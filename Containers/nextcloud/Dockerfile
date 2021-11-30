@@ -109,7 +109,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 22.2.3
+ENV NEXTCLOUD_VERSION 23.0.0
 
 RUN set -ex; \
     fetchDeps=" \
@@ -215,6 +215,13 @@ RUN set -ex; \
         dirmngr \
     ; \
     rm -rf /var/lib/apt/lists/*
+
+RUN rm -rf /tmp/nextcloud-aio && \
+    mkdir -p /tmp/nextcloud-aio && \
+    cd /tmp/nextcloud-aio && \
+    git clone https://github.com/nextcloud/all-in-one.git .; \
+    mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
+    cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/
 
 RUN chown www-data:root -R /usr/src && \
     chown www-data:root -R /usr/local/etc/php/conf.d && \
