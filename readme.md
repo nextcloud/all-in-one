@@ -19,7 +19,8 @@ Included are:
 ```
 curl -fsSL get.docker.com | sudo sh
 ```
-2. Run the following command: 
+2. Run the following command:
+
 ```
 sudo docker run -it \
 --name nextcloud-aio-mastercontainer \
