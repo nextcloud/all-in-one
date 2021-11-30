@@ -217,6 +217,13 @@ php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_D
 php /var/www/html/occ config:system:set htaccess.RewriteBase --value="/"
 php /var/www/html/occ maintenance:update:htaccess
 
+# AIO app
+if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" = "" ]; then
+    php /var/www/html/occ app:enable nextcloud-aio
+elif [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" = "no" ]; then
+    php /var/www/html/occ app:enable nextcloud-aio
+fi
+
 # Notify push
 if ! [ -d "/var/www/html/custom_apps/notify_push" ]; then
     php /var/www/html/occ app:install notify_push
