@@ -374,7 +374,7 @@ class DockerActionManager
             $containerName = $container->GetIdentifier();
 
             // schedule the exec
-            $url = $this->BuildApiUrl(sprintf('/containers/%s/exec', urlencode($containerName)));
+            $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
             $response = json_decode(
                 $this->guzzleClient->request(
                     'POST',
@@ -391,14 +391,15 @@ class DockerActionManager
                             ],
                         ],
                     ]
-                )->getBody()->getContents()
+                )->getBody()->getContents(),
+                true
             );
 
             // get the id from the response
             $id = $response['Id'];
 
             // start the exec
-            $url = $this->BuildApiUrl(sprintf('/exec/%s/start', $id));
+            $url = $this->BuildApiUrl(sprintf('exec/%s/start', $id));
             $this->guzzleClient->request(
                 'POST',
                 $url,
