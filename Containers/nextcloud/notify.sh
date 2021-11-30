@@ -3,7 +3,7 @@
 SUBJECT="$1"
 MESSAGE="$2"
 
-if [ "$(php /var/www/html/occ config:app:get notificaations enabled)" = "no" ]; then
+if [ "$(php /var/www/html/occ config:app:get notifications enabled)" = "no" ]; then
     echo "Cannot send notification as notification app is not enabled."
     exit 1
 fi
