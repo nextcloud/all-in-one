@@ -32,7 +32,10 @@ sudo docker run -it \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
 nextcloud/all-in-one:latest
 ```
-4. Connect to `https://hostname:8443` in your browser or `https://internal.ip.of.your.server:8080`
+4. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
+E.g. https://internal.ip.of.this.server:8080<br>
+If your server has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatially by opening the Nextcloud AIO Interface via:<br>
+https://your-domain-that-points-to-this-server.tld:8443
 
 Explanation of used ports:
 
