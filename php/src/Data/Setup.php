@@ -21,7 +21,7 @@ class Setup
             return '';
         }
 
-        $password = $this->passwordGenerator->GeneratePassword(6);
+        $password = $this->passwordGenerator->GeneratePassword(8);
         $this->configurationManager->SetPassword($password);
         return $password;
     }
