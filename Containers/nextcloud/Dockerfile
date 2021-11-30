@@ -213,6 +213,7 @@ RUN set -ex; \
         openssl \
         gnupg \
         dirmngr \
+        git \
     ; \
     rm -rf /var/lib/apt/lists/*
 

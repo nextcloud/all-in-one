@@ -367,6 +367,51 @@ class DockerActionManager
         }
     }
 
+    public function sendNotification(Container $container, string $subject, string $message)
+    {
+        if ($this->GetContainerStartingState($container) instanceof RunningState) {
+
+            $containerName = $container->GetIdentifier();
+
+            // schedule the exec
+            $url = $this->BuildApiUrl(sprintf('/containers/%s/exec', urlencode($containerName)));
+            $response = json_decode(
+                $this->guzzleClient->request(
+                    'POST',
+                    $url,
+                    [
+                        'json' => [
+                            'AttachStdout' => true,
+                            'Tty' => true,
+                            'Cmd' => [
+                                'bash',
+                                '/notify.sh',
+                                $subject,
+                                $message
+                            ],
+                        ],
+                    ]
+                )->getBody()->getContents()
+            );
+
+            // get the id from the response
+            $id = $response['Id'];
+
+            // start the exec
+            $url = $this->BuildApiUrl(sprintf('/exec/%s/start', $id));
+            $this->guzzleClient->request(
+                'POST',
+                $url,
+                [
+                    'json' => [
+                        'Detach' => false,
+                        'Tty' => true,
+                    ],
+                ]
+            );
+        }
+    }
+
     public function DisconnectContainerFromNetwork(Container $container)
     {
 
