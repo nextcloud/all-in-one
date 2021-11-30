@@ -29,7 +29,7 @@ RUN curl "https://caddyserver.com/api/download?os=linux&arch=amd64" -o "/usr/bin
     && /usr/bin/caddy version
 
 RUN cd /var/www/docker-aio; \
-    git clone git@github.com:nextcloud/all-in-one.git .; \
+    git clone https://github.com/nextcloud/all-in-one.git .; \
     chown -R www-data:www-data ./; \
     chmod 770 -R ./
 
