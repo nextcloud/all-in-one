@@ -1,0 +1,206 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Cantarell, Ubuntu, Helvetica Neue, Arial, Noto Color Emoji, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;;
+}
+
+a {
+    text-decoration: none;
+}
+
+.button {
+    padding: 6px 16px;
+    width: auto;
+    min-height: 34px;
+    cursor: pointer;
+    background-color:#0082c9;
+    font-weight: bold;
+    border-radius: 100px;
+    margin: 3px 3px 3px 0;
+    font-size: 13px;
+    color: white;
+    border: 1px solid black;
+    outline: none;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding-bottom: 5px;
+}
+
+span.error {
+    background-color: #e9322d;
+}
+
+div.toast.error {
+    border-left-color: #e9322d;
+}
+
+.status {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    vertical-align: text-bottom
+}
+
+.status {
+    border-radius: 50%
+}
+
+
+span.success {
+    background-color: #46ba61;
+}
+
+span.running {
+    background-color: rgb(255, 208, 0);
+}
+
+div.toast.success {
+    border-left-color: #46ba61;
+}
+
+div.toast {
+    border-left: 3px solid;
+    right: 10px;
+    min-width: 200px;
+    box-shadow: 0 0 6px 0 rgba(77, 77, 77, 0.3);
+    padding: 12px;
+    margin-top: 45px;
+    position: fixed;
+    z-index: 1;
+    border-radius: 3px;
+    background: none;
+    background-color: white;
+}
+
+.login {
+    padding: 50px;
+    background-color: white;
+    width: 500px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 16px;
+}
+
+.login > .monospace {
+    font-family: monospace;
+    font-size: 17px;
+}
+
+input {
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.login > form > input {
+    width: 100%;
+}
+
+.login > img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.login > .button {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: center;
+    line-height: 33px;
+    margin-top: 20px;
+}
+
+.login-wrapper {
+    height: 100%;
+    width: 100%;
+    background-color: #0082c9;
+    background-image: linear-gradient(
+            40deg
+            , #0082c9 0%, #30b6ff 100%);
+    background-size: contain;
+    background-image: url('/img/background.png'), linear-gradient(
+            40deg
+            , #0082c9 0%, #30b6ff 100%);
+    position: relative;
+}
+
+.content {
+    padding: 20px;
+    max-width: 100%;
+    word-break: break-word;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.logo {
+    background-image: url('/img/logo.svg');
+    height: 50px;
+    background-repeat: no-repeat;
+    display: inline-flex;
+    background-size: contain;
+    background-position: center center;
+    width: 62px;
+    position: absolute;
+    left: 12px;
+    top: 1px;
+    bottom: 1px;
+}
+
+header {
+    background-color: #0082c9;
+    background-image: linear-gradient(40deg, #0082c9 0%, #30b6ff 100%);
+    height: 50px;
+    justify-content: space-between;
+    display: flex;
+}
+
+.loading {
+    color: grey;
+}
+
+#overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+  z-index: 2;
+}
+
+#overlay.loading {
+  display: block;
+}
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+    position: absolute;
+    top: calc(50% - 60px);
+    left: calc(50% - 60px);
+  }
+  
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

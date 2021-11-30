@@ -1,0 +1,37 @@
+{
+    "name": "http-interop/http-factory-guzzle",
+    "description": "An HTTP Factory using Guzzle PSR7",
+    "keywords": [
+        "psr-7",
+        "psr-17",
+        "http",
+        "factory"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "PHP-FIG",
+            "homepage": "http://www.php-fig.org/"
+        }
+    ],
+    "provide": {
+        "psr/http-factory-implementation": "^1.0"
+    },
+    "require": {
+        "php": ">=7.3",
+        "psr/http-factory": "^1.0",
+        "guzzlehttp/psr7": "^1.7||^2.0"
+    },
+    "require-dev": {
+        "http-interop/http-factory-tests": "^0.9",
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Http\\Factory\\Guzzle\\": "src/"
+        }
+    },
+    "suggest": {
+        "guzzlehttp/psr7": "Includes an HTTP factory starting in version 2.0"
+    }
+}

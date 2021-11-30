@@ -1,0 +1,245 @@
+{% extends "layout.twig" %}
+
+{% block body %}
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <header>
+        <div class="">
+            <div class="logo"></div>
+        </div>
+        <form method="POST" action="/api/auth/logout">
+            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+            <input class="button" type="submit" value="Log out" />
+        </form>
+    </header>
+
+    <div class="content">
+        <h1>Nextcloud AIO Beta</h1>
+        This is beta software and not production ready.<br><br>
+
+        {% set isAnyRunning = false %}
+        {% set isWatchtowerRunning = false %}
+        {% set isBackupContainerRunning = false %}
+        {% set isRestoreRunning = false %}
+        {% set isBackupOrRestoreRunning = false %}
+        {% set isApacheStarting = false %}
+
+        {% for container in containers %}
+            {% if class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' and container.GetIdentifier() != 'nextcloud-aio-domaincheck' and container.GetIdentifier() != 'nextcloud-aio-borgbackup' and container.GetIdentifier() != 'nextcloud-aio-watchtower' %}
+                {% set isAnyRunning = true %}
+            {% endif %}
+            {% if container.GetIdentifier() == 'nextcloud-aio-watchtower' and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
+                {% set isWatchtowerRunning = true %}
+            {% endif %}
+            {% if container.GetIdentifier() == 'nextcloud-aio-apache' and class(container.GetStartingState()) == 'AIO\\Container\\State\\StartingState' %}
+                {% set isApacheStarting = true %}
+            {% endif %}
+            {% if container.GetIdentifier() == 'nextcloud-aio-borgbackup' and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
+                {% set isBackupContainerRunning = true %}
+                {% if borg_backup_mode == 'restore' %}
+                    {% set isRestoreRunning = true %}
+                {% endif %}
+                {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
+                    {% set isBackupOrRestoreRunning = true %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if isWatchtowerRunning == true %}
+            Mastercontainer updpate currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until thats done.<br /><br />
+            <a href="" class="button reload">Reload ↻</a><br/>
+        {% else %}
+            {% if isBackupOrRestoreRunning == false and domain == "" %}
+                Please type in the domain that will be used for Nextcloud:<br><br />
+                <form method="POST" action="/api/configuration" class="xhr">
+                    <input type="text" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
+                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                    <input class="button" type="submit" value="Submit" />
+                </form>
+                Make sure that this server is reachable on Port 443 and you've correctly set up the DNS config for the domain that you enter. <br><br>
+                If you have a dynamic IP-adress, you can use e.g. <a href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates. 
+            {% endif %}
+
+            {% if domain != "" %}
+
+                {% if isAnyRunning == true %}
+                    {% if isApacheStarting != true %}
+                        Initial Nextcloud username: admin <br />
+                        Initial Nextcloud password: {{ nextcloud_password }} <br /><br/>
+                        <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
+                    {% else %}
+                        Containers are currently starting.<br /><br />
+                        <a href="" class="button reload">Reload ↻</a><br/>
+                    {% endif %}
+                {% endif %}
+
+                {% if was_start_button_clicked == true %}
+                    <h2>Containers</h2>
+                    <ul>
+                        {# @var containers \AIO\Container\Container[] #}
+                        {% for container in containers %}
+                            {% if container.GetIdentifier() != 'nextcloud-aio-borgbackup' and container.GetIdentifier() != 'nextcloud-aio-watchtower' and container.GetIdentifier() != 'nextcloud-aio-domaincheck' %}
+                                <li>
+                                    {% if class(container.GetStartingState()) == 'AIO\\Container\\State\\StartingState' %}
+                                        <span class="status running"></span>
+                                        <span>{{container.GetDisplayName()}} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Starting</a>)</span>
+                                    {% elseif class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
+                                        <span class="status success"></span>
+                                        <span>{{container.GetDisplayName()}} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Running</a>)</span>
+                                    {% else %}
+                                        <span class="status error"></span>
+                                        <span>{{container.GetDisplayName()}} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Stopped</a>)</span>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+
+                    {% if has_update_available == true %}
+                        Updates are available. Stop your containers and restart them to apply the update. You should consider creating a backup first.<br><br>
+                    {% else %}
+                        You are up-to-date.<br><br>
+                    {% endif %}
+                {% endif %}
+
+                {% if isAnyRunning == true %}
+                    {% if isApacheStarting != true %}
+                        <form method="POST" action="/api/docker/stop" class="xhr">
+                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                            <input class="button" type="submit" value="Stop containers" />
+                        </form>
+                    {% endif %}
+                {% else %}
+                    {% if isRestoreRunning == true %}
+                        Restore currently running. Cannot start the containers until that's done.<br /><br />
+                    {% elseif has_update_available == true and isBackupOrRestoreRunning == true %}
+                        Restore or Backup currently running and container update available. Cannot start the containers until that's done.<br /><br />
+                    {% else %}
+                        {% if was_start_button_clicked == false %}
+                            Clicking on the button below will download all docker containers and start them. This can take a lot of time depending on your internect connection. Since the overall size is a few GB, this will take around 5-10 min or more. So be aware and patient!<br><br>
+                        {% endif %}
+                        {% if was_start_button_clicked == false or has_update_available == false %}
+                            <form method="POST" action="/api/docker/start" class="xhr">
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                <input class="button" type="submit" value="Start containers" />
+                            </form>
+                        {% else %}
+                            <form method="POST" action="/api/docker/start" class="xhr">
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                <input class="button " type="submit" value="Start and update containers" onclick="return confirm('Start and update containers? You should consider creating a backup first.')" />
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
+                {% if is_mastercontainer_update_available == true %}
+                    {% if isBackupOrRestoreRunning == false %}
+                        <h2>Mastercontainer update</h2>
+
+                        A new mastercontainer is available. Please click on the button below to update it.<br><br>
+                        <form method="POST" action="/api/docker/watchtower" class="xhr">
+                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                            <input class="button" type="submit" value="Update mastercontainer" />
+                        </form>
+                    {% endif %}
+                {% endif %}
+
+                {% if was_start_button_clicked == true %}
+                    
+
+                    {% if isBackupOrRestoreRunning == false and borg_backup_host_location == "" and isApacheStarting != true %}
+                        <h2>Backup and restore</h2>
+                        Please type in the directory where backups will get created on the host system:<br><br>
+                        <form method="POST" action="/api/configuration" class="xhr">
+                            <input type="text" name="borg_backup_host_location" value="/mnt/backup" placeholder="/mnt/backup"/>
+                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                            <input class="button" type="submit" value="Submit" />
+                        </form>
+                        The folder path that you enter must start with /mnt/ or /media/ so e.g. /mnt/backup
+                    {% endif %}
+
+                    {% if borg_backup_host_location != "" %}
+                        <h2>Backup and restore</h2>
+                        {% if has_backup_run_once == true and isBackupContainerRunning == false %}
+                            {% if backup_exit_code > 0 %}
+                                <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                            {% elseif backup_exit_code == 0 %}
+                                {% if borg_backup_mode == "backup" %}
+                                    <span class="status success"></span> Last {{ borg_backup_mode }} succesful on {{ last_backup_time }}! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                {% else %}
+                                    <span class="status success"></span> Last {{ borg_backup_mode }} succesful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+
+                        {% if isBackupContainerRunning == false %}
+                            This is your encryption password for backups: {{ borgbackup_password }} <br /><br/>
+                            Please save it at a safe place since you won't be able to restore from backup if you loose this password! <br /><br/>
+                            Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
+                            The backup itself will use a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup">BorgBackup<a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
+                            Backups get created in the following directory on the host: {{ borg_backup_host_location }}/borg <br /><br/>
+
+                            {% if isApacheStarting != true %}
+                                <form method="POST" action="/api/docker/backup" class="xhr">
+                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                    <input class="button" type="submit" value="Create backup" onclick="return confirm('Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.')" />
+                                </form>
+
+                                {% if has_backup_run_once == true %}
+                                    Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact but it should't be needed in most situtations.<br><br/>
+                                    <form method="POST" action="/api/docker/backup-check" class="xhr">
+                                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                        <input class="button" type="submit" value="Check backup integrity" onclick="return confirm('Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.')" /><br/>
+                                    </form>
+
+                                    Click on the button below to restore the last backup from {{ last_backup_time }}. This will overwrite all your files with the state of the backup. It makes sense to run an integrity check before restoring your files but is not mandatory since it shouldn't be needed in most situations.<br><br>
+                                    <form method="POST" action="/api/docker/restore" class="xhr">
+                                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                        <input class="button" type="submit" value="Restore last backup" onclick="return confirm('Restore last backup? Are you sure that you want to restore the last backup? This will stop all running containers and restore the last backup from {{ last_backup_time }}. You might want to check the backup integrity first.')" />
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+
+                        {% else %}
+                            <span class="status running"></span> Backup container currently running. (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                            <a href="" class="button reload">Reload ↻</a><br/>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+    {% if isApacheStarting == true or isBackupContainerRunning == true or isWatchtowerRunning == true %}
+        <script>
+            if (document.hasFocus()) {
+                // hide reload button if the site reloads automatically
+                var list = document.getElementsByClassName("reload button");
+                for (var i = 0; i < list.length; i++) {
+                    // list[i] is a node with the desired class name
+                    list[i].style.display = 'none';
+                }
+
+                // set timeout for reload
+                setTimeout(function(){
+                window.location.reload(1);
+                }, 5000);
+            }
+        </script>
+    {% endif %}
+
+    </div>
+    <div id="overlay">
+        <div class="loader"></div>
+    </div>
+{% endblock %}

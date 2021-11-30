@@ -1,0 +1,26 @@
+{
+    "name": "php-di/slim-bridge",
+    "description": "PHP-DI integration in Slim",
+    "license": "MIT",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "DI\\Bridge\\Slim\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DI\\Bridge\\Slim\\Test\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.1 || ^8.0",
+        "php-di/php-di": "^6.0.0",
+        "php-di/invoker": "^2.0.0",
+        "slim/slim": "^4.2.0"
+    },
+    "require-dev": {
+        "laminas/laminas-diactoros": "^2.1",
+        "phpunit/phpunit": ">= 7.0 < 10"
+    }
+}

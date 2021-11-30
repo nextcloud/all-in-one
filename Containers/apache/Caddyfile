@@ -1,0 +1,53 @@
+{
+    auto_https disable_redirects
+
+    storage file_system {
+        root /mnt/data/caddy
+    }
+}
+
+{$NC_DOMAIN}:443 {
+
+    # Notify Push
+    route /push/* {
+        uri strip_prefix /push
+        reverse_proxy {$NEXTCLOUD_HOST}:7867
+    }
+
+    # Talk
+    route /standalone-signaling/* {
+        uri strip_prefix /standalone-signaling
+        reverse_proxy {$TALK_HOST}:8081
+    }
+
+    # Collabora
+    route /browser/* {
+        reverse_proxy https://{$COLLABORA_HOST}:9980 {
+            transport http {
+                tls_insecure_skip_verify
+            }
+        }
+    }
+    route /hosting/* {
+        reverse_proxy https://{$COLLABORA_HOST}:9980 {
+            transport http {
+                tls_insecure_skip_verify
+            }
+        }
+    }
+    route /cool/* {
+        reverse_proxy https://{$COLLABORA_HOST}:9980 {
+            transport http {
+                tls_insecure_skip_verify
+            }
+        }
+    }
+
+    # Nextcloud
+    route {
+        rewrite /.well-known/carddav /remote.php/dav
+        rewrite /.well-known/caldav /remote.php/dav
+        header Strict-Transport-Security max-age=31536000;
+        reverse_proxy localhost:80
+    }
+}

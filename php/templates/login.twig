@@ -1,0 +1,19 @@
+{% extends "layout.twig" %}
+
+{% block body %}
+    <div class="login-wrapper">
+        <div class="login">
+            <img src="/img/logo-blue.svg" style="margin-left: auto;margin-right: auto;display: block;">
+            <h1>Nextcloud AIO Login</h1>
+            <p>Log in using your Nextcloud AIO credentials. If you don't have them you can also use the automatic login from your Nextcloud.</p>
+            <form method="POST" action="/api/auth/login">
+                <input type="text" name="username" placeholder="Username" />
+                <input type="text" name="password" placeholder="Password" />
+                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                <input type="submit" class="button" value="Login" />
+            </form>
+        </div>
+    </div>
+{% endblock %}
+

@@ -1,0 +1,16 @@
+{
+    auto_https disable_redirects
+
+    storage file_system {
+        root /mnt/docker-aio-config/caddy/
+    }
+}
+
+https://:8443 {
+
+    reverse_proxy localhost:8000
+
+    tls {
+        on_demand
+    }
+}
