@@ -22,9 +22,12 @@ class ConfigurationManager
         return $this->GetConfig()['username'];
     }
 
-    public function GetPassword() : string {
-        return $this->GetConfig()['password'];
-    }
+    public function GetPassword() : ?string {
+        if(array_key_exists('password', $this->GetConfig())){
+            return $this->GetConfig()['password'];
+        }
+        else return null;
+     }
 
     public function GetToken() : string {
         return $this->GetConfig()['AIO_TOKEN'];

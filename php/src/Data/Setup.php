@@ -27,6 +27,6 @@ class Setup
     }
 
     public function CanBeInstalled() : bool {
-        return !file_exists(DataConst::GetConfigFile());
+        return is_null($this->configurationManager->GetPassword());
     }
 }
