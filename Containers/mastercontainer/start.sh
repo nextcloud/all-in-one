@@ -21,6 +21,15 @@ if ! [ -w /mnt/docker-aio-config ]; then
     exit 1
 fi
 
+# Try to create a file
+touch /mnt/docker-aio-config/test
+if ! [ -f /mnt/docker-aio-config/test ]; then
+    echo "Could not create a testfile. Probably don't have enough permissions in the data directory."
+    exit 1
+else
+    rm -f /mnt/docker-aio-config/test
+fi
+
 # Check if api version is supported
 API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
 API_VERSION="$(grep -oP 'const API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP [0-9]+.[0-9]+ | head -1)"
