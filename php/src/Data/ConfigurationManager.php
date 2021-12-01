@@ -30,16 +30,6 @@ class ConfigurationManager
         return $this->GetConfig()['AIO_TOKEN'];
     }
 
-    public function GetIsContainerUpateAvailable() : bool {
-        return isset($this->GetConfig()['isContainerUpateAvailable']) ? $this->GetConfig()['isContainerUpateAvailable'] : false;
-    }
-
-    public function SetIsContainerUpateAvailable(bool $value) : void {
-        $config = $this->GetConfig();
-        $config['isContainerUpateAvailable'] = $value;
-        $this->WriteConfig($config);
-    }
-
     public function SetPassword(string $password) : void {
         $config = $this->GetConfig();
         $config['username'] = 'admin';

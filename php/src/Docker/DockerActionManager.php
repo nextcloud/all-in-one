@@ -290,12 +290,8 @@ class DockerActionManager
     public function isAnyUpdateAvailable() {
         $id = 'nextcloud-aio-apache';
 
-        if ($this->configurationManager->GetIsContainerUpateAvailable()) {
-            return true;
-        }
 
         if ($this->isContainerUpdateAvailable($id) !== "") {
-            $this->configurationManager->SetIsContainerUpateAvailable(true);
             return true;
         } else {
             return false;
