@@ -75,14 +75,8 @@ RUN chmod +x /usr/bin/start.sh; \
     chmod +r /Caddyfile; \
     chmod +x /cron.sh
 
-# add docker group
-RUN groupadd -g 998 docker && \
-    usermod -aG docker www-data
-
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
-
-USER www-data
 
 ENTRYPOINT ["start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
