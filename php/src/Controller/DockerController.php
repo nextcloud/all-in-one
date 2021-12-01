@@ -108,7 +108,6 @@ class DockerController
         // set AIO_TOKEN
         $config['AIO_TOKEN'] = bin2hex(random_bytes(24));
         $this->configurationManager->WriteConfig($config);
-        $this->configurationManager->SetIsContainerUpateAvailable(false);
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
