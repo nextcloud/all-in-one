@@ -36,9 +36,20 @@ nextcloud/all-in-one:latest
 E.g. https://internal.ip.of.this.server:8080<br>
 If your server has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatially by opening the Nextcloud AIO Interface via:<br>
 https://your-domain-that-points-to-this-server.tld:8443
+4. You should now see your login credentials. If not, please have a look at the FAQ section below.
 
 Explanation of used ports:
 
 - `80`: redirects to Nextcloud (HTTP) (is used for getting the certificate via ACME http-challenge for mastercontainer)
 - `8080`: Master Container Interface with self-signed certificate (HTTPS) (works always, also if only access via IP-address is possible, e.g. `https://internal.ip.address:8080/`)
 - `8443`: Master Container Interface with valid automatic certificate via Let's Encrypt! (HTTPS) (Only works if you access the container via a public domain, e.g. `https://public.domain.com:8443/` and not via IP-address.)
+
+## FAQ
+- **Is running Nextcloud AIO via Docker Compose supported?**<br>
+    Unfortunately no, as you most likely run into many issues when trying to do so.
+- **I don't see the initial screen with my login credentials. What to do?**<br>
+    Please try to remove the mastercontainer first by running:
+    ```
+    sudo docker stop nextcloud-aio-mastercontainer; sudo docker rm nextcloud-aio-mastercontainer; sudo docker rm nextcloud_aio_mastercontainer
+    ```
+    Afterwards, install it again by running the above mentioned command again.

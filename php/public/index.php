@@ -98,7 +98,7 @@ $app->get('/setup', function ($request, $response, $args) use ($container) {
     /** @var \AIO\Data\Setup $setup */
     $setup = $container->get(\AIO\Data\Setup::class);
 
-    if(!$setup->CanBeInstalled()) {
+    if(!$setup->CanBeInstalled($request)) {
         return $view->render(
             $response,
             'already-installed.twig'

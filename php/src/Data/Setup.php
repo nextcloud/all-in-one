@@ -3,6 +3,7 @@
 namespace AIO\Data;
 
 use AIO\Auth\PasswordGenerator;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class Setup
 {
@@ -26,7 +27,29 @@ class Setup
         return $password;
     }
 
-    public function CanBeInstalled() : bool {
-        return !file_exists(DataConst::GetConfigFile());
+    public function CanBeInstalled(?Request $request) : bool {
+        if (file_exists(DataConst::GetConfigFile())) {
+            return false;
+        }
+
+        if ($request === null) {
+            return true;
+        }
+
+        $uri = $request->getUri();
+        if ($uri->getPort() === '8080') {
+            if (!file_exists(DataConst::GetTempSetupFile())) {
+                if(!is_dir(DataConst::GetDataDirectory())) {
+                    mkdir(DataConst::GetDataDirectory());
+                }
+                file_put_contents(DataConst::GetTempSetupFile(), '');
+                return false;
+            } else {
+                    unlink(DataConst::GetTempSetupFile());
+                    return true;
+            }
+        }
+
+        return true;
     }
 }

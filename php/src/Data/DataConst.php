@@ -23,6 +23,10 @@ class DataConst {
         return self::GetDataDirectory() . '/configuration.json';
     }
 
+    public static function GetTempSetupFile() : string {
+        return self::GetDataDirectory() . '/temp.setup';
+    }
+
     public static function GetBackupSecretFile() : string {
         return self::GetDataDirectory() . '/backupsecret';
     }
