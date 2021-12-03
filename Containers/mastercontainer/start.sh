@@ -44,6 +44,7 @@ mkdir -p /mnt/docker-aio-config/certs/
 
 # Adjust permissions for all instances
 chmod 770 -R /mnt/docker-aio-config
+chmod 777 /mnt/docker-aio-config
 chown www-data:www-data -R /mnt/docker-aio-config/data/
 chown www-data:www-data -R /mnt/docker-aio-config/session/
 chown root:root -R /mnt/docker-aio-config/caddy/
