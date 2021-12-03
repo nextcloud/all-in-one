@@ -54,3 +54,9 @@ Only those (if you acces the Mastercontainer Interface internally via port 8080)
 - `8443/TCP`: Mastercontainer Interface with valid certificate (only works if port 80 and 8443 are open and you point a domain to your server. It generates a valid certificate then automatically and access via e.g. `https://public.domain.com:8443/` is possible.)
 - `443/TCP`: will be used by the Nextcloud container later on and needs to be open
 - `3478/TCP` and `3478/UPD`: will be used by the Turnserver inside the Talk container and needs to be open
+
+
+### Backup solution
+Nextcloud AIO provides a local backup solution based on BorgBackup. These backups act as a local restore point in case the installation gets corrupted. Note that this implementation does not provide remote backups, for this you can use https://github.com/nextcloud/backup.
+
+Backups can be created and restored in the AIO interface using the buttons `Create Backup` and `restore last backup`.
