@@ -29,7 +29,9 @@ RUN curl "https://caddyserver.com/api/download?os=linux&arch=amd64" -o "/usr/bin
 RUN cd /var/www/docker-aio; \
     git clone https://github.com/nextcloud/all-in-one.git .; \
     chmod 770 -R ./; \
-    chown www-data:www-data -R ./
+    chown www-data:www-data -R ./; \
+    rm -r ./php/data; \
+    rm -r ./php/session
 
 RUN mkdir -p /etc/apache2/certs && \
     cd /etc/apache2/certs && \
