@@ -10,25 +10,15 @@ print_green() {
 if ! [ -a "/var/run/docker.sock" ]; then
     echo "Docker socket is not available. Cannot continue."
     exit 1
-elif ! test -r /var/run/docker.sock; then
+elif ! sudo -u www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
     GROUP="$(stat -c '%g' /var/run/docker.sock)"
     groupadd -g "$GROUP" docker && \
-    usermod -aG docker root
-    if ! test -r /var/run/docker.sock; then
-        echo "Docker socket is not readable by the root user. Cannot continue."
+    usermod -aG docker www-data
+    if ! sudo -u www-data test -r /var/run/docker.sock; then
+        echo "Docker socket is not readable by the www-data user. Cannot continue."
         exit 1
     fi
-fi
-
-# Adjust permissions for all instances
-chown root:root -R /mnt/docker-aio-config
-chmod 770 -R /mnt/docker-aio-config
-
-# Check if volume is writeable
-if ! [ -w /mnt/docker-aio-config ]; then
-    echo "/mnt/docker-aio-config is not writeable."
-    exit 1
 fi
 
 # Check if api version is supported
@@ -50,6 +40,14 @@ fi
 mkdir -p /mnt/docker-aio-config/data/
 mkdir -p /mnt/docker-aio-config/session/
 mkdir -p /mnt/docker-aio-config/caddy/
+mkdir -p /mnt/docker-aio-config/certs/ 
+
+# Adjust permissions for all instances
+chmod 770 -R /mnt/docker-aio-config
+chown www-data:www-data -R /mnt/docker-aio-config/data/
+chown www-data:www-data -R /mnt/docker-aio-config/session/
+chown root:root -R /mnt/docker-aio-config/caddy/
+chown root:root -R /mnt/docker-aio-config/certs/
 
 # Adjust certs
 GENERATED_CERTS="/mnt/docker-aio-config/certs"

@@ -20,17 +20,12 @@ Included are:
 ```
 curl -fsSL get.docker.com | sudo sh
 ```
-2. Make sure that the docker group has the correct groupid:
-
-```
-sudo groupmod -g 998 docker
-```
-3. Make sure to pull the latest image:
+2. Make sure to pull the latest image:
 
 ```
 sudo docker pull nextcloud/all-in-one:latest
 ```
-4. Run the following command in order to start the container:
+3. Run the following command in order to start the container:
 
 ```
 sudo docker run -it \
@@ -43,7 +38,7 @@ sudo docker run -it \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
 nextcloud/all-in-one:latest
 ```
-5. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
+4. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
 E.g. https://internal.ip.of.this.server:8080<br>
 If your server has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatially by opening the Nextcloud AIO Interface via:<br>
 https://your-domain-that-points-to-this-server.tld:8443
