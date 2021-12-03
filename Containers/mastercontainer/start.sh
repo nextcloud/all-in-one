@@ -10,16 +10,20 @@ print_green() {
 if ! [ -a "/var/run/docker.sock" ]; then
     echo "Docker socket is not available. Cannot continue."
     exit 1
-elif ! su www-data -s /bin/bash -c "test -r /var/run/docker.sock"; then
-    echo "Trying to fix docker.sock permissions..."
-    GROUP=$(stat -c '%g' /var/run/docker.sock)
+elif ! test -r /var/run/docker.sock; then
+    echo "Trying to fix docker.sock permissions internally..."
+    GROUP="$(stat -c '%g' /var/run/docker.sock)"
     groupadd -g "$GROUP" docker && \
-    usermod -aG docker www-data
-    if ! su www-data -s /bin/bash -c "test -r /var/run/docker.sock"; then
-        echo "Docker socket is not readable by the www-data user. Cannot continue."
+    usermod -aG docker root
+    if ! test -r /var/run/docker.sock; then
+        echo "Docker socket is not readable by the root user. Cannot continue."
         exit 1
     fi
 fi
+
+# Adjust permissions for all instances
+chown root:root -R /mnt/docker-aio-config
+chmod 770 -R /mnt/docker-aio-config
 
 # Check if volume is writeable
 if ! [ -w /mnt/docker-aio-config ]; then
@@ -42,11 +46,9 @@ else
     sleep 10
 fi
 
-# Adjust data permissions
+# Add important folders
 mkdir -p /mnt/docker-aio-config/data/
 mkdir -p /mnt/docker-aio-config/session/
-
-# Adjust caddy permissions
 mkdir -p /mnt/docker-aio-config/caddy/
 
 # Adjust certs
@@ -64,7 +66,7 @@ if [ -f ./ssl.crt ] && [ -f ./ssl.key ]; then
     cp "$GENERATED_CERTS/ssl.crt" ./
     cp "$GENERATED_CERTS/ssl.key" ./
 fi
-chown -R www-data /mnt/docker-aio-config /etc/apache2/certs/ssl.*
+
 print_green "Initial startup of Nextcloud All In One complete!
 You should be able to open the Nextcloud AIO Interface now on port 8080 of this server!
 E.g. https://internal.ip.of.this.server:8080
