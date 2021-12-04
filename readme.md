@@ -103,6 +103,7 @@ This can be resolved by:
 ```
 sudo chown root:docker /var/run/docker.sock
 ```
+- Run the container as root user (suggestions for a better setup are welcome!)
 
 (Special thanks to https://community.synology.com/enu/forum/17/post/115752 for the hint)
 
