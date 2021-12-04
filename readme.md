@@ -65,4 +65,6 @@ If you connect an external drive to your host, and choose the backup directory t
 
 Backups can be created and restored in the AIO interface using the buttons `Create Backup` and `Restore last backup`. Additionally, a backup check is provided that checks the integrity of your backups but it shouldn't be needed in most situations. 
 
+The backups itself get encrypted with an encryption key that gets shown to you in the AIO interface. Please save that at a safe place as you will not be able to restore from backup without this key.
+
 Note that this implementation does not provide remote backups, for this you can use the [backup app](https://apps.nextcloud.com/apps/backup). 
