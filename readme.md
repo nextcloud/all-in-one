@@ -56,6 +56,10 @@ Only those (if you acces the Mastercontainer Interface internally via port 8080)
 - `443/TCP`: will be used by the Nextcloud container later on and needs to be open
 - `3478/TCP` and `3478/UPD`: will be used by the Turnserver inside the Talk container and needs to be open
 
+### Are reverse proxies supported?
+Reverse proxies are currently not supported.<br>
+You might investigate yourself though how it could made work behind reverse proxies. If you open a PR with that we might consider it then :)
+
 ### How to resolve `Security & setup warnings displays the "missing default phone region" after initial install`?
 Simply run the following command: `sudo docker exec -it nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue"`. Of course you need to modify `yourvalue` based on your location. Examples are `DE`, `EN` and `GB`. See this list for more codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
 
