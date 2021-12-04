@@ -43,6 +43,7 @@ E.g. https://internal.ip.of.this.server:8080<br>
 If your server has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatially by opening the Nextcloud AIO Interface via:<br>
 https://your-domain-that-points-to-this-server.tld:8443
 
+## FAQ
 ### Which ports are mandatory to be open?
 Only those (if you acces the Mastercontainer Interface internally via port 8080):
 - `443/TCP` for the Nextcloud container
@@ -55,8 +56,13 @@ Only those (if you acces the Mastercontainer Interface internally via port 8080)
 - `443/TCP`: will be used by the Nextcloud container later on and needs to be open
 - `3478/TCP` and `3478/UPD`: will be used by the Turnserver inside the Talk container and needs to be open
 
-
 ### Backup solution
-Nextcloud AIO provides a local backup solution based on BorgBackup. These backups act as a local restore point in case the installation gets corrupted. Note that this implementation does not provide remote backups, for this you can use https://github.com/nextcloud/backup.
+Nextcloud AIO provides a local backup solution based on BorgBackup. These backups act as a local restore point in case the installation gets corrupted. 
 
-Backups can be created and restored in the AIO interface using the buttons `Create Backup` and `restore last backup`.
+It is recommended to create a backup before any container update. By doing this, you will be safe regarding any possible complication during updates because you will be able to restore the whole instance with basically one click. 
+
+If you connect an external drive to your host, and choose the backup directory to be on that drive, you are also kind of save against drive failures of the drive where the docker volumes are stored on. 
+
+Backups can be created and restored in the AIO interface using the buttons `Create Backup` and `Restore last backup`. Additionally, a backup check is provided that checks the integrity of your backups but it shouldn't be needed in most situations. 
+
+Note that this implementation does not provide remote backups, for this you can use the [backup app](https://apps.nextcloud.com/apps/backup). 
