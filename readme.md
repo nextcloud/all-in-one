@@ -56,6 +56,9 @@ Only those (if you acces the Mastercontainer Interface internally via port 8080)
 - `443/TCP`: will be used by the Nextcloud container later on and needs to be open
 - `3478/TCP` and `3478/UPD`: will be used by the Turnserver inside the Talk container and needs to be open
 
+### How to resolve `Security & setup warnings displays the "missing default phone region" after initial install`?
+Simply run the following command: `sudo docker exec -it nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue"`. Of course you need to modify `yourvalue` based on your location. Examples are `DE`, `EN` and `GB`. See this list for more codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
+
 ### Backup solution
 Nextcloud AIO provides a local backup solution based on BorgBackup. These backups act as a local restore point in case the installation gets corrupted. 
 
