@@ -44,6 +44,13 @@ If your server has port 80 and 8443 open and you point a domain to your server, 
 https://your-domain-that-points-to-this-server.tld:8443
 
 ## FAQ
+### How does it work?
+Nextcloud AIO is inspired by projects like Portainer that allow to manage the docker daemon by talking to the docker socket directly. This concept allows to install only one container with a single command that does the heavy lifting of creating and managing all containers that are needed in order to provide a Nextcloud installation with most features included. It also makes updating a breeze and is not bound to the host system (and its slow updates) anymore as everything is in containers. Additionally, it is very easy to handle from a user perspective because a simple interface for managing your Nextcloud AIO installation is provided.
+
+### Are reverse proxies supported?
+Reverse proxies are currently because of the above mentioned architecture not supported.<br>
+You might investigate yourself though how it could made work behind reverse proxies. If you open a PR with that we might consider it then :)
+
 ### Which ports are mandatory to be open?
 Only those (if you acces the Mastercontainer Interface internally via port 8080):
 - `443/TCP` for the Nextcloud container
@@ -55,6 +62,22 @@ Only those (if you acces the Mastercontainer Interface internally via port 8080)
 - `8443/TCP`: Mastercontainer Interface with valid certificate (only works if port 80 and 8443 are open and you point a domain to your server. It generates a valid certificate then automatically and access via e.g. `https://public.domain.com:8443/` is possible.)
 - `443/TCP`: will be used by the Nextcloud container later on and needs to be open
 - `3478/TCP` and `3478/UPD`: will be used by the Turnserver inside the Talk container and needs to be open
+
+### How to run `occ` commands?
+Simply run the following: `sudo docker exec -it nextcloud-aio-nextcloud php occ your-command`. Of course `your-command` needs to be exchanged with the command that you want to run.
+
+### How to resolve `Security & setup warnings displays the "missing default phone region" after initial install`?
+Simply run the following command: `sudo docker exec -it nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue"`. Of course you need to modify `yourvalue` based on your location. Examples are `DE`, `EN` and `GB`. See this list for more codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
+
+### How to update the containers?
+If we push new containers to `latest`, you will see in the AIO interface below the `containers` section that new container updates were found. In this case, just press `Stop containers` and `Start containers` in order to update the containers. And don't forget to back up the current state of your instance using the built-in backup solution before starting the containers again! Otherwise you won't be able to restore your instance easily if something should break during the update.
+
+If a new `Mastercontainer` update was found, you'll see an additional section below the `containers` section which shows that a mastercontainer update is available. If so, you can simply press on the button to update the container.
+
+Additionally, there is a cronjob that runs once a day that checks for container and mastercontainer updates and sends a notification to all Nextcloud admins if a new update was found.
+
+### How to easily log in to the AIO interface?
+If your Nextcloud is running and you are logged in as admin in your Nextcloud, you can easily log in to the AIO interface by opening `https://yourdomain.tld/settings/admin/overview` which will show a button on top that enables you to log in to the AIO interface by just clicking on this button. 
 
 ### Backup solution
 Nextcloud AIO provides a local backup solution based on BorgBackup. These backups act as a local restore point in case the installation gets corrupted. 
