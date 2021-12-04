@@ -193,9 +193,12 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
     public function WriteConfig(array $config) : void {
         if(!is_dir(DataConst::GetDataDirectory())) {
-            mkdir(DataConst::GetDataDirectory());
+            throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
         file_put_contents(DataConst::GetConfigFile(), json_encode($config));
     }

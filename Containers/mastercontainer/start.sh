@@ -10,6 +10,9 @@ print_green() {
 if ! [ -a "/var/run/docker.sock" ]; then
     echo "Docker socket is not available. Cannot continue."
     exit 1
+elif ! mountpoint -q "/mnt/docker-aio-config"; then
+    echo "/mnt/docker-aio-config is not a mountpoint. Cannot proceed!"
+    exit 1
 elif ! sudo -u www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
     GROUP="$(stat -c '%g' /var/run/docker.sock)"
