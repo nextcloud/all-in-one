@@ -91,3 +91,18 @@ Backups can be created and restored in the AIO interface using the buttons `Crea
 The backups itself get encrypted with an encryption key that gets shown to you in the AIO interface. Please save that at a safe place as you will not be able to restore from backup without this key.
 
 Note that this implementation does not provide remote backups, for this you can use the [backup app](https://apps.nextcloud.com/apps/backup). 
+
+### Run on Synology NAS
+Running on a Synology NAS will result in a permission issues on /var/run/docker.sock as this by default owned by root:root.
+
+This can be resolved by:
+- Creating a group called docker (can be created through DiskStation GUI)
+- Adding your admin user to this group
+- Logging in over ssh and changing the ownership of /var/run/docker.sock
+
+```
+sudo chown root:docker /var/run/docker.sock
+```
+
+(Special thanks to https://community.synology.com/enu/forum/17/post/115752 for the hint)
+
