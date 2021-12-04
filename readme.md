@@ -44,6 +44,13 @@ If your server has port 80 and 8443 open and you point a domain to your server, 
 https://your-domain-that-points-to-this-server.tld:8443
 
 ## FAQ
+### How does it work?
+Nextcloud AIO is inspired by projects like Portainer that allow to manage the docker daemon by talking to the docker socket directly. This concept allows to install only one container with a single command that does the heavy lifting of creating and managing all containers that are needed in order to provide a Nextcloud installation with most features included. It also makes updating a breeze and is not bound to the host system (and its slow updates) anymore as everything is in containers. Additionally, it is very easy to handle from a user perspective because a simple interface for managing your Nextcloud AIO installation is provided.
+
+### Are reverse proxies supported?
+Reverse proxies are currently because of the above mentioned architecture not supported.<br>
+You might investigate yourself though how it could made work behind reverse proxies. If you open a PR with that we might consider it then :)
+
 ### Which ports are mandatory to be open?
 Only those (if you acces the Mastercontainer Interface internally via port 8080):
 - `443/TCP` for the Nextcloud container
@@ -55,13 +62,6 @@ Only those (if you acces the Mastercontainer Interface internally via port 8080)
 - `8443/TCP`: Mastercontainer Interface with valid certificate (only works if port 80 and 8443 are open and you point a domain to your server. It generates a valid certificate then automatically and access via e.g. `https://public.domain.com:8443/` is possible.)
 - `443/TCP`: will be used by the Nextcloud container later on and needs to be open
 - `3478/TCP` and `3478/UPD`: will be used by the Turnserver inside the Talk container and needs to be open
-
-### How does it work?
-Nextcloud AIO is inspired by projects like Portainer that allow to manage the docker daemon by talking to the docker socket directly. This concept allows to install only one container with a single command that does the heavy lifting of creating and managing all containers that are needed in order to provide a Nextcloud installation with most features included. It also makes updating a breeze and is not bound to the host system (and its slow updates) anymore as everything is in containers. Additionally, it is very easy to handle from a user perspective because a simple interface for managing your Nextcloud AIO installation is provided.
-
-### Are reverse proxies supported?
-Reverse proxies are currently because of the above mentioned architecture not supported.<br>
-You might investigate yourself though how it could made work behind reverse proxies. If you open a PR with that we might consider it then :)
 
 ### How to run `occ` commands?
 Simply run the following: `sudo docker exec -it nextcloud-aio-nextcloud php occ your-command`. Of course `your-command` needs to be exchanged with the command that you want to run.
