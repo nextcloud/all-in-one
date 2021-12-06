@@ -5,14 +5,8 @@ if ! [ -a "/var/run/docker.sock" ]; then
     echo "Docker socket is not available. Cannot continue."
     exit 1
 elif ! test -r /var/run/docker.sock; then
-    echo "Trying to fix docker.sock permissions internally..."
-    GROUP="$(stat -c '%g' /var/run/docker.sock)"
-    groupadd -g "$GROUP" docker && \
-    usermod -aG docker root
-    if ! test -r /var/run/docker.sock; then
-        echo "Docker socket is not readable by the root user. Cannot continue."
-        exit 1
-    fi
+    echo "Docker socket is not readable by the root user. Cannot continue."
+    exit 1
 fi
 
 if [ -n "$CONTAINER_TO_UPDATE" ]; then
