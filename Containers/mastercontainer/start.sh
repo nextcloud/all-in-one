@@ -15,19 +15,18 @@ elif ! mountpoint -q "/mnt/docker-aio-config"; then
     exit 1
 elif ! sudo -u www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
-
     DOCKER_GROUP=$(stat -c '%G' /var/run/docker.sock)
     DOCKER_GROUP_ID=$(stat -c '%g' /var/run/docker.sock)
-    # check if a group with the same group id of /var/run/docker.socket already exists in the container
+    # Check if a group with the same group id of /var/run/docker.socket already exists in the container
     if grep -q "^$DOCKER_GROUP:" /etc/group; then
-            #if yes, add www-data to that group
-            echo "Adding internal www-data to group $DOCKER_GROUP"
-            usermod -aG "$DOCKER_GROUP" www-data
-        else
-            #if the group doesn't exist, create it
-            echo "Creating docker group internally with id $DOCKER_GROUP_ID"
-            groupadd -g "$DOCKER_GROUP_ID" docker
-            usermod -aG docker www-data
+        # If yes, add www-data to that group
+        echo "Adding internal www-data to group $DOCKER_GROUP"
+        usermod -aG "$DOCKER_GROUP" www-data
+    else
+        # If the group doesn't exist, create it
+        echo "Creating docker group internally with id $DOCKER_GROUP_ID"
+        groupadd -g "$DOCKER_GROUP_ID" docker
+        usermod -aG docker www-data
     fi
     if ! sudo -u www-data test -r /var/run/docker.sock; then
         echo "Docker socket is not readable by the www-data user. Cannot continue."
