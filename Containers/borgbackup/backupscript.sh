@@ -171,7 +171,11 @@ if [ "$BORG_MODE" = restore ]; then
         echo "Could not mount the backup!"
         exit 1
     fi
-    if ! rsync --stats --archive --human-readable -vv --delete --exclude "nextcloud_aio_mastercontainer/data/backup_archives.list" /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
+    if ! rsync --stats --archive --human-readable -vv --delete \
+    --exclude "nextcloud_aio_mastercontainer/data/backup_archives.list" \
+    --exclude "nextcloud_aio_mastercontainer/data/session/"** \
+    --exclude "nextcloud_aio_mastercontainer/data/certs/"** \
+    /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
         echo "Something failed while restoring the boot partition."
         umount /tmp/borg
         exit 1
