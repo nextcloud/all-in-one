@@ -194,7 +194,8 @@
       "internalPorts": [],
       "environmentVariables": [
         "BORG_PASSWORD=%BORGBACKUP_PASSWORD%",
-        "BORG_MODE=%BORGBACKUP_MODE%"
+        "BORG_MODE=%BORGBACKUP_MODE%",
+        "SELECTED_RESTORE_TIME=%SELECTED_RESTORE_TIME%"
       ],
       "volumes": [
         {
