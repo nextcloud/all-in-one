@@ -166,13 +166,14 @@ if version_greater "$image_version" "$installed_version"; then
         # Apply other settings
         echo "Applying other settings..."
         php /var/www/html/occ config:system:set upgrade.disable-web --type=bool --value=true
-        php /var/www/html/occ config:app:set updatenotification notify_groups --value="[]"
         php /var/www/html/occ config:system:set mail_smtpmode --value="smtp"
         php /var/www/html/occ config:system:set trashbin_retention_obligation --value="auto, 30"
         php /var/www/html/occ config:system:set versions_retention_obligation --value="auto, 30"
         php /var/www/html/occ config:system:set activity_expire_days --value="30"
         php /var/www/html/occ config:system:set simpleSignUpLink.shown --type=bool --value=false
         php /var/www/html/occ config:system:set share_folder --value="/Shared"
+        # Not needed anymore with the removal of the updatenotification app:
+        # php /var/www/html/occ config:app:set updatenotification notify_groups --value="[]"
 
     #upgrade
     else

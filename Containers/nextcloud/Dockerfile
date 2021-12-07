@@ -229,7 +229,8 @@ RUN chown www-data:root -R /usr/src && \
     chown www-data:root -R /var/log/supervisord/ && \
     chown www-data:root -R /var/run/supervisord/ && \
     mkdir -p /var/log/nextcloud/ && \
-    chown -R www-data:root /var/log/nextcloud/
+    chown -R www-data:root /var/log/nextcloud/ && \
+    rm -r /usr/src/nextcloud/apps/updatenotification
 
 COPY start.sh /
 COPY notify.sh /
