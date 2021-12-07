@@ -27,6 +27,13 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         exit 1
     fi
 
+    # If database export was unsuccessful, skip update 
+    if [ -f "$DUMP_DIR/export.failed" ]; then
+        echo "Database export failed the last time. Most likely was the export time not high enough."
+        echo "Plese report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
+        exit 1
+    fi
+
     # Inform
     echo "Restoring from database dump."
 
@@ -74,10 +81,12 @@ wait $!
 
 # Continue with shutdown procedure: do database dump, etc.
 rm -f "$DUMP_FILE.temp"
+touch "$DUMP_DIR/export.failed"
 if pg_dump --username "$POSTGRES_USER" "$POSTGRES_DB" > "$DUMP_FILE.temp"; then
     rm -f "$DUMP_FILE"
     mv "$DUMP_FILE.temp" "$DUMP_FILE"
     pg_ctl stop -m fast
+    rm "$DUMP_DIR/export.failed"
     echo 'Database dump successful!'
     exit 0
 else
