@@ -26,6 +26,9 @@ RUN curl "https://caddyserver.com/api/download?os=linux&arch=amd64" -o "/usr/bin
     && chmod +x /usr/bin/caddy \
     && /usr/bin/caddy version
 
+COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker
+
 RUN cd /var/www/docker-aio; \
     git clone https://github.com/nextcloud/all-in-one.git .; \
     chmod 770 -R ./; \
