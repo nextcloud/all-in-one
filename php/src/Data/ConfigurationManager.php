@@ -18,10 +18,6 @@ class ConfigurationManager
         return [];
     }
 
-    public function GetUserName() : string {
-        return $this->GetConfig()['username'];
-    }
-
     public function GetPassword() : string {
         return $this->GetConfig()['password'];
     }
@@ -32,7 +28,6 @@ class ConfigurationManager
 
     public function SetPassword(string $password) : void {
         $config = $this->GetConfig();
-        $config['username'] = 'admin';
         $config['password'] = $password;
         $this->WriteConfig($config);
     }

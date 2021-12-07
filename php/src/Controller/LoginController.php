@@ -18,9 +18,8 @@ class LoginController
     }
 
     public function TryLogin(Request $request, Response $response, $args) : Response {
-        $userName = $request->getParsedBody()['username'];
         $password = $request->getParsedBody()['password'];
-        if($this->authManager->CheckCredentials($userName, $password)) {
+        if($this->authManager->CheckCredentials($password)) {
             $this->authManager->SetAuthState(true);
             return $response->withHeader('Location', '/')->withStatus(302);
         }
