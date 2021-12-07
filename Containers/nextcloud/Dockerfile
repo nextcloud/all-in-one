@@ -14,7 +14,7 @@ RUN set -ex; \
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 512M
+ENV PHP_UPLOAD_LIMIT 10G
 RUN set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
@@ -229,7 +229,8 @@ RUN chown www-data:root -R /usr/src && \
     chown www-data:root -R /var/log/supervisord/ && \
     chown www-data:root -R /var/run/supervisord/ && \
     mkdir -p /var/log/nextcloud/ && \
-    chown -R www-data:root /var/log/nextcloud/
+    chown -R www-data:root /var/log/nextcloud/ && \
+    rm -r /usr/src/nextcloud/apps/updatenotification
 
 COPY start.sh /
 COPY notify.sh /
