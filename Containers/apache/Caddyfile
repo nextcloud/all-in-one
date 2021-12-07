@@ -6,7 +6,7 @@
     }
 }
 
-{$NC_DOMAIN}:443 {
+https://{$NC_DOMAIN}:443 {
 
     # Notify Push
     route /push/* {
@@ -49,5 +49,12 @@
         rewrite /.well-known/caldav /remote.php/dav
         header Strict-Transport-Security max-age=31536000;
         reverse_proxy localhost:80
+    }
+
+    # TLS options
+    tls {
+        issuer acme {
+            disable_http_challenge
+        }
     }
 }
