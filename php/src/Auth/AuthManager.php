@@ -12,12 +12,8 @@ class AuthManager {
         $this->configurationManager = $configurationManager;
     }
 
-    public function CheckCredentials(string $username, string $password) : bool {
-        if($username === $this->configurationManager->GetUserName()) {
-            return hash_equals($this->configurationManager->GetPassword(), $password);
-        }
-
-        return false;
+    public function CheckCredentials(string $password) : bool {
+        return hash_equals($this->configurationManager->GetPassword(), $password);
     }
 
     public function CheckToken(string $token) : bool {
