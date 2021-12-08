@@ -6,6 +6,14 @@ print_green() {
     printf "%b%s%b\n" "\e[0;92m" "$TEXT" "\e[0m"
 }
 
+# Function to check if number was provided
+check_if_number() {
+case "${1}" in
+    ''|*[!0-9]*) return 1 ;;
+    *) return 0 ;;
+esac
+}
+
 # Check if socket is available and readable
 if ! [ -a "/var/run/docker.sock" ]; then
     echo "Docker socket is not available. Cannot continue."
@@ -65,6 +73,15 @@ The string must be equal to/start with '/mnt/' or '/media/' or be equal to '/var
         exit 1
     elif [ "$NEXTCLOUD_MOUNT" = "/mnt/ncdata" ] || echo "$NEXTCLOUD_MOUNT" | grep -q "^/mnt/ncdata/"; then
         echo "/mnt/ncdata and /mnt/ncdata/ are not allowed for NEXTCLOUD_MOUNT."
+        exit 1
+    fi
+fi
+if [ -n "$APACHE_PORT" ]; then
+    if ! check_if_number "$APACHE_PORT"; then
+        echo "You provided an Apache port but did not only use numbers"
+        exit 1
+    elif ! [ "$APACHE_PORT" -le 65535 ] || ! [ "$APACHE_PORT" -ge 1 ]; then
+        echo "The provided Apache port is invalid. It must be between 1 and 65535"
         exit 1
     fi
 fi

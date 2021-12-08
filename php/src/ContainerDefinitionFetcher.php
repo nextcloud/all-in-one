@@ -51,11 +51,17 @@ class ContainerDefinitionFetcher
         foreach ($data['production'] as $entry) {
             $ports = new ContainerPorts();
             foreach ($entry['ports'] as $port) {
+                if($port === '%APACHE_PORT%/tcp') {
+                    $port = $this->configurationManager->GetApachePort() . '/tcp';
+                }
                 $ports->AddPort($port);
             }
 
             $internalPorts = new ContainerInternalPorts();
             foreach ($entry['internalPorts'] as $internalPort) {
+                if($internalPort === '%APACHE_PORT%') {
+                    $internalPort = $this->configurationManager->GetApachePort();
+                }
                 $internalPorts->AddInternalPort($internalPort);
             }
 
