@@ -1,5 +1,5 @@
-# From https://github.com/docker-library/postgres/blob/master/13/buster/Dockerfile
-FROM postgres:13-buster
+# From https://github.com/docker-library/postgres/blob/master/13/bullseye/Dockerfile
+FROM postgres:13-bullseye
 
 RUN set -ex; \
     \

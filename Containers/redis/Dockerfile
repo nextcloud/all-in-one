@@ -1,5 +1,5 @@
 # From https://github.com/docker-library/redis/blob/master/6.2/Dockerfile
-FROM redis:6.2-buster
+FROM redis:6.2-bullseye
 
 RUN set -ex; \
     \

@@ -1,4 +1,4 @@
-# From https://github.com/docker-library/php/blob/master/8.0/buster/apache/Dockerfile
+# From https://github.com/docker-library/php/blob/master/8.0/bullseye/apache/Dockerfile
 FROM php:8.0-apache-bullseye
 
 EXPOSE 80
