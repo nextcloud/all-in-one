@@ -91,3 +91,8 @@ Backups can be created and restored in the AIO interface using the buttons `Crea
 The backups itself get encrypted with an encryption key that gets shown to you in the AIO interface. Please save that at a safe place as you will not be able to restore from backup without this key.
 
 Note that this implementation does not provide remote backups, for this you can use the [backup app](https://apps.nextcloud.com/apps/backup). 
+
+### Access/Edit Nextcloud files/folders manually
+The files and folders that you add to Nextcloud are by default stored in the following directory: `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/` on the host. If needed, you can modify/add/delete files/folders there but **ATTENTION**: be very careful when doing so because you might corrupt your AIO installation! Best is to create a backup using the built-in backup solution before editing/changing files/folders in there because you will then be able to restore your instance to the backed up state.
+
+After you are done modifying/adding/deleting files/folders, don't forget to apply the correct permissions by running: `sudo chown -R 33:0 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` and rescan the files with `sudo docker exec -it nextcloud-aio-nextcloud php occ files:scan --all`.
