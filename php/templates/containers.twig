@@ -168,7 +168,7 @@
 
                     {% if borg_backup_host_location != "" %}
                         <h2>Backup and restore</h2>
-                        {% if has_backup_run_once == true and isBackupContainerRunning == false %}
+                        {% if isBackupContainerRunning == false %}
                             {% if backup_exit_code > 0 %}
                                 <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                             {% elseif backup_exit_code == 0 %}
