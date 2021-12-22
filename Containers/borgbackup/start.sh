@@ -25,6 +25,11 @@ fi
 rm -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/backup-is-running"
 
 if [ -n "$FAILED" ]; then
+    if [ "$BORG_MODE" = backup ]; then
+        # Add file to Nextcloud container so that it skips any update the next time
+        touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
+        chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
+    fi
     exit 1
 fi
 

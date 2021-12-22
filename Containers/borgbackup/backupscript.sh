@@ -83,6 +83,13 @@ if [ "$BORG_MODE" = backup ]; then
         fi
     done
 
+    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/export.failed" ]; then
+        echo "Database export failed the last time. Most likely was the export time not high enough."
+        echo "Cannot create a backup now."
+        echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
+        exit 1
+    fi
+
     # Create backup folder
     mkdir -p "$BORG_BACKUP_DIRECTORY"
 
@@ -140,6 +147,9 @@ if [ "$BORG_MODE" = backup ]; then
         exit 1
     fi
 
+    # Remove the update skip file because the backup was successful
+    rm -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
+
     echo "$CURRENT_DATE,$CURRENT_DATE_READABLE" >> "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
     chmod +r "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
 
@@ -187,6 +197,11 @@ if [ "$BORG_MODE" = restore ]; then
     # Inform user
     get_expiration_time
     echo "Restore finished successfully on $END_DATE_READABLE ($DURATION_READABLE)"
+
+    # Add file to Nextcloud container so that it skips any update the next time
+    touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
+    chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
+
     exit 0
 fi
 
