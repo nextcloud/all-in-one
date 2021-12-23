@@ -100,3 +100,6 @@ After you are done modifying/adding/deleting files/folders, don't forget to appl
 ### How to store the files/installation on a separate drive?
 You can move the whole docker library and all its files including all Nextcloud AIO files and folders to a separate drive by first mounting the drive in the host OS (NTFS is not supported) and then following this tutorial: https://www.guguweb.com/2019/02/07/how-to-move-docker-data-directory-to-another-location-on-ubuntu/<br>
 (Of course docker needs to be installed first for this to work.)
+
+### How to migrate from an already existing Nextcloud installation to Nextcloud AIO?
+Please see the following documentation on this: [migration.md](https://github.com/nextcloud/all-in-one/blob/main/migration.md)
