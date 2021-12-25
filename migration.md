@@ -10,7 +10,7 @@ There are basically two ways how to migrate from an already existing Nextcloud i
 
 The procedure for migrating only the files works like this:
 1. Take a backup of your former instance (especially from your datadirectory)
-1. Install Docker AIO on a new server/linux installation, enter your domain and wait until all containers are running
+1. Install Nextcloud AIO on a new server/linux installation, enter your domain and wait until all containers are running
 1. Recreate all users that were present on your former installation
 1. Take a backup using Nextcloud AIO's built-in backup solution (so that you can easily restore to this state again) (Note: this will stop all containers and is expected: don't start the container again at this point!)
 1. Restore the datadirectory of your former instance into the following directory: `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/`
