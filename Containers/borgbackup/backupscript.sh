@@ -183,8 +183,8 @@ if [ "$BORG_MODE" = restore ]; then
     fi
     if ! rsync --stats --archive --human-readable -vv --delete \
     --exclude "nextcloud_aio_mastercontainer/data/backup_archives.list" \
-    --exclude "nextcloud_aio_mastercontainer/data/session/"** \
-    --exclude "nextcloud_aio_mastercontainer/data/certs/"** \
+    --exclude "nextcloud_aio_mastercontainer/session/"** \
+    --exclude "nextcloud_aio_mastercontainer/certs/"** \
     /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
         echo "Something failed while restoring the boot partition."
         umount /tmp/borg
@@ -201,6 +201,9 @@ if [ "$BORG_MODE" = restore ]; then
     # Add file to Nextcloud container so that it skips any update the next time
     touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
     chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
+
+    # Set backup-mode to restore since it was a restore
+    sed -i 's/"backup-mode":"[a-z]\+"/"backup-mode":"restore"/g' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
 
     exit 0
 fi
