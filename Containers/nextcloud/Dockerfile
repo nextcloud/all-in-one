@@ -217,6 +217,13 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*
 
+RUN set -ex; \
+    grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm.max_children =.*/pm.max_children = 100/' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm.start_servers =.*/pm.start_servers = 25/' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm.min_spare_servers =.*/pm.min_spare_servers = 25/' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm.max_spare_servers =.*/pm.max_spare_servers = 75/' /usr/local/etc/php-fpm.d/www.conf
+
 RUN rm -rf /tmp/nextcloud-aio && \
     mkdir -p /tmp/nextcloud-aio && \
     cd /tmp/nextcloud-aio && \
