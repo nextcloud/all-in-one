@@ -507,4 +507,13 @@ class DockerActionManager
             return -1;
         }
     }
+
+    public function isLoginAllowed() : bool {
+        $id = 'nextcloud-aio-apache';
+        $apacheContainer = $this->containerDefinitionFetcher->GetContainerById($id);
+        if ($this->GetContainerStartingState($apacheContainer) instanceof RunningState) {
+            return false;
+        }
+        return true;
+    }
 }
