@@ -125,7 +125,11 @@ class DockerActionManager
         $url = $this->BuildApiUrl(sprintf('containers/%s', urlencode($container->GetIdentifier())));
         try {
             $this->guzzleClient->delete($url);
-        } catch (\Exception $e) {}
+        } catch (ClientException $e) {
+            if ($e->getCode() !== 404) {
+                throw $e;
+            }
+        }
     }
 
     public function GetLogs(Container $container) : string
@@ -426,7 +430,7 @@ class DockerActionManager
                     ],
                 ]
             );
-        } catch (ServerException $e) {}
+        } catch (ClientException $e) {}
     }
 
     private function ConnectContainerIdToNetwork(string $id)
@@ -482,7 +486,9 @@ class DockerActionManager
 
     public function StopContainer(Container $container) {
         $url = $this->BuildApiUrl(sprintf('containers/%s/stop?t=%s', urlencode($container->GetIdentifier()), $container->GetMaxShutdownTime()));
-        $this->guzzleClient->post($url);
+        try {
+            $this->guzzleClient->post($url);
+        } catch (\Exception $e) {}
     }
 
     public function GetBackupcontainerExitCode() : int
