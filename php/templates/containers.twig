@@ -99,7 +99,7 @@
                     </ul>
 
                     {% if has_update_available == true %}
-                        Updates are available. Stop your containers and restart them to apply the update. You should consider creating a backup first.<br><br>
+                        ⚠ Container updates are available. Click on `Stop Containers` and `Start Containers` to update them. You should consider creating a backup first. The mastercontainer gets updated with a different procedure though and has its own update button which is visible if an update is available.<br><br>
                     {% else %}
                         You are up-to-date.<br><br>
                     {% endif %}
@@ -142,7 +142,7 @@
                     {% if isBackupOrRestoreRunning == false %}
                         <h2>Mastercontainer update</h2>
 
-                        A new mastercontainer is available. Please click on the button below to update it.<br><br>
+                        ⚠ A mastercontainer update is available. Please click on the button below to update it. All other containers get updated independently from the mastercontainer by simply clicking on `Stop containers` and clicking on `Start containers` if a new update is available.<br><br>
                         <form method="POST" action="/api/docker/watchtower" class="xhr">
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
