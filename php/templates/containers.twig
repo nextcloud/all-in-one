@@ -101,7 +101,11 @@
                     {% if has_update_available == true %}
                         ⚠ Container updates are available. Click on `Stop Containers` and `Start Containers` to update them. You should consider creating a backup first. The mastercontainer gets updated with a different procedure though and has its own update button which is visible if an update is available.<br><br>
                     {% else %}
-                        You are up-to-date.<br><br>
+                        {% if is_mastercontainer_update_available == false %}
+                            Your containers are up-to-date.<br><br>
+                        {% else %}
+                            Your containers are up-to-date. (Except the mastercontainer. See the section below.)<br><br>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
 
