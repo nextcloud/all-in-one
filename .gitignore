@@ -2,3 +2,4 @@
 /php/data/containers.json
 /php/data/configuration.json
 /php/data/backupsecret.json
+/php/vendor

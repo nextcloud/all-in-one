@@ -29,8 +29,16 @@ RUN curl "https://caddyserver.com/api/download?os=linux&arch=amd64" -o "/usr/bin
 COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker
 
-RUN cd /var/www/docker-aio; \
-    git clone https://github.com/nextcloud/all-in-one.git .; \
+RUN set -e && \
+    curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    chmod +x /usr/local/bin/composer && \
+    cd /var/www/docker-aio; \
+    git clone https://github.com/nextcloud/all-in-one.git --depth 1 .; \
+    cd php; \
+    composer install --no-dev; \
+    cd ..; \
+    rm -f /usr/local/bin/composer; \
     chmod 770 -R ./; \
     chown www-data:www-data -R ./; \
     rm -r ./php/data; \

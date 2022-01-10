@@ -1,3 +1,5 @@
+version: 2
+updates:
 - package-ecosystem: composer
   directory: "/php/"
   schedule:
@@ -12,16 +14,3 @@
   allow:
   - dependency-type: direct
   - dependency-type: indirect
-- package-ecosystem: composer
-  directory: "/php/vendor/"
-  schedule:
-      interval: weekly
-      day: saturday
-      time: "03:00"
-      timezone: Europe/Paris
-  open-pull-requests-limit: 10
-  labels:
-      - 3. to review
-      - dependencies
-  allow:
-      - dependency-type: direct
