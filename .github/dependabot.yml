@@ -11,6 +11,3 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  allow:
-  - dependency-type: direct
-  - dependency-type: indirect
