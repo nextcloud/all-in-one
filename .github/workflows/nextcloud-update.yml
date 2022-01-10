@@ -65,7 +65,7 @@ jobs:
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
-      env:
+      with:
         commit-message: nextcloud-update automated change
         signoff: true
         title: Nextcloud update
