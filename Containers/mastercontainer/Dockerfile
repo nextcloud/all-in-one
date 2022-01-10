@@ -37,6 +37,7 @@ RUN set -e && \
     git clone https://github.com/nextcloud/all-in-one.git --depth 1 .; \
     cd php; \
     composer install --no-dev; \
+    composer clearcache; \
     cd ..; \
     rm -f /usr/local/bin/composer; \
     chmod 770 -R ./; \
