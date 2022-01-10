@@ -1,0 +1,74 @@
+# Inspired by https://github.com/nextcloud/docker/blob/master/.github/workflows/update-sh.yml
+name: nextcloud-update
+
+on:
+  schedule:
+  - cron:  '00 12 * * *'
+
+jobs:
+  run_update_sh:
+    name: Run nextcloud-update script
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run nextcloud-update script
+      run: |
+        # Inspired by https://github.com/nextcloud/docker/blob/master/update.sh
+
+        # APCU
+        apcu_version="$(
+          git ls-remote --tags https://github.com/krakjoe/apcu.git \
+            | cut -d/ -f3 \
+            | grep -vE -- '-rc|-b' \
+            | sed -E 's/^v//' \
+            | sort -V \
+            | tail -1
+        )"
+        sed -i "s|pecl install APCu.*\;|pecl install APCu-$apcu_version\;|" ./Containers/nextcloud/Dockerfile
+        
+        # Memcached
+        memcached_version="$(
+          git ls-remote --tags https://github.com/php-memcached-dev/php-memcached.git \
+            | cut -d/ -f3 \
+            | grep -vE -- '-rc|-b' \
+            | sed -E 's/^[rv]//' \
+            | sort -V \
+            | tail -1
+        )"
+        sed -i "s|pecl install memcached.*\;|pecl install memcached-$memcached_version\;|" ./Containers/nextcloud/Dockerfile
+        
+        # Redis
+        redis_version="$(
+          git ls-remote --tags https://github.com/phpredis/phpredis.git \
+            | cut -d/ -f3 \
+            | grep -viE '[a-z]' \
+            | tr -d '^{}' \
+            | sort -V \
+            | tail -1
+        )"
+        sed -i "s|pecl install redis.*\;|pecl install redis-$redis_version\;|" ./Containers/nextcloud/Dockerfile
+        
+        # Imagick
+        imagick_version="$(
+          git ls-remote --tags https://github.com/mkoppanen/imagick.git \
+            | cut -d/ -f3 \
+            | grep -viE '[a-z]' \
+            | tr -d '^{}' \
+            | sort -V \
+            | tail -1
+        )"
+        sed -i "s|pecl install imagick.*\;|pecl install imagick-$imagick_version\;|" ./Containers/nextcloud/Dockerfile
+        
+        # Nextcloud
+        NCVERSION=$(curl -s -m 900 https://download.nextcloud.com/server/releases/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+        sed -i "s|^ENV NEXTCLOUD_VERSION.*|ENV NEXTCLOUD_VERSION $NCVERSION|" ./Containers/nextcloud/Dockerfile
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      env:
+        commit-message: nextcloud-update automated change
+        signoff: true
+        title: Nextcloud update
+        body: Automated Nextcloud container update
+        labels: dependencies, enhancement
+        milestone: next
