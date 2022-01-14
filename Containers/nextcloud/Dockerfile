@@ -214,6 +214,7 @@ RUN set -ex; \
         gnupg \
         dirmngr \
         git \
+        postgresql-client \
     ; \
     rm -rf /var/lib/apt/lists/*
 
