@@ -89,9 +89,13 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'last_backup_time' => $configurationManager->GetLastBackupTime(),
     ]);
 })->setName('profile');
-$app->get('/login', function ($request, $response, $args) {
+$app->get('/login', function ($request, $response, $args) use ($container) {
     $view = Twig::fromRequest($request);
-    return $view->render($response, 'login.twig');
+    /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
+    $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
+    return $view->render($response, 'login.twig', [
+        'is_login_allowed' => $dockerActionManger->isLoginAllowed(),
+    ]);
 });
 $app->get('/setup', function ($request, $response, $args) use ($container) {
     $view = Twig::fromRequest($request);
