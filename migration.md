@@ -37,7 +37,7 @@ The procedure for migrating the files and the database works like this:
         export PG_DATABASE="nextcloud_db"
         sudo -u postgres psql <<END
         CREATE USER $PG_USER WITH PASSWORD '$PGDB_PASS';
-        CREATE DATABASE $PG_DATABASE WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
+        CREATE DATABASE $PG_DATABASE WITH OWNER $PG_USER TEMPLATE template0 ENCODING 'UTF8';
         END
         ```
     1. Run the following command to start the conversion:
