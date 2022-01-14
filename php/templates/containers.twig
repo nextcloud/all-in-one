@@ -167,7 +167,7 @@
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                             <input class="button" type="submit" value="Submit" />
                         </form>
-                        The folder path that you enter must start with /mnt/ or /media/ so e.g. /mnt/backup
+                        The folder path that you enter must start with <b>/mnt/</b> or <b>/media/</b> or be equal to <b>/var/backups</b>. So e.g. <b>/mnt/backup</b> or <b>/var/backups</b>
                     {% endif %}
 
                     {% if borg_backup_host_location != "" %}
