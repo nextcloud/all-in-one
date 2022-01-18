@@ -37,3 +37,4 @@ jobs:
         body: Automated dependency updates since dependabot does not support grouped updates
         labels: dependencies, enhancement
         milestone: next
+        branch: aio-dependency-update
