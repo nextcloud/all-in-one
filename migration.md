@@ -6,7 +6,7 @@ There are basically two ways how to migrate from an already existing Nextcloud i
 1. Migrate the files and the database which is much more complicated
 
 ### Migrate only the files 
-**Please note**: If you used groupfolders before, you will need to restore the database, as well!
+**Please note**: If you used groupfolders or encrypted your files before, you will need to restore the database, as well!
 
 The procedure for migrating only the files works like this:
 1. Take a backup of your former instance (especially from your datadirectory)
@@ -20,7 +20,7 @@ The procedure for migrating only the files works like this:
 
 ### Migrate the files and the database
 **Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned!<br>
-Also, some special apps that e.g. implement custom user backends like the `user_sql` app will most likely not work in Nextcloud AIO. Additionally, you will currently not be able to use local external storage in Nextcloud AIO since that is not supported, yet. See https://github.com/nextcloud/all-in-one/issues/76
+Also, some special apps that e.g. implement custom user backends like the `user_sql` app will probably not work in Nextcloud AIO. Additionally, you will currently not be able to use local external storage in Nextcloud AIO since that is not supported, yet. See https://github.com/nextcloud/all-in-one/issues/76
 
 The procedure for migrating the files and the database works like this:
 1. Make sure that your old instance is on exactly the same version like the version used in Nextcloud AIO. (e.g. 23.0.0) If not, simply upgrade your former installation to that version or wait until the version used in Nextcloud AIO got updated to the same version of your former installation or the other way around.
