@@ -6,7 +6,7 @@ There are basically two ways how to migrate from an already existing Nextcloud i
 1. Migrate the files and the database which is much more complicated
 
 ### Migrate only the files 
-**Please note**: If you used groupfolders before, you will need to restore the database, as well!
+**Please note**: If you used groupfolders or encrypted your files before, you will need to restore the database, as well!
 
 The procedure for migrating only the files works like this:
 1. Take a backup of your former instance (especially from your datadirectory)
