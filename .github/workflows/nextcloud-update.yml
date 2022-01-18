@@ -72,3 +72,4 @@ jobs:
         body: Automated Nextcloud container update
         labels: dependencies, enhancement
         milestone: next
+        branch: nextcloud-container-update
