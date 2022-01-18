@@ -47,7 +47,7 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.container.name }}
+            nextcloud/${{ matrix.container.name }}
           tags: |
             ${{ matrix.platform.tag }}
 
