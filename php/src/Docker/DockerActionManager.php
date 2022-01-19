@@ -47,12 +47,7 @@ class DockerActionManager
     }
 
     private function BuildImageName(Container $container) : string {
-        $channel = $this->GetCurrentChannel();
-        if ($channel === 'develop') {
-            return $container->GetContainerName() . ':develop';
-        } else {
-            return $container->GetContainerName() . ':latest';
-        }
+        return $container->GetContainerName() . ':' . $this->GetCurrentChannel();
     }
 
     public function GetContainerRunningState(Container $container) : IContainerState
@@ -79,12 +74,7 @@ class DockerActionManager
 
     public function GetContainerUpdateState(Container $container) : IContainerState
     {
-        $channel = $this->GetCurrentChannel();
-        if ($channel === 'develop') {
-            $tag = 'develop';
-        } else {
-            $tag = 'latest';
-        }
+        $tag = $this->GetCurrentChannel();
 
         $runningDigest = $this->GetRepoDigestOfContainer($container->GetIdentifier());
         $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
@@ -350,12 +340,7 @@ class DockerActionManager
         $imageName = 'nextcloud/all-in-one';
         $containerName = 'nextcloud-aio-mastercontainer';
 
-        $channel = $this->GetCurrentChannel();
-        if ($channel === 'develop') {
-            $tag = 'develop';
-        } else {
-            $tag = 'latest';
-        }
+        $tag = $this->GetCurrentChannel();
 
         $runningDigest = $this->GetRepoDigestOfContainer($containerName);
         $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
