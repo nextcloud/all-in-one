@@ -20,7 +20,9 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*
 
-RUN wget "https://caddyserver.com/api/download?os=linux&arch=amd64" -O "/usr/bin/caddy" \
+ENV DEB_HOST_ARCH="$(dpkg-architecture --query DEB_HOST_ARCH)"
+
+RUN wget "https://caddyserver.com/api/download?os=linux&arch=$DEB_HOST_ARCH" -O "/usr/bin/caddy" \
     && chmod +x /usr/bin/caddy \
     && /usr/bin/caddy version
 
