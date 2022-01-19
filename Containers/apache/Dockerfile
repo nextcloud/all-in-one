@@ -17,12 +17,12 @@ RUN set -ex; \
         ca-certificates \
         openssl \
         netcat \
+        dpkg-dev \
     ; \
     rm -rf /var/lib/apt/lists/*
 
-ENV DEB_HOST_ARCH="$(dpkg-architecture --query DEB_HOST_ARCH)"
-
-RUN wget "https://caddyserver.com/api/download?os=linux&arch=$DEB_HOST_ARCH" -O "/usr/bin/caddy" \
+RUN set -ex; \
+    wget "https://caddyserver.com/api/download?os=linux&arch=$(dpkg-architecture --query DEB_BUILD_ARCH)" -O "/usr/bin/caddy" \
     && chmod +x /usr/bin/caddy \
     && /usr/bin/caddy version
 
