@@ -11,8 +11,7 @@ use AIO\Container\State\VersionDifferentState;
 use AIO\Container\State\StoppedState;
 use AIO\Container\State\VersionEqualState;
 use AIO\Data\ConfigurationManager;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\RequestException;
 use AIO\ContainerDefinitionFetcher;
 use http\Env\Response;
 
@@ -55,12 +54,11 @@ class DockerActionManager
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->GetIdentifier())));
         try {
             $response = $this->guzzleClient->get($url);
-        } catch (ClientException $ex) {
-            if($ex->getCode() === 404) {
+        } catch (RequestException $e) {
+            if ($e->getCode() === 404) {
                 return new ImageDoesNotExistState();
             }
-
-            throw $ex;
+            throw $e;
         }
 
         $responseBody = json_decode((string)$response->getBody(), true);
@@ -115,7 +113,7 @@ class DockerActionManager
         $url = $this->BuildApiUrl(sprintf('containers/%s', urlencode($container->GetIdentifier())));
         try {
             $this->guzzleClient->delete($url);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
+        } catch (RequestException $e) {
             if ($e->getCode() !== 404) {
                 throw $e;
             }
@@ -262,8 +260,8 @@ class DockerActionManager
         $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', urlencode($this->BuildImageName($container))));
         try {
             $this->guzzleClient->post($url);
-        } catch (ClientException $ex) {
-            throw $ex;
+        } catch (RequestException $e) {
+            throw $e;
         }
     }
 
@@ -329,7 +327,7 @@ class DockerActionManager
             $tag = $tagArray[1];
             apcu_add($cacheKey, $tag);
             return $tag;
-        } catch (\Exception $ex) {
+        } catch (\Exception $e) {
         }
 
         return 'latest';
@@ -415,7 +413,11 @@ class DockerActionManager
                     ],
                 ]
             );
-        } catch (\GuzzleHttp\Exception\RequestException $e) {}
+        } catch (RequestException $e) {
+            if ($e->getCode() !== 404) {
+                throw $e;
+            }
+        }
     }
 
     private function ConnectContainerIdToNetwork(string $id)
@@ -433,10 +435,8 @@ class DockerActionManager
                     ]
                 ]
             );
-        } catch (ClientException $e) {
-            if($e->getCode() !== 409) {
-                throw $e;
-            }
+        } catch (RequestException $e) {
+            throw $e;
         }
 
         $url = $this->BuildApiUrl(
@@ -452,10 +452,8 @@ class DockerActionManager
                     ]
                 ]
             );
-        } catch (ClientException $e) {
-            if($e->getCode() !== 403) {
-                throw $e;
-            }
+        } catch (RequestException $e) {
+            throw $e;
         }
     }
 
@@ -473,7 +471,7 @@ class DockerActionManager
         $url = $this->BuildApiUrl(sprintf('containers/%s/stop?t=%s', urlencode($container->GetIdentifier()), $container->GetMaxShutdownTime()));
         try {
             $this->guzzleClient->post($url);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
+        } catch (RequestException $e) {
             if ($e->getCode() !== 404 && $e->getCode() !== 304) {
                 throw $e;
             }
@@ -486,11 +484,11 @@ class DockerActionManager
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($containerName)));
         try {
             $response = $this->guzzleClient->get($url);
-        } catch (ClientException $ex) {
-            if ($ex->getCode() === 404) {
+        } catch (RequestException $e) {
+            if ($e->getCode() === 404) {
                 return -1;
             }
-            throw $ex;
+            throw $e;
         }
 
         $responseBody = json_decode((string)$response->getBody(), true);
