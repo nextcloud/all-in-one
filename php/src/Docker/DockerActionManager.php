@@ -456,7 +456,10 @@ class DockerActionManager
                 ]
             );
         } catch (RequestException $e) {
-            throw $e;
+            // 403 is undocumented and gets thrown if a specific container is already part of a network
+            if ($e->getCode() !== 403) {
+                throw $e;
+            }
         }
     }
 
