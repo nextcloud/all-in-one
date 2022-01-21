@@ -414,9 +414,6 @@ class DockerActionManager
                 ]
             );
         } catch (RequestException $e) {
-            if ($e->getCode() !== 404) {
-                throw $e;
-            }
         }
     }
 
