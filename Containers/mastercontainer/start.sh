@@ -35,10 +35,14 @@ elif ! sudo -u www-data test -r /var/run/docker.sock; then
 fi
 
 # Check if api version is supported
+if ! docker info &>/dev/null; then
+    echo "Cannot connect to the docker socket. Cannot proceed."
+    exit 1
+fi
 API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
 API_VERSION="$(grep -oP 'const API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP [0-9]+.[0-9]+ | head -1)"
 API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
-LOCAL_API_VERSION_NUMB="$(curl -s --unix-socket /var/run/docker.sock http://"$API_VERSION"/version | sed 's/,/\n/g' | grep ApiVersion | grep -oP [0-9]+.[0-9]+ | head -1 | sed 's/\.//')"
+LOCAL_API_VERSION_NUMB="$(docker version | grep -i "api version" | grep -oP [0-9]+.[0-9]+ | head -1 | sed 's/\.//')"
 if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
     if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
         echo "Docker v$API_VERSION is not supported by your docker engine. Cannot proceed."

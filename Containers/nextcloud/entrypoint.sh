@@ -83,6 +83,7 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
                     break
                 else
                     echo "Curl didn't produce a 200 status, is appstore reachable?"
+                    sleep 5
                 fi
             done
 
