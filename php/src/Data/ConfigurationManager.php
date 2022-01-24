@@ -172,14 +172,18 @@ class ConfigurationManager
 
         $isValidPath = false;
         foreach($allowedPrefixes as $allowedPrefix) {
-            if(str_starts_with($location, $allowedPrefix)) {
+            if(str_starts_with($location, $allowedPrefix) && !str_ends_with($location, '/')) {
+                $isValidPath = true;
+                break;
+            }
+            if ($location === '/var/backups') {
                 $isValidPath = true;
                 break;
             }
         }
 
         if(!$isValidPath) {
-            throw new InvalidSettingConfigurationException("Path must start with /mnt/ or /media/.");
+            throw new InvalidSettingConfigurationException("The path must start with '/mnt/' or '/media/' or be equal to '/var/backups'.");
         }
 
 
