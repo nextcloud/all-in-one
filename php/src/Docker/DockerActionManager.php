@@ -110,7 +110,7 @@ class DockerActionManager
     }
 
     public function DeleteContainer(Container $container) {
-        $url = $this->BuildApiUrl(sprintf('containers/%s', urlencode($container->GetIdentifier())));
+        $url = $this->BuildApiUrl(sprintf('containers/%s?v=true', urlencode($container->GetIdentifier())));
         try {
             $this->guzzleClient->delete($url);
         } catch (RequestException $e) {
