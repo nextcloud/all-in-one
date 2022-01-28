@@ -31,6 +31,10 @@ RUN set -ex; \
 COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker
 
+RUN mkdir -p /usr/src/php/ext/apcu && \
+    curl -fsSL https://pecl.php.net/get/apcu | tar xvz -C "/usr/src/php/ext/apcu" --strip 1 && \
+    docker-php-ext-install apcu
+
 RUN set -e && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
@@ -73,10 +77,6 @@ RUN a2dissite 000-default && \
 
 RUN mkdir /var/log/supervisord; \
     mkdir /var/run/supervisord;
-
-RUN mkdir -p /usr/src/php/ext/apcu && \
-    curl -fsSL https://pecl.php.net/get/apcu | tar xvz -C "/usr/src/php/ext/apcu" --strip 1 && \
-    docker-php-ext-install apcu
 
 COPY Caddyfile /
 COPY start.sh /usr/bin/
