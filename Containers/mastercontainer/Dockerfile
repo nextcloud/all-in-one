@@ -36,7 +36,7 @@ RUN set -e && \
     mv composer.phar /usr/local/bin/composer && \
     chmod +x /usr/local/bin/composer && \
     cd /var/www/docker-aio; \
-    git clone https://github.com/nextcloud/all-in-one.git --depth 1 .; \
+    git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
     cd php; \
     composer install --no-dev; \
     composer clearcache; \

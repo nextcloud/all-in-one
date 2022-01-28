@@ -228,7 +228,7 @@ RUN set -ex; \
 RUN rm -rf /tmp/nextcloud-aio && \
     mkdir -p /tmp/nextcloud-aio && \
     cd /tmp/nextcloud-aio && \
-    git clone https://github.com/nextcloud/all-in-one.git .; \
+    git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
     mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
     cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/
 
