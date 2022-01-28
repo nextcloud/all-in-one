@@ -12,7 +12,7 @@
         "slim/slim": "4.*",
         "php-di/slim-bridge": "^3.1",
         "guzzlehttp/guzzle": "^7.3",
-        "guzzlehttp/psr7": "^1.8",
+        "guzzlehttp/psr7": "^2.1.0",
         "http-interop/http-factory-guzzle": "^1.2",
         "slim/twig-view": "^3.2",
         "slim/csrf": "^1.2",
