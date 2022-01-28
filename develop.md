@@ -20,18 +20,5 @@ Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/repo-sy
 
 ## How to promote builds from develop to latest
 
-To automatically promoted the latest develop version you can use the following script:
-
-**WARNING:** Make sure to verify that the latest develop tag is what you really want to deploy since someone could have pushed to main and created a new container in between.
-```shell
-# Set the name of the container that you want to promote from the develop- to the latest channels
-export AIO_NAME=$name
-# x64
-docker pull nextcloud/$AIO_NAME\:develop
-docker tag nextcloud/$AIO_NAME\:develop nextcloud/$AIO_NAME\:latest
-docker push nextcloud/$AIO_NAME\:latest
-# arm64 
-docker pull nextcloud/$AIO_NAME\:develop-arm64
-docker tag nextcloud/$AIO_NAME\:develop-arm64 nextcloud/$AIO_NAME\:latest-arm64
-docker push nextcloud/$AIO_NAME\:latest-arm64
-```
+1. Verify that no job is running here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml
+2. Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-latest.yml, click on `Run workflow` and enter your desired container image name that you want to publish from develop to latest. Available image names are listed here: https://github.com/nextcloud-releases/all-in-one/blob/main/.github/workflows/build_images.yml#L21-L30 
