@@ -97,6 +97,11 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
             fi
 
             php /var/www/html/occ app:update --all
+
+            # Fix removing the updatenotification for old instances
+            if [ -d "/var/www/html/apps/updatenotification" ]; then
+                php /var/www/html/occ app:disable updatenotification
+            fi
         fi
 
         echo "Initializing nextcloud $image_version ..."
