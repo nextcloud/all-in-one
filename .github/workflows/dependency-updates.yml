@@ -15,6 +15,7 @@ jobs:
         php-version: '8.0'
     - name: Run dependency update script
       run: |
+        set -x
         curl -sS https://getcomposer.org/installer | php
         mv composer.phar /usr/local/bin/composer
         chmod +x /usr/local/bin/composer
