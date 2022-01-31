@@ -22,11 +22,13 @@ jobs:
         cd ./php
         composer update
         ALL_LINES="$(composer outdated | grep -v "psr/container")"
-        while [ -n "$ALL_LINES" ]; do
-          CURRENT_LINE="$(echo "$ALL_LINES" | head -1)"
-          composer require "$(echo "$CURRENT_LINE" | awk '{print $1}')" "^$(echo "$CURRENT_LINE" | awk '{print $4}')"
-          ALL_LINES="$(echo "$ALL_LINES" | sed '1d')"
-        done
+        if [ -n "$ALL_LINES" ]; then
+          while [ -n "$ALL_LINES" ]; do
+            CURRENT_LINE="$(echo "$ALL_LINES" | head -1)"
+            composer require "$(echo "$CURRENT_LINE" | awk '{print $1}')" "^$(echo "$CURRENT_LINE" | awk '{print $4}')"
+            ALL_LINES="$(echo "$ALL_LINES" | sed '1d')"
+          done
+        fi
         echo "outdated dependencies:
         $(composer outdated)"
     - name: Create Pull Request
