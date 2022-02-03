@@ -182,6 +182,14 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
             # Not needed anymore with the removal of the updatenotification app:
             # php /var/www/html/occ config:app:set updatenotification notify_groups --value="[]"
 
+            # Install some apps by default
+            php /var/www/html/occ app:install twofactor_totp
+            php /var/www/html/occ app:install deck
+            php /var/www/html/occ app:install tasks
+            php /var/www/html/occ app:install calendar
+            php /var/www/html/occ app:install contacts
+            php /var/www/html/occ app:install apporder
+
         #upgrade
         else
             while [ -n "$(pgrep -f cron.php)" ]
