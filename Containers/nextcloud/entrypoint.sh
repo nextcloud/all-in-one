@@ -253,6 +253,8 @@ else
 fi
 php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
 # php /var/www/html/occ richdocuments:activate-config
+# Fix https://github.com/nextcloud/all-in-one/issues/188:
+php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
 
 # Talk
 if ! [ -d "/var/www/html/custom_apps/spreed" ]; then
