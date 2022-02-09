@@ -1,13 +1,7 @@
-# From https://github.com/docker-library/redis/blob/master/6.2/Dockerfile
-FROM redis:6.2-bullseye
+# From https://github.com/docker-library/redis/blob/master/6.2/alpine/Dockerfile
+FROM redis:6.2-alpine
 
-RUN set -ex; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        openssl \
-    ; \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --update --no-cache openssl bash
 
 COPY start.sh /usr/bin/
 RUN chmod +x /usr/bin/start.sh
