@@ -10,6 +10,12 @@ RUN set -ex; \
     addgroup -g 999 -S postgres; \
     adduser -u 999 -S -D -G postgres -H -h /var/lib/postgresql -s /bin/sh postgres
 
+# Fix default permissions
+RUN set -ex; \
+    chown -R postgres:postgres /var/lib/postgresql; \
+    chown -R postgres:postgres /var/run/postgresql; \
+    chown -R postgres:postgres "$PGDATA"
+
 COPY start.sh /usr/bin/
 RUN chmod +x /usr/bin/start.sh
 
