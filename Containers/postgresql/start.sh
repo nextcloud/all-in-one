@@ -18,10 +18,16 @@ if ! [ -w "$DUMP_DIR" ]; then
     exit 1
 fi
 
+# Delete the datadir once (needed for the migration from debian to alpine)
+if ! [ -f "$DUMP_DIR/initial-cleanup-done" ]; then
+    rm -rf "${DATADIR:?}/"*
+    touch "$DUMP_DIR/initial-cleanup-done"
+fi
+
 # Test if some things match
 # shellcheck disable=SC2235
 if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSION")" ] ) \
-|| ( ! [ -f "$DATADIR/PG_VERSION" ] && [ -f "$DUMP_FILE" ] ); then
+|| ( ! [ -f "$DATADIR/PG_VERSION" ] && ( [ -f "$DUMP_FILE" ] || [ -f "$DUMP_DIR/export.failed" ] ) ); then
     # The DUMP_file must be provided
     if ! [ -f "$DUMP_FILE" ]; then
         echo "Unable to restore the database because the database dump is missing."
