@@ -1,0 +1,18 @@
+name: Shellcheck
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  shellcheck:
+    name: Github Actions
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run Shellcheck
+      uses: ludeeus/action-shellcheck@master
+      with:
+        check_together: 'yes'
+      env:
+        SHELLCHECK_OPTS: --shell bash

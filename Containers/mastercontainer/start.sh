@@ -40,9 +40,10 @@ if ! docker info &>/dev/null; then
     exit 1
 fi
 API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
-API_VERSION="$(grep -oP 'const API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP [0-9]+.[0-9]+ | head -1)"
+API_VERSION="$(grep -oP 'const API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP '[0-9]+.[0-9]+' | head -1)"
+# shellcheck disable=SC2001
 API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
-LOCAL_API_VERSION_NUMB="$(docker version | grep -i "api version" | grep -oP [0-9]+.[0-9]+ | head -1 | sed 's/\.//')"
+LOCAL_API_VERSION_NUMB="$(docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
 if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
     if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
         echo "Docker v$API_VERSION is not supported by your docker engine. Cannot proceed."
@@ -71,12 +72,12 @@ chown root:root -R /mnt/docker-aio-config/certs/
 GENERATED_CERTS="/mnt/docker-aio-config/certs"
 TMP_CERTS="/etc/apache2/certs"
 mkdir -p "$GENERATED_CERTS"
-cd "$GENERATED_CERTS"
+cd "$GENERATED_CERTS" || exit 1
 if ! [ -f ./ssl.crt ] && ! [ -f ./ssl.key ]; then
     openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=DE/ST=BE/L=Local/O=Dev/CN=nextcloud.local" -keyout ./ssl.key -out ./ssl.crt
 fi
 if [ -f ./ssl.crt ] && [ -f ./ssl.key ]; then
-    cd "$TMP_CERTS"
+    cd "$TMP_CERTS" || exit 1
     rm ./ssl.crt
     rm ./ssl.key
     cp "$GENERATED_CERTS/ssl.crt" ./
