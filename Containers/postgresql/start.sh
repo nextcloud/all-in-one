@@ -19,6 +19,7 @@ if ! [ -w "$DUMP_DIR" ]; then
 fi
 
 # Test if some things match
+# shellcheck disable=SC2235
 if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSION")" ] ) \
 || ( ! [ -f "$DATADIR/PG_VERSION" ] && [ -f "$DUMP_FILE" ] ); then
     # The DUMP_file must be provided
@@ -41,7 +42,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     set -e
 
     # Remove old database files
-    rm -rf "$DATADIR/"*
+    rm -rf "${DATADIR:?}/"*
 
     # Change database port to a random port temporarily
     export PGPORT=11000
@@ -69,7 +70,7 @@ fi
 # Cover the last case
 if ! [ -f "$DATADIR/PG_VERSION" ] && ! [ -f "$DUMP_FILE" ]; then
     # Remove old database files if somehow there should be some
-    rm -rf "$DATADIR/"*
+    rm -rf "${DATADIR:?}/"*
 fi
 
 # Catch docker stop attempts

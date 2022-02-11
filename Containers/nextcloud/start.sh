@@ -12,7 +12,8 @@ if ! bash /entrypoint.sh; then
 fi
 
 # Correctly set CPU_ARCH for notify_push
-export CPU_ARCH="$(uname -m)"
+CPU_ARCH="$(uname -m)"
+export CPU_ARCH
 if [ -z "$CPU_ARCH" ]; then
     echo "Could not get processor architecture. Exiting."
     exit 1
