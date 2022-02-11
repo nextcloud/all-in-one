@@ -45,7 +45,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     echo "Restoring from database dump."
 
     # Exit if any command fails
-    set -e
+    set -ex
 
     # Remove old database files
     rm -rf "${DATADIR:?}/"*
@@ -56,8 +56,8 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     # Create new database
     exec docker-entrypoint.sh postgres &
 
-    # Wait 2s for creation
-    sleep 2s
+    # Wait 10s for creation
+    sleep 10s
 
     # Restore database
     echo "Restoring the database from database dump"
@@ -70,7 +70,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     export PGPORT=5432
 
     # Don't exit if command fails anymore
-    set +e
+    set +ex
 fi
 
 # Cover the last case
