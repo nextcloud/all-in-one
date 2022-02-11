@@ -16,3 +16,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           locale: "US"
+          fail_on_error: true

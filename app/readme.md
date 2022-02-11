@@ -1,4 +1,4 @@
-## How to develope the app?
+## How to develop the app?
 
 Please note that in order to check if an app is already downloaded
 Nextcloud will look for a folder with the same name as the app.

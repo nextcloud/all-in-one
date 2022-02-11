@@ -92,6 +92,6 @@ if pg_dump --username "$POSTGRES_USER" "$POSTGRES_DB" > "$DUMP_FILE.temp"; then
     exit 0
 else
     pg_ctl stop -m fast
-    echo "Database dump unsucessful!"
+    echo "Database dump unsuccessful!"
     exit 1
 fi
