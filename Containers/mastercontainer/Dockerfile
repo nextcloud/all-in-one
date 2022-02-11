@@ -1,5 +1,8 @@
+# Docker CLI is a requirement
+FROM docker:20.10.12-dind-alpine3.15 as dind
+
 # From https://github.com/docker-library/php/blob/master/8.0/bullseye/apache/Dockerfile
-FROM php:8.0-apache-bullseye
+FROM php:8.0.15-apache-bullseye
 
 EXPOSE 80
 EXPOSE 8080
@@ -28,7 +31,7 @@ RUN set -ex; \
     && chmod +x /usr/bin/caddy \
     && /usr/bin/caddy version
 
-COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
+COPY --from=dind /usr/local/bin/docker /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker
 
 RUN mkdir -p /usr/src/php/ext/apcu && \

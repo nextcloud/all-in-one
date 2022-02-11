@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:focal-20220113
 
 EXPOSE 3478
 

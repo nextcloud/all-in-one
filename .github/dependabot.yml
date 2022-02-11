@@ -3,10 +3,17 @@ updates:
 - package-ecosystem: composer
   directory: "/php/"
   schedule:
-    interval: weekly
-    day: saturday
-    time: "03:00"
-    timezone: Europe/Paris
+    interval: daily
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+- package-ecosystem: "docker"
+  directory: "/Containers/"
+  schedule:
+    interval: "daily"
+    time: "12:00"
   open-pull-requests-limit: 10
   labels:
   - 3. to review
