@@ -14,3 +14,5 @@ jobs:
       uses: ludeeus/action-shellcheck@master
       with:
         check_together: 'yes'
+      env:
+        SHELLCHECK_OPTS: --shell bash
