@@ -17,7 +17,9 @@ RUN set -ex; \
     chown -R postgres:postgres "$PGDATA"
 
 COPY start.sh /usr/bin/
-RUN chmod +x /usr/bin/start.sh
+COPY init-user-db.sh /docker-entrypoint-initdb.d/
+RUN chmod +x /usr/bin/start.sh; \
+    chmod +xr /docker-entrypoint-initdb.d/init-user-db.sh
 
 RUN mkdir /mnt/data; \
     chown postgres:postgres /mnt/data;
