@@ -18,11 +18,13 @@ if ! [ -w "$DUMP_DIR" ]; then
     exit 1
 fi
 
-# # Delete the datadir once (needed for the migration from debian to alpine)
-# if ! [ -f "$DUMP_DIR/initial-cleanup-done" ]; then
-#     rm -rf "${DATADIR:?}/"*
-#     touch "$DUMP_DIR/initial-cleanup-done"
-# fi
+# Delete the datadir once (needed for setting the correct credentials on old instances once)
+if ! [ -f "$DUMP_DIR/export.failed" ] && ! [ -f "$DUMP_DIR/initial-cleanup-done" ]; then
+    set -ex
+    rm -rf "${DATADIR:?}/"*
+    touch "$DUMP_DIR/initial-cleanup-done"
+    set +ex
+fi
 
 # Test if some things match
 # shellcheck disable=SC2235
