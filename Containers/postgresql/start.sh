@@ -63,7 +63,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
 
     # Restore database
     echo "Restoring the database from database dump"
-    psql "$POSTGRES_DB" -U "$POSTGRES_USER" < "$DUMP_FILE"
+    psql "$POSTGRES_DB" -U "oc_$POSTGRES_USER" < "$DUMP_FILE"
 
     # Shut down the database to be able to start it again
     pg_ctl stop -m fast
