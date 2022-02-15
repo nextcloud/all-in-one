@@ -61,9 +61,26 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     # Wait 10s for creation
     sleep 10s
 
+    # Set correct permissions
+    if grep -q "Owner: oc_admin" "$DUMP_FILE" && ! grep -q "Owner: oc_$POSTGRES_USER" "$DUMP_FILE"; then
+        OC_ADMIN_EXISTS=1
+        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+            CREATE USER oc_admin WITH PASSWORD '$POSTGRES_PASSWORD' CREATEDB;
+            ALTER DATABASE "$POSTGRES_DB" OWNER TO oc_admin;
+EOSQL
+    fi
+
     # Restore database
     echo "Restoring the database from database dump"
-    psql "$POSTGRES_DB" -U "oc_$POSTGRES_USER" < "$DUMP_FILE"
+    psql "$POSTGRES_DB" -U "$POSTGRES_USER" < "$DUMP_FILE"
+
+    # Correct permissions
+    if [ -n "$OC_ADMIN_EXISTS" ]; then
+        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+            ALTER DATABASE "$POSTGRES_DB" OWNER TO "oc_$POSTGRES_USER";
+            REASSIGN OWNED BY oc_admin TO "oc_$POSTGRES_USER";
+EOSQL
+    fi
 
     # Shut down the database to be able to start it again
     pg_ctl stop -m fast
