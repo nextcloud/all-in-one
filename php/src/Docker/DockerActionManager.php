@@ -212,6 +212,8 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetBackupMode();
                 } elseif ($out[1] === 'AIO_URL') {
                     $replacements[1] = $this->configurationManager->GetAIOURL();
+                } elseif ($out[1] === 'SELECTED_RESTORE_TIME') {
+                    $replacements[1] = $this->configurationManager->GetSelectedRestoreTime();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }

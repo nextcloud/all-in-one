@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Variables
+export BORG_BACKUP_DIRECTORY="/mnt/borgbackup/borg"
+
 # Validate BORG_PASSWORD
 if [ -z "$BORG_PASSWORD" ]; then
     echo "BORG_PASSWORD is not allowed to be empty."
@@ -23,6 +26,12 @@ fi
 
 # Remove lockfile
 rm -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/backup-is-running"
+
+# Get a list of all available borg archives
+set -x
+borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | awk -F " " '{print $1","$3,$4}' > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
+chmod +r "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
+set +x
 
 if [ -n "$FAILED" ]; then
     if [ "$BORG_MODE" = backup ]; then

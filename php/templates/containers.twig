@@ -206,11 +206,16 @@
                                         <input class="button" type="submit" value="Check backup integrity" onclick="return confirm('Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.')" /><br/>
                                     </form>
 
-                                    Click on the button below to restore the last backup from {{ last_backup_time }}. This will overwrite all your files with the state of the backup. It makes sense to run an integrity check before restoring your files but is not mandatory since it shouldn't be needed in most situations.<br><br>
-                                    <form method="POST" action="/api/docker/restore" class="xhr">
+                                    Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the state of the backup so you should consider creating a backup first. It also makes sense to run an integrity check before restoring your files but is not mandatory since it shouldn't be needed in most situations.<br><br>
+                                    <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                        <input class="button" type="submit" value="Restore last backup" onclick="return confirm('Restore last backup? Are you sure that you want to restore the last backup? This will stop all running containers and restore the last backup from {{ last_backup_time }}. You might want to check the backup integrity first.')" />
+                                        <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
+                                            {% for restore_time in backup_times %}
+                                                <option value="{{ restore_time }}">{{ restore_time }}"</option>
+                                            {% endfor %}
+                                        </select>
+                                        <input class="button" type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
                                     </form>
                                 {% endif %}
                             {% endif %}

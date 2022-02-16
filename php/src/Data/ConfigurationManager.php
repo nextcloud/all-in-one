@@ -64,7 +64,7 @@ class ConfigurationManager
         }
         
         $content = file_get_contents(DataConst::GetBackupArchivesList());
-        if ($content === "") {
+        if (count($content) === 0) {
             return '';
         }
 
@@ -81,6 +81,30 @@ class ConfigurationManager
         }
         
         return $lastBackupTime;
+    }
+
+    public function GetBackupTimes() : array {
+        if (!file_exists(DataConst::GetBackupArchivesList())) {
+            return $array[] = '';
+        }
+        
+        $content = file_get_contents(DataConst::GetBackupArchivesList());
+        if (count($content) === 0) {
+            return $array[] = '';
+        }
+
+        $backupLines = explode('\n', $content);
+        $backupTimes = [];
+        foreach($backupLines as $lines) {
+            $backupTimesTemp = explode(',', $lines);
+            $backupTimes[] = $backupTimesTemp[1];
+        }
+        
+        if (!is_array($backupTimes)) {
+            return $array[] = '';
+        }
+
+        return $backupTimes;
     }
 
     public function wasStartButtonClicked() : bool {
@@ -150,6 +174,15 @@ class ConfigurationManager
         }
 
         return $config['backup-mode'];
+    }
+
+    public function GetSelectedRestoreTime() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['selected-restore-time'])) {
+            $config['selected-restore-time'] = '';
+        }
+
+        return $config['selected-restore-time'];
     }
 
     public function GetAIOURL() : string {

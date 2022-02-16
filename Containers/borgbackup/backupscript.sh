@@ -1,13 +1,9 @@
 #!/bin/bash
 
-# Variables
-BORG_BACKUP_DIRECTORY="/mnt/borgbackup/borg"
-
 # Functions
 get_start_time(){
     START_TIME=$(date +%s)
     CURRENT_DATE=$(date --date @"$START_TIME" +"%Y%m%d_%H%M%S")
-    CURRENT_DATE_READABLE=$(date --date @"$START_TIME" +"%d.%m.%Y - %H:%M:%S") 
 }
 get_expiration_time() {
     END_TIME=$(date +%s)
@@ -150,9 +146,6 @@ if [ "$BORG_MODE" = backup ]; then
     # Remove the update skip file because the backup was successful
     rm -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
 
-    echo "$CURRENT_DATE,$CURRENT_DATE_READABLE" >> "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
-    chmod +r "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
-
     # Prune options
     BORG_PRUNE_OPTS=(--stats --progress --keep-within=7d --keep-weekly=4 --keep-monthly=6 "$BORG_BACKUP_DIRECTORY")
 
@@ -172,17 +165,20 @@ fi
 # Do the restore
 if [ "$BORG_MODE" = restore ]; then
     get_start_time
-    echo "Restoring the last backup..."
 
     # Perform the restore
-    FIRST_ARCHIVE="$(borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | awk -F " " '{print $1}' | sort -r | head -1)"
+    if [ -n "$SELECTED_RESTORE_TIME" ]; then
+        SELECTED_ARCHIVE"$(borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | grep "$SELECTED_RESTORE_TIME" | awk -F " " '{print $1}' | head -1)"
+    else
+        SELECTED_ARCHIVE="$(borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | awk -F " " '{print $1}' | sort -r | head -1)"
+    fi
+    echo "Restoring '$SELECTED_ARCHIVE'..."
     mkdir -p /tmp/borg
-    if ! borg mount "$BORG_BACKUP_DIRECTORY::$FIRST_ARCHIVE" /tmp/borg; then
+    if ! borg mount "$BORG_BACKUP_DIRECTORY::$SELECTED_ARCHIVE" /tmp/borg; then
         echo "Could not mount the backup!"
         exit 1
     fi
     if ! rsync --stats --archive --human-readable -vv --delete \
-    --exclude "nextcloud_aio_mastercontainer/data/backup_archives.list" \
     --exclude "nextcloud_aio_mastercontainer/session/"** \
     --exclude "nextcloud_aio_mastercontainer/certs/"** \
     /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
