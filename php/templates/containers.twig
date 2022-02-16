@@ -212,7 +212,7 @@
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
                                             {% for restore_time in backup_times %}
-                                                <option value="{{ restore_time }}">{{ restore_time }}"</option>
+                                                <option value="{{ restore_time }}">{{ restore_time }}</option>
                                             {% endfor %}
                                         </select>
                                         <input class="button" type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />

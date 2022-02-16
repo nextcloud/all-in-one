@@ -9,7 +9,10 @@ if [ -z "$BORG_PASSWORD" ]; then
     exit 1
 fi
 
-export BORG_PASSWORD
+# Export defaults 
+export BORG_PASSPHRASE="$BORG_PASSWORD"
+export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
+export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
 # Validate BORG_MODE
 if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != restore ] && [ "$BORG_MODE" != check ]; then

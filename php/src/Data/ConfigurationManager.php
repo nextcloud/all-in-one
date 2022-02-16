@@ -64,7 +64,7 @@ class ConfigurationManager
         }
         
         $content = file_get_contents(DataConst::GetBackupArchivesList());
-        if (count($content) === 0) {
+        if ($content === '') {
             return '';
         }
 
@@ -85,23 +85,25 @@ class ConfigurationManager
 
     public function GetBackupTimes() : array {
         if (!file_exists(DataConst::GetBackupArchivesList())) {
-            return $array[] = '';
+            return [];
         }
         
         $content = file_get_contents(DataConst::GetBackupArchivesList());
-        if (count($content) === 0) {
-            return $array[] = '';
+        if ($content === '') {
+            return [];
         }
 
-        $backupLines = explode('\n', $content);
+        $backupLines = explode("\n", $content);
         $backupTimes = [];
         foreach($backupLines as $lines) {
-            $backupTimesTemp = explode(',', $lines);
-            $backupTimes[] = $backupTimesTemp[1];
+            if ($lines !== "") {
+                $backupTimesTemp = explode(',', $lines);
+                $backupTimes[] = $backupTimesTemp[1];     
+            }
         }
         
         if (!is_array($backupTimes)) {
-            return $array[] = '';
+            return [];
         }
 
         return $backupTimes;
