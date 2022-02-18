@@ -58,8 +58,11 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     # Create new database
     exec docker-entrypoint.sh postgres &
 
-    # Wait 10s for creation
-    sleep 10s
+    # Wait for creation
+    while ! nc -z localhost 11000; do
+        echo "Waiting for the database to start."
+        sleep 5
+    done
 
     # Set correct permissions
     if grep -q "Owner: oc_admin" "$DUMP_FILE" && ! grep -q "Owner: oc_$POSTGRES_USER" "$DUMP_FILE"; then
