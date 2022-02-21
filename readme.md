@@ -113,11 +113,31 @@ It is recommended to create a backup before any container update. By doing this,
 
 If you connect an external drive to your host, and choose the backup directory to be on that drive, you are also kind of save against drive failures of the drive where the docker volumes are stored on. 
 
-Backups can be created and restored in the AIO interface using the buttons `Create Backup` and `Restore last backup`. Additionally, a backup check is provided that checks the integrity of your backups but it shouldn't be needed in most situations. 
+Backups can be created and restored in the AIO interface using the buttons `Create Backup` and `Restore selected backup`. Additionally, a backup check is provided that checks the integrity of your backups but it shouldn't be needed in most situations. 
 
 The backups itself get encrypted with an encryption key that gets shown to you in the AIO interface. Please save that at a safe place as you will not be able to restore from backup without this key.
 
-Note that this implementation does not provide remote backups, for this you can use the [backup app](https://apps.nextcloud.com/apps/backup). 
+Note that this implementation does not provide remote backups, for this you can use the [backup app](https://apps.nextcloud.com/apps/backup).
+
+---
+
+**Pro-tip**: you can open the BorgBackup archives on your host by following these steps:<br>
+(instructions for Ubuntu Desktop)
+```bash
+# Install borgbackup on the host
+sudo apt update && sudo apt install borgbackup
+
+# Mount the archives to /tmp/borg (if you are using the default backup location /mnt/backup/borg)
+sudo mkdir -p /tmp/borg && sudo borg mount "/mnt/backup/borg" /tmp/borg
+
+# After entering your repository key successfully, you should be able to access all archives in /tmp/borg
+# You can now do whatever you want by syncing them to a different place using rsync or doing other things
+# E.g. you can open the file manager on that location by running:
+xhost +si:localuser:root && sudo nautilus /tmp/borg
+
+# When you are done, simply close the file manager and run the following command to unmount the backup archives:
+sudo umount /tmp/borg
+```
 
 ### Huge docker logs
 When your containers run for a few days without a restart, the container logs that you can view from the AIO interface can get really huge. You can limit the loge sizes by enabling logrotate for docker container logs. Feel free to enable this by following those instructions: https://sandro-keil.de/blog/logrotate-for-docker-container/
