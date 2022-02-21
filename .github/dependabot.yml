@@ -10,7 +10,88 @@ updates:
   - 3. to review
   - dependencies
 - package-ecosystem: "docker"
-  directory: "/Containers/"
+  directory: "/Containers/apache"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+  - package-ecosystem: "docker"
+  directory: "/Containers/borgbackup"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+  - package-ecosystem: "docker"
+  directory: "/Containers/collabora"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+  - package-ecosystem: "docker"
+  directory: "/Containers/domaincheck"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+  - package-ecosystem: "docker"
+  directory: "/Containers/mastercontainer"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+  - package-ecosystem: "docker"
+  directory: "/Containers/nextcloud"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+  - package-ecosystem: "docker"
+  directory: "/Containers/postgresql"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+  - package-ecosystem: "docker"
+  directory: "/Containers/redis"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+  - package-ecosystem: "docker"
+  directory: "/Containers/talk"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+  - package-ecosystem: "docker"
+  directory: "/Containers/watchtower"
   schedule:
     interval: "daily"
     time: "12:00"
