@@ -48,19 +48,29 @@
         {% endfor %}
 
         {% if isWatchtowerRunning == true %}
-            Mastercontainer updpate currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until thats done.<br /><br />
+            Mastercontainer update currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until that's done.<br /><br />
             <a href="" class="button reload">Reload ↻</a><br/>
         {% else %}
             {% if isBackupOrRestoreRunning == false and domain == "" %}
-                Please type in the domain that will be used for Nextcloud:<br><br />
-                <form method="POST" action="/api/configuration" class="xhr">
-                    <input type="text" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
-                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                    <input class="button" type="submit" value="Submit" />
-                </form>
-                Make sure that this server is reachable on Port 443 and you've correctly set up the DNS config for the domain that you enter. <br><br>
-                If you have a dynamic IP-address, you can use e.g. <a href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates. 
+                {% if is_mastercontainer_update_available == true %}
+                    <h2>Mastercontainer update</h2>
+                    ⚠ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.<br><br>
+                    <form method="POST" action="/api/docker/watchtower" class="xhr">
+                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                        <input class="button" type="submit" value="Update mastercontainer" />
+                    </form>
+                {% else %}
+                    Please type in the domain that will be used for Nextcloud:<br><br />
+                    <form method="POST" action="/api/configuration" class="xhr">
+                        <input type="text" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
+                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                        <input class="button" type="submit" value="Submit" />
+                    </form>
+                    Make sure that this server is reachable on Port 443 and you've correctly set up the DNS config for the domain that you enter. <br><br>
+                    If you have a dynamic IP-address, you can use e.g. <a href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates. 
+                {% endif %}
             {% endif %}
 
             {% if domain != "" %}
@@ -99,18 +109,21 @@
                     </ul>
 
                     {% if has_update_available == true %}
-                        ⚠ Container updates are available. Click on `Stop Containers` and `Start Containers` to update them. You should consider creating a backup first. The mastercontainer gets updated with a different procedure though and has its own update button which is visible if an update is available.<br><br>
+                        {% if is_mastercontainer_update_available == false %}
+                            ⚠ Container updates are available. Click on `Stop Containers` and `Start Containers` to update them. You should consider creating a backup first.<br><br>
+                        {% endif %}
                     {% else %}
                         {% if is_mastercontainer_update_available == false %}
                             Your containers are up-to-date.<br><br>
-                        {% else %}
-                            Your containers are up-to-date. (Except the mastercontainer. See the section below.)<br><br>
                         {% endif %}
                     {% endif %}
                 {% endif %}
 
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
+                        {% if is_mastercontainer_update_available == true %}
+                            ⚠ A mastercontainer update is available. Please click on the button below to stop your containers in order to be able to update the mastercontainer.<br /><br />
+                        {% endif %}
                         <form method="POST" action="/api/docker/stop" class="xhr">
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -126,18 +139,22 @@
                         {% if was_start_button_clicked == false %}
                             Clicking on the button below will download all docker containers and start them. This can take a lot of time depending on your internect connection. Since the overall size is a few GB, this will take around 5-10 min or more. So be aware and patient!<br><br>
                         {% endif %}
-                        {% if was_start_button_clicked == false or has_update_available == false %}
-                            <form method="POST" action="/api/docker/start" class="xhr">
-                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Start containers" />
-                            </form>
+                        {% if is_mastercontainer_update_available == true %}
+                            ⚠ Please update your mastercontainer. Afterwards, you will be able to start your containers again.<br><br>
                         {% else %}
-                            <form method="POST" action="/api/docker/start" class="xhr">
-                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button " type="submit" value="Start and update containers" onclick="return confirm('Start and update containers? You should consider creating a backup first.')" />
-                            </form>
+                            {% if was_start_button_clicked == false or has_update_available == false %}
+                                <form method="POST" action="/api/docker/start" class="xhr">
+                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                    <input class="button" type="submit" value="Start containers" />
+                                </form>
+                            {% else %}
+                                <form method="POST" action="/api/docker/start" class="xhr">
+                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                    <input class="button " type="submit" value="Start and update containers" onclick="return confirm('Start and update containers? You should consider creating a backup first.')" />
+                                </form>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% endif %}
@@ -145,13 +162,16 @@
                 {% if is_mastercontainer_update_available == true %}
                     {% if isBackupOrRestoreRunning == false %}
                         <h2>Mastercontainer update</h2>
-
-                        ⚠ A mastercontainer update is available. Please click on the button below to update it. All other containers get updated independently from the mastercontainer by simply clicking on `Stop containers` and clicking on `Start containers` if a new update is available.<br><br>
-                        <form method="POST" action="/api/docker/watchtower" class="xhr">
-                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                            <input class="button" type="submit" value="Update mastercontainer" />
-                        </form>
+                        {% if isAnyRunning == false %}
+                            ⚠ A mastercontainer update is available. Please click on the button below to update it.<br><br>
+                            <form method="POST" action="/api/docker/watchtower" class="xhr">
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                <input class="button" type="submit" value="Update mastercontainer" />
+                            </form>
+                        {% else %}
+                            ⚠ A mastercontainer update is available. Please stop your containers in order to be able to update the mastercontainer.
+                        {% endif %}
                     {% endif %}
                 {% endif %}
 
