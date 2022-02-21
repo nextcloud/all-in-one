@@ -18,7 +18,7 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  - package-ecosystem: "docker"
+- package-ecosystem: "docker"
   directory: "/Containers/borgbackup"
   schedule:
     interval: "daily"
@@ -27,7 +27,7 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  - package-ecosystem: "docker"
+- package-ecosystem: "docker"
   directory: "/Containers/collabora"
   schedule:
     interval: "daily"
@@ -36,7 +36,7 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  - package-ecosystem: "docker"
+- package-ecosystem: "docker"
   directory: "/Containers/domaincheck"
   schedule:
     interval: "daily"
@@ -45,7 +45,7 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  - package-ecosystem: "docker"
+- package-ecosystem: "docker"
   directory: "/Containers/mastercontainer"
   schedule:
     interval: "daily"
@@ -54,7 +54,7 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  - package-ecosystem: "docker"
+- package-ecosystem: "docker"
   directory: "/Containers/nextcloud"
   schedule:
     interval: "daily"
@@ -63,7 +63,7 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  - package-ecosystem: "docker"
+- package-ecosystem: "docker"
   directory: "/Containers/postgresql"
   schedule:
     interval: "daily"
@@ -72,7 +72,7 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  - package-ecosystem: "docker"
+- package-ecosystem: "docker"
   directory: "/Containers/redis"
   schedule:
     interval: "daily"
@@ -81,7 +81,7 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  - package-ecosystem: "docker"
+- package-ecosystem: "docker"
   directory: "/Containers/talk"
   schedule:
     interval: "daily"
@@ -90,7 +90,7 @@ updates:
   labels:
   - 3. to review
   - dependencies
-  - package-ecosystem: "docker"
+- package-ecosystem: "docker"
   directory: "/Containers/watchtower"
   schedule:
     interval: "daily"
