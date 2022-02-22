@@ -18,8 +18,3 @@ $overwriteCondAddr = getenv('OVERWRITECONDADDR');
 if ($overwriteCondAddr) {
   $CONFIG['overwritecondaddr'] = $overwriteCondAddr;
 }
-
-$trustedProxies = getenv('TRUSTED_PROXIES');
-if ($trustedProxies) {
-  $CONFIG['trusted_proxies'] = array_filter(array_map('trim', explode(' ', $trustedProxies)));
-}
