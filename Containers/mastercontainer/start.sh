@@ -54,6 +54,21 @@ else
     sleep 10
 fi
 
+# Check for other options
+if [ -n "$NEXTCLOUD_MOUNT" ]; then
+    if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/mnt/" \
+    && ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/media/" \
+    && ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/var/backups$"
+    then
+        echo "You've set NEXCLOUD_MOUNT but not to an allowed value.
+The string must be equal to/start with '/mnt/' or '/media/' or be equal to '/var/backups'."
+        exit 1
+    elif [ "$NEXTCLOUD_MOUNT" = "/mnt/ncdata" ] || echo "$NEXTCLOUD_MOUNT" | grep -q "^/mnt/ncdata/"; then
+        echo "/mnt/ncdata and /mnt/ncdata/ are not allowed for NEXTCLOUD_MOUNT."
+        exit 1
+    fi
+fi
+
 # Add important folders
 mkdir -p /mnt/docker-aio-config/data/
 mkdir -p /mnt/docker-aio-config/session/

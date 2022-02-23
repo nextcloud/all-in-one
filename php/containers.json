@@ -98,6 +98,11 @@
           "name": "nextcloud_aio_nextcloud_data",
           "location": "/mnt/ncdata",
           "writeable": true
+        },
+        {
+          "name": "%NEXTCLOUD_MOUNT%",
+          "location": "%NEXTCLOUD_MOUNT%",
+          "writeable": true
         }
       ],
       "environmentVariables": [

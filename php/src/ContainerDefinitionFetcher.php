@@ -67,6 +67,18 @@ class ContainerDefinitionFetcher
                         continue;
                     }
                 }
+                if($value['name'] === '%NEXTCLOUD_MOUNT%') {
+                    $value['name'] = $this->configurationManager->GetNextcloudMount();
+                    if($value['name'] === '') {
+                        continue;
+                    }
+                }
+                if($value['location'] === '%NEXTCLOUD_MOUNT%') {
+                    $value['location'] = $this->configurationManager->GetNextcloudMount();
+                    if($value['location'] === '') {
+                        continue;
+                    }
+                }
                 $volumes->AddVolume(
                     new ContainerVolume(
                         $value['name'],
