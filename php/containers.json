@@ -114,7 +114,6 @@
         "NEXTCLOUD_DATA_DIR=/mnt/ncdata",
         "OVERWRITEHOST=%NC_DOMAIN%",
         "OVERWRITEPROTOCOL=https",
-        "TRUSTED_PROXIES=127.0.0.1",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
         "AIO_URL=%AIO_URL%"

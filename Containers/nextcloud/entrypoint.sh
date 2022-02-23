@@ -250,6 +250,7 @@ elif [ "$(php /var/www/html/occ config:app:get notify_push enabled)" = "no" ]; t
 else
     php /var/www/html/occ app:update notify_push
 fi
+php /var/www/html/occ config:system:set trusted_proxies 0 --value="127.0.0.1"
 php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://$NC_DOMAIN/push"
 
 # Collabora
