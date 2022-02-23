@@ -126,6 +126,11 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("Domain is not in a valid format!");
         }
 
+        // Validate that it is not an IP-address
+        if(filter_var($domain, FILTER_VALIDATE_IP)) {
+            throw new InvalidSettingConfigurationException("Please enter a domain and not an IP-address!");
+        }
+
         $dnsRecordIP = gethostbyname($domain);
 
         // Validate IP
