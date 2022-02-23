@@ -133,7 +133,8 @@ class DockerController
             $this->PerformRecursiveContainerStop($dependency);
         }
 
-        $this->dockerActionManager->DisconnectContainerFromNetwork($container);
+        // Disconnecting is not needed. This also allows to start the containers manually via docker-cli
+        //$this->dockerActionManager->DisconnectContainerFromNetwork($container);
         $this->dockerActionManager->StopContainer($container);
     }
 
