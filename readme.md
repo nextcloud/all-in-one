@@ -117,6 +117,8 @@ Backups can be created and restored in the AIO interface using the buttons `Crea
 
 The backups itself get encrypted with an encryption key that gets shown to you in the AIO interface. Please save that at a safe place as you will not be able to restore from backup without this key.
 
+Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app.
+
 Note that this implementation does not provide remote backups, for this you can use the [backup app](https://apps.nextcloud.com/apps/backup).
 
 ---

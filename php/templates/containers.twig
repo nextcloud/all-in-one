@@ -210,6 +210,7 @@
                             Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
                             The backup itself will use a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup">BorgBackup<a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
                             Backups get created in the following directory on the host: {{ borg_backup_host_location }}/borg <br /><br/>
+                            Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app. <br /><br/>
 
                             {% if isApacheStarting != true %}
                                 <form method="POST" action="/api/docker/backup" class="xhr">
