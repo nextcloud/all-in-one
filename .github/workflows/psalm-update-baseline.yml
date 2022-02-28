@@ -11,8 +11,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
 
       - name: Set up php8.0
         uses: shivammathur/setup-php@v2
@@ -21,20 +19,16 @@ jobs:
           extensions: apcu
           coverage: none
 
-      - name: change directory
-        run: cd php
-
-      - name: Composer install
-        run: composer install
-
-      - name: Psalm
-        run: composer run psalm -- --monochrome --no-progress --output-format=text --update-baseline
-        continue-on-error: true
-
-      - name: Reset composer
+      - name: Run script
         run: |
+          set -x
+          cd php
+          composer global require vimeo/psalm --prefer-dist --no-progress --dev
+          composer install
+          composer run psalm -- --monochrome --no-progress --output-format=text --update-baseline
           git clean -f lib/composer
           git checkout composer.json composer.lock lib/composer
+        continue-on-error: true
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
