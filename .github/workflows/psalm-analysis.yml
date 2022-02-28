@@ -1,0 +1,18 @@
+name: Psalm Analysis
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  psalm:
+    name: Psalm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Psalm
+        uses: docker://ghcr.io/nextcloud/all-in-one-psalm
+        with:
+          composer_ignore_platform_reqs: false
+          relative_dir: php
