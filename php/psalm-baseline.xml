@@ -1,3 +1,149 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="dev-master@569e97d5e99c92f0ccd23f3bb39f16f6aa079ed2">
+<files psalm-version="4.22.0@fc2c6ab4d5fa5d644d8617089f012f3bb84b8703">
+  <file src="public/index.php">
+    <MissingClosureParamType occurrences="10">
+      <code>$args</code>
+      <code>$args</code>
+      <code>$args</code>
+      <code>$args</code>
+      <code>$request</code>
+      <code>$request</code>
+      <code>$request</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+    </MissingClosureParamType>
+  </file>
+  <file src="src/Container/ContainerVolumes.php">
+    <MissingReturnType occurrences="1">
+      <code>AddVolume</code>
+    </MissingReturnType>
+  </file>
+  <file src="src/Controller/ConfigurationController.php">
+    <MissingParamType occurrences="1">
+      <code>$args</code>
+    </MissingParamType>
+    <PossiblyInvalidArrayAccess occurrences="2">
+      <code>$request-&gt;getParsedBody()['borg_backup_host_location']</code>
+      <code>$request-&gt;getParsedBody()['domain']</code>
+    </PossiblyInvalidArrayAccess>
+    <PossiblyNullArgument occurrences="2">
+      <code>$request-&gt;getParsedBody()['borg_backup_host_location']</code>
+      <code>$request-&gt;getParsedBody()['domain']</code>
+    </PossiblyNullArgument>
+    <PossiblyNullArrayAccess occurrences="2">
+      <code>$request-&gt;getParsedBody()['borg_backup_host_location']</code>
+      <code>$request-&gt;getParsedBody()['domain']</code>
+    </PossiblyNullArrayAccess>
+  </file>
+  <file src="src/Controller/DockerController.php">
+    <MissingParamType occurrences="7">
+      <code>$args</code>
+      <code>$args</code>
+      <code>$args</code>
+      <code>$args</code>
+      <code>$args</code>
+      <code>$args</code>
+      <code>$args</code>
+    </MissingParamType>
+    <MissingReturnType occurrences="4">
+      <code>PerformRecursiveContainerStart</code>
+      <code>PerformRecursiveContainerStop</code>
+      <code>StartDomaincheckContainer</code>
+      <code>StopDomaincheckContainer</code>
+    </MissingReturnType>
+    <PossiblyInvalidArrayAccess occurrences="1">
+      <code>$request-&gt;getParsedBody()['selected_restore_time']</code>
+    </PossiblyInvalidArrayAccess>
+    <PossiblyNullArgument occurrences="1">
+      <code>$container</code>
+    </PossiblyNullArgument>
+    <PossiblyNullArrayAccess occurrences="1">
+      <code>$request-&gt;getParsedBody()['selected_restore_time']</code>
+    </PossiblyNullArrayAccess>
+    <PossiblyNullReference occurrences="5">
+      <code>GetDependsOn</code>
+      <code>GetDependsOn</code>
+      <code>GetIdentifier</code>
+      <code>GetIdentifier</code>
+      <code>GetRunningState</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/Controller/LoginController.php">
+    <MissingParamType occurrences="3">
+      <code>$args</code>
+      <code>$args</code>
+      <code>$args</code>
+    </MissingParamType>
+    <PossiblyInvalidArrayAccess occurrences="1">
+      <code>$request-&gt;getParsedBody()['password']</code>
+    </PossiblyInvalidArrayAccess>
+    <PossiblyNullArgument occurrences="1">
+      <code>$password</code>
+    </PossiblyNullArgument>
+    <PossiblyNullArrayAccess occurrences="1">
+      <code>$request-&gt;getParsedBody()['password']</code>
+    </PossiblyNullArrayAccess>
+  </file>
+  <file src="src/Cron/cron.php">
+    <PossiblyNullArgument occurrences="2">
+      <code>$nextcloudContainer</code>
+      <code>$nextcloudContainer</code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Data/ConfigurationManager.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>$response</code>
+    </InvalidScalarArgument>
+    <MissingReturnType occurrences="1">
+      <code>DoubleSafeBackupSecret</code>
+    </MissingReturnType>
+    <TypeDoesNotContainType occurrences="1">
+      <code>is_array($backupTimes)</code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="src/Docker/DockerActionManager.php">
+    <InvalidReturnType occurrences="1">
+      <code>IContainerState</code>
+    </InvalidReturnType>
+    <InvalidScalarArgument occurrences="1">
+      <code>$internalPort</code>
+    </InvalidScalarArgument>
+    <MissingReturnType occurrences="12">
+      <code>ConnectContainerIdToNetwork</code>
+      <code>ConnectContainerToNetwork</code>
+      <code>ConnectMasterContainerToNetwork</code>
+      <code>CreateContainer</code>
+      <code>CreateVolumes</code>
+      <code>DeleteContainer</code>
+      <code>DisconnectContainerFromNetwork</code>
+      <code>PullContainer</code>
+      <code>StartContainer</code>
+      <code>StopContainer</code>
+      <code>isAnyUpdateAvailable</code>
+      <code>sendNotification</code>
+    </MissingReturnType>
+    <PossiblyFalseOperand occurrences="1">
+      <code>strpos($fullDigest, "@")</code>
+    </PossiblyFalseOperand>
+    <PossiblyNullArgument occurrences="1">
+      <code>$apacheContainer</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="1">
+      <code>GetUpdateState</code>
+    </PossiblyNullReference>
+    <RedundantCondition occurrences="1">
+      <code>$container-&gt;GetInternalPorts() !== null</code>
+    </RedundantCondition>
+  </file>
+  <file src="src/Middleware/AuthMiddleware.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>withStatus</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="src/Twig/ClassExtension.php">
+    <MissingParamType occurrences="1">
+      <code>$object</code>
+    </MissingParamType>
+  </file>
 </files>
