@@ -151,7 +151,7 @@ class ConfigurationManager
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,'http://' . $domain . ':443');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
+        $response = (string)curl_exec($ch);
         # Get rid of trailing \n
         $response = str_replace("\n", "", $response);
 
