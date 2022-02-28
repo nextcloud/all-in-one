@@ -2,7 +2,9 @@ name: Create Psalm Container
 
 on:
   workflow_dispatch:
-        
+  schedule:
+    - cron: '5 4 * * *'
+
 jobs:
   push_to_registry:
     runs-on: ubuntu-latest
