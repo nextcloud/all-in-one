@@ -10,17 +10,18 @@
       "displayName": "Apache",
       "containerName": "nextcloud/aio-apache",
       "ports": [
-        "443/tcp"
+        "%APACHE_PORT%/tcp"
       ],
       "internalPorts": [
-        "443"
+        "%APACHE_PORT%"
       ],
       "secrets": [],
       "environmentVariables": [
         "NC_DOMAIN=%NC_DOMAIN%",
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "COLLABORA_HOST=nextcloud-aio-collabora",
-        "TALK_HOST=nextcloud-aio-talk"
+        "TALK_HOST=nextcloud-aio-talk",
+        "APACHE_PORT=%APACHE_PORT%"
       ],
       "volumes": [
         {
@@ -276,11 +277,12 @@
       "displayName": "Domaincheck",
       "containerName": "nextcloud/aio-domaincheck",
       "ports": [
-        "443/tcp"
+        "%APACHE_PORT%/tcp"
       ],
       "internalPorts": [],
       "environmentVariables": [
-        "INSTANCE_ID=%INSTANCE_ID%"
+        "INSTANCE_ID=%INSTANCE_ID%",
+        "APACHE_PORT=%APACHE_PORT%"
       ],
       "volumes": [],
       "secrets": [

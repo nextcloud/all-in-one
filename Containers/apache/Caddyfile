@@ -6,7 +6,7 @@
     }
 }
 
-https://{$NC_DOMAIN}:443 {
+{$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
 
     # Notify Push
     route /push/* {

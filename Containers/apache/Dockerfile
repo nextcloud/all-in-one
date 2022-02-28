@@ -59,7 +59,7 @@ COPY start.sh /usr/bin/
 COPY supervisord.conf /
 RUN chmod +x /usr/bin/start.sh; \
     chmod +r /supervisord.conf; \
-    chmod +r /Caddyfile;
+    chmod +w /Caddyfile;
 
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
