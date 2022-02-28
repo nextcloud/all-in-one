@@ -17,5 +17,9 @@
         "slim/twig-view": "^3.2",
         "slim/csrf": "^1.2",
         "ext-apcu": "*"
-    }
+    },
+    "scripts": {
+		"psalm": "psalm --threads=1",
+		"psalm:update-baseline": "psalm --threads=1 --update-baseline"
+	}
 }
