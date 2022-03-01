@@ -26,7 +26,7 @@ class DockerController
         $this->configurationManager = $configurationManager;
     }
 
-    private function PerformRecursiveContainerStart(string $id) {
+    private function PerformRecursiveContainerStart(string $id) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         foreach($container->GetDependsOn() as $dependency) {
@@ -126,7 +126,7 @@ class DockerController
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
-    private function PerformRecursiveContainerStop(string $id)
+    private function PerformRecursiveContainerStop(string $id) : void
     {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
         foreach($container->GetDependsOn() as $dependency) {
@@ -146,7 +146,7 @@ class DockerController
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
-    public function StartDomaincheckContainer()
+    public function StartDomaincheckContainer() : void
     {
         # Don't start if domain is already set
         if ($this->configurationManager->GetDomain() != '') {
@@ -167,7 +167,7 @@ class DockerController
         $this->PerformRecursiveContainerStart($id);
     }
 
-    private function StopDomaincheckContainer()
+    private function StopDomaincheckContainer() : void
     {
         $id = 'nextcloud-aio-domaincheck';
         $this->PerformRecursiveContainerStop($id);

@@ -109,7 +109,7 @@ class DockerActionManager
         }
     }
 
-    public function DeleteContainer(Container $container) {
+    public function DeleteContainer(Container $container) : void {
         $url = $this->BuildApiUrl(sprintf('containers/%s?v=true', urlencode($container->GetIdentifier())));
         try {
             $this->guzzleClient->delete($url);
@@ -142,12 +142,12 @@ class DockerActionManager
         return $response;
     }
 
-    public function StartContainer(Container $container) {
+    public function StartContainer(Container $container) : void {
         $url = $this->BuildApiUrl(sprintf('containers/%s/start', urlencode($container->GetIdentifier())));
         $this->guzzleClient->post($url);
     }
 
-    public function CreateVolumes(Container $container)
+    public function CreateVolumes(Container $container): void
     {
         $url = $this->BuildApiUrl('volumes/create');
         foreach($container->GetVolumes()->GetVolumes() as $volume) {
@@ -170,7 +170,7 @@ class DockerActionManager
         }
     }
 
-    public function CreateContainer(Container $container) {
+    public function CreateContainer(Container $container) : void {
         $volumes = [];
         foreach($container->GetVolumes()->GetVolumes() as $volume) {
             $volumeEntry = $volume->name . ':' . $volume->mountPoint;
@@ -259,7 +259,7 @@ class DockerActionManager
         );
     }
 
-    public function PullContainer(Container $container)
+    public function PullContainer(Container $container) : void
     {
         $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', urlencode($this->BuildImageName($container))));
         try {
@@ -283,9 +283,8 @@ class DockerActionManager
         return $updateAvailable;
     }
 
-    public function isAnyUpdateAvailable() {
+    public function isAnyUpdateAvailable() : bool {
         $id = 'nextcloud-aio-apache';
-
 
         if ($this->isContainerUpdateAvailable($id) !== "") {
             return true;
@@ -354,7 +353,7 @@ class DockerActionManager
         }
     }
 
-    public function sendNotification(Container $container, string $subject, string $message)
+    public function sendNotification(Container $container, string $subject, string $message) : void
     {
         if ($this->GetContainerStartingState($container) instanceof RunningState) {
 
@@ -400,7 +399,7 @@ class DockerActionManager
         }
     }
 
-    public function DisconnectContainerFromNetwork(Container $container)
+    public function DisconnectContainerFromNetwork(Container $container) : void
     {
 
         $url = $this->BuildApiUrl(
@@ -421,7 +420,7 @@ class DockerActionManager
         }
     }
 
-    private function ConnectContainerIdToNetwork(string $id)
+    private function ConnectContainerIdToNetwork(string $id) : void
     {
         $url = $this->BuildApiUrl('networks/create');
         try {
@@ -464,17 +463,17 @@ class DockerActionManager
         }
     }
 
-    public function ConnectMasterContainerToNetwork()
+    public function ConnectMasterContainerToNetwork() : void
     {
         $this->ConnectContainerIdToNetwork('nextcloud-aio-mastercontainer');
     }
 
-    public function ConnectContainerToNetwork(Container $container)
+    public function ConnectContainerToNetwork(Container $container) : void
     {
       $this->ConnectContainerIdToNetwork($container->GetIdentifier());
     }
 
-    public function StopContainer(Container $container) {
+    public function StopContainer(Container $container) : void {
         $url = $this->BuildApiUrl(sprintf('containers/%s/stop?t=%s', urlencode($container->GetIdentifier()), $container->GetMaxShutdownTime()));
         try {
             $this->guzzleClient->post($url);

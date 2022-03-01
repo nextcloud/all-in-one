@@ -6,7 +6,7 @@ class ContainerVolumes {
     /** @var ContainerVolume[] */
     private array $volumes = [];
 
-    public function AddVolume(ContainerVolume $volume) {
+    public function AddVolume(ContainerVolume $volume) : void {
         $this->volumes[] = $volume;
     }
 
