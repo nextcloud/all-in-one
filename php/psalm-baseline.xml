@@ -92,9 +92,6 @@
     </PossiblyNullArgument>
   </file>
   <file src="src/Data/ConfigurationManager.php">
-    <InvalidScalarArgument occurrences="1">
-      <code>$response</code>
-    </InvalidScalarArgument>
     <MissingReturnType occurrences="1">
       <code>DoubleSafeBackupSecret</code>
     </MissingReturnType>
