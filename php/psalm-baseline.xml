@@ -14,11 +14,6 @@
       <code>$response</code>
     </MissingClosureParamType>
   </file>
-  <file src="src/Container/ContainerVolumes.php">
-    <MissingReturnType occurrences="1">
-      <code>AddVolume</code>
-    </MissingReturnType>
-  </file>
   <file src="src/Controller/ConfigurationController.php">
     <MissingParamType occurrences="1">
       <code>$args</code>
@@ -46,12 +41,6 @@
       <code>$args</code>
       <code>$args</code>
     </MissingParamType>
-    <MissingReturnType occurrences="4">
-      <code>PerformRecursiveContainerStart</code>
-      <code>PerformRecursiveContainerStop</code>
-      <code>StartDomaincheckContainer</code>
-      <code>StopDomaincheckContainer</code>
-    </MissingReturnType>
     <PossiblyInvalidArrayAccess occurrences="1">
       <code>$request-&gt;getParsedBody()['selected_restore_time']</code>
     </PossiblyInvalidArrayAccess>
@@ -91,14 +80,6 @@
       <code>$nextcloudContainer</code>
     </PossiblyNullArgument>
   </file>
-  <file src="src/Data/ConfigurationManager.php">
-    <MissingReturnType occurrences="1">
-      <code>DoubleSafeBackupSecret</code>
-    </MissingReturnType>
-    <TypeDoesNotContainType occurrences="1">
-      <code>is_array($backupTimes)</code>
-    </TypeDoesNotContainType>
-  </file>
   <file src="src/Docker/DockerActionManager.php">
     <InvalidReturnType occurrences="1">
       <code>IContainerState</code>
@@ -106,20 +87,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>$internalPort</code>
     </InvalidScalarArgument>
-    <MissingReturnType occurrences="12">
-      <code>ConnectContainerIdToNetwork</code>
-      <code>ConnectContainerToNetwork</code>
-      <code>ConnectMasterContainerToNetwork</code>
-      <code>CreateContainer</code>
-      <code>CreateVolumes</code>
-      <code>DeleteContainer</code>
-      <code>DisconnectContainerFromNetwork</code>
-      <code>PullContainer</code>
-      <code>StartContainer</code>
-      <code>StopContainer</code>
-      <code>isAnyUpdateAvailable</code>
-      <code>sendNotification</code>
-    </MissingReturnType>
     <PossiblyFalseOperand occurrences="1">
       <code>strpos($fullDigest, "@")</code>
     </PossiblyFalseOperand>
