@@ -46,7 +46,7 @@ class ConfigurationManager
         return $config['secrets'][$secretId];
     }
 
-    private function DoubleSafeBackupSecret(string $borgBackupPassword) {
+    private function DoubleSafeBackupSecret(string $borgBackupPassword) : void {
         file_put_contents(DataConst::GetBackupSecretFile(), $borgBackupPassword);
     }
 
@@ -100,10 +100,6 @@ class ConfigurationManager
                 $backupTimesTemp = explode(',', $lines);
                 $backupTimes[] = $backupTimesTemp[1];     
             }
-        }
-        
-        if (!is_array($backupTimes)) {
-            return [];
         }
 
         return $backupTimes;
