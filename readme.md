@@ -141,6 +141,27 @@ xhost +si:localuser:root && sudo nautilus /tmp/borg
 sudo umount /tmp/borg
 ```
 
+---
+
+#### Delete backup archives manually
+You can delete BorgBackup archives on your host manually by following these steps:<br>
+(instructions for Debian based OS' like Ubuntu)
+```bash
+# Install borgbackup on the host
+sudo apt update && sudo apt install borgbackup
+
+# List all archives (if you are using the default backup location /mnt/backup/borg)
+sudo borg list "/mnt/backup/borg"
+
+# After entering your repository key successfully, you should now see a list of all backup archives
+# An example backup archive might be called 20220223_174237-nextcloud-aio
+# Then you can simply delete the archive with:
+sudo borg delete --stats --progress "/mnt/backup/borg::20220223_174237-nextcloud-aio"
+```
+
+After doing so, make sure to update the backup archives list in the AIO interface!<br>
+You can do so by clicking on the `Check backup integrity` button or `Create backup` button.
+
 ### How to allow the Nextcloud container to access directories on the host?
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that are equal to or start with `/mnt/` or `/media/` or are equal to `/var/backups` and unequal to `/mnt/ncdata`. Two examples for this are: `-e NEXTCLOUD_MOUNT="/mnt/"` or `-e NEXTCLOUD_MOUNT="/media/"`. After doing so, please make sure to apply the correct permissions to the directories that you want to use in Nextcloud. E.g. `sudo chown -R 33:0 /mnt/your-drive-mountpoint` should make it work. You can then navigate to the apps management page, activate the external storage app, navigate to `https://your-nc-domain.com/settings/admin/externalstorages` and add a local external storage directory that will be accessible inside the container at the same place that you've entered. E.g. `/mnt/your-drive-mountpoint` will be mounted to `/mnt/your-drive-mountpoint` inside the container, etc. Be aware though that these locations will not be covered by the built-in backup solution!
 
