@@ -66,28 +66,28 @@ Included are:
     </details>
 
 4. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
-E.g. https://internal.ip.of.this.server:8080<br>
+E.g. `https://internal.ip.of.this.server:8080`<br>
 If your server has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatially by opening the Nextcloud AIO Interface via:<br>
-https://your-domain-that-points-to-this-server.tld:8443
+`https://your-domain-that-points-to-this-server.tld:8443`
+5. Please do not forget to open port `3478/TCP` and `3478/UDP` for the Talk container!
 
 ## FAQ
 ### How does it work?
 Nextcloud AIO is inspired by projects like Portainer that allow to manage the docker daemon by talking to the docker socket directly. This concept allows to install only one container with a single command that does the heavy lifting of creating and managing all containers that are needed in order to provide a Nextcloud installation with most features included. It also makes updating a breeze and is not bound to the host system (and its slow updates) anymore as everything is in containers. Additionally, it is very easy to handle from a user perspective because a simple interface for managing your Nextcloud AIO installation is provided.
 
 ### Are reverse proxies supported?
-Reverse proxies are currently because of the above mentioned architecture not supported.<br>
-You might investigate yourself though how it could made work behind reverse proxies. If you open a PR with that we might consider it then :)
+Yes. Please refer to the following documentation on this: [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
 
 ### Which ports are mandatory to be open?
 Only those (if you acces the Mastercontainer Interface internally via port 8080):
-- `443/TCP` for the Nextcloud container
+- `443/TCP` for the Apache container
 - `3478/TCP` and `3478/UDP` for the Talk container
 
 ### Explanation of used ports:
 - `8080/TCP`: Mastercontainer Interface with self-signed certificate (works always, also if only access via IP-address is possible, e.g. `https://internal.ip.address:8080/`)
 - `80/TCP`: redirects to Nextcloud (is used for getting the certificate via ACME http-challenge for the Mastercontainer)
 - `8443/TCP`: Mastercontainer Interface with valid certificate (only works if port 80 and 8443 are open and you point a domain to your server. It generates a valid certificate then automatically and access via e.g. `https://public.domain.com:8443/` is possible.)
-- `443/TCP`: will be used by the Nextcloud container later on and needs to be open
+- `443/TCP`: will be used by the Apache container later on and needs to be open
 - `3478/TCP` and `3478/UDP`: will be used by the Turnserver inside the Talk container and needs to be open
 
 ### How to run `occ` commands?
