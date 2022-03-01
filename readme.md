@@ -123,7 +123,13 @@ Note that this implementation does not provide remote backups, for this you can 
 
 ---
 
-**Pro-tip**: you can open the BorgBackup archives on your host by following these steps:<br>
+#### Failure of the backup container in LXC containers
+If you are running AIO in a LXC container, you need to make sure that FUSE is enabled in the LXC container settings. Otherwise the backup container will not be able to start as FUSE is required for it to work.
+
+---
+
+#### Pro-tip: Backup archives access
+You can open the BorgBackup archives on your host by following these steps:<br>
 (instructions for Ubuntu Desktop)
 ```bash
 # Install borgbackup on the host
