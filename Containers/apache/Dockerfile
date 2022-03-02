@@ -1,4 +1,4 @@
-FROM debian:bullseye-20220125-slim
+FROM debian:bullseye-20220228-slim
 
 EXPOSE 80
 
