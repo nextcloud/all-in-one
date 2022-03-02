@@ -1,15 +1,12 @@
-FROM debian:bullseye-20220125-slim
+FROM alpine:3.15.0
 
 RUN set -ex; \
     \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
+    apk add --update --no-cache \
+        bash \
         borgbackup \
         rsync \
-        fuse \
-        python3-llfuse \
-    ; \
-    rm -rf /var/lib/apt/lists/*
+        fuse3
 
 VOLUME /root
 
