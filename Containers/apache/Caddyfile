@@ -22,25 +22,13 @@
 
     # Collabora
     route /browser/* {
-        reverse_proxy https://{$COLLABORA_HOST}:9980 {
-            transport http {
-                tls_insecure_skip_verify
-            }
-        }
+        reverse_proxy {$COLLABORA_HOST}:9980
     }
     route /hosting/* {
-        reverse_proxy https://{$COLLABORA_HOST}:9980 {
-            transport http {
-                tls_insecure_skip_verify
-            }
-        }
+        reverse_proxy {$COLLABORA_HOST}:9980
     }
     route /cool/* {
-        reverse_proxy https://{$COLLABORA_HOST}:9980 {
-            transport http {
-                tls_insecure_skip_verify
-            }
-        }
+        reverse_proxy {$COLLABORA_HOST}:9980
     }
 
     # Nextcloud

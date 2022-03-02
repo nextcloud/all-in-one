@@ -179,7 +179,8 @@
         "NC_DOMAIN=%NC_DOMAIN%",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
-        "JANUS_API_KEY=%JANUS_API_KEY%"
+        "JANUS_API_KEY=%JANUS_API_KEY%",
+        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning"
       ],
       "volumes": [],
       "secrets": [
