@@ -19,6 +19,8 @@
         <h1>Nextcloud AIO Beta v0.6.0</h1>
         This is beta software and not production ready.<br><br>
 
+        You are currently running the {{ current_channel }} channel.<br><br>
+
         {% set isAnyRunning = false %}
         {% set isWatchtowerRunning = false %}
         {% set isBackupContainerRunning = false %}
@@ -170,7 +172,14 @@
                                 <input class="button" type="submit" value="Update mastercontainer" />
                             </form>
                         {% else %}
-                            ⚠ A mastercontainer update is available. Please stop your containers in order to be able to update the mastercontainer.
+                            ⚠ A mastercontainer update is available. Please stop your containers in order to be able to update the mastercontainer.<br><br>
+                        {% endif %}
+                        {% if current_channel starts with 'latest' %}
+                            You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest">here</a><br><br>
+                        {% elseif current_channel starts with 'beta' %}
+                            You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases">here</a><br><br>
+                        {% elseif current_channel starts with 'develop' %}
+                            You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main">here</a><br><br>
                         {% endif %}
                     {% endif %}
                 {% endif %}
