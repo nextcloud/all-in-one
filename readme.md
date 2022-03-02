@@ -168,6 +168,88 @@ sudo borg delete --stats --progress "/mnt/backup/borg::20220223_174237-nextcloud
 After doing so, make sure to update the backup archives list in the AIO interface!<br>
 You can do so by clicking on the `Check backup integrity` button or `Create backup` button.
 
+---
+
+#### Sync the backup regularly to another drive
+For increased backup security, you might consider syncing the backup repository regularly to another drive.
+
+To do that, first add the drive to `/etc/fstab` so that it is able to get automatically mounted and then create a script that does all the things automatically. Here is an example for such a script:
+
+<details>
+<summary>Click here to expand</summary>
+
+```bash
+#!/bin/bash
+
+# Please modify all variables below to your needings:
+SOURCE_DIRECTORY="/mnt/backup/borg"
+DRIVE_MOUNTPOINT="/mnt/backup-drive"
+TARGET_DIRECTORY="/mnt/backup-drive/borg"
+
+########################################
+# Please do NOT modify anything below! #
+########################################
+
+if [ "$EUID" -ne 0 ]; then 
+    echo "Please run as root"
+    exit 1
+fi
+
+if ! [ -d "$SOURCE_DIRECTORY" ]; then
+    echo "The source directory does not exist."
+    exit 1
+fi
+
+if ! [ -d "$DRIVE_MOUNTPOINT" ]; then
+    echo "The drive mountpoint must be an existing directory"
+    exit 1
+fi
+
+if ! grep -q " $DRIVE_MOUNTPOINT " /etc/fstab; then
+    echo "Could not find the drive mountpoint in the fstab file. Did you add it there?"
+    exit 1
+fi
+
+if ! mountpoint -q "$DRIVE_MOUNTPOINT"; then
+    mount "$DRIVE_MOUNTPOINT"
+    if ! mountpoint -q "$DRIVE_MOUNTPOINT"; then
+        echo "Could not mount the drive. Is it connected?"
+        exit 1
+    fi
+fi
+
+if [ -f "$SOURCE_DIRECTORY/lock.roster" ]; then
+    echo "Cannot run the script as the backup archive is currently changed. Please try again later."
+    exit 1
+fi
+
+mkdir -p "$TARGET_DIRECTORY"
+if ! [ -d "$TARGET_DIRECTORY" ]; then
+    echo "Could not create target directory"
+    exit 1
+fi
+
+if ! rsync --stats --archive --human-readable --delete "$SOURCE_DIRECTORY/" "$TARGET_DIRECTORY"; then
+    echo "Failed to sync the backup repository to the target directory."
+    exit 1
+fi
+
+umount "$DRIVE_MOUNTPOINT"
+if mountpoint -q "$DRIVE_MOUNTPOINT"; then
+    echo "Synced the backup repository successfully but failed to unmount the target drive."
+    exit 0
+fi
+
+echo "Synced the backup repository successfully and unmounted the target drive."
+exit 0
+```
+
+</details>
+
+You can simply copy and past the script into a file e.g. named `backup-script.sh` e.g. here: `/root/backup-script.sh`. Do not forget to modify the variables to your needings though!
+
+Afterwards apply the correct permissions with `sudo chown root:root /root/backup-script.sh` and `sudo chmod 700 /root/backup-script.sh`. Then you can create a cronjob that runs e.g. at `20:00` each week on sundays like this: `crontab -u root -l | { cat; echo "0 20 * * 7 /root/backup-script.sh"; } | crontab -u root -`. Make sure that it does not collidate with the daily backups from AIO (if configured) since the target backup repository might get into an inconsistent state. (There is no check in place that checks this.)
+
 ### How to allow the Nextcloud container to access directories on the host?
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that are equal to or start with `/mnt/` or `/media/` or are equal to `/var/backups` and unequal to `/mnt/ncdata`. Two examples for this are: `-e NEXTCLOUD_MOUNT="/mnt/"` or `-e NEXTCLOUD_MOUNT="/media/"`. After doing so, please make sure to apply the correct permissions to the directories that you want to use in Nextcloud. E.g. `sudo chown -R 33:0 /mnt/your-drive-mountpoint` should make it work. You can then navigate to the apps management page, activate the external storage app, navigate to `https://your-nc-domain.com/settings/admin/externalstorages` and add a local external storage directory that will be accessible inside the container at the same place that you've entered. E.g. `/mnt/your-drive-mountpoint` will be mounted to `/mnt/your-drive-mountpoint` inside the container, etc. Be aware though that these locations will not be covered by the built-in backup solution!
 
