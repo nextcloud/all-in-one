@@ -261,11 +261,19 @@ class DockerActionManager
 
     public function PullContainer(Container $container) : void
     {
-        $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', urlencode($this->BuildImageName($container))));
-        try {
-            $this->guzzleClient->post($url);
-        } catch (RequestException $e) {
-            throw $e;
+        $pullcontainer = true;
+        if ($container->GetIdentifier() === 'nextcloud-aio-database') {
+            if ($this->GetDatabasecontainerExitCode() > 0) {
+                $pullcontainer = false;
+            }
+        }
+        if ($pullcontainer) {
+            $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', urlencode($this->BuildImageName($container))));
+            try {
+                $this->guzzleClient->post($url);
+            } catch (RequestException $e) {
+                throw $e;
+            }
         }
     }
 
@@ -487,6 +495,29 @@ class DockerActionManager
     public function GetBackupcontainerExitCode() : int
     {
         $containerName = 'nextcloud-aio-borgbackup';
+        $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($containerName)));
+        try {
+            $response = $this->guzzleClient->get($url);
+        } catch (RequestException $e) {
+            if ($e->getCode() === 404) {
+                return -1;
+            }
+            throw $e;
+        }
+
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $exitCode = $responseBody['State']['ExitCode'];
+        if (is_int($exitCode)) {
+            return $exitCode;
+        } else {
+            return -1;
+        }
+    }
+
+    public function GetDatabasecontainerExitCode() : int
+    {
+        $containerName = 'nextcloud-aio-database';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($containerName)));
         try {
             $response = $this->guzzleClient->get($url);
