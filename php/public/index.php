@@ -88,6 +88,7 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'has_update_available' => $dockerActionManger->isAnyUpdateAvailable(),
         'last_backup_time' => $configurationManager->GetLastBackupTime(),
         'backup_times' => $configurationManager->GetBackupTimes(),
+        'current_channel' => $dockerActionManger->GetCurrentChannel(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {
