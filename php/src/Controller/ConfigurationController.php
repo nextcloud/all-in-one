@@ -25,6 +25,12 @@ class ConfigurationController
                 $this->configurationManager->SetDomain($request->getParsedBody()['domain']);
             }
 
+            if (isset($request->getParsedBody()['current-master-password']) || isset($request->getParsedBody()['new-master-password'])) {
+                $currentMasterPassword = $request->getParsedBody()['current-master-password'] ?? '';
+                $newMasterPassword = $request->getParsedBody()['new-master-password'] ?? '';
+                $this->configurationManager->ChangeMasterPassword($currentMasterPassword, $newMasterPassword);
+            }
+
             if (isset($request->getParsedBody()['borg_backup_host_location'])) {
                 $this->configurationManager->SetBorgBackupHostLocation($request->getParsedBody()['borg_backup_host_location']);
             }
