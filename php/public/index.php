@@ -22,11 +22,6 @@ ini_set('session.save_path', $dataConst->GetSessionDirectory());
 // Auto logout on browser close
 ini_set('session.cookie_lifetime', '0');
 
-// Make sure to delete all stale sessions after at least one day
-ini_set('session.gc_maxlifetime', '86400');
-ini_set('session.gc_probability', '1');
-ini_set('session.gc_divisor', '1');
-
 // Create app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
