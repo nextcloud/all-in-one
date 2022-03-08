@@ -96,7 +96,7 @@
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_nextcloud_data",
+          "name": "%NEXTCLOUD_DATADIR%",
           "location": "/mnt/ncdata",
           "writeable": true
         },
@@ -215,7 +215,7 @@
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_nextcloud_data",
+          "name": "%NEXTCLOUD_DATADIR%",
           "location": "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data",
           "writeable": true
         },

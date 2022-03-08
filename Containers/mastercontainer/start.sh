@@ -63,6 +63,19 @@ else
 fi
 
 # Check for other options
+if [ -n "$NEXTCLOUD_DATADIR" ]; then
+    if ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/mnt/" \
+    && ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/media/"
+    then
+        echo "You've set NEXTCLOUD_DATADIR but not to an allowed value.
+The string must start with '/mnt/' or '/media/'. E.g. '/mnt/ncdata'"
+        exit 1
+    elif [ "$NEXTCLOUD_DATADIR" = "/mnt/" ] || [ "$NEXTCLOUD_DATADIR" = "/media/" ]; then
+        echo "You've set NEXTCLOUD_DATADIR but not to an allowed value.
+The string must start with '/mnt/' or '/media/' and not be equal to these."
+        exit 1
+    fi
+fi
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
     if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/mnt/" \
     && ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/media/" \

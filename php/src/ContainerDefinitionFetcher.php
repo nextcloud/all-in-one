@@ -78,6 +78,11 @@ class ContainerDefinitionFetcher
                     if($value['name'] === '') {
                         continue;
                     }
+                } elseif ($value['name'] === '%NEXTCLOUD_DATADIR%') {
+                    $value['name'] = $this->configurationManager->GetNextcloudDatadirMount();
+                    if ($value['name'] === '') {
+                        continue;
+                    }
                 }
                 if($value['location'] === '%NEXTCLOUD_MOUNT%') {
                     $value['location'] = $this->configurationManager->GetNextcloudMount();
