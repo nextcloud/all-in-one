@@ -89,6 +89,12 @@ The string must be equal to/start with '/mnt/' or '/media/' or be equal to '/var
         exit 1
     fi
 fi
+if [ -n "$NEXTCLOUD_DATADIR" ] && [ -n "$NEXTCLOUD_MOUNT" ]; then
+    if [ "$NEXTCLOUD_DATADIR" = "$NEXTCLOUD_MOUNT" ]; then
+        echo "NEXTCLOUD_DATADIR and NEXTCLOUD_MOUNT are not allowed to be equal."
+        exit 1
+    fi
+fi
 if [ -n "$APACHE_PORT" ]; then
     if ! check_if_number "$APACHE_PORT"; then
         echo "You provided an Apache port but did not only use numbers"
