@@ -62,6 +62,15 @@ else
     sleep 10
 fi
 
+# Check if startup command was executed correctly
+if ! docker ps | grep -q "nextcloud-aio-mastercontainer"; then
+    echo "It seems like you did not give the mastercontainer the correct name?"
+    exit 1
+elif ! docker volume ls | grep -q "nextcloud_aio_mastercontainer"; then
+    echo "It seems like you did not give the mastercontainer volume the correct name?"
+    exit 1
+fi
+
 # Check for other options
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
     if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/mnt/" \
