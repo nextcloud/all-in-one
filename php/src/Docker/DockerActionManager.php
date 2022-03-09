@@ -261,19 +261,14 @@ class DockerActionManager
 
     public function PullContainer(Container $container) : void
     {
-        $pullcontainer = true;
-        if ($container->GetIdentifier() === 'nextcloud-aio-database') {
-            if ($this->GetDatabasecontainerExitCode() > 0) {
-                $pullcontainer = false;
-            }
-        }
-        if ($pullcontainer) {
-            $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', urlencode($this->BuildImageName($container))));
-            try {
-                $this->guzzleClient->post($url);
-            } catch (RequestException $e) {
-                throw $e;
-            }
+        $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', urlencode($this->BuildImageName($container))));
+        try {
+            $this->guzzleClient->post($url);
+        } catch (RequestException $e) {
+            error_log($e->getMessage());
+            // Don't exit here because it is possible that the image is already present 
+            // and we ran into docker hub limits.
+            // We will exit later if not image should be available.
         }
     }
 
