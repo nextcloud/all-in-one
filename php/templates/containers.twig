@@ -19,8 +19,6 @@
         <h1>Nextcloud AIO Beta v0.6.0</h1>
         This is beta software and not production ready.<br><br>
 
-        You are currently running the {{ current_channel }} channel.<br><br>
-
         {% set isAnyRunning = false %}
         {% set isWatchtowerRunning = false %}
         {% set isBackupContainerRunning = false %}
@@ -79,6 +77,7 @@
 
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
+                        Your initial Nextcloud credentials:<br><br />
                         Initial Nextcloud username: admin<br />
                         Initial Nextcloud password: {{ nextcloud_password }}<br /><br/>
                         <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
@@ -161,31 +160,42 @@
                     {% endif %}
                 {% endif %}
 
-                {% if is_mastercontainer_update_available == true %}
-                    {% if isBackupOrRestoreRunning == false %}
-                        <h2>Mastercontainer update</h2>
-                        {% if isAnyRunning == false %}
-                            ⚠ A mastercontainer update is available. Please click on the button below to update it.<br><br>
-                            <form method="POST" action="/api/docker/watchtower" class="xhr">
-                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Update mastercontainer" />
-                            </form>
-                        {% else %}
-                            ⚠ A mastercontainer update is available. Please stop your containers in order to be able to update the mastercontainer.<br><br>
-                        {% endif %}
-                        {% if current_channel starts with 'latest' %}
-                            You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest">here</a><br><br>
-                        {% elseif current_channel starts with 'beta' %}
-                            You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases">here</a><br><br>
-                        {% elseif current_channel starts with 'develop' %}
-                            You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main">here</a><br><br>
-                        {% endif %}
-                    {% endif %}
-                {% endif %}
-
                 {% if was_start_button_clicked == true %}
                     
+                    {% if isBackupOrRestoreRunning == false %}
+                        <h2>Mastercontainer</h2>
+                        You are currently running the {{ current_channel }} channel.<br><br>
+
+                        {% if is_mastercontainer_update_available == true %}
+                            {% if isAnyRunning == false %}
+                                ⚠ A mastercontainer update is available. Please click on the button below to update it.<br><br>
+                                <form method="POST" action="/api/docker/watchtower" class="xhr">
+                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                    <input class="button" type="submit" value="Update mastercontainer" />
+                                </form>
+                            {% else %}
+                                ⚠ A mastercontainer update is available. Please stop your containers in order to be able to update the mastercontainer.<br><br>
+                            {% endif %}
+                            {% if current_channel starts with 'latest' %}
+                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest">here</a><br><br>
+                            {% elseif current_channel starts with 'beta' %}
+                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases">here</a><br><br>
+                            {% elseif current_channel starts with 'develop' %}
+                                You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main">here</a><br><br>
+                            {% endif %}
+                        {% endif %}
+
+                        You can change your AIO password below:<br><br />
+                        <form method="POST" action="/api/configuration" class="xhr">
+                            <input type="text" autocomplete="current-password" name="current-master-password" placeholder="your current aio password"/>
+                            <input type="text" autocomplete="new-password" name="new-master-password" placeholder="your new aio password"/>
+                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                            <input class="button" type="submit" value="Submit" />
+                        </form>
+                        The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png">latin characters</a> 'a-z', 'A-Z', '0-9' and spaces.<br><br>
+                    {% endif %}
 
                     {% if isBackupOrRestoreRunning == false and borg_backup_host_location == "" and isApacheStarting != true %}
                         <h2>Backup and restore</h2>

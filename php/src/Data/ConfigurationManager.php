@@ -236,6 +236,34 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public function ChangeMasterPassword(string $currentPassword, string $newPassword) : void {
+        if ($currentPassword === '') {
+            throw new InvalidSettingConfigurationException("Please enter your current password.");
+        }
+
+        if ($currentPassword !== $this->GetPassword()) {
+            throw new InvalidSettingConfigurationException("The entered current password is not correct.");
+        }
+
+        if ($newPassword === '') {
+            throw new InvalidSettingConfigurationException("Please enter a new password.");
+        }
+
+        if (strlen($newPassword) < 24) {
+            throw new InvalidSettingConfigurationException("New passwords must be >= 24 digits.");
+        }
+
+        if (!preg_match("#^[a-zA-Z0-9 ]+$#", $newPassword)) {
+            throw new InvalidSettingConfigurationException('Not allowed characters in the new password.');
+        }
+
+        // All checks pass so set the password
+        $this->SetPassword($newPassword);
+    }
+
     public function GetApachePort() : string {
         $port = getenv('APACHE_PORT');
         if ($port === false) {
