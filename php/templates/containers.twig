@@ -185,16 +185,17 @@
                                 You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main">here</a><br><br>
                             {% endif %}
                         {% endif %}
-
-                        You can change your AIO password below:<br><br />
-                        <form method="POST" action="/api/configuration" class="xhr">
-                            <input type="text" autocomplete="current-password" name="current-master-password" placeholder="your current aio password"/>
-                            <input type="text" autocomplete="new-password" name="new-master-password" placeholder="your new aio password"/>
-                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                            <input class="button" type="submit" value="Submit" />
-                        </form>
-                        The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png">latin characters</a> 'a-z', 'A-Z', '0-9' and spaces.<br><br>
+                        {% if isApacheStarting == false %} 
+                            You can change your AIO password below:<br><br />
+                            <form method="POST" action="/api/configuration" class="xhr">
+                                <input type="text" autocomplete="current-password" name="current-master-password" placeholder="your current aio password"/>
+                                <input type="text" autocomplete="new-password" name="new-master-password" placeholder="your new aio password"/>
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                <input class="button" type="submit" value="Submit" />
+                            </form>
+                            The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png">latin characters</a> 'a-z', 'A-Z', '0-9' and spaces.<br><br>
+                        {% endif %}
                     {% endif %}
 
                     {% if isBackupOrRestoreRunning == false and borg_backup_host_location == "" and isApacheStarting != true %}
