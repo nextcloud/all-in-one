@@ -1,17 +1,15 @@
-FROM alpine:3.15.0
+FROM debian:bullseye-20220125-slim
 
 RUN set -ex; \
     \
-    apk add --update --no-cache \
-        bash \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
         borgbackup \
         rsync \
-        fuse
-
-Run set -ex; \
-    \
-    echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    apk add --update --no-cache py3-llfuse
+        fuse \
+        python3-llfuse \
+    ; \
+    rm -rf /var/lib/apt/lists/*
 
 VOLUME /root
 
