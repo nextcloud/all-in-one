@@ -21,6 +21,15 @@ redis.session.lock_retries = -1
 redis.session.lock_wait_time = 10000
 REDIS_CONF
 
+# Check permissions in ncdata
+touch "/mnt/ncdata/this-is-a-test-file"
+if ! [ -f "/mnt/ncdata/this-is-a-test-file" ]; then
+    echo "The www-data user doesn't seem to have access rights in /mnt/ncdata.
+Did you maybe change the datadir and did forget to apply the correct permissions?"
+    exit 1
+fi
+rm "/mnt/ncdata/this-is-a-test-file"
+
 if [ -f /var/www/html/version.php ]; then
     # shellcheck disable=SC2016
     installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
@@ -221,6 +230,13 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
             php /var/www/html/occ maintenance:mimetype:update-db
         fi
     fi
+fi
+
+# Check if appdata is present
+# If not, something broke (e.g. changing ncdatadir after aio was first started)
+if [ -z "$(find "/mnt/ncdata/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ]; then
+    echo "Appdata is not present. Did you maybe change the datadir after aio was first started?"
+    exit 1
 fi
 
 # Apply one-click-instance settings

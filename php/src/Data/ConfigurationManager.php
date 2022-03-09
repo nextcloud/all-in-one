@@ -337,4 +337,27 @@ class ConfigurationManager
             return $mount;
         }
     }
+
+    public function GetNextcloudDatadirMount() : string {
+        $mount = getenv('NEXTCLOUD_DATADIR');
+        if ($mount === false) {
+            $config = $this->GetConfig();
+            if (!isset($config['nextcloud_datadir']) || $config['nextcloud_datadir'] === '') {
+                $config['nextcloud_datadir'] = 'nextcloud_aio_nextcloud_data';
+            }
+            return $config['nextcloud_datadir'];
+        } else {
+            if(file_exists(DataConst::GetConfigFile())) {
+                $config = $this->GetConfig();
+                if (!isset($config['nextcloud_datadir'])) {
+                    $config['nextcloud_datadir'] = '';
+                }
+                if ($mount !== $config['nextcloud_datadir']) {
+                    $config['nextcloud_datadir'] = $mount;
+                    $this->WriteConfig($config);
+                }
+            }
+            return $mount;
+        }
+    }
 }
