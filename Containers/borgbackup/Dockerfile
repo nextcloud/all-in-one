@@ -6,7 +6,9 @@ RUN set -ex; \
         bash \
         borgbackup \
         rsync \
-        fuse3
+        fuse3 \
+        py3-pip \
+        pip3 install pyfuse3
 
 VOLUME /root
 
