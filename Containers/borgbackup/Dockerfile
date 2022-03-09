@@ -6,9 +6,12 @@ RUN set -ex; \
         bash \
         borgbackup \
         rsync \
-        fuse3 \
-        py3-pip \
-        pip3 install pyfuse3
+        fuse
+
+Run set -ex; \
+    \
+    echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+    apk add --update --no-cache py3-llfuse
 
 VOLUME /root
 
