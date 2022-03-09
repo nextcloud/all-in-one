@@ -44,8 +44,12 @@ class DockerController
     public function GetLogs(Request $request, Response $response, $args) : Response
     {
         $id = $request->getQueryParams()['id'];
-        $container = $this->containerDefinitionFetcher->GetContainerById($id);
-        $logs = $this->dockerActionManager->GetLogs($container);
+        if (str_starts_with($id, 'nextcloud-aio-')) {
+            $logs = $this->dockerActionManager->GetLogs($id);
+        } else {
+            $logs = 'Container not found.';
+        }
+
         $body = $response->getBody();
         $body->write($logs);
 
