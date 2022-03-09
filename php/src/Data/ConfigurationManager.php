@@ -117,8 +117,8 @@ class ConfigurationManager
      * @throws InvalidSettingConfigurationException
      */
     public function SetDomain(string $domain) : void {
-        // Validate URL
-        if (!filter_var('http://' . $domain, FILTER_VALIDATE_URL)) {
+        // Validate domain
+        if (!filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
             throw new InvalidSettingConfigurationException("Domain is not in a valid format!");
         }
 
@@ -160,7 +160,7 @@ class ConfigurationManager
         $response = str_replace("\n", "", $response);
 
         if($response !== $instanceID) {
-            throw new InvalidSettingConfigurationException("Domain does not point to this server.");
+            throw new InvalidSettingConfigurationException("Domain does not point to this server or reverse proxy not configured correctly.");
         }
 
         // Write domain
