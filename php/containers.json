@@ -156,7 +156,8 @@
         "9980"
       ],
       "environmentVariables": [
-        "domain=%NC_DOMAIN%"
+        "domain=%NC_DOMAIN%",
+        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning"
       ],
       "volumes": [],
       "secrets": [],
@@ -179,8 +180,7 @@
         "NC_DOMAIN=%NC_DOMAIN%",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
-        "JANUS_API_KEY=%JANUS_API_KEY%",
-        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning"
+        "JANUS_API_KEY=%JANUS_API_KEY%"
       ],
       "volumes": [],
       "secrets": [
