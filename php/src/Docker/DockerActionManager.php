@@ -7,6 +7,8 @@ use AIO\Container\State\IContainerState;
 use AIO\Container\State\ImageDoesNotExistState;
 use AIO\Container\State\StartingState;
 use AIO\Container\State\RunningState;
+use AIO\Container\State\RestartingState;
+use AIO\Container\State\NotRestartingState;
 use AIO\Container\State\VersionDifferentState;
 use AIO\Container\State\StoppedState;
 use AIO\Container\State\VersionEqualState;
@@ -67,6 +69,27 @@ class DockerActionManager
             return new RunningState();
         } else {
             return new StoppedState();
+        }
+    }
+
+    public function GetContainerRestartingState(Container $container) : IContainerState
+    {
+        $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->GetIdentifier())));
+        try {
+            $response = $this->guzzleClient->get($url);
+        } catch (RequestException $e) {
+            if ($e->getCode() === 404) {
+                return new ImageDoesNotExistState();
+            }
+            throw $e;
+        }
+
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        if ($responseBody['State']['Restarting'] === true) {
+            return new RestartingState();
+        } else {
+            return new NotRestartingState();
         }
     }
 
