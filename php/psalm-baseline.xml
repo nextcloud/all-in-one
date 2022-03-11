@@ -50,11 +50,12 @@
     <PossiblyNullArrayAccess occurrences="1">
       <code>$request-&gt;getParsedBody()['selected_restore_time']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullReference occurrences="5">
+    <PossiblyNullReference occurrences="6">
       <code>GetDependsOn</code>
       <code>GetDependsOn</code>
       <code>GetIdentifier</code>
       <code>GetIdentifier</code>
+      <code>GetRunningState</code>
       <code>GetRunningState</code>
     </PossiblyNullReference>
   </file>
