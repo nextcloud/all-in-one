@@ -149,18 +149,19 @@ class DockerController
     public function StartDomaincheckContainer() : void
     {
         # Don't start if domain is already set
-        if ($this->configurationManager->GetDomain() != '') {
+        if ($this->configurationManager->GetDomain() !== '' || $this->configurationManager->wasStartButtonClicked()) {
             return;
         }
 
         $id = 'nextcloud-aio-domaincheck';
 
-        $container = $this->containerDefinitionFetcher->GetContainerById($id);
+        $domaincheckContainer = $this->containerDefinitionFetcher->GetContainerById($id);
+        $apacheContainer = $this->containerDefinitionFetcher->GetContainerById(self::TOP_CONTAINER);
         // don't start if the domaincheck is already running
-        if ($container->GetIdentifier() === $id && $container->GetRunningState() instanceof RunningState) {
+        if ($domaincheckContainer->GetRunningState() instanceof RunningState) {
             return;
         // don't start if apache is already running
-        } elseif ($container->GetIdentifier() === self::TOP_CONTAINER && $container->GetRunningState() instanceof RunningState) {
+        } elseif ($apacheContainer->GetRunningState() instanceof RunningState) {
             return;
         }
 
