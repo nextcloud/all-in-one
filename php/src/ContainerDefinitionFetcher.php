@@ -27,7 +27,7 @@ class ContainerDefinitionFetcher
         $this->container = $container;
     }
 
-    public function GetContainerById(string $id): ?Container
+    public function GetContainerById(string $id): Container
     {
         $containers = $this->FetchDefinition();
 
@@ -37,7 +37,7 @@ class ContainerDefinitionFetcher
             }
         }
 
-        return null;
+        throw new \Exception("The provided id " . $id . " was not found in the container definition.");
     }
 
     /**
