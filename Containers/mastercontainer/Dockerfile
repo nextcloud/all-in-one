@@ -1,5 +1,5 @@
 # Docker CLI is a requirement
-FROM docker:20.10.12-dind-alpine3.15 as dind
+FROM docker:20.10.13-dind-alpine3.15 as dind
 
 # From https://github.com/docker-library/php/blob/master/8.0/bullseye/apache/Dockerfile
 FROM php:8.0.16-apache-bullseye
