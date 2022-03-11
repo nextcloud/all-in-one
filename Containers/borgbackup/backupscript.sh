@@ -202,7 +202,7 @@ fi
 # Do the Backup check
 if [ "$BORG_MODE" = check ]; then
     get_start_time
-    echo "Checking the backup integity..."
+    echo "Checking the backup integrity..."
 
     # Perform the check
     if ! borg check --verify-data --progress "$BORG_BACKUP_DIRECTORY"; then
