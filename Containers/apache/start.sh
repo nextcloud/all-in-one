@@ -17,12 +17,6 @@ while ! nc -z "$NEXTCLOUD_HOST" 9000; do
     sleep 5
 done
 
-# Only start container if collabora is started
-while ! nc -z "$COLLABORA_HOST" 9980; do
-    echo "Waiting for Collabora to start..."
-    sleep 5
-done
-
 if [ -z "$APACHE_PORT" ]; then
     export APACHE_PORT="443"
 fi
