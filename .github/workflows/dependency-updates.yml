@@ -31,6 +31,18 @@ jobs:
         done
         echo "outdated dependencies:
         $(composer outdated)"
+    - name: Update apcu
+      run: |
+        # APCU
+        apcu_version="$(
+          git ls-remote --tags https://github.com/krakjoe/apcu.git \
+            | cut -d/ -f3 \
+            | grep -vE -- '-rc|-b' \
+            | sed -E 's/^v//' \
+            | sort -V \
+            | tail -1
+        )"
+        sed -i "s|pecl install APCu.*\;|pecl install APCu-$apcu_version\;|" ./Containers/mastercontainer/Dockerfile
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
       with:

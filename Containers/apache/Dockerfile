@@ -1,3 +1,6 @@
+# Caddy is a requirement
+FROM caddy:2.4.6-alpine as caddy
+
 FROM debian:bullseye-20220228-slim
 
 EXPOSE 80
@@ -21,10 +24,8 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*
 
-RUN set -ex; \
-    wget "https://caddyserver.com/api/download?os=linux&arch=$(dpkg-architecture --query DEB_BUILD_ARCH)" -O "/usr/bin/caddy" \
-    && chmod +x /usr/bin/caddy \
-    && /usr/bin/caddy version
+COPY --from=caddy /usr/bin/caddy /usr/bin/
+RUN chmod +x /usr/bin/caddy
 
 RUN a2enmod rewrite \
     headers \
