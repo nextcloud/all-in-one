@@ -251,6 +251,13 @@ php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_D
 php /var/www/html/occ config:system:set htaccess.RewriteBase --value="/"
 php /var/www/html/occ maintenance:update:htaccess
 
+# Disallow creating local external storages when nothing was mounted
+if [ -z "$NEXTCLOUD_MOUNT" ]; then
+    php /var/www/html/occ config:system:set files_external_allow_create_new_local --type=bool --value=false
+else
+    php /var/www/html/occ config:system:set files_external_allow_create_new_local --type=bool --value=true
+fi
+
 # AIO app
 if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" = "" ]; then
     php /var/www/html/occ app:enable nextcloud-aio

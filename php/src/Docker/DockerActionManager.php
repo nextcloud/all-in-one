@@ -216,6 +216,8 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetSelectedRestoreTime();
                 } elseif ($out[1] === 'APACHE_PORT') {
                     $replacements[1] = $this->configurationManager->GetApachePort();
+                } elseif ($out[1] === 'NEXTCLOUD_MOUNT') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudMount();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }
