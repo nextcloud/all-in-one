@@ -265,26 +265,10 @@ class ConfigurationManager
     }
 
     public function GetApachePort() : string {
-        $port = getenv('APACHE_PORT');
-        if ($port === false) {
-            $config = $this->GetConfig();
-            if (!isset($config['apache_port']) || $config['apache_port'] === '') {
-                $config['apache_port'] = '443';
-            }
-            return $config['apache_port'];
-        } else {
-            if(file_exists(DataConst::GetConfigFile())) {
-                $config = $this->GetConfig();
-                if (!isset($config['apache_port'])) {
-                    $config['apache_port'] = '';
-                }
-                if ($port !== $config['apache_port']) {
-                    $config['apache_port'] = $port;
-                    $this->WriteConfig($config);
-                }
-            }
-            return $port;
-        }
+        $envVariableName = 'APACHE_PORT';
+        $configName = 'apache_port';
+        $defaultValue = '443';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
     /**
@@ -295,6 +279,28 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
         file_put_contents(DataConst::GetConfigFile(), json_encode($config));
+    }
+
+    private function GetEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
+        $envVariableOutput = getenv($envVariableName);
+        if ($envVariableOutput === false) {
+            $config = $this->GetConfig();
+            if (!isset($config[$configName]) || $config[$configName] === '') {
+                $config[$configName] = $defaultValue;
+            }
+            return $config[$configName];
+        }
+        if(file_exists(DataConst::GetConfigFile())) {
+            $config = $this->GetConfig();
+            if (!isset($config[$configName])) {
+                $config[$configName] = '';
+            }
+            if ($envVariableOutput !== $config[$configName]) {
+                $config[$configName] = $envVariableOutput;
+                $this->WriteConfig($config);
+            }
+        }
+        return $envVariableOutput;
     }
 
     public function GetBorgBackupHostLocation() : string {
@@ -316,48 +322,16 @@ class ConfigurationManager
     }
 
     public function GetNextcloudMount() : string {
-        $mount = getenv('NEXTCLOUD_MOUNT');
-        if ($mount === false) {
-            $config = $this->GetConfig();
-            if (!isset($config['nextcloud_mount'])) {
-                $config['nextcloud_mount'] = '';
-            }
-            return $config['nextcloud_mount'];
-        } else {
-            if(file_exists(DataConst::GetConfigFile())) {
-                $config = $this->GetConfig();
-                if (!isset($config['nextcloud_mount'])) {
-                    $config['nextcloud_mount'] = '';
-                }
-                if ($mount !== $config['nextcloud_mount']) {
-                    $config['nextcloud_mount'] = $mount;
-                    $this->WriteConfig($config);
-                }
-            }
-            return $mount;
-        }
+        $envVariableName = 'NEXTCLOUD_MOUNT';
+        $configName = 'nextcloud_mount';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
     public function GetNextcloudDatadirMount() : string {
-        $mount = getenv('NEXTCLOUD_DATADIR');
-        if ($mount === false) {
-            $config = $this->GetConfig();
-            if (!isset($config['nextcloud_datadir']) || $config['nextcloud_datadir'] === '') {
-                $config['nextcloud_datadir'] = 'nextcloud_aio_nextcloud_data';
-            }
-            return $config['nextcloud_datadir'];
-        } else {
-            if(file_exists(DataConst::GetConfigFile())) {
-                $config = $this->GetConfig();
-                if (!isset($config['nextcloud_datadir'])) {
-                    $config['nextcloud_datadir'] = '';
-                }
-                if ($mount !== $config['nextcloud_datadir']) {
-                    $config['nextcloud_datadir'] = $mount;
-                    $this->WriteConfig($config);
-                }
-            }
-            return $mount;
-        }
+        $envVariableName = 'NEXTCLOUD_DATADIR';
+        $configName = 'nextcloud_datadir';
+        $defaultValue = 'nextcloud_aio_nextcloud_data';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 }
