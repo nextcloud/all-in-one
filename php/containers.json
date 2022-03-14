@@ -122,7 +122,8 @@
         "OVERWRITEPROTOCOL=https",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
-        "AIO_URL=%AIO_URL%"
+        "AIO_URL=%AIO_URL%",
+        "NEXTCLOUD_MOUNT=%NEXTCLOUD_MOUNT%"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
