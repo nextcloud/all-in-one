@@ -77,7 +77,6 @@
 
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
-                        Your initial Nextcloud credentials:<br><br />
                         Initial Nextcloud username: admin<br />
                         Initial Nextcloud password: {{ nextcloud_password }}<br /><br/>
                         <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
@@ -186,6 +185,7 @@
                             {% endif %}
                         {% endif %}
                         {% if isApacheStarting == false %} 
+                            <h3>AIO password change</h3>
                             You can change your AIO password below:<br><br />
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <input type="text" autocomplete="current-password" name="current-master-password" placeholder="your current aio password"/>
@@ -225,6 +225,7 @@
                         {% endif %}
 
                         {% if isBackupContainerRunning == false %}
+                            <h3>Backup information</h3>
                             This is your encryption password for backups: {{ borgbackup_password }} <br /><br/>
                             Please save it at a safe place since you won't be able to restore from backup if you loose this password! <br /><br/>
                             Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
@@ -233,6 +234,8 @@
                             Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app. <br /><br/>
 
                             {% if isApacheStarting != true %}
+                                <h3>Backup creation</h3>
+                                Clicking on the button below will create a backup.<br><br/>
                                 <form method="POST" action="/api/docker/backup" class="xhr">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -240,6 +243,7 @@
                                 </form>
 
                                 {% if has_backup_run_once == true %}
+                                    <h3>Backup check</h3>
                                     Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact but it should't be needed in most situtations.<br><br/>
                                     <form method="POST" action="/api/docker/backup-check" class="xhr">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -247,6 +251,7 @@
                                         <input class="button" type="submit" value="Check backup integrity" onclick="return confirm('Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.')" /><br/>
                                     </form>
 
+                                    <h3>Backup restore</h3>
                                     Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the state of the backup so you should consider creating a backup first. It also makes sense to run an integrity check before restoring your files but is not mandatory since it shouldn't be needed in most situations.<br><br>
                                     <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
