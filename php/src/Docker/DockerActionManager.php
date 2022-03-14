@@ -267,7 +267,7 @@ class DockerActionManager
         try {
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
-            error_log($e->getMessage());
+            error_log('Could not get image ' . $this->BuildImageName($container) . ' from docker hub. Probably due to rate limits. ' . $e->getMessage());
             // Don't exit here because it is possible that the image is already present 
             // and we ran into docker hub limits.
             // We will exit later if not image should be available.
