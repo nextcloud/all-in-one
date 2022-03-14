@@ -289,19 +289,18 @@ class ConfigurationManager
                 $config[$configName] = $defaultValue;
             }
             return $config[$configName];
-        } else {
-            if(file_exists(DataConst::GetConfigFile())) {
-                $config = $this->GetConfig();
-                if (!isset($config[$configName])) {
-                    $config[$configName] = '';
-                }
-                if ($envVariableOutput !== $config[$configName]) {
-                    $config[$configName] = $envVariableOutput;
-                    $this->WriteConfig($config);
-                }
-            }
-            return $envVariableOutput;
         }
+        if(file_exists(DataConst::GetConfigFile())) {
+            $config = $this->GetConfig();
+            if (!isset($config[$configName])) {
+                $config[$configName] = '';
+            }
+            if ($envVariableOutput !== $config[$configName]) {
+                $config[$configName] = $envVariableOutput;
+                $this->WriteConfig($config);
+            }
+        }
+        return $envVariableOutput;
     }
 
     public function GetBorgBackupHostLocation() : string {
