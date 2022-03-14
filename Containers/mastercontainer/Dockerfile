@@ -1,6 +1,9 @@
 # Docker CLI is a requirement
 FROM docker:20.10.13-dind-alpine3.15 as dind
 
+# Caddy is a requirement
+FROM caddy:2.4.6-alpine as caddy
+
 # From https://github.com/docker-library/php/blob/master/8.0/bullseye/apache/Dockerfile
 FROM php:8.0.16-apache-bullseye
 
@@ -26,17 +29,15 @@ RUN apt-get update; \
     ; \
     rm -rf /var/lib/apt/lists/*
 
-RUN set -ex; \
-    curl "https://caddyserver.com/api/download?os=linux&arch=$(dpkg-architecture --query DEB_BUILD_ARCH)" -o "/usr/bin/caddy" \
-    && chmod +x /usr/bin/caddy \
-    && /usr/bin/caddy version
+COPY --from=caddy /usr/bin/caddy /usr/bin/
+RUN chmod +x /usr/bin/caddy
 
 COPY --from=dind /usr/local/bin/docker /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker
 
-RUN mkdir -p /usr/src/php/ext/apcu && \
-    curl -fsSL https://pecl.php.net/get/apcu | tar xvz -C "/usr/src/php/ext/apcu" --strip 1 && \
-    docker-php-ext-install apcu
+RUN set -ex; \
+    pecl install APCu-5.1.21; \
+    docker-php-ext-enable apcu
 
 RUN set -e && \
     curl -sS https://getcomposer.org/installer | php && \
