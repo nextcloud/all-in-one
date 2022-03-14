@@ -43,6 +43,8 @@ class DockerController
         $this->dockerActionManager->CreateVolumes($container);
         if ($pullcontainer) {
             $this->dockerActionManager->PullContainer($container);
+        } else {
+            error_log('Not pulling the latest database image because the container was not correctly shut down.');
         }
         $this->dockerActionManager->CreateContainer($container);
         $this->dockerActionManager->StartContainer($container);
