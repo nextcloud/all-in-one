@@ -120,12 +120,12 @@ class DockerActionManager
         }
     }
 
-    public function GetLogs(Container $container) : string
+    public function GetLogs(string $id) : string
     {
         $url = $this->BuildApiUrl(
             sprintf(
                 'containers/%s/logs?stdout=true&stderr=true',
-                urlencode($container->GetIdentifier())
+                urlencode($id)
             ));
         $responseBody = (string)$this->guzzleClient->get($url)->getBody();
 

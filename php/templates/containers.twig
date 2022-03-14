@@ -164,7 +164,7 @@
                     
                     {% if isBackupOrRestoreRunning == false %}
                         <h2>Mastercontainer</h2>
-                        You are currently running the {{ current_channel }} channel.<br><br>
+                        You are currently running the {{ current_channel }} channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
 
                         {% if is_mastercontainer_update_available == true %}
                             {% if isAnyRunning == false %}
