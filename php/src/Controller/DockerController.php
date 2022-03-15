@@ -163,22 +163,32 @@ class DockerController
     public function StartDomaincheckContainer() : void
     {
         # Don't start if domain is already set
-        if ($this->configurationManager->GetDomain() != '') {
+        if ($this->configurationManager->GetDomain() !== '' || $this->configurationManager->wasStartButtonClicked()) {
             return;
         }
 
         $id = 'nextcloud-aio-domaincheck';
 
-        $container = $this->containerDefinitionFetcher->GetContainerById($id);
-        // don't start if the domaincheck is already running
-        if ($container->GetIdentifier() === $id && $container->GetRunningState() instanceof RunningState) {
+        $cacheKey = 'domaincheckWasStarted';
+
+        $domaincheckContainer = $this->containerDefinitionFetcher->GetContainerById($id);
+        $apacheContainer = $this->containerDefinitionFetcher->GetContainerById(self::TOP_CONTAINER);
+        // Don't start if apache is already running
+        if ($apacheContainer->GetRunningState() instanceof RunningState) {
             return;
-        // don't start if apache is already running
-        } elseif ($container->GetIdentifier() === self::TOP_CONTAINER && $container->GetRunningState() instanceof RunningState) {
-            return;
+        // Don't start if domaincheck is already running
+        } elseif ($domaincheckContainer->GetRunningState() instanceof RunningState) {
+            $domaincheckWasStarted = apcu_fetch($cacheKey);
+            // Start domaincheck again when 10 minutes are over by not returning here
+            if($domaincheckWasStarted !== false && is_string($domaincheckWasStarted)) {
+                return;
+            }
         }
 
         $this->PerformRecursiveContainerStart($id);
+
+        // Cache the start for 10 minutes
+        apcu_add($cacheKey, '1', 600);
     }
 
     private function StopDomaincheckContainer() : void
