@@ -102,6 +102,9 @@ class ConfigurationManager
             }
         }
 
+        // Reverse the array to list newest backup first
+        $backupTimes = array_reverse($backupTimes);
+
         return $backupTimes;
     }
 
