@@ -49,6 +49,12 @@ class ContainerDefinitionFetcher
 
         $containers = [];
         foreach ($data['production'] as $entry) {
+            if ($entry['identifier'] === 'nextcloud-aio-clamav') {
+                if (!$this->configurationManager->isClamavEnabled()) {
+                    continue;
+                }
+            }
+
             $ports = new ContainerPorts();
             foreach ($entry['ports'] as $port) {
                 if($port === '%APACHE_PORT%/tcp') {
@@ -99,6 +105,16 @@ class ContainerDefinitionFetcher
                 );
             }
 
+            $dependsOn = [];
+            foreach ($entry['dependsOn'] as $value) {
+                if ($value === 'nextcloud-aio-clamav') {
+                    if (!$this->configurationManager->isClamavEnabled()) {
+                        continue;
+                    }
+                }
+                $dependsOn[] = $value;
+            }
+            
             $variables = new ContainerEnvironmentVariables();
             foreach ($entry['environmentVariables'] as $value) {
                 $variables->AddVariable($value);
@@ -114,7 +130,7 @@ class ContainerDefinitionFetcher
                 $internalPorts,
                 $volumes,
                 $variables,
-                $entry['dependsOn'],
+                $dependsOn,
                 $entry['secrets'],
                 $this->container->get(DockerActionManager::class)
             );

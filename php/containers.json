@@ -4,7 +4,8 @@
       "dependsOn": [
         "nextcloud-aio-nextcloud",
         "nextcloud-aio-collabora",
-        "nextcloud-aio-talk"
+        "nextcloud-aio-talk",
+        "nextcloud-aio-clamav"
       ],
       "identifier": "nextcloud-aio-apache",
       "displayName": "Apache",
@@ -123,7 +124,9 @@
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
         "AIO_URL=%AIO_URL%",
-        "NEXTCLOUD_MOUNT=%NEXTCLOUD_MOUNT%"
+        "NEXTCLOUD_MOUNT=%NEXTCLOUD_MOUNT%",
+        "CLAMAV_ENABLED=%CLAMAV_ENABLED%",
+        "CLAMAV_HOST=nextcloud-aio-clamav"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
@@ -292,6 +295,21 @@
       ],
       "maxShutdownTime": 1,
       "restartPolicy": ""
+    },
+    {
+      "dependsOn": [],
+      "identifier": "nextcloud-aio-clamav",
+      "displayName": "ClamAV",
+      "containerName": "nextcloud/aio-clamav",
+      "ports": [],
+      "internalPorts": [
+        "3310"
+      ],
+      "environmentVariables": [],
+      "volumes": [],
+      "secrets": [],
+      "maxShutdownTime": 10,
+      "restartPolicy": "unless-stopped"
     }
   ]
 }

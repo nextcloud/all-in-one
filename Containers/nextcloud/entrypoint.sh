@@ -304,5 +304,26 @@ php /var/www/html/occ config:app:set spreed stun_servers --value="$STUN_SERVERS"
 php /var/www/html/occ config:app:set spreed turn_servers --value="$TURN_SERVERS" --output json
 php /var/www/html/occ config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS" --output json
 
+# Clamav
+if [ "$CLAMAV_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
+        php /var/www/html/occ app:install files_antivirus
+    elif [ "$(php /var/www/html/occ config:app:get files_antivirus enabled)" = "no" ]; then
+        php /var/www/html/occ app:enable files_antivirus
+    else
+        php /var/www/html/occ app:update files_antivirus
+    fi
+    php /var/www/html/occ config:app:set files_antivirus av_mode --value="daemon"
+    php /var/www/html/occ config:app:set files_antivirus av_port --value="3310"
+    php /var/www/html/occ config:app:set files_antivirus av_host --value="$CLAMAV_HOST"
+    php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="104857600"
+    php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="-1"
+    php /var/www/html/occ config:app:set files_antivirus av_infected_action --value="only_log"
+else
+    if [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
+        php /var/www/html/occ app:remove files_antivirus
+    fi
+fi
+
 # Remove the update skip file always
 rm -f /mnt/ncdata/skip.update

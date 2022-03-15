@@ -116,6 +116,29 @@ class ConfigurationManager
         }
     }
 
+    public function isx64Platform() : bool {
+        if (php_uname('m') === 'x86_64') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function isClamavEnabled() : bool {
+        $config = $this->GetConfig();
+        if (isset($config['isClamavEnabled']) && $config['isClamavEnabled'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function SetClamavEnabledState(int $value) : void {
+        $config = $this->GetConfig();
+        $config['isClamavEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */

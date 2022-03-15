@@ -35,6 +35,17 @@ class ConfigurationController
                 $this->configurationManager->SetBorgBackupHostLocation($request->getParsedBody()['borg_backup_host_location']);
             }
 
+            if (isset($request->getParsedBody()['clamav'])) {
+                $value = $request->getParsedBody()['clamav'];
+                if ($value === 'on') {
+                    $this->configurationManager->SetClamavEnabledState(1);
+                } elseif ($value === 'off') {
+                    $this->configurationManager->SetClamavEnabledState(0);
+                } else {
+                    error_log('It seems like clamav was changed but not to on or off.');
+                }
+            }
+
             return $response->withStatus(201)->withHeader('Location', '/');
         } catch (InvalidSettingConfigurationException $ex) {
             $response->getBody()->write($ex->getMessage());

@@ -85,6 +85,8 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'last_backup_time' => $configurationManager->GetLastBackupTime(),
         'backup_times' => $configurationManager->GetBackupTimes(),
         'current_channel' => $dockerActionManger->GetCurrentChannel(),
+        'is_x64_platform' => $configurationManager->isx64Platform(),
+        'is_clamav_enabled' => $configurationManager->isClamavEnabled(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {
