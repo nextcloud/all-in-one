@@ -48,6 +48,7 @@ $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManag
 
 // API
 $app->post('/api/docker/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
+$app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
 $app->post('/api/docker/start', AIO\Controller\DockerController::class . ':StartContainer');
 $app->post('/api/docker/backup', AIO\Controller\DockerController::class . ':StartBackupContainerBackup');
 $app->post('/api/docker/backup-check', AIO\Controller\DockerController::class . ':StartBackupContainerCheck');
