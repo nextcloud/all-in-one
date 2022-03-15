@@ -28,10 +28,10 @@
         {% set isApacheStarting = false %}
 
         {% for container in containers %}
-            {% if class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' and container.GetIdentifier() != 'nextcloud-aio-domaincheck' and container.GetIdentifier() != 'nextcloud-aio-borgbackup' and container.GetIdentifier() != 'nextcloud-aio-watchtower' %}
+            {% if container.GetIdentifier() not in ['nextcloud-aio-domaincheck', 'nextcloud-aio-borgbackup', 'nextcloud-aio-watchtower'] and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
                 {% set isAnyRunning = true %}
             {% endif %}
-            {% if ( container.GetIdentifier() starts with 'nextcloud-aio-redis' or container.GetIdentifier() starts with 'nextcloud-aio-database' or container.GetIdentifier() starts with 'nextcloud-aio-nextcloud' or container.GetIdentifier() starts with 'nextcloud-aio-apache' ) and class(container.GetRestartingState()) == 'AIO\\Container\\State\\RestartingState' %}
+            {% if container.GetIdentifier() in ['nextcloud-aio-redis', 'nextcloud-aio-database', 'nextcloud-aio-nextcloud', 'nextcloud-aio-apache'] and class(container.GetRestartingState()) == 'AIO\\Container\\State\\RestartingState' %}
                 {% set isAnyRestarting = true %}
             {% endif %}
             {% if container.GetIdentifier() == 'nextcloud-aio-watchtower' and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
@@ -105,7 +105,7 @@
                     <ul>
                         {# @var containers \AIO\Container\Container[] #}
                         {% for container in containers %}
-                            {% if container.GetIdentifier() != 'nextcloud-aio-borgbackup' and container.GetIdentifier() != 'nextcloud-aio-watchtower' and container.GetIdentifier() != 'nextcloud-aio-domaincheck' %}
+                            {% if container.GetIdentifier() not in ['nextcloud-aio-borgbackup', 'nextcloud-aio-watchtower', 'nextcloud-aio-domaincheck'] %}
                                 <li>
                                     {% if class(container.GetStartingState()) == 'AIO\\Container\\State\\StartingState' %}
                                         <span class="status running"></span>
