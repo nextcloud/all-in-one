@@ -44,9 +44,6 @@
     <PossiblyInvalidArrayAccess occurrences="1">
       <code>$request-&gt;getParsedBody()['selected_restore_time']</code>
     </PossiblyInvalidArrayAccess>
-    <PossiblyNullArgument occurrences="1">
-      <code>$container</code>
-    </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="1">
       <code>$request-&gt;getParsedBody()['selected_restore_time']</code>
     </PossiblyNullArrayAccess>
