@@ -91,6 +91,10 @@ class Container {
         return $this->dockerActionManager->GetContainerRunningState($this);
     }
 
+    public function GetRestartingState() : IContainerState {
+        return $this->dockerActionManager->GetContainerRestartingState($this);
+    }
+
     public function GetUpdateState() : IContainerState {
         return $this->dockerActionManager->GetContainerUpdateState($this);
     }
