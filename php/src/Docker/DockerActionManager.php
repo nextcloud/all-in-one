@@ -281,13 +281,18 @@ class DockerActionManager
         }
 
         $url = $this->BuildApiUrl('containers/create?name=' . $container->GetIdentifier());
-        $this->guzzleClient->request(
-            'POST',
-            $url,
-            [
-                'json' => $requestBody
-            ]
-        );
+        try {
+            $this->guzzleClient->request(
+                'POST',
+                $url,
+                [
+                    'json' => $requestBody
+                ]
+            );
+        } catch (RequestException $e) {
+            throw $e;
+        }
+
     }
 
     public function PullContainer(Container $container) : void
@@ -344,6 +349,7 @@ class DockerActionManager
 
             return null;
         } catch (\Exception $e) {
+            error_log('Could not get digest of container ' . $this->BuildApiUrl($containerName) . ' ' . $e->getMessage());
             return null;
         }
     }
@@ -365,6 +371,7 @@ class DockerActionManager
             apcu_add($cacheKey, $tag);
             return $tag;
         } catch (\Exception $e) {
+            error_log('Could not get current channel ' . $e->getMessage());
         }
 
         return 'latest';
@@ -451,6 +458,7 @@ class DockerActionManager
                 ]
             );
         } catch (RequestException $e) {
+            error_log('Could not disconnect container from network ' . $e->getMessage());
         }
     }
 
