@@ -293,15 +293,16 @@
                     <form id="options-form" method="POST" action="/api/configuration" class="xhr">
                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                        <input type="hidden" name="options-form" value="options-form">
                         {% if is_clamav_enabled == true %}
-                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (only supported on x64)</label>
+                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (only supported on x64, needs ~2GB additional RAM)</label>
                         {% else %}
-                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (only supported on x64)</label>
+                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (only supported on x64, needs ~2GB additional RAM)</label>
                         {% endif %}
                         <input id="options-form-submit" class="button" type="submit" value="Save changes" />
                     </form>
                     {% if isAnyRunning == true or is_x64_platform == false %}
-                        <script type="text/javascript" src="disabe-clamav.js"></script>
+                        <script type="text/javascript" src="disable-clamav.js"></script>
                     {% endif %}
                 {% endif %}
             {% endif %}

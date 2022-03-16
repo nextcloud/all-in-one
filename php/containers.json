@@ -306,7 +306,13 @@
         "3310"
       ],
       "environmentVariables": [],
-      "volumes": [],
+      "volumes": [
+        {
+          "name": "nextcloud_aio_clamav",
+          "location": "/var/lib/clamav",
+          "writeable": true
+        }
+      ],
       "secrets": [],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"

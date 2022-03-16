@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     // Clamav
-    document.getElementById("clamav").disabled = true;
+    var clamav = document.getElementById("clamav");
+    clamav.disabled = true;
 });
