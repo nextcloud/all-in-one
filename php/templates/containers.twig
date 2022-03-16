@@ -249,7 +249,7 @@
                         {% endif %}
                     {% endif %}
 
-                    {% if isBackupOrRestoreRunning == false %}
+                    {% if isBackupContainerRunning == false %}
                         <h2 id="mastercontainer">Mastercontainer</h2>
                         You are currently running the {{ current_channel }} channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
 
@@ -294,21 +294,7 @@
         {% endif %}
 
     {% if isApacheStarting == true or isBackupContainerRunning == true or isWatchtowerRunning == true %}
-        <script>
-            if (document.hasFocus()) {
-                // hide reload button if the site reloads automatically
-                var list = document.getElementsByClassName("reload button");
-                for (var i = 0; i < list.length; i++) {
-                    // list[i] is a node with the desired class name
-                    list[i].style.display = 'none';
-                }
-
-                // set timeout for reload
-                setTimeout(function(){
-                window.location.reload(1);
-                }, 5000);
-            }
-        </script>
+        <script type="text/javascript" src="automatic_reload.js"></script>
     {% endif %}
 
     </div>
