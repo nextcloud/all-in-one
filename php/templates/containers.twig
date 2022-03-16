@@ -31,7 +31,7 @@
             {% if container.GetIdentifier() not in ['nextcloud-aio-domaincheck', 'nextcloud-aio-borgbackup', 'nextcloud-aio-watchtower'] and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
                 {% set isAnyRunning = true %}
             {% endif %}
-            {% if container.GetIdentifier() in ['nextcloud-aio-redis', 'nextcloud-aio-database', 'nextcloud-aio-nextcloud', 'nextcloud-aio-apache'] and class(container.GetRestartingState()) == 'AIO\\Container\\State\\RestartingState' %}
+            {% if container.GetIdentifier() not in ['nextcloud-aio-domaincheck', 'nextcloud-aio-borgbackup', 'nextcloud-aio-watchtower'] and class(container.GetRestartingState()) == 'AIO\\Container\\State\\RestartingState' %}
                 {% set isAnyRestarting = true %}
             {% endif %}
             {% if container.GetIdentifier() == 'nextcloud-aio-watchtower' and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
