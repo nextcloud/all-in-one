@@ -141,4 +141,6 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, \Psr\Http\
     }
 });
 
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+
 $app->run();
