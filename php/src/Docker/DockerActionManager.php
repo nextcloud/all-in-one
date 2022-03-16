@@ -241,6 +241,12 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetApachePort();
                 } elseif ($out[1] === 'NEXTCLOUD_MOUNT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudMount();
+                } elseif ($out[1] === 'CLAMAV_ENABLED') {
+                    if ($this->configurationManager->isClamavEnabled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }

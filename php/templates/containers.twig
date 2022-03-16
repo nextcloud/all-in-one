@@ -286,10 +286,24 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
-                <h2>Optional</h2>
-                In this section, you will find optional addons in the future.
-                It will disable the ability to change them when any containers are running and allow to change them when they are stopped.
-                Also, it will display possible sections for optional addons. (which itself will be displayed when enabled and running).
+                {% if isBackupContainerRunning == false %}
+                    <h2>Optional</h2>
+                    In this section, you can find optional addons.<br><br>
+                    You can change the state of them when your containers are stopped.<br><br>
+                    <form id="options-form" method="POST" action="/api/configuration" class="xhr">
+                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                        {% if is_clamav_enabled == true %}
+                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (only supported on x64)</label>
+                        {% else %}
+                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (only supported on x64)</label>
+                        {% endif %}
+                        <input id="options-form-submit" class="button" type="submit" value="Save changes" />
+                    </form>
+                    {% if isAnyRunning == true or is_x64_platform == false %}
+                        <script type="text/javascript" src="disabe-clamav.js"></script>
+                    {% endif %}
+                {% endif %}
             {% endif %}
         {% endif %}
 
