@@ -18,21 +18,17 @@
     <MissingParamType occurrences="1">
       <code>$args</code>
     </MissingParamType>
-    <PossiblyInvalidArrayAccess occurrences="4">
+    <PossiblyInvalidArrayAccess occurrences="2">
       <code>$request-&gt;getParsedBody()['borg_backup_host_location']</code>
       <code>$request-&gt;getParsedBody()['domain']</code>
-      <code>$request-&gt;getParsedBody()['clamav']</code>
-      <code>$request-&gt;getParsedBody()['options-form']</code>
     </PossiblyInvalidArrayAccess>
     <PossiblyNullArgument occurrences="2">
       <code>$request-&gt;getParsedBody()['borg_backup_host_location']</code>
       <code>$request-&gt;getParsedBody()['domain']</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="4">
+    <PossiblyNullArrayAccess occurrences="2">
       <code>$request-&gt;getParsedBody()['borg_backup_host_location']</code>
       <code>$request-&gt;getParsedBody()['domain']</code>
-      <code>$request-&gt;getParsedBody()['clamav']</code>
-      <code>$request-&gt;getParsedBody()['options-form']</code>
     </PossiblyNullArrayAccess>
   </file>
   <file src="src/Controller/DockerController.php">
