@@ -53,6 +53,18 @@ class ContainerDefinitionFetcher
                 if (!$this->configurationManager->isClamavEnabled()) {
                     continue;
                 }
+            } elseif ($entry['identifier'] === 'nextcloud-aio-onlyoffice') {
+                if (!$this->configurationManager->isOnlyofficeEnabled()) {
+                    continue;
+                }
+            } elseif ($entry['identifier'] === 'nextcloud-aio-collabora') {
+                if (!$this->configurationManager->isCollaboraEnabled()) {
+                    continue;
+                }
+            } elseif ($entry['identifier'] === 'nextcloud-aio-talk') {
+                if (!$this->configurationManager->isTalkEnabled()) {
+                    continue;
+                }
             }
 
             $ports = new ContainerPorts();
@@ -109,6 +121,18 @@ class ContainerDefinitionFetcher
             foreach ($entry['dependsOn'] as $value) {
                 if ($value === 'nextcloud-aio-clamav') {
                     if (!$this->configurationManager->isClamavEnabled()) {
+                        continue;
+                    }
+                } elseif ($value === 'nextcloud-aio-onlyoffice') {
+                    if (!$this->configurationManager->isOnlyofficeEnabled()) {
+                        continue;
+                    }
+                } elseif ($value === 'nextcloud-aio-collabora') {
+                    if (!$this->configurationManager->isCollaboraEnabled()) {
+                        continue;
+                    }
+                } elseif ($value === 'nextcloud-aio-talk') {
+                    if (!$this->configurationManager->isTalkEnabled()) {
                         continue;
                     }
                 }

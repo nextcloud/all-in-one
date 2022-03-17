@@ -277,32 +277,60 @@ php /var/www/html/occ config:system:set trusted_proxies 0 --value="127.0.0.1"
 php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://$NC_DOMAIN/push"
 
 # Collabora
-if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
-    php /var/www/html/occ app:install richdocuments
-elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" = "no" ]; then
-    php /var/www/html/occ app:enable richdocuments
+if [ "$COLLABORA_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
+        php /var/www/html/occ app:install richdocuments
+    elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" = "no" ]; then
+        php /var/www/html/occ app:enable richdocuments
+    else
+        php /var/www/html/occ app:update richdocuments
+    fi
+    php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
+    # php /var/www/html/occ richdocuments:activate-config
+    # Fix https://github.com/nextcloud/all-in-one/issues/188:
+    php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
 else
-    php /var/www/html/occ app:update richdocuments
+    if [ -d "/var/www/html/custom_apps/richdocuments" ]; then
+        php /var/www/html/occ app:remove richdocuments
+    fi
 fi
-php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
-# php /var/www/html/occ richdocuments:activate-config
-# Fix https://github.com/nextcloud/all-in-one/issues/188:
-php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
+
+# OnlyOffice
+if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
+        php /var/www/html/occ app:install onlyoffice
+    elif [ "$(php /var/www/html/occ config:app:get onlyoffice enabled)" = "no" ]; then
+        php /var/www/html/occ app:enable onlyoffice
+    else
+        php /var/www/html/occ app:update onlyoffice
+    fi
+    php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$NC_DOMAIN/onlyoffice"
+else
+    if [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
+        php /var/www/html/occ app:remove onlyoffice
+    fi
+fi
 
 # Talk
-if ! [ -d "/var/www/html/custom_apps/spreed" ]; then
-    php /var/www/html/occ app:install spreed
-elif [ "$(php /var/www/html/occ config:app:get spreed enabled)" = "no" ]; then
-    php /var/www/html/occ app:enable spreed
+if [ "$TALK_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/spreed" ]; then
+        php /var/www/html/occ app:install spreed
+    elif [ "$(php /var/www/html/occ config:app:get spreed enabled)" = "no" ]; then
+        php /var/www/html/occ app:enable spreed
+    else
+        php /var/www/html/occ app:update spreed
+    fi
+    STUN_SERVERS="[\"$NC_DOMAIN:3478\"]"
+    TURN_SERVERS="[{\"server\":\"$NC_DOMAIN:3478\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
+    SIGNALING_SERVERS="{\"servers\":[{\"server\":\"https://$NC_DOMAIN/standalone-signaling/\",\"verify\":true}],\"secret\":\"$SIGNALING_SECRET\"}"
+    php /var/www/html/occ config:app:set spreed stun_servers --value="$STUN_SERVERS" --output json
+    php /var/www/html/occ config:app:set spreed turn_servers --value="$TURN_SERVERS" --output json
+    php /var/www/html/occ config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS" --output json
 else
-    php /var/www/html/occ app:update spreed
+    if [ -d "/var/www/html/custom_apps/spreed" ]; then
+        php /var/www/html/occ app:remove spreed
+    fi
 fi
-STUN_SERVERS="[\"$NC_DOMAIN:3478\"]"
-TURN_SERVERS="[{\"server\":\"$NC_DOMAIN:3478\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
-SIGNALING_SERVERS="{\"servers\":[{\"server\":\"https://$NC_DOMAIN/standalone-signaling/\",\"verify\":true}],\"secret\":\"$SIGNALING_SECRET\"}"
-php /var/www/html/occ config:app:set spreed stun_servers --value="$STUN_SERVERS" --output json
-php /var/www/html/occ config:app:set spreed turn_servers --value="$TURN_SERVERS" --output json
-php /var/www/html/occ config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS" --output json
 
 # Clamav
 if [ "$CLAMAV_ENABLED" = 'yes' ]; then

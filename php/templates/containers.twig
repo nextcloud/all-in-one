@@ -299,10 +299,30 @@
                         {% else %}
                             <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (only supported on x64, needs ~2GB additional RAM)</label>
                         {% endif %}
+                        {% if is_collabora_enabled == true %}
+                            <input type="checkbox" id="collabora" name="collabora" checked="checked"><label for="collabora">Collabora</label>
+                        {% else %}
+                            <input type="checkbox" id="collabora" name="collabora"><label for="collabora">Collabora</label>
+                        {% endif %}
+                        {% if is_onlyoffice_enabled == true %}
+                            <input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice (only supported on x64)</label>
+                        {% else %}
+                            <input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice (only supported on x64)</label>
+                        {% endif %}
+                        {% if is_talk_enabled == true %}
+                            <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open)</label>
+                        {% else %}
+                            <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open)</label>
+                        {% endif %}
                         <input id="options-form-submit" class="button" type="submit" value="Save changes" />
                     </form>
                     {% if isAnyRunning == true or is_x64_platform == false %}
                         <script type="text/javascript" src="disable-clamav.js"></script>
+                        <script type="text/javascript" src="disable-onlyoffice.js"></script>
+                    {% endif %}
+                    {% if isAnyRunning == true %}
+                        <script type="text/javascript" src="disable-talk.js"></script>
+                        <script type="text/javascript" src="disable-collabora.js"></script>
                     {% endif %}
                 {% endif %}
             {% endif %}
