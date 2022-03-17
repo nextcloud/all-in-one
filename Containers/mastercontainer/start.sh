@@ -43,7 +43,7 @@ elif ! sudo -u www-data test -r /var/run/docker.sock; then
 fi
 
 # Check if api version is supported
-if ! docker info &>/dev/null; then
+if ! sudo -u www-data docker info &>/dev/null; then
     echo "Cannot connect to the docker socket. Cannot proceed."
     exit 1
 fi
@@ -51,7 +51,7 @@ API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
 API_VERSION="$(grep -oP 'const API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP '[0-9]+.[0-9]+' | head -1)"
 # shellcheck disable=SC2001
 API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
-LOCAL_API_VERSION_NUMB="$(docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+LOCAL_API_VERSION_NUMB="$(sudo -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
 if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
     if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
         echo "Docker v$API_VERSION is not supported by your docker engine. Cannot proceed."
@@ -63,10 +63,10 @@ else
 fi
 
 # Check if startup command was executed correctly
-if ! docker ps | grep -q "nextcloud-aio-mastercontainer"; then
+if ! sudo -u www-data docker ps | grep -q "nextcloud-aio-mastercontainer"; then
     echo "It seems like you did not give the mastercontainer the correct name?"
     exit 1
-elif ! docker volume ls | grep -q "nextcloud_aio_mastercontainer"; then
+elif ! sudo -u www-data docker volume ls | grep -q "nextcloud_aio_mastercontainer"; then
     echo "It seems like you did not give the mastercontainer volume the correct name?"
     exit 1
 fi
