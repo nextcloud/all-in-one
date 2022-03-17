@@ -1,7 +1,7 @@
 # From https://github.com/containrrr/watchtower/blob/main/dockerfiles/Dockerfile.self-contained
 FROM containrrr/watchtower:1.4.0 as watchtower
 
-FROM alpine:3.15.0
+FROM alpine:3.15.1
 
 RUN apk add --update --no-cache bash
 COPY --from=watchtower /watchtower /
