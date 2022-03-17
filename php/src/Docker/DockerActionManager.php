@@ -247,6 +247,24 @@ class DockerActionManager
                     } else {
                         $replacements[1] = '';
                     }
+                } elseif ($out[1] === 'ONLYOFFICE_ENABLED') {
+                    if ($this->configurationManager->isOnlyofficeEnabled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
+                } elseif ($out[1] === 'COLLABORA_ENABLED') {
+                    if ($this->configurationManager->isCollaboraEnabled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
+                } elseif ($out[1] === 'TALK_ENABLED') {
+                    if ($this->configurationManager->isTalkEnabled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }

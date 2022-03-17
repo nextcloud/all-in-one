@@ -2,10 +2,11 @@
   "production": [
     {
       "dependsOn": [
-        "nextcloud-aio-nextcloud",
+        "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
+        "nextcloud-aio-clamav",
         "nextcloud-aio-talk",
-        "nextcloud-aio-clamav"
+        "nextcloud-aio-nextcloud"
       ],
       "identifier": "nextcloud-aio-apache",
       "displayName": "Apache",
@@ -22,7 +23,8 @@
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_HOST=nextcloud-aio-talk",
-        "APACHE_PORT=%APACHE_PORT%"
+        "APACHE_PORT=%APACHE_PORT%",
+        "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice"
       ],
       "volumes": [
         {
@@ -126,7 +128,10 @@
         "AIO_URL=%AIO_URL%",
         "NEXTCLOUD_MOUNT=%NEXTCLOUD_MOUNT%",
         "CLAMAV_ENABLED=%CLAMAV_ENABLED%",
-        "CLAMAV_HOST=nextcloud-aio-clamav"
+        "CLAMAV_HOST=nextcloud-aio-clamav",
+        "ONLYOFFICE_ENABLED=%ONLYOFFICE_ENABLED%",
+        "COLLABORA_ENABLED=%COLLABORA_ENABLED%",
+        "TALK_ENABLED=%TALK_ENABLED%"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
@@ -310,6 +315,27 @@
         {
           "name": "nextcloud_aio_clamav",
           "location": "/var/lib/clamav",
+          "writeable": true
+        }
+      ],
+      "secrets": [],
+      "maxShutdownTime": 10,
+      "restartPolicy": "unless-stopped"
+    },
+    {
+      "dependsOn": [],
+      "identifier": "nextcloud-aio-onlyoffice",
+      "displayName": "OnlyOffice",
+      "containerName": "nextcloud/aio-onlyoffice",
+      "ports": [],
+      "internalPorts": [
+        "80"
+      ],
+      "environmentVariables": [],
+      "volumes": [
+        {
+          "name": "nextcloud_aio_onlyoffice",
+          "location": "/var/lib/onlyoffice",
           "writeable": true
         }
       ],

@@ -31,6 +31,12 @@
         reverse_proxy {$COLLABORA_HOST}:9980
     }
 
+    # Onlyoffice
+    route /onlyoffice/* {
+        uri strip_prefix /onlyoffice
+        reverse_proxy {$ONLYOFFICE_HOST}:80
+    }
+
     # Nextcloud
     route {
         rewrite /.well-known/carddav /remote.php/dav

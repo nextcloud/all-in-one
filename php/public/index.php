@@ -87,6 +87,9 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'current_channel' => $dockerActionManger->GetCurrentChannel(),
         'is_x64_platform' => $configurationManager->isx64Platform(),
         'is_clamav_enabled' => $configurationManager->isClamavEnabled(),
+        'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled(),
+        'is_collabora_enabled' => $configurationManager->isCollaboraEnabled(),
+        'is_talk_enabled' => $configurationManager->isTalkEnabled(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {

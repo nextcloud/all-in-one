@@ -139,6 +139,51 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function isOnlyofficeEnabled() : bool {
+        $config = $this->GetConfig();
+        if (isset($config['isOnlyofficeEnabled']) && $config['isOnlyofficeEnabled'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function SetOnlyofficeEnabledState(int $value) : void {
+        $config = $this->GetConfig();
+        $config['isOnlyofficeEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
+    public function isCollaboraEnabled() : bool {
+        $config = $this->GetConfig();
+        if (isset($config['isCollaboraEnabled']) && $config['isCollaboraEnabled'] === 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function SetCollaboraEnabledState(int $value) : void {
+        $config = $this->GetConfig();
+        $config['isCollaboraEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
+    public function isTalkEnabled() : bool {
+        $config = $this->GetConfig();
+        if (isset($config['isTalkEnabled']) && $config['isTalkEnabled'] === 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function SetTalkEnabledState(int $value) : void {
+        $config = $this->GetConfig();
+        $config['isTalkEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */
