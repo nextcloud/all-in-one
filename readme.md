@@ -78,6 +78,9 @@ Nextcloud AIO is inspired by projects like Portainer that allow to manage the do
 ### Are reverse proxies supported?
 Yes. Please refer to the following documentation on this: [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
 
+### How to run it on macOS?
+On macOS, there is one specialty in comparison to linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /var/run/docker.sock.raw:/var/run/docker.sock:ro`. Apart from that it should work and behave the same like on linux.
+
 ### Which ports are mandatory to be open?
 Only those (if you acces the Mastercontainer Interface internally via port 8080):
 - `443/TCP` for the Apache container
