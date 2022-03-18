@@ -49,13 +49,16 @@ RUN chmod +x /usr/bin/start.sh; \
     sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn; \
     mkdir -p /var/tmp;
 
+RUN curl -sL -o "/usr/share/janus/lua/json.lua" "https://raw.githubusercontent.com/rxi/json.lua/master/json.lua"; \
+    curl -sL -o "/usr/share/janus/lua/ansicolors.lua" "https://raw.githubusercontent.com/kikito/ansicolors.lua/master/ansicolors.lua"
+
 RUN mkdir -p /etc/nats; \
     echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf; \
+    chown talk:talk /etc; \
     chown talk:talk -R /etc/nats; \
     chown talk:talk -R /etc/janus; \
     chown talk:talk -R /etc/signaling; \
-    chown talk:talk -R /usr/share/janus; \
-    cat /etc/janus/janus.jcfg
+    chown talk:talk -R /usr
 
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd

@@ -26,7 +26,6 @@ realm=$NC_DOMAIN
 total-quota=100
 bps-capacity=0
 stale-nonce
-no-loopback-peers
 no-multicast-peers
 simple-log
 pidfile=/var/tmp/turnserver.pid
@@ -34,16 +33,16 @@ TURN_CONF
 
 # Janus
 set -x
-sed -i "s|#turn_rest_api_key.*|turn_rest_api_key = $JANUS_API_KEY|" /etc/janus/janus.jcfg
+sed -i "s|#turn_rest_api_key.*|turn_rest_api_key = \"$JANUS_API_KEY\"|" /etc/janus/janus.jcfg
 sed -i "s|#full_trickle.*|full_trickle = true|g" /etc/janus/janus.jcfg
-sed -i "s|#stun_server.*|stun_server = '127.0.0.1'|g" /etc/janus/janus.jcfg
+sed -i 's|#stun_server.*|stun_server = "127.0.0.1"|g' /etc/janus/janus.jcfg
 sed -i "s|#stun_port.*|stun_port = 3478|g" /etc/janus/janus.jcfg
 sed -i "s|#turn_port.*|turn_port = 3478|g" /etc/janus/janus.jcfg
-sed -i "s|#turn_server.*|turn_server = '127.0.0.1'|g" /etc/janus/janus.jcfg
-sed -i "s|#turn_type .*|turn_type = 'udp'|g" /etc/janus/janus.jcfg
-sed -i "s|cert_pem|#cert_pem|g" /etc/janus/janus.jcfg
-sed -i "s|cert_key|#cert_key|g" /etc/janus/janus.jcfg
-sed -i "s|cert_pwd|#cert_pwd|g" /etc/janus/janus.jcfg
+sed -i 's|#turn_server.*|turn_server = "127.0.0.1"|g'/etc/janus/janus.jcfg
+sed -i 's|#turn_type .*|turn_type = "udp"|g' /etc/janus/janus.jcfg
+sed -i 's|#ice_ignore_list .*|ice_ignore_list = "udp"|g' /etc/janus/janus.jcfg
+sed -i 's|#interface.*|interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
+sed -i 's|#ws_interface.*|ws_interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
 set +x
 
 # Signling
