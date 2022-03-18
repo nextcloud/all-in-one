@@ -283,6 +283,7 @@ class ConfigurationManager
         $allowedPrefixes = [
             '/mnt/',
             '/media/',
+            '/host_mnt/',
         ];
 
         $isValidPath = false;
@@ -298,7 +299,7 @@ class ConfigurationManager
         }
 
         if(!$isValidPath) {
-            throw new InvalidSettingConfigurationException("The path must start with '/mnt/' or '/media/' or be equal to '/var/backups'.");
+            throw new InvalidSettingConfigurationException("The path must start with '/mnt/', '/media/' or '/host_mnt/' or be equal to '/var/backups'.");
         }
 
 

@@ -179,12 +179,12 @@
                         <h2>Backup and restore</h2>
                         Please type in the directory where backups will get created on the host system:<br><br>
                         <form method="POST" action="/api/configuration" class="xhr">
-                            <input type="text" name="borg_backup_host_location" value="/mnt/backup" placeholder="/mnt/backup"/>
+                            <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/>
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                             <input class="button" type="submit" value="Submit" />
                         </form>
-                        The folder path that you enter must start with <b>/mnt/</b> or <b>/media/</b> or be equal to <b>/var/backups</b>. So e.g. <b>/mnt/backup</b> or <b>/var/backups</b>
+                        The folder path that you enter must start with <b>/mnt/</b>, <b>/media/</b> or <b>/host_mnt/</b> or be equal to <b>/var/backups</b>.<br>So e.g. <b>/mnt/backup</b> on Linux and macOS or <b>/host_mnt/c/backup/directory</b> on Windows. (This Windows example would be equivalent to 'C:\backup\directory' on the Windows host. So you need to translate the path that you want to use into the correct format.)
                     {% endif %}
 
                     {% if borg_backup_host_location != "" %}
