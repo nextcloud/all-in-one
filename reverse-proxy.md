@@ -49,6 +49,25 @@ nextcloud/all-in-one:latest-arm64
 
 </details>
 
+On macOS see https://github.com/nextcloud/all-in-one#how-to-run-it-on-macos.
+
+<details>
+
+<summary>Command for Windows</summary>
+
+```
+docker run -it ^
+--name nextcloud-aio-mastercontainer ^
+--restart always ^
+-p 8080:8080 ^
+-e APACHE_PORT=11000 ^
+--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config ^
+--volume //var/run/docker.sock:/var/run/docker.sock:ro ^
+nextcloud/all-in-one:latest
+```
+
+</details>
+
 After doing so, you should be able to access the AIO Interface via `https://internal.ip.of.this.server:8080`. Enter your domain that you've entered in the reverse proxy config and you should be done. Please do not forget to open port `3478/TCP` and `3478/UDP` for the Talk container!
 
 ### Optional
@@ -65,4 +84,4 @@ https://<your-nc-domain>:8443 {
 }
 ```
 
-Of course you also need to modify `<your-nc-domain>` to the domain that you want to use. Afterwards should the AIO interface be accessible via `https://<your-nc-domain>:8443`.
+Of course, you also need to modify `<your-nc-domain>` to the domain that you want to use. Afterwards should the AIO interface be accessible via `https://<your-nc-domain>:8443`. You can alternatively change the domain to a different subdomain by using `https://<your-alternative-domain>:443` in the Caddyfile and use that to access the AIO interface.

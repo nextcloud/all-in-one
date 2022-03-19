@@ -20,22 +20,8 @@ The following instructions are especially meant for Linux. For macOS see [this](
     ```
     curl -fsSL get.docker.com | sudo sh
     ```
-2. Make sure to pull the latest image:
-    ```
-    # For x64 CPUs:
-    sudo docker pull nextcloud/all-in-one:latest
-    ```
-    <details>
-    <summary>Command for arm64 CPUs like the Raspberry Pi 4</summary>
 
-    ```
-    # For arm64 CPUs:
-    sudo docker pull nextcloud/all-in-one:latest-arm64
-    ```
-
-    </details>
-
-3. Run the following command in order to start the container:
+2. Run the following command in order to start the container:
     ```
     # For x64 CPUs:
     sudo docker run -it \
@@ -66,11 +52,11 @@ The following instructions are especially meant for Linux. For macOS see [this](
 
     </details>
 
-4. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
+3. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
 E.g. `https://internal.ip.of.this.server:8080`<br>
 If your server has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatially by opening the Nextcloud AIO Interface via:<br>
 `https://your-domain-that-points-to-this-server.tld:8443`
-5. Please do not forget to open port `3478/TCP` and `3478/UDP` for the Talk container!
+4. Please do not forget to open port `3478/TCP` and `3478/UDP` for the Talk container!
 
 ## FAQ
 ### How does it work?
@@ -92,10 +78,10 @@ Only those (if you acces the Mastercontainer Interface internally via port 8080)
 - `3478/TCP` and `3478/UDP`: will be used by the Turnserver inside the Talk container and needs to be open
 
 ### How to run it on macOS?
-On macOS, there is one specialty in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /var/run/docker.sock.raw:/var/run/docker.sock:ro` to run it after you installed Docker Desktop. Apart from that it should work and behave the same like on Linux.
+On macOS, there is one specialty in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /var/run/docker.sock.raw:/var/run/docker.sock:ro` to run it after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/). Apart from that it should work and behave the same like on Linux.
 
 ### How to run it on Windows?
-On Windows, the following command should work after you installed Docker Desktop:
+On Windows, the following command should work after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/):
 <details>
 <summary>Click here to show it</summary>
 
