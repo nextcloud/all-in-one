@@ -54,9 +54,9 @@ The following instructions are especially meant for Linux. For macOS see [this](
 
 3. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
 E.g. `https://internal.ip.of.this.server:8080`<br>
-If your server has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatially by opening the Nextcloud AIO Interface via:<br>
+If your firewall/router has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatially by opening the Nextcloud AIO Interface via:<br>
 `https://your-domain-that-points-to-this-server.tld:8443`
-4. Please do not forget to open port `3478/TCP` and `3478/UDP` for the Talk container!
+4. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
 ## FAQ
 ### How does it work?
@@ -65,7 +65,7 @@ Nextcloud AIO is inspired by projects like Portainer that allow to manage the do
 ### Are reverse proxies supported?
 Yes. Please refer to the following documentation on this: [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
 
-### Which ports are mandatory to be open?
+### Which ports are mandatory to be open in your firewall/router?
 Only those (if you acces the Mastercontainer Interface internally via port 8080):
 - `443/TCP` for the Apache container
 - `3478/TCP` and `3478/UDP` for the Talk container
@@ -73,9 +73,9 @@ Only those (if you acces the Mastercontainer Interface internally via port 8080)
 ### Explanation of used ports:
 - `8080/TCP`: Mastercontainer Interface with self-signed certificate (works always, also if only access via IP-address is possible, e.g. `https://internal.ip.address:8080/`)
 - `80/TCP`: redirects to Nextcloud (is used for getting the certificate via ACME http-challenge for the Mastercontainer)
-- `8443/TCP`: Mastercontainer Interface with valid certificate (only works if port 80 and 8443 are open and you point a domain to your server. It generates a valid certificate then automatically and access via e.g. `https://public.domain.com:8443/` is possible.)
-- `443/TCP`: will be used by the Apache container later on and needs to be open
-- `3478/TCP` and `3478/UDP`: will be used by the Turnserver inside the Talk container and needs to be open
+- `8443/TCP`: Mastercontainer Interface with valid certificate (only works if port 80 and 8443 are open in your firewall/router and you point a domain to your server. It generates a valid certificate then automatically and access via e.g. `https://public.domain.com:8443/` is possible.)
+- `443/TCP`: will be used by the Apache container later on and needs to be open in your firewall/router
+- `3478/TCP` and `3478/UDP`: will be used by the Turnserver inside the Talk container and needs to be open in your firewall/router
 
 ### How to run it on macOS?
 On macOS, there is one specialty in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /var/run/docker.sock.raw:/var/run/docker.sock:ro` to run it after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/). Apart from that it should work and behave the same like on Linux.

@@ -68,7 +68,7 @@ nextcloud/all-in-one:latest
 
 </details>
 
-After doing so, you should be able to access the AIO Interface via `https://internal.ip.of.this.server:8080`. Enter your domain that you've entered in the reverse proxy config and you should be done. Please do not forget to open port `3478/TCP` and `3478/UDP` for the Talk container!
+After doing so, you should be able to access the AIO Interface via `https://internal.ip.of.this.server:8080`. Enter your domain that you've entered in the reverse proxy config and you should be done. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
 ### Optional
 
