@@ -21,7 +21,9 @@ labels: bug, 0. Needs triage
 
 ### Actual behaviour <!--- Tell us what happens instead -->
 
----
+
+### Host OS <!--- (the host OS on which you are trying to install AIO on) -->
+
 
 #### Nextcloud AIO version <!--- (see Nextcloud AIO interface) -->
 
