@@ -15,6 +15,7 @@ Included are:
 **Found a bug?** Please file an issue at https://github.com/nextcloud/all-in-one
 
 ## How to use this?
+The following instructions are especially meant for Linux. For macOS see [this](#how-to-run-it-on-macos), for Windows see [this](#how-to-run-it-on-windows).
 1. Install Docker on your Linux installation using:
     ```
     curl -fsSL get.docker.com | sudo sh
