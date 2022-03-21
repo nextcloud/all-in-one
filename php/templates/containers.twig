@@ -81,8 +81,11 @@
 
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
-                        Initial Nextcloud username: admin<br />
-                        Initial Nextcloud password: {{ nextcloud_password }}<br /><br/>
+                        <details>
+                        <summary>Click here to reveal the initial Nextcloud credentials</summary><br /><br />
+                            Initial Nextcloud username: admin<br />
+                            Initial Nextcloud password: {{ nextcloud_password }}<br /><br/>
+                        </details>
                         <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
                     {% else %}
                         {% if isAnyRestarting == false %}
@@ -203,12 +206,19 @@
 
                         {% if isBackupContainerRunning == false %}
                             <h3>Backup information</h3>
+                            {% if has_backup_run_once == true %}
+                                <details>
+                                <summary>Click here to reveal the backup information</summary><br /><br/>
+                            {% endif %}
                             This is your encryption password for backups: {{ borgbackup_password }} <br /><br/>
                             Please save it at a safe place since you won't be able to restore from backup if you loose this password! <br /><br/>
                             Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
                             The backup itself will use a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup">BorgBackup<a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
                             Backups get created in the following directory on the host: {{ borg_backup_host_location }}/borg <br /><br/>
                             Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app. <br /><br/>
+                            {% if has_backup_run_once == true %}
+                                </details>
+                            {% endif %}
 
                             {% if isApacheStarting != true %}
                                 <h3>Backup creation</h3>
@@ -265,24 +275,27 @@
                                 ⚠ A mastercontainer update is available. Please stop your containers in order to be able to update the mastercontainer.<br><br>
                             {% endif %}
                             {% if current_channel starts with 'latest' %}
-                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest">here</a><br><br>
+                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest"><b>here</b></a><br><br>
                             {% elseif current_channel starts with 'beta' %}
-                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases">here</a><br><br>
+                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases"><b>here</b></a><br><br>
                             {% elseif current_channel starts with 'develop' %}
-                                You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main">here</a><br><br>
+                                You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main"><b>here</b></a><br><br>
                             {% endif %}
                         {% endif %}
                         {% if isApacheStarting == false %} 
                             <h3>AIO password change</h3>
-                            You can change your AIO password below:<br><br />
-                            <form method="POST" action="/api/configuration" class="xhr">
-                                <input type="text" autocomplete="current-password" name="current-master-password" placeholder="your current aio password"/>
-                                <input type="text" autocomplete="new-password" name="new-master-password" placeholder="your new aio password"/>
-                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit" />
-                            </form>
-                            The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png">latin characters</a> 'a-z', 'A-Z', '0-9' and spaces.<br><br>
+                            <details>
+                            <summary>Click here to change your AIO password</summary><br><br />
+                                You can change your AIO password below:<br><br />
+                                <form method="POST" action="/api/configuration" class="xhr">
+                                    <input type="text" autocomplete="current-password" name="current-master-password" placeholder="Your current AIO password"/>
+                                    <input type="text" autocomplete="new-password" name="new-master-password" placeholder="Your new AIO password"/>
+                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                    <input class="button" type="submit" value="Submit" />
+                                </form>
+                                The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><b>latin characters</b></a> <b>a-z</b>, <b>A-Z</b>, <b>0-9</b> and <b>spaces</b>.<br><br>
+                            </details>
                         {% endif %}
                     {% endif %}
                 {% endif %}
