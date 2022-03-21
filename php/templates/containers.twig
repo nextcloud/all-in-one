@@ -310,9 +310,9 @@
                             <input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice (only supported on x64)</label>
                         {% endif %}
                         {% if is_talk_enabled == true %}
-                            <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open)</label>
+                            <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open in your firewall/router)</label>
                         {% else %}
-                            <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open)</label>
+                            <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open in your firewall/router)</label>
                         {% endif %}
                         <input id="options-form-submit" class="button" type="submit" value="Save changes" />
                     </form>
