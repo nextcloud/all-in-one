@@ -109,6 +109,20 @@ class DockerController
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
+    public function StartBackupContainerTest(Request $request, Response $response, $args) : Response {
+        $config = $this->configurationManager->GetConfig();
+        $config['backup-mode'] = 'test';
+        $this->configurationManager->WriteConfig($config);
+
+        $id = self::TOP_CONTAINER;
+        $this->PerformRecursiveContainerStop($id);
+
+        $id = 'nextcloud-aio-borgbackup';
+        $this->PerformRecursiveContainerStart($id);
+
+        return $response->withStatus(201)->withHeader('Location', '/');
+    }
+
     public function StartContainer(Request $request, Response $response, $args) : Response
     {
         $uri = $request->getUri();

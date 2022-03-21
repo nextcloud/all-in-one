@@ -237,6 +237,8 @@ class ConfigurationManager
         // Write domain
         $config = $this->GetConfig();
         $config['domain'] = $domain;
+        // Reset the borg restore password when setting the domain
+        $config['borg_restore_password'] = '';
         $this->WriteConfig($config);
     }
 
@@ -305,6 +307,33 @@ class ConfigurationManager
 
         $config = $this->GetConfig();
         $config['borg_backup_host_location'] = $location;
+        $this->WriteConfig($config);
+    }
+
+        /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public function SetBorgRestoreHostLocationAndPassword(string $location, string $password) : void {
+        if ($location === '') {
+            throw new InvalidSettingConfigurationException("Please enter a path!");
+        }
+        
+        $isValidPath = false;
+        if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
+            $isValidPath = true;
+        }
+
+        if(!$isValidPath) {
+            throw new InvalidSettingConfigurationException("The path may start with '/mnt/', '/media/' or '/host_mnt/' or may be equal to '/var/backups'.");
+        }
+
+        if ($password === '') {
+            throw new InvalidSettingConfigurationException("Please enter the password!");
+        }
+
+        $config = $this->GetConfig();
+        $config['borg_backup_host_location'] = $location;
+        $config['borg_restore_password'] = $password;
         $this->WriteConfig($config);
     }
 
@@ -382,6 +411,15 @@ class ConfigurationManager
         }
 
         return $config['borg_backup_host_location'];
+    }
+
+    public function GetBorgRestorePassword() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['borg_restore_password'])) {
+            $config['borg_restore_password'] = '';
+        }
+
+        return $config['borg_restore_password'];
     }
 
     public function GetBorgBackupMode() : string {

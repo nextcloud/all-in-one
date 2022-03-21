@@ -211,7 +211,8 @@
       "environmentVariables": [
         "BORG_PASSWORD=%BORGBACKUP_PASSWORD%",
         "BORG_MODE=%BORGBACKUP_MODE%",
-        "SELECTED_RESTORE_TIME=%SELECTED_RESTORE_TIME%"
+        "SELECTED_RESTORE_TIME=%SELECTED_RESTORE_TIME%",
+        "BACKUP_RESTORE_PASSWORD=%BACKUP_RESTORE_PASSWORD%"
       ],
       "volumes": [
         {
