@@ -55,6 +55,7 @@
             Mastercontainer update currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until that's done.<br /><br />
             <a href="" class="button reload">Reload ↻</a><br/>
         {% else %}
+            You are currently running the {{ current_channel }} channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
             {% if isBackupOrRestoreRunning == false and domain == "" %}
                 {% if is_mastercontainer_update_available == true %}
                     <h2>Mastercontainer update</h2>
@@ -140,6 +141,13 @@
                     {% if isApacheStarting != true %}
                         {% if is_mastercontainer_update_available == true %}
                             ⚠ A mastercontainer update is available. Please click on the button below to stop your containers in order to be able to update the mastercontainer.<br /><br />
+                            {% if current_channel starts with 'latest' %}
+                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest"><b>here</b></a><br><br>
+                            {% elseif current_channel starts with 'beta' %}
+                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases"><b>here</b></a><br><br>
+                            {% elseif current_channel starts with 'develop' %}
+                                You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main"><b>here</b></a><br><br>
+                            {% endif %}
                         {% endif %}
                         <form method="POST" action="/api/docker/stop" class="xhr">
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -157,7 +165,12 @@
                             Clicking on the button below will download all docker containers and start them. This can take a lot of time depending on your internect connection. Since the overall size is a few GB, this will take around 5-10 min or more. So be aware and patient!<br><br>
                         {% endif %}
                         {% if is_mastercontainer_update_available == true %}
-                            ⚠ Please update your mastercontainer. (The update button is in the Mastercontainer section below the Backup section. Click <a href="#mastercontainer"><b>here</b><a/> to go there.) Afterwards, you will be able to start your containers again.<br><br>
+                            ⚠ A mastercontainer update is available. Please click on the button below to update it.<br><br>
+                            <form method="POST" action="/api/docker/watchtower" class="xhr">
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                <input class="button" type="submit" value="Update mastercontainer" />
+                            </form>
                         {% else %}
                             {% if was_start_button_clicked == false or has_update_available == false %}
                                 <form method="POST" action="/api/docker/start" class="xhr">
@@ -205,22 +218,17 @@
                         {% endif %}
 
                         {% if isBackupContainerRunning == false %}
-                            <h3>Backup information</h3>
                             {% if has_backup_run_once == true %}
                                 <details>
-                                <summary>Click here to reveal the backup information</summary><br />
+                                <summary>Click here to reveal all backup options</summary><br />
                             {% endif %}
+                            <h3>Backup information</h3>
                             This is your encryption password for backups: {{ borgbackup_password }} <br /><br/>
                             Please save it at a safe place since you won't be able to restore from backup if you loose this password! <br /><br/>
                             Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
                             The backup itself will use a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup">BorgBackup<a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
                             Backups get created in the following directory on the host: {{ borg_backup_host_location }}/borg <br /><br/>
                             Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app.
-                            {% if has_backup_run_once == false %}
-                                <br /><br />
-                            {% else %}
-                                </details><br /><br />
-                            {% endif %}
 
                             {% if isApacheStarting != true %}
                                 <h3>Backup creation</h3>
@@ -254,6 +262,11 @@
                                     </form>
                                 {% endif %}
                             {% endif %}
+                            {% if has_backup_run_once == false %}
+                                <br /><br />
+                            {% else %}
+                                </details><br /><br />
+                            {% endif %}
 
                         {% else %}
                             <span class="status running"></span> Backup container currently running. (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
@@ -262,30 +275,8 @@
                     {% endif %}
 
                     {% if isBackupContainerRunning == false %}
-                        <h2 id="mastercontainer">Mastercontainer</h2>
-                        You are currently running the {{ current_channel }} channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
-
-                        {% if is_mastercontainer_update_available == true %}
-                            {% if isAnyRunning == false %}
-                                ⚠ A mastercontainer update is available. Please click on the button below to update it.<br><br>
-                                <form method="POST" action="/api/docker/watchtower" class="xhr">
-                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                    <input class="button" type="submit" value="Update mastercontainer" />
-                                </form>
-                            {% else %}
-                                ⚠ A mastercontainer update is available. Please stop your containers in order to be able to update the mastercontainer.<br><br>
-                            {% endif %}
-                            {% if current_channel starts with 'latest' %}
-                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest"><b>here</b></a><br><br>
-                            {% elseif current_channel starts with 'beta' %}
-                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases"><b>here</b></a><br><br>
-                            {% elseif current_channel starts with 'develop' %}
-                                You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main"><b>here</b></a><br><br>
-                            {% endif %}
-                        {% endif %}
                         {% if isApacheStarting == false %} 
-                            <h3>AIO password change</h3>
+                            <h2>AIO password change</h2>
                             <details>
                             <summary>Click here to change your AIO password</summary><br>
                                 You can change your AIO password below:<br><br />
@@ -303,16 +294,16 @@
                 {% endif %}
                 {% if isBackupContainerRunning == false %}
                     <h2>Optional</h2>
-                    In this section, you can find optional addons.<br><br>
-                    You can change the state of them when your containers are stopped.<br><br>
+                    In this section, you can find optional addons.<br>
+                    You can enable or disaable them when your containers are stopped.<br><br>
                     <form id="options-form" method="POST" action="/api/configuration" class="xhr">
                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                         <input type="hidden" name="options-form" value="options-form">
                         {% if is_clamav_enabled == true %}
-                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (only supported on x64, needs ~2GB additional RAM)</label><br>
+                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (only supported on x64, needs ~1GB additional RAM)</label><br>
                         {% else %}
-                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (only supported on x64, needs ~2GB additional RAM)</label><br>
+                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (only supported on x64, needs ~1GB additional RAM)</label><br>
                         {% endif %}
                         {% if is_collabora_enabled == true %}
                             <input type="checkbox" id="collabora" name="collabora" checked="checked"><label for="collabora">Collabora</label><br>

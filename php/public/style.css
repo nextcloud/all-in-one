@@ -23,6 +23,10 @@ a {
     outline: none;
 }
 
+summary {
+    cursor: pointer;
+}
+
 ul {
     list-style: none;
     padding: 0;
