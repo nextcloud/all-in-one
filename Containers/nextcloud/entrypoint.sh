@@ -297,6 +297,10 @@ fi
 
 # OnlyOffice
 if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
+    while ! nc -z "$ONLYOFFICE_HOST" 80; do
+        echo "waiting for OnlyOffice to become available..."
+        sleep 5
+    done
     if ! [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
         php /var/www/html/occ app:install onlyoffice
     elif [ "$(php /var/www/html/occ config:app:get onlyoffice enabled)" = "no" ]; then

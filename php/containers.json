@@ -131,7 +131,8 @@
         "CLAMAV_HOST=nextcloud-aio-clamav",
         "ONLYOFFICE_ENABLED=%ONLYOFFICE_ENABLED%",
         "COLLABORA_ENABLED=%COLLABORA_ENABLED%",
-        "TALK_ENABLED=%TALK_ENABLED%"
+        "TALK_ENABLED=%TALK_ENABLED%",
+        "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"

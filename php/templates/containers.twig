@@ -82,10 +82,10 @@
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
                         <details>
-                        <summary>Click here to reveal the initial Nextcloud credentials</summary><br /><br />
+                        <summary>Click here to reveal the initial Nextcloud credentials</summary><br />
                             Initial Nextcloud username: admin<br />
-                            Initial Nextcloud password: {{ nextcloud_password }}<br /><br/>
-                        </details>
+                            Initial Nextcloud password: {{ nextcloud_password }}
+                        </details><br /><br />
                         <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
                     {% else %}
                         {% if isAnyRestarting == false %}
@@ -208,16 +208,18 @@
                             <h3>Backup information</h3>
                             {% if has_backup_run_once == true %}
                                 <details>
-                                <summary>Click here to reveal the backup information</summary><br /><br/>
+                                <summary>Click here to reveal the backup information</summary><br />
                             {% endif %}
                             This is your encryption password for backups: {{ borgbackup_password }} <br /><br/>
                             Please save it at a safe place since you won't be able to restore from backup if you loose this password! <br /><br/>
                             Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
                             The backup itself will use a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup">BorgBackup<a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
                             Backups get created in the following directory on the host: {{ borg_backup_host_location }}/borg <br /><br/>
-                            Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app. <br /><br/>
-                            {% if has_backup_run_once == true %}
-                                </details>
+                            Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app.
+                            {% if has_backup_run_once == false %}
+                                <br /><br />
+                            {% else %}
+                                </details><br /><br />
                             {% endif %}
 
                             {% if isApacheStarting != true %}
@@ -285,7 +287,7 @@
                         {% if isApacheStarting == false %} 
                             <h3>AIO password change</h3>
                             <details>
-                            <summary>Click here to change your AIO password</summary><br><br />
+                            <summary>Click here to change your AIO password</summary><br>
                                 You can change your AIO password below:<br><br />
                                 <form method="POST" action="/api/configuration" class="xhr">
                                     <input type="text" autocomplete="current-password" name="current-master-password" placeholder="Your current AIO password"/>
@@ -294,8 +296,8 @@
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <input class="button" type="submit" value="Submit" />
                                 </form>
-                                The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><b>latin characters</b></a> <b>a-z</b>, <b>A-Z</b>, <b>0-9</b> and <b>spaces</b>.<br><br>
-                            </details>
+                                The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><b>latin characters</b></a> <b>a-z</b>, <b>A-Z</b>, <b>0-9</b> and <b>spaces</b>.
+                            </details><br /><br />
                         {% endif %}
                     {% endif %}
                 {% endif %}
@@ -308,24 +310,24 @@
                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                         <input type="hidden" name="options-form" value="options-form">
                         {% if is_clamav_enabled == true %}
-                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (only supported on x64, needs ~2GB additional RAM)</label>
+                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (only supported on x64, needs ~2GB additional RAM)</label><br>
                         {% else %}
-                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (only supported on x64, needs ~2GB additional RAM)</label>
+                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (only supported on x64, needs ~2GB additional RAM)</label><br>
                         {% endif %}
                         {% if is_collabora_enabled == true %}
-                            <input type="checkbox" id="collabora" name="collabora" checked="checked"><label for="collabora">Collabora</label>
+                            <input type="checkbox" id="collabora" name="collabora" checked="checked"><label for="collabora">Collabora</label><br>
                         {% else %}
-                            <input type="checkbox" id="collabora" name="collabora"><label for="collabora">Collabora</label>
+                            <input type="checkbox" id="collabora" name="collabora"><label for="collabora">Collabora</label><br>
                         {% endif %}
                         {% if is_onlyoffice_enabled == true %}
-                            <input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice (only supported on x64)</label>
+                            <input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice (only supported on x64)</label><br>
                         {% else %}
-                            <input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice (only supported on x64)</label>
+                            <input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice (only supported on x64)</label><br>
                         {% endif %}
                         {% if is_talk_enabled == true %}
-                            <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open in your firewall/router)</label>
+                            <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open in your firewall/router)</label><br>
                         {% else %}
-                            <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open in your firewall/router)</label>
+                            <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open in your firewall/router)</label><br>
                         {% endif %}
                         <input id="options-form-submit" class="button" type="submit" value="Save changes" />
                     </form>

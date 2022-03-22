@@ -185,6 +185,7 @@ class DockerController
             }
         }
 
+        $this->StopDomaincheckContainer();
         $this->PerformRecursiveContainerStart($id);
 
         // Cache the start for 10 minutes

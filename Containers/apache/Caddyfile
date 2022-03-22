@@ -34,7 +34,9 @@
     # Onlyoffice
     route /onlyoffice/* {
         uri strip_prefix /onlyoffice
-        reverse_proxy {$ONLYOFFICE_HOST}:80
+        reverse_proxy {$ONLYOFFICE_HOST}:80 {
+            header_up X-Forwarded-Host {http.request.host}/onlyoffice
+        }
     }
 
     # Nextcloud
