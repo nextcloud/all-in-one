@@ -22,7 +22,8 @@ class ConfigurationController
     public function SetConfig(Request $request, Response $response, $args) : Response {
         try {
             if (isset($request->getParsedBody()['domain'])) {
-                $this->configurationManager->SetDomain($request->getParsedBody()['domain']);
+                $domain = $request->getParsedBody()['domain'] ?? '';
+                $this->configurationManager->SetDomain($domain);
             }
 
             if (isset($request->getParsedBody()['current-master-password']) || isset($request->getParsedBody()['new-master-password'])) {
@@ -32,7 +33,14 @@ class ConfigurationController
             }
 
             if (isset($request->getParsedBody()['borg_backup_host_location'])) {
-                $this->configurationManager->SetBorgBackupHostLocation($request->getParsedBody()['borg_backup_host_location']);
+                $location = $request->getParsedBody()['borg_backup_host_location'] ?? '';
+                $this->configurationManager->SetBorgBackupHostLocation($location);
+            }
+
+            if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_password'])) {
+                $restoreLocation = $request->getParsedBody()['borg_restore_host_location'] ?? '';
+                $borgPassword = $request->getParsedBody()['borg_restore_password'] ?? '';
+                $this->configurationManager->SetBorgRestoreHostLocationAndPassword($restoreLocation, $borgPassword);
             }
 
             if (isset($request->getParsedBody()['options-form'])) {

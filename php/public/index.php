@@ -52,6 +52,7 @@ $app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . 
 $app->post('/api/docker/start', AIO\Controller\DockerController::class . ':StartContainer');
 $app->post('/api/docker/backup', AIO\Controller\DockerController::class . ':StartBackupContainerBackup');
 $app->post('/api/docker/backup-check', AIO\Controller\DockerController::class . ':StartBackupContainerCheck');
+$app->post('/api/docker/backup-test', AIO\Controller\DockerController::class . ':StartBackupContainerTest');
 $app->post('/api/docker/restore', AIO\Controller\DockerController::class . ':StartBackupContainerRestore');
 $app->post('/api/docker/stop', AIO\Controller\DockerController::class . ':StopContainer');
 $app->get('/api/docker/logs', AIO\Controller\DockerController::class . ':GetLogs');
@@ -90,6 +91,7 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled(),
         'is_collabora_enabled' => $configurationManager->isCollaboraEnabled(),
         'is_talk_enabled' => $configurationManager->isTalkEnabled(),
+        'borg_restore_password' => $configurationManager->GetBorgRestorePassword(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {

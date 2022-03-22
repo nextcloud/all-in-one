@@ -4,19 +4,23 @@
 export BORG_BACKUP_DIRECTORY="/mnt/borgbackup/borg"
 
 # Validate BORG_PASSWORD
-if [ -z "$BORG_PASSWORD" ]; then
-    echo "BORG_PASSWORD is not allowed to be empty."
+if [ -z "$BORG_PASSWORD" ] && [ -z "$BACKUP_RESTORE_PASSWORD" ]; then
+    echo "Neither BORG_PASSWORD nor BACKUP_RESTORE_PASSWORD are set."
     exit 1
 fi
 
-# Export defaults 
-export BORG_PASSPHRASE="$BORG_PASSWORD"
+# Export defaults
+if [ -n "$BACKUP_RESTORE_PASSWORD" ]; then
+    export BORG_PASSPHRASE="$BACKUP_RESTORE_PASSWORD"
+else
+    export BORG_PASSPHRASE="$BORG_PASSWORD"
+fi
 export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
 # Validate BORG_MODE
-if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != restore ] && [ "$BORG_MODE" != check ]; then
-    echo "No correct BORG_MODE mode applied. Valid are 'backup' and 'restore'."
+if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != restore ] && [ "$BORG_MODE" != check ] && [ "$BORG_MODE" != test ]; then
+    echo "No correct BORG_MODE mode applied. Valid are 'backup', 'check', 'restore' and 'test'."
     exit 1
 fi
 

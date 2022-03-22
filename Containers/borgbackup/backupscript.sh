@@ -173,6 +173,17 @@ if [ "$BORG_MODE" = restore ]; then
         echo "Could not mount the backup!"
         exit 1
     fi
+
+    # Save current aio password
+    AIO_PASSWORD="$(grep -oP '"password":"[a-zA-Z0-9 ]+"' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+    AIO_PASSWORD="${AIO_PASSWORD##\"password\":\"}"
+    AIO_PASSWORD="${AIO_PASSWORD%\"}"
+
+    # Save current path
+    BORG_LOCATION="$(grep -oP '"borg_backup_host_location":"[\\/a-zA-Z0-9 ]+"' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+    BORG_LOCATION="${BORG_LOCATION##\"borg_backup_host_location\":\"}"
+    BORG_LOCATION="${BORG_LOCATION%\"}"
+
     if ! rsync --stats --archive --human-readable -vv --delete \
     --exclude "nextcloud_aio_mastercontainer/session/"** \
     --exclude "nextcloud_aio_mastercontainer/certs/"** \
@@ -182,8 +193,6 @@ if [ "$BORG_MODE" = restore ]; then
         exit 1
     fi
     umount /tmp/borg
-
-    # TODO: reset fetchtimes in configuration.json so that it doesn't get the latest directly...
 
     # Inform user
     get_expiration_time
@@ -196,6 +205,22 @@ if [ "$BORG_MODE" = restore ]; then
     # Set backup-mode to restore since it was a restore
     sed -i 's/"backup-mode":"[a-z]\+"/"backup-mode":"restore"/g' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
 
+    # Reset the AIO password to the currently used one
+    sed -i "s/\"password\":\"[a-zA-Z0-9 ]\+\"/\"password\":\"$AIO_PASSWORD\"/g" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
+
+    # Reset the backup path to the currently used one
+    if [ -n "$BORG_LOCATION" ]; then
+        # shellcheck disable=SC2143
+        if [ -n "$(grep -oP '"borg_backup_host_location":"[\\/a-zA-Z0-9 ]+"' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)" ]; then
+            sed -i "s/\"borg_backup_host_location\":\"[\\/a-zA-Z0-9 ]\+\"/\"borg_backup_host_location\":\"$BORG_LOCATION\"/g" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
+        else
+            echo "Could not set the borg_backup_host_location as it was empty."
+            echo "Probably the regex did not match."
+        fi
+    else
+        echo "Could not get the borg_backup_host_location as it was empty."
+        echo "Probably the regex did not match."
+    fi
     exit 0
 fi
 
@@ -214,4 +239,24 @@ if [ "$BORG_MODE" = check ]; then
     get_expiration_time
     echo "Check finished successfully on $END_DATE_READABLE ($DURATION_READABLE)"
     exit 0
+fi
+
+# Do the backup test
+if [ "$BORG_MODE" = test ]; then
+    if ! [ -d "$BORG_BACKUP_DIRECTORY" ]; then
+        echo "No 'borg' directory in the given backup directory found!"
+        echo "Please adjust the directory so that the borg archive is positioned in a folder named 'borg' inside the given directory!"
+        exit 1
+    elif ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
+        echo "A 'borg' directory was found but could not find the borg archive."
+        echo "It must be positioned directly in the 'borg' subfolder."
+        exit 1
+    elif ! borg list "$BORG_BACKUP_DIRECTORY"; then
+        echo "The entered path seems to be valid but could not open the backup archive."
+        echo "Most likely the entered password was wrong so please adjust it accordingly!"
+        exit 1
+    else
+        echo "Everything looks fine so feel free to continue!"
+        exit 0
+    fi
 fi

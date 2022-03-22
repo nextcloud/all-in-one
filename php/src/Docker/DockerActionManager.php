@@ -241,6 +241,8 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetApachePort();
                 } elseif ($out[1] === 'NEXTCLOUD_MOUNT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudMount();
+                } elseif ($out[1] === 'BACKUP_RESTORE_PASSWORD') {
+                    $replacements[1] = $this->configurationManager->GetBorgRestorePassword();
                 } elseif ($out[1] === 'CLAMAV_ENABLED') {
                     if ($this->configurationManager->isClamavEnabled()) {
                         $replacements[1] = 'yes';
