@@ -32,7 +32,7 @@ if ! mountpoint -q /mnt/borgbackup; then
 fi
 
 # Check if target is empty
-if [ "$BORG_MODE" != backup ] && ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
+if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != test ] && ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
     echo "The repository is empty. cannot perform check or restore."
     exit 1
 fi
