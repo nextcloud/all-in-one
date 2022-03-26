@@ -244,13 +244,13 @@ if ! rsync --stats --archive --human-readable --delete "$SOURCE_DIRECTORY/" "$TA
 fi
 
 umount "$DRIVE_MOUNTPOINT"
-if mountpoint -q "$DRIVE_MOUNTPOINT"; then
-    echo "Synced the backup repository successfully but failed to unmount the target drive."
-    exit 0
+
+if docker ps --format "{{.Names}}" | grep "^nextcloud-aio-nextcloud$"; then
+    docker exec -it nextcloud-aio-nextcloud bash /notify.sh "Rsync backup successful!" "Synced the backup repository successfully."
+else
+    echo "Synced the backup repository successfully."
 fi
 
-echo "Synced the backup repository successfully and unmounted the target drive."
-exit 0
 ```
 
 </details>
