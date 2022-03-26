@@ -209,6 +209,11 @@ if ! [ -d "$SOURCE_DIRECTORY" ]; then
     exit 1
 fi
 
+if [ -z "$(ls -A "$SOURCE_DIRECTORY/")" ]; then
+    echo "The source directory is empty which is not allowed."
+    exit 1
+fi
+
 if ! [ -d "$DRIVE_MOUNTPOINT" ]; then
     echo "The drive mountpoint must be an existing directory"
     exit 1
