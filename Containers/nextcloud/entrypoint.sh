@@ -286,11 +286,13 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:update richdocuments
     fi
     php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
+    php /var/www/html/occ config:app:set richdocuments public_wopi_url --value="https://$NC_DOMAIN/"
     # php /var/www/html/occ richdocuments:activate-config
     # Fix https://github.com/nextcloud/all-in-one/issues/188:
     php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
 else
     if [ -d "/var/www/html/custom_apps/richdocuments" ]; then
+        php /var/www/html/occ config:system:delete allow_local_remote_servers
         php /var/www/html/occ app:remove richdocuments
     fi
 fi
