@@ -64,7 +64,7 @@ jobs:
         sed -i "s|^ENV NEXTCLOUD_VERSION.*|ENV NEXTCLOUD_VERSION $NCVERSION|" ./Containers/nextcloud/Dockerfile
 
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v3
+      uses: peter-evans/create-pull-request@v4
       with:
         commit-message: nextcloud-update automated change
         signoff: true
