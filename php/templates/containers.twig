@@ -406,6 +406,8 @@
 
     {% if isApacheStarting == true or isBackupContainerRunning == true or isWatchtowerRunning == true %}
         <script type="text/javascript" src="automatic_reload.js"></script>
+    {% else %}
+        <script type="text/javascript" src="before-unload.js"></script>
     {% endif %}
 
     </div>
