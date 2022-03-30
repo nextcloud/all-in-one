@@ -21,7 +21,8 @@ The following instructions are especially meant for Linux. For macOS see [this](
     curl -fsSL get.docker.com | sudo sh
     ```
 
-2. Run the following command in order to start the container:
+2. Run the following command in order to start the container:<br>
+    (For people that cannot use ports 80 and/or 443 on this server, please follow [this documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md). Otherwise please run the command below!)
     ```
     # For x64 CPUs:
     sudo docker run -it \
