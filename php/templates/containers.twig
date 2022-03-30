@@ -52,7 +52,7 @@
         {% endfor %}
 
         {% if isWatchtowerRunning == true %}
-            Mastercontainer update currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until that's done.<br /><br />
+            <span class="status running"></span> Mastercontainer update currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until that's done. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br /><br />
             <a href="" class="button reload">Reload ↻</a><br/>
         {% else %}
             You are currently running the {{ current_channel }} channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
@@ -146,8 +146,8 @@
                     {% endif %}
                 {% endif %}
             {% endif %}
-            {% if isBackupContainerRunning == true and domain == "" %}
-                Backup container is currently running.<br /><br />
+            {% if isBackupContainerRunning == true %}
+                <span class="status running"></span> Backup container is currently running. (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                 <a href="" class="button reload">Reload ↻</a><br/><br>
             {% endif %}
 
@@ -163,7 +163,7 @@
                         <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
                     {% else %}
                         {% if isAnyRestarting == false %}
-                            Containers are currently starting.<br /><br />
+                            <span class="status running"></span> Containers are currently starting.<br /><br />
                             <a href="" class="button reload">Reload ↻</a><br/><br>
                         {% else %}
                             It seems like at least one container is currently restarting which means it is not able to start correctly.<br><br>
@@ -340,10 +340,6 @@
                             {% else %}
                                 </details><br /><br />
                             {% endif %}
-
-                        {% else %}
-                            <span class="status running"></span> Backup container currently running. (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
-                            <a href="" class="button reload">Reload ↻</a><br/>
                         {% endif %}
                     {% endif %}
 
