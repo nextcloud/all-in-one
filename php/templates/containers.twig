@@ -22,10 +22,18 @@
         {% set isAnyRunning = false %}
         {% set isAnyRestarting = false %}
         {% set isWatchtowerRunning = false %}
-        {% set isBackupContainerRunning = false %}
         {% set isRestoreRunning = false %}
         {% set isBackupOrRestoreRunning = false %}
         {% set isApacheStarting = false %}
+
+        {% if is_backup_container_running == true %}
+            {% if borg_backup_mode == 'restore' %}
+                {% set isRestoreRunning = true %}
+            {% endif %}
+            {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
+                {% set isBackupOrRestoreRunning = true %}
+            {% endif %}
+        {% endif %}
 
         {% for container in containers %}
             {% if container.GetIdentifier() not in ['nextcloud-aio-domaincheck', 'nextcloud-aio-borgbackup', 'nextcloud-aio-watchtower'] and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
@@ -40,22 +48,13 @@
             {% if container.GetIdentifier() == 'nextcloud-aio-apache' and class(container.GetStartingState()) == 'AIO\\Container\\State\\StartingState' %}
                 {% set isApacheStarting = true %}
             {% endif %}
-            {% if container.GetIdentifier() == 'nextcloud-aio-borgbackup' and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
-                {% set isBackupContainerRunning = true %}
-                {% if borg_backup_mode == 'restore' %}
-                    {% set isRestoreRunning = true %}
-                {% endif %}
-                {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
-                    {% set isBackupOrRestoreRunning = true %}
-                {% endif %}
-            {% endif %}
         {% endfor %}
 
         {% if isWatchtowerRunning == true %}
             <span class="status running"></span> Mastercontainer update currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until that's done. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br /><br />
             <a href="" class="button reload">Reload ↻</a><br/>
         {% else %}
-            {% if isBackupContainerRunning == false and domain == "" %}
+            {% if is_backup_container_running == false and domain == "" %}
                 {% if is_mastercontainer_update_available == true %}
                     <h2>Mastercontainer update</h2>
                     ⚠ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.<br><br>
@@ -145,7 +144,7 @@
                     {% endif %}
                 {% endif %}
             {% endif %}
-            {% if isBackupContainerRunning == true %}
+            {% if is_backup_container_running == true %}
                 <span class="status running"></span> Backup container is currently running. (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                 <a href="" class="button reload">Reload ↻</a><br/><br>
             {% endif %}
@@ -264,7 +263,7 @@
 
                 {% if was_start_button_clicked == true %}
 
-                    {% if isBackupContainerRunning == false and borg_backup_host_location == "" and isApacheStarting != true %}
+                    {% if is_backup_container_running == false and borg_backup_host_location == "" and isApacheStarting != true %}
                         <h2>Backup and restore</h2>
                         Please type in the directory where backups will get created on the host system:<br><br>
                         <form method="POST" action="/api/configuration" class="xhr">
@@ -278,7 +277,7 @@
 
                     {% if borg_backup_host_location != "" %}
                         <h2>Backup and restore</h2>
-                        {% if isBackupContainerRunning == false %}
+                        {% if is_backup_container_running == false %}
                             {% if backup_exit_code > 0 %}
                                 <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                             {% elseif backup_exit_code == 0 %}
@@ -290,7 +289,7 @@
                             {% endif %}
                         {% endif %}
 
-                        {% if isBackupContainerRunning == false %}
+                        {% if is_backup_container_running == false %}
                             {% if has_backup_run_once == true %}
                                 <details>
                                 <summary>Click here to reveal all backup options</summary><br />
@@ -343,7 +342,7 @@
                         {% endif %}
                     {% endif %}
 
-                    {% if isBackupContainerRunning == false %}
+                    {% if is_backup_container_running == false %}
                         {% if isApacheStarting == false %} 
                             <h2>AIO password change</h2>
                             You can change your AIO password below:<br><br />
@@ -358,7 +357,7 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
-                {% if isBackupContainerRunning == false %}
+                {% if is_backup_container_running == false %}
                     <h2>Optional addons</h2>
                     In this section, you can find optional addons.<br>
                     You can enable or disaable them when your containers are stopped.<br><br>
@@ -400,7 +399,7 @@
             {% endif %}
         {% endif %}
 
-    {% if isApacheStarting == true or isBackupContainerRunning == true or isWatchtowerRunning == true %}
+    {% if isApacheStarting == true or is_backup_container_running == true or isWatchtowerRunning == true %}
         <script type="text/javascript" src="automatic_reload.js"></script>
     {% else %}
         <script type="text/javascript" src="before-unload.js"></script>
