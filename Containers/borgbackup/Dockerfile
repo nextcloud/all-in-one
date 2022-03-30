@@ -8,6 +8,7 @@ RUN set -ex; \
         rsync \
         fuse \
         python3-llfuse \
+        jq \
     ; \
     rm -rf /var/lib/apt/lists/*
 

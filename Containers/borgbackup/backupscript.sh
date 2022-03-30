@@ -174,24 +174,44 @@ if [ "$BORG_MODE" = restore ]; then
         exit 1
     fi
 
-    # Save current aio password
-    AIO_PASSWORD="$(grep -oP '"password":"[a-zA-Z0-9 ]+"' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
-    AIO_PASSWORD="${AIO_PASSWORD##\"password\":\"}"
-    AIO_PASSWORD="${AIO_PASSWORD%\"}"
-
-    # Save current path
-    BORG_LOCATION="$(grep -oP '"borg_backup_host_location":"[\\/a-zA-Z0-9 ]+"' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
-    BORG_LOCATION="${BORG_LOCATION##\"borg_backup_host_location\":\"}"
-    BORG_LOCATION="${BORG_LOCATION%\"}"
-
+    # Restore everything except the configuration file
     if ! rsync --stats --archive --human-readable -vv --delete \
     --exclude "nextcloud_aio_mastercontainer/session/"** \
     --exclude "nextcloud_aio_mastercontainer/certs/"** \
+    --exclude "nextcloud_aio_mastercontainer/data/configuration.json" \
     /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
-        echo "Something failed while restoring the boot partition."
+        echo "Something failed while restoring from backup."
         umount /tmp/borg
         exit 1
     fi
+
+    # Save current aio password
+    AIO_PASSWORD="$(jq '.password' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+
+    # Save current path
+    BORG_LOCATION="$(jq '.borg_backup_host_location' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+
+    # Restore the configuration file
+    if ! rsync --archive --human-readable -vv \
+    /tmp/borg/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json \
+    /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json; then
+        echo "Something failed while restoring the configuration.json."
+        umount /tmp/borg
+        exit 1
+    fi
+
+    # Set backup-mode to restore since it was a restore
+    CONTENTS="$(jq '."backup-mode" = "restore"' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+    echo -E "${CONTENTS}" > /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
+
+    # Reset the backup path to the currently used one
+    CONTENTS="$(jq ".borg_backup_host_location = $BORG_LOCATION" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+    echo -E "${CONTENTS}" > /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
+
+    # Reset the AIO password to the currently used one
+    CONTENTS="$(jq ".password = $AIO_PASSWORD" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+    echo -E "${CONTENTS}" > /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
+
     umount /tmp/borg
 
     # Inform user
@@ -201,27 +221,6 @@ if [ "$BORG_MODE" = restore ]; then
     # Add file to Nextcloud container so that it skips any update the next time
     touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
     chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
-
-    # Set backup-mode to restore since it was a restore
-    sed -i 's/"backup-mode":"[a-z]\+"/"backup-mode":"restore"/g' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
-
-    # Reset the AIO password to the currently used one
-    sed -i "s/\"password\":\"[a-zA-Z0-9 ]\+\"/\"password\":\"$AIO_PASSWORD\"/g" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
-
-    # Reset the backup path to the currently used one
-    if [ -n "$BORG_LOCATION" ]; then
-        # shellcheck disable=SC2143
-        if [ -n "$(grep -oP '"borg_backup_host_location":"[\\/a-zA-Z0-9 ]+"' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)" ]; then
-            sed -i "s/\"borg_backup_host_location\":\"[\\/a-zA-Z0-9 ]\+\"/\"borg_backup_host_location\":\"$BORG_LOCATION\"/g" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
-        else
-            echo "Could not set the borg_backup_host_location as it was empty."
-            echo "Probably the regex did not match."
-        fi
-    else
-        echo "Could not get the borg_backup_host_location as it was empty."
-        echo "Probably the regex did not match."
-    fi
-    exit 0
 fi
 
 # Do the Backup check
