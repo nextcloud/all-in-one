@@ -55,7 +55,6 @@
             <span class="status running"></span> Mastercontainer update currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until that's done. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br /><br />
             <a href="" class="button reload">Reload ↻</a><br/>
         {% else %}
-            You are currently running the {{ current_channel }} channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
             {% if isBackupContainerRunning == false and domain == "" %}
                 {% if is_mastercontainer_update_available == true %}
                     <h2>Mastercontainer update</h2>
@@ -66,8 +65,8 @@
                         <input class="button" type="submit" value="Update mastercontainer" />
                     </form>
                 {% else %}
-                    Nextcloud AIO stands for Nextcloud All In One and provides easy deployment and maintenance with most features included in this one Nextcloud instance.<br><br>
                     {% if borg_backup_host_location == '' and borg_restore_password == '' %}
+                        Nextcloud AIO stands for Nextcloud All In One and provides easy deployment and maintenance with most features included in this one Nextcloud instance.<br><br>
                         <h2>New AIO instance</h2>
                         Please type in the domain that will be used for Nextcloud if you want to create a new instance:<br><br />
                         <form method="POST" action="/api/configuration" class="xhr">
@@ -152,6 +151,7 @@
             {% endif %}
 
             {% if domain != "" %}
+                You are currently running the {{ current_channel }} channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
 
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
