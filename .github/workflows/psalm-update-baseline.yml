@@ -31,7 +31,7 @@ jobs:
         continue-on-error: true
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.COMMAND_BOT_PAT }}
           commit-message: Update psalm baseline
