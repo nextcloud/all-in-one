@@ -10,4 +10,8 @@ if (document.hasFocus()) {
     setTimeout(function(){
     window.location.reload(1);
     }, 5000);
+} else {
+    window.addEventListener("beforeunload", function() {
+        document.getElementById('overlay').classList.add('loading')
+    });
 }
