@@ -600,4 +600,13 @@ class DockerActionManager
         }
         return true;
     }
+
+    public function isBackupContainerRunning() : bool {
+        $id = 'nextcloud-aio-borgbackup';
+        $backupContainer = $this->containerDefinitionFetcher->GetContainerById($id);
+        if ($this->GetContainerRunningState($backupContainer) instanceof RunningState) {
+            return true;
+        }
+        return false;
+    }
 }
