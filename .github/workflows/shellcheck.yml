@@ -9,7 +9,7 @@ jobs:
     name: Github Actions
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Run Shellcheck
       uses: ludeeus/action-shellcheck@master
       with:
