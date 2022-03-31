@@ -122,6 +122,19 @@ It is recommended to create a backup before any container update. By doing this,
 
 If you connect an external drive to your host, and choose the backup directory to be on that drive, you are also kind of save against drive failures of the drive where the docker volumes are stored on. 
 
+<details>
+<summary>How to do the above step for step</summary>
+
+<br>
+
+1. Mount an external/backup HDD to the host OS using the built-in functionality or udev rules or whatever way you prefer. (E.g. follow this video: https://www.youtube.com/watch?v=2lSyX4D3v_s) and mount the drive in best case in `/mnt/backup`.
+2. If not already done, fire up the docker container and set up Nextcloud as per the guide.
+3. Now open the AIO interface.
+4. Under backup section, add your external disk mountpoint as backup directory, e.g. `/mnt/backup`.
+5. Click on `Create Backup` which should create the first backup on the external disk.
+
+</details>
+
 Backups can be created and restored in the AIO interface using the buttons `Create Backup` and `Restore selected backup`. Additionally, a backup check is provided that checks the integrity of your backups but it shouldn't be needed in most situations. 
 
 The backups itself get encrypted with an encryption key that gets shown to you in the AIO interface. Please save that at a safe place as you will not be able to restore from backup without this key.
