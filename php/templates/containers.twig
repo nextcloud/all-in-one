@@ -76,10 +76,10 @@
                         </form>
                         Make sure that this server is reachable on Port 443 and you've correctly set up the DNS config for the domain that you enter. <br><br>
                         If you have a dynamic IP-address, you can use e.g. <a href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates. <br /><br/>
-                    {% endif %}
 
-                    <h2>Restore AIO instance from backup</h2>
-                    You can alternatively restore an AIO instance from backup.<br><br>
+                        <h2>Restore AIO instance from backup</h2>
+                        You can alternatively restore an AIO instance from backup.<br><br>
+                    {% endif %}
 
                     {% if borg_backup_host_location != '' and borg_restore_password != '' %}
                         {% if borg_backup_mode in ['test', 'check'] %}
@@ -150,7 +150,9 @@
             {% endif %}
 
             {% if domain != "" %}
-                You are currently running the {{ current_channel }} channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
+                {% if  was_start_button_clicked == true %}
+                    You are currently running the {{ current_channel }} channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
+                {% endif %}
 
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
