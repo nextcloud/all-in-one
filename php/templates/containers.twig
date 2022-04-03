@@ -145,22 +145,22 @@
                 {% endif %}
             {% endif %}
 
+            {% if domain != "" and was_start_button_clicked == true %}
+                    You are running the <b>{{ current_channel }}</b> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
+            {% endif %}
+
             {% if is_backup_container_running == true %}
                 <span class="status running"></span> Backup container is currently running. (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                 <a href="" class="button reload">Reload ↻</a><br/><br>
             {% endif %}
 
             {% if domain != "" %}
-                {% if  was_start_button_clicked == true %}
-                    You are running the <b>{{ current_channel }}</b> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
-                {% endif %}
-
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
                         <details>
                         <summary>Click here to reveal the initial Nextcloud credentials</summary><br />
-                            Initial Nextcloud username: admin<br />
-                            Initial Nextcloud password: {{ nextcloud_password }}
+                            Initial Nextcloud username: <b>admin</b><br />
+                            Initial Nextcloud password: <b>{{ nextcloud_password }}</b>
                         </details><br /><br />
                         <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
                     {% else %}
@@ -298,11 +298,11 @@
                                 <summary>Click here to reveal all backup options</summary><br />
                             {% endif %}
                             <h3>Backup information</h3>
-                            This is your encryption password for backups: {{ borgbackup_password }} <br /><br/>
+                            This is your encryption password for backups: <b>{{ borgbackup_password }}</b><br /><br/>
                             Please save it at a safe place since you won't be able to restore from backup if you loose this password! <br /><br/>
                             Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
-                            The backup itself will use a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup">BorgBackup<a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
-                            Backups get created in the following directory on the host: {{ borg_backup_host_location }}/borg <br /><br/>
+                            The backup itself will use a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup"><b>BorgBackup</b><a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
+                            Backups get created in the following directory on the host: <b>{{ borg_backup_host_location }}/borg</b> <br /><br/>
                             Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app.
 
                             {% if isApacheStarting != true %}
