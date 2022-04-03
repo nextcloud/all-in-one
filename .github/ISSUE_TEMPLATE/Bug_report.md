@@ -27,6 +27,6 @@ labels: bug, 0. Needs triage
 
 #### Nextcloud AIO version <!--- (see Nextcloud AIO interface) -->
 
-#### Current channel <!--- (see the channel name in the Mastercontainer section) -->
+#### Current channel <!--- (see the channel name in the AIO interface) -->
 
 #### Other valuable info <!--- (like logs, screenshots & Co.) -->
