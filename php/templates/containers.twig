@@ -292,7 +292,7 @@
                             {% endif %}
                         {% endif %}
 
-                        {% if is_backup_container_running == false %}
+                        {% if is_backup_container_running == false and isApacheStarting == false %}
                             {% if has_backup_run_once == true %}
                                 <details>
                                 <summary>Click here to reveal all backup options</summary><br />
