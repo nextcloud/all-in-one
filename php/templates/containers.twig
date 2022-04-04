@@ -50,7 +50,19 @@
             {% endif %}
         {% endfor %}
 
-        {% if isWatchtowerRunning == true %}
+        {% if is_daily_backup_running == true %}
+            <span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br /><br />
+            It will update all containers and all apps if the backup is successful.<br /><br />
+            {% if is_mastercontainer_update_available == true %}
+                Since the mastercontainer gets updated, it will restart the container which will make it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower">Logs</a>)<br /><br />
+            {% endif %}
+            {% if has_update_available == false %}
+                The whole process should not take more than a few minutes.<br /><br />
+            {% else %}
+                The whole process can take a while because your containers get updated.<br /><br />
+            {% endif %}
+            <a href="" class="button reload">Reload ↻</a><br/>
+        {% elseif isWatchtowerRunning == true %}
             <span class="status running"></span> Mastercontainer update currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until that's done. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower">Logs</a>)<br /><br />
             <a href="" class="button reload">Reload ↻</a><br/>
         {% else %}
@@ -335,6 +347,26 @@
                                         </select>
                                         <input class="button" type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
                                     </form>
+
+                                    <h3>Daily backup creation</h3>
+                                    {% if daily_backup_time == "" %}
+                                        By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <b>04:00</b> will create backups at 4 am CT and <b>16:00</b> at 4 pm CT.<br><br/>
+                                        <form method="POST" action="/api/configuration" class="xhr">
+                                            <input type="text" name="daily_backup_time" value="04:00" placeholder="04:00"/>
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input class="button" type="submit" value="Submit" />
+                                        </form>
+                                        This option will also automatically update your containers and apps and will send a notification about the result of the backup.<br><br/>
+                                    {% else %}
+                                        Daily backups will be created at <b>{{ daily_backup_time }} CT</b> which includes a notification about the result of the backup and automatic updates of your containers and apps. You can disable this option again by clicking on the button below.<br><br/>
+                                        <form method="POST" action="/api/configuration" class="xhr">
+                                            <input type="hidden" name="delete_daily_backup_time" value="yes"/>
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input class="button" type="submit" value="Disable daily backups" />
+                                        </form>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if has_backup_run_once == false %}
@@ -402,7 +434,7 @@
             {% endif %}
         {% endif %}
 
-    {% if isApacheStarting == true or is_backup_container_running == true or isWatchtowerRunning == true %}
+    {% if isApacheStarting == true or is_backup_container_running == true or isWatchtowerRunning == true or is_daily_backup_running == true %}
         <script type="text/javascript" src="automatic_reload.js"></script>
     {% else %}
         <script type="text/javascript" src="before-unload.js"></script>

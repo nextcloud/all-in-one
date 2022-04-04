@@ -93,6 +93,8 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'is_collabora_enabled' => $configurationManager->isCollaboraEnabled(),
         'is_talk_enabled' => $configurationManager->isTalkEnabled(),
         'borg_restore_password' => $configurationManager->GetBorgRestorePassword(),
+        'daily_backup_time' => $configurationManager->GetDailyBackupTime(),
+        'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {
