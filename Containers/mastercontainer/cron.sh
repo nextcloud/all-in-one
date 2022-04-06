@@ -28,7 +28,10 @@ while true; do
         echo "Daily backup has started"
 
         # Delete all active sessions and create a lock file
-        rm -f "/mnt/docker-aio-config/session/"*
+        # But don't kick out the user if the mastercontainer was just updated since we block the interface either way with the lock file
+        if [ "$LOCK_FILE_PRESENT" = 0 ]; then
+            rm -f "/mnt/docker-aio-config/session/"*
+        fi
         sudo -u www-data touch "/mnt/docker-aio-config/data/daily_backup_running"
 
         # Check if apache is running/stopped, watchtower is stopped and backupcontainer is stopped
