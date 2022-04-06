@@ -283,10 +283,6 @@ php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://
 
 # Collabora
 if [ "$COLLABORA_ENABLED" = 'yes' ]; then
-    while ! nc -z "$COLLABORA_HOST" 9980; do
-        echo "waiting for Collabora to become available..."
-        sleep 5
-    done
     if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ app:install richdocuments
     elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" = "no" ]; then
@@ -294,11 +290,9 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     else
         php /var/www/html/occ app:update richdocuments
     fi
+    php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
     # Fix https://github.com/nextcloud/all-in-one/issues/188:
     php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
-    php /var/www/html/occ config:app:set richdocuments wopi_url --value="http://$COLLABORA_HOST:9980/"
-    php /var/www/html/occ config:app:set richdocuments public_wopi_url --value="https://$NC_DOMAIN/"
-    php /var/www/html/occ richdocuments:activate-config
 else
     if [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ config:system:delete allow_local_remote_servers
