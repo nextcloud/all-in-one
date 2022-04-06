@@ -43,6 +43,15 @@ class ConfigurationController
                 $this->configurationManager->SetBorgRestoreHostLocationAndPassword($restoreLocation, $borgPassword);
             }
 
+            if (isset($request->getParsedBody()['daily_backup_time'])) {
+                $dailyBackupTime = $request->getParsedBody()['daily_backup_time'] ?? '';
+                $this->configurationManager->SetDailyBackupTime($dailyBackupTime);
+            }
+
+            if (isset($request->getParsedBody()['delete_daily_backup_time'])) {
+                $this->configurationManager->DeleteDailyBackupTime();
+            }
+
             if (isset($request->getParsedBody()['options-form'])) {
                 if (isset($request->getParsedBody()['collabora']) && isset($request->getParsedBody()['onlyoffice'])) {
                     throw new InvalidSettingConfigurationException("Collabora and Onlyoffice are not allowed to be enabled at the same time!");

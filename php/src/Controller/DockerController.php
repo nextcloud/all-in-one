@@ -70,6 +70,11 @@ class DockerController
     }
 
     public function StartBackupContainerBackup(Request $request, Response $response, $args) : Response {
+        $this->startBackup();
+        return $response->withStatus(201)->withHeader('Location', '/');
+    }
+
+    public function startBackup() : void {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'backup';
         $this->configurationManager->WriteConfig($config);
@@ -79,8 +84,6 @@ class DockerController
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
-
-        return $response->withStatus(201)->withHeader('Location', '/');
     }
 
     public function StartBackupContainerCheck(Request $request, Response $response, $args) : Response {
@@ -134,6 +137,16 @@ class DockerController
         $config['AIO_URL'] = $host . ':' . $port;
         // set wasStartButtonClicked
         $config['wasStartButtonClicked'] = 1;
+        $this->configurationManager->WriteConfig($config);
+
+        // Start container
+        $this->startTopContainer();
+
+        return $response->withStatus(201)->withHeader('Location', '/');
+    }
+
+    public function startTopContainer() : void {
+        $config = $this->configurationManager->GetConfig();
         // set AIO_TOKEN
         $config['AIO_TOKEN'] = bin2hex(random_bytes(24));
         $this->configurationManager->WriteConfig($config);
@@ -144,14 +157,17 @@ class DockerController
         $id = self::TOP_CONTAINER;
 
         $this->PerformRecursiveContainerStart($id);
-        return $response->withStatus(201)->withHeader('Location', '/');
     }
 
     public function StartWatchtowerContainer(Request $request, Response $response, $args) : Response {
+        $this->startWatchtower();
+        return $response->withStatus(201)->withHeader('Location', '/');
+    }
+
+    public function startWatchtower() : void {
         $id = 'nextcloud-aio-watchtower';
 
         $this->PerformRecursiveContainerStart($id);
-        return $response->withStatus(201)->withHeader('Location', '/');
     }
 
     private function PerformRecursiveContainerStop(string $id) : void

@@ -133,7 +133,8 @@
         "COLLABORA_ENABLED=%COLLABORA_ENABLED%",
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_ENABLED=%TALK_ENABLED%",
-        "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice"
+        "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
+        "DAILY_BACKUP_RUNNING=%DAILY_BACKUP_RUNNING%"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"

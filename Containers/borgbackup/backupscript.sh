@@ -178,6 +178,7 @@ if [ "$BORG_MODE" = restore ]; then
     if ! rsync --stats --archive --human-readable -vv --delete \
     --exclude "nextcloud_aio_mastercontainer/session/"** \
     --exclude "nextcloud_aio_mastercontainer/certs/"** \
+    --exclude "nextcloud_aio_mastercontainer/data/daily_backup_running" \
     --exclude "nextcloud_aio_mastercontainer/data/configuration.json" \
     /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
         echo "Something failed while restoring from backup."

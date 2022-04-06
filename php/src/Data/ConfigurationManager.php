@@ -444,4 +444,39 @@ class ConfigurationManager
         $defaultValue = 'nextcloud_aio_nextcloud_data';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
+
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public function SetDailyBackupTime(string $time) : void {
+        if ($time === "") {
+            throw new InvalidSettingConfigurationException("The daily backup time must not be empty!");
+        }
+
+        if (!preg_match("#^[0-1][0-9]:[0-5][0-9]$#", $time) && !preg_match("#^2[0-3]:[0-5][0-9]$#", $time)) {
+            throw new InvalidSettingConfigurationException("You did not enter a correct time! One correct example is '04:00'!");
+        }
+        
+        file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
+    }
+
+    public function GetDailyBackupTime() : string {
+        if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
+            return '';
+        }
+        return file_get_contents(DataConst::GetDailyBackupTimeFile());
+    }
+
+    public function DeleteDailyBackupTime() : void {
+        if (file_exists(DataConst::GetDailyBackupTimeFile())) {
+            unlink(DataConst::GetDailyBackupTimeFile());
+        }
+    }
+
+    public function isDailyBackupRunning() : bool {
+        if (file_exists(DataConst::GetDailyBackupBlockFile())) {
+            return true;
+        }
+        return false;
+    }
 }

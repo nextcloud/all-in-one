@@ -26,6 +26,7 @@ RUN apt-get update; \
         openssl \
         sudo \
         dpkg-dev \
+        netcat \
     ; \
     rm -rf /var/lib/apt/lists/*
 
@@ -84,10 +85,12 @@ RUN mkdir /var/log/supervisord; \
 
 COPY Caddyfile /
 COPY start.sh /usr/bin/
+COPY backup-time-file-watcher.sh /
 COPY cron.sh /
 COPY supervisord.conf /
 RUN chmod +x /usr/bin/start.sh; \
-    chmod +x /cron.sh
+    chmod +x /cron.sh; \
+    chmod +x /backup-time-file-watcher.sh
 
 USER root
 

@@ -267,6 +267,12 @@ class DockerActionManager
                     } else {
                         $replacements[1] = '';
                     }
+                } elseif ($out[1] === 'DAILY_BACKUP_RUNNING') {
+                    if ($this->configurationManager->isDailyBackupRunning()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }

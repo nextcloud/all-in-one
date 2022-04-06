@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # version_greater A B returns whether A > B
 version_greater() {
@@ -229,6 +229,11 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
             php /var/www/html/occ maintenance:mimetype:update-js
             php /var/www/html/occ maintenance:mimetype:update-db
         fi
+    fi
+
+    # Performing update of all apps if daily backups are enabled, running and successful
+    if [ "$DAILY_BACKUP_RUNNING" = 'yes' ]; then
+        php /var/www/html/occ app:update --all
     fi
 fi
 

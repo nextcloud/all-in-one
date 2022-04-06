@@ -27,6 +27,14 @@ class DataConst {
         return self::GetDataDirectory() . '/backupsecret';
     }
 
+    public static function GetDailyBackupTimeFile() : string {
+        return self::GetDataDirectory() . '/daily_backup_time';
+    }
+
+    public static function GetDailyBackupBlockFile() : string {
+        return self::GetDataDirectory() . '/daily_backup_running';
+    }
+
     public static function GetBackupKeyFile() : string {
         return self::GetDataDirectory() . '/borg.config';
     }
