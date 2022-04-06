@@ -1,7 +1,7 @@
 #!/bin/bash
 
 while true; do
-    while "$(find "/mnt/docker-aio-config/session/" -mindepth 1 -exec grep "aio_authenticated|[a-z]:1" {} \; | wc -l)" -gt 1; do
+    while [ "$(find "/mnt/docker-aio-config/session/" -mindepth 1 -exec grep "aio_authenticated|[a-z]:1" {} \; | wc -l)" -gt 1 ]; do
         unset SESSION_FILES
         SESSION_FILES="$(find "/mnt/docker-aio-config/session/" -mindepth 1)"
         unset SESSION_FILES_ARRAY

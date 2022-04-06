@@ -118,7 +118,7 @@
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
                                         {% for restore_time in backup_times %}
-                                            <option value="{{ restore_time }}">{{ restore_time }}</option>
+                                            <option value="{{ restore_time }}">{{ restore_time }} CT</option>
                                         {% endfor %}
                                     </select>
                                     <input class="button" type="submit" value="Restore selected backup"/>
@@ -297,7 +297,7 @@
                                 <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                             {% elseif backup_exit_code == 0 %}
                                 {% if borg_backup_mode == "backup" %}
-                                    <span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }}! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                    <span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }} CT! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                                 {% else %}
                                     <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                                 {% endif %}
@@ -342,7 +342,7 @@
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
                                             {% for restore_time in backup_times %}
-                                                <option value="{{ restore_time }}">{{ restore_time }}</option>
+                                                <option value="{{ restore_time }}">{{ restore_time }} CT</option>
                                             {% endfor %}
                                         </select>
                                         <input class="button" type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
