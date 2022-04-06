@@ -1,9 +1,8 @@
 #!/bin/bash
 
 restart_process() {
-    set -x
+    echo "Restarting cron.sh because daily backup time was set or unset."
     pkill cron.sh
-    set +x
 }
 
 file_present() {
@@ -22,5 +21,5 @@ file_present() {
 
 while true; do
     file_present
-    sleep 5
+    sleep 2
 done
