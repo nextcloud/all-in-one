@@ -191,6 +191,13 @@ if [ "$BORG_MODE" = restore ]; then
     # Save current path
     BORG_LOCATION="$(jq '.borg_backup_host_location' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
 
+    # Save current nextcloud datadir
+    if grep -q '"nextcloud_datadir":' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json; then
+        NEXTCLOUD_DATADIR="$(jq '.nextcloud_datadir' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+    else
+        NEXTCLOUD_DATADIR='""'
+    fi
+
     # Restore the configuration file
     if ! rsync --archive --human-readable -vv \
     /tmp/borg/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json \
@@ -210,6 +217,10 @@ if [ "$BORG_MODE" = restore ]; then
 
     # Reset the AIO password to the currently used one
     CONTENTS="$(jq ".password = $AIO_PASSWORD" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+    echo -E "${CONTENTS}" > /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
+
+    # Reset the datadir to the one that was used for the restore
+    CONTENTS="$(jq ".nextcloud_datadir = $NEXTCLOUD_DATADIR" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
     echo -E "${CONTENTS}" > /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
 
     umount /tmp/borg

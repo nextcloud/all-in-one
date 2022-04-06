@@ -35,10 +35,8 @@ fi
 rm -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/backup-is-running"
 
 # Get a list of all available borg archives
-set -x
 borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | awk -F " " '{print $1","$3,$4}' > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
 chmod +r "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
-set +x
 
 if [ -n "$FAILED" ]; then
     if [ "$BORG_MODE" = backup ]; then
