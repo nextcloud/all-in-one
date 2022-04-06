@@ -233,7 +233,8 @@ RUN set -ex; \
     chmod +x /entrypoint.sh && \
     chmod +r /upgrade.exclude && \
     chmod +x /cron.sh && \
-    chmod +x /notify.sh
+    chmod +x /notify.sh && \
+    chmod +x /activate-collabora.sh
 
 RUN set -ex; \
     mkdir /mnt/ncdata; \
