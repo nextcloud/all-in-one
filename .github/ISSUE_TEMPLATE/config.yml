@@ -1,9 +1,12 @@
 blank_issues_enabled: false
 contact_links:
     - name: 💡 Suggest a new feature or discuss one
-      url:  https://github.com/nextcloud/all-in-one/discussions
+      url:  https://github.com/nextcloud/all-in-one/discussions/categories/ideas
       about: For new feature requests and discussion of existing ones
-    - name: ❓ Community Support and Help
+    - name: ❓ Questions on AIO
+      url: https://github.com/nextcloud/all-in-one/discussions/categories/questions
+      about: For questions regarding AIO
+    - name: ⛑️ Community Support and Help
       url: https://help.nextcloud.com/tag/aio
       about: For other types of questions
     - name: 💼 Nextcloud Enterprise
