@@ -412,7 +412,7 @@ class DockerActionManager
         $runningDigest = $this->GetRepoDigestOfContainer($containerName);
         $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
 
-        if ($remoteDigest === $runningDigest || $remoteDigest === null) {
+        if ($remoteDigest === $runningDigest || $remoteDigest === null || $runningDigest === null) {
             return false;
         } else {
             return true;
