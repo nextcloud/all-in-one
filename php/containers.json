@@ -168,7 +168,7 @@
         "9980"
       ],
       "environmentVariables": [
-        "domain=%NC_DOMAIN%",
+        "aliasgroup1=https://%NC_DOMAIN%:443",
         "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning"
       ],
       "volumes": [],
