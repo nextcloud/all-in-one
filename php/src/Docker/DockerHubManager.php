@@ -52,8 +52,10 @@ class DockerHubManager
                 }
             }
 
+            error_log('Could not get digest of container ' . $name . ':' . $tag);
             return null;
         } catch (\Exception $e) {
+            error_log('Could not get digest of container ' . $name . ':' . $tag . ' ' . $e->getMessage());
             return null;
         }
     }

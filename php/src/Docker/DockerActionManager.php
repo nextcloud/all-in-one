@@ -100,7 +100,7 @@ class DockerActionManager
         $runningDigest = $this->GetRepoDigestOfContainer($container->GetIdentifier());
         $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
 
-        if ($runningDigest === $remoteDigest || $remoteDigest === null || $runningDigest === null) {
+        if ($runningDigest === $remoteDigest || $remoteDigest === null) {
             return new VersionEqualState();
         } else {
             return new VersionDifferentState();
@@ -375,7 +375,6 @@ class DockerActionManager
 
             return null;
         } catch (\Exception $e) {
-            error_log('Could not get digest of container ' . $this->BuildApiUrl($containerName) . ' ' . $e->getMessage());
             return null;
         }
     }
@@ -413,7 +412,7 @@ class DockerActionManager
         $runningDigest = $this->GetRepoDigestOfContainer($containerName);
         $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
 
-        if ($remoteDigest === $runningDigest || $remoteDigest === null || $runningDigest === null) {
+        if ($remoteDigest === $runningDigest || $remoteDigest === null) {
             return false;
         } else {
             return true;
