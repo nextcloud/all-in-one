@@ -7,6 +7,8 @@ Included are:
 - High performance backend for Nextcloud Files
 - High performance backend for Nextcloud Talk
 - Backup solution (based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
+- OnlyOffice
+- ClamAV
 
 **Found a bug?** Please file an issue at https://github.com/nextcloud/all-in-one
 
