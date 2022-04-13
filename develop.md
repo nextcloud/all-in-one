@@ -18,7 +18,12 @@ It will now also select the developer channel for all other containers automatic
 
 Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/repo-sync.yml and run the workflow that will first sync the repo and then build new container that automatically get published to `develop` and `develop-arm64`.
 
-## How to promote builds from develop to latest
+## How to promote builds from develop to beta
 
 1. Verify that no job is running here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml
-2. Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-latest.yml, click on `Run workflow` and enter your desired container image name that you want to publish from develop to latest. Available image names are listed here: https://github.com/nextcloud-releases/all-in-one/blob/main/.github/workflows/build_images.yml#L21-L30 
+2. Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-beta.yml, click on `Run workflow`.
+
+## How to promote builds from beta to latest
+
+1. Verify that no job is running here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-beta.yml
+2. Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-latest.yml, click on `Run workflow`.

@@ -1,8 +1,4 @@
-# Nextcloud All In One Beta
-This is beta software and not production ready.
-But feel free to use it at your own risk!
-We expect there to be rough edges and potentially serious bugs.
-
+# Nextcloud All In One
 Nextcloud AIO stands for Nextcloud All In One and provides easy deployment and maintenance with most features included in this one Nextcloud instance. 
 
 Included are:
@@ -105,6 +101,9 @@ Simply run the following: `sudo docker exec -it nextcloud-aio-nextcloud php occ 
 
 ### How to resolve `Security & setup warnings displays the "missing default phone region" after initial install`?
 Simply run the following command: `sudo docker exec -it nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue"`. Of course you need to modify `yourvalue` based on your location. Examples are `DE`, `EN` and `GB`. See this list for more codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
+
+### How to switch the channel?
+You can switch to a different channel like e.g. the beta channel or from the beta channel back to the latest channel by stopping the mastercontainer, removing it (no data will be lost) and recreating the container using the same command that you used initially to create the mastercontainer. For the beta channel on x64 you need to change the last line `nextcloud/all-in-one:latest` to `nextcloud/all-in-one:beta` and vice versa. For arm64 it is `nextcloud/all-in-one:latest-arm64` and `nextcloud/all-in-one:beta-arm64`, respectively.
 
 ### How to update the containers?
 If we push new containers to `latest`, you will see in the AIO interface below the `containers` section that new container updates were found. In this case, just press `Stop containers` and `Start containers` in order to update the containers. The mastercontainer has its own update procedure though. See below. And don't forget to back up the current state of your instance using the built-in backup solution before starting the containers again! Otherwise you won't be able to restore your instance easily if something should break during the update. 
