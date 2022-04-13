@@ -16,8 +16,7 @@
     </header>
 
     <div class="content">
-        <h1>Nextcloud AIO Beta v0.10.0</h1>
-        This is beta software and not production ready.<br><br>
+        <h1>Nextcloud AIO v1.0.0</h1>
 
         {% set isAnyRunning = false %}
         {% set isAnyRestarting = false %}
@@ -158,7 +157,7 @@
             {% endif %}
 
             {% if domain != "" and was_start_button_clicked == true %}
-                    You are running the <b>{{ current_channel }}</b> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
+                    You are running the <a href="https://github.com/nextcloud/all-in-one#how-to-switch-the-channel"><b>{{ current_channel }} channel</b></a>. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
             {% endif %}
 
             {% if is_backup_container_running == true %}
