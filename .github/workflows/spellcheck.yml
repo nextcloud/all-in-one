@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: spelling or typos
         uses: actions/checkout@v3
+      - name: fix permission for reviewdog
+        run: sudo chown -R root:root $GITHUB_WORKSPACE
       - name: misspell
         uses: reviewdog/action-misspell@v1
         with:
