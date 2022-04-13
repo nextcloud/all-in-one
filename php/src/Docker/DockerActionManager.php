@@ -100,7 +100,7 @@ class DockerActionManager
         $runningDigest = $this->GetRepoDigestOfContainer($container->GetIdentifier());
         $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
 
-        if ($runningDigest === $remoteDigest || $remoteDigest === null) {
+        if ($runningDigest === $remoteDigest || $remoteDigest === null || $runningDigest === null) {
             return new VersionEqualState();
         } else {
             return new VersionDifferentState();
