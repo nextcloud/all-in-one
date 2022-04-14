@@ -32,7 +32,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 <summary>click here to expand</summary>
 <br>
 
-**Disclaimer:** the config below is not working 100% correctly, yet. See e.g. https://github.com/nextcloud/all-in-one/issues/450, https://github.com/nextcloud/all-in-one/issues/447 and https://github.com/nextcloud/all-in-one/discussions/486. Improvements to it are very welcome!
+**Disclaimer:** the config below is not working 100% correctly, yet. See e.g. https://github.com/nextcloud/all-in-one/issues/450, https://github.com/nextcloud/all-in-one/issues/447 and https://github.com/nextcloud/all-in-one/issues/491. Improvements to it are very welcome!
 
 Add this to you nginx config:
 
