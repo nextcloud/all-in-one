@@ -62,7 +62,9 @@ If your firewall/router has port 80 and 8443 open and you point a domain to your
 Nextcloud AIO is inspired by projects like Portainer that allow to manage the docker daemon by talking to the docker socket directly. This concept allows to install only one container with a single command that does the heavy lifting of creating and managing all containers that are needed in order to provide a Nextcloud installation with most features included. It also makes updating a breeze and is not bound to the host system (and its slow updates) anymore as everything is in containers. Additionally, it is very easy to handle from a user perspective because a simple interface for managing your Nextcloud AIO installation is provided.
 
 ### Are reverse proxies supported?
-Yes. Please refer to the following documentation on this: [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
+Yes. `nextcloud/all-in-one` assumes that your reverse proxy is installed directly on the host, not inside a separate docker container.
+
+Please refer to the following documentation on this: [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
 
 ### Which ports are mandatory to be open in your firewall/router?
 Only those (if you acces the Mastercontainer Interface internally via port 8080):
