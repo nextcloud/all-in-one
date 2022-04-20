@@ -379,18 +379,15 @@
                     {% if is_backup_container_running == false %}
                         {% if isApacheStarting == false %} 
                             <h2>AIO password change</h2>
-                            <details>
-                            <summary>Click here to chance your AIO password</summary><br />
-                                You can change your AIO password below:<br><br />
-                                <form method="POST" action="/api/configuration" class="xhr">
-                                    <input type="text" autocomplete="current-password" name="current-master-password" placeholder="Your current AIO password"/>
-                                    <input type="text" autocomplete="new-password" name="new-master-password" placeholder="Your new AIO password"/>
-                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                    <input class="button" type="submit" value="Submit" />
-                                </form>
-                                The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><b>latin characters</b></a> <b>a-z</b>, <b>A-Z</b>, <b>0-9</b> and <b>spaces</b>.
-                                </details><br /><br />
+                            You can change your AIO password below:<br><br />
+                            <form method="POST" action="/api/configuration" class="xhr">
+                                <input type="text" autocomplete="current-password" name="current-master-password" placeholder="Your current AIO password"/>
+                                <input type="text" autocomplete="new-password" name="new-master-password" placeholder="Your new AIO password"/>
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                <input class="button" type="submit" value="Submit" />
+                            </form>
+                            The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><b>latin characters</b></a> <b>a-z</b>, <b>A-Z</b>, <b>0-9</b> and <b>spaces</b>.
                         {% endif %}
                     {% endif %}
                 {% endif %}

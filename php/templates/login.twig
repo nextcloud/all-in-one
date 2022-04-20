@@ -6,7 +6,7 @@
             <img src="/img/logo-blue.svg" style="margin-left: auto;margin-right: auto;display: block;">
             <h1>Nextcloud AIO Login</h1>
             {% if is_login_allowed == true %}
-                <p>Log in using your Nextcloud AIO password.</p>
+                <p>Log in using your Nextcloud AIO password:</p>
                 <form method="POST" action="/api/auth/login">
                     <input type="text" name="password" placeholder="Password" />
                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
