@@ -1,7 +1,7 @@
 # Caddy is a requirement
 FROM caddy:2.4.6-alpine as caddy
 
-FROM debian:bullseye-20220328-slim
+FROM debian:bullseye-20220418-slim
 
 EXPOSE 80
 
