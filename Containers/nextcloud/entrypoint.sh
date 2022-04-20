@@ -211,8 +211,11 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
             echo "Upgrading nextcloud from $installed_version to $image_version..."
             if ! php /var/www/html/occ upgrade || ! php /var/www/html/occ -V; then
                 echo "Upgrade failed. Please restore from backup."
+                bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup!"
                 exit 1
             fi
+
+            bash /notify.sh "Nextcloud update to $image_version successful!" "Feel free to inspect the Nextcloud container logs for more info."
 
             php /var/www/html/occ app:list | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
             echo "The following apps have been disabled:"
@@ -233,7 +236,10 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
 
     # Performing update of all apps if daily backups are enabled, running and successful
     if [ "$DAILY_BACKUP_RUNNING" = 'yes' ]; then
-        php /var/www/html/occ app:update --all
+        UPDATED_APPS="$(php /var/www/html/occ app:update --all)"
+        if [ -n "$UPDATED_APPS" ]; then
+             bash /notify.sh "Your apps just got updated!" "$UPDATED_APPS"
+        fi
     fi
 fi
 
