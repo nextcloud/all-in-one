@@ -97,14 +97,21 @@ class DockerActionManager
     {
         $tag = $this->GetCurrentChannel();
 
-        $runningDigest = $this->GetRepoDigestOfContainer($container->GetIdentifier());
-        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
-
-        if ($runningDigest === $remoteDigest || $remoteDigest === null || $runningDigest === null) {
-            return new VersionEqualState();
-        } else {
+        $runningDigests = $this->GetRepoDigestsOfContainer($container->GetIdentifier());
+        if ($runningDigests === null) {
             return new VersionDifferentState();
         }
+        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
+        if ($remoteDigest === null) {
+            return new VersionEqualstate();
+        }
+
+        foreach($runningDigests as $runningDigest) {
+            if ($runningDigest === $remoteDigest) {
+                return new VersionEqualState();
+            }
+        }
+        return new VersionDifferentState();
     }
 
     public function GetContainerStartingState(Container $container) : IContainerState
@@ -358,7 +365,7 @@ class DockerActionManager
         }
     }
 
-    private function GetRepoDigestOfContainer(string $containerName) : ?string {
+    private function GetRepoDigestsOfContainer(string $containerName) : ?array {
         try {
             $containerUrl = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
             $containerOutput = json_decode($this->guzzleClient->get($containerUrl)->getBody()->getContents(), true);
@@ -367,10 +374,30 @@ class DockerActionManager
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
             $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true);
 
-            if(isset($imageOutput['RepoDigests']) && count($imageOutput['RepoDigests']) === 1) {
-                $fullDigest = $imageOutput['RepoDigests'][0];
+            if (!isset($imageOutput['RepoDigests'])) {
+                error_log('RepoDigests is not set of container ' . $containerName);
+                return null;
+            } 
 
-                return substr($fullDigest, strpos($fullDigest, "@") + 1);
+            if (!is_array($imageOutput['RepoDigests'])) {
+                error_log('RepoDigests of ' . $containerName . ' is not an array which is not allowed!');
+                return null;
+            }
+
+            $repoDigestArray = [];
+            $oneDigestGiven = false;
+            foreach($imageOutput['RepoDigests'] as $repoDigest) {
+                $digestPosition = strpos($repoDigest, '@');
+                if ($digestPosition === false) {
+                    error_log('Somehow the RepoDigest of ' . $containerName . ' does not contain a @.');
+                    return null;
+                }
+                $repoDigestArray[] = substr($repoDigest, $digestPosition + 1);
+                $oneDigestGiven = true;
+            }
+
+            if ($oneDigestGiven) {
+                return $repoDigestArray;
             }
 
             return null;
@@ -409,14 +436,21 @@ class DockerActionManager
 
         $tag = $this->GetCurrentChannel();
 
-        $runningDigest = $this->GetRepoDigestOfContainer($containerName);
-        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
-
-        if ($remoteDigest === $runningDigest || $remoteDigest === null || $runningDigest === null) {
-            return false;
-        } else {
+        $runningDigests = $this->GetRepoDigestsOfContainer($containerName);
+        if ($runningDigests === null) {
             return true;
         }
+        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
+        if ($remoteDigest === null) {
+            return false;
+        }
+
+        foreach ($runningDigests as $runningDigest) {
+            if ($remoteDigest === $runningDigest) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function sendNotification(Container $container, string $subject, string $message) : void
