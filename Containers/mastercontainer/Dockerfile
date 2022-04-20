@@ -92,7 +92,8 @@ COPY supervisord.conf /
 RUN chmod +x /usr/bin/start.sh; \
     chmod +x /cron.sh; \
     chmod +x /session-deduplicator.sh; \
-    chmod +x /backup-time-file-watcher.sh
+    chmod +x /backup-time-file-watcher.sh; \
+    chmod a+r /Caddyfile
 
 USER root
 
