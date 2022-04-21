@@ -60,9 +60,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>$internalPort</code>
     </InvalidScalarArgument>
-    <PossiblyFalseOperand occurrences="1">
-      <code>strpos($fullDigest, "@")</code>
-    </PossiblyFalseOperand>
     <RedundantCondition occurrences="1">
       <code>$container-&gt;GetInternalPorts() !== null</code>
     </RedundantCondition>
