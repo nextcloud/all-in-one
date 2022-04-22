@@ -37,7 +37,7 @@ jobs:
         apcu_version="$(
           git ls-remote --tags https://github.com/krakjoe/apcu.git \
             | cut -d/ -f3 \
-            | grep -vE -- '-rc|-b' \
+            | grep -viE -- 'rc|b' \
             | sed -E 's/^v//' \
             | sort -V \
             | tail -1
