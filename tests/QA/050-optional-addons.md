@@ -8,3 +8,5 @@
     - [ ] Collabora by trying to open a .docx or .odt file in Nextcloud
     - [ ] Nextcloud Talk by opening the Talk app in Nextcloud, creating a new chat and trying to join a call in this chat. Also verifying in the settings that the HPB and turn server work.
     - [ ] Onlyoffice by trying to open a .docx file in Nextcloud
+
+You can now continue with [060-environmental-variables.md](./060-environmental-variables.md)
