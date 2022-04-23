@@ -17,9 +17,9 @@ labels: bug, 0. Needs triage
 2.
 3.
 
-### Expected behaviour <!--- Tell us what should happen -->
+### Expected behavior <!--- Tell us what should happen -->
 
-### Actual behaviour <!--- Tell us what happens instead -->
+### Actual behavior <!--- Tell us what happens instead -->
 
 
 ### Host OS <!--- (the host OS on which you are trying to install AIO on) -->
