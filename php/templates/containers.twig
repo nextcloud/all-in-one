@@ -168,11 +168,17 @@
             {% if domain != "" %}
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
-                        <details>
-                        <summary>Click here to reveal the initial Nextcloud credentials</summary><br />
-                            Initial Nextcloud username: <b>admin</b><br />
-                            Initial Nextcloud password: <b>{{ nextcloud_password }}</b>
-                        </details><br /><br />
+                        {% if borg_backup_host_location != '' %}
+                            <details>
+                            <summary>Click here to reveal the initial Nextcloud credentials</summary><br />
+                        {% endif %}
+                                Initial Nextcloud username: <b>admin</b><br />
+                                Initial Nextcloud password: <b>{{ nextcloud_password }}</b>
+                        {% if borg_backup_host_location != '' %}
+                            </details><br /><br />
+                        {% else %}
+                            <br><br>
+                        {% endif %}
                         <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
                     {% else %}
                         {% if isAnyRestarting == false %}

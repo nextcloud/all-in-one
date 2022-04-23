@@ -23,7 +23,7 @@ For the below to work, it is important that you have a domain that you point ont
     - [ ] Below that it should show a section with Containers: Apache, Database, Nextcloud and Redis and that your containers are up-to-date
     - [ ] On the bottom should be the Optional addons section shown but with disabled checkboxes (not clickable)
     - [ ] A automatic reload every 5s should happen until all Containers are started (as long as this window is focused)
-- [ ] After waiting a bit longer it should instead of the advice that your containers are currently running a details tag that is expandable with the initial Nextcloud credentials (username, password) and below that a button that allows to open the Nextcloud interface in a new tab
+- [ ] After waiting a bit longer it should instead of the advice that your containers are currently running show the initial Nextcloud credentials (username, password) and below that a button that allows to open the Nextcloud interface in a new tab
 - [ ] Clicking on that button should open the Nextcloud interface in a new tab and you should be able to log in using the provided credentials
 - [ ] Below the Containers section it should show a `Stop containers` button
 - [ ] Below the Containers section and above the Optional Addons section, you should see a Backup and restore section and an AIO password change section
