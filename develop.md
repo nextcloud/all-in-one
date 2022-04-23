@@ -14,6 +14,9 @@ nextcloud/all-in-one:develop
 And you are done :)
 It will now also select the developer channel for all other containers automatically.
 
+## How to publish new releases?
+Simply use https://github.com/nextcloud/all-in-one/issues/180 as template.
+
 ## How to build new containers
 
 Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/repo-sync.yml and run the workflow that will first sync the repo and then build new container that automatically get published to `develop` and `develop-arm64`.
