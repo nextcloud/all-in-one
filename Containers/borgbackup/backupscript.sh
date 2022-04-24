@@ -256,11 +256,15 @@ fi
 if [ "$BORG_MODE" = test ]; then
     if ! [ -d "$BORG_BACKUP_DIRECTORY" ]; then
         echo "No 'borg' directory in the given backup directory found!"
+        echo "Only the files/folders below have been found in the given directory."
+        ls -a "$MOUNT_DIR"
         echo "Please adjust the directory so that the borg archive is positioned in a folder named 'borg' inside the given directory!"
         exit 1
     elif ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
         echo "A 'borg' directory was found but could not find the borg archive."
-        echo "It must be positioned directly in the 'borg' subfolder."
+        echo "Only the files/folders below have been found in the borg directory."
+        ls -a "$BORG_BACKUP_DIRECTORY"
+        echo "The archive and most importantly the config file must be positioned directly in the 'borg' subfolder."
         exit 1
     elif ! borg list "$BORG_BACKUP_DIRECTORY"; then
         echo "The entered path seems to be valid but could not open the backup archive."
