@@ -51,7 +51,7 @@
 
         {% if is_daily_backup_running == true %}
             <span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br /><br />
-            It will update all containers and all apps if the backup is successful.<br /><br />
+            It will update your containers, the mastercontainer and your Nextcloud apps if the backup is successful.<br /><br />
             {% if is_mastercontainer_update_available == true %}
                 Since the mastercontainer gets updated, it will restart the container which will make it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower">Logs</a>)<br /><br />
             {% endif %}
@@ -353,7 +353,7 @@
                                         <input class="button" type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
                                     </form>
 
-                                    <h3>Daily backup creation</h3>
+                                    <h3>Daily backup</h3>
                                     {% if daily_backup_time == "" %}
                                         By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <b>04:00</b> will create backups at 4 am UTC and <b>16:00</b> at 4 pm UTC.<br><br/>
                                         <form method="POST" action="/api/configuration" class="xhr">
@@ -362,9 +362,9 @@
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                             <input class="button" type="submit" value="Submit" />
                                         </form>
-                                        This option will also automatically update your containers and apps and will send a notification about the result of the backup.<br><br/>
+                                        This option will also automatically update your containers, the mastercontainer and your Nextcloud apps and will send a notification about the result of the backup.<br><br/>
                                     {% else %}
-                                        Daily backups will be created at <b>{{ daily_backup_time }} UTC</b> which includes a notification about the result of the backup and automatic updates of your containers and apps. You can disable this option again by clicking on the button below.<br><br/>
+                                        Daily backups will be created at <b>{{ daily_backup_time }} UTC</b> which includes a notification about the result of the backup and automatic updates of your containers, the mastercontainer and your Nextcloud apps. You can disable this option again by clicking on the button below.<br><br/>
                                         <form method="POST" action="/api/configuration" class="xhr">
                                             <input type="hidden" name="delete_daily_backup_time" value="yes"/>
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
