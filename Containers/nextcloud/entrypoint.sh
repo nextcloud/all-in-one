@@ -250,6 +250,12 @@ if [ -z "$(find "/mnt/ncdata/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*"
     exit 1
 fi
 
+# Perform fingerprint update if instance was restored
+if [ -f "/mnt/ncdata/fingerprint.update" ]; then
+    php /var/www/html/occ maintenance:data-fingerprint
+    rm "/mnt/ncdata/fingerprint.update"
+fi
+
 # Apply one-click-instance settings
 echo "Applying one-click-instance settings..."
 php /var/www/html/occ config:system:set one-click-instance --value=true --type=bool
