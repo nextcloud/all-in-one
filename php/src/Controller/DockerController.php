@@ -115,6 +115,7 @@ class DockerController
     public function StartBackupContainerTest(Request $request, Response $response, $args) : Response {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'test';
+        $config['instance_restore_attempt'] = 0;
         $this->configurationManager->WriteConfig($config);
 
         $id = self::TOP_CONTAINER;

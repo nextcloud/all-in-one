@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Variables
-export BORG_BACKUP_DIRECTORY="/mnt/borgbackup/borg"
+export MOUNT_DIR="/mnt/borgbackup"
+export BORG_BACKUP_DIRECTORY="$MOUNT_DIR/borg"
 
 # Validate BORG_PASSWORD
 if [ -z "$BORG_PASSWORD" ] && [ -z "$BACKUP_RESTORE_PASSWORD" ]; then
@@ -35,7 +36,11 @@ fi
 rm -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/backup-is-running"
 
 # Get a list of all available borg archives
-borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | awk -F " " '{print $1","$3,$4}' > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
+if borg list "$BORG_BACKUP_DIRECTORY" &>/dev/null; then
+    borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | awk -F " " '{print $1","$3,$4}' > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
+else
+    echo "" > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
+fi
 chmod +r "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
 
 if [ -n "$FAILED" ]; then

@@ -334,6 +334,7 @@ class ConfigurationManager
         $config = $this->GetConfig();
         $config['borg_backup_host_location'] = $location;
         $config['borg_restore_password'] = $password;
+        $config['instance_restore_attempt'] = 1;
         $this->WriteConfig($config);
     }
 
@@ -420,6 +421,18 @@ class ConfigurationManager
         }
 
         return $config['borg_restore_password'];
+    }
+
+    public function isInstanceRestoreAttempt() : bool {
+        $config = $this->GetConfig();
+        if(!isset($config['instance_restore_attempt'])) {
+            $config['instance_restore_attempt'] = '';
+        }
+
+        if ($config['instance_restore_attempt'] === 1) {
+            return true;
+        }
+        return false;
     }
 
     public function GetBorgBackupMode() : string {
