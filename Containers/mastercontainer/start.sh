@@ -54,7 +54,7 @@ API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
 LOCAL_API_VERSION_NUMB="$(sudo -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
 if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
     if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
-        echo "Docker v$API_VERSION is not supported by your docker engine. Cannot proceed."
+        echo "Docker API v$API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
         exit 1
     fi
 else
