@@ -5,6 +5,7 @@
     - [ ] Enter `/mnt/` or  `/media/` or `/host_mnt/` or `/var/backups/` should send an error as well
     - [ ] Accepted should be `/mnt/backup`, `/media/backup`, `/host_mnt/c/backup` and `/var/backups`.
     - [ ] The side should now reload
+- [ ] The initial Nextcloud credentials on top of the page that are visible when the containers are running should now be hidden in a details tag
 - [ ] In the Backup restore section you should now see a Backup information section with important info like the encryption password, the backup location and more.
 - [ ] Also you should see a Backup cretion section that contains a `Create backup` button.
 - [ ] Clicking on the `Create backup` button should open a window prompt that allows to cancel the operation.
