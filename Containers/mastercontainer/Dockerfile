@@ -2,7 +2,7 @@
 FROM docker:20.10.14-dind-alpine3.15 as dind
 
 # Caddy is a requirement
-FROM caddy:2.4.6-alpine as caddy
+FROM caddy:2.5.0-alpine as caddy
 
 # From https://github.com/docker-library/php/blob/master/8.0/bullseye/apache/Dockerfile
 FROM php:8.0.18-apache-bullseye
