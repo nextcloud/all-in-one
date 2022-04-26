@@ -8,7 +8,7 @@
             {% if is_login_allowed == true %}
                 <p>Log in using your Nextcloud AIO password:</p>
                 <form method="POST" action="/api/auth/login">
-                    <input type="password" name="password" placeholder="Password" />
+                    <input type="text" autocomplete="off" name="password" placeholder="Password" />
                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                     <input type="submit" class="button" value="Login" />
