@@ -233,6 +233,10 @@ if [ "$BORG_MODE" = restore ]; then
     # Add file to Nextcloud container so that it skips any update the next time
     touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
     chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
+
+    # Add file to Nextcloud container so that it performs a fingerprint update the next time
+    touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/fingerprint.update"
+    chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/fingerprint.update"
 fi
 
 # Do the Backup check
