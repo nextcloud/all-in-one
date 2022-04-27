@@ -52,6 +52,8 @@ location / {
     }
 ```
 
+Please note that the `$connection_upgrade` is not defined in a default `nginx` configuration. You will need to add it to your `nginx.conf`. Please see [this nginx blog post](https://www.nginx.com/blog/websocket-nginx/) for details.
+
 Of course SSL needs to be set up as well e.g. by using certbot and your domain must be also added inside the nginx config.
 
 </details>
