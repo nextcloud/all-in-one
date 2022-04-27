@@ -31,6 +31,9 @@ elif ! sudo -u www-data test -r /var/run/docker.sock; then
         echo "Adding internal www-data to group $DOCKER_GROUP"
         usermod -aG "$DOCKER_GROUP" www-data
     else
+        # Delete the docker group for cases when the docker socket permissions changed between restarts
+        groupdel docker &>/dev/null
+
         # If the group doesn't exist, create it
         echo "Creating docker group internally with id $DOCKER_GROUP_ID"
         groupadd -g "$DOCKER_GROUP_ID" docker
