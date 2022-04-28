@@ -130,6 +130,20 @@ chown www-data:www-data -R /mnt/docker-aio-config/session/
 chown www-data:www-data -R /mnt/docker-aio-config/caddy/
 chown root:root -R /mnt/docker-aio-config/certs/
 
+# Don't allow access to the AIO interface directly from the Nextcloud container
+# Probably more cosmetic than anything but at least an attempt
+if ! grep -q '# nextcloud-aio-block' /etc/apache2/apache2.conf; then
+    cat << APACHE_CONF >> /etc/apache2/apache2.conf
+# nextcloud-aio-block-start
+<Location />
+order allow,deny
+deny from nextcloud-aio-nextcloud.nextcloud-aio
+allow from all
+</Location>
+# nextcloud-aio-block-end
+APACHE_CONF
+fi
+
 # Adjust certs
 GENERATED_CERTS="/mnt/docker-aio-config/certs"
 TMP_CERTS="/etc/apache2/certs"
