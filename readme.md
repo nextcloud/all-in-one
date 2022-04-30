@@ -275,7 +275,12 @@ fi
 
 You can simply copy and past the script into a file e.g. named `backup-script.sh` e.g. here: `/root/backup-script.sh`. Do not forget to modify the variables to your needings though!
 
-Afterwards apply the correct permissions with `sudo chown root:root /root/backup-script.sh` and `sudo chmod 700 /root/backup-script.sh`. Then you can create a cronjob that runs e.g. at `20:00` each week on sundays like this: `crontab -u root -l | { cat; echo "0 20 * * 7 /root/backup-script.sh"; } | crontab -u root -`. Make sure that it does not collidate with the daily backups from AIO (if configured) since the target backup repository might get into an inconsistent state. (There is no check in place that checks this.)
+Afterwards apply the correct permissions with `sudo chown root:root /root/backup-script.sh` and `sudo chmod 700 /root/backup-script.sh`. Then you can create a cronjob that runs e.g. at `20:00` each week on sundays like this: 
+1. Open the cronjob with `sudo crontab -u root -e` (and choose your editor of choice if not already done. I'd recommend nano). 
+1. Add the following new line to the crontab if not alreaddy present: `0 20 * * 7 /root/backup-script.sh` which will run the script at 20:00 on sundays each week. 
+1. save and close the crontab (when using nano are the shortcouts for this Ctrl + o -> Enter and close the editor with Ctrl + x).
+
+⚠ **Attention:** Make sure that the execution of the script does not collidate with the daily backups from AIO (if configured) since the target backup repository might get into an inconsistent state. (There is no check in place that checks this.)
 
 ### How to change the default location of Nextcloud's Datadir?
 You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/mnt/`, `/media/` or `/host_mnt/`. An example for Linux and macOS is `-e NEXTCLOUD_DATADIR="/mnt/ncdata"`. On Windows it might be `-e NEXTCLOUD_DATADIR="/host_mnt/c/your/data/path"` (This Windows example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) Please make sure to apply the correct permissions to the chosen directory before starting Nextcloud the first time (not needed on Windows). In this example would the command for this be: `sudo chown -R 33:0 /mnt/ncdata`. ⚠ **Attention:** It is very important to change the datadir **before** Nextcloud is installed/started the first time and not to change it afterwards!
