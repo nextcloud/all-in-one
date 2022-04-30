@@ -278,7 +278,7 @@ You can simply copy and past the script into a file e.g. named `backup-script.sh
 Afterwards apply the correct permissions with `sudo chown root:root /root/backup-script.sh` and `sudo chmod 700 /root/backup-script.sh`. Then you can create a cronjob that runs e.g. at `20:00` each week on sundays like this: 
 1. Open the cronjob with `sudo crontab -u root -e` (and choose your editor of choice if not already done. I'd recommend nano). 
 1. Add the following new line to the crontab if not alreaddy present: `0 20 * * 7 /root/backup-script.sh` which will run the script at 20:00 on sundays each week. 
-1. save and close the crontab (when using nano are the shortcouts for this Ctrl + o -> Enter and close the editor with Ctrl + x).
+1. save and close the crontab (when using nano are the shortcouts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
 
 ⚠ **Attention:** Make sure that the execution of the script does not collidate with the daily backups from AIO (if configured) since the target backup repository might get into an inconsistent state. (There is no check in place that checks this.)
 
