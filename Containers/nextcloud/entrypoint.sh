@@ -81,6 +81,8 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
             mkdir -p /usr/src/tmp/nextcloud/custom_apps
             chmod +x /usr/src/tmp/nextcloud/occ
             cp /usr/src/nextcloud/config/* /usr/src/tmp/nextcloud/config/
+            mkdir -p /usr/src/tmp/nextcloud/apps/nextcloud-aio
+            cp /usr/src/nextcloud/apps/nextcloud-aio/* /usr/src/tmp/nextcloud/apps/nextcloud-aio/
             mv /usr/src/nextcloud /usr/src/temp-nextcloud
             mv /usr/src/tmp/nextcloud /usr/src/nextcloud
             rm -r /usr/src/tmp
