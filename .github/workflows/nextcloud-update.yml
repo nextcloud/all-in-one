@@ -60,7 +60,8 @@ jobs:
         sed -i "s|pecl install imagick.*\;|pecl install imagick-$imagick_version\;|" ./Containers/nextcloud/Dockerfile
         
         # Nextcloud
-        NCVERSION=$(curl -s -m 900 https://download.nextcloud.com/server/releases/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+        NC_MAJOR="$(grep "ENV NEXTCLOUD_VERSION" ./Containers/nextcloud/Dockerfile | grep -oP '[23][0-9]')"
+        NCVERSION=$(curl -s -m 900 https://download.nextcloud.com/server/releases/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | grep "$NC_MAJOR" | sort --version-sort | tail -1)
         sed -i "s|^ENV NEXTCLOUD_VERSION.*|ENV NEXTCLOUD_VERSION $NCVERSION|" ./Containers/nextcloud/Dockerfile
 
     - name: Create Pull Request
