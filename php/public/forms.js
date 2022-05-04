@@ -12,7 +12,7 @@
     }
     lastError = toast
     body.prepend(toast)
-    setTimeout(toast.remove.bind(toast), 3000)
+    setTimeout(toast.remove.bind(toast), 7000)
   }
 
   function handleEvent(e) {
