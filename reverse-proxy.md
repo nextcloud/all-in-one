@@ -1,12 +1,18 @@
 ## Reverse Proxy Documentation
 
-Basically, you need to specify the port that the apache container shall use and modify the startup command a bit.
+**Please note:** Publishing the AIO interface with a valid certificate to the public internet is **NOT** the goal of this documentation! Instead, the main goal is to publish Nextcloud with a valid certificate to the public internet which is **NOT** running inside the mastercontainer but in a different container! If you need a valid certificate for the AIO interface, see [point 3](#3-optional-get-a-valid-certificate-for-the-aio-interface). 
 
-All examples below will use port `11000` as example apache port. Also it is supposed that the reverse proxy runs on the same server like AIO, hence `localhost` is used and not an internal ip-address to point to the AIO instance. Modify both to your needings.
+In order to run Nextcloud behind a reverse proxy, you need to specify the port that the Apache container shall use, add a specific config to your reverse proxy and modify the startup command a bit. All examples below will use port `11000` as example Apache port. Modify it to your needings.
 
-**Info:** The instructions below assume that your reverse proxy is installed directly on the host, not inside a separate docker container. If you want to run the reverse proxy inside a docker container, you can do so by using the `--network host` option when starting the reverse proxy container. Or if you don't want to use the networks host option, substituting `localhost` by the internal ip-address of the Host might work.
+⚠ **Attention** The process to run Nextcloud behind a reverse proxy consists of at least these 2 steps:
+1. **Configure the reverse proxy! See [point 1](#1-add-this-to-your-reverse-proxy-config)**
+1. **Use the in this document provided startup command! See [point 2](#2-use-this-startup-command)**
+- Optional: get a valid certificate for the AIO interface! See [point 3](#3-optional-get-a-valid-certificate-for-the-aio-interface)
+- How to debug things? See [point 4](#4-how-to-debug-things)
 
-### Reverse proxy config examples
+### 1. Add this to your reverse proxy config
+
+⚠ **Please note:** Since the Apache container gets spawned by the mastercontainer, there is **NO** way to provide custom docker labels for the Apache container. So please do not attempt to do this because you will fail!
 
 #### Caddy
 
@@ -19,11 +25,11 @@ Add this to your Caddyfile:
 ```
 https://<your-nc-domain>:443 {
     header Strict-Transport-Security max-age=31536000;
-    reverse_proxy localhost:11000
+    reverse_proxy <ip.address.of.the.server>:11000
 }
 ```
 
-Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud.
+Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also you need to modify `<ip.address.of.the.server>` to the ip-address of the server which is running the docker service.
 
 </details>
 
@@ -39,7 +45,7 @@ Add this to you nginx config:
 
 ```
 location / {
-        proxy_pass http://localhost:11000;
+        proxy_pass http://<ip.address.of.the.server>:11000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -51,7 +57,7 @@ location / {
     }
 ```
 
-Of course SSL needs to be set up as well e.g. by using certbot and your domain must be also added inside the nginx config.
+Of course SSL needs to be set up as well e.g. by using certbot and your domain must be also added inside the nginx config. You will also need to modify `<ip.address.of.the.server>` to the ip-address of the server which is running the docker service.
 
 </details>
 
@@ -63,7 +69,7 @@ Of course SSL needs to be set up as well e.g. by using certbot and your domain m
 
 **Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
 
-Add a `nc.toml` to the treafik rules folder with the following content:
+Add a `nc.toml` to the Treafik rules folder with the following content:
 
 ```toml
 [http.routers]
@@ -80,14 +86,14 @@ Add a `nc.toml` to the treafik rules folder with the following content:
         [http.services.nc-svc.loadBalancer]
             passHostHeader = true
             [[http.services.nc-svc.loadBalancer.servers]]
-                url = "http://localhost:11000"
+                url = "http://<ip.address.of.the.server>:11000"
 ```
 
-Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud.
+Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. You will also need to modify `<ip.address.of.the.server>` to the ip-address of the server which is running the docker service.
 
 </details>
 
-### Startup command
+### 2. Use this startup command
 
 After adjusting your reverse proxy config, use the following command to start AIO:
 
@@ -140,15 +146,26 @@ nextcloud/all-in-one:latest
 
 </details>
 
-After doing so, you should be able to access the AIO Interface via `https://internal.ip.of.this.server:8080`. Enter your domain that you've entered in the reverse proxy config and you should be done. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
+<details>
 
-### Optional
+<summary>Inspiration for a docker-compose file</summary>
+
+Simply translate the docker run command into a docker-compose file. You can have a look at [this file](https://github.com/nextcloud/all-in-one/blob/main/docker-compose.yml) for some inspiration but you will need to modify it either way.
+
+</details>
+
+---
+
+#### How to continue? 
+After using the above command, you should be able to access the AIO Interface via `https://ip.address.of.the.server:8080`. Enter your domain that you've entered in the reverse proxy config and you should be done. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
+
+### 3. Optional: get a valid certificate for the AIO interface
 
 If you want to also access your AIO interface publicly with a valid certificate, you can add e.g. the following config to your Caddyfile:
 
 ```
 https://<your-nc-domain>:8443 {
-    reverse_proxy https://localhost:8080 {
+    reverse_proxy https://<ip.address.of.the.server>:8080 {
         transport http {
             tls_insecure_skip_verify
         }
@@ -156,4 +173,11 @@ https://<your-nc-domain>:8443 {
 }
 ```
 
-Of course, you also need to modify `<your-nc-domain>` to the domain that you want to use. Afterwards should the AIO interface be accessible via `https://<your-nc-domain>:8443`. You can alternatively change the domain to a different subdomain by using `https://<your-alternative-domain>:443` in the Caddyfile and use that to access the AIO interface.
+Of course, you also need to modify `<your-nc-domain>` to the domain that you want to use. You will also need to modify `<ip.address.of.the.server>` to the ip-address of the server which is running the docker service.
+Afterwards should the AIO interface be accessible via `https://<your-nc-domain>:8443`. You can alternatively change the domain to a different subdomain by using `https://<your-alternative-domain>:443` in the Caddyfile and use that to access the AIO interface.
+
+### 4. How to debug things?
+If something does not work, follow the steps below:
+1. Make sure to follow the whole reverse proxy documentation step-for-step from top to bottom
+1. Find out if the the reverse proxy can ping the entered ip-address of the server that is hosting the docker service.
+    - If not, you need to make that possible. In worst case, you need to use the `--network host` option when starting the reverse proxy container (if the reverse proxy is running inside a container)
