@@ -12,7 +12,7 @@ In order to run Nextcloud behind a reverse proxy, you need to specify the port t
 
 ### 1. Add this to your reverse proxy config
 
-⚠ **Please note:** Since the Apache container gets spawned by the mastercontainer, there is **NO** way to provide custom docker labels for the Apache container. So please do not attempt to do this because you will fail!
+⚠ **Please note:** Since the Apache container gets spawned by the mastercontainer, there is **NO** way to provide custom docker labels or custom environmental variables for the Apache container. So please do not attempt to do this because you will fail!
 
 #### Caddy
 
@@ -58,6 +58,16 @@ location / {
 ```
 
 Of course SSL needs to be set up as well e.g. by using certbot and your domain must be also added inside the nginx config. You will also need to modify `<private.ip.address.of.the.host>` to the private ip-address of the host that is running the docker daemon. **Advice:** the `nextcloud-aio-mastercontainer` is **NOT** running the docker daemon. The host itself is running the docker daemon.
+
+</details>
+
+#### Nginx-Proxy
+
+<details>
+
+<summary>click here to expand</summary>
+
+Unfortunately it is not possible to configure nginx-proxy in a way that works because it completely relies on environmental variables of the docker containers itself. Providing these does not work as stated above.
 
 </details>
 
