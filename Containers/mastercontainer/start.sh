@@ -78,7 +78,8 @@ if [ -n "$NEXTCLOUD_DATADIR" ]; then
     && ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/host_mnt/"
     then
         echo "You've set NEXTCLOUD_DATADIR but not to an allowed value.
-The string must start with '/mnt/', '/media/' or '/host_mnt/'. E.g. '/mnt/ncdata'"
+The string must start with '/mnt/', '/media/' or '/host_mnt/'. E.g. '/mnt/ncdata'.
+It is set to '$NEXTCLOUD_DATADIR'."
         exit 1
     elif [ "$NEXTCLOUD_DATADIR" = "/mnt/" ] || [ "$NEXTCLOUD_DATADIR" = "/media/" ] || [ "$NEXTCLOUD_DATADIR" = "/host_mnt/" ]; then
         echo "You've set NEXTCLOUD_DATADIR but not to an allowed value.
@@ -93,7 +94,8 @@ if [ -n "$NEXTCLOUD_MOUNT" ]; then
     && ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/var/backups$"
     then
         echo "You've set NEXCLOUD_MOUNT but not to an allowed value.
-The string must be equal to/start with '/mnt/', '/media/' or '/host_mnt/' or be equal to '/var/backups'."
+The string must be equal to/start with '/mnt/', '/media/' or '/host_mnt/' or be equal to '/var/backups'.
+It is set to '$NEXTCLOUD_DATADIR'."
         exit 1
     elif [ "$NEXTCLOUD_MOUNT" = "/mnt/ncdata" ] || echo "$NEXTCLOUD_MOUNT" | grep -q "^/mnt/ncdata/"; then
         echo "/mnt/ncdata and /mnt/ncdata/ are not allowed for NEXTCLOUD_MOUNT."
@@ -108,7 +110,8 @@ if [ -n "$NEXTCLOUD_DATADIR" ] && [ -n "$NEXTCLOUD_MOUNT" ]; then
 fi
 if [ -n "$APACHE_PORT" ]; then
     if ! check_if_number "$APACHE_PORT"; then
-        echo "You provided an Apache port but did not only use numbers"
+        echo "You provided an Apache port but did not only use numbers.
+It is set to '$APACHE_PORT'."
         exit 1
     elif ! [ "$APACHE_PORT" -le 65535 ] || ! [ "$APACHE_PORT" -ge 1 ]; then
         echo "The provided Apache port is invalid. It must be between 1 and 65535"
