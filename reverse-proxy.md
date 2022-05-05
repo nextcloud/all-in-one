@@ -25,11 +25,11 @@ Add this to your Caddyfile:
 ```
 https://<your-nc-domain>:443 {
     header Strict-Transport-Security max-age=31536000;
-    reverse_proxy <ip.address.of.the.server>:11000
+    reverse_proxy <private.ip.address.of.the.host>:11000
 }
 ```
 
-Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also you need to modify `<ip.address.of.the.server>` to the ip-address of the server which is running the docker service.
+Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also you need to modify `<private.ip.address.of.the.host>` to the private ip-address of the host that is running the docker daemon. **Advice:** the `nextcloud-aio-mastercontainer` is **NOT** running the docker daemon. The host itself is running the docker daemon.
 
 </details>
 
@@ -45,7 +45,7 @@ Add this to you nginx config:
 
 ```
 location / {
-        proxy_pass http://<ip.address.of.the.server>:11000;
+        proxy_pass http://<private.ip.address.of.the.host>:11000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -57,7 +57,7 @@ location / {
     }
 ```
 
-Of course SSL needs to be set up as well e.g. by using certbot and your domain must be also added inside the nginx config. You will also need to modify `<ip.address.of.the.server>` to the ip-address of the server which is running the docker service.
+Of course SSL needs to be set up as well e.g. by using certbot and your domain must be also added inside the nginx config. You will also need to modify `<private.ip.address.of.the.host>` to the private ip-address of the host that is running the docker daemon. **Advice:** the `nextcloud-aio-mastercontainer` is **NOT** running the docker daemon. The host itself is running the docker daemon.
 
 </details>
 
@@ -86,10 +86,10 @@ Add a `nc.toml` to the Treafik rules folder with the following content:
         [http.services.nc-svc.loadBalancer]
             passHostHeader = true
             [[http.services.nc-svc.loadBalancer.servers]]
-                url = "http://<ip.address.of.the.server>:11000"
+                url = "http://<private.ip.address.of.the.host>:11000"
 ```
 
-Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. You will also need to modify `<ip.address.of.the.server>` to the ip-address of the server which is running the docker service.
+Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. You will also need to modify `<private.ip.address.of.the.host>` to the private ip-address of the host that is running the docker daemon. **Advice:** the `nextcloud-aio-mastercontainer` is **NOT** running the docker daemon. The host itself is running the docker daemon.
 
 </details>
 
@@ -157,7 +157,7 @@ Simply translate the docker run command into a docker-compose file. You can have
 ---
 
 #### How to continue? 
-After using the above command, you should be able to access the AIO Interface via `https://ip.address.of.the.server:8080`. Enter your domain that you've entered in the reverse proxy config and you should be done. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
+After using the above command, you should be able to access the AIO Interface via `https://private.ip.address.of.the.host:8080`. Enter your domain that you've entered in the reverse proxy config and you should be done. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
 ### 3. Optional: get a valid certificate for the AIO interface
 
@@ -165,7 +165,7 @@ If you want to also access your AIO interface publicly with a valid certificate,
 
 ```
 https://<your-nc-domain>:8443 {
-    reverse_proxy https://<ip.address.of.the.server>:8080 {
+    reverse_proxy https://<private.ip.address.of.the.host>:8080 {
         transport http {
             tls_insecure_skip_verify
         }
@@ -173,11 +173,13 @@ https://<your-nc-domain>:8443 {
 }
 ```
 
-Of course, you also need to modify `<your-nc-domain>` to the domain that you want to use. You will also need to modify `<ip.address.of.the.server>` to the ip-address of the server which is running the docker service.
+Of course, you also need to modify `<your-nc-domain>` to the domain that you want to use. You will also need to modify `<private.ip.address.of.the.host>` to the private ip-address of the host that is running the docker daemon. **Advice:** the `nextcloud-aio-mastercontainer` is **NOT** running the docker daemon. The host itself is running the docker daemon.
+
 Afterwards should the AIO interface be accessible via `https://<your-nc-domain>:8443`. You can alternatively change the domain to a different subdomain by using `https://<your-alternative-domain>:443` in the Caddyfile and use that to access the AIO interface.
 
 ### 4. How to debug things?
 If something does not work, follow the steps below:
-1. Make sure to follow the whole reverse proxy documentation step-for-step from top to bottom
-1. Find out if the the reverse proxy can ping the entered ip-address of the server that is hosting the docker service.
-    - If not, you need to make that possible. In worst case, you need to use the `--network host` option when starting the reverse proxy container (if the reverse proxy is running inside a container)
+1. Make sure to exactly follow the whole reverse proxy documentation step-for-step from top to bottom!
+1. Find out if you can ping the private ip-address of the host that is running the docker daemon from inside the reverse proxy container (if runing the reverse proxy in a container). **Advice:** the `nextcloud-aio-mastercontainer` is **NOT** running the docker daemon. The host itself is running the docker daemon.
+1. Try to configure everything from scratch if it still does not work!
+    <!-- - If not, you need to make that possible. In worst case, you need to use the `--network host` option when starting the reverse proxy container (if the reverse proxy is running inside a container) -->
