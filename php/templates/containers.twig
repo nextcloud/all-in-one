@@ -141,7 +141,9 @@
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input class="button" type="submit" value="Submit" />
                             </form>
-                            The folder path that you enter may start with <b>/mnt/</b>, <b>/media/</b> or <b>/host_mnt/</b> or may be equal to <b>/var/backups</b>.<br><br>So e.g. <b>/mnt/backup</b> on Linux and macOS or <b>/host_mnt/c/backup/directory</b> on Windows. (This Windows example would be equivalent to 'C:\backup\directory' on the Windows host. So you need to translate the path that you want to use into the correct format.)<br><br>
+                            The folder path that you enter may start with <b>/mnt/</b>, <b>/media/</b> or <b>/host_mnt/</b> or may be equal to <b>/var/backups</b>.<br><br>
+                            An example for Linux and macOS is <b>/mnt/backup</b>.<br>
+                            On Windows it might be <b>/host_mnt/c/backup/directory</b>. (This Windows example would be equivalent to 'C:\backup\directory' on the Windows host. So you need to translate the path that you want to use into the correct format.)<br><br>
                             ⚠ Note that the backup archive must be located in a subfolder of the folder that you enter here and the subfolder which contains the archive must be named 'borg'. Otherwise will the backup container not find the backup archive!<br><br>
                         {% endif %}
                     {% else %}
@@ -291,7 +293,9 @@
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                             <input class="button" type="submit" value="Submit" />
                         </form>
-                        The folder path that you enter must start with <b>/mnt/</b>, <b>/media/</b> or <b>/host_mnt/</b> or be equal to <b>/var/backups</b>.<br><br>So e.g. <b>/mnt/backup</b> on Linux and macOS or <b>/host_mnt/c/backup/directory</b> on Windows. (This Windows example would be equivalent to 'C:\backup\directory' on the Windows host. So you need to translate the path that you want to use into the correct format.)
+                            The folder path that you enter may start with <b>/mnt/</b>, <b>/media/</b> or <b>/host_mnt/</b> or may be equal to <b>/var/backups</b>.<br><br>
+                            An example for Linux and macOS is <b>/mnt/backup</b>.<br>
+                            On Windows it might be <b>/host_mnt/c/backup/directory</b>. (This Windows example would be equivalent to 'C:\backup\directory' on the Windows host. So you need to translate the path that you want to use into the correct format.)<br><br>
                     {% endif %}
 
                     {% if borg_backup_host_location != "" %}
