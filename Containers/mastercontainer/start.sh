@@ -116,6 +116,16 @@ if [ -n "$APACHE_PORT" ]; then
     fi
 fi
 
+# Check DNS resolution
+# Prevents issues like https://github.com/nextcloud/all-in-one/discussions/565
+curl https://nextcloud.com &>/dev/null
+if [ "$?" = 6 ]; then
+    echo "Could not resolve the host nextcloud.com."
+    echo "Most likely the DNS resolving does not work."
+    echo "You should be able to fix this by adding the '--dns=\"ip.address.of.dns.server\"' option to the docker run command."
+    exit 1
+fi
+
 # Add important folders
 mkdir -p /mnt/docker-aio-config/data/
 mkdir -p /mnt/docker-aio-config/session/
