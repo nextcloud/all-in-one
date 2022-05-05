@@ -102,6 +102,9 @@ Simply run the following: `sudo docker exec -it nextcloud-aio-nextcloud php occ 
 ### How to resolve `Security & setup warnings displays the "missing default phone region" after initial install`?
 Simply run the following command: `sudo docker exec -it nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue"`. Of course you need to modify `yourvalue` based on your location. Examples are `DE`, `EN` and `GB`. See this list for more codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
 
+### Update policy
+This project values stability over new features. That means that when a new major Nextcloud update gets introduced, we will wait at least until the first patch release, e.g. `24.0.1` is out before upgrading to it. Also we will wait with the upgrade until all important apps are compatible with the new major version. Minor or patch releases for Nextcloud and all dependencies as well as all containers will be updated to new versions as soon as possible but we try to give all updates first a good test round before pushing them. That means that it can take around 2 weeks before new updates reach the `latest` channel. If you want to help testing, you can switch to the `beta` channel by following [this documentation](#how-to-switch-the-channel) which will also give you the updates earlier.
+
 ### How to switch the channel?
 You can switch to a different channel like e.g. the beta channel or from the beta channel back to the latest channel by stopping the mastercontainer, removing it (no data will be lost) and recreating the container using the same command that you used initially to create the mastercontainer. For the beta channel on x64 you need to change the last line `nextcloud/all-in-one:latest` to `nextcloud/all-in-one:beta` and vice versa. For arm64 it is `nextcloud/all-in-one:latest-arm64` and `nextcloud/all-in-one:beta-arm64`, respectively.
 
