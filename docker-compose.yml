@@ -20,3 +20,16 @@ services:
       # - APACHE_PORT=11000 # Is needed when running behind a reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       # - NEXTCLOUD_DATADIR="/mnt/ncdata" # Allows to set the host directory for Nextcloud's datadir. See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir
       # - NEXTCLOUD_MOUNT="/mnt/" # Allows the Nextcloud container to access the chosen directory on the host. See https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host
+
+  # # Optional: Caddy reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+  # # You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
+  # caddy:
+  #   image: caddy:alpine
+  #   restart: always
+  #   container_name: caddy
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - ./certs:/certs
+  #     - ./config:/config
+  #     - ./data:/data
+  #     - ./sites:/srv
