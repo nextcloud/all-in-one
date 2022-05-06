@@ -282,26 +282,13 @@ class ConfigurationManager
      * @throws InvalidSettingConfigurationException
      */
     public function SetBorgBackupHostLocation(string $location) : void {
-        $allowedPrefixes = [
-            '/mnt/',
-            '/media/',
-            '/host_mnt/',
-        ];
-
         $isValidPath = false;
-        foreach($allowedPrefixes as $allowedPrefix) {
-            if(str_starts_with($location, $allowedPrefix) && !str_ends_with($location, '/')) {
-                $isValidPath = true;
-                break;
-            }
-            if ($location === '/var/backups') {
-                $isValidPath = true;
-                break;
-            }
+        if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
+            $isValidPath = true;
         }
 
-        if(!$isValidPath) {
-            throw new InvalidSettingConfigurationException("The path must start with '/mnt/', '/media/' or '/host_mnt/' or be equal to '/var/backups'.");
+        if (!$isValidPath) {
+            throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'!");
         }
 
 
@@ -323,8 +310,8 @@ class ConfigurationManager
             $isValidPath = true;
         }
 
-        if(!$isValidPath) {
-            throw new InvalidSettingConfigurationException("The path may start with '/mnt/', '/media/' or '/host_mnt/' or may be equal to '/var/backups'.");
+        if (!$isValidPath) {
+            throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'!");
         }
 
         if ($password === '') {
