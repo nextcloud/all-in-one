@@ -105,7 +105,9 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 ### 2. Use this startup command
 
-After adjusting your reverse proxy config, use the following command to start AIO:
+After adjusting your reverse proxy config, use the following command to start AIO:<br>
+
+(For an docker-compose example, see the example further [below](#inspiration-for-a-docker-compose-file).)
 
 ```
 # For x64 CPUs:
@@ -156,13 +158,9 @@ nextcloud/all-in-one:latest
 
 </details>
 
-<details>
+#### Inspiration for a docker-compose file
 
-<summary>Inspiration for a docker-compose file</summary>
-
-Simply translate the docker run command into a docker-compose file. You can have a look at [this file](https://github.com/nextcloud/all-in-one/blob/main/docker-compose.yml) for some inspiration but you will need to modify it either way.
-
-</details>
+Simply translate the docker run command into a docker-compose file. You can have a look at [this file](https://github.com/nextcloud/all-in-one/blob/main/docker-compose.yml) for some inspiration but you will need to modify it either way. You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
 
 ---
 
@@ -192,4 +190,4 @@ If something does not work, follow the steps below:
 1. Make sure to exactly follow the whole reverse proxy documentation step-for-step from top to bottom!
 1. Find out if you can ping the private ip-address of the host that is running the docker daemon from inside the reverse proxy container (if runing the reverse proxy in a container). **Advice:** the `nextcloud-aio-mastercontainer` is **NOT** running the docker daemon. The host itself is running the docker daemon.
 1. Try to configure everything from scratch if it still does not work!
-    <!-- - If not, you need to make that possible. In worst case, you need to use the `--network host` option when starting the reverse proxy container (if the reverse proxy is running inside a container) -->
+1. If nothing works and as last resort, you can modify `<private.ip.address.of.the.host>` to `localhost`. For that to work, the reverse proxy needs to be member of the host network. That means, that when running the reverse proxy inside a container, you need to use the `--network host` option when starting the container.
