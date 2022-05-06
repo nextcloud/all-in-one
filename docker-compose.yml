@@ -33,3 +33,4 @@ services:
   #     - ./config:/config
   #     - ./data:/data
   #     - ./sites:/srv
+  #   network_mode: "host"
