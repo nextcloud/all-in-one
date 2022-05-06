@@ -1,5 +1,5 @@
 # Docker CLI is a requirement
-FROM docker:20.10.14-dind-alpine3.15 as dind
+FROM docker:20.10.15-dind-alpine3.15 as dind
 
 # Caddy is a requirement
 FROM caddy:2.5.0-alpine as caddy
