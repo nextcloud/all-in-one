@@ -68,7 +68,13 @@ Of course SSL needs to be set up as well e.g. by using certbot and your domain m
 
 <summary>click here to expand</summary>
 
-Unfortunately it is not possible to configure nginx-proxy in a way that works because it completely relies on environmental variables of the docker containers itself. Providing these does not work as stated above.
+Unfortunately it is not possible to configure nginx-proxy in a way that works because it completely relies on environmental variables of the docker containers itself. Providing these variables does not work as stated above.
+
+If you really want to use AIO, we recommend you to switch to caddy. It is simply amazing!<br>
+Of course understandable if that is not possible for you.
+
+Apart from that, there is this idea: https://github.com/nextcloud/all-in-one/issues/557<br>
+Pull requests are very welcome!
 
 </details>
 
