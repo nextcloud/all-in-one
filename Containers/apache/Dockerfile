@@ -40,7 +40,8 @@ RUN a2enmod rewrite \
 
 COPY nextcloud.conf /etc/apache2/sites-available/
 
-RUN a2dissite 000-default && \
+RUN set -ex; \
+    a2dissite 000-default && \
     a2dissite default-ssl && \
     a2ensite nextcloud.conf && \
     rm -rf /var/www/html/* && \
@@ -61,7 +62,8 @@ COPY supervisord.conf /
 RUN chmod +x /usr/bin/start.sh; \
     chmod +r /supervisord.conf; \
     chmod a+w /Caddyfile; \
-    chmod a+w /
+    chmod 777 /; \
+    chmod +r -R /etc/apache2
 
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
