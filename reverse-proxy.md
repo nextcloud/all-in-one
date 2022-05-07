@@ -86,25 +86,50 @@ Pull requests are very welcome!
 
 **Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
 
-Add a `nc.toml` to the Treafik rules folder with the following content:
+1. Add a `nextcloud.toml` to the Treafik rules folder with the following content:
 
-```toml
-[http.routers]
-    [http.routers.nc-rtr]
-        entryPoints = ["https"]
-        rule = "Host(<your-nc-domain>)"
-        service = "nc-svc"
-        middlewares = ["chain-no-auth"]
-        [http.routers.nc-rtr.tls]
-            certresolver = "le"
+    ```toml
+    [http.routers]
+        [http.routers.nc-rtr]
+            entryPoints = ["https"]
+            rule = "Host(<your-nc-domain>)"
+            service = "nc-svc"
+            middlewares = ["chain-no-auth"]
+            [http.routers.nc-rtr.tls]
+                certresolver = "le"
 
-[http.services]
-    [http.services.nc-svc]
-        [http.services.nc-svc.loadBalancer]
-            passHostHeader = true
-            [[http.services.nc-svc.loadBalancer.servers]]
-                url = "http://<private.ip.address.of.the.host>:11000"
-```
+    [http.services]
+        [http.services.nc-svc]
+            [http.services.nc-svc.loadBalancer]
+                passHostHeader = true
+                [[http.services.nc-svc.loadBalancer.servers]]
+                    url = "http://<private.ip.address.of.the.host>:11000"
+    ```
+
+2. Add to the bottom of the `middlewares.toml` file in the Treafik rules folder the following content:
+
+    ```toml
+    [http.middlewares.nc-middlewares-secure-headers]
+        [http.middlewares.nc-middlewares-secure-headers.headers]
+            hostsProxyHeaders = ["X-Forwarded-Host"]
+            sslRedirect = true
+            stsSeconds = 63072000
+            stsIncludeSubdomains = true
+            stsPreload = true
+            forceSTSHeader = true
+            referrerPolicy = "same-origin"
+            X-Robots-Tag = "none"
+    ```
+
+3. Add to the bottom of the `middleware-chains.toml` file in the Traefik rules folder the following content:
+
+    ```toml
+    [http.middlewares.chain-nc]
+        [http.middlewares.chain-nc.chain]
+            middlewares = [ "middlewares-rate-limit", "nc-middlewares-secure-headers"]
+    ```
+
+---
 
 Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. You will also need to modify `<private.ip.address.of.the.host>` to the private ip-address of the host that is running the docker daemon. **Advice:** the `nextcloud-aio-mastercontainer` is **NOT** running the docker daemon. The host itself is running the docker daemon.
 
