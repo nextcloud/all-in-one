@@ -1,0 +1,79 @@
+{
+	"type": "object",
+	"description": "AIO containers definition schema",
+	"additionalProperties": false,
+	"minProperties": 1,
+	"properties": {
+		"production": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"minProperties": 11,
+				"properties": {
+					"containerName": {
+						"type": "string"
+					},
+					"dependsOn": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"displayName": {
+						"type": "string"
+					},
+					"environmentVariables": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"identifier": {
+						"type": "string"
+					},
+					"internalPorts": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"maxShutdownTime": {
+						"type": "integer"
+					},
+					"ports": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"restartPolicy": {
+						"type": "string"
+					},
+					"secrets": {
+						"type": "array"
+					},
+					"volumes": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"additionalProperties": false,
+							"minProperties": 3,
+							"properties": {
+								"location": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"writeable": {
+									"type": "boolean"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,6 +1,7 @@
 {
   "production": [
     {
+      "identifier": "nextcloud-aio-apache",
       "dependsOn": [
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
@@ -8,7 +9,6 @@
         "nextcloud-aio-talk",
         "nextcloud-aio-nextcloud"
       ],
-      "identifier": "nextcloud-aio-apache",
       "displayName": "Apache",
       "containerName": "nextcloud/aio-apache",
       "ports": [
@@ -42,8 +42,8 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "dependsOn": [],
       "identifier": "nextcloud-aio-database",
+      "dependsOn": [],
       "displayName": "Database",
       "containerName": "nextcloud/aio-postgresql",
       "ports": [],
@@ -74,11 +74,11 @@
       "restartPolicy": "unless-stopped"
     },
     {
+      "identifier": "nextcloud-aio-nextcloud",
       "dependsOn": [
         "nextcloud-aio-database",
         "nextcloud-aio-redis"
       ],
-      "identifier": "nextcloud-aio-nextcloud",
       "displayName": "Nextcloud",
       "containerName": "nextcloud/aio-nextcloud",
       "ports": [],
@@ -140,8 +140,8 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "dependsOn": [],
       "identifier": "nextcloud-aio-redis",
+      "dependsOn": [],
       "displayName": "Redis",
       "containerName": "nextcloud/aio-redis",
       "ports": [],
@@ -159,8 +159,8 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "dependsOn": [],
       "identifier": "nextcloud-aio-collabora",
+      "dependsOn": [],
       "displayName": "Collabora",
       "containerName": "nextcloud/aio-collabora",
       "ports": [],
@@ -177,8 +177,8 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "dependsOn": [],
       "identifier": "nextcloud-aio-talk",
+      "dependsOn": [],
       "displayName": "Talk",
       "containerName": "nextcloud/aio-talk",
       "ports": [
@@ -204,8 +204,8 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "dependsOn": [],
       "identifier": "nextcloud-aio-borgbackup",
+      "dependsOn": [],
       "displayName": "Borgbackup",
       "containerName": "nextcloud/aio-borgbackup",
       "ports": [],
@@ -265,8 +265,8 @@
       "restartPolicy": ""
     },
     {
-      "dependsOn": [],
       "identifier": "nextcloud-aio-watchtower",
+      "dependsOn": [],
       "displayName": "Watchtower",
       "containerName": "nextcloud/aio-watchtower",
       "ports": [],
@@ -306,8 +306,8 @@
       "restartPolicy": ""
     },
     {
-      "dependsOn": [],
       "identifier": "nextcloud-aio-clamav",
+      "dependsOn": [],
       "displayName": "ClamAV",
       "containerName": "nextcloud/aio-clamav",
       "ports": [],
@@ -327,8 +327,8 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "dependsOn": [],
       "identifier": "nextcloud-aio-onlyoffice",
+      "dependsOn": [],
       "displayName": "OnlyOffice",
       "containerName": "nextcloud/aio-onlyoffice",
       "ports": [],

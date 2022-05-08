@@ -1,0 +1,160 @@
+version: "3.8"
+
+services:
+  nextcloud-aio-apache:
+    container_name: nextcloud-aio-apache
+    depends_on:
+      - nextcloud-aio-onlyoffice
+      - nextcloud-aio-collabora
+      - nextcloud-aio-clamav
+      - nextcloud-aio-talk
+      - nextcloud-aio-nextcloud
+    image: nextcloud/aio-apache:latest
+    ports:
+      - ${APACHE_PORT}:${APACHE_PORT}/tcp
+    environment:
+      - NC_DOMAIN=${NC_DOMAIN}
+      - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
+      - COLLABORA_HOST=nextcloud-aio-collabora
+      - TALK_HOST=nextcloud-aio-talk
+      - APACHE_PORT=${APACHE_PORT}
+      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
+    volumes:
+      - nextcloud_aio_nextcloud:/var/www/html:ro
+      - nextcloud_aio_apache:/mnt/data:rw
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+ 
+  nextcloud-aio-database:
+    container_name: nextcloud-aio-database
+    image: nextcloud/aio-postgresql:latest
+    volumes:
+      - nextcloud_aio_database:/var/lib/postgresql/data:rw
+      - nextcloud_aio_database_dump:/mnt/data:rw
+    environment:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=nextcloud_database
+      - POSTGRES_USER=nextcloud
+    stop_grace_period: 1800s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+ 
+  nextcloud-aio-nextcloud:
+    container_name: nextcloud-aio-nextcloud
+    depends_on:
+      - nextcloud-aio-database
+      - nextcloud-aio-redis
+    image: nextcloud/aio-nextcloud:latest
+    volumes:
+      - nextcloud_aio_nextcloud:/var/www/html:rw
+      - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
+      - ${NEXTCLOUD_MOUNT}:${NEXTCLOUD_MOUNT}:rw
+    environment:
+      - POSTGRES_HOST=nextcloud-aio-database
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=nextcloud_database
+      - POSTGRES_USER=nextcloud
+      - REDIS_HOST=nextcloud-aio-redis
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - AIO_TOKEN=${AIO_TOKEN}
+      - NC_DOMAIN=${NC_DOMAIN}
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=${NEXTCLOUD_PASSWORD}
+      - NEXTCLOUD_DATA_DIR=/mnt/ncdata
+      - OVERWRITEHOST=${NC_DOMAIN}
+      - OVERWRITEPROTOCOL=https
+      - TURN_SECRET=${TURN_SECRET}
+      - SIGNALING_SECRET=${SIGNALING_SECRET}
+      - AIO_URL=${AIO_URL}
+      - NEXTCLOUD_MOUNT=${NEXTCLOUD_MOUNT}
+      - CLAMAV_ENABLED=${CLAMAV_ENABLED}
+      - CLAMAV_HOST=nextcloud-aio-clamav
+      - ONLYOFFICE_ENABLED=${ONLYOFFICE_ENABLED}
+      - COLLABORA_ENABLED=${COLLABORA_ENABLED}
+      - COLLABORA_HOST=nextcloud-aio-collabora
+      - TALK_ENABLED=${TALK_ENABLED}
+      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
+      - DAILY_BACKUP_RUNNING=${DAILY_BACKUP_RUNNING}
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+ 
+  nextcloud-aio-redis:
+    container_name: nextcloud-aio-redis
+    image: nextcloud/aio-redis:latest
+    environment:
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+ 
+  nextcloud-aio-collabora:
+    container_name: nextcloud-aio-collabora
+    image: nextcloud/aio-collabora:latest
+    environment:
+      - aliasgroup1=https://${NC_DOMAIN}:443
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+ 
+  nextcloud-aio-talk:
+    container_name: nextcloud-aio-talk
+    image: nextcloud/aio-talk:latest
+    ports:
+      - 3478:3478/tcp
+      - 3478:3478/udp
+    environment:
+      - NC_DOMAIN=${NC_DOMAIN}
+      - TURN_SECRET=${TURN_SECRET}
+      - SIGNALING_SECRET=${SIGNALING_SECRET}
+      - JANUS_API_KEY=${JANUS_API_KEY}
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+ 
+  nextcloud-aio-clamav:
+    container_name: nextcloud-aio-clamav
+    image: nextcloud/aio-clamav:latest
+    volumes:
+      - nextcloud_aio_clamav:/var/lib/clamav:rw
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+ 
+  nextcloud-aio-onlyoffice:
+    container_name: nextcloud-aio-onlyoffice
+    image: nextcloud/aio-onlyoffice:latest
+    volumes:
+      - nextcloud_aio_onlyoffice:/var/lib/onlyoffice:rw
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+
+volumes:
+  nextcloud_aio_apache:
+    name: nextcloud_aio_apache
+  nextcloud_aio_clamav:
+    name: nextcloud_aio_clamav
+  nextcloud_aio_database:
+    name: nextcloud_aio_database
+  nextcloud_aio_database_dump:
+    name: nextcloud_aio_database_dump
+  nextcloud_aio_nextcloud:
+    name: nextcloud_aio_nextcloud
+  nextcloud_aio_onlyoffice:
+    name: nextcloud_aio_onlyoffice
+  nextcloud_aio_nextcloud_data:
+    name: nextcloud_aio_nextcloud_data
+
+networks:
+  nextcloud-aio:
