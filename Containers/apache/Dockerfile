@@ -45,7 +45,6 @@ RUN set -ex; \
     a2dissite default-ssl && \
     a2ensite nextcloud.conf && \
     rm -rf /var/www/html/* && \
-    service apache2 restart; \
     chown www-data:www-data -R /var/log/apache2; \
     chown -R www-data:www-data /var/run/apache2; \
     chown -R www-data:www-data /var/www;
