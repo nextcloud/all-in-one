@@ -46,6 +46,7 @@ RUN set -ex; \
     a2ensite nextcloud.conf && \
     rm -rf /var/www/html/* && \
     chown www-data:www-data -R /var/log/apache2; \
+    mkdir -p /var/run/apache2; \
     chown -R www-data:www-data /var/run/apache2; \
     chown -R www-data:www-data /var/www;
 
