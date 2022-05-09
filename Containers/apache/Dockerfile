@@ -40,6 +40,10 @@ RUN a2enmod rewrite \
 
 COPY nextcloud.conf /etc/apache2/sites-available/
 
+RUN rm /etc/apache2/ports.conf; \
+    sed -s -i -e "s/Include ports.conf//" /etc/apache2/apache2.conf; \
+    sed -i "/^Listen /d" /etc/apache2/apache2.conf
+
 RUN set -ex; \
     a2dissite 000-default && \
     a2dissite default-ssl && \
