@@ -288,30 +288,30 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/backup
 ⚠ **Attention:** Make sure that the execution of the script does not collidate with the daily backups from AIO (if configured) since the target backup repository might get into an inconsistent state. (There is no check in place that checks this.)
 
 ### How to change the default location of Nextcloud's Datadir?
-You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/mnt/`, `/media/`, `/volume[0-9]/` or `/host_mnt/`. 
+You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
 
-(`/volume[0-9]/` means that all strings from `/volume1/` to `/volume9/` are allowed.)
-
-- An example for Linux and macOS is `-e NEXTCLOUD_DATADIR="/mnt/ncdata"`. 
+- An example for Linux is `-e NEXTCLOUD_DATADIR="/mnt/ncdata"`.
+- On macOS it might be `-e NEXTCLOUD_DATADIR="/var/nextcloud-data"`
 - For Synology it may be `/volume1/docker/nextcloud/data`. 
 - On Windows it might be `-e NEXTCLOUD_DATADIR="/host_mnt/c/your/data/path"` (This Windows example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
 
 ⚠ Please make sure to apply the correct permissions to the chosen directory before starting Nextcloud the first time (not needed on Windows). 
 
-- In this example for macOS and Linux, the command for this be: `sudo chown -R 33:0 /mnt/ncdata`. 
+- In this example for Linux, the command for this would be `sudo chown -R 33:0 /mnt/ncdata`. 
+- On macOS, the command for this would be `sudo chown -R 33:0 /var/nextcloud-data`.
 - For Synology, the command for this example would be `sudo chown -R 33:0 /volume1/docker/nextcloud/data` 
 - On Windows, this command is not needed.
 
 ⚠ **Attention:** It is very important to change the datadir **before** Nextcloud is installed/started the first time and not to change it afterwards!
 
 ### How to allow the Nextcloud container to access directories on the host?
-By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that are equal to or start with `/mnt/`, `/media/`, `/volume[0-9]/` or `/host_mnt/` or are equal to `/var/backups` and unequal to `/mnt/ncdata`. 
+By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
 
-- Two examples for Linux and macOS are: `-e NEXTCLOUD_MOUNT="/mnt/"` and `-e NEXTCLOUD_MOUNT="/media/"`. 
+- Two examples for Linux are `-e NEXTCLOUD_MOUNT="/mnt/"` and `-e NEXTCLOUD_MOUNT="/media/"`.
 - For Synology it may be `/volume1/`.
 - On Windows it might be `-e NEXTCLOUD_MOUNT="/host_mnt/c"` (This Windows example would be equivalent to `C:\` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
 
-After using this option, please make sure to apply the correct permissions to the directories that you want to use in Nextcloud (not needed on Windows). E.g. `sudo chown -R 33:0 /mnt/your-drive-mountpoint` should make it work on Linux and macOS when you have used `-e NEXTCLOUD_MOUNT="/mnt/"`. 
+After using this option, please make sure to apply the correct permissions to the directories that you want to use in Nextcloud (not needed on Windows). E.g. `sudo chown -R 33:0 /mnt/your-drive-mountpoint` should make it work on Linux when you have used `-e NEXTCLOUD_MOUNT="/mnt/"`. 
 
 You can then navigate to the apps management page, activate the external storage app, navigate to `https://your-nc-domain.com/settings/admin/externalstorages` and add a local external storage directory that will be accessible inside the container at the same place that you've entered. E.g. `/mnt/your-drive-mountpoint` will be mounted to `/mnt/your-drive-mountpoint` inside the container, etc. 
 

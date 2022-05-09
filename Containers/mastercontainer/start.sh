@@ -78,34 +78,21 @@ fi
 
 # Check for other options
 if [ -n "$NEXTCLOUD_DATADIR" ]; then
-    if ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/mnt/" \
-    && ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/media/" \
-    && ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/volume[0-9]/" \
-    && ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/host_mnt/"
-    then
+    if ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/" || [ "$NEXTCLOUD_DATADIR" = "/" ]; then
         echo "You've set NEXTCLOUD_DATADIR but not to an allowed value.
-The string must start with '/mnt/', '/media/', '/volume[0-9]/' or '/host_mnt/'. E.g. '/mnt/ncdata'.
+The string must start with '/' and must not be equal to '/'.
 It is set to '$NEXTCLOUD_DATADIR'."
-        exit 1
-    elif [ "$NEXTCLOUD_DATADIR" = "/mnt/" ] || [ "$NEXTCLOUD_DATADIR" = "/media/" ] || [ "$NEXTCLOUD_DATADIR" = "/volume[0-9]/" ] || [ "$NEXTCLOUD_DATADIR" = "/host_mnt/" ]; then
-        echo "You've set NEXTCLOUD_DATADIR but not to an allowed value.
-The string must start with '/mnt/', '/media/', '/volume[0-9]/' or '/host_mnt/' and not be equal to these."
         exit 1
     fi
 fi
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
-    if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/mnt/" \
-    && ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/media/" \
-    && ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/volume[0-9]/" \
-    && ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/host_mnt/" \
-    && ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/var/backups$"
-    then
+    if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/" || [ "$NEXTCLOUD_MOUNT" = "/" ]; then
         echo "You've set NEXCLOUD_MOUNT but not to an allowed value.
-The string must be equal to/start with '/mnt/', '/media/', '/volume[0-9]/' or '/host_mnt/' or be equal to '/var/backups'.
-It is set to '$NEXTCLOUD_DATADIR'."
+The string must start with '/' and must not be equal to '/'.
+It is set to '$NEXTCLOUD_MOUNT'."
         exit 1
     elif [ "$NEXTCLOUD_MOUNT" = "/mnt/ncdata" ] || echo "$NEXTCLOUD_MOUNT" | grep -q "^/mnt/ncdata/"; then
-        echo "'/mnt/ncdata' and '/mnt/ncdata/' are not allowed for NEXTCLOUD_MOUNT."
+        echo "'/mnt/ncdata' and '/mnt/ncdata/' are not allowed as values for NEXTCLOUD_MOUNT."
         exit 1
     fi
 fi
