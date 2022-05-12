@@ -1,0 +1,26 @@
+name: Update Yaml files
+
+on:
+  schedule:
+  - cron:  '00 12 * * *'
+
+jobs:
+  psalm:
+    name: update yaml files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: update yaml files
+        run: |
+          sudo bash manual-install/update-yaml.sh
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Yaml updates
+          signoff: true
+          title: Yaml updates
+          body: Automated yaml updates for the docker-compose files. Should only be merged shortly before the next latest release.
+          labels: dependencies
+          milestone: next
+          branch: aio-yaml-update

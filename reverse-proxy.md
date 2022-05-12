@@ -73,8 +73,7 @@ Unfortunately it is not possible to configure nginx-proxy in a way that works be
 If you really want to use AIO, we recommend you to switch to caddy. It is simply amazing!<br>
 Of course understandable if that is not possible for you.
 
-Apart from that, there is this idea: https://github.com/nextcloud/all-in-one/issues/557<br>
-Pull requests are very welcome!
+Apart from that, there is this: [manual-install](https://github.com/nextcloud/all-in-one/tree/main/manual-install)
 
 </details>
 

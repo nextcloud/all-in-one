@@ -1,0 +1,18 @@
+name: Json Validator
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  psalm:
+    name: Json Validator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Validate Json
+        run: |
+          sudo apt install python3-pip --no-install-recommends
+          sudo pip3 install json-spec
+          json validate --schema-file=php/containers-schema.json --document-file=php/containers.json

@@ -3,3 +3,6 @@
 /php/data/configuration.json
 /php/data/backupsecret.json
 /php/vendor
+/manual-install/*.conf
+!/manual-install/sample.conf
+/manual-install/docker-compose.yml
