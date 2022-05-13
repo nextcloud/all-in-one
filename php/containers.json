@@ -283,7 +283,7 @@
       ],
       "volumes": [
         {
-          "name": "/var/run/docker.sock",
+          "name": "%DOCKER_SOCKET_PATH%",
           "location": "/var/run/docker.sock",
           "writeable": false
         }

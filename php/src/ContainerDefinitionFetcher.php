@@ -101,8 +101,13 @@ class ContainerDefinitionFetcher
                     if ($value['name'] === '') {
                         continue;
                     }
+                } elseif ($value['name'] === '%DOCKER_SOCKET_PATH%') {
+                    $value['name'] = $this->configurationManager->GetDockerSocketPath();
+                    if($value['name'] === '') {
+                        continue;
+                    }
                 }
-                if($value['location'] === '%NEXTCLOUD_MOUNT%') {
+                if ($value['location'] === '%NEXTCLOUD_MOUNT%') {
                     $value['location'] = $this->configurationManager->GetNextcloudMount();
                     if($value['location'] === '') {
                         continue;
