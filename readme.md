@@ -297,9 +297,9 @@ You can configure the Nextcloud container to use a specific directory on your ho
 
 ⚠ Please make sure to apply the correct permissions to the chosen directory before starting Nextcloud the first time (not needed on Windows). 
 
-- In this example for Linux, the command for this would be `sudo chown -R 33:0 /mnt/ncdata`. 
-- On macOS, the command for this would be `sudo chown -R 33:0 /var/nextcloud-data`.
-- For Synology, the command for this example would be `sudo chown -R 33:0 /volume1/docker/nextcloud/data` 
+- In this example for Linux, the command for this would be `sudo chown -R 33:0 /mnt/ncdata` and `sudo chmod -R 750 /mnt/ncdata`. 
+- On macOS, the command for this would be `sudo chown -R 33:0 /var/nextcloud-data` and `sudo chmod -R 750 /var/nextcloud-data`.
+- For Synology, the command for this example would be `sudo chown -R 33:0 /volume1/docker/nextcloud/data` and `sudo chmod -R 750 /volume1/docker/nextcloud/data`
 - On Windows, this command is not needed.
 
 ⚠ **Attention:** It is very important to change the datadir **before** Nextcloud is installed/started the first time and not to change it afterwards!
@@ -311,7 +311,7 @@ By default, the Nextcloud container is confined and cannot access directories on
 - For Synology it may be `/volume1/`.
 - On Windows it might be `-e NEXTCLOUD_MOUNT="/host_mnt/c"` (This Windows example would be equivalent to `C:\` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
 
-After using this option, please make sure to apply the correct permissions to the directories that you want to use in Nextcloud (not needed on Windows). E.g. `sudo chown -R 33:0 /mnt/your-drive-mountpoint` should make it work on Linux when you have used `-e NEXTCLOUD_MOUNT="/mnt/"`. 
+After using this option, please make sure to apply the correct permissions to the directories that you want to use in Nextcloud (not needed on Windows). E.g. `sudo chown -R 33:0 /mnt/your-drive-mountpoint` and `sudo chmod -R 750 /mnt/your-drive-mountpoint` should make it work on Linux when you have used `-e NEXTCLOUD_MOUNT="/mnt/"`. 
 
 You can then navigate to the apps management page, activate the external storage app, navigate to `https://your-nc-domain.com/settings/admin/externalstorages` and add a local external storage directory that will be accessible inside the container at the same place that you've entered. E.g. `/mnt/your-drive-mountpoint` will be mounted to `/mnt/your-drive-mountpoint` inside the container, etc. 
 
@@ -323,7 +323,7 @@ When your containers run for a few days without a restart, the container logs th
 ### Access/Edit Nextcloud files/folders manually
 The files and folders that you add to Nextcloud are by default stored in the following directory: `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/` on the host. If needed, you can modify/add/delete files/folders there but **ATTENTION**: be very careful when doing so because you might corrupt your AIO installation! Best is to create a backup using the built-in backup solution before editing/changing files/folders in there because you will then be able to restore your instance to the backed up state.
 
-After you are done modifying/adding/deleting files/folders, don't forget to apply the correct permissions by running: `sudo chown -R 33:0 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` and rescan the files with `sudo docker exec -it nextcloud-aio-nextcloud php occ files:scan --all`.
+After you are done modifying/adding/deleting files/folders, don't forget to apply the correct permissions by running: `sudo chown -R 33:0 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` and `sudo chmod -R 750 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` and rescan the files with `sudo docker exec -it nextcloud-aio-nextcloud php occ files:scan --all`.
 
 ### How to store the files/installation on a separate drive?
 You can move the whole docker library and all its files including all Nextcloud AIO files and folders to a separate drive by first mounting the drive in the host OS (NTFS is not supported) and then following this tutorial: https://www.guguweb.com/2019/02/07/how-to-move-docker-data-directory-to-another-location-on-ubuntu/<br>
@@ -333,7 +333,7 @@ You can move the whole docker library and all its files including all Nextcloud 
 You can edit Nextclouds config.php file directly from the host with your favorite text editor. E.g. like this: `sudo nano /var/lib/docker/volumes/nextcloud_aio_nextcloud/_data/config/config.php`. Make sure to not break the file though which might corrupt your Nextcloud instance otherwise. In best case, create a backup using the built-in backup solution before editing the file.
 
 ### Custom skeleton directory
-If you want to define a custom skeleton directory, you can do so by putting your skeleton files into `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/skeleton/`, applying the correct permissions with `sudo chown -R 33:0 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/skeleton` and setting the skeleton directory option with `sudo docker exec -it nextcloud-aio-nextcloud php occ config:system:set skeletondirectory --value="/mnt/ncdata/skeleton"`. You can read further on this option here: [click here](https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/config_sample_php_parameters.html?highlight=skeletondir#:~:text=adding%20%3Fdirect%3D1-,'skeletondirectory',-%3D%3E%20'%2Fpath%2Fto%2Fnextcloud)
+If you want to define a custom skeleton directory, you can do so by putting your skeleton files into `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/skeleton/`, applying the correct permissions with `sudo chown -R 33:0 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/skeleton` and and `sudo chmod -R 750 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` and setting the skeleton directory option with `sudo docker exec -it nextcloud-aio-nextcloud php occ config:system:set skeletondirectory --value="/mnt/ncdata/skeleton"`. You can read further on this option here: [click here](https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/config_sample_php_parameters.html?highlight=skeletondir#:~:text=adding%20%3Fdirect%3D1-,'skeletondirectory',-%3D%3E%20'%2Fpath%2Fto%2Fnextcloud)
 
 ### LDAP
 It is possible to connect to an existing LDAP server. You need to make sure that the LDAP server is reachable from the Nextcloud container. Then you can enable the LDAP app and configure LDAP in Nextcloud manually. If you don't have a LDAP server yet, recommended is to use this docker container: https://hub.docker.com/r/osixia/openldap/. Make sure here as well that Nextcloud can talk to the LDAP server. The easiest way is by adding the LDAP docker container to the docker network `nextcloud-aio`. Then you can connect to the LDAP container by its name from the Nextcloud container. **Pro-tip**: You will probably find this app useful: https://apps.nextcloud.com/apps/ldap_write_support
