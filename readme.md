@@ -17,8 +17,8 @@ The following instructions are especially meant for Linux. For macOS see [this](
     curl -fsSL get.docker.com | sudo sh
     ```
 
-2. Run the following command in order to start the container:<br>
-    (For people that cannot use ports 80 and/or 443 on this server, please follow [this documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md). Otherwise please run the command below!)
+2. Run the command below in order to start the container:<br><br>
+    (For people that cannot use ports 80 and/or 443 on this server, please follow the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) because port 443 is used by this project and opened on the host by default even though it does not look like this is the case. Otherwise please run the command below!)
     ```
     # For x64 CPUs:
     sudo docker run -it \
@@ -50,7 +50,7 @@ The following instructions are especially meant for Linux. For macOS see [this](
     </details>
 
 3. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
-E.g. `https://ip.address.of.this.server:8080`<br>
+E.g. `https://ip.address.of.this.server:8080`<br><br>
 If your firewall/router has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatially by opening the Nextcloud AIO Interface via:<br>
 `https://your-domain-that-points-to-this-server.tld:8443`
 4. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
