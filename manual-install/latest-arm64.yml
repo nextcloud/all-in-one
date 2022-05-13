@@ -4,9 +4,7 @@ services:
   nextcloud-aio-apache:
     container_name: nextcloud-aio-apache
     depends_on:
-      - nextcloud-aio-onlyoffice
       - nextcloud-aio-collabora
-      - nextcloud-aio-clamav
       - nextcloud-aio-talk
       - nextcloud-aio-nextcloud
     image: nextcloud/aio-apache:latest-arm64
@@ -18,7 +16,6 @@ services:
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_HOST=nextcloud-aio-talk
       - APACHE_PORT=${APACHE_PORT}
-      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
@@ -70,13 +67,9 @@ services:
       - SIGNALING_SECRET=${SIGNALING_SECRET}
       - AIO_URL=${AIO_URL}
       - NEXTCLOUD_MOUNT=${NEXTCLOUD_MOUNT}
-      - CLAMAV_ENABLED=${CLAMAV_ENABLED}
-      - CLAMAV_HOST=nextcloud-aio-clamav
-      - ONLYOFFICE_ENABLED=${ONLYOFFICE_ENABLED}
       - COLLABORA_ENABLED=${COLLABORA_ENABLED}
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_ENABLED=${TALK_ENABLED}
-      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
       - DAILY_BACKUP_RUNNING=${DAILY_BACKUP_RUNNING}
     stop_grace_period: 10s
     restart: unless-stopped
@@ -123,16 +116,12 @@ services:
 volumes:
   nextcloud_aio_apache:
     name: nextcloud_aio_apache
-  nextcloud_aio_clamav:
-    name: nextcloud_aio_clamav
   nextcloud_aio_database:
     name: nextcloud_aio_database
   nextcloud_aio_database_dump:
     name: nextcloud_aio_database_dump
   nextcloud_aio_nextcloud:
     name: nextcloud_aio_nextcloud
-  nextcloud_aio_onlyoffice:
-    name: nextcloud_aio_onlyoffice
   nextcloud_aio_nextcloud_data:
     name: nextcloud_aio_nextcloud_data
 
