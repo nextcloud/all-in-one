@@ -1,6 +1,7 @@
 name: Update Yaml files
 
 on:
+  workflow_dispatch:
   schedule:
   - cron:  '00 12 * * *'
 
