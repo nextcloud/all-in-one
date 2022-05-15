@@ -36,7 +36,7 @@ The procedure for migrating the files and the database works like this:
         export PG_PASSWORD="my-temporary-password"
         export PG_DATABASE="nextcloud_db"
         sudo -u postgres psql <<END
-        CREATE USER $PG_USER WITH PASSWORD '$PGDB_PASS';
+        CREATE USER $PG_USER WITH PASSWORD '$PG_PASSWORD';
         CREATE DATABASE $PG_DATABASE WITH OWNER $PG_USER TEMPLATE template0 ENCODING 'UTF8';
         END
         ```
