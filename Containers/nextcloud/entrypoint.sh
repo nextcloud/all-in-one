@@ -53,6 +53,7 @@ if [ -f "/var/www/html/lib/versioncheck.php" ] && ! php /var/www/html/lib/versio
     echo "It seems like your installed Nextcloud is not compatible with the by the container provided PHP version."
     echo "This most likely happened because you tried to restore an old Nextcloud version from backup that is not compatible with the PHP version that comes with the container."
     echo "Please try to restore a more recent backup which contains a Nextcloud version that is compatible with the PHP version that comes with the container."
+    echo "If you do not have a more recent backup, feel free to have a look at this documentation: https://github.com/nextcloud/all-in-one/blob/main/manual-upgrade.md"
     exit 1
 fi
 
