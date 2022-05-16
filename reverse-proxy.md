@@ -134,6 +134,16 @@ Of course you need to modify `<your-nc-domain>` in the nextcloud.toml to the dom
 
 </details>
 
+#### Others
+
+<details>
+
+<summary>click here to expand</summary>
+
+Config examples for other reverse proxies are currently not documented. Pull requests are welcome!
+
+</details>
+
 ### 2. Use this startup command
 
 After adjusting your reverse proxy config, use the following command to start AIO:<br>
