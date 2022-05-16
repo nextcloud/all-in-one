@@ -292,7 +292,7 @@ You can configure the Nextcloud container to use a specific directory on your ho
 
 - An example for Linux is `-e NEXTCLOUD_DATADIR="/mnt/ncdata"`.
 - On macOS it might be `-e NEXTCLOUD_DATADIR="/var/nextcloud-data"`
-- For Synology it may be `/volume1/docker/nextcloud/data`. 
+- For Synology it may be `-e NEXTCLOUD_DATADIR="/volume1/docker/nextcloud/data"`. 
 - On Windows it might be `-e NEXTCLOUD_DATADIR="/host_mnt/c/your/data/path"` (This Windows example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
 
 ⚠ Please make sure to apply the correct permissions to the chosen directory before starting Nextcloud the first time (not needed on Windows). 
@@ -308,7 +308,7 @@ You can configure the Nextcloud container to use a specific directory on your ho
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
 
 - Two examples for Linux are `-e NEXTCLOUD_MOUNT="/mnt/"` and `-e NEXTCLOUD_MOUNT="/media/"`.
-- For Synology it may be `/volume1/`.
+- For Synology it may be `-e NEXTCLOUD_MOUNT="/volume1/"`.
 - On Windows it might be `-e NEXTCLOUD_MOUNT="/host_mnt/c"` (This Windows example would be equivalent to `C:\` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
 
 After using this option, please make sure to apply the correct permissions to the directories that you want to use in Nextcloud (not needed on Windows). E.g. `sudo chown -R 33:0 /mnt/your-drive-mountpoint` and `sudo chmod -R 750 /mnt/your-drive-mountpoint` should make it work on Linux when you have used `-e NEXTCLOUD_MOUNT="/mnt/"`. 
