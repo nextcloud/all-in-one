@@ -36,13 +36,13 @@ The procedure for migrating the files and the database works like this:
         export PG_PASSWORD="my-temporary-password"
         export PG_DATABASE="nextcloud_db"
         sudo -u postgres psql <<END
-        CREATE USER $PG_USER WITH PASSWORD '$PGDB_PASS';
+        CREATE USER $PG_USER WITH PASSWORD '$PG_PASSWORD';
         CREATE DATABASE $PG_DATABASE WITH OWNER $PG_USER TEMPLATE template0 ENCODING 'UTF8';
         END
         ```
     1. Run the following command to start the conversion:
         ```
-        occ db:convert-type --all-apps --password "$PGDB_PASS" pgsql "$PG_USER" 127.0.0.1 "$PG_DATABASE"
+        occ db:convert-type --all-apps --password "$PG_PASSWORD" pgsql "$PG_USER" 127.0.0.1 "$PG_DATABASE"
         ```
         **Please note:** You might need to change the ip-address `127.0.0.1` based on your exact installation.<br>
         Further information on the conversion is additionally available here: https://docs.nextcloud.com/server/stable/admin_manual/configuration_database/db_conversion.html#converting-database-type
