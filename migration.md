@@ -1,11 +1,11 @@
-## How to migrate from an already existing Nextcloud installation to Nextcloud AIO?
+# How to migrate from an already existing Nextcloud installation to Nextcloud AIO?
 
 There are basically two ways how to migrate from an already existing Nextcloud installation to Nextcloud AIO:
 
 1. Migrate only the files which is the easiest way
 1. Migrate the files and the database which is much more complicated
 
-### Migrate only the files 
+## Migrate only the files 
 **Please note**: If you used groupfolders or encrypted your files before, you will need to restore the database, as well!
 
 The procedure for migrating only the files works like this:
@@ -18,7 +18,7 @@ The procedure for migrating only the files works like this:
 1. Start the containers again and wait until all containers are running
 1. Run `sudo docker exec -it nextcloud-aio-nextcloud php occ files:scan-app-data && sudo docker exec -it nextcloud-aio-nextcloud php occ files:scan --all` in order to scan all files in the datadirectory.
 
-### Migrate the files and the database
+## Migrate the files and the database
 **Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned!<br>
 Also, you will currently not be able to use local external storage in Nextcloud AIO since that is not supported, yet. See https://github.com/nextcloud/all-in-one/issues/76
 

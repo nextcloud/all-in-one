@@ -1,4 +1,4 @@
-## Reverse Proxy Documentation
+# Reverse Proxy Documentation
 
 **Please note:** Publishing the AIO interface with a valid certificate to the public internet is **not** the goal of this documentation! Instead, the main goal is to publish Nextcloud with a valid certificate to the public internet which is **not** running inside the mastercontainer but in a different container! If you need a valid certificate for the AIO interface, see [point 3](#3-optional-get-a-valid-certificate-for-the-aio-interface). 
 
@@ -10,11 +10,11 @@ In order to run Nextcloud behind a reverse proxy, you need to specify the port t
 - Optional: get a valid certificate for the AIO interface! See [point 3](#3-optional-get-a-valid-certificate-for-the-aio-interface)
 - How to debug things? See [point 4](#4-how-to-debug-things)
 
-### 1. Add this to your reverse proxy config
+## 1. Add this to your reverse proxy config
 
 **Please note:** Since the Apache container gets spawned by the mastercontainer, there is **NO** way to provide custom docker labels or custom environmental variables for the Apache container. So please do not attempt to do this because you will fail! Only the documented way will work!
 
-#### Caddy
+### Caddy
 
 <details>
 
@@ -33,7 +33,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 </details>
 
-#### Nginx
+### Nginx
 
 <details>
 
@@ -62,7 +62,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 </details>
 
-#### Nginx-Proxy
+### Nginx-Proxy
 
 <details>
 
@@ -77,7 +77,7 @@ Apart from that, there is this: [manual-install](https://github.com/nextcloud/al
 
 </details>
 
-#### Traefik 2
+### Traefik 2
 
 <details>
 
@@ -134,7 +134,7 @@ Of course you need to modify `<your-nc-domain>` in the nextcloud.toml to the dom
 
 </details>
 
-#### Others
+### Others
 
 <details>
 
@@ -144,7 +144,7 @@ Config examples for other reverse proxies are currently not documented. Pull req
 
 </details>
 
-### 2. Use this startup command
+## 2. Use this startup command
 
 After adjusting your reverse proxy config, use the following command to start AIO:<br>
 
@@ -199,16 +199,16 @@ nextcloud/all-in-one:latest
 
 </details>
 
-#### Inspiration for a docker-compose file
+### Inspiration for a docker-compose file
 
 Simply translate the docker run command into a docker-compose file. You can have a look at [this file](https://github.com/nextcloud/all-in-one/blob/main/docker-compose.yml) for some inspiration but you will need to modify it either way. You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
 
 ---
 
-#### How to continue? 
+### How to continue? 
 After using the above command, you should be able to access the AIO Interface via `https://ip.address.of.the.host:8080`. Enter your domain that you've entered in the reverse proxy config and you should be done. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
-### 3. Optional: get a valid certificate for the AIO interface
+## 3. Optional: get a valid certificate for the AIO interface
 
 If you want to also access your AIO interface publicly with a valid certificate, you can add e.g. the following config to your Caddyfile:
 
@@ -226,7 +226,7 @@ Of course you need to modify `<your-nc-domain>` in the nextcloud.toml to the dom
 
 Afterwards should the AIO interface be accessible via `https://ip.address.of.the.host:8443`. You can alternatively change the domain to a different subdomain by using `https://<your-alternative-domain>:443` instead of `https://<your-nc-domain>:8443` in the Caddyfile and use that to access the AIO interface.
 
-### 4. How to debug things?
+## 4. How to debug things?
 If something does not work, follow the steps below:
 1. Make sure to exactly follow the whole reverse proxy documentation step-for-step from top to bottom!
 1. Make sure that the reverse proxy is running on the host OS or if running in a container, connected to the host network. If that is not possible, substitute `localhost` in the default configurations by the ip-address that you can easily get when running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (The command only works on Linux)
