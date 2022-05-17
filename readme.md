@@ -63,7 +63,7 @@ Nextcloud AIO is inspired by projects like Portainer that manage the docker daem
 Yes. Please refer to the following documentation on this: [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
 
 ### Which ports are mandatory to be open in your firewall/router?
-Only those (if you acces the Mastercontainer Interface internally via port 8080):
+Only those (if you access the Mastercontainer Interface internally via port 8080):
 - `443/TCP` for the Apache container
 - `3478/TCP` and `3478/UDP` for the Talk container
 
