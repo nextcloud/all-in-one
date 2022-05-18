@@ -175,11 +175,12 @@
                             <summary>Click here to reveal the initial Nextcloud credentials</summary><br />
                         {% endif %}
                                 Initial Nextcloud username: <b>admin</b><br />
-                                Initial Nextcloud password: <b>{{ nextcloud_password }}</b>
+                                Initial Nextcloud password: 
                         {% if borg_backup_host_location != '' %}
-                            </details><br /><br />
+                            {# nextcloud_password needs to be duplicated due to a bug in Firefox. See https://github.com/nextcloud/all-in-one/issues/638. #}
+                            <b>{{ nextcloud_password }}</b></details><br /><br />
                         {% else %}
-                            <br><br>
+                            <b>{{ nextcloud_password }}</b><br><br>
                         {% endif %}
                         <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
                     {% else %}
