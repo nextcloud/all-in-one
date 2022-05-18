@@ -479,4 +479,33 @@ class ConfigurationManager
         }
         return false;
     }
+
+    public function GetTimezone() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['timezone'])) {
+            $config['timezone'] = '';
+        }
+
+        return $config['timezone'];
+    }
+
+    public function SetTimezone(string $timezone) : void {
+        if ($timezone === "") {
+            throw new InvalidSettingConfigurationException("The timezone must not be empty!");
+        }
+
+        if (!preg_match("#[a-zA-Z0-9_-/+]+$#", $timezone)) {
+            throw new InvalidSettingConfigurationException("The entered timezone does not seem to be a valid timezone!");
+        }
+
+        $config = $this->GetConfig();
+        $config['timezone'] = $timezone;
+        $this->WriteConfig($config);
+    }
+
+    public function DeleteTimezone() : void {
+        $config = $this->GetConfig();
+        $config['timezone'] = '';
+        $this->WriteConfig($config);
+    }
 }

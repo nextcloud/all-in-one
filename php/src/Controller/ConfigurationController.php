@@ -52,6 +52,15 @@ class ConfigurationController
                 $this->configurationManager->DeleteDailyBackupTime();
             }
 
+            if (isset($request->getParsedBody()['delete_timezone'])) {
+                $this->configurationManager->DeleteTimezone();
+            }
+
+            if (isset($request->getParsedBody()['timezone'])) {
+                $timezone = $request->getParsedBody()['timezone'] ?? '';
+                $this->configurationManager->SetTimezone($timezone);
+            }
+
             if (isset($request->getParsedBody()['options-form'])) {
                 if (isset($request->getParsedBody()['collabora']) && isset($request->getParsedBody()['onlyoffice'])) {
                     throw new InvalidSettingConfigurationException("Collabora and Onlyoffice are not allowed to be enabled at the same time!");

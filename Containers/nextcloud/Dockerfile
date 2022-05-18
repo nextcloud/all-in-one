@@ -198,6 +198,7 @@ RUN set -ex; \
         gnupg \
         git \
         postgresql-client \
+        tzdata \
     ; \
     rm -rf /var/lib/apt/lists/*
 
