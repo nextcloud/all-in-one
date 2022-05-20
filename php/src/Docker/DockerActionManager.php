@@ -530,9 +530,13 @@ class DockerActionManager
                 $url,
                 [
                     'json' => [
-                        'name' => 'nextcloud-aio',
-                        'checkDuplicate' => true,
-                        'internal' => true,
+                        'Name' => 'nextcloud-aio',
+                        'CheckDuplicate' => true,
+                        'Driver' => 'bridge',
+                        'Internal' => true,
+                        'Options' => [
+                            'com.docker.network.bridge.enable_icc' => 'true'
+                        ]
                     ]
                 ]
             );
