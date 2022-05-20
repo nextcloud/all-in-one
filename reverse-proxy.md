@@ -14,7 +14,82 @@ In order to run Nextcloud behind a reverse proxy, you need to specify the port t
 
 **Please note:** Since the Apache container gets spawned by the mastercontainer, there is **NO** way to provide custom docker labels or custom environmental variables for the Apache container. So please do not attempt to do this because you will fail! Only the documented way will work!
 
-### Caddy
+### Apache
+
+<details>
+
+<summary>click here to expand</summary>
+
+**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+
+Add this as a new Apache site config:
+
+(The config below assumse that you are using certbot to get your certificates. You need to create them first in order to make it work.)
+
+```
+<VirtualHost *:80>
+    ServerName <your-nc-domain>
+    ServerAlias <your-nc-domain>
+
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+    RewriteCond %{SERVER_NAME} =<your-nc-domain>
+    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName <your-nc-domain>
+    ServerAlias <your-nc-domain>
+
+    # Reverse proxy
+    RewriteEngine On
+    ProxyPreserveHost On
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteCond %{HTTP:Connection} upgrade [NC]
+    RewriteRule .* "ws://localhost:11000/$1" [P,L]
+    ProxyRequests off
+    ProxyPass / http://locahost:11000/
+    ProxyPassReverse / http://locahost:11000/
+
+    # Enable h2, h2c and http1.1
+    Protocols h2 h2c http/1.1
+
+    # SSL
+    SSLProxyEngine On
+    SSLProxyVerify none
+    SSLProxyCheckPeerCN off
+    SSLProxyCheckPeerName off
+    SSLProxyCheckPeerExpire off
+    Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains; preload"
+    Include /etc/letsencrypt/options-ssl-apache.conf
+    SSLCertificateFile /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/<your-nc-domain>/privkey.pem
+
+    # Disable HTTP TRACE method.
+    TraceEnable off
+    <Files ".ht*">
+        Require all denied
+    </Files>
+</VirtualHost>
+```
+
+Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `locahost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
+
+To make the config work you need to enable the following mods:
+```
+mod_rewrite
+mod_proxy
+mod_proxy_http
+mod_proxy_wstunnel
+mod_ssl
+mod_headers
+mod_http2
+```
+
+</details>
+
+### Caddy (Recommended)
 
 <details>
 
