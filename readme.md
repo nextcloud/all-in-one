@@ -120,6 +120,23 @@ Additionally, there is a cronjob that runs once a day that checks for container 
 ### How to easily log in to the AIO interface?
 If your Nextcloud is running and you are logged in as admin in your Nextcloud, you can easily log in to the AIO interface by opening `https://yourdomain.tld/settings/admin/overview` which will show a button on top that enables you to log in to the AIO interface by just clicking on this button. **Note:** You can change the domain/ip-address/port of the button by simply stopping the containers, visiting the AIO interface from the correct and desired domain/ip-address/port and clicking once on `Start containers`.
 
+### How to properly reset the instance?
+If something goes unexpected routes during the initial installation, you might want to reset the AIO installation to be able to start from scratch.
+
+**Please note**: if you already have it running and have data on your instance, you should not follow these instructions as it will delete all data that is coupled to your AIO instance.
+
+Here is how to reset the AIO instance properly:
+1. Stop all containers if they are running from the AIO interface
+1. Stop the mastercontainer with `sudo docker stop nextcloud-aio-mastercontainer`
+1. If the domaincheck container is still running, stop it with `sudo docker stop nextcloud-aio-domaincheck`
+1. Check which containers are stopped: `sudo docker ps --filter "status=exited"`
+1. Now remove all these stopped containers with `sudo docker container prune`
+1. Delete the docker network with `sudo docker network rm nextcloud-aio`
+1. Check which volumes are dangling with `sudo volume ls --filter "dangling=true"`
+1. Now remove all these dangling volumes: `sudo docker volume prune` (on Windows you might need to remove some volumes afterwards manually with `docker volume rm nextcloud_aio_backup`, `docker volume rm nextcloud_aio_nextcloud_data`, `docker volume rm nextcloud_aio_nextcloud_mount`)
+1. Optional: You can remove all docker images with `sudo docker image prune -a`.
+1. And you are done! Now feel free to start over with the recommended docker run command!
+
 ### Backup solution
 Nextcloud AIO provides a local backup solution based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup). These backups act as a local restore point in case the installation gets corrupted. 
 
