@@ -98,6 +98,16 @@ nextcloud/all-in-one:latest
 
 </details>
 
+### How to resolve firewall problems with Fedora Linux, RHEL OS, CentOS, SUSE Linux and others?
+It is known that Linux distros that use [firewalld](https://firewalld.org) as their firewall daemon have problems with docker networks. In case the containers are not able to communicate with each other, you may change your firewalld to use the iptables backend by running:
+```
+sudo sed -i 's/FirewallBackend=nftables/FirewallBackend=iptables/g' /etc/firewalld/firewalld.conf
+sudo systemctl restart firewalld docker
+```
+Afterwards it should work.<br>
+
+See https://dev.to/ozorest/fedora-32-how-to-solve-docker-internal-network-issue-22me for more details on this. This limitation is even mentioned on the official firewalld website: https://firewalld.org/#who-is-using-it
+
 ### How to run `occ` commands?
 Simply run the following: `sudo docker exec -it nextcloud-aio-nextcloud php occ your-command`. Of course `your-command` needs to be exchanged with the command that you want to run.
 
