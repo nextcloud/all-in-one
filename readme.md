@@ -96,13 +96,14 @@ nextcloud/all-in-one:latest
 
 **Please note:** In order to make the built-in backup solution able to back up to the host system, you need to create a volume with the name `nextcloud_aio_backupdir` beforehand:
 ```
-docker volume create --driver local --name nextcloud_aio_backupdir ^
-    -o device="/host_mnt/c/your/backup/path" ^
-    -o type="none" ^
-    -o o="bind"
+docker volume create ^
+--driver local ^
+--name nextcloud_aio_backupdir ^
+-o device="/host_mnt/c/your/backup/path" ^
+-o type="none" ^
+-o o="bind"
 ```
-(This Windows example would be equivalent to `C:\your\backup\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
-⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
+(The value `/host_mnt/c/your/backup/path` in this example would be equivalent to `C:\your\backup\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
 
 </details>
 
@@ -330,13 +331,14 @@ You can configure the Nextcloud container to use a specific directory on your ho
 - For Synology it may be `-e NEXTCLOUD_DATADIR="/volume1/docker/nextcloud/data"`. 
 - On Windows it must be `-e NEXTCLOUD_DATADIR="nextcloud_aio_nextcloud_datadir"`. In order to use this, you need to create the `nextcloud_aio_nextcloud_datadir` volume beforehand:
     ```
-    docker volume create --driver local --name nextcloud_aio_nextcloud_datadir ^
-        -o device="/host_mnt/c/your/data/path" ^
-        -o type="none" ^
-        -o o="bind"
+    docker volume create ^
+    --driver local ^
+    --name nextcloud_aio_nextcloud_datadir ^
+    -o device="/host_mnt/c/your/data/path" ^
+    -o type="none" ^
+    -o o="bind"
     ```
-    (This Windows example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
-    ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
+    (The value `/host_mnt/c/your/data/path` in this example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
 
 ⚠️ Please make sure to apply the correct permissions to the chosen directory before starting Nextcloud the first time (not needed on Windows). 
 
