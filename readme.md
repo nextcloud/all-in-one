@@ -140,7 +140,7 @@ Here is how to reset the AIO instance properly:
 1. Check which containers are stopped: `sudo docker ps --filter "status=exited"`
 1. Now remove all these stopped containers with `sudo docker container prune`
 1. Delete the docker network with `sudo docker network rm nextcloud-aio`
-1. Check which volumes are dangling with `sudo volume ls --filter "dangling=true"`
+1. Check which volumes are dangling with `sudo docker volume ls --filter "dangling=true"`
 1. Now remove all these dangling volumes: `sudo docker volume prune` (on Windows you might need to remove some volumes afterwards manually with `docker volume rm nextcloud_aio_backup`, `docker volume rm nextcloud_aio_nextcloud_data`, `docker volume rm nextcloud_aio_nextcloud_mount`)
 1. Optional: You can remove all docker images with `sudo docker image prune -a`.
 1. And you are done! Now feel free to start over with the recommended docker run command!
