@@ -24,7 +24,8 @@
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_HOST=nextcloud-aio-talk",
         "APACHE_PORT=%APACHE_PORT%",
-        "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice"
+        "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
+        "TZ=%TIMEZONE%"
       ],
       "volumes": [
         {
@@ -68,7 +69,8 @@
       "environmentVariables": [
         "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
         "POSTGRES_DB=nextcloud_database",
-        "POSTGRES_USER=nextcloud"
+        "POSTGRES_USER=nextcloud",
+        "TZ=%TIMEZONE%"
       ],
       "maxShutdownTime": 1800,
       "restartPolicy": "unless-stopped"
@@ -134,7 +136,8 @@
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_ENABLED=%TALK_ENABLED%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
-        "DAILY_BACKUP_RUNNING=%DAILY_BACKUP_RUNNING%"
+        "DAILY_BACKUP_RUNNING=%DAILY_BACKUP_RUNNING%",
+        "TZ=%TIMEZONE%"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
@@ -149,7 +152,8 @@
         "6379"
       ],
       "environmentVariables": [
-        "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%"
+        "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
+        "TZ=%TIMEZONE%"
       ],
       "volumes": [],
       "secrets": [
@@ -169,7 +173,8 @@
       ],
       "environmentVariables": [
         "aliasgroup1=https://%NC_DOMAIN%:443",
-        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning"
+        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning",
+        "TZ=%TIMEZONE%"
       ],
       "volumes": [],
       "secrets": [],
@@ -192,7 +197,8 @@
         "NC_DOMAIN=%NC_DOMAIN%",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
-        "JANUS_API_KEY=%JANUS_API_KEY%"
+        "JANUS_API_KEY=%JANUS_API_KEY%",
+        "TZ=%TIMEZONE%"
       ],
       "volumes": [],
       "secrets": [
@@ -314,7 +320,9 @@
       "internalPorts": [
         "3310"
       ],
-      "environmentVariables": [],
+      "environmentVariables": [
+        "TZ=%TIMEZONE%"
+      ],
       "volumes": [
         {
           "name": "nextcloud_aio_clamav",
@@ -335,7 +343,9 @@
       "internalPorts": [
         "80"
       ],
-      "environmentVariables": [],
+      "environmentVariables": [
+        "TZ=%TIMEZONE%"
+      ],
       "volumes": [
         {
           "name": "nextcloud_aio_onlyoffice",

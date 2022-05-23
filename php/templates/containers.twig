@@ -399,7 +399,32 @@
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input class="button" type="submit" value="Submit" />
                             </form>
-                            The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><b>latin characters</b></a> <b>a-z</b>, <b>A-Z</b>, <b>0-9</b> and <b>spaces</b>.
+                            The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><b>latin characters</b></a> <b>a-z</b>, <b>A-Z</b>, <b>0-9</b> and <b>spaces</b>.<br><br>
+
+                            <h2>Timezone change</h2>
+                            In order to get the correct time values for certain Nextcloud features, it makes sense to set the timezone for Nextcloud to the one that your users mainly use. Please note that this setting does not apply to the mastercontainer and any backup option.<br><br>
+                            {% if isAnyRunning == true %}
+                                You can change the timezone when your containers are stopped.<br><br>
+                            {% else %}
+                                {% if timezone == "" %}
+                                    You can configure the timezone for Nextcloud below:<br><br>
+                                    <form method="POST" action="/api/configuration" class="xhr">
+                                        <input type="text" name="timezone" placeholder="Europe/Berlin" />
+                                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                        <input class="button" type="submit" value="Submit" />
+                                    </form>
+                                    You need to make sure that the timezone that you enter is valid. An example is <b>Europe/Berlin</b>. You can get valid values by looking at the 'TZ database name' column of this list: <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"><b>click here<b/></a>.<br><br>
+                                {% else %}
+                                    The timezone for Nextcloud is currently set to <b>{{ timezone }}</b>. You can reset the timezone again by clicking on the button below.<br><br/>
+                                    <form method="POST" action="/api/configuration" class="xhr">
+                                        <input type="hidden" name="delete_timezone" value="yes"/>
+                                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                        <input class="button" type="submit" value="Reset the timezone" />
+                                    </form>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% endif %}

@@ -96,6 +96,7 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'borg_restore_password' => $configurationManager->GetBorgRestorePassword(),
         'daily_backup_time' => $configurationManager->GetDailyBackupTime(),
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
+        'timezone' => $configurationManager->GetTimezone(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {
