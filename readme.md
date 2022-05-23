@@ -94,6 +94,8 @@ docker run -it ^
 nextcloud/all-in-one:latest
 ```
 
+**Please note:** AIO works on Windows in general but due to a bug in `Docker for Windows`, it currently does not support mounting directories from the host into AIO which means that `NEXTCLOUD_DATADIR`, `NEXTCLOUD_MOUNT` do not work and the built-in backup solution is not able to write to the host OS. See https://github.com/nextcloud/all-in-one/discussions/600.
+
 </details>
 
 ### How to resolve firewall problems with Fedora Linux, RHEL OS, CentOS, SUSE Linux and others?
