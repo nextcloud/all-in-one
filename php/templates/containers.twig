@@ -68,7 +68,7 @@
             {% if is_backup_container_running == false and domain == "" %}
                 {% if is_mastercontainer_update_available == true %}
                     <h2>Mastercontainer update</h2>
-                    ⚠ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.<br><br>
+                    ⚠️ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.<br><br>
                     <form method="POST" action="/api/docker/watchtower" class="xhr">
                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -145,7 +145,7 @@
                             An example for Linux is <b>/mnt/backup</b>.<br>
                             For macOS it may be <b>/var/backup</b>.<br>
                             On Windows it must be <b>nextcloud_aio_backupdir</b>. You need to create the 'nextcloud_aio_backupdir' volume beforehand by following this documentation: <a href="https://github.com/nextcloud/all-in-one#how-to-run-it-on-windows"><b>click here</b></a><br><br>
-                            ⚠ Note that the backup archive must be located in a subfolder of the folder that you enter here and the subfolder which contains the archive must be named 'borg'. Otherwise will the backup container not find the backup archive!<br><br>
+                            ⚠️ Note that the backup archive must be located in a subfolder of the folder that you enter here and the subfolder which contains the archive must be named 'borg'. Otherwise will the backup container not find the backup archive!<br><br>
                         {% endif %}
                     {% else %}
                         <b>Everything set!</b> Click on the button below to test the path and password:<br/><br/>
@@ -223,7 +223,7 @@
 
                     {% if has_update_available == true %}
                         {% if is_mastercontainer_update_available == false %}
-                            ⚠ Container updates are available. Click on 'Stop Containers' and 'Start Containers' to update them. You should consider creating a backup first.<br><br>
+                            ⚠️ Container updates are available. Click on 'Stop Containers' and 'Start Containers' to update them. You should consider creating a backup first.<br><br>
                         {% endif %}
                     {% else %}
                         {% if is_mastercontainer_update_available == false %}
@@ -235,7 +235,7 @@
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
                         {% if is_mastercontainer_update_available == true %}
-                            ⚠ A mastercontainer update is available. Please click on the button below to stop your containers in order to be able to update the mastercontainer.<br /><br />
+                            ⚠️ A mastercontainer update is available. Please click on the button below to stop your containers in order to be able to update the mastercontainer.<br /><br />
                             {% if current_channel starts with 'latest' %}
                                 You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest"><b>here</b></a><br><br>
                             {% elseif current_channel starts with 'beta' %}
@@ -260,7 +260,7 @@
                             Clicking on the button below will download all docker containers and start them. This can take a lot of time depending on your internect connection. Since the overall size is a few GB, this will take around 5-10 min or more. So be aware and patient!<br><br>
                         {% endif %}
                         {% if is_mastercontainer_update_available == true %}
-                            ⚠ A mastercontainer update is available. Please click on the button below to update it.<br><br>
+                            ⚠️ A mastercontainer update is available. Please click on the button below to update it.<br><br>
                             <form method="POST" action="/api/docker/watchtower" class="xhr">
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">

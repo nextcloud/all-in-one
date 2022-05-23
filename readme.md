@@ -102,7 +102,7 @@ docker volume create --driver local --name nextcloud_aio_backupdir ^
     -o o="bind"
 ```
 (This Windows example would be equivalent to `C:\your\backup\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
-⚠️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
+⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
 
 </details>
 
@@ -320,7 +320,7 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/backup
 1. Add the following new line to the crontab if not already present: `0 20 * * 7 /root/backup-script.sh` which will run the script at 20:00 on Sundays each week. 
 1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
 
-⚠ **Attention:** Make sure that the execution of the script does not collide with the daily backups from AIO (if configured) since the target backup repository might get into an inconsistent state. (There is no check in place that checks this.)
+⚠️ **Attention:** Make sure that the execution of the script does not collide with the daily backups from AIO (if configured) since the target backup repository might get into an inconsistent state. (There is no check in place that checks this.)
 
 ### How to change the default location of Nextcloud's Datadir?
 You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
@@ -336,16 +336,16 @@ You can configure the Nextcloud container to use a specific directory on your ho
         -o o="bind"
     ```
     (This Windows example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
-    ⚠️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
+    ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
 
-⚠ Please make sure to apply the correct permissions to the chosen directory before starting Nextcloud the first time (not needed on Windows). 
+⚠️ Please make sure to apply the correct permissions to the chosen directory before starting Nextcloud the first time (not needed on Windows). 
 
 - In this example for Linux, the command for this would be `sudo chown -R 33:0 /mnt/ncdata` and `sudo chmod -R 750 /mnt/ncdata`. 
 - On macOS, the command for this would be `sudo chown -R 33:0 /var/nextcloud-data` and `sudo chmod -R 750 /var/nextcloud-data`.
 - For Synology, the command for this example would be `sudo chown -R 33:0 /volume1/docker/nextcloud/data` and `sudo chmod -R 750 /volume1/docker/nextcloud/data`
 - On Windows, this command is not needed.
 
-⚠ **Attention:** It is very important to change the datadir **before** Nextcloud is installed/started the first time and not to change it afterwards!
+⚠️ **Attention:** It is very important to change the datadir **before** Nextcloud is installed/started the first time and not to change it afterwards!
 
 ### How to allow the Nextcloud container to access directories on the host?
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
