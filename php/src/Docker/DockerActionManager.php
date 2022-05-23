@@ -186,13 +186,30 @@ class DockerActionManager
             ];
 
             $firstChar = substr($volume->name, 0, 1);
-            if(!in_array($firstChar, $forbiddenChars)) {
+            if (!in_array($firstChar, $forbiddenChars)) {
                 $this->guzzleClient->request(
                     'POST',
                     $url,
                     [
                         'json' => [
-                            'name' => $volume->name,
+                            'Name' => $volume->name,
+                        ],
+                    ]
+                );
+            } elseif ($this->configurationManager->isWindowsPath($volume->name)) {
+                $name = $this->configurationManager->GetWindowsVolumeName($volume->name);
+                $this->guzzleClient->request(
+                    'POST',
+                    $url,
+                    [
+                        'json' => [
+                            'Name' => $name,
+                            'Driver' => 'local',
+                            'DriverOpts' => [
+                                'type' => 'none',
+                                'device' => $volume->name,
+                                'o' => 'bind',
+                            ]
                         ],
                     ]
                 );
@@ -203,8 +220,11 @@ class DockerActionManager
     public function CreateContainer(Container $container) : void {
         $volumes = [];
         foreach($container->GetVolumes()->GetVolumes() as $volume) {
+            if ($this->configurationManager->isWindowsPath($volume->name)) {
+                $volume->name = $this->configurationManager->GetWindowsVolumeName($volume->name);
+            }
             $volumeEntry = $volume->name . ':' . $volume->mountPoint;
-            if($volume->isWritable) {
+            if ($volume->isWritable) {
                 $volumeEntry = $volumeEntry . ':' . 'rw';
             } else {
                 $volumeEntry = $volumeEntry . ':' . 'ro';
