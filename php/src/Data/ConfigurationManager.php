@@ -497,12 +497,15 @@ class ConfigurationManager
         return $config['timezone'];
     }
 
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
     public function SetTimezone(string $timezone) : void {
         if ($timezone === "") {
             throw new InvalidSettingConfigurationException("The timezone must not be empty!");
         }
 
-        if (!preg_match("#[a-zA-Z0-9_-/+]+$#", $timezone)) {
+        if (!preg_match("#^[a-zA-Z0-9_\-\/\+]+$#", $timezone)) {
             throw new InvalidSettingConfigurationException("The entered timezone does not seem to be a valid timezone!");
         }
 
