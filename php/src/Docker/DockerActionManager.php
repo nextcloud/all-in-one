@@ -185,6 +185,10 @@ class DockerActionManager
                 '/',
             ];
 
+            if ($volume->name === 'nextcloud_aio_nextcloud_datadir' || $volume->name === 'nextcloud_aio_backupdir') {
+                return;
+            }
+
             $firstChar = substr($volume->name, 0, 1);
             if(!in_array($firstChar, $forbiddenChars)) {
                 $this->guzzleClient->request(

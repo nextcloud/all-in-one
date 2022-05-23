@@ -289,6 +289,8 @@ class ConfigurationManager
         $isValidPath = false;
         if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
             $isValidPath = true;
+        } elseif ($location === 'nextcloud_aio_backupdir') {
+            $isValidPath = true;
         }
 
         if (!$isValidPath) {
@@ -311,6 +313,8 @@ class ConfigurationManager
         
         $isValidPath = false;
         if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
+            $isValidPath = true;
+        } elseif ($location === 'nextcloud_aio_backupdir') {
             $isValidPath = true;
         }
 
