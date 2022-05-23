@@ -102,6 +102,7 @@ docker volume create --driver local --name nextcloud_aio_backupdir ^
     -o o="bind"
 ```
 (This Windows example would be equivalent to `C:\your\backup\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
+⚠️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
 
 </details>
 
@@ -335,6 +336,7 @@ You can configure the Nextcloud container to use a specific directory on your ho
         -o o="bind"
     ```
     (This Windows example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) 
+    ⚠️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
 
 ⚠ Please make sure to apply the correct permissions to the chosen directory before starting Nextcloud the first time (not needed on Windows). 
 
