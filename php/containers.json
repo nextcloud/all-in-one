@@ -70,7 +70,8 @@
         "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
         "POSTGRES_DB=nextcloud_database",
         "POSTGRES_USER=nextcloud",
-        "TZ=%TIMEZONE%"
+        "TZ=%TIMEZONE%",
+        "PGTZ=%TIMEZONE%"
       ],
       "maxShutdownTime": 1800,
       "restartPolicy": "unless-stopped"
