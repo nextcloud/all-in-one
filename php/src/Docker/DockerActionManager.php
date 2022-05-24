@@ -539,7 +539,8 @@ class DockerActionManager
                         'Name' => 'nextcloud-aio',
                         'CheckDuplicate' => true,
                         'Driver' => 'bridge',
-                        'Internal' => true,
+                        'EnableIPv6' => true,
+                        'Internal' => false,
                         'Options' => [
                             'com.docker.network.bridge.enable_icc' => 'true'
                         ]
