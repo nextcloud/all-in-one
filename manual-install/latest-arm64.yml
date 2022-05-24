@@ -16,6 +16,7 @@ services:
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_HOST=nextcloud-aio-talk
       - APACHE_PORT=${APACHE_PORT}
+      - TZ=${TIMEZONE}
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
@@ -34,6 +35,8 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=nextcloud_database
       - POSTGRES_USER=nextcloud
+      - TZ=${TIMEZONE}
+      - PGTZ=${TIMEZONE}
     stop_grace_period: 1800s
     restart: unless-stopped
     networks:
@@ -71,6 +74,7 @@ services:
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_ENABLED=${TALK_ENABLED}
       - DAILY_BACKUP_RUNNING=${DAILY_BACKUP_RUNNING}
+      - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -81,6 +85,7 @@ services:
     image: nextcloud/aio-redis:latest-arm64
     environment:
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -92,6 +97,7 @@ services:
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443
       - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning
+      - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -108,6 +114,7 @@ services:
       - TURN_SECRET=${TURN_SECRET}
       - SIGNALING_SECRET=${SIGNALING_SECRET}
       - JANUS_API_KEY=${JANUS_API_KEY}
+      - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:

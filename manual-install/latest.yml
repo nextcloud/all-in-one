@@ -19,6 +19,7 @@ services:
       - TALK_HOST=nextcloud-aio-talk
       - APACHE_PORT=${APACHE_PORT}
       - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
+      - TZ=${TIMEZONE}
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
@@ -37,6 +38,8 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=nextcloud_database
       - POSTGRES_USER=nextcloud
+      - TZ=${TIMEZONE}
+      - PGTZ=${TIMEZONE}
     stop_grace_period: 1800s
     restart: unless-stopped
     networks:
@@ -78,6 +81,7 @@ services:
       - TALK_ENABLED=${TALK_ENABLED}
       - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
       - DAILY_BACKUP_RUNNING=${DAILY_BACKUP_RUNNING}
+      - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -88,6 +92,7 @@ services:
     image: nextcloud/aio-redis:latest
     environment:
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -99,6 +104,7 @@ services:
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443
       - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning
+      - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -115,6 +121,7 @@ services:
       - TURN_SECRET=${TURN_SECRET}
       - SIGNALING_SECRET=${SIGNALING_SECRET}
       - JANUS_API_KEY=${JANUS_API_KEY}
+      - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -123,6 +130,8 @@ services:
   nextcloud-aio-clamav:
     container_name: nextcloud-aio-clamav
     image: nextcloud/aio-clamav:latest
+    environment:
+      - TZ=${TIMEZONE}
     volumes:
       - nextcloud_aio_clamav:/var/lib/clamav:rw
     stop_grace_period: 10s
@@ -133,6 +142,8 @@ services:
   nextcloud-aio-onlyoffice:
     container_name: nextcloud-aio-onlyoffice
     image: nextcloud/aio-onlyoffice:latest
+    environment:
+      - TZ=${TIMEZONE}
     volumes:
       - nextcloud_aio_onlyoffice:/var/lib/onlyoffice:rw
     stop_grace_period: 10s
