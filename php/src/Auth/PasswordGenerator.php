@@ -7792,7 +7792,7 @@ class PasswordGenerator
             if($password !== '') {
                 $password = $password . ' ';
             }
-            $password = $password . $this->words[random_int(0, 2047)];
+            $password = $password . $this->words[random_int(0, 7775)];
         }
 
         return $password;
