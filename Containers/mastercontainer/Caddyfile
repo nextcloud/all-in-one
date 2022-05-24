@@ -1,9 +1,19 @@
 {
+    # auto_https will create redirects for https://{host}:8443 instead of https://{host}
+    # https redirects are added manually in the http://:80 block
     auto_https disable_redirects
 
     storage file_system {
         root /mnt/docker-aio-config/caddy/
     }
+}
+
+http://:80 {
+  redir https://{host}{uri}
+}
+
+http://:8443 {
+  redir https://{host}:8443{uri}
 }
 
 https://:8443 {
