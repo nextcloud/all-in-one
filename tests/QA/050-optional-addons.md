@@ -1,6 +1,6 @@
 # Optional addons
 
-- [ ] At the bottom of the page in the AIO interface, you should see the optional addons section
+- [ ] Close to the bottom of the page in the AIO interface, you should see the optional addons section
 - [ ] You should be able to change optional addons when containers are stopped and not change them when containers are running
 - [ ] Enabling either of the options should start a new container with the same or comparable name and should also list them in the containers section
 - [ ] After all containers are started with the new config active, you should verify that the options were automatically activated/deactivated.
