@@ -79,8 +79,6 @@ On macOS, there is one specialty in comparison to Linux: instead of using `--vol
 
 ### How to run it on Windows?
 On Windows, the following command should work after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/):
-<details>
-<summary>Click here to show it</summary>
 
 ```
 docker run -it ^
@@ -104,8 +102,6 @@ docker volume create ^
 -o o="bind"
 ```
 (The value `/host_mnt/c/your/backup/path` in this example would be equivalent to `C:\your\backup\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
-
-</details>
 
 ### How to resolve firewall problems with Fedora Linux, RHEL OS, CentOS, SUSE Linux and others?
 It is known that Linux distros that use [firewalld](https://firewalld.org) as their firewall daemon have problems with docker networks. In case the containers are not able to communicate with each other, you may change your firewalld to use the iptables backend by running:
