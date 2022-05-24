@@ -359,7 +359,7 @@
                                         <input class="button" type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
                                     </form>
 
-                                    <h3>Daily backup</h3>
+                                    <h3>Daily backup and automatic updates</h3>
                                     {% if daily_backup_time == "" %}
                                         By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <b>04:00</b> will create backups at 4 am UTC and <b>16:00</b> at 4 pm UTC.<br><br/>
                                         <form method="POST" action="/api/configuration" class="xhr">
