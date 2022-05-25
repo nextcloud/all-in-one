@@ -3,16 +3,26 @@ name: Psalm Analysis
 on:
   pull_request:
   push:
+    branches:
+      - main
 
 jobs:
   psalm:
     name: Psalm
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Psalm
-        uses: docker://ghcr.io/nextcloud/all-in-one-psalm
+      - uses: actions/checkout@v3
+      - name: Set up php8.0
+        uses: shivammathur/setup-php@v2
         with:
-          composer_ignore_platform_reqs: false
-          relative_dir: php
+          php-version: 8.0
+          extensions: apcu
+          coverage: none
+
+      - name: Run script
+        run: |
+          set -x
+          cd php
+          composer global require vimeo/psalm --prefer-dist --no-progress --dev
+          composer install
+          composer run psalm -- --monochrome --no-progress --output-format=text
