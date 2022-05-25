@@ -25,4 +25,4 @@ jobs:
           cd php
           composer global require vimeo/psalm --prefer-dist --no-progress --dev
           composer install
-          composer run psalm -- --monochrome --no-progress --output-format=text
+          composer run psalm
