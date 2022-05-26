@@ -446,14 +446,14 @@
                     {% endif %}
 
                     <h2>Timezone change</h2>
-                    In order to get the correct time values for certain Nextcloud features, it makes sense to set the timezone for Nextcloud to the one that your users mainly use. Please note that this setting does not apply to the mastercontainer and any backup option.<br><br>
                     {% if isAnyRunning == true %}
-                        <b>Note:</b> You can change the timezone when your containers are stopped.<br><br>
                         {% if timezone != "" %}
                             The timezone for Nextcloud is currently set to <b>{{ timezone }}</b>.<br><br>
                         {% endif %}
+                        <b>Note:</b> You can change the timezone when your containers are stopped.<br><br>
                     {% else %}
                         {% if timezone == "" %}
+                            In order to get the correct time values for certain Nextcloud features, it makes sense to set the timezone for Nextcloud to the one that your users mainly use. Please note that this setting does not apply to the mastercontainer and any backup option.<br><br>
                             You can configure the timezone for Nextcloud below:<br><br>
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <input type="text" name="timezone" placeholder="Europe/Berlin" />
