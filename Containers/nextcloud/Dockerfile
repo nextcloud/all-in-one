@@ -222,8 +222,6 @@ RUN set -ex; \
     chown www-data:root -R /usr/local/etc/php/conf.d && \
     chown www-data:root -R /var/log/supervisord/ && \
     chown www-data:root -R /var/run/supervisord/ && \
-    mkdir -p /var/log/nextcloud/ && \
-    chown -R www-data:root /var/log/nextcloud/ && \
     rm -r /usr/src/nextcloud/apps/updatenotification
 
 COPY start.sh /

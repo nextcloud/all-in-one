@@ -170,10 +170,10 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
             mkdir -p /var/www/html/data
             php /var/www/html/occ config:system:set loglevel --value=2
             php /var/www/html/occ config:system:set log_type --value=file
-            php /var/www/html/occ config:system:set logfile --value="/var/log/nextcloud/nextcloud.log"
+            php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
             php /var/www/html/occ config:system:set log_rotate_size --value="10485760"
             php /var/www/html/occ app:enable admin_audit
-            php /var/www/html/occ config:app:set admin_audit logfile --value="/var/log/nextcloud/audit.log"
+            php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
             php /var/www/html/occ config:system:set log.condition apps 0 --value="admin_audit"
 
             # Apply preview settings
@@ -271,6 +271,11 @@ fi
 echo "Applying one-click-instance settings..."
 php /var/www/html/occ config:system:set one-click-instance --value=true --type=bool
 php /var/www/html/occ config:system:set one-click-instance.user-limit --value=100 --type=int
+
+# Adjusting log files to be stored on a volume
+echo "Adjusting log files..."
+php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
+php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
 
 # Apply network settings
 echo "Applying network settings..."
