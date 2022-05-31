@@ -2,15 +2,15 @@ version: "3.8"
 
 volumes:
   nextcloud_aio_mastercontainer:
-    name: nextcloud_aio_mastercontainer # Is not allowed to be changed
+    name: nextcloud_aio_mastercontainer # This line is not allowed to be changed
 
 services:
   nextcloud:
     image: nextcloud/all-in-one:latest # Must be changed to 'nextcloud/all-in-one:latest-arm64' when used with an arm64 CPU
     restart: always
-    container_name: nextcloud-aio-mastercontainer # Is not allowed to be changed
+    container_name: nextcloud-aio-mastercontainer # This line is not allowed to be changed
     volumes:
-      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # Is not allowed to be changed
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - 80:80 # Can be removed when running behind a reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
