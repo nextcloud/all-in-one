@@ -199,10 +199,17 @@ class ConfigurationManager
         }
 
         $dnsRecordIP = gethostbyname($domain);
+        if ($dnsRecordIP === $domain) {
+            $dnsRecordIP = '';
+        }
 
         // Validate IP
         if(!filter_var($dnsRecordIP, FILTER_VALIDATE_IP)) {
             throw new InvalidSettingConfigurationException("DNS config is not set for this domain or the domain is not a valid domain! (It was found to be set to '" . $dnsRecordIP . "')");
+        }
+
+        if (!filter_var($dnsRecordIP, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            throw new InvalidSettingConfigurationException("It seems like the ip-address is set to an internal or reserved ip-address. This is not supported. (It was found to be set to '" . $dnsRecordIP . "')");
         }
 
         // Check if port 443 is open
