@@ -20,7 +20,7 @@ while true; do
     # Allow to continue directly if e.g. the mastercontainer was updated. Otherwise wait for the next execution
     if [ "$LOCK_FILE_PRESENT" = 0 ]; then
         while [ "$(date +%H:%M)" != "$BACKUP_TIME" ]; do 
-            sleep 1
+            sleep 30
         done
     fi
 
@@ -93,4 +93,7 @@ while true; do
 
     # Remove dangling images
     sudo -u www-data docker image prune -f
+
+    # Wait 60s so that the whole loop will not be executed again
+    sleep 60
 done
