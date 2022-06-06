@@ -37,15 +37,6 @@ if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != test ] && ! [ -f "$BORG_BACKU
     exit 1
 fi
 
-# Break the borg lock if it exists
-if [ -f "$BORG_BACKUP_DIRECTORY/lock.roster" ]; then
-    echo "Breaking the borg lock..."
-    if ! borg break-lock "$BORG_BACKUP_DIRECTORY"; then
-        echo "Could not break the borg lock!"
-        exit 1
-    fi
-fi
-
 # Create lockfile
 if [ "$BORG_MODE" = backup ] || [ "$BORG_MODE" = restore ]; then
     touch "/nextcloud_aio_volumes/nextcloud_aio_database_dump/backup-is-running"
