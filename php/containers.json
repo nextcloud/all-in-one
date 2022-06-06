@@ -128,6 +128,7 @@
         "OVERWRITEPROTOCOL=https",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
+        "ONLYOFFICE_SECRET=%ONLYOFFICE_SECRET%",
         "AIO_URL=%AIO_URL%",
         "NEXTCLOUD_MOUNT=%NEXTCLOUD_MOUNT%",
         "CLAMAV_ENABLED=%CLAMAV_ENABLED%",
@@ -158,7 +159,8 @@
       ],
       "volumes": [],
       "secrets": [
-        "REDIS_PASSWORD"
+        "REDIS_PASSWORD",
+        "ONLYOFFICE_SECRET"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
@@ -345,7 +347,10 @@
         "80"
       ],
       "environmentVariables": [
-        "TZ=%TIMEZONE%"
+        "TZ=%TIMEZONE%",
+        "JWT_ENABLED=true",
+        "JWT_HEADER=AuthorizationJwt",
+        "JWT_SECRET=%ONLYOFFICE_SECRET%"
       ],
       "volumes": [
         {
@@ -354,7 +359,9 @@
           "writeable": true
         }
       ],
-      "secrets": [],
+      "secrets": [
+        "ONLYOFFICE_SECRET"
+      ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
     }
