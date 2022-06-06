@@ -98,6 +98,7 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
         'timezone' => $configurationManager->GetTimezone(),
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped(),
+        'talk_port' => $configurationManager->GetTalkPort(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {

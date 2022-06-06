@@ -1,7 +1,5 @@
 FROM ubuntu:focal-20220531
 
-EXPOSE 3478
-
 RUN set -ex; \
     \
     apt-get update; \

@@ -360,8 +360,8 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     else
         php /var/www/html/occ app:update spreed
     fi
-    STUN_SERVERS="[\"$NC_DOMAIN:3478\"]"
-    TURN_SERVERS="[{\"server\":\"$NC_DOMAIN:3478\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
+    STUN_SERVERS="[\"$NC_DOMAIN:$TALK_PORT\"]"
+    TURN_SERVERS="[{\"server\":\"$NC_DOMAIN:$TALK_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
     SIGNALING_SERVERS="{\"servers\":[{\"server\":\"https://$NC_DOMAIN/standalone-signaling/\",\"verify\":true}],\"secret\":\"$SIGNALING_SECRET\"}"
     php /var/www/html/occ config:app:set spreed stun_servers --value="$STUN_SERVERS" --output json
     php /var/www/html/occ config:app:set spreed turn_servers --value="$TURN_SERVERS" --output json
