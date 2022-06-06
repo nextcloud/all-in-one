@@ -114,6 +114,14 @@ It is set to '$APACHE_PORT'."
         exit 1
     fi
 fi
+if [ -n "$DOCKER_SOCKET_PATH" ]; then
+    if ! echo "$DOCKER_SOCKET_PATH" | grep -q "^/" || echo "$DOCKER_SOCKET_PATH" | grep -q "/$"; then
+        echo "You've set DOCKER_SOCKET_PATH but not to an allowed value.
+The string must start with '/' and must not end with '/'.
+It is set to '$DOCKER_SOCKET_PATH'."
+        exit 1
+    fi
+fi
 
 # Check DNS resolution
 # Prevents issues like https://github.com/nextcloud/all-in-one/discussions/565

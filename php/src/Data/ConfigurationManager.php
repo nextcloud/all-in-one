@@ -453,6 +453,13 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetDockerSocketPath() : string {
+        $envVariableName = 'DOCKER_SOCKET_PATH';
+        $configName = 'docker_socket_path';
+        $defaultValue = '/var/run/docker.sock';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */

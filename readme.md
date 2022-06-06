@@ -75,7 +75,7 @@ Only those (if you access the Mastercontainer Interface internally via port 8080
 - `3478/TCP` and `3478/UDP`: will be used by the Turnserver inside the Talk container and needs to be open in your firewall/router
 
 ### How to run it on macOS?
-On macOS, there is one specialty in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /var/run/docker.sock.raw:/var/run/docker.sock:ro` to run it after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/). Apart from that it should work and behave the same like on Linux.
+On macOS, there are two things different in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /var/run/docker.sock.raw:/var/run/docker.sock:ro` to run it after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/). You also need to add `-e DOCKER_SOCKET_PATH="/var/run/docker.sock.raw"`to the startup command. Apart from that it should work and behave the same like on Linux.
 
 ### How to run it on Windows?
 On Windows, the following command should work after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/):

@@ -4,5 +4,6 @@
 - [ ] Make also sure that reverse proxies work by following https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#reverse-proxy-documentation and following [001-initial-setup.md](./001-initial-setup.md) and [002-new-instance.md](./002-new-instance.md)
 - [ ] When starting the mastercontainer with `-e NEXTCLOUD_DATADIR="/mnt/testdata"` it should map that location from `/mnt/testdata` to `/mnt/ncdata` inside the Nextcloud container. Not having adjusted the permissions correctly before starting the Nextcloud container the first time will not allow the Nextcloud container to start correctly. See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir for allowed values.
 - [ ] When starting the mastercontainer with `-e NEXTCLOUD_MOUNT="/mnt/"` it should map `/mnt/` to `/mnt/` inside the Nextcloud container. See https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host for allowed values.
+- [ ] When starting the mastercontainer with `-e DOCKER_SOCKET_PATH="/var/run/docker.sock.raw"` it should map `/var/run/docker.sock.raw` to `/var/run/docker.sock` inside the watchtower container which allow to update the mastercontainer on macos and with docker rootless.
 
 You can now continue with [070-timezone-change.md](./070-timezone-change.md)
