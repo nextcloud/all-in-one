@@ -65,8 +65,7 @@ COPY start.sh /usr/bin/
 COPY supervisord.conf /
 RUN chmod +x /usr/bin/start.sh; \
     chmod +r /supervisord.conf; \
-    chmod a+w /Caddyfile; \
-    chmod 777 /; \
+    chown www-data:www-data /Caddyfile; \
     chmod +r -R /etc/apache2
 
 # Give root a random password
