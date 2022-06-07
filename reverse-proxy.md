@@ -54,7 +54,6 @@ Add this as a new Apache site config:
 
     # SSL
     SSLEngine on
-    Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains; preload"
     Include /etc/letsencrypt/options-ssl-apache.conf
     SSLCertificateFile /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem
     SSLCertificateKeyFile /etc/letsencrypt/live/<your-nc-domain>/privkey.pem
@@ -84,7 +83,6 @@ Add this to your Caddyfile:
 
 ```
 https://<your-nc-domain>:443 {
-    header Strict-Transport-Security max-age=31536000;
     reverse_proxy localhost:11000
 }
 ```
@@ -192,10 +190,6 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
         [http.middlewares.nc-middlewares-secure-headers.headers]
             hostsProxyHeaders = ["X-Forwarded-Host"]
             sslRedirect = true
-            stsSeconds = 63072000
-            stsIncludeSubdomains = true
-            stsPreload = true
-            forceSTSHeader = true
             referrerPolicy = "same-origin"
             X-Robots-Tag = "none"
     ```
