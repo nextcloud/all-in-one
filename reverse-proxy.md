@@ -29,7 +29,6 @@ Add this as a new Apache site config:
 ```
 <VirtualHost *:80>
     ServerName <your-nc-domain>
-    ServerAlias <your-nc-domain>
 
     RewriteEngine On
     RewriteCond %{HTTPS} off
@@ -40,7 +39,6 @@ Add this as a new Apache site config:
 
 <VirtualHost *:443>
     ServerName <your-nc-domain>
-    ServerAlias <your-nc-domain>
 
     # Reverse proxy
     RewriteEngine On
@@ -48,7 +46,6 @@ Add this as a new Apache site config:
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
     RewriteRule .* "ws://localhost:11000/$1" [P,L]
-    ProxyRequests off
     ProxyPass / http://localhost:11000/
     ProxyPassReverse / http://localhost:11000/
 
@@ -56,11 +53,7 @@ Add this as a new Apache site config:
     Protocols h2 h2c http/1.1
 
     # SSL
-    SSLProxyEngine On
-    SSLProxyVerify none
-    SSLProxyCheckPeerCN off
-    SSLProxyCheckPeerName off
-    SSLProxyCheckPeerExpire off
+    SSLEngine on
     Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains; preload"
     Include /etc/letsencrypt/options-ssl-apache.conf
     SSLCertificateFile /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem
@@ -76,16 +69,8 @@ Add this as a new Apache site config:
 
 Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
 
-To make the config work you need to enable the following mods:
-```
-mod_rewrite
-mod_proxy
-mod_proxy_http
-mod_proxy_wstunnel
-mod_ssl
-mod_headers
-mod_http2
-```
+To make the config work you can run the following command:
+`sudo a2enmod rewrite proxy proxy_http proxy_wstunnel ssl headers http2`
 
 </details>
 
