@@ -31,5 +31,5 @@ Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/repo-sy
 1. Verify that no job is running here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-beta.yml
 2. Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-latest.yml, click on `Run workflow`.
 
-## Where to find the VPS builds?
+## Where to find the VPS and other builds?
 This is documented here: https://github.com/nextcloud-releases/all-in-one/tree/main/.build
