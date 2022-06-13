@@ -85,7 +85,7 @@ RUN set -ex; \
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 RUN { \
-        echo 'opcache.interned_strings_buffer=16'; \
+        echo 'opcache.interned_strings_buffer=64'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
