@@ -431,6 +431,13 @@ class DockerActionManager
             $tagArray = explode(':', $output['Config']['Image']);
             $tag = $tagArray[1];
             apcu_add($cacheKey, $tag);
+            /**
+             * @psalm-suppress TypeDoesNotContainNull
+             */
+            if ($tag === null) {
+                error_log("No tag was found when getting the current channel. You probably did not follow the documentation correctly. Changing the channel to the default 'latest'.");
+                $tag = 'latest';
+            }
             return $tag;
         } catch (\Exception $e) {
             error_log('Could not get current channel ' . $e->getMessage());
