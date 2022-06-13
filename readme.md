@@ -358,6 +358,9 @@ You can then navigate to the apps management page, activate the external storage
 
 Be aware though that these locations will not be covered by the built-in backup solution!
 
+### How to run this with docker rootless?
+You can run AIO also with docker rootless. How to do this is documented here: [docker-rootless.md](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md)
+
 ### Huge docker logs
 When your containers run for a few days without a restart, the container logs that you can view from the AIO interface can get really huge. You can limit the loge sizes by enabling logrotate for docker container logs. Feel free to enable this by following those instructions: https://sandro-keil.de/blog/logrotate-for-docker-container/
 
