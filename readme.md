@@ -395,3 +395,13 @@ If you want to use the user_sql app, the easiest way is to create an additional 
 
 ### How to migrate from an already existing Nextcloud installation to Nextcloud AIO?
 Please see the following documentation on this: [migration.md](https://github.com/nextcloud/all-in-one/blob/main/migration.md)
+
+### Requirements for integrating new containers
+For integrating new containers, they must pass specific requirements for being considered to get integrated in AIO itself. Even if not considered, we may add some documentation on it.
+
+What are the requirements?
+1. New containers must be related to Nextcloud. Related means that there must be a feature in Nextcloud that gets added by adding this container.
+2. It must be optionally installable. Disabling and enabling the container from the AIO interface must work and must not produce any unexpected side-effects.
+3. The feature that gets added into Nextcloud by adding the container must be maintained by the Nextcloud GmbH. 
+4. It must be possible to run the container without big quirks inside docker containers. Big quirks means e.g. needing to change the capabilities or security options. 
+5. The container should not mount directories from the host into the container: only docker volumes should be used.
