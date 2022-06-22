@@ -1,25 +1,25 @@
-name: Psalm Security Analysis
+# name: Psalm Security Analysis
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  psalm:
-    name: Psalm
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Psalm
-        uses: docker://ghcr.io/nextcloud/all-in-one-psalm
-        with:
-          relative_dir: php
-          security_analysis: true
-          composer_ignore_platform_reqs: false
-          report_file: results.sarif
-      - name: Upload Security Analysis results to GitHub
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: php/results.sarif
+# jobs:
+#   psalm:
+#     name: Psalm
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+#       - name: Psalm
+#         uses: docker://ghcr.io/nextcloud/all-in-one-psalm
+#         with:
+#           relative_dir: php
+#           security_analysis: true
+#           composer_ignore_platform_reqs: false
+#           report_file: results.sarif
+#       - name: Upload Security Analysis results to GitHub
+#         uses: github/codeql-action/upload-sarif@v2
+#         with:
+#           sarif_file: php/results.sarif
