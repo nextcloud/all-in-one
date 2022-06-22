@@ -21,14 +21,27 @@ if [ -z "$APACHE_PORT" ]; then
     export APACHE_PORT="443"
 fi
 
-# Change the Caddyfile
+# Change variables in case of reverse proxies
 if [ "$APACHE_PORT" != '443' ]; then
     export PROTOCOL="http"
     export NC_DOMAIN=""
-    CADDYFILE="$(sed 's|auto_https.*|auto_https off|' /Caddyfile)"
 else
     export PROTOCOL="https"
+fi
+
+# Change the auto_https in case of reverse proxies
+if [ "$APACHE_PORT" != '443' ]; then
+    CADDYFILE="$(sed 's|auto_https.*|auto_https off|' /Caddyfile)"
+else
     CADDYFILE="$(sed 's|auto_https.*|auto_https disable_redirects|' /Caddyfile)"
+fi
+echo "$CADDYFILE" > /Caddyfile
+
+# Change the trusted_proxies in case of reverse proxies
+if [ "$APACHE_PORT" != '443' ]; then
+    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies private_ranges|' /Caddyfile)"
+else
+    CADDYFILE="$(sed 's|trusted_proxies private_ranges|# trusted_proxies placeholder|' /Caddyfile)"
 fi
 echo "$CADDYFILE" > /Caddyfile
 
