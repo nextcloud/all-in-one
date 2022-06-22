@@ -293,10 +293,20 @@ if ! [ -d "$TARGET_DIRECTORY" ]; then
     exit 1
 fi
 
+if [ -f "$SOURCE_DIRECTORY/aio-lockfile" ]; then
+    echo "Not continuing because aio-lockfile already exists."
+    exit 1
+fi
+
+touch "$SOURCE_DIRECTORY/aio-lockfile"
+
 if ! rsync --stats --archive --human-readable --delete "$SOURCE_DIRECTORY/" "$TARGET_DIRECTORY"; then
     echo "Failed to sync the backup repository to the target directory."
     exit 1
 fi
+
+rm "$SOURCE_DIRECTORY/aio-lockfile"
+rm "$TARGET_DIRECTORY/aio-lockfile"
 
 umount "$DRIVE_MOUNTPOINT"
 
@@ -316,8 +326,6 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/backup
 1. Open the cronjob with `sudo crontab -u root -e` (and choose your editor of choice if not already done. I'd recommend nano). 
 1. Add the following new line to the crontab if not already present: `0 20 * * 7 /root/backup-script.sh` which will run the script at 20:00 on Sundays each week. 
 1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
-
-⚠️ **Attention:** Make sure that the execution of the script does not collide with the daily backups from AIO (if configured) since the target backup repository might get into an inconsistent state. (There is no check in place that checks this.)
 
 ### How to change the default location of Nextcloud's Datadir?
 You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
