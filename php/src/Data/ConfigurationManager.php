@@ -242,6 +242,8 @@ class ConfigurationManager
 
         if ($response !== $instanceID) {
             error_log('The response of the connection attempt to "' . $testUrl . '" was: ' . $response);
+            error_log('Expected was: ' . $instanceID);
+            error_log('The error message was: ' . curl_error($ch));
             throw new InvalidSettingConfigurationException("Domain does not point to this server or the reverse proxy is not configured correctly. See the mastercontainer logs for more details. ('sudo docker logs -f nextcloud-aio-mastercontainer')");
         }
 
