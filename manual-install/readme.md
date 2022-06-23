@@ -36,6 +36,6 @@ Since the AIO containers may change in the future, it is highly recommended to s
 
 ## FAQ
 ### Backup and restore?
-If you leave `NEXTLOUD_DATADIR` in your conf file at the default value of `nextcloud_aio_nextcloud_data` and don't modify the yaml file, all data will be stored inside docker volumes which are on Linux by default located here: `/var/lib/docker/volumes`. Simply backing up this location should be a valid backup solution. Then you can also easily restore in case something bad happens. However if you change `NEXTLOUD_DATADIR` to a path like `/mnt/ncdata`, you obviously need to back up this location, too because the Nextcloud data will be stored there. The same applies to any change to the yaml file. 
+If you leave `NEXTCLOUD_DATADIR` in your conf file at the default value of `nextcloud_aio_nextcloud_data` and don't modify the yaml file, all data will be stored inside docker volumes which are on Linux by default located here: `/var/lib/docker/volumes`. Simply backing up this location should be a valid backup solution. Then you can also easily restore in case something bad happens. However if you change `NEXTCLOUD_DATADIR` to a path like `/mnt/ncdata`, you obviously need to back up this location, too because the Nextcloud data will be stored there. The same applies to any change to the yaml file. 
 
 Obviously you also need to back up the conf file and the yaml file if you modified it.
