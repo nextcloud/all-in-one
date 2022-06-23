@@ -3,8 +3,6 @@ FROM caddy:2.5.1-alpine as caddy
 
 FROM debian:bullseye-20220527-slim
 
-EXPOSE 80
-
 RUN mkdir -p /mnt/data; \
     chown www-data:www-data /mnt/data;
 
