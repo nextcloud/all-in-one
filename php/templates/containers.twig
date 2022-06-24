@@ -318,7 +318,7 @@
                         {% if is_backup_container_running == false and isApacheStarting == false %}
                             {% if has_backup_run_once == true %}
                                 <details>
-                                <summary>Click here to reveal all backup options</summary><br />
+                                <summary>Click here to reveal all backup options (it also includes an option for automatic updates)</summary><br />
                             {% endif %}
                             <h3>Backup information</h3>
                             This is your encryption password for backups: <b>{{ borgbackup_password }}</b><br /><br/>
