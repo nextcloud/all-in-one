@@ -208,8 +208,16 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("DNS config is not set for this domain or the domain is not a valid domain! (It was found to be set to '" . $dnsRecordIP . "')");
         }
 
+        // Get the apache port
+        $port = $this->GetApachePort();
+
         if (!filter_var($dnsRecordIP, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-            throw new InvalidSettingConfigurationException("It seems like the ip-address is set to an internal or reserved ip-address. This is not supported. (It was found to be set to '" . $dnsRecordIP . "')");
+            $errorMessage = "It seems like the ip-address is set to an internal or reserved ip-address. This is not supported. (It was found to be set to '" . $dnsRecordIP . "')";
+            if ($port === '443') {
+                throw new InvalidSettingConfigurationException($errorMessage);
+            } else {
+                error_log($errorMessage);
+            }
         }
 
         // Check if port 443 is open
@@ -224,7 +232,6 @@ class ConfigurationManager
         $instanceID = $this->GetSecret('INSTANCE_ID');
 
         // set protocol
-        $port = $this->GetApachePort();
         if ($port !== '443') {
             $protocol = 'https://';
         } else {
