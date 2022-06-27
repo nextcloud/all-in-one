@@ -292,6 +292,12 @@ class DockerActionManager
                     } else {
                         $replacements[1] = $this->configurationManager->GetTimezone();
                     }
+                } elseif ($out[1] === 'COLLABORA_DICTIONARIES') {
+                    if ($this->configurationManager->GetCollaboraDictionaries() === '') {
+                        $replacements[1] = 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru';
+                    } else {
+                        $replacements[1] = $this->configurationManager->GetCollaboraDictionaries();
+                    }
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }

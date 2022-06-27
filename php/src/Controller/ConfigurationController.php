@@ -87,6 +87,15 @@ class ConfigurationController
                 }
             }
 
+            if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {
+                $this->configurationManager->DeleteCollaboraDictionaries();
+            }
+
+            if (isset($request->getParsedBody()['collabora_dictionaries'])) {
+                $collaboraDictionaries = $request->getParsedBody()['collabora_dictionaries'] ?? '';
+                $this->configurationManager->SetCollaboraDictionaries($collaboraDictionaries);
+            }
+
             return $response->withStatus(201)->withHeader('Location', '/');
         } catch (InvalidSettingConfigurationException $ex) {
             $response->getBody()->write($ex->getMessage());

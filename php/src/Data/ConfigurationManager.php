@@ -568,4 +568,36 @@ class ConfigurationManager
         }
         return false;
     }
+
+    public function GetCollaboraDictionaries() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['collabora_dictionaries'])) {
+            $config['collabora_dictionaries'] = '';
+        }
+
+        return $config['collabora_dictionaries'];
+    }
+
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public function SetCollaboraDictionaries(string $CollaboraDictionaries) : void {
+        if ($CollaboraDictionaries === "") {
+            throw new InvalidSettingConfigurationException("The dictionaries must not be empty!");
+        }
+
+        if (!preg_match("#^[a-zA-Z_ ]+$#", $CollaboraDictionaries)) {
+            throw new InvalidSettingConfigurationException("The entered dictionaries do not seem to be a valid!");
+        }
+
+        $config = $this->GetConfig();
+        $config['collabora_dictionaries'] = $CollaboraDictionaries;
+        $this->WriteConfig($config);
+    }
+
+    public function DeleteCollaboraDictionaries() : void {
+        $config = $this->GetConfig();
+        $config['collabora_dictionaries'] = '';
+        $this->WriteConfig($config);
+    }
 }
