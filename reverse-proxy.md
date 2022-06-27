@@ -20,7 +20,7 @@ In order to run Nextcloud behind a reverse proxy, you need to specify the port t
 
 <summary>click here to expand</summary>
 
-**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. See e.g. https://github.com/nextcloud/all-in-one/issues/834. Improvements to it are very welcome!
 
 Add this as a new Apache site config:
 
@@ -45,7 +45,7 @@ Add this as a new Apache site config:
     ProxyPreserveHost On
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
-    RewriteRule .* "ws://localhost:11000/$1" [P,L]
+    RewriteRule ^/(.*) "ws://localhost:11000/$1" [P,L]
     ProxyPass / http://localhost:11000/
     ProxyPassReverse / http://localhost:11000/
 
