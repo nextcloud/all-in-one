@@ -342,6 +342,8 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
     else
         php /var/www/html/occ app:update onlyoffice
     fi
+    php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
+    php /var/www/html/occ config:app:set onlyoffice jwt_header --value="AuthorizationJwt"
     php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$NC_DOMAIN/onlyoffice"
 else
     if [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
