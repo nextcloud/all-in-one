@@ -203,6 +203,13 @@ class ConfigurationManager
             $dnsRecordIP = '';
         }
 
+        if (empty($dnsRecordIP)) {
+            $record = dns_get_record($domain, DNS_AAAA);
+            if (!empty($record)) {
+                $dnsRecordIP = $record[0]['ipv6'];
+            }
+        }
+
         // Validate IP
         if(!filter_var($dnsRecordIP, FILTER_VALIDATE_IP)) {
             throw new InvalidSettingConfigurationException("DNS config is not set for this domain or the domain is not a valid domain! (It was found to be set to '" . $dnsRecordIP . "')");
