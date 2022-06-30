@@ -91,6 +91,19 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 </details>
 
+### Cloudflare Argo Tunnel
+
+<details>
+
+<summary>click here to expand</summary>
+
+Although it does not seems like it is the case but from AIO perspective a Cloudflare Argo Tunnel works like a reverse proxy. Here is how to make it work:
+
+1. Install the Cloudflare Argo Tunnel on the same machine where AIO will be running on and point the Argo Tunnel with the domain that you want to use for AIO to `localhost:11000`. If the Argo Tunnel is running on a different machine, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
+2. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `-e SKIP_DOMAIN_VALIDATION=true` to the docker run command which will disable the dommain validation (because it is known that the domain validation will not work behind a Cloudflare Argo Tunnel). So you need to ensure yourself that you've configured everything correctly.
+
+</details>
+
 ### Nginx
 
 <details>
@@ -307,3 +320,5 @@ If something does not work, follow the steps below:
 1. Make sure that the mastercontainer is able to spawn other containers. You can do so by checking that the mastercontainer indeed has access to the Docker socket which might not be positioned in one of the suggested directories like `/var/run/docker.sock` but in a different directory, based on your OS and the way how you installed Docker. The mastercontainer logs should help figuring this out. You can have a look at them by running `sudo docker logs nextcloud-aio-mastercontainer` after the container is started the first time.
 1. Check if after the mastercontainer was started, the reverse proxy if running inside a container, can reach the provided apache port. You can test this by running `nc -z localhost 11000; echo $?` from inside the reverse proxy container. If the output is `0`, everything works. Alternatively you can of course use instead of `localhost` the ip-address of the host here for the test.
 1. Try to configure everything from scratch if it still does not work!
+1. As last resort, you may disable the domain validation by adding `-e SKIP_DOMAIN_VALIDATION=true` to the docker run command. But only use this if you are completely sure that you've correctly configured everything!
+
