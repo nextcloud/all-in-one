@@ -369,6 +369,9 @@ You can then navigate to the apps management page, activate the external storage
 
 Be aware though that these locations will not be covered by the built-in backup solution!
 
+### What can I do to fix the internal or reserved ip-address error?
+If you get an error during the domain validation which states that your ip-address is an internal or reserved ip-address, you can fix this by first making sure that your domain indeed has the correct public ip-address that points to the server and then adding `--add-host yourdomain.com:<public-ip-address>` to the initial docker run command which will allow the domain validation to work correctly. And so that you know: even if the `A` record of your domain should change over time, this is no problem since the mastercontainer will not make any attempt to access the chosen domain after the initial domain validation.
+
 ### How to run this with docker rootless?
 You can run AIO also with docker rootless. How to do this is documented here: [docker-rootless.md](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md)
 
