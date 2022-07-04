@@ -71,6 +71,10 @@ class ContainerDefinitionFetcher
             foreach ($entry['ports'] as $port) {
                 if($port === '%APACHE_PORT%/tcp') {
                     $port = $this->configurationManager->GetApachePort() . '/tcp';
+                } elseif($port === '%TALK_PORT%/tcp') {
+                    $port = $this->configurationManager->GetTalkPort() . '/tcp';
+                } elseif($port === '%TALK_PORT%/udp') {
+                    $port = $this->configurationManager->GetTalkPort() . '/udp';
                 }
                 $ports->AddPort($port);
             }
@@ -79,6 +83,8 @@ class ContainerDefinitionFetcher
             foreach ($entry['internalPorts'] as $internalPort) {
                 if($internalPort === '%APACHE_PORT%') {
                     $internalPort = $this->configurationManager->GetApachePort();
+                } elseif($internalPort === '%TALK_PORT%') {
+                    $internalPort = $this->configurationManager->GetTalkPort();
                 }
                 $internalPorts->AddInternalPort($internalPort);
             }

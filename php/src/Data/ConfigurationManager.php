@@ -395,6 +395,13 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetTalkPort() : string {
+        $envVariableName = 'TALK_PORT';
+        $configName = 'talk_port';
+        $defaultValue = '3478';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */

@@ -139,7 +139,8 @@
         "TALK_ENABLED=%TALK_ENABLED%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
         "DAILY_BACKUP_RUNNING=%DAILY_BACKUP_RUNNING%",
-        "TZ=%TIMEZONE%"
+        "TZ=%TIMEZONE%",
+        "TALK_PORT=%TALK_PORT%"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
@@ -190,18 +191,19 @@
       "displayName": "Talk",
       "containerName": "nextcloud/aio-talk",
       "ports": [
-        "3478/tcp",
-        "3478/udp"
+        "%TALK_PORT%/tcp",
+        "%TALK_PORT%/udp"
       ],
       "internalPorts": [
-        "3478"
+        "%TALK_PORT%"
       ],
       "environmentVariables": [
         "NC_DOMAIN=%NC_DOMAIN%",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
         "JANUS_API_KEY=%JANUS_API_KEY%",
-        "TZ=%TIMEZONE%"
+        "TZ=%TIMEZONE%",
+        "TALK_PORT=%TALK_PORT%"
       ],
       "volumes": [],
       "secrets": [

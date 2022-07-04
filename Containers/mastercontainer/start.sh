@@ -114,6 +114,22 @@ It is set to '$APACHE_PORT'."
         exit 1
     fi
 fi
+if [ -n "$TALK_PORT" ]; then
+    if ! check_if_number "$TALK_PORT"; then
+        echo "You provided an Talk port but did not only use numbers.
+It is set to '$TALK_PORT'."
+        exit 1
+    elif ! [ "$TALK_PORT" -le 65535 ] || ! [ "$TALK_PORT" -ge 1 ]; then
+        echo "The provided Talk port is invalid. It must be between 1 and 65535"
+        exit 1
+    fi
+fi
+if [ -n "$APACHE_PORT" ] && [ -n "$TALK_PORT" ]; then
+    if [ "$APACHE_PORT" = "$TALK_PORT" ]; then
+        echo "APACHE_PORT and TALK_PORT are not allowed to be equal."
+        exit 1
+    fi
+fi
 if [ -n "$DOCKER_SOCKET_PATH" ]; then
     if ! echo "$DOCKER_SOCKET_PATH" | grep -q "^/" || echo "$DOCKER_SOCKET_PATH" | grep -q "/$"; then
         echo "You've set DOCKER_SOCKET_PATH but not to an allowed value.

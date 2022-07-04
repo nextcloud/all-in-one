@@ -17,7 +17,7 @@ fi
 
 # Turn
 cat << TURN_CONF > "/etc/turnserver.conf"
-listening-port=3478
+listening-port=$TALK_PORT
 fingerprint
 lt-cred-mech
 use-auth-secret
@@ -36,8 +36,8 @@ set -x
 sed -i "s|#turn_rest_api_key.*|turn_rest_api_key = \"$JANUS_API_KEY\"|" /etc/janus/janus.jcfg
 sed -i "s|#full_trickle.*|full_trickle = true|g" /etc/janus/janus.jcfg
 sed -i 's|#stun_server.*|stun_server = "127.0.0.1"|g' /etc/janus/janus.jcfg
-sed -i "s|#stun_port.*|stun_port = 3478|g" /etc/janus/janus.jcfg
-sed -i "s|#turn_port.*|turn_port = 3478|g" /etc/janus/janus.jcfg
+sed -i "s|#stun_port.*|stun_port = $TALK_PORT|g" /etc/janus/janus.jcfg
+sed -i "s|#turn_port.*|turn_port = $TALK_PORT|g" /etc/janus/janus.jcfg
 sed -i 's|#turn_server.*|turn_server = "127.0.0.1"|g'/etc/janus/janus.jcfg
 sed -i 's|#turn_type .*|turn_type = "udp"|g' /etc/janus/janus.jcfg
 sed -i 's|#ice_ignore_list .*|ice_ignore_list = "udp"|g' /etc/janus/janus.jcfg
@@ -80,7 +80,7 @@ url = ws://127.0.0.1:8188
 [turn]
 apikey = ${JANUS_API_KEY}
 secret = ${TURN_SECRET}
-servers = turn:$NC_DOMAIN:3478?transport=tcp,turn:$NC_DOMAIN:3478?transport=udp
+servers = turn:$NC_DOMAIN:$TALK_PORT?transport=tcp,turn:$NC_DOMAIN:$TALK_PORT?transport=udp
 SIGNALING_CONF
 
 exec "$@"

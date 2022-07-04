@@ -438,9 +438,9 @@
                             <input type="checkbox" id="collabora" name="collabora"><label for="collabora">Collabora (Nextcloud Office)</label><br>
                         {% endif %}
                         {% if is_talk_enabled == true %}
-                            <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open in your firewall/router)</label><br><br>
+                            <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open in your firewall/router)</label><br><br>
                         {% else %}
-                            <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports 3478/TCP and 3478/UDP open in your firewall/router)</label><br><br>
+                            <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open in your firewall/router)</label><br><br>
                         {% endif %}
                         {% if is_onlyoffice_enabled == true %}
                             <input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice (only supported on x64)</label><br>
