@@ -199,7 +199,7 @@ class ConfigurationManager
         }
 
         // Skip domain validation if opted in to do so
-        if ($this->shouldDomainValidationBeSkipped()) {
+        if (!$this->shouldDomainValidationBeSkipped()) {
 
             $dnsRecordIP = gethostbyname($domain);
             if ($dnsRecordIP === $domain) {
@@ -562,8 +562,7 @@ class ConfigurationManager
     }
 
     public function shouldDomainValidationBeSkipped() : bool {
-        $envVariableOutput = getenv('SKIP_DOMAIN_VALIDATION');
-        if ($envVariableOutput !== false) {
+        if (getenv('SKIP_DOMAIN_VALIDATION') !== false) {
             return true;
         }
         return false;
