@@ -99,6 +99,7 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'timezone' => $configurationManager->GetTimezone(),
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped(),
         'talk_port' => $configurationManager->GetTalkPort(),
+        'collabora_dictionaries' =>  $configurationManager->GetCollaboraDictionaries(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {

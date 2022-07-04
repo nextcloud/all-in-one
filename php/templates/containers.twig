@@ -459,6 +459,29 @@
                         <script type="text/javascript" src="disable-collabora.js"></script>
                     {% endif %}
 
+                    {% if is_collabora_enabled == true and isAnyRunning == false and was_start_button_clicked == true %}
+                        <h3>Collabora dictionaries</h3>
+
+                        {% if collabora_dictionaries == "" %}
+                            In order to get the correct dictionaries in Collabora, you may configure the dictionaries below:<br><br>
+                            <form method="POST" action="/api/configuration" class="xhr">
+                                <input type="text" name="collabora_dictionaries" placeholder="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru" />
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                <input class="button" type="submit" value="Submit" />
+                            </form>
+                            You need to make sure that the dictionaries that you enter are valid. An example is <b>de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru</b>.<br><br>
+                        {% else %}
+                            The dictionaries for Collabora are currently set to <b>{{ collabora_dictionaries }}</b>. You can reset them again by clicking on the button below.<br><br/>
+                            <form method="POST" action="/api/configuration" class="xhr">
+                                <input type="hidden" name="delete_collabora_dictionaries" value="yes"/>
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                <input class="button" type="submit" value="Reset collabora dictionaries" />
+                            </form>
+                        {% endif %}
+                    {% endif %}
+
                     <h2>Timezone change</h2>
                     {% if isAnyRunning == true %}
                         {% if timezone != "" %}

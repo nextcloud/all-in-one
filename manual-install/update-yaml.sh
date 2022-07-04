@@ -59,6 +59,7 @@ done
 sed -i 's|_ENABLED=|_ENABLED=no          # Setting this to "yes" enables the option in Nextcloud automatically.|' sample.conf
 sed -i 's|TALK_ENABLED=no|TALK_ENABLED=yes|' sample.conf
 sed -i 's|COLLABORA_ENABLED=no|COLLABORA_ENABLED=yes|' sample.conf
+sed -i 's|COLLABORA_DICTIONARIES=|COLLABORA_DICTIONARIES=de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru        # You can change this in order to enable other dictionaries for collabora|' sample.conf
 sed -i 's|NEXTCLOUD_DATADIR=|NEXTCLOUD_DATADIR=nextcloud_aio_nextcloud_data          # You can change this to e.g. "/mnt/ncdata" to map it to a location on your host. It needs to be adjusted before the first startup and never afterwards!|' sample.conf
 sed -i 's|NEXTCLOUD_MOUNT=|NEXTCLOUD_MOUNT=/mnt/          # This allows the Nextcloud container to access directories on the host. It must never be equal to the value of NEXTCLOUD_DATADIR!|' sample.conf
 sed -i 's|DAILY_BACKUP_RUNNING=|DAILY_BACKUP_RUNNING=no          # When setting to yes, it will automatically update all installed Nextcloud apps upon container startup.|' sample.conf
