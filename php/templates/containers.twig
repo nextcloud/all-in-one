@@ -79,14 +79,19 @@
                         Nextcloud AIO stands for Nextcloud All In One and provides easy deployment and maintenance with most features included in this one Nextcloud instance.<br><br>
                         <h2>New AIO instance</h2>
                         Please type in the domain that will be used for Nextcloud if you want to create a new instance:<br><br />
+                        {% if skip_domain_validation == true %}
+                            <b>Please Note:</b> The domain validation is disabled so any domain will be accepted here! So make sure that you do not make a typo here as you will not be able to change it afterwards!<br><br>
+                        {% endif %}
                         <form method="POST" action="/api/configuration" class="xhr">
                             <input type="text" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                             <input class="button" type="submit" value="Submit" />
                         </form>
-                        Make sure that this server is reachable on Port 443 and you've correctly set up the DNS config for the domain that you enter. <br><br>
-                        If you have a dynamic IP-address, you can use e.g. <a href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates. <br /><br/>
+                        {% if skip_domain_validation == false %}
+                            Make sure that this server is reachable on Port 443 and you've correctly set up the DNS config for the domain that you enter. <br><br>
+                            If you have a dynamic IP-address, you can use e.g. <a href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates. <br /><br/>
+                        {% endif %}
 
                         <h2>Restore former AIO instance from backup</h2>
                         You can alternatively restore a former AIO instance from backup.<br><br>
