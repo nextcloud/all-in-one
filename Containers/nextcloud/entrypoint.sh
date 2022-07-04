@@ -324,7 +324,6 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
 else
     if [ -d "/var/www/html/custom_apps/richdocuments" ]; then
-        php /var/www/html/occ config:system:delete allow_local_remote_servers
         php /var/www/html/occ app:remove richdocuments
     fi
 fi
@@ -345,6 +344,7 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
     php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
     php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$NC_DOMAIN/onlyoffice"
+    php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
 else
     if [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
         php /var/www/html/occ app:remove onlyoffice
