@@ -163,7 +163,7 @@ Nextcloud AIO provides a local backup solution based on [BorgBackup](https://git
 
 It is recommended to create a backup before any container update. By doing this, you will be safe regarding any possible complication during updates because you will be able to restore the whole instance with basically one click. 
 
-If you connect an external drive to your host, and choose the backup directory to be on that drive, you are also kind of save against drive failures of the drive where the docker volumes are stored on. 
+If you connect an external drive to your host, and choose the backup directory to be on that drive, you are also kind of safe against drive failures of the drive where the docker volumes are stored on. 
 
 <details>
 <summary>How to do the above step for step</summary>
