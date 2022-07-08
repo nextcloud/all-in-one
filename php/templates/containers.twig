@@ -51,7 +51,7 @@
 
         {% if is_daily_backup_running == true %}
             <span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br /><br />
-            It will update your containers, the mastercontainer and your Nextcloud apps if the backup is successful.<br /><br />
+            It will update your containers, the mastercontainer and on saturdays your Nextcloud apps if the backup is successful.<br /><br />
             {% if is_mastercontainer_update_available == true %}
                 Since the mastercontainer gets updated, it will restart the container which will make it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower">Logs</a>)<br /><br />
             {% endif %}
@@ -382,9 +382,9 @@
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                             <input class="button" type="submit" value="Submit" />
                                         </form>
-                                        This option will also automatically update your containers, the mastercontainer and your Nextcloud apps and will send a notification about the result of the backup.<br><br/>
+                                        This option will also automatically update your containers, the mastercontainer and on saturdays your Nextcloud apps and will send a notification about the result of the backup.<br><br/>
                                     {% else %}
-                                        Daily backups will be created at <b>{{ daily_backup_time }} UTC</b> which includes a notification about the result of the backup and automatic updates of your containers, the mastercontainer and your Nextcloud apps. You can disable this option again by clicking on the button below.<br><br/>
+                                        Daily backups will be created at <b>{{ daily_backup_time }} UTC</b> which includes a notification about the result of the backup and automatic updates of your containers, the mastercontainer and on saturdays your Nextcloud apps. You can disable this option again by clicking on the button below.<br><br/>
                                         <form method="POST" action="/api/configuration" class="xhr">
                                             <input type="hidden" name="delete_daily_backup_time" value="yes"/>
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
