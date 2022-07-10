@@ -88,11 +88,13 @@ COPY start.sh /usr/bin/
 COPY backup-time-file-watcher.sh /
 COPY session-deduplicator.sh /
 COPY cron.sh /
+COPY daily-backup.sh /
 COPY supervisord.conf /
 RUN chmod +x /usr/bin/start.sh; \
     chmod +x /cron.sh; \
     chmod +x /session-deduplicator.sh; \
     chmod +x /backup-time-file-watcher.sh; \
+    chmod +x /daily-backup.sh; \
     chmod a+r /Caddyfile
 
 USER root

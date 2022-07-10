@@ -44,8 +44,13 @@ class ConfigurationController
             }
 
             if (isset($request->getParsedBody()['daily_backup_time'])) {
+                if (isset($request->getParsedBody()['automatic_updates'])) {
+                    $enableAutomaticUpdates = true;
+                } else {
+                    $enableAutomaticUpdates = false;
+                }
                 $dailyBackupTime = $request->getParsedBody()['daily_backup_time'] ?? '';
-                $this->configurationManager->SetDailyBackupTime($dailyBackupTime);
+                $this->configurationManager->SetDailyBackupTime($dailyBackupTime, $enableAutomaticUpdates);
             }
 
             if (isset($request->getParsedBody()['delete_daily_backup_time'])) {

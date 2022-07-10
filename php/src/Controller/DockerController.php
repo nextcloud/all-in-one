@@ -26,22 +26,21 @@ class DockerController
         $this->configurationManager = $configurationManager;
     }
 
-    private function PerformRecursiveContainerStart(string $id) : void {
+    private function PerformRecursiveContainerStart(string $id, bool $pullContainer = true) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         foreach($container->GetDependsOn() as $dependency) {
             $this->PerformRecursiveContainerStart($dependency);
         }
 
-        $pullcontainer = true;
         if ($id === 'nextcloud-aio-database') {
             if ($this->dockerActionManager->GetDatabasecontainerExitCode() > 0) {
-                $pullcontainer = false;
+                $pullContainer = false;
             }
         }
         $this->dockerActionManager->DeleteContainer($container);
         $this->dockerActionManager->CreateVolumes($container);
-        if ($pullcontainer) {
+        if ($pullContainer) {
             $this->dockerActionManager->PullContainer($container);
         } else {
             error_log('Not pulling the latest database image because the container was not correctly shut down.');
@@ -145,12 +144,12 @@ class DockerController
         $this->configurationManager->WriteConfig($config);
 
         // Start container
-        $this->startTopContainer();
+        $this->startTopContainer(true);
 
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
-    public function startTopContainer() : void {
+    public function startTopContainer(bool $pullContainer) : void {
         $config = $this->configurationManager->GetConfig();
         // set AIO_TOKEN
         $config['AIO_TOKEN'] = bin2hex(random_bytes(24));
@@ -161,7 +160,7 @@ class DockerController
 
         $id = self::TOP_CONTAINER;
 
-        $this->PerformRecursiveContainerStart($id);
+        $this->PerformRecursiveContainerStart($id, $pullContainer);
     }
 
     public function StartWatchtowerContainer(Request $request, Response $response, $args) : Response {
@@ -193,6 +192,11 @@ class DockerController
         $this->PerformRecursiveContainerStop($id);
 
         return $response->withStatus(201)->withHeader('Location', '/');
+    }
+
+    public function stopTopContainer() : void {
+        $id = self::TOP_CONTAINER;
+        $this->PerformRecursiveContainerStop($id);
     }
 
     public function StartDomaincheckContainer() : void

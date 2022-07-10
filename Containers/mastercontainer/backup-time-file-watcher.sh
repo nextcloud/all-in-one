@@ -10,12 +10,12 @@ file_present() {
         if [ "$FILE_PRESENT" = 0 ]; then
             restart_process
         else
-            if [ -n "$BACKUP_TIME" ] && [ "$(cat "/mnt/docker-aio-config/data/daily_backup_time")" != "$BACKUP_TIME" ]; then
+            if [ -n "$BACKUP_TIME" ] && [ "$(head -1 "/mnt/docker-aio-config/data/daily_backup_time")" != "$BACKUP_TIME" ]; then
                 restart_process
             fi
         fi
         FILE_PRESENT=1
-        BACKUP_TIME="$(cat "/mnt/docker-aio-config/data/daily_backup_time")"
+        BACKUP_TIME="$(head -1 "/mnt/docker-aio-config/data/daily_backup_time")"
     else
         if [ "$FILE_PRESENT" = 1 ]; then
             restart_process
