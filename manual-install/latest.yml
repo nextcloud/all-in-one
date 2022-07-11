@@ -71,6 +71,7 @@ services:
       - OVERWRITEPROTOCOL=https
       - TURN_SECRET=${TURN_SECRET}
       - SIGNALING_SECRET=${SIGNALING_SECRET}
+      - ONLYOFFICE_SECRET=${ONLYOFFICE_SECRET}
       - AIO_URL=${AIO_URL}
       - NEXTCLOUD_MOUNT=${NEXTCLOUD_MOUNT}
       - CLAMAV_ENABLED=${CLAMAV_ENABLED}
@@ -82,6 +83,7 @@ services:
       - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
       - DAILY_BACKUP_RUNNING=${DAILY_BACKUP_RUNNING}
       - TZ=${TIMEZONE}
+      - TALK_PORT=${TALK_PORT}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -104,6 +106,7 @@ services:
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443
       - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning
+      - dictionaries=${COLLABORA_DICTIONARIES}
       - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
@@ -114,14 +117,15 @@ services:
     container_name: nextcloud-aio-talk
     image: nextcloud/aio-talk:latest
     ports:
-      - 3478:3478/tcp
-      - 3478:3478/udp
+      - ${TALK_PORT}:${TALK_PORT}/tcp
+      - ${TALK_PORT}:${TALK_PORT}/udp
     environment:
       - NC_DOMAIN=${NC_DOMAIN}
       - TURN_SECRET=${TURN_SECRET}
       - SIGNALING_SECRET=${SIGNALING_SECRET}
       - JANUS_API_KEY=${JANUS_API_KEY}
       - TZ=${TIMEZONE}
+      - TALK_PORT=${TALK_PORT}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -144,6 +148,9 @@ services:
     image: nextcloud/aio-onlyoffice:latest
     environment:
       - TZ=${TIMEZONE}
+      - JWT_ENABLED=true
+      - JWT_HEADER=AuthorizationJwt
+      - JWT_SECRET=${ONLYOFFICE_SECRET}
     volumes:
       - nextcloud_aio_onlyoffice:/var/lib/onlyoffice:rw
     stop_grace_period: 10s
