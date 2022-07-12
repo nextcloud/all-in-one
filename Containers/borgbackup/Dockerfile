@@ -1,4 +1,4 @@
-FROM debian:bullseye-20220622-slim
+FROM debian:bullseye-20220711-slim
 
 RUN set -ex; \
     \
