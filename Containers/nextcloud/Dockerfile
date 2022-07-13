@@ -1,5 +1,5 @@
 # From https://github.com/nextcloud/docker/blob/master/23/fpm-alpine/Dockerfile
-FROM php:8.0.20-fpm-alpine3.15
+FROM php:8.0.21-fpm-alpine3.15
 
 # Custom: change id of www-data user as it needs to be the same like on old installations
 RUN set -ex; \
