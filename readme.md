@@ -144,6 +144,12 @@ Additionally, there is a cronjob that runs once a day that checks for container 
 ### How to easily log in to the AIO interface?
 If your Nextcloud is running and you are logged in as admin in your Nextcloud, you can easily log in to the AIO interface by opening `https://yourdomain.tld/settings/admin/overview` which will show a button on top that enables you to log in to the AIO interface by just clicking on this button. **Note:** You can change the domain/ip-address/port of the button by simply stopping the containers, visiting the AIO interface from the correct and desired domain/ip-address/port and clicking once on `Start containers`.
 
+### How to change the domain?
+If you set up a new AIO instance, you need to enter a domain. Currently there is no way to change this domain afterwards from the AIO interface. So in order to change it, you need to edit the configuration.json manually that is most likely stored in `/var/lib/docker/volumes/nextcloud_aio_mastercontainer/_data/data/configuration.json`, subsitute each occurrence of your old domain with your new domain and save and write out the file. Afterwards restart your containers from the AIO interface and everything should work as expected if the new domain is correctly configured.<br>
+If you are running AIO behind a reverse proxy, you need to obviously also change the domain in your reverse proxy config.
+
+**⚠️ Please note:** Editing the configuration.json manually and making a mistake may break your instance so please create a backup first!
+
 ### How to properly reset the instance?
 If something goes unexpected routes during the initial installation, you might want to reset the AIO installation to be able to start from scratch.
 
