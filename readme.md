@@ -109,6 +109,9 @@ The easiest way to run it with Portainer on Linux is to use Portainer's stacks f
 ### How to run it behind a Cloudflare Argo Tunnel?
 Although it does not seems like it is the case but from AIO perspective a Cloudflare Argo Tunnel works like a reverse proxy. So please follow the [reverse proxy documentation](./reverse-proxy.md) where is documented how to make it run behind a Cloudflare Argo Tunnel.
 
+### How to get it running using the ACME DNS-challenge?
+You can install AIO in reverse proxy mode where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section).
+
 ### How to run it locally?
 If you do not want to open Nextcloud to the public internet, you may have a look at the following documentation how to set it up locally: [local-instance.md](./local-instance.md)
 
