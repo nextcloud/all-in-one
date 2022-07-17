@@ -507,7 +507,7 @@ class ConfigurationManager
         }
         
         if ($enableAutomaticUpdates === false) {
-            $time .= '\nautomaticUpdatesAreNotEnabled';
+            $time .= PHP_EOL . 'automaticUpdatesAreNotEnabled';
         }
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
     }
