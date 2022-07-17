@@ -15,6 +15,3 @@ $dockerController = $container->get(\AIO\Controller\DockerController::class);
 
 // Stop container and start backup
 $dockerController->startBackup();
-
-// Start apache
-$dockerController->startTopContainer();

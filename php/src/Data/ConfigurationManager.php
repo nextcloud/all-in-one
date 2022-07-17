@@ -497,7 +497,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetDailyBackupTime(string $time) : void {
+    public function SetDailyBackupTime(string $time, bool $enableAutomaticUpdates) : void {
         if ($time === "") {
             throw new InvalidSettingConfigurationException("The daily backup time must not be empty!");
         }
@@ -506,6 +506,9 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("You did not enter a correct time! One correct example is '04:00'!");
         }
         
+        if ($enableAutomaticUpdates === false) {
+            $time .= '\nautomaticUpdatesAreNotEnabled';
+        }
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
     }
 
@@ -513,7 +516,22 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
             return '';
         }
-        return file_get_contents(DataConst::GetDailyBackupTimeFile());
+        $dailyBackupFile = file_get_contents(DataConst::GetDailyBackupTimeFile());
+        $dailyBackupFileArray = explode("\n", $dailyBackupFile);
+        return $dailyBackupFileArray[0];
+    }
+
+    public function areAutomaticUpdatesEnabled() : bool {
+        if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
+            return false;
+        }
+        $dailyBackupFile = file_get_contents(DataConst::GetDailyBackupTimeFile());
+        $dailyBackupFileArray = explode("\n", $dailyBackupFile);
+        if (isset($dailyBackupFileArray[1]) && $dailyBackupFileArray[1] === 'automaticUpdatesAreNotEnabled') {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public function DeleteDailyBackupTime() : void {
