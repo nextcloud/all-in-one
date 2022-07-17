@@ -5,7 +5,8 @@ RUN adduser -S www-data -G www-data
 RUN rm -rf /etc/lighttpd/lighttpd.conf
 COPY lighttpd.conf /etc/lighttpd/lighttpd.conf
 RUN chmod +r -R /etc/lighttpd && \
-    chown www-data:www-data -R /var/www
+    chown www-data:www-data -R /var/www && \
+    chown www-data:www-data /etc/lighttpd/lighttpd.conf
 
 COPY start.sh /
 RUN chmod +x /start.sh
