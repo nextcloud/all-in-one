@@ -342,6 +342,15 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/backup
 1. Add the following new line to the crontab if not already present: `0 20 * * 7 /root/backup-script.sh` which will run the script at 20:00 on Sundays each week. 
 1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
 
+### How to stop/start/update containers or trigger the daily backup from a script externally?
+You can do so by running the `/daily-backup.sh` script that is stored in the mastercontainer. It accepts the following environmental varilables:
+- `AUTOMATIC_UPDATES` if set to `1`, it will automatically stop the containers, update them and start them including the mastercontainer. If the mastercontainer gets updated, this script's execution will stop as soon as the mastercontainer gets stopped. You can then wait until it is started again and run the script with this flag again in order to update all containers correctly afterwards.
+- `DAILY_BACKUP` if set to `1`, it will automatically stop the containers and create a backup. If you want to start them again afterwards, you may have a look at the `START_CONTAINERS` option. Please be aware that this option is non-blocking which means that the backup is not done when the process is finished since it only start the borgbackup container with the correct configuration.
+- `START_CONTAINERS` if set to `1`, it will automatically start the containers without updating them.
+- `STOP_CONTAINERS` if set to `1`, it will automatically stop the containers.
+
+One example for this would be `sudo docker exec -it nextcloud-aio-mastercontainer DAILY_BACKUP=1 /daily-backup.sh`, which you can run via a cronjob or put it in a script.
+
 ### How to change the default location of Nextcloud's Datadir?
 You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
 
