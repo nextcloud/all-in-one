@@ -8,5 +8,6 @@
 - [ ] When starting the mastercontainer with `-e NEXTCLOUD_DATADIR="/mnt/testdata"` it should map that location from `/mnt/testdata` to `/mnt/ncdata` inside the Nextcloud container. Not having adjusted the permissions correctly before starting the Nextcloud container the first time will not allow the Nextcloud container to start correctly. See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir for allowed values.
 - [ ] When starting the mastercontainer with `-e NEXTCLOUD_MOUNT="/mnt/"` it should map `/mnt/` to `/mnt/` inside the Nextcloud container. See https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host for allowed values.
 - [ ] When starting the mastercontainer with `-e DOCKER_SOCKET_PATH="/var/run/docker.sock.raw"` it should map `/var/run/docker.sock.raw` to `/var/run/docker.sock` inside the watchtower container which allow to update the mastercontainer on macos and with docker rootless.
+- [ ] When starting the mastercontainer with `-e DISABLE_BACKUP_SECTION=true` it should hide the backup section that gets shown after AIO is set up (everything of [020-backup-and-restore](./020-backup-and-restore.md)) and simply show that the backup section is disabled.
 
 You can now continue with [070-timezone-change.md](./070-timezone-change.md)
