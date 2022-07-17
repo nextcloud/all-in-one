@@ -314,13 +314,22 @@ class DockerActionManager
 
         if(count($exposedPorts) > 0) {
             $requestBody['ExposedPorts'] = $exposedPorts;
-            foreach($container->GetPorts()->GetPorts() as $port) {
+            foreach ($container->GetPorts()->GetPorts() as $port) {
                 $portNumber = explode("/", $port);
-                $requestBody['HostConfig']['PortBindings'][$port] = [
-                    [
-                    'HostPort' => $portNumber[0],
-                    ]
-                ];
+                if ($this->configurationManager->GetApachePort() === $portNumber[0] && $this->configurationManager->GetApacheIPBinding() !== '') {
+                    $requestBody['HostConfig']['PortBindings'][$port] = [
+                        [
+                        'HostPort' => $portNumber[0],
+                        'HostIp' => $this->configurationManager->GetApacheIPBinding(),
+                        ]
+                    ];
+                } else {
+                    $requestBody['HostConfig']['PortBindings'][$port] = [
+                        [
+                        'HostPort' => $portNumber[0],
+                        ]
+                    ];
+                }
             }
         }
 

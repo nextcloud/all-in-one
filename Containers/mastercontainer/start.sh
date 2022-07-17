@@ -114,6 +114,13 @@ It is set to '$APACHE_PORT'."
         exit 1
     fi
 fi
+if [ -n "$APACHE_IP_BINDING" ]; then
+    if ! echo "$APACHE_IP_BINDING" | grep -q '^[0-9.]\+$'; then
+        echo "You provided an ip-address for the apache container's ip-binding but it was not a valid ip-address.
+It is set to '$APACHE_IP_BINDING'."
+        exit 1
+    fi
+fi
 if [ -n "$TALK_PORT" ]; then
     if ! check_if_number "$TALK_PORT"; then
         echo "You provided an Talk port but did not only use numbers.

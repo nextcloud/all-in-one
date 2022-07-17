@@ -1,6 +1,7 @@
 # Environmental variables
 
 - [ ] When starting the mastercontainer with `-e APACHE_PORT=11000` on a clean instance, the domaincheck container should be started with that same port published. That makes sure that also the Apache container will use that port later on. Using a value here that is not a port will not allow the mastercontainer to start correctly.
+- [ ] When starting the mastercontainer with `-e APACHE_IP_BINDING=127.0.0.1` on a clean instance, the domaincheck container's apache port should only listen on localhost on the host. Using a value here that is not a number or dot will not allow the mastercontainer to start correctly.
 - [ ] When starting the mastercontainer with `-e TALK_PORT=3479` on a clean instance, the talk container should use this port later on. Using a value here that is not a port will not allow the mastercontainer to start correctly. Also it should stop if apache_port and talk_port are set to the same value.
 - [ ] Make also sure that reverse proxies work by following https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#reverse-proxy-documentation and following [001-initial-setup.md](./001-initial-setup.md) and [002-new-instance.md](./002-new-instance.md)
 - [ ] When starting the mastercontainer with `-e SKIP_DOMAIN_VALIDATION=true` on a clean instance, it should skip the domain verification. So it should accept any domain that you type in then.

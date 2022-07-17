@@ -599,4 +599,11 @@ class ConfigurationManager
         $config['collabora_dictionaries'] = '';
         $this->WriteConfig($config);
     }
+
+    public function GetApacheIPBinding() : string {
+        $envVariableName = 'APACHE_IP_BINDING';
+        $configName = 'apache_ip_binding';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
 }
