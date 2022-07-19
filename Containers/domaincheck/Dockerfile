@@ -1,4 +1,4 @@
-FROM alpine:3.15.4
+FROM alpine:3.16.1
 RUN apk add --update --no-cache lighttpd bash
 
 RUN adduser -S www-data -G www-data
