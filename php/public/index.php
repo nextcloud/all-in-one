@@ -101,6 +101,7 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'talk_port' => $configurationManager->GetTalkPort(),
         'collabora_dictionaries' => $configurationManager->GetCollaboraDictionaries(),
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
+        'is_backup_section_enabled' => $configurationManager->isBackupSectionEnabled(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {
