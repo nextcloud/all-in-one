@@ -146,6 +146,9 @@ Simply run the following: `sudo docker exec -it nextcloud-aio-nextcloud php occ 
 ### How to resolve `Security & setup warnings displays the "missing default phone region" after initial install`?
 Simply run the following command: `sudo docker exec -it nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue"`. Of course you need to modify `yourvalue` based on your location. Examples are `DE`, `EN` and `GB`. See this list for more codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
 
+### How to run multiple AIO instances on one server?
+See [multiple-instances.md](./multiple-instances.md) for some documentation on this.
+
 ### Bruteforce protection FAQ
 Nextcloud features a built-in bruteforce protection which may get triggered and will block an ip-address or disable a user. You can unblock an ip-address by running `sudo docker exec -it nextcloud-aio-nextcloud php occ security:bruteforce:reset <ip-address>` and enable a disabled user by running `sudo docker exec -it nextcloud-aio-nextcloud php occ user:enable <name of user>`. See https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html#security for further information.
 
