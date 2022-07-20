@@ -118,11 +118,17 @@ If you do not want to open Nextcloud to the public internet, you may have a look
 ### Are self-signed certificates supported?
 No and they will not be. If you want to run it locally, without opening Nextcloud to the public internet, please have a look at the [local instance documentation](./local-instance.md).
 
+### Can I use an ip-address for Nextcloud instead of a domain?
+No and it will not be added. If you only want to run it locally, you may have a look at the following documentation: [local-instance.md](./local-instance.md)
+
 ### Are other ports than then default 443 for Nextcloud supported?
 No and they will not be. Please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). If port 443 and/or 80 is blocked for you, you may use the ACME DNS-challenge or a Cloudflare Argo Tunnel.
 
 ### Can I run Nextcloud in a subdirectory on my domain?
 No and it will not be added. Please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md).
+
+### How can I access Nextcloud locally?
+The recommended way is to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-adddress of your server that runs Nextcloud AIO.
 
 ### How to resolve firewall problems with Fedora Linux, RHEL OS, CentOS, SUSE Linux and others?
 It is known that Linux distros that use [firewalld](https://firewalld.org) as their firewall daemon have problems with docker networks. In case the containers are not able to communicate with each other, you may change your firewalld to use the iptables backend by running:
