@@ -11,7 +11,7 @@ Included are:
 - ClamAV
 
 ## How to use this?
-The following instructions are especially meant for Linux. For macOS see [this](#how-to-run-it-on-macos), for Windows see [this](#how-to-run-it-on-windows).
+The following instructions are especially meant for Linux. For macOS see [this](#how-to-run-aio-on-macos), for Windows see [this](#how-to-run-aio-on-windows).
 1. Install Docker on your Linux installation using:
     ```
     curl -fsSL get.docker.com | sudo sh
@@ -74,10 +74,10 @@ Only those (if you access the Mastercontainer Interface internally via port 8080
 - `443/TCP`: will be used by the Apache container later on and needs to be open in your firewall/router
 - `3478/TCP` and `3478/UDP`: will be used by the Turnserver inside the Talk container and needs to be open in your firewall/router
 
-### How to run it on macOS?
+### How to run AIO on macOS?
 On macOS, there are two things different in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /var/run/docker.sock.raw:/var/run/docker.sock:ro` to run it after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/). You also need to add `-e DOCKER_SOCKET_PATH="/var/run/docker.sock.raw"`to the startup command. Apart from that it should work and behave the same like on Linux.
 
-### How to run it on Windows?
+### How to run AIO on Windows?
 On Windows, the following command should work in the command prompt after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/):
 
 ```
@@ -103,19 +103,19 @@ docker volume create ^
 ```
 (The value `/host_mnt/c/your/backup/path` in this example would be equivalent to `C:\your\backup\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
 
-### How to run it with Portainer?
+### How to run AIO with Portainer?
 The easiest way to run it with Portainer on Linux is to use Portainer's stacks feature and use [this docker-compose file](./docker-compose.yml) in order to start AIO correctly. 
 
-### How to run it behind a Cloudflare Argo Tunnel?
+### How to run Nextcloud behind a Cloudflare Argo Tunnel?
 Although it does not seems like it is the case but from AIO perspective a Cloudflare Argo Tunnel works like a reverse proxy. So please follow the [reverse proxy documentation](./reverse-proxy.md) where is documented how to make it run behind a Cloudflare Argo Tunnel.
 
-### How to get it running using the ACME DNS-challenge?
+### How to get Nextcloud running using the ACME DNS-challenge?
 You can install AIO in reverse proxy mode where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section).
 
-### How to run it locally?
+### How to run Nextcloud locally?
 If you do not want to open Nextcloud to the public internet, you may have a look at the following documentation how to set it up locally: [local-instance.md](./local-instance.md)
 
-### Are self-signed certificates supported?
+### Are self-signed certificates supported for Nextcloud?
 No and they will not be. If you want to run it locally, without opening Nextcloud to the public internet, please have a look at the [local instance documentation](./local-instance.md).
 
 ### Can I use an ip-address for Nextcloud instead of a domain?
