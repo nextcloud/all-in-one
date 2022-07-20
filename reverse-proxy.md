@@ -92,6 +92,31 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 </details>
 
+### Caddy with ACME DNS-challenge
+
+<details>
+
+<summary>click here to expand</summary>
+
+You can get AIO running using the ACME DNS-challenge. Here is how to do it.
+
+1. Follow [this documentation](https://caddy.community/t/how-to-use-dns-provider-modules-in-caddy-2/8148) in order to get a Caddy build that is compatible with your domain provider's DNS challenge.
+1. Add this to your Caddyfile:
+    ```
+    https://<your-nc-domain>:443 {
+        reverse_proxy localhost:11000
+        tls {
+            dns <provider> <key>
+        }
+    }
+    ```
+    Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. You also need to adjust `<provider>` and `<key>` to match your case. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
+1. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `-e SKIP_DOMAIN_VALIDATION=true` to the docker run command which will disable the dommain validation (because it is known that the domain validation will not when using the DNS-challenge since no port is publicly opened.
+
+**Advice:** In order to make it work in your home network, you may add the internal ipv4-address of your reverse proxy as A DNS-record to your domain and disable the dns-rebind-protection in your router. Another way it to set up a local dns-server and set up a custom dns-record for that domain that points to the internal ipv4-adddress of your reverse proxy. If both is not possible, you may add the domain to the hosts file which is needed then for any devices that shall use the server.
+
+</details>
+
 ### Cloudflare Argo Tunnel
 
 <details>
@@ -101,7 +126,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 Although it does not seems like it is the case but from AIO perspective a Cloudflare Argo Tunnel works like a reverse proxy. Here is how to make it work:
 
 1. Install the Cloudflare Argo Tunnel on the same machine where AIO will be running on and point the Argo Tunnel with the domain that you want to use for AIO to `http://localhost:11000`. If the Argo Tunnel is running on a different machine, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
-2. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `-e SKIP_DOMAIN_VALIDATION=true` to the docker run command which will disable the dommain validation (because it is known that the domain validation will not work behind a Cloudflare Argo Tunnel). So you need to ensure yourself that you've configured everything correctly.
+1. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `-e SKIP_DOMAIN_VALIDATION=true` to the docker run command which will disable the dommain validation (because it is known that the domain validation will not work behind a Cloudflare Argo Tunnel). So you need to ensure yourself that you've configured everything correctly.
 
 </details>
 
