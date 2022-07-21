@@ -70,7 +70,7 @@ The procedure for migrating the files and the database works like this:
     sudo rm /var/lib/docker/volumes/nextcloud_aio_database_dump/_data/database-dump.sql
     sudo cp database-dump.sql /var/lib/docker/volumes/nextcloud_aio_database_dump/_data/
     sudo chmod 777 /var/lib/docker/volumes/nextcloud_aio_database_dump/_data/database-dump.sql
-    sudo rm -r /var/lib/docker/volumes/nextcloud_aio_database/_data/*
+    sudo rm /var/lib/docker/volumes/nextcloud_aio_database_dump/_data/initial-cleanup-done
     ```
 1. If the commands above were executed successfully, restore the datadirectory of your former instance into the following directory: `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/`
 1. Next, run `sudo chown -R 33:0 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` and `sudo chmod -R 750 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*`to apply the correct permissions
