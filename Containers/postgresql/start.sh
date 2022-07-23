@@ -39,7 +39,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     # If database export was unsuccessful, skip update 
     if [ -f "$DUMP_DIR/export.failed" ]; then
         echo "Database export failed the last time. Most likely was the export time not high enough."
-        echo "Plese report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
+        echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
         exit 1
     fi
 
@@ -64,12 +64,21 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         sleep 5
     done
 
-    # Set correct permissions
-    if grep -q "Owner: oc_admin" "$DUMP_FILE" && ! grep -q "Owner: oc_$POSTGRES_USER" "$DUMP_FILE"; then
-        OC_ADMIN_EXISTS=1
+    # Check if the line we grep for later on is there
+    GREP_STRING='Name: oc_appconfig; Type: TABLE; Schema: public; Owner:'
+    if ! grep -q "$GREP_STRING" "$DUMP_FILE"; then
+        echo "The needed oc_appconfig line is not there which is unexpected."
+        echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
+        exit 1
+    fi
+
+    # Get the Owner
+    DB_OWNER="$(grep "$GREP_STRING" "$DUMP_FILE" | grep -oP 'Owner:.*$' | sed 's|Owner:||;s| ||g')"
+    if [ "$DB_OWNER" != "oc_$POSTGRES_USER" ]; then
+        DIFFERENT_DB_OWNER=1
         psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-            CREATE USER oc_admin WITH PASSWORD '$POSTGRES_PASSWORD' CREATEDB;
-            ALTER DATABASE "$POSTGRES_DB" OWNER TO oc_admin;
+            CREATE USER "$DB_OWNER" WITH PASSWORD '$POSTGRES_PASSWORD' CREATEDB;
+            ALTER DATABASE "$POSTGRES_DB" OWNER TO "$DB_OWNER";
 EOSQL
     fi
 
@@ -78,10 +87,10 @@ EOSQL
     psql "$POSTGRES_DB" -U "$POSTGRES_USER" < "$DUMP_FILE"
 
     # Correct permissions
-    if [ -n "$OC_ADMIN_EXISTS" ]; then
+    if [ -n "$DIFFERENT_DB_OWNER" ]; then
         psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
             ALTER DATABASE "$POSTGRES_DB" OWNER TO "oc_$POSTGRES_USER";
-            REASSIGN OWNED BY oc_admin TO "oc_$POSTGRES_USER";
+            REASSIGN OWNED BY "$DB_OWNER" TO "oc_$POSTGRES_USER";
 EOSQL
     fi
 
