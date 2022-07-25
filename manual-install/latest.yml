@@ -81,7 +81,7 @@ services:
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_ENABLED=${TALK_ENABLED}
       - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
-      - DAILY_BACKUP_RUNNING=${DAILY_BACKUP_RUNNING}
+      - UPDATE_NEXTCLOUD_APPS=${UPDATE_NEXTCLOUD_APPS}
       - TZ=${TIMEZONE}
       - TALK_PORT=${TALK_PORT}
     stop_grace_period: 10s
