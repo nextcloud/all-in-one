@@ -377,6 +377,9 @@ You can do so by running the `/daily-backup.sh` script that is stored in the mas
 
 One example for this would be `sudo docker exec -it nextcloud-aio-mastercontainer DAILY_BACKUP=1 /daily-backup.sh`, which you can run via a cronjob or put it in a script.
 
+### How to disable the backup section?
+If you already have a backup solution in place, you may want to hide the backup section. You can do so by adding `-e DISABLE_BACKUP_SECTION=true` to the initial startup of the mastercontainer.
+
 ### How to change the default location of Nextcloud's Datadir?
 You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
 

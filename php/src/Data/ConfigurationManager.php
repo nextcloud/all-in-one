@@ -624,4 +624,19 @@ class ConfigurationManager
         $defaultValue = '';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
+
+    private function GetDisableBackupSection() : string {
+        $envVariableName = 'DISABLE_BACKUP_SECTION';
+        $configName = 'disable_backup_section';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function isBackupSectionEnabled() : bool {
+        if ($this->GetDisableBackupSection() === 'true') {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

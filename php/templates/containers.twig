@@ -293,117 +293,125 @@
 
                 {% if was_start_button_clicked == true %}
 
-                    {% if is_backup_container_running == false and borg_backup_host_location == "" and isApacheStarting != true %}
+                    {% if is_backup_section_enabled == false %}
                         <h2>Backup and restore</h2>
-                        Please type in the directory where backups will get created on the host system:<br><br>
-                        <form method="POST" action="/api/configuration" class="xhr">
-                            <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/>
-                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                            <input class="button" type="submit" value="Submit" />
-                        </form>
+                        The backup section is disabled via environmental variable.<br><br>
+                    {% else %}
+                        {% if is_backup_container_running == false and borg_backup_host_location == "" and isApacheStarting != true %}
+                            <h2>Backup and restore</h2>
+                            Please type in the directory where backups will get created on the host system:<br><br>
+                            <form method="POST" action="/api/configuration" class="xhr">
+                                <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/>
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                <input class="button" type="submit" value="Submit" />
+                            </form>
                             The folder path that you enter must start with <b>/</b> and must <b>not</b> end with <b>/</b>.<br><br>
                             An example for Linux is <b>/mnt/backup</b>.<br>
                             For macOS it may be <b>/var/backup</b>.<br>
                             On Windows it must be <b>nextcloud_aio_backupdir</b>. You need to create the 'nextcloud_aio_backupdir' volume beforehand by following this documentation: <a href="https://github.com/nextcloud/all-in-one#how-to-run-aio-on-windows"><b>click here</b></a><br><br>
+                        {% endif %}
                     {% endif %}
 
-                    {% if borg_backup_host_location != "" %}
-                        {% if is_backup_container_running == false %}
-                            <h2>Backup and restore</h2>
-                            {% if backup_exit_code > 0 %}
-                                <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
-                                {% if has_backup_run_once == false %}
-                                    You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on 'Create Backup' for testing the new value.<br /><br />
-                                    <form method="POST" action="/api/configuration" class="xhr">
-                                        <input type="text" value="{{borg_backup_host_location}}" name="borg_backup_host_location" placeholder="/mnt/backup"/>
-                                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                        <input class="button" type="submit" value="Submit" />
-                                    </form>
-                                {% endif %}
-                            {% elseif backup_exit_code == 0 %}
-                                {% if borg_backup_mode == "backup" %}
-                                    <span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }} UTC! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
-                                {% else %}
-                                    <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
+                    {% if is_backup_section_enabled == true %}
 
-                        {% if is_backup_container_running == false and isApacheStarting == false %}
-                            {% if has_backup_run_once == true %}
-                                <details>
-                                <summary>Click here to reveal all backup options (it also includes an option for automatic updates)</summary><br />
-                            {% endif %}
-                            <h3>Backup information</h3>
-                            This is your encryption password for backups: <b>{{ borgbackup_password }}</b><br /><br/>
-                            Please save it at a safe place since you won't be able to restore from backup if you loose this password! <br /><br/>
-                            Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
-                            The backup itself will use a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup"><b>BorgBackup</b><a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
-                            Backups get created in the following directory on the host: <b>{{ borg_backup_host_location }}/borg</b> <br /><br/>
-                            Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app.
-
-                            {% if isApacheStarting != true %}
-                                <h3>Backup creation</h3>
-                                Clicking on the button below will create a backup.<br><br/>
-                                <form method="POST" action="/api/docker/backup" class="xhr">
-                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                    <input class="button" type="submit" value="Create backup" onclick="return confirm('Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.')" />
-                                </form>
-
-                                {% if has_backup_run_once == true %}
-                                    <h3>Backup check</h3>
-                                    Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact but it should't be needed in most situtations.<br><br/>
-                                    <form method="POST" action="/api/docker/backup-check" class="xhr">
-                                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                        <input class="button" type="submit" value="Check backup integrity" onclick="return confirm('Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.')" /><br/>
-                                    </form>
-
-                                    <h3>Backup restore</h3>
-                                    Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the state of the backup so you should consider creating a backup first. It also makes sense to run an integrity check before restoring your files but is not mandatory since it shouldn't be needed in most situations.<br><br>
-                                    <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
-                                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                        <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
-                                            {% for restore_time in backup_times %}
-                                                <option value="{{ restore_time }}">{{ restore_time }} UTC</option>
-                                            {% endfor %}
-                                        </select>
-                                        <input class="button" type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
-                                    </form>
-
-                                    <h3>Daily backup and automatic updates</h3>
-                                    {% if daily_backup_time == "" %}
-                                        By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <b>04:00</b> will create backups at 4 am UTC and <b>16:00</b> at 4 pm UTC.<br><br/>
+                        {% if borg_backup_host_location != "" %}
+                            {% if is_backup_container_running == false %}
+                                <h2>Backup and restore</h2>
+                                {% if backup_exit_code > 0 %}
+                                    <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                    {% if has_backup_run_once == false %}
+                                        You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on 'Create Backup' for testing the new value.<br /><br />
                                         <form method="POST" action="/api/configuration" class="xhr">
-                                            <input type="text" name="daily_backup_time" value="04:00" placeholder="04:00"/>
+                                            <input type="text" value="{{borg_backup_host_location}}" name="borg_backup_host_location" placeholder="/mnt/backup"/>
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input class="button" type="submit" value="Submit" /><br>
-                                            <input type="checkbox" id="automatic_updates" name="automatic_updates" checked="checked"><label for="automatic_updates">Automatically update all containers, the mastercontainer and on saturdays your Nextcloud apps</label><br>
+                                            <input class="button" type="submit" value="Submit" />
                                         </form>
+                                    {% endif %}
+                                {% elseif backup_exit_code == 0 %}
+                                    {% if borg_backup_mode == "backup" %}
+                                        <span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }} UTC! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                                     {% else %}
-                                        Daily backups will be created at <b>{{ daily_backup_time }} UTC</b> which includes a notification about the result of the backup.
-                                        {% if automatic_updates == true %}
-                                            Also your containers, the mastercontainer and on saturdays your Nextcloud apps will be automatically updated. 
-                                        {% endif %}
-                                        You can disable this option again by clicking on the button below.<br><br/>
-                                        <form method="POST" action="/api/configuration" class="xhr">
-                                            <input type="hidden" name="delete_daily_backup_time" value="yes"/>
-                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input class="button" type="submit" value="Disable daily backups" />
-                                        </form>
+                                        <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
-                            {% if has_backup_run_once == false %}
-                                <br /><br />
-                            {% else %}
-                                </details><br /><br />
+
+                            {% if is_backup_container_running == false and isApacheStarting == false %}
+                                {% if has_backup_run_once == true %}
+                                    <details>
+                                    <summary>Click here to reveal all backup options (it also includes an option for automatic updates)</summary><br />
+                                {% endif %}
+                                <h3>Backup information</h3>
+                                This is your encryption password for backups: <b>{{ borgbackup_password }}</b><br /><br/>
+                                Please save it at a safe place since you won't be able to restore from backup if you loose this password! <br /><br/>
+                                Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
+                                The backup itself will use a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup"><b>BorgBackup</b><a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
+                                Backups get created in the following directory on the host: <b>{{ borg_backup_host_location }}/borg</b> <br /><br/>
+                                Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app.
+
+                                {% if isApacheStarting != true %}
+                                    <h3>Backup creation</h3>
+                                    Clicking on the button below will create a backup.<br><br/>
+                                    <form method="POST" action="/api/docker/backup" class="xhr">
+                                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                        <input class="button" type="submit" value="Create backup" onclick="return confirm('Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.')" />
+                                    </form>
+
+                                    {% if has_backup_run_once == true %}
+                                        <h3>Backup check</h3>
+                                        Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact but it should't be needed in most situtations.<br><br/>
+                                        <form method="POST" action="/api/docker/backup-check" class="xhr">
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input class="button" type="submit" value="Check backup integrity" onclick="return confirm('Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.')" /><br/>
+                                        </form>
+
+                                        <h3>Backup restore</h3>
+                                        Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the state of the backup so you should consider creating a backup first. It also makes sense to run an integrity check before restoring your files but is not mandatory since it shouldn't be needed in most situations.<br><br>
+                                        <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
+                                                {% for restore_time in backup_times %}
+                                                    <option value="{{ restore_time }}">{{ restore_time }} UTC</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input class="button" type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
+                                        </form>
+
+                                        <h3>Daily backup and automatic updates</h3>
+                                        {% if daily_backup_time == "" %}
+                                            By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <b>04:00</b> will create backups at 4 am UTC and <b>16:00</b> at 4 pm UTC.<br><br/>
+                                            <form method="POST" action="/api/configuration" class="xhr">
+                                                <input type="text" name="daily_backup_time" value="04:00" placeholder="04:00"/>
+                                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                                <input class="button" type="submit" value="Submit" /><br>
+                                                <input type="checkbox" id="automatic_updates" name="automatic_updates" checked="checked"><label for="automatic_updates">Automatically update all containers, the mastercontainer and on saturdays your Nextcloud apps</label><br>
+                                            </form>
+                                        {% else %}
+                                            Daily backups will be created at <b>{{ daily_backup_time }} UTC</b> which includes a notification about the result of the backup.
+                                            {% if automatic_updates == true %}
+                                                Also your containers, the mastercontainer and on saturdays your Nextcloud apps will be automatically updated. 
+                                            {% endif %}
+                                            You can disable this option again by clicking on the button below.<br><br/>
+                                            <form method="POST" action="/api/configuration" class="xhr">
+                                                <input type="hidden" name="delete_daily_backup_time" value="yes"/>
+                                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                                <input class="button" type="submit" value="Disable daily backups" />
+                                            </form>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                                {% if has_backup_run_once == false %}
+                                    <br /><br />
+                                {% else %}
+                                    </details><br /><br />
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     {% endif %}
