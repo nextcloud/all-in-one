@@ -331,7 +331,7 @@ After using the above command, you should be able to access the AIO Interface vi
 
 ## 3. If the reverse proxy is installed on the same host, you should configure the apache container to only listen on localhost.
 
-Use this envorinmental variable during the initial startup of the mastercontainer to make the apache container only listen on localhost: `-e APACHE_IP_BINDING=127.0.0.1`
+Use this envorinmental variable during the initial startup of the mastercontainer to make the apache container only listen on localhost: `-e APACHE_IP_BINDING=127.0.0.1`. **Attention:** This is only recommended to be set if you use `localhost` in your reverse proxy config to connect to your AIO instance. If you use an ip-address, you can either simply skip this step or set it to `0.0.0.0` if you are unsure what the correct value is.
 
 ## 4. Optional: get a valid certificate for the AIO interface
 
