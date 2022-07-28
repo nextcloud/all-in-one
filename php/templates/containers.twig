@@ -82,7 +82,7 @@
                         <h2>New AIO instance</h2>
                         Please type in the domain that will be used for Nextcloud if you want to create a new instance:<br><br />
                         {% if skip_domain_validation == true %}
-                            <b>Please Note:</b> The domain validation is disabled so any domain will be accepted here! So make sure that you do not make a typo here as you will not be able to change it afterwards!<br><br>
+                            <b>Please note:</b> The domain validation is disabled so any domain will be accepted here! So make sure that you do not make a typo here as you will not be able to change it afterwards!<br><br>
                         {% endif %}
                         <form method="POST" action="/api/configuration" class="xhr">
                             <input type="text" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
@@ -152,7 +152,7 @@
                             An example for Linux is <b>/mnt/backup</b>.<br>
                             For macOS it may be <b>/var/backup</b>.<br>
                             On Windows it must be <b>nextcloud_aio_backupdir</b>. You need to create the 'nextcloud_aio_backupdir' volume beforehand by following this documentation: <a href="https://github.com/nextcloud/all-in-one#how-to-run-aio-on-windows"><b>click here</b></a><br><br>
-                            ⚠️ Note that the backup archive must be located in a subfolder of the folder that you enter here and the subfolder which contains the archive must be named 'borg'. Otherwise will the backup container not find the backup archive!<br><br>
+                            ⚠️ Please note that the backup archive must be located in a subfolder of the folder that you enter here and the subfolder which contains the archive must be named 'borg'. Otherwise will the backup container not find the backup archive!<br><br>
                         {% endif %}
                     {% else %}
                         <b>Everything set!</b> Click on the button below to test the path and password:<br/><br/>
@@ -435,7 +435,7 @@
                     <h2>Optional addons</h2>
                     In this section you can enable or disable optional addons.<br><br>
                     {% if isAnyRunning == true %}
-                        <b>Note:</b> You can enable or disable them when your containers are stopped.<br><br>
+                        <b>Please note:</b> You can enable or disable them when your containers are stopped.<br><br>
                     {% endif %}
                     <form id="options-form" method="POST" action="/api/configuration" class="xhr">
                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -501,7 +501,7 @@
                         {% if timezone != "" %}
                             The timezone for Nextcloud is currently set to <b>{{ timezone }}</b>.<br><br>
                         {% endif %}
-                        <b>Note:</b> You can change the timezone when your containers are stopped.<br><br>
+                        <b>Please note:</b> You can change the timezone when your containers are stopped.<br><br>
                     {% else %}
                         {% if timezone == "" %}
                             In order to get the correct time values for certain Nextcloud features, it makes sense to set the timezone for Nextcloud to the one that your users mainly use. Please note that this setting does not apply to the mastercontainer and any backup option.<br><br>

@@ -171,10 +171,10 @@ Additionally, there is a cronjob that runs once a day that checks for container 
 If your Nextcloud is running and you are logged in as admin in your Nextcloud, you can easily log in to the AIO interface by opening `https://yourdomain.tld/settings/admin/overview` which will show a button on top that enables you to log in to the AIO interface by just clicking on this button. **Note:** You can change the domain/ip-address/port of the button by simply stopping the containers, visiting the AIO interface from the correct and desired domain/ip-address/port and clicking once on `Start containers`.
 
 ### How to change the domain?
+**⚠️ Please note:** Editing the configuration.json manually and making a mistake may break your instance so please create a backup first!
+
 If you set up a new AIO instance, you need to enter a domain. Currently there is no way to change this domain afterwards from the AIO interface. So in order to change it, you need to edit the configuration.json manually that is most likely stored in `/var/lib/docker/volumes/nextcloud_aio_mastercontainer/_data/data/configuration.json`, subsitute each occurrence of your old domain with your new domain and save and write out the file. Afterwards restart your containers from the AIO interface and everything should work as expected if the new domain is correctly configured.<br>
 If you are running AIO behind a reverse proxy, you need to obviously also change the domain in your reverse proxy config.
-
-**⚠️ Please note:** Editing the configuration.json manually and making a mistake may break your instance so please create a backup first!
 
 ### How to properly reset the instance?
 If something goes unexpected routes during the initial installation, you might want to reset the AIO installation to be able to start from scratch.
@@ -381,6 +381,8 @@ One example for this would be `sudo docker exec -it nextcloud-aio-mastercontaine
 If you already have a backup solution in place, you may want to hide the backup section. You can do so by adding `-e DISABLE_BACKUP_SECTION=true` to the initial startup of the mastercontainer.
 
 ### How to change the default location of Nextcloud's Datadir?
+⚠️ **Attention:** It is very important to change the datadir **before** Nextcloud is installed/started the first time and not to change it afterwards! If you still want to do it afterwards, see [this](https://github.com/nextcloud/all-in-one/discussions/890#discussioncomment-3089903) on how to do it.
+
 You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
 
 - An example for Linux is `-e NEXTCLOUD_DATADIR="/mnt/ncdata"`.
@@ -403,8 +405,6 @@ You can configure the Nextcloud container to use a specific directory on your ho
 - On macOS, the command for this would be `sudo chown -R 33:0 /var/nextcloud-data` and `sudo chmod -R 750 /var/nextcloud-data`.
 - For Synology, the command for this example would be `sudo chown -R 33:0 /volume1/docker/nextcloud/data` and `sudo chmod -R 750 /volume1/docker/nextcloud/data`
 - On Windows, this command is not needed.
-
-⚠️ **Attention:** It is very important to change the datadir **before** Nextcloud is installed/started the first time and not to change it afterwards! If you still want to do it afterwards, see [this](https://github.com/nextcloud/all-in-one/discussions/890#discussioncomment-3089903) on how to do it.
 
 ### How to allow the Nextcloud container to access directories on the host?
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
