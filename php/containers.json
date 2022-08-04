@@ -83,7 +83,7 @@
         "nextcloud-aio-redis"
       ],
       "displayName": "Nextcloud",
-      "containerName": "nextcloud-aio-nextcloud",
+      "containerName": "nextcloud/aio-nextcloud",
       "ports": [],
       "internalPorts": [
         "9000"
