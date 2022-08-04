@@ -83,7 +83,7 @@
         "nextcloud-aio-redis"
       ],
       "displayName": "Nextcloud",
-      "containerName": "nextcloud/aio-nextcloud",
+      "containerName": "aio-nextcloud-ldaps-pr",
       "ports": [],
       "internalPorts": [
         "9000"
@@ -110,6 +110,11 @@
           "name": "%NEXTCLOUD_MOUNT%",
           "location": "%NEXTCLOUD_MOUNT%",
           "writeable": true
+        },
+        {
+          "name": "%TRUSTED_CACERTS_DIR%",
+          "location": "/usr/local/share/ca-certificates/extra",
+          "writeable": false
         }
       ],
       "environmentVariables": [
@@ -140,7 +145,8 @@
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
         "UPDATE_NEXTCLOUD_APPS=%UPDATE_NEXTCLOUD_APPS%",
         "TZ=%TIMEZONE%",
-        "TALK_PORT=%TALK_PORT%"
+        "TALK_PORT=%TALK_PORT%",
+        "TRUSTED_CACERTS_DIR=%TRUSTED_CACERTS_DIR%"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
