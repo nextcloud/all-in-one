@@ -177,7 +177,7 @@
       ],
       "environmentVariables": [
         "aliasgroup1=https://%NC_DOMAIN%:443",
-        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning",
+        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true",
         "dictionaries=%COLLABORA_DICTIONARIES%",
         "TZ=%TIMEZONE%"
       ],
