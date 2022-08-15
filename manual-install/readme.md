@@ -7,9 +7,9 @@ You can run the containers that are build for AIO with docker-compose. This come
 - You can modify all values on your own
 
 ### Disadvantages
-- You loose the AIO interface
-- You loose update notifications and automatic updates
-- You loose all AIO backup and restore features
+- You lose the AIO interface
+- You lose update notifications and automatic updates
+- You lose all AIO backup and restore features
 - You need to know what you are doing, especially when modifying the docker-compose file
 - Probably more
 
