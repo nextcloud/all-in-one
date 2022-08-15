@@ -11,7 +11,12 @@ POSTGRES_USER="oc_$POSTGRES_USER"
 export POSTGRES_USER
 
 # Fix false database connection on old instances
-if [ -f "/var/www/html/config/config.php" ] && sleep 2 && psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:5432/$POSTGRES_DB" -c "select now()"; then
+if [ -f "/var/www/html/config/config.php" ]; then
+    sleep 2
+    while ! psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:5432/$POSTGRES_DB" -c "select now()"; do
+        echo "Waiting for the database to start..."
+        sleep 5
+    done
     sed -i "s|'dbuser'.*=>.*$|'dbuser' => '$POSTGRES_USER',|" /var/www/html/config/config.php
     sed -i "s|'dbpassword'.*=>.*$|'dbpassword' => '$POSTGRES_PASSWORD',|" /var/www/html/config/config.php
 fi
