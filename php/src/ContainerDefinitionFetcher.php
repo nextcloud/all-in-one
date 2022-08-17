@@ -65,6 +65,10 @@ class ContainerDefinitionFetcher
                 if (!$this->configurationManager->isTalkEnabled()) {
                     continue;
                 }
+            } elseif ($entry['identifier'] === 'nextcloud-aio-imaginary') {
+                if (!$this->configurationManager->isImaginaryEnabled()) {
+                    continue;
+                }
             }
 
             $ports = new ContainerPorts();
@@ -144,6 +148,10 @@ class ContainerDefinitionFetcher
                     }
                 } elseif ($value === 'nextcloud-aio-talk') {
                     if (!$this->configurationManager->isTalkEnabled()) {
+                        continue;
+                    }
+                } elseif ($value === 'nextcloud-aio-imaginary') {
+                    if (!$this->configurationManager->isImaginaryEnabled()) {
                         continue;
                     }
                 }

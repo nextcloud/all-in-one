@@ -139,6 +139,21 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function isImaginaryEnabled() : bool {
+        $config = $this->GetConfig();
+        if (isset($config['isImaginaryEnabled']) && $config['isImaginaryEnabled'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function SetImaginaryEnabledState(int $value) : void {
+        $config = $this->GetConfig();
+        $config['isImaginaryEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
     public function isOnlyofficeEnabled() : bool {
         $config = $this->GetConfig();
         if (isset($config['isOnlyofficeEnabled']) && $config['isOnlyofficeEnabled'] === 1) {

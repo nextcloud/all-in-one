@@ -407,5 +407,16 @@ else
     fi
 fi
 
+# Imaginary
+if version_greater "24.0.0.0" "$installed_version"; then
+    if [ "$IMAGINARY_ENABLED" = 'yes' ]; then
+        php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
+        php /var/www/html/occ config:system:set preview_imaginary_url --value="http://$IMAGINARY_HOST:9000"
+    else
+        php /var/www/html/occ config:system:delete enabledPreviewProviders 0
+        php /var/www/html/occ config:system:delete preview_imaginary_url
+    fi
+fi
+
 # Remove the update skip file always
 rm -f /mnt/ncdata/skip.update
