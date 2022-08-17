@@ -198,15 +198,17 @@ RUN set -ex; \
         git \
         postgresql-client \
         tzdata \
+        mawk \
     ; \
     rm -rf /var/lib/apt/lists/*
 
 RUN set -ex; \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's/^pm.max_children =.*/pm.max_children = 100/' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's/^pm.start_servers =.*/pm.start_servers = 25/' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's/^pm.min_spare_servers =.*/pm.min_spare_servers = 25/' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's/^pm.max_spare_servers =.*/pm.max_spare_servers = 75/' /usr/local/etc/php-fpm.d/www.conf
+    sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm.max_children =.*/pm.max_children = ${PHP_MAX_CHILDREN}/' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm.start_servers =.*/pm.start_servers = 2/' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm.min_spare_servers =.*/pm.min_spare_servers = 1/' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm.max_spare_servers =.*/pm.max_spare_servers = 3/' /usr/local/etc/php-fpm.d/www.conf
 
 RUN set -ex; \
     rm -rf /tmp/nextcloud-aio && \
