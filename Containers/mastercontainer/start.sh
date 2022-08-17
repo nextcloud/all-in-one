@@ -112,6 +112,14 @@ It is set to '$NEXTCLOUD_UPLOAD_LIMIT'."
         exit 1
     fi
 fi
+if [ -n "$NEXTCLOUD_MAX_TIME" ]; then
+    if ! echo "$NEXTCLOUD_MAX_TIME" | grep -q '^[0-9]\+$'; then
+        echo "You've set NEXTCLOUD_MAX_TIME but not to an allowed value.
+The string must be a number. E.g. '3600'.
+It is set to '$NEXTCLOUD_MAX_TIME'."
+        exit 1
+    fi
+fi
 if [ -n "$APACHE_PORT" ]; then
     if ! check_if_number "$APACHE_PORT"; then
         echo "You provided an Apache port but did not only use numbers.
