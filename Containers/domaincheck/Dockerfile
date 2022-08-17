@@ -15,4 +15,4 @@ USER www-data
 RUN mkdir -p /var/www/domaincheck/
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD curl -skfI localhost:$APACHE_PORT
+HEALTHCHECK CMD curl -skfI localhost:$APACHE_PORT || exit 1

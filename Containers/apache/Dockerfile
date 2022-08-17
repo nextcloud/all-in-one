@@ -75,4 +75,4 @@ USER www-data
 ENTRYPOINT ["start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD (curl -skfI localhost:8000 && curl -skfI localhost:$APACHE_PORT)
+HEALTHCHECK CMD (curl -skfI localhost:8000 && curl -skfI localhost:$APACHE_PORT) || exit 1

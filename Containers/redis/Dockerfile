@@ -12,4 +12,4 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 USER redis
 ENTRYPOINT ["start.sh"]
 
-HEALTHCHECK CMD redis-cli -a $REDIS_HOST_PASSWORD PING
+HEALTHCHECK CMD redis-cli -a $REDIS_HOST_PASSWORD PING || exit 1

@@ -14,4 +14,4 @@ RUN set -ex; \
 
 USER 104
 
-HEALTHCHECK CMD curl -skfI localhost:9980
+HEALTHCHECK CMD curl -skfI localhost:9980 || exit 1
