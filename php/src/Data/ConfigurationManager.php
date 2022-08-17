@@ -502,6 +502,13 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetNextcloudUploadLimit() : string {
+        $envVariableName = 'NEXTCLOUD_UPLOAD_LIMIT';
+        $configName = 'nextcloud_upload_limit';
+        $defaultValue = '10G';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     public function GetDockerSocketPath() : string {
         $envVariableName = 'DOCKER_SOCKET_PATH';
         $configName = 'docker_socket_path';
