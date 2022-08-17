@@ -57,6 +57,14 @@ if [ -f "/var/www/html/lib/versioncheck.php" ] && ! php /var/www/html/lib/versio
     exit 1
 fi
 
+# Do not start the container if the last update failed
+if [ -f "/mnt/ncdata/update.failed" ]; then
+    echo "The last Nextcloud update failed."
+    echo "Please restore from backup and try again!"
+    echo "If you do not have a backup in place, you can simply delete the update.failed file in the datadir which will allow the container to start again."
+    exit 1
+fi
+
 # Skip any update if Nextcloud was just restored
 if ! [ -f "/mnt/ncdata/skip.update" ]; then
     if version_greater "$image_version" "$installed_version"; then
@@ -213,6 +221,7 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
 
         #upgrade
         else
+            touch "/mnt/ncdata/update.failed"
             while [ -n "$(pgrep -f cron.php)" ]
             do
                 echo "Waiting for Nextclouds cronjob to finish..."
@@ -226,6 +235,7 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
                 exit 1
             fi
 
+            rm "/mnt/ncdata/update.failed"
             bash /notify.sh "Nextcloud update to $image_version successful!" "Feel free to inspect the Nextcloud container logs for more info."
 
             php /var/www/html/occ app:list | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after

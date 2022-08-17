@@ -152,6 +152,11 @@ if [ "$BORG_MODE" = backup ]; then
     # Inform user
     get_expiration_time
     echo "Backup finished successfully on $END_DATE_READABLE ($DURATION_READABLE)"
+    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/update.failed" ]; then
+        echo "However a Nextcloud update failed. So reporting that the backup failed which will skip any update attempt the next time."
+        echo "Please restore a backup from before the failed Nextcloud update attempt."
+        exit 1
+    fi
     exit 0
 fi
 

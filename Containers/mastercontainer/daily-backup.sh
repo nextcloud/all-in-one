@@ -69,6 +69,10 @@ if [ "$DAILY_BACKUP" = 1 ]; then
         while docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-nextcloud$" && ! nc -z nextcloud-aio-nextcloud 9000; do
             echo "Waiting for the Nextcloud container to start"
             sleep 30
+            if [ "$(docker inspect nextcloud-aio-nextcloud --format "{{.State.Restarting}}")" = "true" ]; then
+                echo "Nextcloud container restarting. Skipping this check!"
+                break
+            fi
         done
     fi
     sudo -u www-data php /var/www/docker-aio/php/src/Cron/BackupNotification.php
