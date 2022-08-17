@@ -19,6 +19,7 @@ RUN set -ex; \
         openssl \
         netcat \
         dpkg-dev \
+        curl \
     ; \
     rm -rf /var/lib/apt/lists/*
 
@@ -73,3 +74,5 @@ USER www-data
 
 ENTRYPOINT ["start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+
+HEALTHCHECK CMD (curl -skfI localhost:$APACHE_PORT && curl -skfI localhost:8000)

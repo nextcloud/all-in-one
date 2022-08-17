@@ -27,6 +27,7 @@ RUN apt-get update; \
         sudo \
         dpkg-dev \
         netcat \
+        curl \
     ; \
     rm -rf /var/lib/apt/lists/*
 
@@ -101,3 +102,5 @@ USER root
 
 ENTRYPOINT ["start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+
+HEALTHCHECK CMD curl -skfI https://localhost:8080

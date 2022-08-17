@@ -13,3 +13,5 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*
 
 USER 104
+
+HEALTHCHECK CMD curl -skfI localhost:9980
