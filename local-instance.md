@@ -15,5 +15,13 @@ You can alternatively use the ACME DNS-challenge to get a valid certificate for 
 ## 3. Use Cloudflare
 If you do not have any contol over the network, you may think about using Cloudflare Argo Tunnel to get a valid certificate for your Nextcloud. However it will be opened to the public internet then. See https://github.com/nextcloud/all-in-one#how-to-run-nextcloud-behind-a-cloudflare-argo-tunnel how to set this up.
 
-## 4. Buy a certificate and use that
+## 4. Without public domain and only available in LAN 
+
+1. Set up a reverse proxy by following the [reverse proxy documentation](./reverse-proxy.md) and use a self signed certificate e.g. for caddy add "tls internal" above reverseproxy line.
+1. Set up a local DNS-server like a pi-hole and configure it to be your local DNS-server for the whole network. Then in the Pi-hole interface, add a custom DNS-record for your domain and overwrite the A-record (and possibly the AAAA-record, too) to point to the local ip-address of your reverse proxy 
+1. Enter the the ip-address of your local dns-server in the deamon.json file for docker so that you are sure that all docker containers use the correct local dns-server.
+1. Run the docker aio image with ```-e APACHE_IP_BINDING=127.0.0.1``` when the reverseproxy is installed on the same host and localhost is configured in the reverseproxy config, as well as ```-e SKIP_DOMAIN_VALIDATION=true``` for ignoring the self signed certificate
+1. Now, entering the domain in the AIO-interface should work as expected and should allow you to continue with the setup
+
+## 5. Buy a certificate and use that
 If none of the above ways work for you, you may simply buy a certificate from an issuer for your domain. You then download the certificate onto your server, configure AIO in [reverse proxy mode](./reverse-proxy.md) and use the certificate for your domain in your reverse proxy config.
