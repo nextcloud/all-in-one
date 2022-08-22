@@ -271,6 +271,15 @@ if [ -z "$(find "/mnt/ncdata/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*"
     exit 1
 fi
 
+# Configure tempdirectory
+if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
+    mkdir -p "/mnt/ncdata/tmp/"
+    if ! grep -q upload_tmp_dir /usr/local/etc/php/conf.d/nextcloud.ini; then
+        echo "upload_tmp_dir = /mnt/ncdata/tmp/" >> /usr/local/etc/php/conf.d/nextcloud.ini
+    fi
+    php /var/www/html/occ config:system:set tempdirectory --value="/mnt/ncdata/tmp/"
+fi
+
 # Perform fingerprint update if instance was restored
 if [ -f "/mnt/ncdata/fingerprint.update" ]; then
     php /var/www/html/occ maintenance:data-fingerprint
