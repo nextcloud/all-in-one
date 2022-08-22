@@ -10,7 +10,7 @@ directory_empty() {
     [ -z "$(ls -A "$1/")" ]
 }
 
-echo "Configuring Redis as session handler"
+echo "Configuring Redis as session handler..."
 cat << REDIS_CONF > /usr/local/etc/php/conf.d/redis-session.ini
 session.save_handler = redis
 session.save_path = "tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}"
@@ -20,6 +20,11 @@ redis.session.lock_retries = -1
 # Wait 10ms before retrying the lock rather than the default 2ms.
 redis.session.lock_wait_time = 10000
 REDIS_CONF
+
+echo "Setting php max children..."
+MEMORY=$(mawk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
+PHP_MAX_CHILDREN=$((MEMORY/50))
+export PHP_MAX_CHILDREN
 
 # Check permissions in ncdata
 touch "/mnt/ncdata/this-is-a-test-file"

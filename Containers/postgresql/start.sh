@@ -110,6 +110,11 @@ if ! [ -f "$DATADIR/PG_VERSION" ] && ! [ -f "$DUMP_FILE" ]; then
     rm -rf "${DATADIR:?}/"*
 fi
 
+echo "Setting max connections..."
+MEMORY=$(mawk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
+MAX_CONNECTIONS=$((MEMORY/50+3))
+sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
+
 # Catch docker stop attempts
 trap 'true' SIGINT SIGTERM
 
