@@ -61,6 +61,9 @@ RUN mkdir -p /etc/nats; \
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 
+# Set default talk port https://github.com/nextcloud/all-in-one/issues/1011
+ENV TALK_PORT=3478
+
 USER talk
 ENTRYPOINT ["start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
