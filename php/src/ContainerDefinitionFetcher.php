@@ -112,6 +112,11 @@ class ContainerDefinitionFetcher
                     if($value['name'] === '') {
                         continue;
                     }
+                } elseif ($value['name'] === '%TRUSTED_CACERTS_DIR%') {
+                    $value['name'] = $this->configurationManager->GetTrustedCacertsDir();
+                    if($value['name'] === '') {
+                        continue;
+                    }
                 }
                 if ($value['location'] === '%NEXTCLOUD_MOUNT%') {
                     $value['location'] = $this->configurationManager->GetNextcloudMount();

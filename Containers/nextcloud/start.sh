@@ -26,6 +26,12 @@ if ! bash /entrypoint.sh; then
     exit 1
 fi
 
+# Trust additional Cacerts, if needed
+if [ -n "$TRUSTED_CACERTS_DIR" ]; then
+    echo "User required to trust additional CA certificates, doing so now."
+    update-ca-certificates
+fi
+
 # Correctly set CPU_ARCH for notify_push
 CPU_ARCH="$(uname -m)"
 export CPU_ARCH
