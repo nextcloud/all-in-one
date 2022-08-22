@@ -23,4 +23,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     // Talk
     var talk = document.getElementById("talk");
     talk.addEventListener('change', makeOptionsFormSubmitVisible);
+
+    // Imaginary
+    var imaginary = document.getElementById("imaginary");
+    imaginary.addEventListener('change', makeOptionsFormSubmitVisible);
 });

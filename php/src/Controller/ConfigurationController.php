@@ -90,6 +90,11 @@ class ConfigurationController
                 } else {
                     $this->configurationManager->SetTalkEnabledState(0);
                 }
+                if (isset($request->getParsedBody()['imaginary'])) {
+                    $this->configurationManager->SetImaginaryEnabledState(1);
+                } else {
+                    $this->configurationManager->SetImaginaryEnabledState(0);
+                }
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {

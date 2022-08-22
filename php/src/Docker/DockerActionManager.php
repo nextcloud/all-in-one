@@ -298,6 +298,12 @@ class DockerActionManager
                     } else {
                         $replacements[1] = $this->configurationManager->GetCollaboraDictionaries();
                     }
+                } elseif ($out[1] === 'IMAGINARY_ENABLED') {
+                    if ($this->configurationManager->isImaginaryEnabled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }

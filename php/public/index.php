@@ -102,6 +102,7 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
         'collabora_dictionaries' => $configurationManager->GetCollaboraDictionaries(),
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
         'is_backup_section_enabled' => $configurationManager->isBackupSectionEnabled(),
+        'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled(),
     ]);
 })->setName('profile');
 $app->get('/login', function ($request, $response, $args) use ($container) {
