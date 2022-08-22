@@ -509,6 +509,13 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetNextcloudMaxTime() : string {
+        $envVariableName = 'NEXTCLOUD_MAX_TIME';
+        $configName = 'nextcloud_max_time';
+        $defaultValue = '3600';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     public function GetDockerSocketPath() : string {
         $envVariableName = 'DOCKER_SOCKET_PATH';
         $configName = 'docker_socket_path';

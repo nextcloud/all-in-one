@@ -306,6 +306,8 @@ class DockerActionManager
                     }
                 } elseif ($out[1] === 'NEXTCLOUD_UPLOAD_LIMIT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
+                } elseif ($out[1] === 'NEXTCLOUD_MAX_TIME') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudMaxTime();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }
