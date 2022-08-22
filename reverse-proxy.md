@@ -64,6 +64,9 @@ Add this as a new Apache site config:
     <Files ".ht*">
         Require all denied
     </Files>
+
+    # Support big file uploads
+    LimitRequestBody 0
 </VirtualHost>
 ```
 
