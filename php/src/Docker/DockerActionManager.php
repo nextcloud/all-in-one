@@ -304,6 +304,8 @@ class DockerActionManager
                     } else {
                         $replacements[1] = '';
                     }
+                } elseif ($out[1] === 'NEXTCLOUD_UPLOAD_LIMIT') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }
