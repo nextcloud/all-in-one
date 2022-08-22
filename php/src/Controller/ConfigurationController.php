@@ -57,6 +57,11 @@ class ConfigurationController
                 $this->configurationManager->DeleteDailyBackupTime();
             }
 
+            if (isset($request->getParsedBody()['additional_backup_directories'])) {
+                $additionalBackupDirectories = $request->getParsedBody()['additional_backup_directories'] ?? '';
+                $this->configurationManager->SetAdditionalBackupDirectories($additionalBackupDirectories);
+            }
+
             if (isset($request->getParsedBody()['delete_timezone'])) {
                 $this->configurationManager->DeleteTimezone();
             }

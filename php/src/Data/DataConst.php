@@ -31,6 +31,10 @@ class DataConst {
         return self::GetDataDirectory() . '/daily_backup_time';
     }
 
+    public static function GetAdditionalBackupDirectoriesFile() : string {
+        return self::GetDataDirectory() . '/additional_backup_directories';
+    }
+
     public static function GetDailyBackupBlockFile() : string {
         return self::GetDataDirectory() . '/daily_backup_running';
     }
