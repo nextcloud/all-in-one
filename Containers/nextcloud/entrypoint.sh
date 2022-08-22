@@ -24,7 +24,9 @@ REDIS_CONF
 echo "Setting php max children..."
 MEMORY=$(mawk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
 PHP_MAX_CHILDREN=$((MEMORY/50))
-export PHP_MAX_CHILDREN
+if [ -n "$PHP_MAX_CHILDREN" ]; then
+    sed -i "s/^pm.max_children =.*/pm.max_children = $PHP_MAX_CHILDREN/" /usr/local/etc/php-fpm.d/www.conf
+fi
 
 # Check permissions in ncdata
 touch "/mnt/ncdata/this-is-a-test-file"

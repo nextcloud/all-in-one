@@ -113,7 +113,9 @@ fi
 echo "Setting max connections..."
 MEMORY=$(mawk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
 MAX_CONNECTIONS=$((MEMORY/50+3))
-sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
+if [ -n "$MAX_CONNECTIONS" ]; then
+    sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
+fi
 
 # Catch docker stop attempts
 trap 'true' SIGINT SIGTERM
