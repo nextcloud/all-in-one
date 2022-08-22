@@ -10,7 +10,7 @@ directory_empty() {
     [ -z "$(ls -A "$1/")" ]
 }
 
-echo "Configuring Redis as session handler"
+echo "Configuring Redis as session handler..."
 cat << REDIS_CONF > /usr/local/etc/php/conf.d/redis-session.ini
 session.save_handler = redis
 session.save_path = "tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}"
@@ -20,6 +20,11 @@ redis.session.lock_retries = -1
 # Wait 10ms before retrying the lock rather than the default 2ms.
 redis.session.lock_wait_time = 10000
 REDIS_CONF
+
+echo "Setting php max children..."
+MEMORY=$(mawk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
+PHP_MAX_CHILDREN=$((MEMORY/50))
+export PHP_MAX_CHILDREN
 
 # Check permissions in ncdata
 touch "/mnt/ncdata/this-is-a-test-file"
@@ -404,6 +409,17 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
 else
     if [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
         php /var/www/html/occ app:remove files_antivirus
+    fi
+fi
+
+# Imaginary
+if version_greater "24.0.0.0" "$installed_version"; then
+    if [ "$IMAGINARY_ENABLED" = 'yes' ]; then
+        php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
+        php /var/www/html/occ config:system:set preview_imaginary_url --value="http://$IMAGINARY_HOST:9000"
+    else
+        php /var/www/html/occ config:system:delete enabledPreviewProviders 0
+        php /var/www/html/occ config:system:delete preview_imaginary_url
     fi
 fi
 

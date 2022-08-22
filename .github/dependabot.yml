@@ -135,3 +135,12 @@ updates:
   labels:
   - 3. to review
   - dependencies
+- package-ecosystem: "docker"
+  directory: "/Containers/imaginary"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies

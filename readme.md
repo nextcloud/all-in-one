@@ -7,7 +7,7 @@ Included are:
 - High performance backend for Nextcloud Files
 - High performance backend for Nextcloud Talk
 - Backup solution (based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
-- OnlyOffice
+- Imaginary
 - ClamAV
 
 ## How to use this?
@@ -424,6 +424,12 @@ Be aware though that these locations will not be covered by the built-in backup 
 
 ### How to adjust the Talk port?
 By default will the talk container use port `3478/UDP` and `3478/TCP` for connections. You can adjust the port by adding e.g. `-e TALK_PORT=3478` to the initial docker run command and adjusting the port to your desired value.
+
+### How to adjust the upload limit for Nextcloud?
+By default are uploads to Nextcloud limited to a max of 10G. You can adjust the upload limit by providing `-e NEXTCLOUD_UPLOAD_LIMIT=10G` to the docker run command of the mastercontainer and customize the value to your fitting. It must start with a number and end with `G` e.g. `10G`.
+
+### How to adjust the max execution time for Nextcloud?
+By default are uploads to Nextcloud limited to a max of 3600s. You can adjust the upload time limit by providing `-e NEXTCLOUD_MAX_TIME=3600` to the docker run command of the mastercontainer and customize the value to your fitting. It must be a number e.g. `3600`.
 
 ### What can I do to fix the internal or reserved ip-address error?
 If you get an error during the domain validation which states that your ip-address is an internal or reserved ip-address, you can fix this by first making sure that your domain indeed has the correct public ip-address that points to the server and then adding `--add-host yourdomain.com:<public-ip-address>` to the initial docker run command which will allow the domain validation to work correctly. And so that you know: even if the `A` record of your domain should change over time, this is no problem since the mastercontainer will not make any attempt to access the chosen domain after the initial domain validation.

@@ -139,6 +139,21 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function isImaginaryEnabled() : bool {
+        $config = $this->GetConfig();
+        if (isset($config['isImaginaryEnabled']) && $config['isImaginaryEnabled'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function SetImaginaryEnabledState(int $value) : void {
+        $config = $this->GetConfig();
+        $config['isImaginaryEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
     public function isOnlyofficeEnabled() : bool {
         $config = $this->GetConfig();
         if (isset($config['isOnlyofficeEnabled']) && $config['isOnlyofficeEnabled'] === 1) {
@@ -484,6 +499,20 @@ class ConfigurationManager
         $envVariableName = 'NEXTCLOUD_DATADIR';
         $configName = 'nextcloud_datadir';
         $defaultValue = 'nextcloud_aio_nextcloud_data';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function GetNextcloudUploadLimit() : string {
+        $envVariableName = 'NEXTCLOUD_UPLOAD_LIMIT';
+        $configName = 'nextcloud_upload_limit';
+        $defaultValue = '10G';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function GetNextcloudMaxTime() : string {
+        $envVariableName = 'NEXTCLOUD_MAX_TIME';
+        $configName = 'nextcloud_max_time';
+        $defaultValue = '3600';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 

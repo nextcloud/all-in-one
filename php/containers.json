@@ -80,7 +80,8 @@
       "identifier": "nextcloud-aio-nextcloud",
       "dependsOn": [
         "nextcloud-aio-database",
-        "nextcloud-aio-redis"
+        "nextcloud-aio-redis",
+        "nextcloud-aio-imaginary"
       ],
       "displayName": "Nextcloud",
       "containerName": "nextcloud/aio-nextcloud",
@@ -140,7 +141,10 @@
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
         "UPDATE_NEXTCLOUD_APPS=%UPDATE_NEXTCLOUD_APPS%",
         "TZ=%TIMEZONE%",
-        "TALK_PORT=%TALK_PORT%"
+        "TALK_PORT=%TALK_PORT%",
+        "IMAGINARY_ENABLED=%IMAGINARY_ENABLED%",
+        "IMAGINARY_HOST=nextcloud-aio-imaginary",
+        "PHP_UPLOAD_LIMIT=%NEXTCLOUD_UPLOAD_LIMIT%"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
@@ -365,6 +369,23 @@
       "secrets": [
         "ONLYOFFICE_SECRET"
       ],
+      "maxShutdownTime": 10,
+      "restartPolicy": "unless-stopped"
+    },
+    {
+      "identifier": "nextcloud-aio-imaginary",
+      "dependsOn": [],
+      "displayName": "Imaginary",
+      "containerName": "nextcloud/aio-imaginary",
+      "ports": [],
+      "internalPorts": [
+        "9000"
+      ],
+      "environmentVariables": [
+        "TZ=%TIMEZONE%"
+      ],
+      "volumes": [],
+      "secrets": [],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
     }

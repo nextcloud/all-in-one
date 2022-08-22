@@ -298,6 +298,16 @@ class DockerActionManager
                     } else {
                         $replacements[1] = $this->configurationManager->GetCollaboraDictionaries();
                     }
+                } elseif ($out[1] === 'IMAGINARY_ENABLED') {
+                    if ($this->configurationManager->isImaginaryEnabled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
+                } elseif ($out[1] === 'NEXTCLOUD_UPLOAD_LIMIT') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
+                } elseif ($out[1] === 'NEXTCLOUD_MAX_TIME') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudMaxTime();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }
