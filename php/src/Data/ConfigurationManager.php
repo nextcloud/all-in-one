@@ -154,6 +154,21 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function isFulltextsearchEnabled() : bool {
+        $config = $this->GetConfig();
+        if (isset($config['isFulltextsearchEnabled']) && $config['isFulltextsearchEnabled'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function SetFulltextsearchEnabledState(int $value) : void {
+        $config = $this->GetConfig();
+        $config['isFulltextsearchEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
     public function isOnlyofficeEnabled() : bool {
         $config = $this->GetConfig();
         if (isset($config['isOnlyofficeEnabled']) && $config['isOnlyofficeEnabled'] === 1) {

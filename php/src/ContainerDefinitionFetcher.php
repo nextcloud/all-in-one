@@ -69,6 +69,10 @@ class ContainerDefinitionFetcher
                 if (!$this->configurationManager->isImaginaryEnabled()) {
                     continue;
                 }
+            } elseif ($entry['identifier'] === 'nextcloud-aio-fulltextsearch') {
+                if (!$this->configurationManager->isFulltextsearchEnabled()) {
+                    continue;
+                }
             }
 
             $ports = new ContainerPorts();
@@ -152,6 +156,10 @@ class ContainerDefinitionFetcher
                     }
                 } elseif ($value === 'nextcloud-aio-imaginary') {
                     if (!$this->configurationManager->isImaginaryEnabled()) {
+                        continue;
+                    }
+                } elseif ($value === 'nextcloud-aio-fulltextsearch') {
+                    if (!$this->configurationManager->isFulltextsearchEnabled()) {
                         continue;
                     }
                 }

@@ -95,6 +95,11 @@ class ConfigurationController
                 } else {
                     $this->configurationManager->SetImaginaryEnabledState(0);
                 }
+                if (isset($request->getParsedBody()['fulltextsearch'])) {
+                    $this->configurationManager->SetFulltextsearchEnabledState(1);
+                } else {
+                    $this->configurationManager->SetFulltextsearchEnabledState(0);
+                }
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {
