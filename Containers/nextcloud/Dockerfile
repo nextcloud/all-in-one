@@ -224,7 +224,7 @@ RUN set -ex; \
 RUN set -ex; \
     chown www-data:root -R /usr/src && \
     chown www-data:root -R /usr/local/etc/php/conf.d && \
-    chown www-data:root /usr/local/etc/php-fpm.d/www.conf && \
+    chown www-data:root -R /usr/local/etc/php-fpm.d && \
     chown www-data:root -R /var/log/supervisord/ && \
     chown www-data:root -R /var/run/supervisord/ && \
     rm -r /usr/src/nextcloud/apps/updatenotification
