@@ -11,7 +11,7 @@ elif [ -z "$JANUS_API_KEY" ]; then
     echo "You need to provide the JANUS_API_KEY."
     exit 1
 elif [ -z "$SIGNALING_SECRET" ]; then
-    echo "You need to provide the JANUS_API_KEY."
+    echo "You need to provide the SIGNALING_SECRET."
     exit 1
 fi
 
