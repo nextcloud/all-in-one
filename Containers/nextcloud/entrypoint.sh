@@ -24,7 +24,9 @@ REDIS_CONF
 echo "Setting php max children..."
 MEMORY=$(mawk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
 PHP_MAX_CHILDREN=$((MEMORY/50))
-export PHP_MAX_CHILDREN
+if [ -n "$PHP_MAX_CHILDREN" ]; then
+    sed -i "s/^pm.max_children =.*/pm.max_children = $PHP_MAX_CHILDREN/" /usr/local/etc/php-fpm.d/www.conf
+fi
 
 # Check permissions in ncdata
 touch "/mnt/ncdata/this-is-a-test-file"
@@ -413,7 +415,7 @@ else
 fi
 
 # Imaginary
-if version_greater "24.0.0.0" "$installed_version"; then
+if version_greater "$installed_version" "24.0.0.0"; then
     if [ "$IMAGINARY_ENABLED" = 'yes' ]; then
         php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
         php /var/www/html/occ config:system:set preview_imaginary_url --value="http://$IMAGINARY_HOST:9000"

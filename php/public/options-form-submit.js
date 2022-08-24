@@ -13,8 +13,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
     clamav.addEventListener('change', makeOptionsFormSubmitVisible);
 
     // OnlyOffice
-    var onlyoffice = document.getElementById("onlyoffice");
-    onlyoffice.addEventListener('change', makeOptionsFormSubmitVisible);
+    try {
+        var onlyoffice = document.getElementById("onlyoffice");
+        onlyoffice.addEventListener('change', makeOptionsFormSubmitVisible);
+    } catch (error) {
+        // console.error(error);
+    }
 
     // Collabora
     var collabora = document.getElementById("collabora");
