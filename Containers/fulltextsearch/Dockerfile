@@ -2,3 +2,5 @@
 FROM elasticsearch:7.17.6
 
 RUN elasticsearch-plugin install --batch ingest-attachment
+
+HEALTHCHECK CMD curl -skfI localhost:9200 || exit 1
