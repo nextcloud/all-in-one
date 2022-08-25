@@ -184,7 +184,7 @@ if [ "$BORG_MODE" = backup ]; then
             do
                 EXCLUDE_DIRS+=(--exclude "/host_mounts/$directory/")
             done
-            if ! borg create "${BORG_OPTS[@]}" "${EXCLUDED_DIRECTORIES[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts" "/host_mounts/"; then
+            if ! borg create "${BORG_OPTS[@]}" "${EXCLUDE_DIRS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts" "/host_mounts/"; then
                 echo "Deleting the failed backup archive..."
                 borg delete --stats --progress "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts"
                 echo "Backup of additional host-mounts failed!"

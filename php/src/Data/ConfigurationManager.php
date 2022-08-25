@@ -594,7 +594,7 @@ class ConfigurationManager
             // Trim all unwanted chars on both sites
             $entry = trim($entry);
             if ($entry !== "") {
-                if (!preg_match("#^/[0-1a-zA-Z/-_]$#", $entry) && !preg_match("#^[0-1a-zA-Z_-]$#", $entry)) {
+                if (!preg_match("#^/[0-1a-zA-Z/-_]+$#", $entry) && !preg_match("#^[0-1a-zA-Z_-]+$#", $entry)) {
                     throw new InvalidSettingConfigurationException("You entered unallowed characters! Problematic is " . $entry);
                 }
                 $validDirectories .= rtrim($entry, '/') . PHP_EOL;

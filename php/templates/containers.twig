@@ -407,7 +407,7 @@
                                             </form>
                                         {% endif %}
 
-                                        <h3>Back up additional directories and volumes of your host</h3>
+                                        <h3>Back up additional directories and docker volumes of your host</h3>
                                         Below, you can enter directories and docker volumes of your host that will backed up additionally into the same borg backup archive.<br><br>
                                         <form method="POST" action="/api/configuration" class="xhr">
                                             <textarea id="additional_backup_directories" name="additional_backup_directories" rows="4" cols="50" placeholder="/directory/on/the/host&#10;my_custom_docker_volume">{{ additional_backup_directories }}</textarea>
@@ -415,7 +415,7 @@
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                             <input class="button" type="submit" value="Submit" /><br>
                                         </form>
-                                        Each line and entry needs to start with a slash or letter/digit. Allowed are only <b>a-z</b>, <b>A-Z</b>, <b>0-9</b>, <b>_</b>, <b>-</b>, and <b>/</b>. If the entry begins with a letter/digit are slashes not supported. Two valid entries are <b>/directory/on/the/host</b> and <b>my_custom_docker_volume</b><br><br/>
+                                        Each line and entry needs to start with a slash or letter/digit. Allowed are only <b>a-z</b>, <b>A-Z</b>, <b>0-9</b>, <b>_</b>, <b>-</b>, and <b>/</b>. If the entry begins with a letter/digit are slashes not supported. Two valid entries are <b>/directory/on/the/host</b> and <b>my_custom_docker_volume</b>. You need to make sure yourself that all given directories exist. Otherwise the backup container will fail starting!<br><br/>
                                         Make sure to specify all storages that you want to back up separately since storages will not be mounted recursively. E.g. providing <b>/</b> as additional backup directory will only back up files and folders that are stored on the root partition and not on the EFI partition or any other. Excluded by the backup will be caches and a few other directories. You should make sure to stop all services before the backup can run correctly if you want to back up the root partition. For automating this see <a href="https://github.com/nextcloud/all-in-one#how-to-stopstartupdate-containers-or-trigger-the-daily-backup-from-a-script-externally">this documentation</a><br><br/>
                                         Please note that the chosen directories/volumes will not be restored when you restore your instance, so this would need to be done manually. <br><br>
                                         {% if additional_backup_directories != "" %}
