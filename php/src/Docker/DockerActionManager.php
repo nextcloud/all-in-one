@@ -314,6 +314,14 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
                 } elseif ($out[1] === 'NEXTCLOUD_MAX_TIME') {
                     $replacements[1] = $this->configurationManager->GetNextcloudMaxTime();
+                } elseif ($out[1] === 'ADDITIONAL_DIRECTORIES_BACKUP') {
+                    if ($this->configurationManager->GetAdditionalBackupDirectoriesString() !== '') {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
+                } elseif ($out[1] === 'BORGBACKUP_HOST_LOCATION') {
+                    $replacements[1] = $this->configurationManager->GetBorgBackupHostLocation();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }
@@ -354,6 +362,22 @@ class DockerActionManager
             $requestBody['HostConfig']['CapAdd'] = ["SYS_ADMIN"];
             $requestBody['HostConfig']['Devices'] = [["PathOnHost" => "/dev/fuse", "PathInContainer" => "/dev/fuse", "CgroupPermissions" => "rwm"]];
             $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined"];
+            
+            // Additional backup directories
+            $mounts = [];
+            foreach ($this->configurationManager->GetAdditionalBackupDirectoriesArray() as $additionalBackupDirectories) {
+                if ($additionalBackupDirectories !== '') {
+                    if (!str_starts_with($additionalBackupDirectories, '/')) {
+                        $target = '/docker_volumes/';
+                    } else {
+                        $target = '/host_mounts';
+                    }
+                    $mounts[] = ["Type" => "bind", "Source" => $additionalBackupDirectories, "Target" => $target . $additionalBackupDirectories, "ReadOnly" => true, "BindOptions" => ["NonRecursive" => true]];
+                }
+            }
+            if(count($mounts) > 0) {
+                $requestBody['HostConfig']['Mounts'] = $mounts;
+            }
         }
 
         $url = $this->BuildApiUrl('containers/create?name=' . $container->GetIdentifier());
