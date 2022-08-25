@@ -584,6 +584,45 @@ class ConfigurationManager
         }
     }
 
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public function SetAdditionalBackupDirectories(string $additionalBackupDirectories) : void {
+        $additionalBackupDirectoriesArray = explode("\n", $additionalBackupDirectories);
+        $validDirectories = '';
+        foreach($additionalBackupDirectoriesArray as $entry) {
+            // Trim all unwanted chars on both sites
+            $entry = trim($entry);
+            if ($entry !== "") {
+                if (!preg_match("#^/[0-1a-zA-Z/-_]$#", $entry) && !preg_match("#^[0-1a-zA-Z_-]$#", $entry)) {
+                    throw new InvalidSettingConfigurationException("You entered unallowed characters! Problematic is " . $entry);
+                }
+                $validDirectories .= rtrim($entry, '/') . PHP_EOL;
+            }
+        }
+
+        if ($validDirectories === '') {
+            unlink(DataConst::GetAdditionalBackupDirectoriesFile());
+        } else {
+            file_put_contents(DataConst::GetAdditionalBackupDirectoriesFile(), $validDirectories);
+        }
+    }
+
+    public function GetAdditionalBackupDirectoriesString() : string {
+        if (!file_exists(DataConst::GetAdditionalBackupDirectoriesFile())) {
+            return '';
+        }
+        $additionalBackupDirectories = file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile());
+        return $additionalBackupDirectories;
+    }
+
+    public function GetAdditionalBackupDirectoriesArray() : array {
+        $additionalBackupDirectories = $this->GetAdditionalBackupDirectoriesString();
+        $additionalBackupDirectoriesArray = explode("\n", $additionalBackupDirectories);
+        $additionalBackupDirectoriesArray = array_unique($additionalBackupDirectoriesArray, SORT_REGULAR);
+        return $additionalBackupDirectoriesArray;
+    }
+
     public function isDailyBackupRunning() : bool {
         if (file_exists(DataConst::GetDailyBackupBlockFile())) {
             return true;

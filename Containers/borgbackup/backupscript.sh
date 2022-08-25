@@ -149,6 +149,54 @@ if [ "$BORG_MODE" = backup ]; then
         exit 1
     fi
 
+    # Back up additional directories of the host
+    if [ "$ADDITIONAL_DIRECTORIES_BACKUP" = 'yes' ]; then
+        if [ -d "/docker_volumes/" ]; then
+            DOCKER_VOLUME_DIRS="$(find /docker_volumes -mindepth 1 -maxdepth 1 -type d)"
+            mapfile -t DOCKER_VOLUME_DIRS <<< "$DOCKER_VOLUME_DIRS"
+            for directory in "${DOCKER_VOLUME_DIRS[@]}"; do
+                if [ -z "$(ls -A "$directory")" ]; then
+                    echo "$directory is empty which is not allowed."
+                    exit 1
+                fi
+            done
+            if ! borg create "${BORG_OPTS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-docker-volumes" "/docker_volumes/"; then
+                echo "Deleting the failed backup archive..."
+                borg delete --stats --progress "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-docker-volumes"
+                echo "Backup of additional docker-volumes failed!"
+                exit 1
+            fi
+
+            if ! borg prune --prefix '*_*-additional-docker-volumes' "${BORG_PRUNE_OPTS[@]}"; then
+                echo "Failed to prune additional docker-volumes archives!"
+                exit 1
+            fi
+        fi
+        if [ -d "/host_mounts/" ]; then
+            EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache var/cache lost+found run var/run dev tmp sys proc)
+            # Exclude borg backup cache
+            EXCLUDED_DIRECTORIES+=(var/lib/docker/volumes/nextcloud_aio_backup_cache/_data)
+            # Exclude target directory
+            if [ -n "$BORGBACKUP_HOST_LOCATION" ] && [ "$BORGBACKUP_HOST_LOCATION" != "nextcloud_aio_backupdir" ]; then
+                EXCLUDED_DIRECTORIES+=("$BORGBACKUP_HOST_LOCATION")
+            fi
+            for directory in "${EXCLUDED_DIRECTORIES[@]}"
+            do
+                EXCLUDE_DIRS+=(--exclude "/host_mounts/$directory/")
+            done
+            if ! borg create "${BORG_OPTS[@]}" "${EXCLUDED_DIRECTORIES[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts" "/host_mounts/"; then
+                echo "Deleting the failed backup archive..."
+                borg delete --stats --progress "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts"
+                echo "Backup of additional host-mounts failed!"
+                exit 1
+            fi
+            if ! borg prune --prefix '*_*-additional-host-mounts' "${BORG_PRUNE_OPTS[@]}"; then
+                echo "Failed to prune additional host-mount archives!"
+                exit 1
+            fi
+        fi
+    fi
+
     # Inform user
     get_expiration_time
     echo "Backup finished successfully on $END_DATE_READABLE ($DURATION_READABLE)"
@@ -195,6 +243,11 @@ if [ "$BORG_MODE" = restore ]; then
     # Save current path
     BORG_LOCATION="$(jq '.borg_backup_host_location' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
 
+    # Save Additional Backup dirs
+    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories" ]; then
+        ADDITIONAL_BACKUP_DIRECTORIES="$(cat /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories)"
+    fi
+
     # Save current nextcloud datadir
     if grep -q '"nextcloud_datadir":' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json; then
         NEXTCLOUD_DATADIR="$(jq '.nextcloud_datadir' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
@@ -226,6 +279,13 @@ if [ "$BORG_MODE" = restore ]; then
     # Reset the datadir to the one that was used for the restore
     CONTENTS="$(jq ".nextcloud_datadir = $NEXTCLOUD_DATADIR" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
     echo -E "${CONTENTS}" > /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
+
+    # Reset the additional backup directories
+    if [ -n "$ADDITIONAL_BACKUP_DIRECTORIES" ]; then
+        echo "$ADDITIONAL_BACKUP_DIRECTORIES" > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories"
+        chown 33:0 "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories"
+        chmod 770 "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories"
+    fi
 
     umount /tmp/borg
 
