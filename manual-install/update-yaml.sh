@@ -117,10 +117,10 @@ sed -i '/image:/s/$/:latest/' latest.yml
 
 cat containers.yml > latest-arm64.yml
 sed -i '/image:/s/$/:latest-arm64/' latest-arm64.yml
-sed -i '/  nextcloud-aio-clamav:/,/^$/d' latest-arm64.yml
+sed -i '/  nextcloud-aio-clamav:/,/^ $/d' latest-arm64.yml
 sed -i '/nextcloud[-_]aio[-_]clamav/d' latest-arm64.yml
 sed -i '/CLAMAV_ENABLED/d' latest-arm64.yml
-sed -i '/  nextcloud-aio-onlyoffice:/,/^$/d' latest-arm64.yml
+sed -i '/  nextcloud-aio-onlyoffice:/,/^ $/d' latest-arm64.yml
 sed -i '/nextcloud[-_]aio[-_]onlyoffice/d' latest-arm64.yml
 sed -i '/ONLYOFFICE_ENABLED/d' latest-arm64.yml
 sed -i '/ONLYOFFICE_SECRET/d' latest-arm64.yml
