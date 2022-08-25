@@ -31,4 +31,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     // Imaginary
     var imaginary = document.getElementById("imaginary");
     imaginary.addEventListener('change', makeOptionsFormSubmitVisible);
+
+    // Fulltextsearch
+    var fulltextsearch = document.getElementById("fulltextsearch");
+    fulltextsearch.addEventListener('change', makeOptionsFormSubmitVisible);
 });

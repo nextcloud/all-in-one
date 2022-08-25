@@ -3,6 +3,7 @@
     {
       "identifier": "nextcloud-aio-apache",
       "dependsOn": [
+        "nextcloud-aio-fulltextsearch",
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-clamav",
@@ -144,7 +145,9 @@
         "TALK_PORT=%TALK_PORT%",
         "IMAGINARY_ENABLED=%IMAGINARY_ENABLED%",
         "IMAGINARY_HOST=nextcloud-aio-imaginary",
-        "PHP_UPLOAD_LIMIT=%NEXTCLOUD_UPLOAD_LIMIT%"
+        "PHP_UPLOAD_LIMIT=%NEXTCLOUD_UPLOAD_LIMIT%",
+        "FULLTEXTSEARCH_ENABLED=%FULLTEXTSEARCH_ENABLED%",
+        "FULLTEXTSEARCH_HOST=nextcloud-aio-fulltextsearch"
       ],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
@@ -385,6 +388,31 @@
         "TZ=%TIMEZONE%"
       ],
       "volumes": [],
+      "secrets": [],
+      "maxShutdownTime": 10,
+      "restartPolicy": "unless-stopped"
+    },
+    {
+      "identifier": "nextcloud-aio-fulltextsearch",
+      "dependsOn": [],
+      "displayName": "Fulltextsearch",
+      "containerName": "nextcloud/aio-fulltextsearch",
+      "ports": [],
+      "internalPorts": [
+        "9200"
+      ],
+      "environmentVariables": [
+        "TZ=%TIMEZONE%",
+        "discovery.type=single-node",
+        "ES_JAVA_OPTS=-Xms1024M -Xmx1024M"
+      ],
+      "volumes": [
+        {
+          "name": "nextcloud_aio_elasticsearch",
+          "location": "/usr/share/elasticsearch/data",
+          "writeable": true
+        }
+      ],
       "secrets": [],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"

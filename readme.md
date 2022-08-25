@@ -9,6 +9,7 @@ Included are:
 - Backup solution (based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
 - Imaginary
 - ClamAV
+- Fulltextsearch
 
 ## How to use this?
 The following instructions are especially meant for Linux. For macOS see [this](#how-to-run-aio-on-macos), for Windows see [this](#how-to-run-aio-on-windows).

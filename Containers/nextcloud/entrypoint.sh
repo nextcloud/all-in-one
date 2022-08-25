@@ -434,5 +434,47 @@ if version_greater "$installed_version" "24.0.0.0"; then
     fi
 fi
 
+# Fulltextsearch
+if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
+    while ! nc -z "$FULLTEXTSEARCH_HOST" 9200; do
+        echo "waiting for Fulltextsearch to become available..."
+        sleep 5
+    done
+    if ! [ -d "/var/www/html/custom_apps/fulltextsearch" ]; then
+        php /var/www/html/occ app:install fulltextsearch
+    elif [ "$(php /var/www/html/occ config:app:get fulltextsearch enabled)" = "no" ]; then
+        php /var/www/html/occ app:enable fulltextsearch
+    else
+        php /var/www/html/occ app:update fulltextsearch
+    fi    
+    if ! [ -d "/var/www/html/custom_apps/fulltextsearch_elasticsearch" ]; then
+        php /var/www/html/occ app:install fulltextsearch_elasticsearch
+    elif [ "$(php /var/www/html/occ config:app:get fulltextsearch_elasticsearch enabled)" = "no" ]; then
+        php /var/www/html/occ app:enable fulltextsearch_elasticsearch
+    else
+        php /var/www/html/occ app:update fulltextsearch_elasticsearch
+    fi    
+    if ! [ -d "/var/www/html/custom_apps/files_fulltextsearch" ]; then
+        php /var/www/html/occ app:install files_fulltextsearch
+    elif [ "$(php /var/www/html/occ config:app:get files_fulltextsearch enabled)" = "no" ]; then
+        php /var/www/html/occ app:enable files_fulltextsearch
+    else
+        php /var/www/html/occ app:update files_fulltextsearch
+    fi
+    php /var/www/html/occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
+    php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$FULLTEXTSEARCH_HOST:9200\"}"
+    php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
+else
+    if [ -d "/var/www/html/custom_apps/fulltextsearch" ]; then
+        php /var/www/html/occ app:remove fulltextsearch
+    fi
+    if [ -d "/var/www/html/custom_apps/fulltextsearch_elasticsearch" ]; then
+        php /var/www/html/occ app:remove fulltextsearch_elasticsearch
+    fi
+    if [ -d "/var/www/html/custom_apps/files_fulltextsearch" ]; then
+        php /var/www/html/occ app:remove files_fulltextsearch
+    fi
+fi
+
 # Remove the update skip file always
 rm -f /mnt/ncdata/skip.update

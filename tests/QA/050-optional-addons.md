@@ -8,6 +8,7 @@
     - [ ] Collabora by trying to open a .docx or .odt file in Nextcloud
     - [ ] Nextcloud Talk by opening the Talk app in Nextcloud, creating a new chat and trying to join a call in this chat. Also verifying in the settings that the HPB and turn server work.
     - [ ] Imaginary by having a look if when uploading a new picture in Nextcloud, it adds some log entries to the container
+    - [ ] Fulltextsearch by trying to search for a heading inside a file in Nextcloud
 - [ ] When Collabora is enabled, it should show below the Optional Addons section a section where you can change the dictionaries for collabora. `de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru` should be a valid setting. E.g. `de.De` not. If already set, it should show a button that allows to remove the setting again.
 
 You can now continue with [060-environmental-variables.md](./060-environmental-variables.md)

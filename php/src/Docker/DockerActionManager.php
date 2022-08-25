@@ -304,6 +304,12 @@ class DockerActionManager
                     } else {
                         $replacements[1] = '';
                     }
+                } elseif ($out[1] === 'FULLTEXTSEARCH_ENABLED') {
+                    if ($this->configurationManager->isFulltextsearchEnabled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
                 } elseif ($out[1] === 'NEXTCLOUD_UPLOAD_LIMIT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
                 } elseif ($out[1] === 'NEXTCLOUD_MAX_TIME') {

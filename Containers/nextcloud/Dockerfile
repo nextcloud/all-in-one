@@ -238,7 +238,8 @@ RUN set -ex; \
     chmod +r /upgrade.exclude && \
     chmod +x /cron.sh && \
     chmod +x /notify.sh && \
-    chmod +x /activate-collabora.sh
+    chmod +x /activate-collabora.sh && \
+    chmod +x /activate-fulltextsearch.sh
 
 RUN set -ex; \
     mkdir /mnt/ncdata; \
