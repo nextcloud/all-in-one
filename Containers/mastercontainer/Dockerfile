@@ -27,7 +27,6 @@ RUN apt-get update; \
         sudo \
         dpkg-dev \
         netcat \
-        curl \
     ; \
     rm -rf /var/lib/apt/lists/*
 
