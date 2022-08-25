@@ -149,6 +149,9 @@ updates:
   schedule:
     interval: "daily"
     time: "12:00"
+  ignore:
+    - dependency-name: "elasticsearch"
+      update-types: ["version-update:semver-major"]
   open-pull-requests-limit: 10
   labels:
   - 3. to review
