@@ -61,8 +61,10 @@ RUN mkdir /var/log/supervisord; \
 COPY Caddyfile /
 
 COPY start.sh /usr/bin/
+COPY healthcheck.sh /usr/bin/
 COPY supervisord.conf /
 RUN chmod +x /usr/bin/start.sh; \
+    chmod +x /usr/bin/healthcheck.sh; \
     chmod +r /supervisord.conf; \
     chown www-data:www-data /Caddyfile; \
     chmod +r -R /etc/apache2
@@ -75,4 +77,4 @@ USER www-data
 ENTRYPOINT ["start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD (curl -skfI localhost:8000 && curl -skfI localhost:$APACHE_PORT) || exit 1
+HEALTHCHECK CMD healthcheck.sh
