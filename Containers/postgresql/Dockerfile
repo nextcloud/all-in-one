@@ -31,3 +31,5 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 
 USER postgres
 ENTRYPOINT ["start.sh"]
+
+HEALTHCHECK CMD psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/$POSTGRES_DB" -c "select now()" || exit 1
