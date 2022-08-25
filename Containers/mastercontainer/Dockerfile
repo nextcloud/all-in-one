@@ -101,3 +101,5 @@ USER root
 
 ENTRYPOINT ["start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+
+HEALTHCHECK CMD curl -skfI https://localhost:8080 || exit 1

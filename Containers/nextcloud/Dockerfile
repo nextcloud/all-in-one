@@ -252,3 +252,5 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 
 USER www-data
 ENTRYPOINT ["/start.sh"]
+
+HEALTHCHECK CMD (nc -z localhost 9000 && curl -skI localhost:7867) || exit 1
