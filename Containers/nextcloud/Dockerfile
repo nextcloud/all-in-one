@@ -113,7 +113,6 @@ RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
         bzip2 \
         gnupg \
-        fcgi \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
@@ -254,4 +253,4 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 USER www-data
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD (cgi-fcgi -bind -connect localhost:9000 && curl -skI localhost:7867) || exit 1
+HEALTHCHECK CMD (nc -z localhost 9000 && curl -skI localhost:7867) || exit 1
