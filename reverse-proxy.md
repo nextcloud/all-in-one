@@ -278,7 +278,7 @@ sudo docker run \
 --sig-proxy=false \
 --name nextcloud-aio-mastercontainer \
 --restart always \
--p 8080:8080 \
+--publish 8080:8080 \
 -e APACHE_PORT=11000 \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
@@ -297,7 +297,7 @@ sudo docker run \
 --sig-proxy=false \
 --name nextcloud-aio-mastercontainer \
 --restart always \
--p 8080:8080 \
+--publish 8080:8080 \
 -e APACHE_PORT=11000 \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
@@ -317,7 +317,7 @@ docker run ^
 --sig-proxy=false ^
 --name nextcloud-aio-mastercontainer ^
 --restart always ^
--p 8080:8080 ^
+--publish 8080:8080 ^
 -e APACHE_PORT=11000 ^
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config ^
 --volume //var/run/docker.sock:/var/run/docker.sock:ro ^
