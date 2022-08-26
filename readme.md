@@ -22,7 +22,8 @@ The following instructions are especially meant for Linux. For macOS see [this](
     (For people that cannot use ports 80 and/or 443 on this server, please follow the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) because port 443 is used by this project and opened on the host by default even though it does not look like this is the case. Otherwise please run the command below!)
     ```
     # For x64 CPUs:
-    sudo docker run -it \
+    sudo docker run \
+    --sig-proxy=false \
     --name nextcloud-aio-mastercontainer \
     --restart always \
     -p 80:80 \
@@ -37,7 +38,8 @@ The following instructions are especially meant for Linux. For macOS see [this](
 
     ```
     # For arm64 CPUs:
-    sudo docker run -it \
+    sudo docker run \
+    --sig-proxy=false \
     --name nextcloud-aio-mastercontainer \
     --restart always \
     -p 80:80 \
@@ -82,7 +84,8 @@ On macOS, there are two things different in comparison to Linux: instead of usin
 On Windows, the following command should work in the command prompt after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/):
 
 ```
-docker run -it ^
+docker run ^
+--sig-proxy=false ^
 --name nextcloud-aio-mastercontainer ^
 --restart always ^
 -p 80:80 ^

@@ -274,7 +274,8 @@ After adjusting your reverse proxy config, use the following command to start AI
 
 ```
 # For x64 CPUs:
-sudo docker run -it \
+sudo docker run \
+--sig-proxy=false \
 --name nextcloud-aio-mastercontainer \
 --restart always \
 -p 8080:8080 \
@@ -292,7 +293,8 @@ You should also think about limiting the apache container to listen only on loca
 
 ```
 # For arm64 CPUs:
-sudo docker run -it \
+sudo docker run \
+--sig-proxy=false \
 --name nextcloud-aio-mastercontainer \
 --restart always \
 -p 8080:8080 \
@@ -311,7 +313,8 @@ On macOS see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-macos.
 <summary>Command for Windows</summary>
 
 ```
-docker run -it ^
+docker run ^
+--sig-proxy=false ^
 --name nextcloud-aio-mastercontainer ^
 --restart always ^
 -p 8080:8080 ^
