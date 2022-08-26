@@ -25,9 +25,9 @@ The following instructions are especially meant for Linux. For macOS see [this](
     sudo docker run -it \
     --name nextcloud-aio-mastercontainer \
     --restart always \
-    -p 80:80 \
-    -p 8080:8080 \
-    -p 8443:8443 \
+    --publish 80:80 \
+    --publish 8080:8080 \
+    --publish 8443:8443 \
     --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
     --volume /var/run/docker.sock:/var/run/docker.sock:ro \
     nextcloud/all-in-one:latest
@@ -40,9 +40,9 @@ The following instructions are especially meant for Linux. For macOS see [this](
     sudo docker run -it \
     --name nextcloud-aio-mastercontainer \
     --restart always \
-    -p 80:80 \
-    -p 8080:8080 \
-    -p 8443:8443 \
+    --publish 80:80 \
+    --publish 8080:8080 \
+    --publish 8443:8443 \
     --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
     --volume /var/run/docker.sock:/var/run/docker.sock:ro \
     nextcloud/all-in-one:latest-arm64
@@ -85,9 +85,9 @@ On Windows, the following command should work in the command prompt after you in
 docker run -it ^
 --name nextcloud-aio-mastercontainer ^
 --restart always ^
--p 80:80 ^
--p 8080:8080 ^
--p 8443:8443 ^
+--publish 80:80 ^
+--publish 8080:8080 ^
+--publish 8443:8443 ^
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config ^
 --volume //var/run/docker.sock:/var/run/docker.sock:ro ^
 nextcloud/all-in-one:latest

@@ -277,7 +277,7 @@ After adjusting your reverse proxy config, use the following command to start AI
 sudo docker run -it \
 --name nextcloud-aio-mastercontainer \
 --restart always \
--p 8080:8080 \
+--publish 8080:8080 \
 -e APACHE_PORT=11000 \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
@@ -295,7 +295,7 @@ You should also think about limiting the apache container to listen only on loca
 sudo docker run -it \
 --name nextcloud-aio-mastercontainer \
 --restart always \
--p 8080:8080 \
+--publish 8080:8080 \
 -e APACHE_PORT=11000 \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
@@ -314,7 +314,7 @@ On macOS see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-macos.
 docker run -it ^
 --name nextcloud-aio-mastercontainer ^
 --restart always ^
--p 8080:8080 ^
+--publish 8080:8080 ^
 -e APACHE_PORT=11000 ^
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config ^
 --volume //var/run/docker.sock:/var/run/docker.sock:ro ^
