@@ -225,6 +225,11 @@ if [ "$BORG_MODE" = restore ]; then
         exit 1
     fi
 
+    # Save Additional Backup dirs
+    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories" ]; then
+        ADDITIONAL_BACKUP_DIRECTORIES="$(cat /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories)"
+    fi
+
     # Restore everything except the configuration file
     if ! rsync --stats --archive --human-readable -vv --delete \
     --exclude "nextcloud_aio_mastercontainer/session/"** \
@@ -242,11 +247,6 @@ if [ "$BORG_MODE" = restore ]; then
 
     # Save current path
     BORG_LOCATION="$(jq '.borg_backup_host_location' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
-
-    # Save Additional Backup dirs
-    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories" ]; then
-        ADDITIONAL_BACKUP_DIRECTORIES="$(cat /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories)"
-    fi
 
     # Save current nextcloud datadir
     if grep -q '"nextcloud_datadir":' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json; then
