@@ -462,8 +462,20 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:update files_fulltextsearch
     fi
     php /var/www/html/occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-    php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$FULLTEXTSEARCH_HOST:9200\"}"
+    php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$FULLTEXTSEARCH_HOST:9200\",\"elastic_index\":\"nextcloud-aio\"}"
     php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
+
+    # Do the index
+    if ! [ -f "/mnt/ncdata/fts-index.done" ]; then
+        echo "Waiting 10s before activating FTS..."
+        sleep 10
+        echo "Activating fulltextsearch..."
+        if php /var/www/html/occ fulltextsearch:test && php /var/www/html/occ fulltextsearch:index; then
+            touch "/mnt/ncdata/fts-index.done"
+        else
+            echo "Fulltextsearch failed. Could not index."
+        fi
+    fi
 else
     if [ -d "/var/www/html/custom_apps/fulltextsearch" ]; then
         php /var/www/html/occ app:remove fulltextsearch
