@@ -230,6 +230,11 @@ if [ "$BORG_MODE" = restore ]; then
         ADDITIONAL_BACKUP_DIRECTORIES="$(cat /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories)"
     fi
 
+    # Save daily backup time
+    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_time" ]; then
+        DAILY_BACKUPTIME="$(cat /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_time)"
+    fi
+
     # Restore everything except the configuration file
     if ! rsync --stats --archive --human-readable -vv --delete \
     --exclude "nextcloud_aio_mastercontainer/session/"** \
@@ -285,6 +290,13 @@ if [ "$BORG_MODE" = restore ]; then
         echo "$ADDITIONAL_BACKUP_DIRECTORIES" > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories"
         chown 33:0 "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories"
         chmod 770 "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories"
+    fi
+
+    # Reset the additional backup directories
+    if [ -n "$DAILY_BACKUPTIME" ]; then
+        echo "$DAILY_BACKUPTIME" > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_time"
+        chown 33:0 "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_time"
+        chmod 770 "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_time"
     fi
 
     umount /tmp/borg
