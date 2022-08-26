@@ -3,10 +3,8 @@
     {
       "identifier": "nextcloud-aio-apache",
       "dependsOn": [
-        "nextcloud-aio-fulltextsearch",
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
-        "nextcloud-aio-clamav",
         "nextcloud-aio-talk",
         "nextcloud-aio-nextcloud"
       ],
@@ -82,6 +80,8 @@
       "dependsOn": [
         "nextcloud-aio-database",
         "nextcloud-aio-redis",
+        "nextcloud-aio-clamav",
+        "nextcloud-aio-fulltextsearch",
         "nextcloud-aio-imaginary"
       ],
       "displayName": "Nextcloud",
