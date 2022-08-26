@@ -382,7 +382,7 @@ You can do so by running the `/daily-backup.sh` script that is stored in the mas
 - `START_CONTAINERS` if set to `1`, it will automatically start the containers without updating them.
 - `STOP_CONTAINERS` if set to `1`, it will automatically stop the containers.
 
-One example for this would be `sudo docker exec -it nextcloud-aio-mastercontainer DAILY_BACKUP=1 /daily-backup.sh`, which you can run via a cronjob or put it in a script.
+One example for this would be `sudo docker exec -it -e DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script.
 
 ### How to disable the backup section?
 If you already have a backup solution in place, you may want to hide the backup section. You can do so by adding `-e DISABLE_BACKUP_SECTION=true` to the initial startup of the mastercontainer.
