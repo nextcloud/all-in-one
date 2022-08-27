@@ -141,7 +141,7 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 
 <summary>click here to expand</summary>
 
-**Disclaimer:** the config below is not working 100% correctly, yet. See e.g. https://github.com/nextcloud/all-in-one/issues/450, https://github.com/nextcloud/all-in-one/issues/447 and https://github.com/nextcloud/all-in-one/issues/491. Improvements to it are very welcome!
+**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
 
 Add this to you nginx config:
 
