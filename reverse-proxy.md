@@ -239,7 +239,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
             hostsProxyHeaders = ["X-Forwarded-Host"]
             sslRedirect = true
             referrerPolicy = "same-origin"
-            X-Robots-Tag = "none"
+            X-Robots-Tags = "none"
     ```
 
 3. Add to the bottom of the `middleware-chains.toml` file in the Traefik rules folder the following content:
