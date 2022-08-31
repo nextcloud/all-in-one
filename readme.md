@@ -381,6 +381,7 @@ You can do so by running the `/daily-backup.sh` script that is stored in the mas
 - `DAILY_BACKUP` if set to `1`, it will automatically stop the containers and create a backup. If you want to start them again afterwards, you may have a look at the `START_CONTAINERS` option. Please be aware that this option is non-blocking which means that the backup is not done when the process is finished since it only start the borgbackup container with the correct configuration.
 - `START_CONTAINERS` if set to `1`, it will automatically start the containers without updating them.
 - `STOP_CONTAINERS` if set to `1`, it will automatically stop the containers.
+- `CHECK_BACKUP` if set to `1`, it will start the backup check. This is not allowed to be enabled at the same time like `DAILY_BACKUP`.
 
 One example for this would be `sudo docker exec -it -e DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script.
 
