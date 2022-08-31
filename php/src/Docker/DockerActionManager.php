@@ -162,11 +162,11 @@ class DockerActionManager
         $response = "";
         $separator = "\r\n";
         $line = strtok($responseBody, $separator);
-        $response = substr($line, 8) . "\n";
+        $response = substr($line, 8) . $separator;
 
         while ($line !== false) {
             $line = strtok($separator);
-            $response .= substr($line, 8) . "\n";
+            $response .= substr($line, 8) . $separator;
         }
 
         return $response;
