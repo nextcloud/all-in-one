@@ -538,6 +538,13 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetTrustedCacertsDir() : string {
+        $envVariableName = 'TRUSTED_CACERTS_DIR';
+        $configName = 'trusted_cacerts_dir';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */

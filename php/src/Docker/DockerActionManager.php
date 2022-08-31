@@ -314,6 +314,8 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
                 } elseif ($out[1] === 'NEXTCLOUD_MAX_TIME') {
                     $replacements[1] = $this->configurationManager->GetNextcloudMaxTime();
+                } elseif ($out[1] === 'TRUSTED_CACERTS_DIR') {
+                    $replacements[1] = $this->configurationManager->GetTrustedCacertsDir();
                 } elseif ($out[1] === 'ADDITIONAL_DIRECTORIES_BACKUP') {
                     if ($this->configurationManager->GetAdditionalBackupDirectoriesString() !== '') {
                         $replacements[1] = 'yes';
