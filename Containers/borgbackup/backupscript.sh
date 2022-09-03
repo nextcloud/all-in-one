@@ -87,10 +87,12 @@ if [ "$BORG_MODE" = backup ]; then
         # Don't initialize if already initialized
         if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
             echo "Cannot initialize a new repository as that was already done at least one time."
+            echo "If you still want to do so, you may delete the 'borg.config' file that is stored in the mastercontainer volume manually, which will allow you to initialize a new borg repository in the chosen directory."
             exit 1
         fi
 
         echo "initializing repository..."
+        NEW_REPOSITORY=1
         if ! borg init --debug --encryption=repokey-blake2 "$BORG_BACKUP_DIRECTORY"; then
             echo "Could not initialize borg repository."
             rm -f "$BORG_BACKUP_DIRECTORY/config"
@@ -133,6 +135,10 @@ if [ "$BORG_MODE" = backup ]; then
         echo "Deleting the failed backup archive..."
         borg delete --stats --progress "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio"
         echo "Backup failed!"
+        if [ "$NEW_REPOSITORY" = 1 ]; then
+            echo "Deleting borg.config file so that you can choose a different location for the backup."
+            rm "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"
+        fi
         exit 1
     fi
 
