@@ -90,16 +90,18 @@ COPY session-deduplicator.sh /
 COPY cron.sh /
 COPY daily-backup.sh /
 COPY supervisord.conf /
+COPY healthcheck.sh /
 RUN chmod +x /usr/bin/start.sh; \
     chmod +x /cron.sh; \
     chmod +x /session-deduplicator.sh; \
     chmod +x /backup-time-file-watcher.sh; \
     chmod +x /daily-backup.sh; \
-    chmod a+r /Caddyfile
+    chmod a+r /Caddyfile; \
+    chmod +x /healthcheck.sh
 
 USER root
 
 ENTRYPOINT ["start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD curl -skfI https://localhost:8080 || exit 1
+HEALTHCHECK CMD /healthcheck.sh
