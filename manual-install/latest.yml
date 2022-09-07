@@ -6,7 +6,6 @@ services:
     depends_on:
       - nextcloud-aio-onlyoffice
       - nextcloud-aio-collabora
-      - nextcloud-aio-clamav
       - nextcloud-aio-talk
       - nextcloud-aio-nextcloud
     image: nextcloud/aio-apache:latest
@@ -50,6 +49,9 @@ services:
     depends_on:
       - nextcloud-aio-database
       - nextcloud-aio-redis
+      - nextcloud-aio-clamav
+      - nextcloud-aio-fulltextsearch
+      - nextcloud-aio-imaginary
     image: nextcloud/aio-nextcloud:latest
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:rw
@@ -84,6 +86,12 @@ services:
       - UPDATE_NEXTCLOUD_APPS=${UPDATE_NEXTCLOUD_APPS}
       - TZ=${TIMEZONE}
       - TALK_PORT=${TALK_PORT}
+      - IMAGINARY_ENABLED=${IMAGINARY_ENABLED}
+      - IMAGINARY_HOST=nextcloud-aio-imaginary
+      - PHP_UPLOAD_LIMIT=${NEXTCLOUD_UPLOAD_LIMIT}
+      - FULLTEXTSEARCH_ENABLED=${FULLTEXTSEARCH_ENABLED}
+      - FULLTEXTSEARCH_HOST=nextcloud-aio-fulltextsearch
+      - PHP_MAX_TIME=${NEXTCLOUD_MAX_TIME}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -157,6 +165,30 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
+ 
+  nextcloud-aio-imaginary:
+    container_name: nextcloud-aio-imaginary
+    image: nextcloud/aio-imaginary:latest
+    environment:
+      - TZ=${TIMEZONE}
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+ 
+  nextcloud-aio-fulltextsearch:
+    container_name: nextcloud-aio-fulltextsearch
+    image: nextcloud/aio-fulltextsearch:latest
+    environment:
+      - TZ=${TIMEZONE}
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1024M -Xmx1024M
+    volumes:
+      - nextcloud_aio_elasticsearch:/usr/share/elasticsearch/data:rw
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
 
 volumes:
   nextcloud_aio_apache:
@@ -167,6 +199,8 @@ volumes:
     name: nextcloud_aio_database
   nextcloud_aio_database_dump:
     name: nextcloud_aio_database_dump
+  nextcloud_aio_elasticsearch:
+    name: nextcloud_aio_elasticsearch
   nextcloud_aio_nextcloud:
     name: nextcloud_aio_nextcloud
   nextcloud_aio_onlyoffice:
