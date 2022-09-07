@@ -23,7 +23,7 @@ lt-cred-mech
 use-auth-secret
 static-auth-secret=$TURN_SECRET
 realm=$NC_DOMAIN
-total-quota=100
+total-quota=0
 bps-capacity=0
 stale-nonce
 no-multicast-peers
