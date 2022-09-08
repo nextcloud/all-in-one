@@ -18,16 +18,6 @@ if ! [ -w "$DUMP_DIR" ]; then
     exit 1
 fi
 
-# Check if initdb was successful
-if [ -f "/mnt/data/initdb.failed" ]; then
-    echo "It seems like initializing the database was unsuccessful."
-    echo "Most likely the timezone is not a valid one."
-    echo "Please restore a backup, change the timezone to a valid one and try again."
-    echo "If this is a new instance, clean it properly by following https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance"
-    echo "Afterwards feel free to try again with a valid timezone."
-    exit 1
-fi
-
 # Delete the datadir once (needed for setting the correct credentials on old instances once)
 if ! [ -f "$DUMP_DIR/export.failed" ] && ! [ -f "$DUMP_DIR/initial-cleanup-done" ]; then
     set -ex
@@ -67,11 +57,6 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
 
     # Create new database
     exec docker-entrypoint.sh postgres &
-
-    # Exit if initdb failed
-    if [ -f "/mnt/data/initdb.failed" ]; then
-        exit 1
-    fi
 
     # Wait for creation
     while ! nc -z localhost 11000; do
@@ -138,11 +123,6 @@ trap 'true' SIGINT SIGTERM
 # Start the database
 exec docker-entrypoint.sh postgres &
 wait $!
-
-# Exit if initdb failed
-if [ -f "/mnt/data/initdb.failed" ]; then
-    exit 1
-fi
 
 # Continue with shutdown procedure: do database dump, etc.
 rm -f "$DUMP_FILE.temp"
