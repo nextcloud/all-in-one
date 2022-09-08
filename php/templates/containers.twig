@@ -538,7 +538,7 @@
                                 <input type="text" name="timezone" placeholder="Europe/Berlin" />
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit" />
+                                <input class="button" type="submit" value="Submit" onclick="return confirm('Are you sure that this is a valid timezone? Please double check by following the wikipedia article and checking the correct column since if not, it will break the startup since the database will not get correctly initialized and you will end in a startup loop.')" />
                             </form>
                             You need to make sure that the timezone that you enter is valid. An example is <b>Europe/Berlin</b>. You can get valid values by looking at the 'TZ database name' column of this list: <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"><b>click here</b></a>.<br><br>
                         {% else %}
