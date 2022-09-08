@@ -85,14 +85,17 @@ class DockerController
     }
 
     public function StartBackupContainerCheck(Request $request, Response $response, $args) : Response {
+        $this->checkBackup();
+        return $response->withStatus(201)->withHeader('Location', '/');
+    }
+
+    public function checkBackup() : void {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'check';
         $this->configurationManager->WriteConfig($config);
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
-
-        return $response->withStatus(201)->withHeader('Location', '/');
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, $args) : Response {

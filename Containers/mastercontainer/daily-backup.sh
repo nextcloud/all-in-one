@@ -1,10 +1,16 @@
 #!/bin/bash
 
-echo "Daily backup has started"
+echo "Daily backup script has started"
+
+# Daily backup and backup check cannot be run at the same time
+if [ "$DAILY_BACKUP" = 1 ] && [ "$CHECK_BACKUP" = 1 ]; then
+    echo "Daily backup and backup check cannot be run at the same time. Exiting..."
+    exit 1
+fi
 
 # Delete all active sessions and create a lock file
 # But don't kick out the user if the mastercontainer was just updated since we block the interface either way with the lock file
-if [ "$LOCK_FILE_PRESENT" = 0 ]; then
+if [ "$LOCK_FILE_PRESENT" = 0 ] || ! [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
     rm -f "/mnt/docker-aio-config/session/"*
 fi
 sudo -u www-data touch "/mnt/docker-aio-config/data/daily_backup_running"
@@ -26,6 +32,8 @@ done
 
 # Update the mastercontainer
 if [ "$AUTOMATIC_UPDATES" = 1 ]; then
+    echo "Starting mastercontainer update..." 
+    echo "(The script might get exited due to that. In order to update all the other containers correctly, you need to run this script with the same settings a second time.)"
     sudo -u www-data php /var/www/docker-aio/php/src/Cron/UpdateMastercontainer.php
 fi
 
@@ -40,20 +48,31 @@ else
 fi
 
 # Stop containers if required
-if [ "$DAILY_BACKUP" != 1 ] || [ "$STOP_CONTAINERS" = 1 ]; then
+# shellcheck disable=SC2235
+if [ "$CHECK_BACKUP" != 1 ] && ([ "$DAILY_BACKUP" != 1 ] || [ "$STOP_CONTAINERS" = 1 ]); then
+    echo "Stopping containers..."
     sudo -u www-data php /var/www/docker-aio/php/src/Cron/StopContainers.php
 fi
 
 # Execute the backup itself and some related tasks (also stops the containers)
 if [ "$DAILY_BACKUP" = 1 ]; then
+    echo "Creating daily backup..."
     sudo -u www-data php /var/www/docker-aio/php/src/Cron/CreateBackup.php
+fi
+
+# Execute backup check
+if [ "$CHECK_BACKUP" = 1 ]; then
+    echo "Starting backup check..."
+    sudo -u www-data php /var/www/docker-aio/php/src/Cron/CheckBackup.php
 fi
 
 # Start and/or update containers
 if [ "$AUTOMATIC_UPDATES" = 1 ]; then
+    echo "Starting and updating containers..."
     sudo -u www-data php /var/www/docker-aio/php/src/Cron/StartAndUpdateContainers.php
 else
     if [ "$START_CONTAINERS" = 1 ]; then
+        echo "Starting containers without updating them..."
         sudo -u www-data php /var/www/docker-aio/php/src/Cron/StartContainers.php
     fi
 fi
@@ -75,7 +94,8 @@ if [ "$DAILY_BACKUP" = 1 ]; then
             fi
         done
     fi
+    echo "Sending backup notification..."
     sudo -u www-data php /var/www/docker-aio/php/src/Cron/BackupNotification.php
 fi
 
-echo "Daily backup has finished"
+echo "Daily backup script has finished"
