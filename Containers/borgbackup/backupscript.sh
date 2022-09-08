@@ -126,14 +126,14 @@ if [ "$BORG_MODE" = backup ]; then
     # Borg options
     # auto,zstd compression seems to has the best ratio based on:
     # https://forum.level1techs.com/t/optimal-compression-for-borg-backups/145870/6
-    BORG_OPTS=(--stats --progress --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
+    BORG_OPTS=(--stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
     # Create the backup
     echo "Starting the backup..."
     get_start_time
     if ! borg create "${BORG_OPTS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/"; then
         echo "Deleting the failed backup archive..."
-        borg delete --stats --progress "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio"
+        borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio"
         echo "Backup failed!"
         if [ "$NEW_REPOSITORY" = 1 ]; then
             echo "Deleting borg.config file so that you can choose a different location for the backup."
@@ -146,7 +146,7 @@ if [ "$BORG_MODE" = backup ]; then
     rm -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
 
     # Prune options
-    BORG_PRUNE_OPTS=(--stats --progress --keep-within=7d --keep-weekly=4 --keep-monthly=6 "$BORG_BACKUP_DIRECTORY")
+    BORG_PRUNE_OPTS=(--stats --keep-within=7d --keep-weekly=4 --keep-monthly=6 "$BORG_BACKUP_DIRECTORY")
 
     # Prune archives
     echo "Pruning the archives..."
@@ -168,7 +168,7 @@ if [ "$BORG_MODE" = backup ]; then
             done
             if ! borg create "${BORG_OPTS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-docker-volumes" "/docker_volumes/"; then
                 echo "Deleting the failed backup archive..."
-                borg delete --stats --progress "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-docker-volumes"
+                borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-docker-volumes"
                 echo "Backup of additional docker-volumes failed!"
                 exit 1
             fi
@@ -192,7 +192,7 @@ if [ "$BORG_MODE" = backup ]; then
             done
             if ! borg create "${BORG_OPTS[@]}" "${EXCLUDE_DIRS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts" "/host_mounts/"; then
                 echo "Deleting the failed backup archive..."
-                borg delete --stats --progress "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts"
+                borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts"
                 echo "Backup of additional host-mounts failed!"
                 exit 1
             fi
@@ -326,7 +326,7 @@ if [ "$BORG_MODE" = check ]; then
     echo "Checking the backup integrity..."
 
     # Perform the check
-    if ! borg check --verify-data --progress "$BORG_BACKUP_DIRECTORY"; then
+    if ! borg check --verify-data "$BORG_BACKUP_DIRECTORY"; then
         echo "Some errors were found while checking the backup integrity!"
         exit 1
     fi
