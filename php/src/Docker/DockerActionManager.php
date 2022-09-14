@@ -326,6 +326,8 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetBorgBackupHostLocation();
                 } elseif ($out[1] === 'APACHE_MAX_SIZE') {
                     $replacements[1] = $this->configurationManager->GetApacheMaxSize();
+                } elseif ($out[1] === 'COLLABORA_SECCOMP_POLICY') {
+                    $replacements[1] = $this->configurationManager->GetCollaboraSeccompPolicy();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }

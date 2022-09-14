@@ -550,6 +550,21 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetCollaboraSeccompPolicy() : string {
+        $defaultString = '--o:security.seccomp=';
+        if ($this->GetCollaboraSeccompDisabledState() !== 'true') {
+            return $defaultString . 'true';
+        }
+        return $defaultString . 'false';
+    }
+
+    private function GetCollaboraSeccompDisabledState() : string {
+        $envVariableName = 'COLLABORA_SECCOMP_DISABLED';
+        $configName = 'collabora_seccomp_disabled';
+        $defaultValue = 'false';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */

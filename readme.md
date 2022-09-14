@@ -499,3 +499,6 @@ You can make the Nextcloud container trust any Certification Authority by provid
 When using `docker run`, the environmental variable can be set with `-e TRUSTED_CACERTS_DIR=/path/to/my/cacerts`.
 
 In order for the value to be valid, the path should start with `/` and not end with '/' and point to an existing **directory**. Pointing the variable directly to a certificate **file** will not work and may also break things.
+
+### How to disable Collabora's Seccomp feature?
+The Collabora container enables Seccomp by default, which is a security feature of the Linux kernel. On systems without this kernel feature enabled, you need to provide `-e COLLABORA_SECCOMP_DISABLED=true` to the initial docker run command in order to make it work.
