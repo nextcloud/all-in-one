@@ -367,8 +367,8 @@ rm "$TARGET_DIRECTORY/aio-lockfile"
 
 umount "$DRIVE_MOUNTPOINT"
 
-if docker ps --format "{{.Names}}" | grep "^nextcloud-aio-nextcloud$"; then
-    docker exec -it nextcloud-aio-nextcloud bash /notify.sh "Rsync backup successful!" "Synced the backup repository successfully."
+if docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-nextcloud$"; then
+    docker exec nextcloud-aio-nextcloud bash /notify.sh "Rsync backup successful!" "Synced the backup repository successfully."
 else
     echo "Synced the backup repository successfully."
 fi
@@ -381,7 +381,11 @@ You can simply copy and past the script into a file e.g. named `backup-script.sh
 
 Afterwards apply the correct permissions with `sudo chown root:root /root/backup-script.sh` and `sudo chmod 700 /root/backup-script.sh`. Then you can create a cronjob that runs e.g. at `20:00` each week on Sundays like this: 
 1. Open the cronjob with `sudo crontab -u root -e` (and choose your editor of choice if not already done. I'd recommend nano). 
-1. Add the following new line to the crontab if not already present: `0 20 * * 7 /root/backup-script.sh` which will run the script at 20:00 on Sundays each week. 
+1. Add the following new line to the crontab if not already present: 
+    ```
+    0 20 * * 7 /root/backup-script.sh
+    ```
+    which will run the script at 20:00 on Sundays each week. 
 1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
 
 ### How to stop/start/update containers or trigger the daily backup from a script externally?
@@ -392,7 +396,22 @@ You can do so by running the `/daily-backup.sh` script that is stored in the mas
 - `STOP_CONTAINERS` if set to `1`, it will automatically stop the containers.
 - `CHECK_BACKUP` if set to `1`, it will start the backup check. This is not allowed to be enabled at the same time like `DAILY_BACKUP`. Please be aware that this option is non-blocking which means that the backup check is not done when the process is finished since it only start the borgbackup container with the correct configuration.
 
-One example for this would be `sudo docker exec -it -e DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script.
+One example for this would be `sudo docker exec -e DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script.
+
+### How to install external dependencies into the Nextcloud container permanently?
+Some Nextcloud apps require additional external dependencies that must be bundled within Nextcloud container in order to work correctly. As we cannot put each and every dependency for all apps into the container - as this would make the project very fast unmaintainable - there is an official way how you can add additional dependencies into the Nextcloud container. However note that doing this is not recommended since we do not test Nextcloud apps that require external dependencies. Also migrating your AIO installation to a different server will require this part to be set up again.
+
+**Here is then now how you can install external dependencies into the Nextcloud container permanently:**<br>
+The Nextcloud container comes with a script that is located in `/install_dependencies.sh` which contains the logic which is needed to install external dependencies correctly. It accepts the environmental variable `ADDITIONAL_APKS` which allows to install the dependencies permanently. The script need to be executed as root user inside the container every 5 min and will install the needed dependencies in a permanent way. In order to do so, you simply create a cronjob that runs the script every 5 min.
+
+One example for this is:
+1. run `sudo crontab -u root -e` in order to edit root users crontab (and choose your editor of choice if not already done. I'd recommend nano). 
+2. Add the line below into the file (and adjust your dependencies, (`dependency1 dependency2`), you can find available packages here: https://pkgs.alpinelinux.org/packages?name=&branch=v3.16&repo=&arch=&maintainer=):
+    ```
+    */5 * * * * docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-nextcloud$" && docker exec --user root -e ADDITIONAL_APKS="dependency1 dependency2" nextcloud-aio-nextcloud /install_dependencies.sh
+    ```
+3. Save out and close the file.
+4. Now the chosen external dependencies should be added to the Nextcloud container permanently which you can verify after waiting max 5 min.
 
 ⚠️ Please note that none of the option returns error codes. So you need to check for the correct result yourself.
 

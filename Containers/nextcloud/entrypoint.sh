@@ -79,6 +79,9 @@ if [ -f "$NEXTCLOUD_DATA_DIR/update.failed" ]; then
     exit 1
 fi
 
+# TODO: wait max 5min for external dependencies to get installed before starting the container
+# We may need an additional lockfile that should be tested for if existing... the external script should then remove that when succesful...
+
 # Skip any update if Nextcloud was just restored
 if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
     if version_greater "$image_version" "$installed_version"; then
