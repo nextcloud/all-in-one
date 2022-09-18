@@ -135,8 +135,11 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
             php /var/www/html/occ app:update --all
 
             # Fix removing the updatenotification for old instances
+            UPDATENOTIFICATION_STATUS="$(php /var/www/html/occ config:app:get updatenotification enabled)"
             if [ -d "/var/www/html/apps/updatenotification" ]; then
                 php /var/www/html/occ app:disable updatenotification
+            elif [ "$UPDATENOTIFICATION_STATUS" != "no" ] && [ -n "$UPDATENOTIFICATION_STATUS" ]; then
+                php /var/www/html/occ config:app:set updatenotification enabled --value="no"
             fi
         fi
 
