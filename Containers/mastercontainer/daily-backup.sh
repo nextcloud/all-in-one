@@ -80,7 +80,9 @@ fi
 # Delete the lock file
 rm -f "/mnt/docker-aio-config/data/daily_backup_running"
 
-if [ "$DAILY_BACKUP" = 1 ]; then
+# Send backup notification
+# shellcheck disable=SC2235
+if [ "$DAILY_BACKUP" = 1 ] && ([ "$AUTOMATIC_UPDATES" = 1 ] || [ "$START_CONTAINERS" = 1 ]); then
     # Wait for the nextcloud container to start and send if the backup was successful
     if ! docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-nextcloud$"; then
         echo "Something seems to be wrong: Nextcloud should be started at this step."
