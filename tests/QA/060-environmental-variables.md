@@ -11,5 +11,7 @@
 - [ ] When starting the mastercontainer with `-e NEXTCLOUD_MAX_TIME=4000` it should change Nextclouds upload max time 4000s. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud for allowed values.
 - [ ] When starting the mastercontainer with `-e DOCKER_SOCKET_PATH="/var/run/docker.sock.raw"` it should map `/var/run/docker.sock.raw` to `/var/run/docker.sock` inside the watchtower container which allow to update the mastercontainer on macos and with docker rootless.
 - [ ] When starting the mastercontainer with `-e DISABLE_BACKUP_SECTION=true` it should hide the backup section that gets shown after AIO is set up (everything of [020-backup-and-restore](./020-backup-and-restore.md)) and simply show that the backup section is disabled.
+- [ ] When starting the mastercontainer with `-e TRUSTED_CACERTS_DIR=/path/to/my/cacerts`, the resulting nextcloud container should trust all the Certification Authorities, whose certificates are included in the directory `/path/to/my/cacerts` on the host.
+See https://github.com/nextcloud/all-in-one#how-to-trust-user-defiend-certification-authorities-(ca)
 
 You can now continue with [070-timezone-change.md](./070-timezone-change.md)

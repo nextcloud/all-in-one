@@ -64,6 +64,7 @@ sed -i 's|NEXTCLOUD_DATADIR=|NEXTCLOUD_DATADIR=nextcloud_aio_nextcloud_data     
 sed -i 's|NEXTCLOUD_MOUNT=|NEXTCLOUD_MOUNT=/mnt/          # This allows the Nextcloud container to access directories on the host. It must never be equal to the value of NEXTCLOUD_DATADIR!|' sample.conf
 sed -i 's|NEXTCLOUD_UPLOAD_LIMIT=|NEXTCLOUD_UPLOAD_LIMIT=10G          # This allows to change the upload limit of the Nextcloud container|' sample.conf
 sed -i 's|NEXTCLOUD_MAX_TIME=|NEXTCLOUD_MAX_TIME=3600          # This allows to change the upload time limit of the Nextcloud container|' sample.conf
+sed -i 's|TRUSTED_CACERTS_DIR=|TRUSTED_CACERTS_DIR=/path/to/my/cacerts          # Nextcloud container will trust all the Certification Authorities, whose certificates are included in the given directory.|' sample.conf
 sed -i 's|UPDATE_NEXTCLOUD_APPS=|UPDATE_NEXTCLOUD_APPS=no          # When setting to yes, it will automatically update all installed Nextcloud apps upon container startup on saturdays.|' sample.conf
 sed -i 's|APACHE_PORT=|APACHE_PORT=443          # Changing this to a different value than 443 will allow you to run it behind a reverse proxy.|' sample.conf
 sed -i 's|TALK_PORT=|TALK_PORT=3478          # This allows to adjust the port that the talk container is using.|' sample.conf

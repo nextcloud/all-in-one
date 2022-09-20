@@ -22,6 +22,12 @@ if [ -f "/var/www/html/config/config.php" ]; then
     # sed -i "s|'dbpassword'.*=>.*$|'dbpassword' => '$POSTGRES_PASSWORD',|" /var/www/html/config/config.php
 fi
 
+# Trust additional Cacerts, if the user provided $TRUSTED_CACERTS_DIR
+if [ -n "$TRUSTED_CACERTS_DIR" ]; then
+    echo "User required to trust additional CA certificates, running 'update-ca-certificates."
+    update-ca-certificates
+fi
+
 # Run original entrypoint
 if ! bash /entrypoint.sh; then
     exit 1
