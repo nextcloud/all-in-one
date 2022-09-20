@@ -378,12 +378,14 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/backup
 ### How to stop/start/update containers or trigger the daily backup from a script externally?
 You can do so by running the `/daily-backup.sh` script that is stored in the mastercontainer. It accepts the following environmental varilables:
 - `AUTOMATIC_UPDATES` if set to `1`, it will automatically stop the containers, update them and start them including the mastercontainer. If the mastercontainer gets updated, this script's execution will stop as soon as the mastercontainer gets stopped. You can then wait until it is started again and run the script with this flag again in order to update all containers correctly afterwards.
-- `DAILY_BACKUP` if set to `1`, it will automatically stop the containers and create a backup. If you want to start them again afterwards, you may have a look at the `START_CONTAINERS` option. Please be aware that this option is non-blocking which means that the backup is not done when the process is finished since it only start the borgbackup container with the correct configuration.
+- `DAILY_BACKUP` if set to `1`, it will automatically stop the containers and create a backup. If you want to start them again afterwards, you may have a look at the `START_CONTAINERS` option. Please be aware that this option is non-blocking if `START_CONTAINERS` and `AUTOMATIC_UPDATES` is not enabled at the same time which means that the backup check is not done when the process is finished since it only start the borgbackup container with the correct configuration.
 - `START_CONTAINERS` if set to `1`, it will automatically start the containers without updating them.
 - `STOP_CONTAINERS` if set to `1`, it will automatically stop the containers.
-- `CHECK_BACKUP` if set to `1`, it will start the backup check. This is not allowed to be enabled at the same time like `DAILY_BACKUP`.
+- `CHECK_BACKUP` if set to `1`, it will start the backup check. This is not allowed to be enabled at the same time like `DAILY_BACKUP`. Please be aware that this option is non-blocking which means that the backup check is not done when the process is finished since it only start the borgbackup container with the correct configuration.
 
 One example for this would be `sudo docker exec -it -e DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script.
+
+⚠️ Please note that none of the option returns error codes. So you need to check for the correct result yourself.
 
 ### How to disable the backup section?
 If you already have a backup solution in place, you may want to hide the backup section. You can do so by adding `-e DISABLE_BACKUP_SECTION=true` to the initial startup of the mastercontainer.
