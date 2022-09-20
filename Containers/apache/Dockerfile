@@ -1,7 +1,7 @@
 # Caddy is a requirement
 FROM caddy:2.5.2-alpine as caddy
 
-FROM debian:bullseye-20220822-slim
+FROM debian:bullseye-20220912-slim
 
 RUN mkdir -p /mnt/data; \
     chown www-data:www-data /mnt/data;
