@@ -29,13 +29,20 @@ if [ -n "$PHP_MAX_CHILDREN" ]; then
 fi
 
 # Check permissions in ncdata
-touch "/mnt/ncdata/this-is-a-test-file"
-if ! [ -f "/mnt/ncdata/this-is-a-test-file" ]; then
-    echo "The www-data user doesn't seem to have access rights in /mnt/ncdata.
-Did you maybe change the datadir and did forget to apply the correct permissions?"
+touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
+if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
+    echo "The www-data user doesn't seem to have access rights in the datadir.
+Did you maybe change the datadir and did forget to apply the correct permissions?
+See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir
+The found permissions are:
+$(stat -c "%u:%g %a" "$NEXTCLOUD_DATA_DIR")
+(userID:groupID permissions)
+but they should be:
+33:0 750
+(userID:groupID permissions)"
     exit 1
 fi
-rm "/mnt/ncdata/this-is-a-test-file"
+rm "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 
 if [ -f /var/www/html/version.php ]; then
     # shellcheck disable=SC2016
@@ -65,7 +72,7 @@ if [ -f "/var/www/html/lib/versioncheck.php" ] && ! php /var/www/html/lib/versio
 fi
 
 # Do not start the container if the last update failed
-if [ -f "/mnt/ncdata/update.failed" ]; then
+if [ -f "$NEXTCLOUD_DATA_DIR/update.failed" ]; then
     echo "The last Nextcloud update failed."
     echo "Please restore from backup and try again!"
     echo "If you do not have a backup in place, you can simply delete the update.failed file in the datadir which will allow the container to start again."
@@ -73,7 +80,7 @@ if [ -f "/mnt/ncdata/update.failed" ]; then
 fi
 
 # Skip any update if Nextcloud was just restored
-if ! [ -f "/mnt/ncdata/skip.update" ]; then
+if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
     if version_greater "$image_version" "$installed_version"; then
         # Check if it skips a major version
         INSTALLED_MAJOR="${installed_version%%.*}"
@@ -228,7 +235,7 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
 
         #upgrade
         else
-            touch "/mnt/ncdata/update.failed"
+            touch "$NEXTCLOUD_DATA_DIR/update.failed"
             while [ -n "$(pgrep -f cron.php)" ]
             do
                 echo "Waiting for Nextclouds cronjob to finish..."
@@ -242,7 +249,7 @@ if ! [ -f "/mnt/ncdata/skip.update" ]; then
                 exit 1
             fi
 
-            rm "/mnt/ncdata/update.failed"
+            rm "$NEXTCLOUD_DATA_DIR/update.failed"
             bash /notify.sh "Nextcloud update to $image_version successful!" "Feel free to inspect the Nextcloud container logs for more info."
 
             php /var/www/html/occ app:list | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
@@ -273,24 +280,24 @@ fi
 
 # Check if appdata is present
 # If not, something broke (e.g. changing ncdatadir after aio was first started)
-if [ -z "$(find "/mnt/ncdata/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ]; then
+if [ -z "$(find "$NEXTCLOUD_DATA_DIR/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ]; then
     echo "Appdata is not present. Did you maybe change the datadir after aio was first started?"
     exit 1
 fi
 
 # Configure tempdirectory
 if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
-    mkdir -p "/mnt/ncdata/tmp/"
+    mkdir -p "$NEXTCLOUD_DATA_DIR/tmp/"
     if ! grep -q upload_tmp_dir /usr/local/etc/php/conf.d/nextcloud.ini; then
-        echo "upload_tmp_dir = /mnt/ncdata/tmp/" >> /usr/local/etc/php/conf.d/nextcloud.ini
+        echo "upload_tmp_dir = $NEXTCLOUD_DATA_DIR/tmp/" >> /usr/local/etc/php/conf.d/nextcloud.ini
     fi
-    php /var/www/html/occ config:system:set tempdirectory --value="/mnt/ncdata/tmp/"
+    php /var/www/html/occ config:system:set tempdirectory --value="$NEXTCLOUD_DATA_DIR/tmp/"
 fi
 
 # Perform fingerprint update if instance was restored
-if [ -f "/mnt/ncdata/fingerprint.update" ]; then
+if [ -f "$NEXTCLOUD_DATA_DIR/fingerprint.update" ]; then
     php /var/www/html/occ maintenance:data-fingerprint
-    rm "/mnt/ncdata/fingerprint.update"
+    rm "$NEXTCLOUD_DATA_DIR/fingerprint.update"
 fi
 
 # Apply one-click-instance settings
@@ -466,12 +473,12 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
     php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 
     # Do the index
-    if ! [ -f "/mnt/ncdata/fts-index.done" ]; then
+    if ! [ -f "$NEXTCLOUD_DATA_DIR/fts-index.done" ]; then
         echo "Waiting 10s before activating FTS..."
         sleep 10
         echo "Activating fulltextsearch..."
         if php /var/www/html/occ fulltextsearch:test && php /var/www/html/occ fulltextsearch:index; then
-            touch "/mnt/ncdata/fts-index.done"
+            touch "$NEXTCLOUD_DATA_DIR/fts-index.done"
         else
             echo "Fulltextsearch failed. Could not index."
         fi
@@ -489,4 +496,4 @@ else
 fi
 
 # Remove the update skip file always
-rm -f /mnt/ncdata/skip.update
+rm -f "$NEXTCLOUD_DATA_DIR"/skip.update
