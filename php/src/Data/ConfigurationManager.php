@@ -524,6 +524,11 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetApacheMaxSize() : int {
+        $uploadLimit = (int)rtrim($this->GetNextcloudUploadLimit(), 'G');
+        return $uploadLimit * 1024 * 1024 * 1024;
+    }
+
     public function GetNextcloudMaxTime() : string {
         $envVariableName = 'NEXTCLOUD_MAX_TIME';
         $configName = 'nextcloud_max_time';

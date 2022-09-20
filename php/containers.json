@@ -24,7 +24,9 @@
         "TALK_HOST=nextcloud-aio-talk",
         "APACHE_PORT=%APACHE_PORT%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
-        "TZ=%TIMEZONE%"
+        "TZ=%TIMEZONE%",
+        "APACHE_MAX_SIZE=%APACHE_MAX_SIZE%",
+        "APACHE_MAX_TIME=%NEXTCLOUD_MAX_TIME%"
       ],
       "volumes": [
         {
