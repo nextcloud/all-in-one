@@ -37,7 +37,7 @@ COPY --from=dind /usr/local/bin/docker /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker
 
 RUN set -ex; \
-    pecl install APCu-5.1.21; \
+    pecl install APCu-5.1.22; \
     docker-php-ext-enable apcu
 
 RUN set -e && \
