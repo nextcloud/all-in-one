@@ -324,6 +324,8 @@ class DockerActionManager
                     }
                 } elseif ($out[1] === 'BORGBACKUP_HOST_LOCATION') {
                     $replacements[1] = $this->configurationManager->GetBorgBackupHostLocation();
+                } elseif ($out[1] === 'APACHE_MAX_SIZE') {
+                    $replacements[1] = $this->configurationManager->GetApacheMaxSize();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }
