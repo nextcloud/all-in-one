@@ -17,6 +17,8 @@ services:
       - TALK_HOST=nextcloud-aio-talk
       - APACHE_PORT=${APACHE_PORT}
       - TZ=${TIMEZONE}
+      - APACHE_MAX_SIZE=${APACHE_MAX_SIZE}
+      - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
@@ -54,6 +56,7 @@ services:
       - nextcloud_aio_nextcloud:/var/www/html:rw
       - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
       - ${NEXTCLOUD_MOUNT}:${NEXTCLOUD_MOUNT}:rw
+      - ${TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     environment:
       - POSTGRES_HOST=nextcloud-aio-database
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
@@ -84,6 +87,7 @@ services:
       - FULLTEXTSEARCH_ENABLED=${FULLTEXTSEARCH_ENABLED}
       - FULLTEXTSEARCH_HOST=nextcloud-aio-fulltextsearch
       - PHP_MAX_TIME=${NEXTCLOUD_MAX_TIME}
+      - TRUSTED_CACERTS_DIR=${TRUSTED_CACERTS_DIR}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
@@ -105,7 +109,7 @@ services:
     image: nextcloud/aio-collabora:latest-arm64
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443
-      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true ${COLLABORA_SECCOMP_POLICY}
       - dictionaries=${COLLABORA_DICTIONARIES}
       - TZ=${TIMEZONE}
     stop_grace_period: 10s
