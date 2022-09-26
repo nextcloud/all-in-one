@@ -135,6 +135,42 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 
 </details>
 
+### HaProxy
+
+<details>
+
+<summary>click here to expand</summary>
+
+Here is an example HaProxy config:
+
+```
+global
+    chroot                      /var/haproxy
+    log                         /var/run/log audit debug
+    lua-prepend-path            /tmp/haproxy/lua/?.lua
+
+defaults
+    log     global
+    option redispatch -1
+    retries 3
+    default-server init-addr last,libc
+
+# Frontend: LetsEncrypt_443 ()
+frontend LetsEncrypt_443
+    # ACL: Nextcloud
+    acl acl_60604e669c3ca4.13013327 hdr(host) -i <your-nc-domain>
+
+# Backend: Nextcloud ()
+backend Nextcloud
+    mode http
+    balance source
+    server Nextcloud localhost:11000 
+```
+
+Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
+
+</details>
+
 ### Nginx
 
 <details>
