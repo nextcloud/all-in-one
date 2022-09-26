@@ -1,5 +1,5 @@
 # From https://github.com/h2non/imaginary/blob/master/Dockerfile
-FROM nextcloud/imaginary:20220919
+FROM nextcloud/imaginary:20220926
 
 USER root
 RUN set -ex; \
