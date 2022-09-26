@@ -382,7 +382,7 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$NC_DOMAIN/onlyoffice"
     php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
 else
-    if [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
+    if [ -d "/var/www/html/custom_apps/onlyoffice" ] && [ -n "$ONLYOFFICE_SECRET" ] && [ "$(php /var/www/html/occ config:system:get onlyoffice jwt_secret)" = "$ONLYOFFICE_SECRET" ]; then
         php /var/www/html/occ app:remove onlyoffice
     fi
 fi
