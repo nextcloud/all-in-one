@@ -328,6 +328,8 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetApacheMaxSize();
                 } elseif ($out[1] === 'COLLABORA_SECCOMP_POLICY') {
                     $replacements[1] = $this->configurationManager->GetCollaboraSeccompPolicy();
+                } elseif ($out[1] === '%NEXTCLOUD_STARTUP_APPS%') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudStartupApps();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
                 }

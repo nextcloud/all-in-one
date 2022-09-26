@@ -446,6 +446,9 @@ If you get an error during the domain validation which states that your ip-addre
 ### How to run this with docker rootless?
 You can run AIO also with docker rootless. How to do this is documented here: [docker-rootless.md](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md)
 
+### How to change the Nextcloud apps that are installed on the first startup?
+You might want to adjust the Nextcloud apps that are installed upon the first startup of the Nextcloud container. You can do so by adding `-e NEXTCLOUD_STARTUP_APPS=twofactor_totp deck tasks calendar contacts apporder` to the docker run command of the mastercontainer and customize the value to your fitting. It must be a string with small letters a-z, spaces and hyphens or '_'.
+
 ### Huge docker logs
 When your containers run for a few days without a restart, the container logs that you can view from the AIO interface can get really huge. You can limit the loge sizes by enabling logrotate for docker container logs. Feel free to enable this by following those instructions: https://sandro-keil.de/blog/logrotate-for-docker-container/
 

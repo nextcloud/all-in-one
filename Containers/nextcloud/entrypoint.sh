@@ -229,12 +229,12 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             # php /var/www/html/occ config:app:set updatenotification notify_groups --value="[]"
 
             # Install some apps by default
-            php /var/www/html/occ app:install twofactor_totp
-            php /var/www/html/occ app:install deck
-            php /var/www/html/occ app:install tasks
-            php /var/www/html/occ app:install calendar
-            php /var/www/html/occ app:install contacts
-            php /var/www/html/occ app:install apporder
+            if [ -n "$STARTUP_APPS" ]; then
+                read -ra STARTUP_APPS_ARRAY <<< "$STARTUP_APPS"
+                for app in "${STARTUP_APPS_ARRAY[@]}"; do
+                    php /var/www/html/occ app:install "$app"
+                done
+            fi
 
         #upgrade
         else
