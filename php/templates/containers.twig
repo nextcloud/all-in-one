@@ -483,20 +483,20 @@
                             <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open in your firewall/router)</label><br><br>
                         {% endif %}
                         {% if is_onlyoffice_enabled == true %}
-                            <input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice (only supported on x64)</label><br>
+                            <input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice</label><br>
                         {% else %}
-                            {#<input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice (only supported on x64)</label><br>#}
+                            {#<input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice</label><br>#}
                         {% endif %}
                         <input id="options-form-submit" class="button" type="submit" value="Save changes" />
                     </form>
                     <b>Minimal system requirements:</b> When any optional addon is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV or Fulltextsearch, at least 3GB RAM are required. When enabling everything, at least 4GB RAM are required. Recommended are at least 1GB more RAM than the minimal requirement.<br><br>
                     {% if isAnyRunning == true or is_x64_platform == false %}
                         <script type="text/javascript" src="disable-clamav.js"></script>
-                        <script type="text/javascript" src="disable-onlyoffice.js"></script>
                     {% endif %}
                     {% if isAnyRunning == true %}
                         <script type="text/javascript" src="disable-talk.js"></script>
                         <script type="text/javascript" src="disable-collabora.js"></script>
+                        <script type="text/javascript" src="disable-onlyoffice.js"></script>
                         <script type="text/javascript" src="disable-imaginary.js"></script>
                         <script type="text/javascript" src="disable-fulltextsearch.js"></script>
                     {% endif %}
