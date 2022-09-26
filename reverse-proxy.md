@@ -141,6 +141,8 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 
 <summary>click here to expand</summary>
 
+**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+
 Here is an example HaProxy config:
 
 ```
