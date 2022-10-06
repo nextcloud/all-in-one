@@ -159,8 +159,60 @@ defaults
 
 # Frontend: LetsEncrypt_443 ()
 frontend LetsEncrypt_443
+    bind 0.0.0.0:443 name 0.0.0.0:443 ssl prefer-client-ciphers ssl-min-ver TLSv1.2 ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256 ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256 crt-list /tmp/haproxy/ssl/605f6609f106d1.17683543.certlist 
+    mode http
+    option http-keep-alive
+    default_backend acme_challenge_backend
+    option forwardfor
+    # tuning options
+    timeout client 30s
+
+    # logging options
+    # ACL: find_acme_challenge
+    acl acl_605f6d4b6453d2.03059920 path_beg -i /.well-known/acme-challenge/
     # ACL: Nextcloud
     acl acl_60604e669c3ca4.13013327 hdr(host) -i <your-nc-domain>
+
+    # ACTION: redirect_acme_challenges
+    use_backend acme_challenge_backend if acl_605f6d4b6453d2.03059920
+    # ACTION: Nextcloud
+    use_backend Nextcloud if acl_60604e669c3ca4.13013327
+
+
+# Frontend: LetsEncrypt_80 ()
+frontend LetsEncrypt_80
+    bind 0.0.0.0:80 name 0.0.0.0:80 
+    mode tcp
+    default_backend acme_challenge_backend
+    # tuning options
+    timeout client 30s
+
+    # logging options
+    # ACL: find_acme_challenge
+    acl acl_605f6d4b6453d2.03059920 path_beg -i /.well-known/acme-challenge/
+
+    # ACTION: redirect_acme_challenges
+    use_backend acme_challenge_backend if acl_605f6d4b6453d2.03059920
+
+# Frontend (DISABLED): 1_HTTP_frontend ()
+
+# Frontend (DISABLED): 1_HTTPS_frontend ()
+
+# Frontend (DISABLED): 0_SNI_frontend ()
+
+# Backend: acme_challenge_backend (Added by Let's Encrypt plugin)
+backend acme_challenge_backend
+    # health checking is DISABLED
+    mode http
+    balance source
+    # stickiness
+    stick-table type ip size 50k expire 30m  
+    stick on src
+    # tuning options
+    timeout connect 30s
+    timeout server 30s
+    http-reuse safe
+    server acme_challenge_host 127.0.0.1:43580 
 
 # Backend: Nextcloud ()
 backend Nextcloud
