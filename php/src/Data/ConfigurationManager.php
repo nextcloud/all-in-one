@@ -439,6 +439,10 @@ class ConfigurationManager
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
+        $df = disk_free_space(DataConst::GetDataDirectory());
+        if ($df !== false && (int)$df < 10240) {
+            throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
+        }
         file_put_contents(DataConst::GetConfigFile(), json_encode($config));
     }
 
