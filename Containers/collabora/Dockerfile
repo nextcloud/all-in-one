@@ -9,9 +9,10 @@ RUN set -ex; \
     export DEBIAN_FRONTEND=noninteractive; \
     apt-get install -y --no-install-recommends \
         tzdata \
+        netcat \
     ; \
     rm -rf /var/lib/apt/lists/*
 
 USER 104
 
-HEALTHCHECK CMD curl -skfI localhost:9980 || exit 1
+HEALTHCHECK CMD nc -z localhost 9980 || exit 1

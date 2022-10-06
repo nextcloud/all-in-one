@@ -69,4 +69,4 @@ USER talk
 ENTRYPOINT ["start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD (curl -skI localhost:8081 && curl -skI localhost:8188 && curl -skf --http0.9 localhost:4222 && nc -z localhost $TALK_PORT) || exit 1
+HEALTHCHECK CMD (nc -z localhost 8081 && nc -z localhost 8188 && nc -z localhost 4222 && nc -z localhost $TALK_PORT) || exit 1

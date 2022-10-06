@@ -1,5 +1,5 @@
 FROM alpine:3.16.2
-RUN apk add --update --no-cache lighttpd bash curl
+RUN apk add --update --no-cache lighttpd bash curl netcat-openbsd
 
 RUN adduser -S www-data -G www-data
 RUN rm -rf /etc/lighttpd/lighttpd.conf
@@ -15,4 +15,4 @@ USER www-data
 RUN mkdir -p /var/www/domaincheck/
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD curl -skfI localhost:$APACHE_PORT || exit 1
+HEALTHCHECK CMD nc -z localhost $APACHE_PORT || exit 1
