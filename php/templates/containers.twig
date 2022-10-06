@@ -167,7 +167,11 @@
             {% endif %}
 
             {% if domain != "" and was_start_button_clicked == true %}
+                {% if current_channel starts with 'latest' or current_channel starts with 'beta' or current_channel starts with 'develop' %}
                     You are running the <a href="https://github.com/nextcloud/all-in-one#how-to-switch-the-channel"><b>{{ current_channel }}</b></a> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
+                {% else %}
+                    No channel was found. This means that AIO is not able to update itself and its component and will also not be able to report about updates. Updates need to be done externally.
+                {% endif %}
             {% endif %}
 
             {% if is_backup_container_running == true %}
