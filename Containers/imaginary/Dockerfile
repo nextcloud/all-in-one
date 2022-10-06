@@ -8,8 +8,9 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
+        netcat \
     ; \
     rm -rf /var/lib/apt/lists/*
 USER nobody
 
-HEALTHCHECK CMD curl -skI 127.0.0.1:9000 || exit 1
+HEALTHCHECK CMD nc -z localhost 9000 || exit 1
