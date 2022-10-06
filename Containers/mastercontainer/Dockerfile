@@ -5,7 +5,7 @@ FROM docker:20.10.18-dind-alpine3.16 as dind
 FROM caddy:2.6.1-alpine as caddy
 
 # From https://github.com/docker-library/php/blob/master/8.0/bullseye/apache/Dockerfile
-FROM php:8.0.23-apache-bullseye
+FROM php:8.0.24-apache-bullseye
 
 EXPOSE 80
 EXPOSE 8080
