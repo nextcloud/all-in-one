@@ -41,14 +41,14 @@ Add this as a new Apache site config:
 <VirtualHost *:443>
     ServerName <your-nc-domain>
 
-    # Reverse proxy
-    RewriteEngine On
+    # Reverse proxy based on https://httpd.apache.org/docs/current/mod/mod_proxy_wstunnel.html
+    RewriteEngine on
     ProxyPreserveHost On
+    AllowEncodedSlashes NoDecode
+    ProxyPass / http://localhost:11000/
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
-    RewriteRule ^/(.*) "ws://localhost:11000/$1" [P,L]
-    ProxyPass / http://localhost:11000/
-    ProxyPassReverse / http://localhost:11000/
+    RewriteRule ^/?(.*) "ws://localhost:11000/$1" [P,QSA,B=?:;]
 
     # Enable h2, h2c and http1.1
     Protocols h2 h2c http/1.1
