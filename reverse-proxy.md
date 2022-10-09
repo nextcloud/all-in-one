@@ -42,7 +42,7 @@ Add this as a new Apache site config:
     ServerName <your-nc-domain>
 
     # Reverse proxy based on https://httpd.apache.org/docs/current/mod/mod_proxy_wstunnel.html
-    RewriteEngine on
+    RewriteEngine On
     ProxyPreserveHost On
     AllowEncodedSlashes NoDecode
     ProxyPass / http://localhost:11000/
