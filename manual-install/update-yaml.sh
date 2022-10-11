@@ -92,6 +92,9 @@ done
 
 OUTPUT="$(echo "$OUTPUT" | sed "/restart: /a\ \ \ \ networks:\n\ \ \ \ \ \ - nextcloud-aio")"
 
+# Add Collabora capability
+OUTPUT="$(echo "$OUTPUT" | sed "/nextcloud-aio-collabora:/a\ \ \ \ cap_add:\n\ \ \ \ \ \ - MKNOD")"
+
 echo 'version: "3.8"' > containers.yml
 echo "" >> containers.yml
 

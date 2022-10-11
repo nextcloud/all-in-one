@@ -385,6 +385,11 @@ class DockerActionManager
             }
         }
 
+        // Special handling for collabora container
+        if ($container->GetIdentifier() === 'nextcloud-aio-collabora') {
+            $requestBody['HostConfig']['CapAdd'] = ["MKNOD"];
+        }
+
         $url = $this->BuildApiUrl('containers/create?name=' . $container->GetIdentifier());
         try {
             $this->guzzleClient->request(
