@@ -202,6 +202,7 @@ RUN set -ex; \
         postgresql-client \
         tzdata \
         mawk \
+        sudo \
     ; \
     rm -rf /var/lib/apt/lists/*
 
@@ -249,7 +250,8 @@ VOLUME /mnt/ncdata
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 
-USER www-data
+USER root
 ENTRYPOINT ["/start.sh"]
+CMD ["sudo", "-u", "www-data", "/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD (nc -z localhost 9000 && nc -z localhost 7867) || exit 1
+HEALTHCHECK CMD (sudo -u www-data nc -z localhost 9000 && sudo -u www-data nc -z localhost 7867) || exit 1
