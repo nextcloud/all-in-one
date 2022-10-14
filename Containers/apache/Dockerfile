@@ -1,5 +1,5 @@
 # Caddy is a requirement
-FROM caddy:2.6.1-alpine as caddy
+FROM caddy:2.6.2-alpine as caddy
 
 FROM debian:bullseye-20221004-slim
 
