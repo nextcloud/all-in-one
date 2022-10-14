@@ -270,6 +270,12 @@ sudo borg list "/mnt/backup/borg"
 # An example backup archive might be called 20220223_174237-nextcloud-aio
 # Then you can simply delete the archive with:
 sudo borg delete --stats --progress "/mnt/backup/borg::20220223_174237-nextcloud-aio"
+
+# If borg 1.2.0 or higher is installed, you then need to run borg compact in order to clean up the freed space
+sudo borg version
+# If version number of the command above is higher than 1.2.0 you need to run the command below:
+sudo borg compact "/mnt/backup/"
+
 ```
 
 After doing so, make sure to update the backup archives list in the AIO interface!<br>
