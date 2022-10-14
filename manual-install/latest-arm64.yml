@@ -4,6 +4,7 @@ services:
   nextcloud-aio-apache:
     container_name: nextcloud-aio-apache
     depends_on:
+      - nextcloud-aio-onlyoffice
       - nextcloud-aio-collabora
       - nextcloud-aio-talk
       - nextcloud-aio-nextcloud
@@ -16,6 +17,7 @@ services:
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_HOST=nextcloud-aio-talk
       - APACHE_PORT=${APACHE_PORT}
+      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
       - TZ=${TIMEZONE}
       - APACHE_MAX_SIZE=${APACHE_MAX_SIZE}
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
@@ -73,11 +75,14 @@ services:
       - OVERWRITEPROTOCOL=https
       - TURN_SECRET=${TURN_SECRET}
       - SIGNALING_SECRET=${SIGNALING_SECRET}
+      - ONLYOFFICE_SECRET=${ONLYOFFICE_SECRET}
       - AIO_URL=${AIO_URL}
       - NEXTCLOUD_MOUNT=${NEXTCLOUD_MOUNT}
+      - ONLYOFFICE_ENABLED=${ONLYOFFICE_ENABLED}
       - COLLABORA_ENABLED=${COLLABORA_ENABLED}
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_ENABLED=${TALK_ENABLED}
+      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
       - UPDATE_NEXTCLOUD_APPS=${UPDATE_NEXTCLOUD_APPS}
       - TZ=${TIMEZONE}
       - TALK_PORT=${TALK_PORT}
@@ -135,6 +140,21 @@ services:
     networks:
       - nextcloud-aio
  
+  nextcloud-aio-onlyoffice:
+    container_name: nextcloud-aio-onlyoffice
+    image: nextcloud/aio-onlyoffice:latest-arm64
+    environment:
+      - TZ=${TIMEZONE}
+      - JWT_ENABLED=true
+      - JWT_HEADER=AuthorizationJwt
+      - JWT_SECRET=${ONLYOFFICE_SECRET}
+    volumes:
+      - nextcloud_aio_onlyoffice:/var/lib/onlyoffice:rw
+    stop_grace_period: 10s
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+ 
   nextcloud-aio-imaginary:
     container_name: nextcloud-aio-imaginary
     image: nextcloud/aio-imaginary:latest-arm64
@@ -170,6 +190,8 @@ volumes:
     name: nextcloud_aio_elasticsearch
   nextcloud_aio_nextcloud:
     name: nextcloud_aio_nextcloud
+  nextcloud_aio_onlyoffice:
+    name: nextcloud_aio_onlyoffice
   nextcloud_aio_nextcloud_data:
     name: nextcloud_aio_nextcloud_data
 
