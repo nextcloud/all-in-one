@@ -274,6 +274,54 @@ Of course you need to modify `<your-nc-domain>` in the nextcloud.toml to the dom
 
 </details>
 
+### Traefik 2.x(via docker-compose.yml labels)
+
+<details>
+
+<summary>click here to expand</summary>
+
+The `docker-compose.yml` file prepared by the team works pretty well out-of-the box, but some additional configuration is needed to make it work with Traefik.
+
+Add your configuration using labels in deploy section. The `deploy` section is at the same level as `image` and `environment`
+
+   ```yaml
+    deploy:
+      labels:
+        # enable traefik for this service
+        - traefik.enable=true
+   
+        # needed for Traefik to communicate with Nextcloud instance - mostly needed in docker swarm mode to pass overlay network or pass custom networks
+        # if you are running simple config and encounter some problems try removing this property
+        - traefik.docker.network=<your-network> 
+        
+        # you can pass your own domain here as Host(`nextcloud.example.com`)
+        - traefik.http.routers.nextcloud-rtr.rule=Host(`<your-nc-domain>`)
+   
+        # here is just some standard Traefik labels port will stay the same, the entrypoints you can find in your static configuration
+        - traefik.http.services.nextcloud.loadbalancer.server.port=80
+        - traefik.http.routers.nextcloud-rtr.entrypoints=<entrypoint(s)>
+        
+        # labels below are used for configuring TLS(access via HTTPS) - cert resolvers you will find in static configuration
+        - traefik.http.routers.nextcloud-rtr.tls=true
+        - traefik.http.routers.nextcloud-rtr.tls.certresolver=<your-cert-resolver>
+   ```
+   
+---
+
+### Known issues
+
+1. Strict mode, no HTTP connection allowed!
+
+This problem will manifest itself during logins on Android via HTTPS endpoint and it will not allow you to login. To fix it simply add `OVERWRITEPROTOCOL` variable to your `docker-compose.yml` file in `environment` section: 
+
+   ```yaml
+     environment:
+        # your properties like MYSQL_PASSWORD MYSQL_DATABASE MYSQL_USER etc. will also be here
+        - OVERWRITEPROTOCOL=https
+   ```
+
+</details>
+
 ### Others
 
 <details>
