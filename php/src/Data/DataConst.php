@@ -46,4 +46,8 @@ class DataConst {
     public static function GetBackupArchivesList() : string {
         return self::GetDataDirectory() . '/backup_archives.list';
     }
+
+    public static function GetSessionDateFile() : string {
+        return self::GetDataDirectory() . '/session_date_file';
+    }
 }

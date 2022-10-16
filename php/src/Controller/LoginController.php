@@ -23,7 +23,7 @@ class LoginController
         if (!$this->dockerActionManager->isLoginAllowed()) {
             return $response->withHeader('Location', '/')->withStatus(302);
         }
-        $password = $request->getParsedBody()['password'];
+        $password = $request->getParsedBody()['password'] ?? '';
         if($this->authManager->CheckCredentials($password)) {
             $this->authManager->SetAuthState(true);
             return $response->withHeader('Location', '/')->withStatus(302);
@@ -33,7 +33,7 @@ class LoginController
     }
 
     public function GetTryLogin(Request $request, Response $response, $args) : Response {
-        $token = $request->getQueryParams()['token'];
+        $token = $request->getQueryParams()['token'] ?? '';
         if($this->authManager->CheckToken($token)) {
             $this->authManager->SetAuthState(true);
             return $response->withHeader('Location', '/')->withStatus(302);
