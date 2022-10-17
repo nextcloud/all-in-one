@@ -10,8 +10,13 @@ on:
   push:
     branches:
       - main
-      - master
-      - stable*
+
+permissions:
+  contents: read
+
+concurrency: 
+  group: lint-php-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   php-lint:
@@ -36,6 +41,8 @@ jobs:
         run: cd php && composer run lint
 
   summary:
+    permissions:
+      contents: none
     runs-on: ubuntu-latest
     needs: php-lint
 
