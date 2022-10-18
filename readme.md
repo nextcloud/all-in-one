@@ -134,7 +134,10 @@ No and they will not be. Please use a dedicated domain for Nextcloud and set it 
 No and it will not be added. Please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md).
 
 ### How can I access Nextcloud locally?
-The recommended way is to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-adddress of your server that runs Nextcloud AIO.
+The recommended way is to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-adddress of your server that runs Nextcloud AIO. Below are some guides:
+- https://howchoo.com/pi/pi-hole-setup
+- https://docs.callitkarma.me/posts/PiHole-Local-DNS/
+- https://www.howtogeek.com/devops/how-to-run-your-own-dns-server-on-your-local-network/
 
 ### How to skip the domain validation?
 If you are completely sure that you've configured everything correctly and are not able to pass the domain validation, you may skip the domain validation by adding `-e SKIP_DOMAIN_VALIDATION=true` to the docker run command of the mastercontainer.
