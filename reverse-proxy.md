@@ -229,6 +229,10 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 **Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
 
+ 
+#### Toml File configuration
+    
+    
 1. Add a `nextcloud.toml` to the Treafik rules folder with the following content:
 
     ```toml
@@ -237,7 +241,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
             entryPoints = ["https"]
             rule = "Host(<your-nc-domain>)"
             service = "nc-svc"
-            middlewares = ["chain-no-auth"]
+            middlewares = ["nc-chain"]
             [http.routers.nc-rtr.tls]
                 certresolver = "le"
 
@@ -252,12 +256,33 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 2. Add to the bottom of the `middlewares.toml` file in the Treafik rules folder the following content:
 
     ```toml
-    [http.middlewares.nc-middlewares-secure-headers]
-        [http.middlewares.nc-middlewares-secure-headers.headers]
+    [http.middlewares.nextcloud-secureheaders]
+        [http.middlewares.nextcloud-secureheaders.headers]
             hostsProxyHeaders = ["X-Forwarded-Host"]
-            sslRedirect = true
             referrerPolicy = "same-origin"
             X-Robots-Tag = "none"
+            stsSeconds = 63072000
+            stsIncludeSubdomains = true
+            stsPreload = true
+            forceSTSHeader = true
+            accessControlMaxAge = 100
+            browserXssFilter = true
+    [http.middlewares.nextcloud-redirecthttps]
+        [http.middlewares.nextcloud-redirecthttps.redirectscheme]
+            scheme = "https"
+            permanent = true
+    [http.middlewares.nextcloud-redirectregex]
+        [http.middlewares.nextcloud-redirectregex.redirectRegex]
+            permanent = true
+            regex = "https://(.*)/.well-known/(card|cal)dav"
+            replacement = "https://${1}/remote.php/dav/"
+    
+    # if not already defined
+    [http.middlewares.middlewares-rate-limit]
+        [http.middlewares.middlewares-rate-limit.rateLimit]
+            average = 100
+            burst = 50
+    
     ```
 
 3. Add to the bottom of the `middleware-chains.toml` file in the Traefik rules folder the following content:
@@ -265,13 +290,45 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
     ```toml
     [http.middlewares.chain-nc]
         [http.middlewares.chain-nc.chain]
-            middlewares = [ "middlewares-rate-limit", "nc-middlewares-secure-headers"]
+            middlewares = [ "middlewares-rate-limit", "nextcloud-redirecthttps", "nextcloud-redirectregex", "nextcloud-secureheaders"]
     ```
-
 ---
 
 Of course you need to modify `<your-nc-domain>` in the nextcloud.toml to the domain on which you want to run Nextcloud. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
 
+#### Docker-compose configuration
+    
+    Update the tls certresolver with the name you configured in your traefik.
+    
+    ```yaml
+        labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.rule=Host(`your-nc-domain`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls=true"
+      - "traefik.http.routers.nextcloud.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nextcloud.middlewares=chain-nextcloud"
+      - "traefik.http.middlewares.chain-nextcloud.chain.middlewares=nextcloud-middlewares-ratelimit,nextcloud-redirecthttps,nextcloud-redirectregex,nextcloud-secureheaders"
+      - "traefik.http.middlewares.nextcloud-redirecthttps.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.nextcloud-redirecthttps.redirectscheme.permanent=true"
+      - "traefik.http.middlewares.nextcloud-secureheaders.headers.hostsProxyHeaders=X-Forwarded-Host"
+      - "traefik.http.middlewares.nextcloud-secureheaders.headers.referrerPolicy=same-origin"
+      - "traefik.http.middlewares.nextcloud-secureheaders.headers.customResponseHeaders.X-Robots-Tag=none"
+      - "traefik.http.middlewares.nextcloud-secureheaders.headers.stsSeconds=63072000"
+      - "traefik.http.middlewares.nextcloud-secureheaders.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.nextcloud-secureheaders.headers.stsPreload=true"
+      - "traefik.http.middlewares.nextcloud-secureheaders.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.nextcloud-secureheaders.headers.accessControlMaxAge=100"
+      - "traefik.http.middlewares.nextcloud-secureheaders.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.nextcloud-middlewares-ratelimit.ratelimit.average=100"
+      - "traefik.http.middlewares.nextcloud-middlewares-ratelimit.ratelimit.burst=50"
+      - "traefik.http.middlewares.nextcloud-redirectregex.redirectRegex.permanent=true"
+      - "traefik.http.middlewares.nextcloud-redirectregex.redirectRegex.regex=https://(.*)/.well-known/(card|cal)dav"
+      - "traefik.http.middlewares.nextcloud-redirectregex.redirectRegex.replacement=https://$${1}/remote.php/dav/"
+    ```
+    
+    
+    
 </details>
 
 ### Others
