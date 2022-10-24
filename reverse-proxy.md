@@ -135,6 +135,96 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 
 </details>
 
+### HaProxy
+
+<details>
+
+<summary>click here to expand</summary>
+
+**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+
+Here is an example HaProxy config:
+
+```
+global
+    chroot                      /var/haproxy
+    log                         /var/run/log audit debug
+    lua-prepend-path            /tmp/haproxy/lua/?.lua
+
+defaults
+    log     global
+    option redispatch -1
+    retries 3
+    default-server init-addr last,libc
+
+# Frontend: LetsEncrypt_443 ()
+frontend LetsEncrypt_443
+    bind 0.0.0.0:443 name 0.0.0.0:443 ssl prefer-client-ciphers ssl-min-ver TLSv1.2 ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256 ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256 crt-list /tmp/haproxy/ssl/605f6609f106d1.17683543.certlist 
+    mode http
+    option http-keep-alive
+    default_backend acme_challenge_backend
+    option forwardfor
+    # tuning options
+    timeout client 30s
+
+    # logging options
+    # ACL: find_acme_challenge
+    acl acl_605f6d4b6453d2.03059920 path_beg -i /.well-known/acme-challenge/
+    # ACL: Nextcloud
+    acl acl_60604e669c3ca4.13013327 hdr(host) -i <your-nc-domain>
+
+    # ACTION: redirect_acme_challenges
+    use_backend acme_challenge_backend if acl_605f6d4b6453d2.03059920
+    # ACTION: Nextcloud
+    use_backend Nextcloud if acl_60604e669c3ca4.13013327
+
+
+# Frontend: LetsEncrypt_80 ()
+frontend LetsEncrypt_80
+    bind 0.0.0.0:80 name 0.0.0.0:80 
+    mode tcp
+    default_backend acme_challenge_backend
+    # tuning options
+    timeout client 30s
+
+    # logging options
+    # ACL: find_acme_challenge
+    acl acl_605f6d4b6453d2.03059920 path_beg -i /.well-known/acme-challenge/
+
+    # ACTION: redirect_acme_challenges
+    use_backend acme_challenge_backend if acl_605f6d4b6453d2.03059920
+
+# Frontend (DISABLED): 1_HTTP_frontend ()
+
+# Frontend (DISABLED): 1_HTTPS_frontend ()
+
+# Frontend (DISABLED): 0_SNI_frontend ()
+
+# Backend: acme_challenge_backend (Added by Let's Encrypt plugin)
+backend acme_challenge_backend
+    # health checking is DISABLED
+    mode http
+    balance source
+    # stickiness
+    stick-table type ip size 50k expire 30m  
+    stick on src
+    # tuning options
+    timeout connect 30s
+    timeout server 30s
+    http-reuse safe
+    server acme_challenge_host 127.0.0.1:43580 
+
+# Backend: Nextcloud ()
+backend Nextcloud
+    mode http
+    balance source
+    server Nextcloud localhost:11000 
+```
+
+Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
+
+</details>
+
 ### Nginx
 
 <details>
