@@ -236,7 +236,10 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 Add this to you nginx config:
 
 ```
-location / {
+server {
+    listen 443 ssl;
+    server_name <your-nc-domain>;
+    location / {
         proxy_pass http://localhost:11000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
@@ -248,6 +251,10 @@ location / {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
     }
+    ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem; # managed by certbot on host machine
+    ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
+}
+
 ```
 and this to the http{...}-section in your nginx.conf:
 
