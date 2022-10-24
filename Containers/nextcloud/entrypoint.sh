@@ -398,12 +398,16 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     else
         php /var/www/html/occ app:update spreed
     fi
-    STUN_SERVERS="[\"$NC_DOMAIN:$TALK_PORT\"]"
-    TURN_SERVERS="[{\"server\":\"$NC_DOMAIN:$TALK_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
-    SIGNALING_SERVERS="{\"servers\":[{\"server\":\"https://$NC_DOMAIN/standalone-signaling/\",\"verify\":true}],\"secret\":\"$SIGNALING_SECRET\"}"
-    php /var/www/html/occ config:app:set spreed stun_servers --value="$STUN_SERVERS" --output json
-    php /var/www/html/occ config:app:set spreed turn_servers --value="$TURN_SERVERS" --output json
-    php /var/www/html/occ config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS" --output json
+    # Based on https://github.com/nextcloud/spreed/issues/960#issuecomment-416993435
+    if ! php /var/www/html/occ talk:turn:list --output="plain" | grep -q "$NC_DOMAIN:$TALK_PORT"; then
+        php /var/www/html/occ talk:turn:add "$NC_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
+    fi
+    if ! php /var/www/html/occ talk:stun:list --output="plain" | grep -q "$NC_DOMAIN:$TALK_PORT"; then
+        php /var/www/html/occ talk:stun:add "$NC_DOMAIN:$TALK_PORT"
+    fi
+    if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://$NC_DOMAIN/standalone-signaling/"; then
+        php /var/www/html/occ talk:signaling:add "https://$NC_DOMAIN/standalone-signaling/" "$SIGNALING_SECRET" --validate-ssh-certificate
+    fi
 else
     if [ -d "/var/www/html/custom_apps/spreed" ]; then
         php /var/www/html/occ app:remove spreed
