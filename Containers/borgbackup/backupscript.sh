@@ -155,6 +155,13 @@ if [ "$BORG_MODE" = backup ]; then
         exit 1
     fi
 
+    # Compact archives
+    echo "Compacting the archives..."
+    if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
+        echo "Failed to compact archives!"
+        exit 1
+    fi
+
     # Back up additional directories of the host
     if [ "$ADDITIONAL_DIRECTORIES_BACKUP" = 'yes' ]; then
         if [ -d "/docker_volumes/" ]; then
@@ -172,9 +179,12 @@ if [ "$BORG_MODE" = backup ]; then
                 echo "Backup of additional docker-volumes failed!"
                 exit 1
             fi
-
             if ! borg prune --prefix '*_*-additional-docker-volumes' "${BORG_PRUNE_OPTS[@]}"; then
                 echo "Failed to prune additional docker-volumes archives!"
+                exit 1
+            fi
+            if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
+                echo "Failed to compact archives!"
                 exit 1
             fi
         fi
@@ -198,6 +208,10 @@ if [ "$BORG_MODE" = backup ]; then
             fi
             if ! borg prune --prefix '*_*-additional-host-mounts' "${BORG_PRUNE_OPTS[@]}"; then
                 echo "Failed to prune additional host-mount archives!"
+                exit 1
+            fi
+            if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
+                echo "Failed to compact archives!"
                 exit 1
             fi
         fi

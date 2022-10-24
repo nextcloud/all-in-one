@@ -3,8 +3,8 @@ FROM debian:bullseye-20221004-slim
 RUN set -ex; \
     \
     apt-get update; \
+    apt-get install -y --no-install-recommends borgbackup -t bullseye-backports; \
     apt-get install -y --no-install-recommends \
-        borgbackup \
         rsync \
         fuse \
         python3-llfuse \
