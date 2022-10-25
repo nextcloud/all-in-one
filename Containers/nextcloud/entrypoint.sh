@@ -307,6 +307,8 @@ fi
 echo "Applying one-click-instance settings..."
 php /var/www/html/occ config:system:set one-click-instance --value=true --type=bool
 php /var/www/html/occ config:system:set one-click-instance.user-limit --value=100 --type=int
+php /var/www/html/occ config:system:set one-click-instance.link --value="https://nextcloud.com/all-in-one/"
+php /var/www/html/occ app:enable support
 
 # Adjusting log files to be stored on a volume
 echo "Adjusting log files..."
