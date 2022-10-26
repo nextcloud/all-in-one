@@ -443,7 +443,7 @@ class ConfigurationManager
         if ($df !== false && (int)$df < 10240) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
         }
-        file_put_contents(DataConst::GetConfigFile(), json_encode($config));
+        file_put_contents(DataConst::GetConfigFile(), json_encode($config, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
     }
 
     private function GetEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
