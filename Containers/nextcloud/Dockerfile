@@ -227,15 +227,12 @@ RUN set -ex; \
     chown www-data:root -R /usr/src && \
     chown www-data:root -R /usr/local/etc/php/conf.d && \
     chown www-data:root -R /usr/local/etc/php-fpm.d && \
-    chown www-data:root -R /var/log/supervisord/ && \
-    chown www-data:root -R /var/run/supervisord/ && \
     rm -r /usr/src/nextcloud/apps/updatenotification
 
 COPY start.sh /
 COPY notify.sh /
 RUN set -ex; \
     chmod +x /start.sh && \
-    chmod +r /supervisord.conf && \
     chmod +x /entrypoint.sh && \
     chmod +r /upgrade.exclude && \
     chmod +x /cron.sh && \
@@ -253,6 +250,5 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 
 USER root
 ENTRYPOINT ["/start.sh"]
-CMD ["sudo", "-E", "-u", "www-data", "/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD (sudo -u www-data nc -z localhost 9000 && sudo -u www-data nc -z localhost 7867) || exit 1
