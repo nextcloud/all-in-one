@@ -237,22 +237,42 @@ Add this to you nginx config:
 
 ```
 server {
-    listen 443 ssl;
+    listen 80;
+#    listen [::]:80;            # uncomment to use IPv6
+    
+    if ($scheme = "http") {
+	return 301 https://$host$request_uri;
+    }
+
+    listen 443 ssl http2;
+#    listen [::]:443 ssl http2; # uncomment to use IPv6
+    
     server_name <your-nc-domain>;
+	
     location / {
-        proxy_pass http://localhost:11000$request_uri;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        client_max_body_size 0;
+        proxy_pass                          http://localhost:11000$request_uri;
+	
+        proxy_set_header Host               $host;
+        proxy_set_header X-Real-IP          $remote_addr;
+        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+        client_max_body_size                0;
 
         # Websocket
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $connection_upgrade;
+        proxy_http_version                  1.1;
+        proxy_set_header Upgrade            $http_upgrade;
+        proxy_set_header Connection         $connection_upgrade;
     }
-    ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem; # managed by certbot on host machine
-    ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
+    
+    ssl_certificate     /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem; # managed by certbot on host machine
+    ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem;   # managed by certbot on host machine
+    
+    ssl_session_timeout 1d;
+    ssl_session_cache   shared:MozSSL:10m;  # about 40000 sessions
+    ssl_session_tickets off;
+    
+    ssl_protocols             TLSv1.2 TLSv1.3;
+    ssl_ciphers               ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
 }
 
 ```
