@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ "$EUID" = 0 ]]; then
-    sudo -u www-data -s
+    sudo -u www-data -sE
 fi
 
 SUBJECT="$1"

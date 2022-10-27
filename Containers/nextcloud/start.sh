@@ -34,7 +34,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
     chown -R www-data:root "$NEXTCLOUD_DATA_DIR"
     chmod 750 -R "$NEXTCLOUD_DATA_DIR"
 fi
-rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
+sudo -u www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 
 # Run original entrypoint
 if ! sudo -u www-data bash /entrypoint.sh; then
