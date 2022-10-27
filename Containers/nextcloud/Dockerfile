@@ -253,6 +253,6 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 
 USER root
 ENTRYPOINT ["/start.sh"]
-CMD ["sudo", "-uE", "www-data", "/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["sudo", "-E", "-u", "www-data", "/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD (sudo -u www-data nc -z localhost 9000 && sudo -u www-data nc -z localhost 7867) || exit 1

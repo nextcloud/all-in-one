@@ -37,7 +37,7 @@ fi
 sudo -u www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 
 # Run original entrypoint
-if ! sudo -uE www-data bash /entrypoint.sh; then
+if ! sudo -E -u www-data bash /entrypoint.sh; then
     exit 1
 fi
 
