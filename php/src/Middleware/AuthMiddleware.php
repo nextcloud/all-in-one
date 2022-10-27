@@ -28,10 +28,10 @@ class AuthMiddleware
 
         if(!in_array($request->getUri()->getPath(), $publicRoutes)) {
             if(!$this->authManager->IsAuthenticated()) {
-                $response = new Response();
-                return $response
-                    ->withHeader('Location', '/')
-                    ->withStatus(302);
+                $status = 302;
+                $headers = ['Location' => '/'];
+                $response = new Response($status, $headers);
+                return $response;
             }
         }
 

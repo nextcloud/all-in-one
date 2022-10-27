@@ -101,7 +101,7 @@ class DockerController
     public function StartBackupContainerRestore(Request $request, Response $response, $args) : Response {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'restore';
-        $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'];
+        $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
         $this->configurationManager->WriteConfig($config);
 
         $id = self::TOP_CONTAINER;
