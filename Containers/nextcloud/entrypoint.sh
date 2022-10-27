@@ -279,6 +279,8 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
              bash /notify.sh "Your apps just got updated!" "$UPDATED_APPS"
         fi
     fi
+else
+    SKIP_UPDATE=1
 fi
 
 # Check if appdata is present
@@ -341,7 +343,7 @@ if ! [ -d "/var/www/html/custom_apps/notify_push" ]; then
     php /var/www/html/occ app:install notify_push
 elif [ "$(php /var/www/html/occ config:app:get notify_push enabled)" = "no" ]; then
     php /var/www/html/occ app:enable notify_push
-else
+elif [ "$SKIP_UPDATE" != 1 ]; then
     php /var/www/html/occ app:update notify_push
 fi
 php /var/www/html/occ config:system:set trusted_proxies 0 --value="127.0.0.1"
@@ -354,7 +356,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:install richdocuments
     elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" = "no" ]; then
         php /var/www/html/occ app:enable richdocuments
-    else
+    elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update richdocuments
     fi
     php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
@@ -376,7 +378,7 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:install onlyoffice
     elif [ "$(php /var/www/html/occ config:app:get onlyoffice enabled)" = "no" ]; then
         php /var/www/html/occ app:enable onlyoffice
-    else
+    elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update onlyoffice
     fi
     php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
@@ -395,7 +397,7 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:install spreed
     elif [ "$(php /var/www/html/occ config:app:get spreed enabled)" = "no" ]; then
         php /var/www/html/occ app:enable spreed
-    else
+    elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update spreed
     fi
     # Based on https://github.com/nextcloud/spreed/issues/960#issuecomment-416993435
@@ -425,7 +427,7 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:install files_antivirus
     elif [ "$(php /var/www/html/occ config:app:get files_antivirus enabled)" = "no" ]; then
         php /var/www/html/occ app:enable files_antivirus
-    else
+    elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update files_antivirus
     fi
     php /var/www/html/occ config:app:set files_antivirus av_mode --value="daemon"
@@ -461,21 +463,21 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:install fulltextsearch
     elif [ "$(php /var/www/html/occ config:app:get fulltextsearch enabled)" = "no" ]; then
         php /var/www/html/occ app:enable fulltextsearch
-    else
+    elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update fulltextsearch
     fi    
     if ! [ -d "/var/www/html/custom_apps/fulltextsearch_elasticsearch" ]; then
         php /var/www/html/occ app:install fulltextsearch_elasticsearch
     elif [ "$(php /var/www/html/occ config:app:get fulltextsearch_elasticsearch enabled)" = "no" ]; then
         php /var/www/html/occ app:enable fulltextsearch_elasticsearch
-    else
+    elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update fulltextsearch_elasticsearch
     fi    
     if ! [ -d "/var/www/html/custom_apps/files_fulltextsearch" ]; then
         php /var/www/html/occ app:install files_fulltextsearch
     elif [ "$(php /var/www/html/occ config:app:get files_fulltextsearch enabled)" = "no" ]; then
         php /var/www/html/occ app:enable files_fulltextsearch
-    else
+    elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update files_fulltextsearch
     fi
     php /var/www/html/occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
