@@ -203,6 +203,7 @@ RUN set -ex; \
         tzdata \
         mawk \
         sudo \
+        grep \
     ; \
     rm -rf /var/lib/apt/lists/*
 
