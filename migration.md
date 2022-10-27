@@ -17,7 +17,7 @@ The procedure for migrating only the files works like this:
 1. Restore the datadirectory of your former instance into the following directory: `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/`
 1. Next, run `sudo chown -R 33:0 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` and `sudo chmod -R 750 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` to apply the correct permissions
 1. Start the containers again and wait until all containers are running
-1. Run `sudo docker exec -it nextcloud-aio-nextcloud php occ files:scan-app-data && sudo docker exec -it nextcloud-aio-nextcloud php occ files:scan --all` in order to scan all files in the datadirectory.
+1. Run `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ files:scan-app-data && sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ files:scan --all` in order to scan all files in the datadirectory.
 
 ## Migrate the files and the database
 **Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned!

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Only start container if database is accessible
-while ! nc -z "$POSTGRES_HOST" 5432; do
+while ! sudo -u www-data nc -z "$POSTGRES_HOST" 5432; do
     echo "Waiting for database to start..."
     sleep 5
 done
@@ -13,7 +13,7 @@ export POSTGRES_USER
 # Fix false database connection on old instances
 if [ -f "/var/www/html/config/config.php" ]; then
     sleep 2
-    while ! psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:5432/$POSTGRES_DB" -c "select now()"; do
+    while ! sudo -u www-data psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:5432/$POSTGRES_DB" -c "select now()"; do
         echo "Waiting for the database to start..."
         sleep 5
     done
@@ -28,8 +28,16 @@ if [ -n "$TRUSTED_CACERTS_DIR" ]; then
     update-ca-certificates
 fi
 
+# Check datadir permissions
+sudo -u www-data touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
+if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
+    chown -R www-data:root "$NEXTCLOUD_DATA_DIR"
+    chmod 750 -R "$NEXTCLOUD_DATA_DIR"
+fi
+sudo -u www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
+
 # Run original entrypoint
-if ! bash /entrypoint.sh; then
+if ! sudo -u www-data bash /entrypoint.sh; then
     exit 1
 fi
 

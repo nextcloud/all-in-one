@@ -32,8 +32,8 @@ fi
 touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
     echo "The www-data user doesn't seem to have access rights in the datadir.
-Did you maybe change the datadir and did forget to apply the correct permissions?
-See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir
+Most likely are the files located on a drive that does not follow linux permissions.
+Please adjust the permissions like mentioned below.
 The found permissions are:
 $(stat -c "%u:%g %a" "$NEXTCLOUD_DATA_DIR")
 (userID:groupID permissions)
