@@ -8,7 +8,7 @@ on:
 
 jobs:
   shellcheck:
-    name: Github Actions
+    name: Check Shell
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
