@@ -30,12 +30,6 @@
       <code>$args</code>
       <code>$args</code>
     </MissingParamType>
-    <PossiblyInvalidArrayAccess occurrences="1">
-      <code>$request-&gt;getParsedBody()['selected_restore_time']</code>
-    </PossiblyInvalidArrayAccess>
-    <PossiblyNullArrayAccess occurrences="1">
-      <code>$request-&gt;getParsedBody()['selected_restore_time']</code>
-    </PossiblyNullArrayAccess>
   </file>
   <file src="src/Controller/LoginController.php">
     <MissingParamType occurrences="3">
@@ -43,15 +37,6 @@
       <code>$args</code>
       <code>$args</code>
     </MissingParamType>
-    <PossiblyInvalidArrayAccess occurrences="1">
-      <code>$request-&gt;getParsedBody()['password']</code>
-    </PossiblyInvalidArrayAccess>
-    <PossiblyNullArgument occurrences="1">
-      <code>$password</code>
-    </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="1">
-      <code>$request-&gt;getParsedBody()['password']</code>
-    </PossiblyNullArrayAccess>
   </file>
   <file src="src/Docker/DockerActionManager.php">
     <InvalidReturnType occurrences="1">
@@ -63,11 +48,6 @@
     <RedundantCondition occurrences="1">
       <code>$container-&gt;GetInternalPorts() !== null</code>
     </RedundantCondition>
-  </file>
-  <file src="src/Middleware/AuthMiddleware.php">
-    <UndefinedInterfaceMethod occurrences="1">
-      <code>withStatus</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="src/Twig/ClassExtension.php">
     <MissingParamType occurrences="1">
