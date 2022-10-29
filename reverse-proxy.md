@@ -236,58 +236,51 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 Add this to you nginx config:
 
 ```
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
 server {
     listen 80;
 #    listen [::]:80;            # uncomment to use IPv6
-    
+
     if ($scheme = "http") {
-	return 301 https://$host$request_uri;
+        return 301 https://$host$request_uri;
     }
 
     listen 443 ssl http2;
 #    listen [::]:443 ssl http2; # uncomment to use IPv6
-    
+
     server_name <your-nc-domain>;
-	
+
     location / {
-        proxy_pass                          http://localhost:11000$request_uri;
-	
-        proxy_set_header Host               $host;
-        proxy_set_header X-Real-IP          $remote_addr;
-        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
-        client_max_body_size                0;
+        proxy_pass http://localhost:11000$request_uri;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        client_max_body_size 0;
 
         # Websocket
-        proxy_http_version                  1.1;
-        proxy_set_header Upgrade            $http_upgrade;
-        proxy_set_header Connection         $connection_upgrade;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
     }
-    
-    ssl_certificate     /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem; # managed by certbot on host machine
-    ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem;   # managed by certbot on host machine
-    
+
+    ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
+    ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
+
     ssl_session_timeout 1d;
-    ssl_session_cache   shared:MozSSL:10m;  # about 40000 sessions
+    ssl_session_cache shared:MozSSL:10m; # about 40000 sessions
     ssl_session_tickets off;
-    
-    ssl_protocols             TLSv1.2 TLSv1.3;
-    ssl_ciphers               ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
 }
 
 ```
-and this to the http{...}-section in your nginx.conf:
-
-```
-    ##
-    # Connection header for WebSocket reverse proxy
-    ##
-    map $http_upgrade $connection_upgrade {
-        default upgrade;
-        ''      close;
-    }
-```
-(otherwise nginx will fail to start with a message saying the variable named connection_upgrade does not exist)
     
 Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
 
