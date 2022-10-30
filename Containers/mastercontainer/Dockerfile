@@ -52,7 +52,7 @@ RUN set -e && \
     cd ..; \
     rm -f /usr/local/bin/composer; \
     chmod 770 -R ./; \
-    chown www-data:www-data -R ./; \
+    chown www-data:www-data -R /var/www; \
     rm -r ./php/data; \
     rm -r ./php/session
 
