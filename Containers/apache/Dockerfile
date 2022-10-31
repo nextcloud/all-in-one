@@ -46,6 +46,10 @@ RUN rm /etc/apache2/ports.conf; \
 RUN set -ex; \
     a2dissite 000-default && \
     a2dissite default-ssl && \
+    rm -f /etc/apache2/sites-enabled/000-default.conf && \
+    rm -f /etc/apache2/sites-enabled/default-ssl.conf && \
+    rm /etc/apache2/sites-available/000-default.conf && \
+    rm /etc/apache2/sites-available/default-ssl.conf && \
     a2ensite nextcloud.conf && \
     rm -rf /var/www/html/* && \
     chown www-data:www-data -R /var/log/apache2; \
