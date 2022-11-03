@@ -24,7 +24,7 @@ fi
 
 # Trust additional Cacerts, if the user provided $TRUSTED_CACERTS_DIR
 if [ -n "$TRUSTED_CACERTS_DIR" ]; then
-    echo "User required to trust additional CA certificates, running 'update-ca-certificates."
+    echo "User required to trust additional CA certificates, running 'update-ca-certificates.'"
     update-ca-certificates
 fi
 
