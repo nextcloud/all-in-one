@@ -275,7 +275,7 @@ sudo borg list "/mnt/backup/borg"
 sudo borg delete --stats --progress "/mnt/backup/borg::20220223_174237-nextcloud-aio"
 
 # If borg 1.2.0 or higher is installed, you then need to run borg compact in order to clean up the freed space
-sudo borg version
+sudo borg --version
 # If version number of the command above is higher than 1.2.0 you need to run the command below:
 sudo borg compact "/mnt/backup/"
 
@@ -326,7 +326,7 @@ if ! [ -d "$DRIVE_MOUNTPOINT" ]; then
     exit 1
 fi
 
-if ! grep -q " $DRIVE_MOUNTPOINT " /etc/fstab; then
+if ! grep -q "$DRIVE_MOUNTPOINT" /etc/fstab; then
     echo "Could not find the drive mountpoint in the fstab file. Did you add it there?"
     exit 1
 fi
