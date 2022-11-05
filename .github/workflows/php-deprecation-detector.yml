@@ -1,0 +1,29 @@
+name: PHP Deprecation Detector
+# See https://github.com/wapmorgan/PhpDeprecationDetector
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  psalm:
+    name: PHP Deprecation Detector
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up php8.0
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.0
+          extensions: apcu
+          coverage: none
+
+      - name: Run script
+        run: |
+          set -x
+          cd php
+          composer global require wapmorgan/php-deprecation-detector dev-master
+          composer install
+          composer run php-deprecation-detector
