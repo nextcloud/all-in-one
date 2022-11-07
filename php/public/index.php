@@ -22,6 +22,9 @@ ini_set('session.save_path', $dataConst->GetSessionDirectory());
 // Auto logout on browser close
 ini_set('session.cookie_lifetime', '0');
 
+# Keep session for 24h max
+ini_set('session.gc_maxlifetime', '86400');
+
 // Create app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
