@@ -1,5 +1,5 @@
 # From https://github.com/containrrr/watchtower/blob/main/dockerfiles/Dockerfile.self-contained
-FROM containrrr/watchtower:1.4.0 as watchtower
+FROM containrrr/watchtower:1.5.1 as watchtower
 
 FROM alpine:3.16.2
 
