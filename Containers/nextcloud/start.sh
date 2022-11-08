@@ -36,6 +36,34 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
 fi
 sudo -u www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 
+# Install additional dependencies
+if [ -n "$ADDITIONAL_APKS" ]; then
+    if ! [ -f "/additional-apks-are-installed" ]; then
+        read -ra ADDITIONAL_APKS_ARRAY <<< "$ADDITIONAL_APKS"
+        for app in "${ADDITIONAL_APKS_ARRAY[@]}"; do
+            apk add "$app"
+        done
+    fi
+    touch /additional-apks-are-installed
+fi
+
+# Install additional php extensions
+if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
+    if ! [ -f "/additional-php-extensions-are-installed" ]; then
+        read -ra ADDITIONAL_PHP_EXTENSIONS_ARRAY <<< "$ADDITIONAL_PHP_EXTENSIONS"
+        for app in "${ADDITIONAL_PHP_EXTENSIONS_ARRAY[@]}"; do
+            if [ "$app" = imagick ]; then
+                pecl install imagick-3.7.0
+                docker-php-ext-enable imagick
+            else
+                pecl install "$app"
+                docker-php-ext-enable "$app"
+            fi
+        done
+    fi
+    touch /additional-php-extensions-are-installed
+fi
+
 # Run original entrypoint
 if ! sudo -E -u www-data bash /entrypoint.sh; then
     exit 1

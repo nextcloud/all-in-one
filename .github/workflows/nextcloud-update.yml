@@ -57,8 +57,8 @@ jobs:
             | sort -V \
             | tail -1
         )"
-        sed -i "s|pecl install imagick.*\;|pecl install imagick-$imagick_version\;|" ./Containers/nextcloud/Dockerfile
-        
+        sed -i "s|pecl install imagick.*|pecl install imagick-$imagick_version|" ./Containers/nextcloud/start.sh
+
         # Nextcloud
         NC_MAJOR="$(grep "ENV NEXTCLOUD_VERSION" ./Containers/nextcloud/Dockerfile | grep -oP '[23][0-9]')"
         NCVERSION=$(curl -s -m 900 https://download.nextcloud.com/server/releases/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | grep "$NC_MAJOR" | sort --version-sort | tail -1)
