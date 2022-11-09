@@ -548,7 +548,7 @@ class ConfigurationManager
     }
 
     public function GetTrustedCacertsDir() : string {
-        $envVariableName = 'TRUSTED_CACERTS_DIR';
+        $envVariableName = 'NEXTCLOUD_TRUSTED_CACERTS_DIR';
         $configName = 'trusted_cacerts_dir';
         $defaultValue = '';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
