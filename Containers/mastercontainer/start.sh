@@ -120,6 +120,14 @@ It is set to '$NEXTCLOUD_MAX_TIME'."
         exit 1
     fi
 fi
+if [ -n "$NEXTCLOUD_MEMORY_LIMIT" ]; then
+    if ! echo "$NEXTCLOUD_MEMORY_LIMIT" | grep -q '^[0-9]\+M$'; then
+        echo "You've set NEXTCLOUD_MEMORY_LIMIT but not to an allowed value.
+The string must start with a number and end with 'M'.
+It is set to '$NEXTCLOUD_MEMORY_LIMIT'."
+        exit 1
+    fi
+fi
 if [ -n "$APACHE_PORT" ]; then
     if ! check_if_number "$APACHE_PORT"; then
         echo "You provided an Apache port but did not only use numbers.
