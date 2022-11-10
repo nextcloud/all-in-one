@@ -120,7 +120,7 @@ class ContainerDefinitionFetcher
                     if($value['name'] === '') {
                         continue;
                     }
-                } elseif ($value['name'] === '%TRUSTED_CACERTS_DIR%') {
+                } elseif ($value['name'] === '%NEXTCLOUD_TRUSTED_CACERTS_DIR%') {
                     $value['name'] = $this->configurationManager->GetTrustedCacertsDir();
                     if($value['name'] === '') {
                         continue;
