@@ -42,7 +42,9 @@ if [ -n "$ADDITIONAL_APKS" ]; then
         read -ra ADDITIONAL_APKS_ARRAY <<< "$ADDITIONAL_APKS"
         for app in "${ADDITIONAL_APKS_ARRAY[@]}"; do
             echo "Installing $app via apk..."
-            apk add --no-cache "$app" >/dev/null
+            if ! apk add --no-cache "$app" >/dev/null; then
+                echo "The packet $app was not installed!"
+            fi
         done
     fi
     touch /additional-apks-are-installed
@@ -56,11 +58,32 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
             if [ "$app" = imagick ]; then
                 echo "Installing Imagick via PECL..."
                 pecl install imagick-3.7.0 >/dev/null
-                docker-php-ext-enable imagick >/dev/null
-            else
+                if ! docker-php-ext-enable imagick >/dev/null; then
+                    echo "Could not install PHP extension imagick!"
+                fi
+            elif [ "$app" = inotify ]; then
                 echo "Installing $app via PECL..."
                 pecl install "$app" >/dev/null
-                docker-php-ext-enable "$app" >/dev/null
+                if ! docker-php-ext-enable "$app" >/dev/null; then
+                    echo "Could not install PHP extension $app!"
+                fi
+            elif [ "$app" = soap ]; then
+                echo "Installing $app from core..."
+                if ! docker-php-ext-install -j "$(nproc)" "$app" >/dev/null; then
+                    echo "Could not install PHP extension $app!"
+                fi
+            else
+                echo "Installing PHP extension $app ..."
+                if pecl install "$app" >/dev/null; then
+                    if ! docker-php-ext-enable "$app" >/dev/null; then
+                        echo "Could not install PHP extension $app!"
+                    fi
+                else
+                    echo "Could not install $app using PECL. Trying to install from core..."
+                    if ! docker-php-ext-install -j "$(nproc)" "$app" >/dev/null; then
+                        echo "Could also not install $app from core. The PHP extensions was not installed!"
+                    fi
+                fi
             fi
         done
     fi
