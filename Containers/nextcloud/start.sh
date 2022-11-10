@@ -91,17 +91,19 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
                 fi
             fi
         done
+        if [ "$PHP_DEPS_ARE_INSTALLED" = 1 ]; then
+            rm -rf /tmp/pear
+            runDeps="$( \
+                scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
+                    | tr ',' '\n' \
+                    | sort -u \
+                    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+            )";
+            # shellcheck disable=SC2086
+            apk add --virtual .nextcloud-phpext-rundeps $runDeps >/dev/null
+            apk del .build-deps >/dev/null
+        fi
     fi
-    rm -rf /tmp/pear
-    runDeps="$( \
-        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
-            | tr ',' '\n' \
-            | sort -u \
-            | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
-    )";
-    # shellcheck disable=SC2086
-    apk add --virtual .nextcloud-phpext-rundeps $runDeps >/dev/null
-    apk del .build-deps >/dev/null
     touch /additional-php-extensions-are-installed
 fi
 
