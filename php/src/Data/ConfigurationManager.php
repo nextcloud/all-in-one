@@ -561,6 +561,20 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetNextcloudAdditionalApks() : string {
+        $envVariableName = 'NEXTCLOUD_ADDITIONAL_APKS';
+        $configName = 'nextcloud_additional_apks';
+        $defaultValue = '';
+        return trim($this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue));
+    }
+
+    public function GetNextcloudAdditionalPhpExtensions() : string {
+        $envVariableName = 'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS';
+        $configName = 'nextcloud_additional_php_extensions';
+        $defaultValue = 'imagick';
+        return trim($this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue));
+    }
+
     public function GetCollaboraSeccompPolicy() : string {
         $defaultString = '--o:security.seccomp=';
         if ($this->GetCollaboraSeccompDisabledState() !== 'true') {

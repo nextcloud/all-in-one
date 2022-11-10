@@ -36,6 +36,60 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
 fi
 sudo -u www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 
+# Install additional dependencies
+if [ -n "$ADDITIONAL_APKS" ]; then
+    if ! [ -f "/additional-apks-are-installed" ]; then
+        read -ra ADDITIONAL_APKS_ARRAY <<< "$ADDITIONAL_APKS"
+        for app in "${ADDITIONAL_APKS_ARRAY[@]}"; do
+            echo "Installing $app via apk..."
+            if ! apk add --no-cache "$app" >/dev/null; then
+                echo "The packet $app was not installed!"
+            fi
+        done
+    fi
+    touch /additional-apks-are-installed
+fi
+
+# Install additional php extensions
+if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
+    if ! [ -f "/additional-php-extensions-are-installed" ]; then
+        read -ra ADDITIONAL_PHP_EXTENSIONS_ARRAY <<< "$ADDITIONAL_PHP_EXTENSIONS"
+        for app in "${ADDITIONAL_PHP_EXTENSIONS_ARRAY[@]}"; do
+            if [ "$app" = imagick ]; then
+                echo "Installing Imagick via PECL..."
+                pecl install imagick-3.7.0 >/dev/null
+                if ! docker-php-ext-enable imagick >/dev/null; then
+                    echo "Could not install PHP extension imagick!"
+                fi
+            elif [ "$app" = inotify ]; then
+                echo "Installing $app via PECL..."
+                pecl install "$app" >/dev/null
+                if ! docker-php-ext-enable "$app" >/dev/null; then
+                    echo "Could not install PHP extension $app!"
+                fi
+            elif [ "$app" = soap ]; then
+                echo "Installing $app from core..."
+                if ! docker-php-ext-install -j "$(nproc)" "$app" >/dev/null; then
+                    echo "Could not install PHP extension $app!"
+                fi
+            else
+                echo "Installing PHP extension $app ..."
+                if pecl install "$app" >/dev/null; then
+                    if ! docker-php-ext-enable "$app" >/dev/null; then
+                        echo "Could not install PHP extension $app!"
+                    fi
+                else
+                    echo "Could not install $app using PECL. Trying to install from core..."
+                    if ! docker-php-ext-install -j "$(nproc)" "$app" >/dev/null; then
+                        echo "Could also not install $app from core. The PHP extensions was not installed!"
+                    fi
+                fi
+            fi
+        done
+    fi
+    touch /additional-php-extensions-are-installed
+fi
+
 # Run original entrypoint
 if ! sudo -E -u www-data bash /entrypoint.sh; then
     exit 1

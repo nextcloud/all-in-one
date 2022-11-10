@@ -185,6 +185,22 @@ It is set to '$NEXTCLOUD_STARTUP_APPS'."
         exit 1
     fi
 fi
+if [ -n "$NEXTCLOUD_ADDITIONAL_APKS" ]; then
+    if ! echo "$NEXTCLOUD_ADDITIONAL_APKS" | grep -q "^[a-z _-]\+$"; then
+        echo "You've set NEXTCLOUD_ADDITIONAL_APKS but not to an allowed value.
+It needs to be a string. Allowed are small letters a-z, spaces, hyphens and '_'.
+It is set to '$NEXTCLOUD_ADDITIONAL_APKS'."
+        exit 1
+    fi
+fi
+if [ -n "$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS" ]; then
+    if ! echo "$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS" | grep -q "^[a-z _-]\+$"; then
+        echo "You've set NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS but not to an allowed value.
+It needs to be a string. Allowed are small letters a-z, spaces, hyphens and '_'.
+It is set to '$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS'."
+        exit 1
+    fi
+fi
 
 # Check DNS resolution
 # Prevents issues like https://github.com/nextcloud/all-in-one/discussions/565
