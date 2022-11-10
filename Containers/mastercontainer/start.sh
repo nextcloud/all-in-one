@@ -165,7 +165,15 @@ if [ -n "$TRUSTED_CACERTS_DIR" ]; then
     if ! echo "$TRUSTED_CACERTS_DIR" | grep -q "^/" || echo "$TRUSTED_CACERTS_DIR" | grep -q "/$"; then
         echo "You've set TRUSTED_CACERTS_DIR but not to an allowed value.
 It should be an absolute path to a directory that starts with '/' but not end with '/'.
-It is set to '$TRUSTED_CACERTS_DIR '."
+It is set to '$TRUSTED_CACERTS_DIR'."
+        exit 1
+    fi
+fi
+if [ -n "$NEXTCLOUD_STARTUP_APPS" ]; then
+    if ! echo "$NEXTCLOUD_STARTUP_APPS" | grep -q "^[a-z _-]\+$"; then
+        echo "You've set NEXTCLOUD_STARTUP_APPS but not to an allowed value.
+It needs to be a string. Allowed are small letters a-z, spaces, hyphens and '_'.
+It is set to '$NEXTCLOUD_STARTUP_APPS'."
         exit 1
     fi
 fi
