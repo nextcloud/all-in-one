@@ -455,6 +455,9 @@ By default are uploads to Nextcloud limited to a max of 10G. You can adjust the 
 ### How to adjust the max execution time for Nextcloud?
 By default are uploads to Nextcloud limited to a max of 3600s. You can adjust the upload time limit by providing `-e NEXTCLOUD_MAX_TIME=3600` to the docker run command of the mastercontainer and customize the value to your fitting. It must be a number e.g. `3600`.
 
+### How to adjust the PHP memory limit for Nextcloud?
+By default is each PHP process in the Nextcloud container limited to a max of 512 MB. You can adjust the memory limit by providing `-e NEXTCLOUD_MEMORY_LIMIT=512M` to the docker run command of the mastercontainer and customize the value to your fitting. It must start with a number and end with `M` e.g. `1024M`.
+
 ### What can I do to fix the internal or reserved ip-address error?
 If you get an error during the domain validation which states that your ip-address is an internal or reserved ip-address, you can fix this by first making sure that your domain indeed has the correct public ip-address that points to the server and then adding `--add-host yourdomain.com:<public-ip-address>` to the initial docker run command which will allow the domain validation to work correctly. And so that you know: even if the `A` record of your domain should change over time, this is no problem since the mastercontainer will not make any attempt to access the chosen domain after the initial domain validation.
 

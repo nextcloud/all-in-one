@@ -312,6 +312,8 @@ class DockerActionManager
                     }
                 } elseif ($out[1] === 'NEXTCLOUD_UPLOAD_LIMIT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
+                } elseif ($out[1] === 'NEXTCLOUD_MEMORY_LIMIT') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudMemoryLimit();
                 } elseif ($out[1] === 'NEXTCLOUD_MAX_TIME') {
                     $replacements[1] = $this->configurationManager->GetNextcloudMaxTime();
                 } elseif ($out[1] === 'NEXTCLOUD_TRUSTED_CACERTS_DIR') {
