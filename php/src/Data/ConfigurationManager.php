@@ -564,7 +564,7 @@ class ConfigurationManager
     public function GetNextcloudAdditionalApks() : string {
         $envVariableName = 'NEXTCLOUD_ADDITIONAL_APKS';
         $configName = 'nextcloud_additional_apks';
-        $defaultValue = '';
+        $defaultValue = 'imagemagick';
         return trim($this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue));
     }
 

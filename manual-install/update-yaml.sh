@@ -77,7 +77,7 @@ sed -i 's|NEXTCLOUD_PASSWORD=|NEXTCLOUD_PASSWORD=          # TODO! This is the p
 sed -i 's|TIMEZONE=|TIMEZONE=Europe/Berlin          # TODO! This is the timezone that your containers will use.|' sample.conf
 sed -i 's|COLLABORA_SECCOMP_POLICY=|COLLABORA_SECCOMP_POLICY=--o:security.seccomp=true          # Changing the value to false allows to disable the seccomp feature of the Collabora container.|' sample.conf
 sed -i 's|NEXTCLOUD_STARTUP_APPS=|NEXTCLOUD_STARTUP_APPS=twofactor_totp deck tasks calendar contacts apporder        # Allows to modify the Nextcloud apps that are installed on starting AIO the first time|' sample.conf
-sed -i 's|NEXTCLOUD_ADDITIONAL_APKS=|NEXTCLOUD_ADDITIONAL_APKS=imagick        # This allows to add additional packages to the Nextcloud container permanently.|' sample.conf
+sed -i 's|NEXTCLOUD_ADDITIONAL_APKS=|NEXTCLOUD_ADDITIONAL_APKS=imagemagick        # This allows to add additional packages to the Nextcloud container permanently.|' sample.conf
 sed -i 's|NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=|NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=imagick        # This allows to add additional php extensions to the Nextcloud container permanently. Default is imagick but can be overwritten by modifying this value.|' sample.conf
 sed -i 's|=$|=          # TODO! This needs to be a unique and good password!|' sample.conf
 
