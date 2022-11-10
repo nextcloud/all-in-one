@@ -55,6 +55,14 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
     if ! [ -f "/additional-php-extensions-are-installed" ]; then
         read -ra ADDITIONAL_PHP_EXTENSIONS_ARRAY <<< "$ADDITIONAL_PHP_EXTENSIONS"
         for app in "${ADDITIONAL_PHP_EXTENSIONS_ARRAY[@]}"; do
+            # shellcheck disable=SC2086
+            if [ "$PHP_DEPS_ARE_INSTALLED" != 1 ]; then
+                echo "Installing PHP build dependencies..."
+                if ! apk add --no-cache --virtual .build-deps libxml2-dev imagemagick-dev autoconf $PHPIZE_DEPS >/dev/null; then
+                    echo "Could not install build-deps!"
+                fi
+                PHP_DEPS_ARE_INSTALLED=1
+            fi
             if [ "$app" = imagick ]; then
                 echo "Installing Imagick via PECL..."
                 pecl install imagick-3.7.0 >/dev/null
@@ -74,19 +82,26 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
                 fi
             else
                 echo "Installing PHP extension $app ..."
-                if pecl install "$app" >/dev/null; then
+                if ! docker-php-ext-install -j "$(nproc)" "$app" >/dev/null; then
+                    echo "Could not install $app from core. Trying to install from PECL..."
+                    pecl install "$app" >/dev/null
                     if ! docker-php-ext-enable "$app" >/dev/null; then
-                        echo "Could not install PHP extension $app!"
-                    fi
-                else
-                    echo "Could not install $app using PECL. Trying to install from core..."
-                    if ! docker-php-ext-install -j "$(nproc)" "$app" >/dev/null; then
-                        echo "Could also not install $app from core. The PHP extensions was not installed!"
+                        echo "Could also not install $app from PECL. The PHP extensions was not installed!"
                     fi
                 fi
             fi
         done
     fi
+    rm -rf /tmp/pear
+    runDeps="$( \
+        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
+            | tr ',' '\n' \
+            | sort -u \
+            | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )";
+    # shellcheck disable=SC2086
+    apk add --virtual .nextcloud-phpext-rundeps $runDeps >/dev/null
+    apk del .build-deps >/dev/null
     touch /additional-php-extensions-are-installed
 fi
 

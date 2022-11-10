@@ -39,7 +39,6 @@ RUN set -ex; \
         openldap-dev \
         pcre-dev \
         postgresql-dev \
-        imagemagick-dev \
         libwebp-dev \
         gmp-dev \
     ; \
@@ -142,7 +141,6 @@ RUN set -ex; \
     \
     apk add --no-cache \
         ffmpeg \
-        imagemagick \
         procps \
         samba-client \
         supervisor \
