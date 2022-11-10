@@ -41,7 +41,8 @@ if [ -n "$ADDITIONAL_APKS" ]; then
     if ! [ -f "/additional-apks-are-installed" ]; then
         read -ra ADDITIONAL_APKS_ARRAY <<< "$ADDITIONAL_APKS"
         for app in "${ADDITIONAL_APKS_ARRAY[@]}"; do
-            apk add "$app"
+            echo "Installing $app via apk..."
+            apk add --no-cache "$app" >/dev/null
         done
     fi
     touch /additional-apks-are-installed
@@ -53,11 +54,13 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
         read -ra ADDITIONAL_PHP_EXTENSIONS_ARRAY <<< "$ADDITIONAL_PHP_EXTENSIONS"
         for app in "${ADDITIONAL_PHP_EXTENSIONS_ARRAY[@]}"; do
             if [ "$app" = imagick ]; then
-                pecl install imagick-3.7.0
-                docker-php-ext-enable imagick
+                echo "Installing Imagick via PECL..."
+                pecl install imagick-3.7.0 >/dev/null
+                docker-php-ext-enable imagick >/dev/null
             else
-                pecl install "$app"
-                docker-php-ext-enable "$app"
+                echo "Installing $app via PECL..."
+                pecl install "$app" >/dev/null
+                docker-php-ext-enable "$app" >/dev/null
             fi
         done
     fi
