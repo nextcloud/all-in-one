@@ -65,7 +65,7 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
             fi
             if [ "$app" = imagick ]; then
                 echo "Installing Imagick via PECL..."
-                pecl install imagick-3.7.0 >/dev/null
+                pecl install imagick-3.7.0  >/dev/null
                 if ! docker-php-ext-enable imagick >/dev/null; then
                     echo "Could not install PHP extension imagick!"
                 fi
