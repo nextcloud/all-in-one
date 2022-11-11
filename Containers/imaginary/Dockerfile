@@ -13,4 +13,6 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*
 USER nobody
 
+ENTRYPOINT ["/usr/local/bin/imaginary", "-return-size"]
+
 HEALTHCHECK CMD nc -z localhost 9000 || exit 1
