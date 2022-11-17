@@ -267,6 +267,8 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             rm "$NEXTCLOUD_DATA_DIR/update.failed"
             bash /notify.sh "Nextcloud update to $image_version successful!" "Feel free to inspect the Nextcloud container logs for more info."
 
+            php /var/www/html/occ app:update --all
+
             # Restore app status
             if [ "${APPSTORAGE[0]}" != "no-export-done" ]; then
                 echo "Restoring the status of apps. This can take a while..."
@@ -281,12 +283,14 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                             fi
                             # Only restore the group settings, if the app was enabled (and is thus compatible with the new NC version)
                             if [ "${APPSTORAGE[$app]}" != "yes" ]; then
-                                nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+                                php /var/www/html/occ config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
                             fi
                         fi
                     fi
                 done
             fi
+
+            php /var/www/html/occ app:update --all
 
             # Apply optimization
             echo "Doing some optimizations..."
