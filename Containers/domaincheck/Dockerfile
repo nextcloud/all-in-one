@@ -1,4 +1,4 @@
-FROM alpine:3.16.2
+FROM alpine:3.16.3
 RUN apk add --update --no-cache lighttpd bash curl netcat-openbsd
 
 RUN adduser -S www-data -G www-data
