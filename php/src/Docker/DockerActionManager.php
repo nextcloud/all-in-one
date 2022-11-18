@@ -540,7 +540,7 @@ class DockerActionManager
         return true;
     }
 
-    public function sendNotification(Container $container, string $subject, string $message) : void
+    public function sendNotification(Container $container, string $subject, string $message, string $file = '/notify.sh') : void
     {
         if ($this->GetContainerStartingState($container) instanceof RunningState) {
 
@@ -558,7 +558,7 @@ class DockerActionManager
                             'Tty' => true,
                             'Cmd' => [
                                 'bash',
-                                '/notify.sh',
+                                $file,
                                 $subject,
                                 $message
                             ],
@@ -737,6 +737,38 @@ class DockerActionManager
         if ($this->GetContainerRunningState($backupContainer) instanceof RunningState) {
             return true;
         }
+        return false;
+    }
+
+    private function GetCreatedTimeOfNextcloudImage() : ?string {
+        $imageName = 'nextcloud/aio-nextcloud' . ':' . $this->GetCurrentChannel();
+        try {
+            $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
+            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true);
+
+            if (!isset($imageOutput['Created'])) {
+                error_log('Created is not set of image ' . $imageName);
+                return null;
+            }
+
+            return str_replace('T', ' ', $imageOutput['Created']);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function isNextcloudImageOutdated() : bool {
+        $createdTime = $this->GetCreatedTimeOfNextcloudImage();
+
+        if ($createdTime === null) {
+            return false;
+        }
+
+        // If the image is older than 90 days, it is outdated.
+        if ((time() - (60 * 60 * 24 * 90)) > strtotime($createdTime)) {
+            return true;
+        }
+
         return false;
     }
 }

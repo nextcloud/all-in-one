@@ -227,12 +227,14 @@ RUN set -ex; \
 
 COPY start.sh /
 COPY notify.sh /
+COPY notify-all.sh /
 RUN set -ex; \
     chmod +x /start.sh && \
     chmod +x /entrypoint.sh && \
     chmod +r /upgrade.exclude && \
     chmod +x /cron.sh && \
     chmod +x /notify.sh && \
+    chmod +x /notify-all.sh && \
     chmod +x /activate-collabora.sh
 
 RUN set -ex; \
