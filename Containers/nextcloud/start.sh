@@ -17,9 +17,11 @@ if [ -f "/var/www/html/config/config.php" ]; then
         echo "Waiting for the database to start..."
         sleep 5
     done
-    # The code below is hopefully not needed anymore. Was introduced with https://github.com/nextcloud/all-in-one/pull/218
-    # sed -i "s|'dbuser'.*=>.*$|'dbuser' => '$POSTGRES_USER',|" /var/www/html/config/config.php
-    # sed -i "s|'dbpassword'.*=>.*$|'dbpassword' => '$POSTGRES_PASSWORD',|" /var/www/html/config/config.php
+    if [ "$POSTGRES_USER" = "oc_nextcloud" ] && echo "$POSTGRES_PASSWORD" | grep -q '^[a-z0-9]\+$'; then
+        # this was introduced with https://github.com/nextcloud/all-in-one/pull/218
+        sed -i "s|'dbuser'.*=>.*$|'dbuser' => '$POSTGRES_USER',|" /var/www/html/config/config.php
+        sed -i "s|'dbpassword'.*=>.*$|'dbpassword' => '$POSTGRES_PASSWORD',|" /var/www/html/config/config.php
+    fi
 fi
 
 # Trust additional Cacerts, if the user provided $TRUSTED_CACERTS_DIR
