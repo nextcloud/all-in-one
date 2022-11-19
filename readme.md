@@ -537,3 +537,77 @@ In order for the value to be valid, the path should start with `/` and not end w
 
 ### How to disable Collabora's Seccomp feature?
 The Collabora container enables Seccomp by default, which is a security feature of the Linux kernel. On systems without this kernel feature enabled, you need to provide `-e COLLABORA_SECCOMP_DISABLED=true` to the initial docker run command in order to make it work.
+
+### How to enable automatic updates without creating a backup beforehand?
+If you have an external backup solution, you might want to enable automatic updates without creating a backup first. However note that doing this is not recommended since you will not be able to easily create and restore a backup from the AIO interface anymore and you need to make sure to shut down all the containers properly before creating the backup, e.g. by stopping them from the AIO interface first. 
+
+But anyhow, is here a guide that helps you automate the whole procedure:
+
+<details>
+<summary>Click here to expand</summary>
+
+```bash
+#!/bin/bash
+
+docker exec -e STOP_CONTAINERS=1 nextcloud-aio-mastercontainer /daily-backup.sh
+
+# Below is optional if you run AIO in a VM which will shut down the VM afterwards
+# poweroff
+
+```
+
+</details>
+
+You can simply copy and past the script into a file e.g. named `shutdown-script.sh` e.g. here: `/root/shutdown-script.sh`. 
+
+Afterwards apply the correct permissions with `sudo chown root:root /root/shutdown-script.sh` and `sudo chmod 700 /root/shutdown-script.sh`. Then you can create a cronjob that runs e.g. runs the script at `04:00` each day like this: 
+1. Open the cronjob with `sudo crontab -u root -e` (and choose your editor of choice if not already done. I'd recommend nano). 
+1. Add the following new line to the crontab if not already present: `0 4 * * * /root/shutdown-script.sh` which will run the script at 04:00 each day. 
+1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
+
+
+**After that is in place, you should schedule a backup from your backup solution that creates a backup after AIO is shut down properly.**
+
+**Afterwards, you can create a second script that automatically updates the containers:**
+
+<details>
+<summary>Click here to expand</summary>
+
+```bash
+#!/bin/bash
+
+# Please modify all variables below to your needings:
+APACHE_PORT="443" # This needs to match the chosen APACHE_PORT port of AIO, e.g. 11000. By default it is 443.
+
+########################################
+# Please do NOT modify anything below! #
+########################################
+
+# Run container update once
+docker exec -e AUTOMATIC_UPDATES=1 nextcloud-aio-mastercontainer /daily-backup.sh
+
+# Wait until Watchtower is finished
+while docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-watchtower$"; do
+    echo "Waiting for watchtower to stop"
+    sleep 30
+done
+
+# Wait until Apache is running again
+while nc -z localhost "$APACHE_PORT"; do
+    echo "Waiting for Apache to start"
+    sleep 30
+done
+
+# Run container update another time to make sure that all containers are updated correctly.
+docker exec -e AUTOMATIC_UPDATES=1 nextcloud-aio-mastercontainer /daily-backup.sh
+
+```
+
+</details>
+
+You can simply copy and past the script into a file e.g. named `automatic-updates.sh` e.g. here: `/root/automatic-updates.sh`. Do not forget to modify the variables to your requirements!
+
+Afterwards apply the correct permissions with `sudo chown root:root /root/automatic-updates.sh` and `sudo chmod 700 /root/automatic-updates.sh`. Then you can create a cronjob that runs e.g. at `05:00` each day like this: 
+1. Open the cronjob with `sudo crontab -u root -e` (and choose your editor of choice if not already done. I'd recommend nano). 
+1. Add the following new line to the crontab if not already present: `0 5 * * * /root/automatic-updates.sh` which will run the script at 05:00 each day. 
+1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
