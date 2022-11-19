@@ -85,6 +85,13 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
         # Check if it skips a major version
         INSTALLED_MAJOR="${installed_version%%.*}"
         IMAGE_MAJOR="${image_version%%.*}"
+        
+        if [ "$installed_version" != "0.0.0.0" ]; then
+            # Write output to logfile.
+            exec > >(tee -i "/var/www/html/data/update.log")
+            exec 2>&1
+        fi
+
         if [ "$installed_version" != "0.0.0.0" ] && [ "$((IMAGE_MAJOR - INSTALLED_MAJOR))" -gt 1 ]; then
             set -ex
             NEXT_MAJOR="$((INSTALLED_MAJOR + 1))"
@@ -133,7 +140,19 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             php /var/www/html/occ maintenance:mode --off
 
             echo "Getting and backing up the status of apps for later, this might take a while..."
-            php /var/www/html/occ app:list | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
+            NC_APPS="$(find /var/www/html/custom_apps/ -type d -maxdepth 1 -mindepth 1 | sed 's|/var/www/html/custom_apps/||g')"
+            if [ -z "$NC_APPS" ]; then
+                echo "No apps detected, aborting export of app status..."
+                APPSTORAGE="no-export-done"
+            else
+                read -ra NC_APPS_ARRAY <<< "$NC_APPS"
+                declare -Ag APPSTORAGE
+                echo "Disabling apps before the update in order to make the update procedure more safe. This can take a while..."
+                for app in "${NC_APPS_ARRAY[@]}"; do
+                    APPSTORAGE[$app]=$(php /var/www/html/occ config:app:get "$app" enabled)
+                    php /var/www/html/occ app:disable "$app"
+                done
+            fi
 
             if [ "$((IMAGE_MAJOR - INSTALLED_MAJOR))" -eq 1 ]; then
                 php /var/www/html/occ config:system:delete app_install_overwrite
@@ -238,13 +257,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 
         #upgrade
         else
-            touch "$NEXTCLOUD_DATA_DIR/update.failed"
-            while [ -n "$(pgrep -f cron.php)" ]
-            do
-                echo "Waiting for Nextclouds cronjob to finish..."
-                sleep 5
-            done
-
             echo "Upgrading nextcloud from $installed_version to $image_version..."
             if ! php /var/www/html/occ upgrade || ! php /var/www/html/occ -V; then
                 echo "Upgrade failed. Please restore from backup."
@@ -255,10 +267,30 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             rm "$NEXTCLOUD_DATA_DIR/update.failed"
             bash /notify.sh "Nextcloud update to $image_version successful!" "Feel free to inspect the Nextcloud container logs for more info."
 
-            php /var/www/html/occ app:list | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
-            echo "The following apps have been disabled:"
-            diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
-            rm -f /tmp/list_before /tmp/list_after
+            php /var/www/html/occ app:update --all
+
+            # Restore app status
+            if [ "${APPSTORAGE[0]}" != "no-export-done" ]; then
+                echo "Restoring the status of apps. This can take a while..."
+                for app in "${!APPSTORAGE[@]}"; do
+                    if [ -n "${APPSTORAGE[$app]}" ]; then
+                        if [ "${APPSTORAGE[$app]}" != "no" ]; then
+                            echo "Enabling $app..."
+                            if ! php /var/www/html/occ app:enable "$app" >/dev/null; then
+                                echo "$app could not get enabled. Probably because it is not compatible with the new Nextcloud version."
+                                bash /notify.sh "Could not enable the $app after the Nextcloud update!" "Feel free to look at the Nextcloud update logs and force-enable the app again from the app-store UI."
+                                continue
+                            fi
+                            # Only restore the group settings, if the app was enabled (and is thus compatible with the new NC version)
+                            if [ "${APPSTORAGE[$app]}" != "yes" ]; then
+                                php /var/www/html/occ config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+                            fi
+                        fi
+                    fi
+                done
+            fi
+
+            php /var/www/html/occ app:update --all
 
             # Apply optimization
             echo "Doing some optimizations..."
