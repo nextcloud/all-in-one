@@ -13,14 +13,14 @@ while true; do
             export START_CONTAINERS=1
         fi
         set +x
+        if [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
+            export LOCK_FILE_PRESENT=1
+        else
+            export LOCK_FILE_PRESENT=0
+        fi
     else
         export BACKUP_TIME="04:00"
         export DAILY_BACKUP=0
-    fi
-
-    if [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
-        export LOCK_FILE_PRESENT=1
-    else
         export LOCK_FILE_PRESENT=0
     fi
 
