@@ -145,7 +145,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 echo "No apps detected, aborting export of app status..."
                 APPSTORAGE="no-export-done"
             else
-                read -ra NC_APPS_ARRAY <<< "$NC_APPS"
+                mapfile -t NC_APPS_ARRAY <<< "$NC_APPS"
                 declare -Ag APPSTORAGE
                 echo "Disabling apps before the update in order to make the update procedure more safe. This can take a while..."
                 for app in "${NC_APPS_ARRAY[@]}"; do
@@ -257,6 +257,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 
         #upgrade
         else
+            touch "$NEXTCLOUD_DATA_DIR/update.failed"
             echo "Upgrading nextcloud from $installed_version to $image_version..."
             if ! php /var/www/html/occ upgrade || ! php /var/www/html/occ -V; then
                 echo "Upgrade failed. Please restore from backup."
