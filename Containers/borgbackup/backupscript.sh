@@ -262,6 +262,7 @@ if [ "$BORG_MODE" = restore ]; then
     --exclude "nextcloud_aio_mastercontainer/data/daily_backup_running" \
     --exclude "nextcloud_aio_mastercontainer/data/session_date_file" \
     --exclude "nextcloud_aio_mastercontainer/data/configuration.json" \
+    --exclude "nextcloud_aio_apache/caddy/ocsp/"** \
     /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
         echo "Something failed while restoring from backup."
         umount /tmp/borg
