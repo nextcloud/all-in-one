@@ -243,18 +243,19 @@ map $http_upgrade $connection_upgrade {
 
 server {
     listen 80;
-#    listen [::]:80;            # uncomment to use IPv6
+    listen [::]:80;            # comment to disable IPv6
 
     if ($scheme = "http") {
         return 301 https://$host$request_uri;
     }
 
     listen 443 ssl http2;
-#    listen [::]:443 ssl http2; # uncomment to use IPv6
+    listen [::]:443 ssl http2; # comment to disable IPv6
 
     server_name <your-nc-domain>;
 
     location / {
+        resolver localhost;
         proxy_pass http://localhost:11000$request_uri;
 
         proxy_set_header Host $host;
