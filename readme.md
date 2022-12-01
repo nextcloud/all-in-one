@@ -446,6 +446,8 @@ You can then navigate to the apps management page, activate the external storage
 
 Be aware though that these locations will not be covered by the built-in backup solution!
 
+**Please note:** If you can't see the type "local storage" in the external storage admin options, a restart of the containers from the AIO interface may be required.
+
 ### How to adjust the Talk port?
 By default will the talk container use port `3478/UDP` and `3478/TCP` for connections. You can adjust the port by adding e.g. `-e TALK_PORT=3478` to the initial docker run command and adjusting the port to your desired value.
 
