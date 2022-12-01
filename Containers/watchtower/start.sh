@@ -10,7 +10,7 @@ elif ! test -r /var/run/docker.sock; then
 fi
 
 if [ -n "$CONTAINER_TO_UPDATE" ]; then
-    exec /watchtower --cleanup --run-once "$CONTAINER_TO_UPDATE"
+    exec /watchtower --cleanup --debug --run-once "$CONTAINER_TO_UPDATE"
 else
     echo "'CONTAINER_TO_UPDATE' is not set. Cannot update anything."
     exit 1
