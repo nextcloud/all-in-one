@@ -3,7 +3,7 @@
 There are basically three ways how to migrate from an already existing Nextcloud installation to Nextcloud AIO:
 
 1. Migrate only the files which is the easiest way
-1. Migrate the files and the database which is much more complicated
+1. Migrate the files and the database which is much more complicated (and doesn't work on former snap installations)
 1. Use the user_migration app that allows to migrate some of the user's data from a former instance to a new instance but needs to be done manually for each user
 
 ## Migrate only the files 
@@ -20,7 +20,7 @@ The procedure for migrating only the files works like this:
 1. Run `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ files:scan-app-data && sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ files:scan --all` in order to scan all files in the datadirectory.
 
 ## Migrate the files and the database
-**Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned!
+**Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned! Also, this will not work on former snap installations as the snap is read-only and thus you cannot install the necessary `pdo_pgsql` PHP extension.
 
 The procedure for migrating the files and the database works like this:
 1. Make sure that your old instance is on exactly the same version like the version used in Nextcloud AIO. (e.g. 23.0.0) You can find the used version here: [click here](https://github.com/nextcloud/all-in-one/search?l=Dockerfile&q=NEXTCLOUD_VERSION&type=). If not, simply upgrade your former installation to that version or wait until the version used in Nextcloud AIO got updated to the same version of your former installation or the other way around.
@@ -44,8 +44,8 @@ The procedure for migrating the files and the database works like this:
         ```
         occ db:convert-type --all-apps --password "$PG_PASSWORD" pgsql "$PG_USER" 127.0.0.1 "$PG_DATABASE"
         ```
-        **Please note:** You might need to change the ip-address `127.0.0.1` based on your exact installation.<br>
-        Further information on the conversion is additionally available here: https://docs.nextcloud.com/server/stable/admin_manual/configuration_database/db_conversion.html#converting-database-type
+        **Please note:** You might need to change the ip-address `127.0.0.1` and adjust the occ command (`occ`) based on your exact installation. Further information on the conversion is additionally available here: https://docs.nextcloud.com/server/stable/admin_manual/configuration_database/db_conversion.html#converting-database-type<br>
+        **Troubleshooting:** If you get an error that it could not find a driver for the conversion, you most likely need to install the PHP extension `pdo_pgsql`.
     1. Hopefully does the conversion finish successfully. If not, simply restore your old Nextcloud installation from backup. If yes, you should now log in to your Nextcloud and test if everything works and if all data has been converted successfully.
     1. If everything works as expected, feel free to continue with the steps below.
 1. Now, run a pg_dump to get an export of your current database. Something like the following command should work:
