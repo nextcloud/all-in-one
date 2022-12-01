@@ -209,6 +209,9 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             # unset admin password
             unset ADMIN_PASSWORD
 
+            # Post Install logs: For questions like https://help.nextcloud.com/t/nextcloud-aio-error-could-not-get-appdata-folder-after-container-has-already-written-data-in-it/151122/5
+            echo "Install errors: $(cat /var/www/html/data/nextcloud.log)"
+
             # Apply log settings
             echo "Applying default settings..."
             mkdir -p /var/www/html/data
@@ -320,6 +323,9 @@ fi
 # If not, something broke (e.g. changing ncdatadir after aio was first started)
 if [ -z "$(find "$NEXTCLOUD_DATA_DIR/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ]; then
     echo "Appdata is not present. Did you maybe change the datadir after aio was first started?"
+    echo "See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir"
+    echo "In the datadir was found:"
+    ls -la "$NEXTCLOUD_DATA_DIR/"
     exit 1
 fi
 
