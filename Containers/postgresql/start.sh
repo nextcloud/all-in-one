@@ -9,6 +9,8 @@ export PGPASSWORD="$POSTGRES_PASSWORD"
 # Don't start database as long as backup is running
 while [ -f "$DUMP_DIR/backup-is-running" ]; do
     echo "Waiting for backup container to finish..."
+    echo "If this is incorrect because the backup container is not running anymore (because it was forcefully killed), you might delete the lock file which is by default stored here:"
+    echo "/var/lib/docker/volumes/nextcloud_aio_database_dump/_data/backup-is-running"
     sleep 10
 done
 
