@@ -88,6 +88,7 @@ if [ "$BORG_MODE" = backup ]; then
         if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
             echo "Cannot initialize a new repository as that was already done at least one time."
             echo "If you still want to do so, you may delete the 'borg.config' file that is stored in the mastercontainer volume manually, which will allow you to initialize a new borg repository in the chosen directory."
+            echo "By default it is stored here: /var/lib/docker/volumes/nextcloud_aio_mastercontainer/_data/data/borg.config"
             exit 1
         fi
 
