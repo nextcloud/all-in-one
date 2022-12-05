@@ -1,13 +1,14 @@
 name: dependency-updates
 
 on:
+  workflow_dispatch:
   schedule:
   - cron:  '00 12 * * *'
 
 jobs:
   dependency_updates:
     name: Run dependency update script
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
     - uses: nanasess/setup-php@master
