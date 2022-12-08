@@ -106,7 +106,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             tar -xjf nextcloud.tar.bz2 -C /usr/src/tmp/
             gpgconf --kill all
             rm nextcloud.tar.bz2.asc nextcloud.tar.bz2
-            rm -rf "$GNUPGHOME" /usr/src/tmp/nextcloud/updater
             mkdir -p /usr/src/tmp/nextcloud/data
             mkdir -p /usr/src/tmp/nextcloud/custom_apps
             chmod +x /usr/src/tmp/nextcloud/occ

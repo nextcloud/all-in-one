@@ -123,7 +123,6 @@ RUN set -ex; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
     gpgconf --kill all; \
     rm nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    rm -rf "$GNUPGHOME" /usr/src/nextcloud/updater; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
