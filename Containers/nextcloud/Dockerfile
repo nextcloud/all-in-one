@@ -53,7 +53,6 @@ RUN set -ex; \
         ldap \
         opcache \
         pcntl \
-        pdo_mysql \
         pdo_pgsql \
         zip \
         gmp \
