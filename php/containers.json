@@ -178,7 +178,13 @@
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "TZ=%TIMEZONE%"
       ],
-      "volumes": [],
+      "volumes": [
+        {
+          "name": "nextcloud_aio_redis",
+          "location": "/data",
+          "writeable": true
+        }
+      ],
       "secrets": [
         "REDIS_PASSWORD",
         "ONLYOFFICE_SECRET"
