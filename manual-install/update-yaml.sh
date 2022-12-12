@@ -59,7 +59,7 @@ done
 sed -i 's|_ENABLED=|_ENABLED=no          # Setting this to "yes" enables the option in Nextcloud automatically.|' sample.conf
 sed -i 's|TALK_ENABLED=no|TALK_ENABLED=yes|' sample.conf
 sed -i 's|COLLABORA_ENABLED=no|COLLABORA_ENABLED=yes|' sample.conf
-sed -i 's|COLLABORA_DICTIONARIES=|COLLABORA_DICTIONARIES=de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru        # You can change this in order to enable other dictionaries for collabora|' sample.conf
+sed -i 's|COLLABORA_DICTIONARIES=|COLLABORA_DICTIONARIES="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru"        # You can change this in order to enable other dictionaries for collabora|' sample.conf
 sed -i 's|NEXTCLOUD_DATADIR=|NEXTCLOUD_DATADIR=nextcloud_aio_nextcloud_data          # You can change this to e.g. "/mnt/ncdata" to map it to a location on your host. It needs to be adjusted before the first startup and never afterwards!|' sample.conf
 sed -i 's|NEXTCLOUD_MOUNT=|NEXTCLOUD_MOUNT=/mnt/          # This allows the Nextcloud container to access directories on the host. It must never be equal to the value of NEXTCLOUD_DATADIR!|' sample.conf
 sed -i 's|NEXTCLOUD_UPLOAD_LIMIT=|NEXTCLOUD_UPLOAD_LIMIT=10G          # This allows to change the upload limit of the Nextcloud container|' sample.conf
@@ -76,7 +76,7 @@ sed -i 's|NC_DOMAIN=|NC_DOMAIN=yourdomain.com          # TODO! Needs to be chang
 sed -i 's|NEXTCLOUD_PASSWORD=|NEXTCLOUD_PASSWORD=          # TODO! This is the password of the initially created Nextcloud admin with username "admin".|' sample.conf
 sed -i 's|TIMEZONE=|TIMEZONE=Europe/Berlin          # TODO! This is the timezone that your containers will use.|' sample.conf
 sed -i 's|COLLABORA_SECCOMP_POLICY=|COLLABORA_SECCOMP_POLICY=--o:security.seccomp=true          # Changing the value to false allows to disable the seccomp feature of the Collabora container.|' sample.conf
-sed -i 's|NEXTCLOUD_STARTUP_APPS=|NEXTCLOUD_STARTUP_APPS=twofactor_totp deck tasks calendar contacts apporder        # Allows to modify the Nextcloud apps that are installed on starting AIO the first time|' sample.conf
+sed -i 's|NEXTCLOUD_STARTUP_APPS=|NEXTCLOUD_STARTUP_APPS="twofactor_totp deck tasks calendar contacts apporder"        # Allows to modify the Nextcloud apps that are installed on starting AIO the first time|' sample.conf
 sed -i 's|NEXTCLOUD_ADDITIONAL_APKS=|NEXTCLOUD_ADDITIONAL_APKS=imagemagick        # This allows to add additional packages to the Nextcloud container permanently. Default is imagemagick but can be overwritten by modifying this value.|' sample.conf
 sed -i 's|NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=|NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=imagick        # This allows to add additional php extensions to the Nextcloud container permanently. Default is imagick but can be overwritten by modifying this value.|' sample.conf
 sed -i 's|=$|=          # TODO! This needs to be a unique and good password!|' sample.conf
