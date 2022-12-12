@@ -66,7 +66,7 @@ if [ "$BORG_MODE" = backup ]; then
 
     # Test that nothing is empty
     for directory in "${VOLUME_DIRS[@]}"; do
-        if [ -z "$(ls -A "$directory")" ]; then
+        if [ -z "$(ls -A "$directory")" ] && [ "$directory" != "/nextcloud_aio_volumes/nextcloud_aio_elasticsearch" ]; then
             echo "$directory is empty which is not allowed."
             exit 1
         fi

@@ -290,6 +290,11 @@
           "name": "%BORGBACKUP_HOST_LOCATION%",
           "location": "/mnt/borgbackup",
           "writeable": true
+        },
+        {
+          "name": "nextcloud_aio_elasticsearch",
+          "location": "/nextcloud_aio_volumes/nextcloud_aio_elasticsearch",
+          "writeable": true
         }
       ],
       "secrets": [
