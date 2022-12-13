@@ -301,6 +301,11 @@
           "name": "nextcloud_aio_elasticsearch",
           "location": "/nextcloud_aio_volumes/nextcloud_aio_elasticsearch",
           "writeable": true
+        },
+        {
+          "name": "nextcloud_aio_redis",
+          "location": "/mnt/redis",
+          "writeable": true
         }
       ],
       "secrets": [

@@ -337,6 +337,9 @@ if [ "$BORG_MODE" = restore ]; then
     # Add file to Nextcloud container so that it performs a fingerprint update the next time
     touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/fingerprint.update"
     chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/fingerprint.update"
+
+    # Delete redis cache
+    rm -f "/mnt/redis/dump.rdb"
 fi
 
 # Do the Backup check
