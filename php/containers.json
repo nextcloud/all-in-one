@@ -207,7 +207,13 @@
         "dictionaries=%COLLABORA_DICTIONARIES%",
         "TZ=%TIMEZONE%"
       ],
-      "volumes": [],
+      "volumes": [
+        {
+          "name": "nextcloud_aio_collabora_fonts",
+          "location": "/opt/cool/systemplate/tmpfonts",
+          "writeable": true
+        }
+      ],
       "secrets": [],
       "maxShutdownTime": 10,
       "restartPolicy": "unless-stopped"
