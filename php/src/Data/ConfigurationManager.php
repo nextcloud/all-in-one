@@ -726,7 +726,7 @@ class ConfigurationManager
         if (is_string($apps)) {
             return trim($apps);
         }
-        return 'twofactor_totp deck tasks calendar contacts apporder';
+        return 'deck tasks calendar contacts';
     }
 
     public function GetCollaboraDictionaries() : string {
