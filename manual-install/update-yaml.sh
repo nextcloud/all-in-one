@@ -101,6 +101,8 @@ echo "" >> containers.yml
 
 echo "$OUTPUT" >> containers.yml
 
+sed -i '/container_name/d' containers.yml
+
 VOLUMES="$(grep -oP 'nextcloud_aio_[a-z_]+' containers.yml | sort -u)"
 mapfile -t VOLUMES <<< "$VOLUMES"
 echo "" >> containers.yml
