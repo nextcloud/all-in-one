@@ -13,11 +13,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     clamav.addEventListener('change', makeOptionsFormSubmitVisible);
 
     // OnlyOffice
-    try {
-        var onlyoffice = document.getElementById("onlyoffice");
+    var onlyoffice = document.getElementById("onlyoffice");
+    if (onlyoffice) {
         onlyoffice.addEventListener('change', makeOptionsFormSubmitVisible);
-    } catch (error) {
-        // console.error(error);
     }
 
     // Collabora
