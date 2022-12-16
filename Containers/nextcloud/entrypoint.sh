@@ -470,7 +470,7 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
         sleep 5
     done
     if [ "$CLAMAV_COUNT" -ge 90 ]; then
-        echo "Error: ClamAV was not reachable within 90s."
+        echo "Error: ClamAV was not reachable within 90s. Most likely is your RAM not big enough to let it start correctly."
         exit 1
     fi
     if ! [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
