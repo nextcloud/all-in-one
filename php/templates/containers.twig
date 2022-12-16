@@ -111,7 +111,7 @@
                                     {% if borg_backup_mode == 'test' %}
                                         Please adjust the path and/or the password in order to make it work!<br><br>
                                     {% elseif borg_backup_mode == 'check' %}
-                                        The backup archive seems to be corrupt. Please try to use a different intact backup archive or try to fix it by following <a href="https://borgbackup.readthedocs.io/en/stable/faq.html?highlight=repair#:~:text=repairing%20a%20damaged%20repository"><b>this documentation</b></a>
+                                        The backup archive seems to be corrupt. Please try to use a different intact backup archive or try to fix it by following <a href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><b>this documentation</b></a>
                                     {% endif %}
                                 {% elseif backup_exit_code == 0 %}
                                     <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
@@ -328,6 +328,9 @@
                                 <h2>Backup and restore</h2>
                                 {% if backup_exit_code > 0 %}
                                     <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                    {% if borg_backup_mode == "check" %}
+                                        The backup archive seems to be corrupt. You can try to fix it by following <a href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><b>this documentation</b></a><br /><br />
+                                    {% endif %}
                                     {% if has_backup_run_once == false %}
                                         You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on 'Create Backup' for testing the new value.<br /><br />
                                         <form method="POST" action="/api/configuration" class="xhr">
