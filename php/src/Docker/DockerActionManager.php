@@ -232,7 +232,7 @@ class DockerActionManager
 
         $envs = $container->GetEnvironmentVariables()->GetVariables();
         foreach($envs as $key => $env) {
-            $patterns = ['/%(.*)%/'];
+            $patterns = ['/%([A-Z_]+)%/'];
 
 
             if(preg_match($patterns[0], $env, $out) === 1) {
@@ -338,6 +338,11 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetNextcloudAdditionalPhpExtensions();
                 } else {
                     $replacements[1] = $this->configurationManager->GetSecret($out[1]);
+                }
+
+                // TODO: get rid of this ugly hack
+                if ($out[2] === 'NC_DOMAIN') {
+                    $replacements[2] = $this->configurationManager->GetDomain();
                 }
 
                 $envs[$key] = preg_replace($patterns, $replacements, $env);
