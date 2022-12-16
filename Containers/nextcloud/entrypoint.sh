@@ -463,10 +463,16 @@ fi
 
 # Clamav
 if [ "$CLAMAV_ENABLED" = 'yes' ]; then
-    while ! nc -z "$CLAMAV_HOST" 3310; do
+    CLAMAV_COUNT=0
+    while ! nc -z "$CLAMAV_HOST" 3310 && [ "$CLAMAV_COUNT" -lt 90 ]; do
         echo "waiting for clamav to become available..."
+        CLAMAV_COUNT=$((CLAMAV_COUNT + 5))
         sleep 5
     done
+    if [ "$CLAMAV_COUNT" -ge 90 ]; then
+        echo "Error: ClamAV was not reachable within 90s."
+        exit 1
+    fi
     if ! [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
         php /var/www/html/occ app:install files_antivirus
     elif [ "$(php /var/www/html/occ config:app:get files_antivirus enabled)" = "no" ]; then

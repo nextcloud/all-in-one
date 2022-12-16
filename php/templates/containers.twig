@@ -562,7 +562,7 @@
             {% endif %}
         {% endif %}
 
-    {% if isApacheStarting == true or is_backup_container_running == true or isWatchtowerRunning == true or is_daily_backup_running == true %}
+    {% if isAnyRestarting == false and (isApacheStarting == true or is_backup_container_running == true or isWatchtowerRunning == true or is_daily_backup_running == true) %}
         <script type="text/javascript" src="automatic_reload.js"></script>
     {% else %}
         <script type="text/javascript" src="before-unload.js"></script>
