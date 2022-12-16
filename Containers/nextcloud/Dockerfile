@@ -198,6 +198,7 @@ RUN set -ex; \
         mawk \
         sudo \
         grep \
+        coreutils \
     ; \
     rm -rf /var/lib/apt/lists/*
 
