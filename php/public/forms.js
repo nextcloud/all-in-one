@@ -19,12 +19,13 @@
     const xhr = e.target;
     if (xhr.status === 201) {
       window.location.replace(xhr.getResponseHeader('Location'));
-    }
-    if (xhr.status === 422) {
+    } else if (xhr.status === 422) {
       showError(xhr.response);
-    }
-    if (xhr.status === 500) {
-      showError("Server error. Please see the logs for details.");
+    } else if (xhr.status === 500) {
+      showError("Server error. Please check the mastercontainer logs for details.");
+    } else {
+      // If the responose is not one of the above, we should reload to show the latest content
+      window.location.reload(1);
     }
   }
 
