@@ -260,7 +260,7 @@ if [ "$BORG_MODE" = restore ]; then
     if ! rsync --stats --archive --human-readable -vv --delete \
     --exclude "nextcloud_aio_apache/caddy/"** \
     --include "nextcloud_aio_elasticsearch/"** \
-    --exclude "nextcloud_aio_elasticsearch/" \
+    --exclude "nextcloud_aio_elasticsearch" \
     --exclude "nextcloud_aio_mastercontainer/caddy/"** \
     --exclude "nextcloud_aio_mastercontainer/certs/"** \
     --exclude "nextcloud_aio_mastercontainer/data/configuration.json" \
