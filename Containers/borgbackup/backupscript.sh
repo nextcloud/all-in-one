@@ -259,8 +259,8 @@ if [ "$BORG_MODE" = restore ]; then
     # Restore everything except the configuration file
     if ! rsync --stats --archive --human-readable -vv --delete \
     --exclude "nextcloud_aio_apache/caddy/"** \
-    --exclude "nextcloud_aio_elasticsearch/" \
     --include "nextcloud_aio_elasticsearch/"** \
+    --exclude "nextcloud_aio_elasticsearch/" \
     --exclude "nextcloud_aio_mastercontainer/caddy/"** \
     --exclude "nextcloud_aio_mastercontainer/certs/"** \
     --exclude "nextcloud_aio_mastercontainer/data/configuration.json" \
