@@ -5,12 +5,14 @@ You can run the containers that are build for AIO with docker-compose. This come
 ### Advantages
 - You can run it without a container having access to the docker socket
 - You can modify all values on your own
+- You can run the containers with docker swarm
 
 ### Disadvantages
 - You lose the AIO interface
 - You lose update notifications and automatic updates
 - You lose all AIO backup and restore features
 - You need to know what you are doing, especially when modifying the docker-compose file
+- For updating, you need to strictly follow the at the bottom described update routine
 - Probably more
 
 ## How to use this?
