@@ -432,6 +432,23 @@ You can configure the Nextcloud container to use a specific directory on your ho
     -o o="bind"
     ```
     (The value `/host_mnt/c/your/data/path` in this example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
+⚠️️ **Attention**: Make sure the user www-data can access the folder.  
+
+#### Can I use a CIFS/SMB share as Datadir? ####
+
+Sure. Add this to your `etc/fstab`:
+
+```
+//your-storage-host/subpath /mnt/storagebox cifs rw,credentials=/etc/storage-credentials.txt,uid=www-data,gid=0,file_mode=0770,dir_mode=0770 0 0
+```
+
+and into `/etc/storage-credentials.txt`:
+```
+username=<smb/cifs username>
+password=<password>
+```
+
+Now you can use /mnt/storagebox as Datadir like described above
 
 ### How to allow the Nextcloud container to access directories on the host?
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
