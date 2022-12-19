@@ -108,6 +108,8 @@ services:
   nextcloud-aio-redis:
     container_name: nextcloud-aio-redis
     image: nextcloud/aio-redis:latest
+    volumes:
+      - nextcloud_aio_redis:/data:rw
     environment:
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
       - TZ=${TIMEZONE}
@@ -215,6 +217,8 @@ volumes:
     name: nextcloud_aio_onlyoffice
   nextcloud_aio_nextcloud_data:
     name: nextcloud_aio_nextcloud_data
+  nextcloud_aio_redis:
+    name: nextcloud_aio_redis
 
 networks:
   nextcloud-aio:
