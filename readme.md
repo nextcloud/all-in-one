@@ -431,24 +431,24 @@ You can configure the Nextcloud container to use a specific directory on your ho
     -o type="none" ^
     -o o="bind"
     ```
-    (The value `/host_mnt/c/your/data/path` in this example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
-⚠️️ **Attention**: Make sure the user www-data can access the folder.  
+(The value `/host_mnt/c/your/data/path` in this example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
 
-#### Can I use a CIFS/SMB share as Datadir? ####
+### Can I use a CIFS/SMB share as Nextcloud's datadir?
 
-Sure. Add this to your `etc/fstab`:
+Sure. Add this to the `/etc/fstab` file: <br>
+`<your-storage-host-and-subpath> <your-mount-dir> cifs rw,credentials=<your-credentials-file>,uid=33,gid=0,file_mode=0770,dir_mode=0770 0 0`<br>
+(Of course you need to modify `<your-storage-host-and-subpath>`, `<your-mount-dir>` and `<your-credentials-file>` for your specific case.)
 
-```
-//your-storage-host/subpath /mnt/storagebox cifs rw,credentials=/etc/storage-credentials.txt,uid=www-data,gid=0,file_mode=0770,dir_mode=0770 0 0
-```
-
-and into `/etc/storage-credentials.txt`:
+One example could look like this:<br>
+`//your-storage-host/subpath /mnt/storagebox cifs rw,credentials=/etc/storage-credentials,uid=33,gid=0,file_mode=0770,dir_mode=0770 0 0`<br>
+and add into `/etc/storage-credentials`:
 ```
 username=<smb/cifs username>
 password=<password>
 ```
+(Of course you need to modify `<smb/cifs username>` and `<password>` for your specific case.)
 
-Now you can use /mnt/storagebox as Datadir like described above
+Now you can use `/mnt/storagebox` as Nextcloud's datadir like described in the section above above this one.
 
 ### How to allow the Nextcloud container to access directories on the host?
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
