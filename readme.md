@@ -496,6 +496,9 @@ Some Nextcloud apps require additional php extensions that must be bundled withi
 
 You can do so by adding `-e NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS="imagick extension1 extension2"` to the docker run command of the mastercontainer and customize the value to your fitting. It must be a string with small letters a-z, digits 0-9, spaces, dots and hyphens or '_'. You can find available extensions here: https://pecl.php.net/packages.php. By default added is `imagick`. If you want to keep that, you need to specify it as well.
 
+### What about the pdlib PHP extension for the facerecognition app?
+The [facerecognition app](https://apps.nextcloud.com/apps/facerecognition) requires the pdlib PHP extension to be installed. Unfortunately, it is not available on PECL nor via PHP core, so there is no way to add this into AIO currently. However you can vote up [this issue](https://github.com/goodspb/pdlib/issues/56) to bring it to PECL and there is the [recognize app](https://apps.nextcloud.com/apps/recognize) that also allows to do face-recognition.
+
 ### Huge docker logs
 When your containers run for a few days without a restart, the container logs that you can view from the AIO interface can get really huge. You can limit the loge sizes by enabling logrotate for docker container logs. Feel free to enable this by following those instructions: https://sandro-keil.de/blog/logrotate-for-docker-container/
 
