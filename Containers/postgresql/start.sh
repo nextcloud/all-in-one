@@ -52,6 +52,10 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         exit 1
     fi
 
+    # Write output to logfile.
+    exec > >(tee -i "$DUMP_DIR/database-import.log")
+    exec 2>&1
+
     # Inform
     echo "Restoring from database dump."
 
