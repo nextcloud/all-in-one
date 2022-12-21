@@ -20,6 +20,13 @@ if ! [ -w "$DUMP_DIR" ]; then
     exit 1
 fi
 
+# Don't start if import failed
+if [ -f "$DUMP_DIR/import.failed" ]; then
+    echo "The database import failed. Please restore a backup and try again."
+    echo "For further clues on what went wrong, look at the logs above."
+    exit 1
+fi
+
 # Delete the datadir once (needed for setting the correct credentials on old instances once)
 if ! [ -f "$DUMP_DIR/export.failed" ] && ! [ -f "$DUMP_DIR/initial-cleanup-done" ]; then
     set -ex
@@ -45,8 +52,15 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         exit 1
     fi
 
+    # Write output to logfile.
+    exec > >(tee -i "$DUMP_DIR/database-import.log")
+    exec 2>&1
+
     # Inform
     echo "Restoring from database dump."
+
+    # Add import.failed file
+    touch "$DUMP_DIR/import.failed"
 
     # Exit if any command fails
     set -ex
@@ -76,7 +90,12 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
 
     # Get the Owner
     DB_OWNER="$(grep "$GREP_STRING" "$DUMP_FILE" | grep -oP 'Owner:.*$' | sed 's|Owner:||;s| ||g')"
-    if [ "$DB_OWNER" != "oc_$POSTGRES_USER" ]; then
+    if [ "$DB_OWNER" = "$POSTGRES_USER" ]; then
+        DIFFERENT_DB_OWNER=1
+        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+            ALTER DATABASE "$POSTGRES_DB" OWNER TO "$POSTGRES_USER";
+EOSQL
+    elif [ "$DB_OWNER" != "oc_$POSTGRES_USER" ]; then
         DIFFERENT_DB_OWNER=1
         psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
             CREATE USER "$DB_OWNER" WITH PASSWORD '$POSTGRES_PASSWORD' CREATEDB;
@@ -104,6 +123,9 @@ EOSQL
 
     # Don't exit if command fails anymore
     set +ex
+
+    # Remove import failed file if everything went correctly
+    rm "$DUMP_DIR/import.failed"
 fi
 
 # Cover the last case
