@@ -10,7 +10,7 @@ In order to run Nextcloud behind a reverse proxy, you need to specify the port t
 1. Optional: If the reverse proxy is installed on the same host, you should limit the apache container to only listen on localhost. See [point 3](#3-if-the-reverse-proxy-is-installed-on-the-same-host-you-should-configure-the-apache-container-to-only-listen-on-localhost)
 1. **Open the AIO interface. See [point 4](#4-open-the-aio-interface)**
 1. Optional: Get a valid certificate for the AIO interface! See [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface)
-1.Optional: How to debug things? See [point 6](#6-how-to-debug-things)
+1. Optional: How to debug things? See [point 6](#6-how-to-debug-things)
 
 ## 1. Add this to your reverse proxy config
 
