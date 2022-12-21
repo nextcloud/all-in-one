@@ -199,6 +199,7 @@ RUN set -ex; \
         sudo \
         grep \
         coreutils \
+        gcompat \
     ; \
     rm -rf /var/lib/apt/lists/*
 
