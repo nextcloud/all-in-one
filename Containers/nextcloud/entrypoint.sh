@@ -415,6 +415,44 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
     # Fix https://github.com/nextcloud/all-in-one/issues/188:
     php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
+    # Make collabora more save
+    COLLABORA_IPv4_ADDRESS="$(echo "<?php echo gethostbyname('$NC_DOMAIN');" | php | head -1)"
+    COLLABORA_IPv6_Address="<?php \$record = dns_get_record('$NC_DOMAIN', DNS_AAAA);"
+    # shellcheck disable=SC2016
+    COLLABORA_IPv6_Address+='if (!empty($record)) {echo $record[0]["ipv6"];}'
+    COLLABORA_IPv6_Address="$(echo "$COLLABORA_IPv6_Address" | php | head -1)"
+    COLLABORA_ALLOW_LIST="$(php /var/www/html/occ config:app:get richdocuments wopi_allowlist)"
+    if [ -n "$COLLABORA_IPv4_ADDRESS" ]; then
+        if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$COLLABORA_IPv4_ADDRESS"; then
+            if [ -z "$COLLABORA_ALLOW_LIST" ]; then
+                COLLABORA_ALLOW_LIST="$COLLABORA_IPv4_ADDRESS"
+            else
+                COLLABORA_ALLOW_LIST+=",$COLLABORA_IPv4_ADDRESS"
+            fi
+        fi
+    else
+        echo "Warning: No ipv4-address found for the collabora container."
+    fi
+    if [ -n "$COLLABORA_IPv6_ADDRESS" ]; then
+        if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$COLLABORA_IPv6_ADDRESS"; then
+            if [ -z "$COLLABORA_ALLOW_LIST" ]; then
+                COLLABORA_ALLOW_LIST="$COLLABORA_IPv6_ADDRESS"
+            else
+                COLLABORA_ALLOW_LIST+=",$COLLABORA_IPv6_ADDRESS"
+            fi
+        fi
+    else
+        echo "No ipv6-address found for the collabora container."
+    fi
+    if [ -n "$COLLABORA_ALLOW_LIST" ]; then
+        PRIVATE_IP_RANGES='127.0.0.1/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,fd00::/8,::1'
+        if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$PRIVATE_IP_RANGES"; then
+            COLLABORA_ALLOW_LIST+=",$PRIVATE_IP_RANGES"
+        fi
+        php /var/www/html/occ config:app:set richdocuments wopi_allowlist --value="$COLLABORA_ALLOW_LIST"
+    else
+        echo "Warning: wopi_allowlist is empty which should not be the case!"
+    fi
 else
     if [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ app:remove richdocuments
