@@ -15,7 +15,7 @@ elif [ -z "$SIGNALING_SECRET" ]; then
     exit 1
 fi
 
-# Turn
+# Turn: https://github.com/coturn/coturn/blob/master/examples/etc/turnserver.conf
 cat << TURN_CONF > "/etc/turnserver.conf"
 listening-port=$TALK_PORT
 fingerprint
@@ -29,6 +29,9 @@ stale-nonce
 no-multicast-peers
 simple-log
 pidfile=/var/tmp/turnserver.pid
+no-tls
+no-dtls
+userdb=/var/lib/turn/turndb
 TURN_CONF
 
 # Janus

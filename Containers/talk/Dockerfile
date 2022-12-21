@@ -53,11 +53,13 @@ RUN curl -sL -o "/usr/share/janus/lua/json.lua" "https://raw.githubusercontent.c
 
 RUN mkdir -p /etc/nats; \
     echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf; \
+    mkdir /var/lib/turn; \
     chown talk:talk /etc; \
     chown talk:talk -R /etc/nats; \
     chown talk:talk -R /etc/janus; \
     chown talk:talk -R /etc/signaling; \
-    chown talk:talk -R /usr
+    chown talk:talk -R /usr; \
+    chown talk:talk -R /var/lib/turn;
 
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
