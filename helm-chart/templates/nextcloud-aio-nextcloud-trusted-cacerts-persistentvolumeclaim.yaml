@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    io.kompose.service: nextcloud-aio-nextcloud-trusted-cacerts
+  name: nextcloud-aio-nextcloud-trusted-cacerts
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.MAX_STORAGE_SIZE }}
