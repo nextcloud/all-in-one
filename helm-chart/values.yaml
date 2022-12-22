@@ -1,0 +1,34 @@
+IMAGE_TAG: latest          # Version of docker images, should be latest or latest-arm64. Note: latest-arm64 has no clamav support
+AIO_TOKEN: 123456          # Has no function but needs to be set!
+AIO_URL: localhost          # Has no function but needs to be set!
+APACHE_MAX_SIZE: 10737418240          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT
+APACHE_PORT: 443          # Changing this to a different value than 443 will allow you to run it behind a reverse proxy.
+CLAMAV_ENABLED: no          # Setting this to yes enables the option in Nextcloud automatically. Note: latest-arm64 has no clamav support
+COLLABORA_DICTIONARIES: de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru        # You can change this in order to enable other dictionaries for collabora
+COLLABORA_ENABLED: yes          # Setting this to yes enables the option in Nextcloud automatically.
+COLLABORA_SECCOMP_POLICY: --o:security.seccomp=true          # Changing the value to false allows to disable the seccomp feature of the Collabora container.
+DATABASE_PASSWORD:           # TODO! This needs to be a unique and good password!
+FULLTEXTSEARCH_ENABLED: no          # Setting this to yes enables the option in Nextcloud automatically.
+IMAGINARY_ENABLED: no          # Setting this to yes enables the option in Nextcloud automatically.
+JANUS_API_KEY:           # TODO! This needs to be a unique and good password!
+NC_DOMAIN: yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.
+NEXTCLOUD_ADDITIONAL_APKS: imagemagick        # This allows to add additional packages to the Nextcloud container permanently. Default is imagemagick but can be overwritten by modifying this value.
+NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS: imagick        # This allows to add additional php extensions to the Nextcloud container permanently. Default is imagick but can be overwritten by modifying this value.
+NEXTCLOUD_MAX_TIME: 3600          # This allows to change the upload time limit of the Nextcloud container
+NEXTCLOUD_MEMORY_LIMIT: 512M          # This allows to change the PHP memory limit of the Nextcloud container
+NEXTCLOUD_MOUNT:        # Setting this to any value allows to enable external storages in Nextcloud
+NEXTCLOUD_PASSWORD:           # TODO! This is the password of the initially created Nextcloud admin with username admin.
+NEXTCLOUD_STARTUP_APPS: deck twofactor_totp tasks calendar contacts        # Allows to modify the Nextcloud apps that are installed on starting AIO the first time
+NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container
+NEXTCLOUD_UPLOAD_LIMIT: 10G          # This allows to change the upload limit of the Nextcloud container
+ONLYOFFICE_ENABLED: no          # Setting this to yes enables the option in Nextcloud automatically.
+ONLYOFFICE_SECRET:           # TODO! This needs to be a unique and good password!
+REDIS_PASSWORD:           # TODO! This needs to be a unique and good password!
+SIGNALING_SECRET:           # TODO! This needs to be a unique and good password!
+TALK_ENABLED: yes          # Setting this to yes enables the option in Nextcloud automatically.
+TALK_PORT: 3478          # This allows to adjust the port that the talk container is using.
+TIMEZONE: Europe/Berlin          # TODO! This is the timezone that your containers will use.
+TURN_SECRET:           # TODO! This needs to be a unique and good password!
+UPDATE_NEXTCLOUD_APPS: no          # When setting to yes, it will automatically update all installed Nextcloud apps upon container startup on saturdays.
+MAX_STORAGE_SIZE: 10Gi        # You can adjust the max storage that each volume can use with this value
+STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes

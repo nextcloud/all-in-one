@@ -2,8 +2,8 @@ name: Update Helm Chart
 
 on:
   workflow_dispatch:
-  # schedule:
-  # - cron:  '00 12 * * *'
+  schedule:
+  - cron:  '00 12 * * *'
 
 jobs:
   psalm:
@@ -14,7 +14,12 @@ jobs:
         uses: actions/checkout@v3
       - name: update helm chart
         run: |
-          sudo bash helm-chart/update-helm.sh
+          DOCKER_TAG="$(curl -L -s 'https://registry.hub.docker.com/v2/repositories/nextcloud/all-in-one/tags?page_size=1024' | jq '."results"[]["name"]' | sed 's|"||g' | grep '^20' | sort -r | head -1)"
+          DOCKER_TAG="${DOCKER_TAG%%latest*}"
+          export DOCKER_TAG
+          if [ -n "$DOCKER_TAG" ] && ! grep -q "$DOCKER_TAG" ./helm-chart/templates/nextcloud-aio-nextcloud-deployment.yaml; then
+            sudo bash helm-chart/update-helm.sh "$DOCKER_TAG"
+          fi
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
@@ -25,4 +30,4 @@ jobs:
           labels: dependencies
           milestone: next
           branch: aio-helm-update
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
