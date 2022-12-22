@@ -484,7 +484,7 @@ If you get an error during the domain validation which states that your ip-addre
 You can run AIO also with docker rootless. How to do this is documented here: [docker-rootless.md](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md)
 
 ### How to change the Nextcloud apps that are installed on the first startup?
-You might want to adjust the Nextcloud apps that are installed upon the first startup of the Nextcloud container. You can do so by adding `-e NEXTCLOUD_STARTUP_APPS="deck tasks calendar contacts files_lock"` to the docker run command of the mastercontainer and customize the value to your fitting. It must be a string with small letters a-z, spaces and hyphens or '_'.
+You might want to adjust the Nextcloud apps that are installed upon the first startup of the Nextcloud container. You can do so by adding `-e NEXTCLOUD_STARTUP_APPS="deck tasks calendar contacts"` to the docker run command of the mastercontainer and customize the value to your fitting. It must be a string with small letters a-z, spaces and hyphens or '_'.
 
 ### How to add packets permanently to the Nextcloud container?
 Some Nextcloud apps require additional external dependencies that must be bundled within Nextcloud container in order to work correctly. As we cannot put each and every dependency for all apps into the container - as this would make the project very fast unmaintainable - there is an official way how you can add additional dependencies into the Nextcloud container. However note that doing this is disrecommended since we do not test Nextcloud apps that require external dependencies. 
