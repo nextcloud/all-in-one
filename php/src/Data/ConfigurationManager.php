@@ -726,7 +726,7 @@ class ConfigurationManager
         if (is_string($apps)) {
             return trim($apps);
         }
-        return 'deck tasks calendar contacts';
+        return 'deck tasks calendar contacts files_lock';
     }
 
     public function GetCollaboraDictionaries() : string {
