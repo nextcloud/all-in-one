@@ -15,7 +15,7 @@
 - [ ] When starting the mastercontainer with `-e NEXTCLOUD_TRUSTED_CACERTS_DIR=/path/to/my/cacerts`, the resulting nextcloud container should trust all the Certification Authorities, whose certificates are included in the directory `/path/to/my/cacerts` on the host.
 See https://github.com/nextcloud/all-in-one#how-to-trust-user-defiend-certification-authorities-ca
 - [ ] When starting the mastercontainer with `-e COLLABORA_SECCOMP_DISABLED=true`, the resulting collabora container should have `--o:security.seccomp=false` applied to it.
-- [ ] When starting the mastercontainer with `-e NEXTCLOUD_STARTUP_APPS=deck`, the resulting Nextcloud should have only installed the deck app and not the other apps that get installed by default. Default are `deck tasks calendar contacts files_lock`.
+- [ ] When starting the mastercontainer with `-e NEXTCLOUD_STARTUP_APPS=deck`, the resulting Nextcloud should have only installed the deck app and not the other apps that get installed by default. Default are `deck tasks calendar contacts`.
 - [ ] When starting the mastercontainer with `-e NEXTCLOUD_ADDITIONAL_APKS=zip`, the resulting Nextcloud container should have the zip package installed and not imagemagick.
 - [ ] When starting the mastercontainer with `-e NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=inotify`, the resulting Nextcloud container should have the inotify extension installed and not the imagick extension.
 
