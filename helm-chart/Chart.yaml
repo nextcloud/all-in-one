@@ -1,0 +1,8 @@
+name: Nextcloud AIO Helm Chart
+description: A generated Helm Chart for Nextcloud AIO from Skippbox Kompose
+version: 0.0.1
+apiVersion: v1
+keywords:
+  - latest
+sources: https://github.com/nextcloud/all-in-one/tree/main/helm-chart
+home: https://github.com/nextcloud/all-in-one/tree/main/helm-chart
