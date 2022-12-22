@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: nextcloud-aio-fulltextsearch
+  name: nextcloud-aio-fulltextsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nextcloud-aio-fulltextsearch
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c -f latest.yml
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/nextcloud-aio: "true"
+        io.kompose.service: nextcloud-aio-fulltextsearch
+    spec:
+      containers:
+        - env:
+            - name: ES_JAVA_OPTS
+              value: -Xms1024M -Xmx1024M
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+            - name: discovery.type
+              value: single-node
+          image: nextcloud/aio-fulltextsearch:latest
+          name: nextcloud-aio-fulltextsearch
+          resources: {}
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: nextcloud-aio-elasticsearch
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: nextcloud-aio-elasticsearch
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-elasticsearch
+status: {}
