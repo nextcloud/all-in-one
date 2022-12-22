@@ -1,17 +1,14 @@
-FROM debian:bullseye-20230109-slim
+FROM alpine:3.17.1
 
 RUN set -ex; \
     \
-    echo "deb http://deb.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends borgbackup -t bullseye-backports; \
-    apt-get install -y --no-install-recommends \
+    apk add --no-cache \
+        bash \
+        borgbackup \
         rsync \
         fuse \
-        python3-llfuse \
-        jq \
-    ; \
-    rm -rf /var/lib/apt/lists/*
+        py3-llfuse \
+        jq
 
 VOLUME /root
 
