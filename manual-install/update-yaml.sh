@@ -107,6 +107,7 @@ echo "" >> containers.yml
 echo "$OUTPUT" >> containers.yml
 
 sed -i '/container_name/d' containers.yml
+sed -i 's|^ $||' containers.yml
 
 VOLUMES="$(grep -oP 'nextcloud_aio_[a-z_]+' containers.yml | sort -u)"
 mapfile -t VOLUMES <<< "$VOLUMES"
@@ -131,7 +132,7 @@ sed -i '/image:/s/$/:latest/' latest.yml
 
 cat containers.yml > latest-arm64.yml
 sed -i '/image:/s/$/:latest-arm64/' latest-arm64.yml
-sed -i '/  nextcloud-aio-clamav:/,/^ $/d' latest-arm64.yml
+sed -i '/  nextcloud-aio-clamav:/,/^$/d' latest-arm64.yml
 sed -i '/nextcloud[-_]aio[-_]clamav/d' latest-arm64.yml
 sed -i '/CLAMAV_ENABLED/d' latest-arm64.yml
 
