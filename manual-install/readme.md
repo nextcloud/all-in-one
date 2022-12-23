@@ -27,6 +27,11 @@ Now copy the provided yaml file to a docker-compose file by running on x64 `cp l
 
 Now you should be ready to go with `sudo docker-compose --env-file my.conf up`.
 
+## Docker profiles
+The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, onlyoffice, talk, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`.
+
+For a complete all-in-one with collabora use `sudo docker-compose --env-file my.conf --profile collabora --profile talk --profile clamav --profile imaginary --profile fulltextsearch up`.
+
 ## How to update?
 Since the AIO containers may change in the future, it is highly recommended to strictly follow the following procedure whenever you want to upgrade your containers.
 1. Run `sudo docker-compose --env-file my.conf down` to stop all running containers
