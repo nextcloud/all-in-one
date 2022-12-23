@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ["8.0"]
+        php-versions: ["8.1"]
 
     name: php-lint
 

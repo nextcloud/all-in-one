@@ -23,7 +23,7 @@ jobs:
       - name: Modify the Dockerfile
         run: |
           set -x
-          sed -i 's|FROM php:7.4-alpine|FROM php:8.0-alpine|' "psalm-github-actions/Dockerfile"
+          sed -i 's|FROM php:7.4-alpine|FROM php:8.1-alpine|' "psalm-github-actions/Dockerfile"
           cat << APCU >> "psalm-github-actions/Dockerfile"
           RUN mkdir -p /usr/src/php/ext/apcu && \
             curl -fsSL https://pecl.php.net/get/apcu | tar xvz -C "/usr/src/php/ext/apcu" --strip 1 && \
