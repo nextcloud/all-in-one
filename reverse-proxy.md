@@ -46,10 +46,11 @@ Add this as a new Apache site config:
     RewriteEngine On
     ProxyPreserveHost On
     AllowEncodedSlashes NoDecode
-    ProxyPass / http://localhost:11000/
+    ProxyPass / http://localhost:11000/ nocanon
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
-    RewriteRule ^/?(.*) "ws://localhost:11000/$1" [P,QSA,B=?:;]
+    RewriteCond %{THE_REQUEST} "^[a-zA-Z]+ /(.*) HTTP/\d+(\.\d+)?$"
+    RewriteRule .? "ws://localhost:11000/%1" [P,L]
 
     # Enable h2, h2c and http1.1
     Protocols h2 h2c http/1.1
