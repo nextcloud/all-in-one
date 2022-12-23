@@ -21,9 +21,9 @@ First, install docker and docker-compose if not already done. Then simply run th
 git clone https://github.com/nextcloud/all-in-one.git
 cd all-in-one/manual-install
 ```
-Then copy the sample.conf to a new file, e.g. `cp sample.conf my.conf`, open the new conf file, e.g. with `nano my.conf`, edit all values that are marked with `# TODO!`, close and save the file.
+Then copy the sample.conf to a new file, e.g. `cp sample.conf my.conf`, open the new conf file, e.g. with `nano my.conf`, edit all values that are marked with `# TODO!`, close and save the file. For arm64 support use `IMAGE_TAG=latest-arm64` (Note: there is no clamav image for arm64).
 
-Now copy the provided yaml file to a docker-compose file by running on x64 `cp latest.yml docker-compose.yml` and on arm64 `cp latest-arm64.yml docker-compose.yml`.
+Now copy the provided yaml file to a docker-compose file by running `cp latest.yml docker-compose.yml`.
 
 Now you should be ready to go with `sudo docker-compose --env-file my.conf up`.
 
