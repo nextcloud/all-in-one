@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-database:
     container_name: nextcloud-aio-database
     image: nextcloud/aio-postgresql:latest
@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-nextcloud:
     container_name: nextcloud-aio-nextcloud
     depends_on:
@@ -104,7 +104,7 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-redis:
     container_name: nextcloud-aio-redis
     image: nextcloud/aio-redis:latest
@@ -115,9 +115,10 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-collabora:
     container_name: nextcloud-aio-collabora
+    profiles: ["collabora"]
     image: nextcloud/aio-collabora:latest
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443
@@ -128,9 +129,10 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-talk:
     container_name: nextcloud-aio-talk
+    profiles: ["talk"]
     image: nextcloud/aio-talk:latest
     ports:
       - ${TALK_PORT}:${TALK_PORT}/tcp
@@ -146,9 +148,10 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-clamav:
     container_name: nextcloud-aio-clamav
+    profiles: ["clamav"]
     image: nextcloud/aio-clamav:latest
     environment:
       - TZ=${TIMEZONE}
@@ -158,9 +161,10 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-onlyoffice:
     container_name: nextcloud-aio-onlyoffice
+    profiles: ["onlyoffice"]
     image: nextcloud/aio-onlyoffice:latest
     environment:
       - TZ=${TIMEZONE}
@@ -173,9 +177,10 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-imaginary:
     container_name: nextcloud-aio-imaginary
+    profiles: ["imaginary"]
     image: nextcloud/aio-imaginary:latest
     environment:
       - TZ=${TIMEZONE}
@@ -183,9 +188,10 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-fulltextsearch:
     container_name: nextcloud-aio-fulltextsearch
+    profiles: ["fulltextsearch"]
     image: nextcloud/aio-fulltextsearch:latest
     environment:
       - TZ=${TIMEZONE}

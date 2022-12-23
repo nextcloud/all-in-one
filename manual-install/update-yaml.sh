@@ -92,6 +92,11 @@ do
     if [ "$name" != "nextcloud-aio-apache" ]; then
         OUTPUT="$(echo "$OUTPUT" | sed "/  $name:/i\ ")"
     fi
+    if ! echo "$name" | grep "apache$" && ! echo "$name" | grep "database$" && ! echo "$name" | grep "nextcloud$" && ! echo "$name" | grep "redis$"; then
+        sed -i '/container_name/d' containers.yml
+        SLIM_NAME="${name##nextcloud-aio-}"
+        OUTPUT="$(echo "$OUTPUT" | sed "/container_name: $name$/a\ \ \ \ profiles:\ \[\"$SLIM_NAME\"\]")"
+    fi
 done
 
 OUTPUT="$(echo "$OUTPUT" | sed "/restart: /a\ \ \ \ networks:\n\ \ \ \ \ \ - nextcloud-aio")"
@@ -102,6 +107,7 @@ echo "" >> containers.yml
 echo "$OUTPUT" >> containers.yml
 
 sed -i '/container_name/d' containers.yml
+sed -i 's|^ $||' containers.yml
 
 VOLUMES="$(grep -oP 'nextcloud_aio_[a-z_]+' containers.yml | sort -u)"
 mapfile -t VOLUMES <<< "$VOLUMES"
@@ -126,7 +132,7 @@ sed -i '/image:/s/$/:latest/' latest.yml
 
 cat containers.yml > latest-arm64.yml
 sed -i '/image:/s/$/:latest-arm64/' latest-arm64.yml
-sed -i '/  nextcloud-aio-clamav:/,/^ $/d' latest-arm64.yml
+sed -i '/  nextcloud-aio-clamav:/,/^$/d' latest-arm64.yml
 sed -i '/nextcloud[-_]aio[-_]clamav/d' latest-arm64.yml
 sed -i '/CLAMAV_ENABLED/d' latest-arm64.yml
 
