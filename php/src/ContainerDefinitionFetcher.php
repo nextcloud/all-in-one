@@ -178,7 +178,7 @@ class ContainerDefinitionFetcher
 
             $containers[] = new Container(
                 $entry['container_name'],
-                $entry['displayName'],
+                $entry['display_name'],
                 $entry['image'],
                 $entry['restart'],
                 $entry['stop_grace_period'],

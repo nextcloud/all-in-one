@@ -20,7 +20,7 @@
 							"type": "string"
 						}
 					},
-					"displayName": {
+					"display_name": {
 						"type": "string"
 					},
 					"environment": {
