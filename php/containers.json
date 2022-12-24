@@ -41,7 +41,7 @@
         }
       ],
       "stop_grace_period": 10,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-database",
@@ -75,7 +75,7 @@
         "PGTZ=%TIMEZONE%"
       ],
       "stop_grace_period": 1800,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-nextcloud",
@@ -163,7 +163,7 @@
         "ADDITIONAL_PHP_EXTENSIONS=%NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS%"
       ],
       "stop_grace_period": 10,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-redis",
@@ -190,7 +190,7 @@
         "ONLYOFFICE_SECRET"
       ],
       "stop_grace_period": 10,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-collabora",
@@ -216,7 +216,7 @@
       ],
       "secrets": [],
       "stop_grace_period": 10,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-talk",
@@ -245,7 +245,7 @@
         "JANUS_API_KEY"
       ],
       "stop_grace_period": 10,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-borgbackup",
@@ -318,7 +318,7 @@
         "BORGBACKUP_PASSWORD"
       ],
       "stop_grace_period": 10,
-      "restartPolicy": ""
+      "restart": ""
     },
     {
       "container_name": "nextcloud-aio-watchtower",
@@ -339,7 +339,7 @@
       ],
       "secrets": [],
       "stop_grace_period": 10,
-      "restartPolicy": ""
+      "restart": ""
     },
     {
       "depends_on": [],
@@ -359,7 +359,7 @@
         "INSTANCE_ID"
       ],
       "stop_grace_period": 1,
-      "restartPolicy": ""
+      "restart": ""
     },
     {
       "container_name": "nextcloud-aio-clamav",
@@ -383,7 +383,7 @@
       ],
       "secrets": [],
       "stop_grace_period": 10,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-onlyoffice",
@@ -411,7 +411,7 @@
         "ONLYOFFICE_SECRET"
       ],
       "stop_grace_period": 10,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-imaginary",
@@ -428,7 +428,7 @@
       "volumes": [],
       "secrets": [],
       "stop_grace_period": 10,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
@@ -453,7 +453,7 @@
       ],
       "secrets": [],
       "stop_grace_period": 10,
-      "restartPolicy": "unless-stopped"
+      "restart": "unless-stopped"
     }
   ]
 }

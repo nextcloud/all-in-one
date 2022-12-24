@@ -18,7 +18,6 @@ echo "$OUTPUT" | yq -P > ./manual-install/containers.yml
 cd manual-install || exit
 sed -i "s|'||g" containers.yml
 sed -i 's|production:|services:|' containers.yml
-sed -i 's|restartPolicy:|restart:|' containers.yml
 sed -i '/displayName:/d' containers.yml
 sed -i '/stop_grace_period:/s/$/s/' containers.yml
 sed -i '/: \[\]/d' containers.yml

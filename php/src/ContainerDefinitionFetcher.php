@@ -180,7 +180,7 @@ class ContainerDefinitionFetcher
                 $entry['container_name'],
                 $entry['displayName'],
                 $entry['image'],
-                $entry['restartPolicy'],
+                $entry['restart'],
                 $entry['stop_grace_period'],
                 $ports,
                 $internalPorts,
