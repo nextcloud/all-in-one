@@ -11,7 +11,7 @@
 				"additionalProperties": false,
 				"minProperties": 11,
 				"properties": {
-					"containerName": {
+					"image": {
 						"type": "string"
 					},
 					"depends_on": {

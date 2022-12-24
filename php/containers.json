@@ -9,7 +9,7 @@
         "nextcloud-aio-nextcloud"
       ],
       "displayName": "Apache",
-      "containerName": "nextcloud/aio-apache",
+      "image": "nextcloud/aio-apache",
       "ports": [
         "%APACHE_PORT%/tcp"
       ],
@@ -47,7 +47,7 @@
       "container_name": "nextcloud-aio-database",
       "depends_on": [],
       "displayName": "Database",
-      "containerName": "nextcloud/aio-postgresql",
+      "image": "nextcloud/aio-postgresql",
       "ports": [],
       "internalPorts": [
         "5432"
@@ -87,7 +87,7 @@
         "nextcloud-aio-imaginary"
       ],
       "displayName": "Nextcloud",
-      "containerName": "nextcloud/aio-nextcloud",
+      "image": "nextcloud/aio-nextcloud",
       "ports": [],
       "internalPorts": [
         "9000"
@@ -169,7 +169,7 @@
       "container_name": "nextcloud-aio-redis",
       "depends_on": [],
       "displayName": "Redis",
-      "containerName": "nextcloud/aio-redis",
+      "image": "nextcloud/aio-redis",
       "ports": [],
       "internalPorts": [
         "6379"
@@ -196,7 +196,7 @@
       "container_name": "nextcloud-aio-collabora",
       "depends_on": [],
       "displayName": "Collabora",
-      "containerName": "nextcloud/aio-collabora",
+      "image": "nextcloud/aio-collabora",
       "ports": [],
       "internalPorts": [
         "9980"
@@ -222,7 +222,7 @@
       "container_name": "nextcloud-aio-talk",
       "depends_on": [],
       "displayName": "Talk",
-      "containerName": "nextcloud/aio-talk",
+      "image": "nextcloud/aio-talk",
       "ports": [
         "%TALK_PORT%/tcp",
         "%TALK_PORT%/udp"
@@ -251,7 +251,7 @@
       "container_name": "nextcloud-aio-borgbackup",
       "depends_on": [],
       "displayName": "Borgbackup",
-      "containerName": "nextcloud/aio-borgbackup",
+      "image": "nextcloud/aio-borgbackup",
       "ports": [],
       "internalPorts": [],
       "environmentVariables": [
@@ -324,7 +324,7 @@
       "container_name": "nextcloud-aio-watchtower",
       "depends_on": [],
       "displayName": "Watchtower",
-      "containerName": "nextcloud/aio-watchtower",
+      "image": "nextcloud/aio-watchtower",
       "ports": [],
       "internalPorts": [],
       "environmentVariables": [
@@ -345,7 +345,7 @@
       "depends_on": [],
       "container_name": "nextcloud-aio-domaincheck",
       "displayName": "Domaincheck",
-      "containerName": "nextcloud/aio-domaincheck",
+      "image": "nextcloud/aio-domaincheck",
       "ports": [
         "%APACHE_PORT%/tcp"
       ],
@@ -365,7 +365,7 @@
       "container_name": "nextcloud-aio-clamav",
       "depends_on": [],
       "displayName": "ClamAV",
-      "containerName": "nextcloud/aio-clamav",
+      "image": "nextcloud/aio-clamav",
       "ports": [],
       "internalPorts": [
         "3310"
@@ -389,7 +389,7 @@
       "container_name": "nextcloud-aio-onlyoffice",
       "depends_on": [],
       "displayName": "OnlyOffice",
-      "containerName": "nextcloud/aio-onlyoffice",
+      "image": "nextcloud/aio-onlyoffice",
       "ports": [],
       "internalPorts": [
         "80"
@@ -417,7 +417,7 @@
       "container_name": "nextcloud-aio-imaginary",
       "depends_on": [],
       "displayName": "Imaginary",
-      "containerName": "nextcloud/aio-imaginary",
+      "image": "nextcloud/aio-imaginary",
       "ports": [],
       "internalPorts": [
         "9000"
@@ -434,7 +434,7 @@
       "container_name": "nextcloud-aio-fulltextsearch",
       "depends_on": [],
       "displayName": "Fulltextsearch",
-      "containerName": "nextcloud/aio-fulltextsearch",
+      "image": "nextcloud/aio-fulltextsearch",
       "ports": [],
       "internalPorts": [
         "9200"

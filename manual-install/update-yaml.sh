@@ -23,7 +23,6 @@ sed -i 's|environmentVariables:|environment:|' containers.yml
 sed -i '/displayName:/d' containers.yml
 sed -i 's|maxShutdownTime:|stop_grace_period:|' containers.yml
 sed -i '/stop_grace_period:/s/$/s/' containers.yml
-sed -i 's|containerName:|image:|' containers.yml
 sed -i '/: \[\]/d' containers.yml
 sed -i 's|- name: |- |' containers.yml
 
