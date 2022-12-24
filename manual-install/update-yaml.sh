@@ -46,6 +46,7 @@ do
 done
 
 rm -f sample.conf
+echo 'IMAGE_TAG=latest          # Version of docker images, should be latest or latest-arm64. Note: latest-arm64 has no clamav support' >> sample.conf
 VARIABLES="$(grep -oP '%[A-Z_a-z0-6]+%' containers.yml | sort -u)"
 mapfile -t VARIABLES <<< "$VARIABLES"
 for variable in "${VARIABLES[@]}"
@@ -57,6 +58,7 @@ do
 done
 
 sed -i 's|_ENABLED=|_ENABLED=no          # Setting this to "yes" enables the option in Nextcloud automatically.|' sample.conf
+sed -i 's|CLAMAV_ENABLED=no|CLAMAV_ENABLED=no          # Setting this to "yes" enables the option in Nextcloud automatically. Note: latest-arm64 has no clamav support|' sample.conf
 sed -i 's|TALK_ENABLED=no|TALK_ENABLED=yes|' sample.conf
 sed -i 's|COLLABORA_ENABLED=no|COLLABORA_ENABLED=yes|' sample.conf
 sed -i 's|COLLABORA_DICTIONARIES=|COLLABORA_DICTIONARIES="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru"        # You can change this in order to enable other dictionaries for collabora|' sample.conf
@@ -128,12 +130,6 @@ networks:
 NETWORK
 
 cat containers.yml > latest.yml
-sed -i '/image:/s/$/:latest/' latest.yml
-
-cat containers.yml > latest-arm64.yml
-sed -i '/image:/s/$/:latest-arm64/' latest-arm64.yml
-sed -i '/  nextcloud-aio-clamav:/,/^$/d' latest-arm64.yml
-sed -i '/nextcloud[-_]aio[-_]clamav/d' latest-arm64.yml
-sed -i '/CLAMAV_ENABLED/d' latest-arm64.yml
+sed -i "/image:/s/$/:\${IMAGE_TAG}/" latest.yml
 
 rm containers.yml
