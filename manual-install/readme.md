@@ -21,20 +21,26 @@ First, install docker and docker-compose if not already done. Then simply run th
 git clone https://github.com/nextcloud/all-in-one.git
 cd all-in-one/manual-install
 ```
-Then copy the sample.conf to a new file, e.g. `cp sample.conf my.conf`, open the new conf file, e.g. with `nano my.conf`, edit all values that are marked with `# TODO!`, close and save the file. For arm64 support use `IMAGE_TAG=latest-arm64` (Note: there is no clamav image for arm64).
+Then copy the sample.conf to default environment file, e.g. `cp sample.conf .env`, open the new conf file, e.g. with `nano .env`, edit all values that are marked with `# TODO!`, close and save the file.  For arm64 support use `IMAGE_TAG=latest-arm64` (Note: there is no clamav image for arm64).
 
 Now copy the provided yaml file to a docker-compose file by running `cp latest.yml docker-compose.yml`.
 
-Now you should be ready to go with `sudo docker-compose --env-file my.conf up`.
+Now you should be ready to go with `sudo docker-compose up`.
+
+## Docker profiles
+The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, onlyoffice, talk, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`.
+
+For a complete all-in-one with collabora use `sudo docker-compose --profile collabora --profile talk --profile clamav --profile imaginary --profile fulltextsearch up`.
 
 ## How to update?
 Since the AIO containers may change in the future, it is highly recommended to strictly follow the following procedure whenever you want to upgrade your containers.
-1. Run `sudo docker-compose --env-file my.conf down` to stop all running containers
+1. If your previous copy of `sample.conf` is named `my.conf`, run `mv my.conf .env` in order to rename the file to `.env`.
+1. Run `sudo docker-compose down` to stop all running containers
 1. Back up all important files and folders
 1. Run `git pull` in order to get the updated yaml files from the repository. Now bring your `docker-compose.yml` file up-to-date with the updated one from the repository. You can use `diff docker-compose.yml latest.yml` on x64 and `diff docker-compose.yml latest-arm64.yml` on arm64 for comparing.
 1. Also have a look at the `sample.conf` if any variable was added or renamed and add that to your conf file as well. Here may help the diff command as well.
-1. After the file update was successful, simply run `sudo docker-compose --env-file my.conf pull` to pull the new images.
-1. At the end run `sudo docker-compose --env-file my.conf up` in order to start and update the containers with the new configuration.
+1. After the file update was successful, simply run `sudo docker-compose pull` to pull the new images.
+1. At the end run `sudo docker-compose up` in order to start and update the containers with the new configuration.
 
 ## FAQ
 ### Backup and restore?

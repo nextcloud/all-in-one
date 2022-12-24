@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-database:
     container_name: nextcloud-aio-database
     image: nextcloud/aio-postgresql:${IMAGE_TAG}
@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-nextcloud:
     container_name: nextcloud-aio-nextcloud
     depends_on:
@@ -104,7 +104,7 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-redis:
     container_name: nextcloud-aio-redis
     image: nextcloud/aio-redis:${IMAGE_TAG}
@@ -115,10 +115,11 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-collabora:
     container_name: nextcloud-aio-collabora
     image: nextcloud/aio-collabora:${IMAGE_TAG}
+    profiles: ["collabora"]
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443
       - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true ${COLLABORA_SECCOMP_POLICY}
@@ -128,10 +129,11 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-talk:
     container_name: nextcloud-aio-talk
     image: nextcloud/aio-talk:${IMAGE_TAG}
+    profiles: ["talk"]
     ports:
       - ${TALK_PORT}:${TALK_PORT}/tcp
       - ${TALK_PORT}:${TALK_PORT}/udp
@@ -146,10 +148,11 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-clamav:
     container_name: nextcloud-aio-clamav
     image: nextcloud/aio-clamav:${IMAGE_TAG}
+    profiles: ["clamav"]
     environment:
       - TZ=${TIMEZONE}
     volumes:
@@ -158,10 +161,11 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-onlyoffice:
     container_name: nextcloud-aio-onlyoffice
     image: nextcloud/aio-onlyoffice:${IMAGE_TAG}
+    profiles: ["onlyoffice"]
     environment:
       - TZ=${TIMEZONE}
       - JWT_ENABLED=true
@@ -173,20 +177,22 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-imaginary:
     container_name: nextcloud-aio-imaginary
     image: nextcloud/aio-imaginary:${IMAGE_TAG}
+    profiles: ["imaginary"]
     environment:
       - TZ=${TIMEZONE}
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
- 
+
   nextcloud-aio-fulltextsearch:
     container_name: nextcloud-aio-fulltextsearch
     image: nextcloud/aio-fulltextsearch:${IMAGE_TAG}
+    profiles: ["fulltextsearch"]
     environment:
       - TZ=${TIMEZONE}
       - discovery.type=single-node
