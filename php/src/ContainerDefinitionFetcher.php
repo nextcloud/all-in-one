@@ -49,27 +49,27 @@ class ContainerDefinitionFetcher
 
         $containers = [];
         foreach ($data['production'] as $entry) {
-            if ($entry['identifier'] === 'nextcloud-aio-clamav') {
+            if ($entry['container_name'] === 'nextcloud-aio-clamav') {
                 if (!$this->configurationManager->isClamavEnabled()) {
                     continue;
                 }
-            } elseif ($entry['identifier'] === 'nextcloud-aio-onlyoffice') {
+            } elseif ($entry['container_name'] === 'nextcloud-aio-onlyoffice') {
                 if (!$this->configurationManager->isOnlyofficeEnabled()) {
                     continue;
                 }
-            } elseif ($entry['identifier'] === 'nextcloud-aio-collabora') {
+            } elseif ($entry['container_name'] === 'nextcloud-aio-collabora') {
                 if (!$this->configurationManager->isCollaboraEnabled()) {
                     continue;
                 }
-            } elseif ($entry['identifier'] === 'nextcloud-aio-talk') {
+            } elseif ($entry['container_name'] === 'nextcloud-aio-talk') {
                 if (!$this->configurationManager->isTalkEnabled()) {
                     continue;
                 }
-            } elseif ($entry['identifier'] === 'nextcloud-aio-imaginary') {
+            } elseif ($entry['container_name'] === 'nextcloud-aio-imaginary') {
                 if (!$this->configurationManager->isImaginaryEnabled()) {
                     continue;
                 }
-            } elseif ($entry['identifier'] === 'nextcloud-aio-fulltextsearch') {
+            } elseif ($entry['container_name'] === 'nextcloud-aio-fulltextsearch') {
                 if (!$this->configurationManager->isFulltextsearchEnabled()) {
                     continue;
                 }
@@ -177,7 +177,7 @@ class ContainerDefinitionFetcher
             }
 
             $containers[] = new Container(
-                $entry['identifier'],
+                $entry['container_name'],
                 $entry['displayName'],
                 $entry['containerName'],
                 $entry['restartPolicy'],

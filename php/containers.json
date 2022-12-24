@@ -1,7 +1,7 @@
 {
   "production": [
     {
-      "identifier": "nextcloud-aio-apache",
+      "container_name": "nextcloud-aio-apache",
       "dependsOn": [
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
@@ -44,7 +44,7 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-database",
+      "container_name": "nextcloud-aio-database",
       "dependsOn": [],
       "displayName": "Database",
       "containerName": "nextcloud/aio-postgresql",
@@ -78,7 +78,7 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-nextcloud",
+      "container_name": "nextcloud-aio-nextcloud",
       "dependsOn": [
         "nextcloud-aio-database",
         "nextcloud-aio-redis",
@@ -166,7 +166,7 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-redis",
+      "container_name": "nextcloud-aio-redis",
       "dependsOn": [],
       "displayName": "Redis",
       "containerName": "nextcloud/aio-redis",
@@ -193,7 +193,7 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-collabora",
+      "container_name": "nextcloud-aio-collabora",
       "dependsOn": [],
       "displayName": "Collabora",
       "containerName": "nextcloud/aio-collabora",
@@ -219,7 +219,7 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-talk",
+      "container_name": "nextcloud-aio-talk",
       "dependsOn": [],
       "displayName": "Talk",
       "containerName": "nextcloud/aio-talk",
@@ -248,7 +248,7 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-borgbackup",
+      "container_name": "nextcloud-aio-borgbackup",
       "dependsOn": [],
       "displayName": "Borgbackup",
       "containerName": "nextcloud/aio-borgbackup",
@@ -321,7 +321,7 @@
       "restartPolicy": ""
     },
     {
-      "identifier": "nextcloud-aio-watchtower",
+      "container_name": "nextcloud-aio-watchtower",
       "dependsOn": [],
       "displayName": "Watchtower",
       "containerName": "nextcloud/aio-watchtower",
@@ -343,7 +343,7 @@
     },
     {
       "dependsOn": [],
-      "identifier": "nextcloud-aio-domaincheck",
+      "container_name": "nextcloud-aio-domaincheck",
       "displayName": "Domaincheck",
       "containerName": "nextcloud/aio-domaincheck",
       "ports": [
@@ -362,7 +362,7 @@
       "restartPolicy": ""
     },
     {
-      "identifier": "nextcloud-aio-clamav",
+      "container_name": "nextcloud-aio-clamav",
       "dependsOn": [],
       "displayName": "ClamAV",
       "containerName": "nextcloud/aio-clamav",
@@ -386,7 +386,7 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-onlyoffice",
+      "container_name": "nextcloud-aio-onlyoffice",
       "dependsOn": [],
       "displayName": "OnlyOffice",
       "containerName": "nextcloud/aio-onlyoffice",
@@ -414,7 +414,7 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-imaginary",
+      "container_name": "nextcloud-aio-imaginary",
       "dependsOn": [],
       "displayName": "Imaginary",
       "containerName": "nextcloud/aio-imaginary",
@@ -431,7 +431,7 @@
       "restartPolicy": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-fulltextsearch",
+      "container_name": "nextcloud-aio-fulltextsearch",
       "dependsOn": [],
       "displayName": "Fulltextsearch",
       "containerName": "nextcloud/aio-fulltextsearch",

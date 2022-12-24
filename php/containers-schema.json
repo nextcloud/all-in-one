@@ -29,7 +29,7 @@
 							"type": "string"
 						}
 					},
-					"identifier": {
+					"container_name": {
 						"type": "string"
 					},
 					"internalPorts": {
