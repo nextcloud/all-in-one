@@ -25,7 +25,6 @@ sed -i 's|maxShutdownTime:|stop_grace_period:|' containers.yml
 sed -i '/stop_grace_period:/s/$/s/' containers.yml
 sed -i 's|containerName:|image:|' containers.yml
 sed -i '/: \[\]/d' containers.yml
-sed -i 's|dependsOn:|depends_on:|' containers.yml
 sed -i 's|- name: |- |' containers.yml
 
 TCP="$(grep -oP '[%A-Z0-9_]+/tcp' containers.yml | sort -u)"

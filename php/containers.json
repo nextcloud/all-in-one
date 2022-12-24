@@ -2,7 +2,7 @@
   "production": [
     {
       "container_name": "nextcloud-aio-apache",
-      "dependsOn": [
+      "depends_on": [
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-talk",
@@ -45,7 +45,7 @@
     },
     {
       "container_name": "nextcloud-aio-database",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "Database",
       "containerName": "nextcloud/aio-postgresql",
       "ports": [],
@@ -79,7 +79,7 @@
     },
     {
       "container_name": "nextcloud-aio-nextcloud",
-      "dependsOn": [
+      "depends_on": [
         "nextcloud-aio-database",
         "nextcloud-aio-redis",
         "nextcloud-aio-clamav",
@@ -167,7 +167,7 @@
     },
     {
       "container_name": "nextcloud-aio-redis",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "Redis",
       "containerName": "nextcloud/aio-redis",
       "ports": [],
@@ -194,7 +194,7 @@
     },
     {
       "container_name": "nextcloud-aio-collabora",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "Collabora",
       "containerName": "nextcloud/aio-collabora",
       "ports": [],
@@ -220,7 +220,7 @@
     },
     {
       "container_name": "nextcloud-aio-talk",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "Talk",
       "containerName": "nextcloud/aio-talk",
       "ports": [
@@ -249,7 +249,7 @@
     },
     {
       "container_name": "nextcloud-aio-borgbackup",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "Borgbackup",
       "containerName": "nextcloud/aio-borgbackup",
       "ports": [],
@@ -322,7 +322,7 @@
     },
     {
       "container_name": "nextcloud-aio-watchtower",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "Watchtower",
       "containerName": "nextcloud/aio-watchtower",
       "ports": [],
@@ -342,7 +342,7 @@
       "restartPolicy": ""
     },
     {
-      "dependsOn": [],
+      "depends_on": [],
       "container_name": "nextcloud-aio-domaincheck",
       "displayName": "Domaincheck",
       "containerName": "nextcloud/aio-domaincheck",
@@ -363,7 +363,7 @@
     },
     {
       "container_name": "nextcloud-aio-clamav",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "ClamAV",
       "containerName": "nextcloud/aio-clamav",
       "ports": [],
@@ -387,7 +387,7 @@
     },
     {
       "container_name": "nextcloud-aio-onlyoffice",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "OnlyOffice",
       "containerName": "nextcloud/aio-onlyoffice",
       "ports": [],
@@ -415,7 +415,7 @@
     },
     {
       "container_name": "nextcloud-aio-imaginary",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "Imaginary",
       "containerName": "nextcloud/aio-imaginary",
       "ports": [],
@@ -432,7 +432,7 @@
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
-      "dependsOn": [],
+      "depends_on": [],
       "displayName": "Fulltextsearch",
       "containerName": "nextcloud/aio-fulltextsearch",
       "ports": [],

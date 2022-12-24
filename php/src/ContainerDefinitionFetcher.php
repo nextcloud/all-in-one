@@ -142,7 +142,7 @@ class ContainerDefinitionFetcher
             }
 
             $dependsOn = [];
-            foreach ($entry['dependsOn'] as $value) {
+            foreach ($entry['depends_on'] as $value) {
                 if ($value === 'nextcloud-aio-clamav') {
                     if (!$this->configurationManager->isClamavEnabled()) {
                         continue;

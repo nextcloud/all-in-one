@@ -14,7 +14,7 @@
 					"containerName": {
 						"type": "string"
 					},
-					"dependsOn": {
+					"depends_on": {
 						"type": "array",
 						"items": {
 							"type": "string"
