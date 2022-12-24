@@ -130,6 +130,6 @@ networks:
 NETWORK
 
 cat containers.yml > latest.yml
-sed -i '/image:/s/$/:${IMAGE_TAG}/' latest.yml
+sed -i '/image:/s/$/:\${IMAGE_TAG}/' latest.yml
 
 rm containers.yml
