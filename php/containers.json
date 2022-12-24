@@ -1,5 +1,5 @@
 {
-  "production": [
+  "services": [
     {
       "container_name": "nextcloud-aio-apache",
       "depends_on": [
