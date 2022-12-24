@@ -40,7 +40,7 @@
           "writeable": true
         }
       ],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": "unless-stopped"
     },
     {
@@ -74,7 +74,7 @@
         "TZ=%TIMEZONE%",
         "PGTZ=%TIMEZONE%"
       ],
-      "maxShutdownTime": 1800,
+      "stop_grace_period": 1800,
       "restartPolicy": "unless-stopped"
     },
     {
@@ -162,7 +162,7 @@
         "ADDITIONAL_APKS=%NEXTCLOUD_ADDITIONAL_APKS%",
         "ADDITIONAL_PHP_EXTENSIONS=%NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS%"
       ],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": "unless-stopped"
     },
     {
@@ -189,7 +189,7 @@
         "REDIS_PASSWORD",
         "ONLYOFFICE_SECRET"
       ],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": "unless-stopped"
     },
     {
@@ -215,7 +215,7 @@
         }
       ],
       "secrets": [],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": "unless-stopped"
     },
     {
@@ -244,7 +244,7 @@
         "SIGNALING_SECRET",
         "JANUS_API_KEY"
       ],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": "unless-stopped"
     },
     {
@@ -317,7 +317,7 @@
       "secrets": [
         "BORGBACKUP_PASSWORD"
       ],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": ""
     },
     {
@@ -338,7 +338,7 @@
         }
       ],
       "secrets": [],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": ""
     },
     {
@@ -358,7 +358,7 @@
       "secrets": [
         "INSTANCE_ID"
       ],
-      "maxShutdownTime": 1,
+      "stop_grace_period": 1,
       "restartPolicy": ""
     },
     {
@@ -382,7 +382,7 @@
         }
       ],
       "secrets": [],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": "unless-stopped"
     },
     {
@@ -410,7 +410,7 @@
       "secrets": [
         "ONLYOFFICE_SECRET"
       ],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": "unless-stopped"
     },
     {
@@ -427,7 +427,7 @@
       ],
       "volumes": [],
       "secrets": [],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": "unless-stopped"
     },
     {
@@ -452,7 +452,7 @@
         }
       ],
       "secrets": [],
-      "maxShutdownTime": 10,
+      "stop_grace_period": 10,
       "restartPolicy": "unless-stopped"
     }
   ]

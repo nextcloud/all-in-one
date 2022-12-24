@@ -38,7 +38,7 @@
 							"type": "string"
 						}
 					},
-					"maxShutdownTime": {
+					"stop_grace_period": {
 						"type": "integer"
 					},
 					"ports": {

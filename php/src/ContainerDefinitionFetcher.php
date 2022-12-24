@@ -181,7 +181,7 @@ class ContainerDefinitionFetcher
                 $entry['displayName'],
                 $entry['image'],
                 $entry['restartPolicy'],
-                $entry['maxShutdownTime'],
+                $entry['stop_grace_period'],
                 $ports,
                 $internalPorts,
                 $volumes,
