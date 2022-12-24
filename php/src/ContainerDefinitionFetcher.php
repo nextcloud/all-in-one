@@ -172,7 +172,7 @@ class ContainerDefinitionFetcher
             }
             
             $variables = new ContainerEnvironmentVariables();
-            foreach ($entry['environmentVariables'] as $value) {
+            foreach ($entry['environment'] as $value) {
                 $variables->AddVariable($value);
             }
 

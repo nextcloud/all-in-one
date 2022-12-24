@@ -17,7 +17,7 @@
         "%APACHE_PORT%"
       ],
       "secrets": [],
-      "environmentVariables": [
+      "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "COLLABORA_HOST=nextcloud-aio-collabora",
@@ -67,7 +67,7 @@
           "writeable": true
         }
       ],
-      "environmentVariables": [
+      "environment": [
         "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
         "POSTGRES_DB=nextcloud_database",
         "POSTGRES_USER=nextcloud",
@@ -121,7 +121,7 @@
           "writeable": false
         }
       ],
-      "environmentVariables": [
+      "environment": [
         "POSTGRES_HOST=nextcloud-aio-database",
         "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
         "POSTGRES_DB=nextcloud_database",
@@ -174,7 +174,7 @@
       "internalPorts": [
         "6379"
       ],
-      "environmentVariables": [
+      "environment": [
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "TZ=%TIMEZONE%"
       ],
@@ -201,7 +201,7 @@
       "internalPorts": [
         "9980"
       ],
-      "environmentVariables": [
+      "environment": [
         "aliasgroup1=https://%NC_DOMAIN%:443",
         "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true %COLLABORA_SECCOMP_POLICY%",
         "dictionaries=%COLLABORA_DICTIONARIES%",
@@ -230,7 +230,7 @@
       "internalPorts": [
         "%TALK_PORT%"
       ],
-      "environmentVariables": [
+      "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
@@ -254,7 +254,7 @@
       "image": "nextcloud/aio-borgbackup",
       "ports": [],
       "internalPorts": [],
-      "environmentVariables": [
+      "environment": [
         "BORG_PASSWORD=%BORGBACKUP_PASSWORD%",
         "BORG_MODE=%BORGBACKUP_MODE%",
         "SELECTED_RESTORE_TIME=%SELECTED_RESTORE_TIME%",
@@ -327,7 +327,7 @@
       "image": "nextcloud/aio-watchtower",
       "ports": [],
       "internalPorts": [],
-      "environmentVariables": [
+      "environment": [
         "CONTAINER_TO_UPDATE=nextcloud-aio-mastercontainer"
       ],
       "volumes": [
@@ -350,7 +350,7 @@
         "%APACHE_PORT%/tcp"
       ],
       "internalPorts": [],
-      "environmentVariables": [
+      "environment": [
         "INSTANCE_ID=%INSTANCE_ID%",
         "APACHE_PORT=%APACHE_PORT%"
       ],
@@ -370,7 +370,7 @@
       "internalPorts": [
         "3310"
       ],
-      "environmentVariables": [
+      "environment": [
         "TZ=%TIMEZONE%",
         "CLAMD_STARTUP_TIMEOUT=90"
       ],
@@ -394,7 +394,7 @@
       "internalPorts": [
         "80"
       ],
-      "environmentVariables": [
+      "environment": [
         "TZ=%TIMEZONE%",
         "JWT_ENABLED=true",
         "JWT_HEADER=AuthorizationJwt",
@@ -422,7 +422,7 @@
       "internalPorts": [
         "9000"
       ],
-      "environmentVariables": [
+      "environment": [
         "TZ=%TIMEZONE%"
       ],
       "volumes": [],
@@ -439,7 +439,7 @@
       "internalPorts": [
         "9200"
       ],
-      "environmentVariables": [
+      "environment": [
         "TZ=%TIMEZONE%",
         "discovery.type=single-node",
         "ES_JAVA_OPTS=-Xms1024M -Xmx1024M"

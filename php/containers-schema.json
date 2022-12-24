@@ -23,7 +23,7 @@
 					"displayName": {
 						"type": "string"
 					},
-					"environmentVariables": {
+					"environment": {
 						"type": "array",
 						"items": {
 							"type": "string"
