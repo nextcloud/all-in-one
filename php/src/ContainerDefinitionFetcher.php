@@ -5,7 +5,6 @@ namespace AIO;
 use AIO\Container\Container;
 use AIO\Container\ContainerEnvironmentVariables;
 use AIO\Container\ContainerPorts;
-use AIO\Container\ContainerInternalPorts;
 use AIO\Container\ContainerVolume;
 use AIO\Container\ContainerVolumes;
 use AIO\Container\State\RunningState;
@@ -87,14 +86,10 @@ class ContainerDefinitionFetcher
                 $ports->AddPort($port);
             }
 
-            $internalPorts = new ContainerInternalPorts();
-            foreach ($entry['internal_ports'] as $internalPort) {
-                if($internalPort === '%APACHE_PORT%') {
-                    $internalPort = $this->configurationManager->GetApachePort();
-                } elseif($internalPort === '%TALK_PORT%') {
-                    $internalPort = $this->configurationManager->GetTalkPort();
-                }
-                $internalPorts->AddInternalPort($internalPort);
+            if($entry['internal_port'] === '%APACHE_PORT%') {
+                $entry['internal_port'] = $this->configurationManager->GetApachePort();
+            } elseif($entry['internal_port'] === '%TALK_PORT%') {
+                $entry['internal_port'] = $this->configurationManager->GetTalkPort();
             }
 
             $volumes = new ContainerVolumes();
@@ -183,7 +178,7 @@ class ContainerDefinitionFetcher
                 $entry['restart'],
                 $entry['stop_grace_period'],
                 $ports,
-                $internalPorts,
+                $entry['internal_port'],
                 $volumes,
                 $variables,
                 $dependsOn,

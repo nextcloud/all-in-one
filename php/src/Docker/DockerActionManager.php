@@ -124,15 +124,13 @@ class DockerActionManager
         }
 
         $containerName = $container->GetIdentifier();
-        if ($container->GetInternalPorts() !== null) {
-            foreach($container->GetInternalPorts()->GetInternalPorts() as $internalPort) {
-                $connection = @fsockopen($containerName, $internalPort, $errno, $errstr, 0.1);
-                if ($connection) {
-                    fclose($connection);
-                    return new RunningState();
-                } else {
-                    return new StartingState();
-                }
+        if ($container->GetInternalPort() !== "") {
+            $connection = @fsockopen($containerName, (int)$container->GetInternalPort(), $errno, $errstr, 0.1);
+            if ($connection) {
+                fclose($connection);
+                return new RunningState();
+            } else {
+                return new StartingState();
             }
         } else {
             return new RunningState();
