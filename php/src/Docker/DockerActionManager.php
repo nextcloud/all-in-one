@@ -124,8 +124,9 @@ class DockerActionManager
         }
 
         $containerName = $container->GetIdentifier();
-        if ($container->GetInternalPort() !== "") {
-            $connection = @fsockopen($containerName, (int)$container->GetInternalPort(), $errno, $errstr, 0.1);
+        $internalPort = $container->GetInternalPort();
+        if ($internalPort !== "" && $internalPort !== 'host') {
+            $connection = @fsockopen($containerName, (int)$internalPort, $errno, $errstr, 0.1);
             if ($connection) {
                 fclose($connection);
                 return new RunningState();
@@ -216,8 +217,10 @@ class DockerActionManager
         }
 
         $exposedPorts = [];
-        foreach($container->GetPorts()->GetPorts() as $port) {
-            $exposedPorts[$port] = null;
+        if ($container->GetInternalPort() !== 'host') {
+            foreach($container->GetPorts()->GetPorts() as $port) {
+                $exposedPorts[$port] = null;
+            }
         }
 
         $requestBody = [
@@ -566,7 +569,6 @@ class DockerActionManager
                 true
             );
 
-            // get the id from the response
             $id = $response['Id'];
 
             // start the exec
@@ -606,34 +608,39 @@ class DockerActionManager
         }
     }
 
-    private function ConnectContainerIdToNetwork(string $id) : void
+    private function ConnectContainerIdToNetwork(string $id, string $internalPort) : void
     {
-        $url = $this->BuildApiUrl('networks/create');
-        try {
-            $this->guzzleClient->request(
-                'POST',
-                $url,
-                [
-                    'json' => [
-                        'Name' => 'nextcloud-aio',
-                        'CheckDuplicate' => true,
-                        'Driver' => 'bridge',
-                        'Internal' => false,
-                        'Options' => [
-                            'com.docker.network.bridge.enable_icc' => 'true'
+        if ($internalPort === 'host') {
+            $network = 'host';
+        } else {
+            $network = 'nextcloud-aio';
+            $url = $this->BuildApiUrl('networks/create');
+            try {
+                $this->guzzleClient->request(
+                    'POST',
+                    $url,
+                    [
+                        'json' => [
+                            'Name' => 'nextcloud-aio',
+                            'CheckDuplicate' => true,
+                            'Driver' => 'bridge',
+                            'Internal' => false,
+                            'Options' => [
+                                'com.docker.network.bridge.enable_icc' => 'true'
+                            ]
                         ]
                     ]
-                ]
-            );
-        } catch (RequestException $e) {
-            // 409 is undocumented and gets thrown if the network already exists.
-            if ($e->getCode() !== 409) {
-                throw $e;
+                );
+            } catch (RequestException $e) {
+                // 409 is undocumented and gets thrown if the network already exists.
+                if ($e->getCode() !== 409) {
+                    throw $e;
+                }
             }
         }
 
         $url = $this->BuildApiUrl(
-            sprintf('networks/%s/connect', 'nextcloud-aio')
+            sprintf('networks/%s/connect', $network)
         );
         try {
             $this->guzzleClient->request(
@@ -655,12 +662,12 @@ class DockerActionManager
 
     public function ConnectMasterContainerToNetwork() : void
     {
-        $this->ConnectContainerIdToNetwork('nextcloud-aio-mastercontainer');
+        $this->ConnectContainerIdToNetwork('nextcloud-aio-mastercontainer', '');
     }
 
     public function ConnectContainerToNetwork(Container $container) : void
     {
-      $this->ConnectContainerIdToNetwork($container->GetIdentifier());
+      $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort());
     }
 
     public function StopContainer(Container $container) : void {
