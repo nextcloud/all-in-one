@@ -11,7 +11,11 @@
       "display_name": "Apache",
       "image": "nextcloud/aio-apache",
       "ports": [
-        "%APACHE_PORT%/tcp"
+        {
+          "port": "%APACHE_PORT%",
+          "ip_binding": "%APACHE_IP_BINDING%",
+          "protocol": "tcp"
+        }
       ],
       "internal_port": "%APACHE_PORT%",
       "secrets": [],
@@ -214,8 +218,16 @@
       "display_name": "Talk",
       "image": "nextcloud/aio-talk",
       "ports": [
-        "%TALK_PORT%/tcp",
-        "%TALK_PORT%/udp"
+        {
+          "port": "%TALK_PORT%",
+          "ip_binding": "",
+          "protocol": "tcp"
+        },
+        {
+          "port": "%TALK_PORT%",
+          "ip_binding": "",
+          "protocol": "udp"
+        }
       ],
       "internal_port": "%TALK_PORT%",
       "environment": [
@@ -335,7 +347,11 @@
       "display_name": "Domaincheck",
       "image": "nextcloud/aio-domaincheck",
       "ports": [
-        "%APACHE_PORT%/tcp"
+        {
+          "port": "%APACHE_PORT%",
+          "ip_binding": "%APACHE_IP_BINDING%",
+          "protocol": "tcp"
+        }
       ],
       "internal_port": "",
       "environment": [

@@ -4,6 +4,7 @@ namespace AIO;
 
 use AIO\Container\Container;
 use AIO\Container\ContainerEnvironmentVariables;
+use AIO\Container\ContainerPort;
 use AIO\Container\ContainerPorts;
 use AIO\Container\ContainerVolume;
 use AIO\Container\ContainerVolumes;
@@ -75,21 +76,14 @@ class ContainerDefinitionFetcher
             }
 
             $ports = new ContainerPorts();
-            foreach ($entry['ports'] as $port) {
-                if($port === '%APACHE_PORT%/tcp') {
-                    $port = $this->configurationManager->GetApachePort() . '/tcp';
-                } elseif($port === '%TALK_PORT%/tcp') {
-                    $port = $this->configurationManager->GetTalkPort() . '/tcp';
-                } elseif($port === '%TALK_PORT%/udp') {
-                    $port = $this->configurationManager->GetTalkPort() . '/udp';
-                }
-                $ports->AddPort($port);
-            }
-
-            if($entry['internal_port'] === '%APACHE_PORT%') {
-                $entry['internal_port'] = $this->configurationManager->GetApachePort();
-            } elseif($entry['internal_port'] === '%TALK_PORT%') {
-                $entry['internal_port'] = $this->configurationManager->GetTalkPort();
+            foreach ($entry['ports'] as $value) {
+                $ports->AddPort(
+                    new ContainerPort(
+                        $value['port'],
+                        $value['ip_binding'],
+                        $value['protocol']
+                    )
+                );
             }
 
             $volumes = new ContainerVolumes();

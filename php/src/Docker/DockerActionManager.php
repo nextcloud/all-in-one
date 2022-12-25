@@ -125,6 +125,12 @@ class DockerActionManager
 
         $containerName = $container->GetIdentifier();
         $internalPort = $container->GetInternalPort();
+        if($internalPort === '%APACHE_PORT%') {
+            $internalPort = $this->configurationManager->GetApachePort();
+        } elseif($internalPort === '%TALK_PORT%') {
+            $internalPort = $this->configurationManager->GetTalkPort();
+        }
+        
         if ($internalPort !== "" && $internalPort !== 'host') {
             $connection = @fsockopen($containerName, (int)$internalPort, $errno, $errstr, 0.1);
             if ($connection) {
@@ -214,13 +220,6 @@ class DockerActionManager
             }
 
             $volumes[] = $volumeEntry;
-        }
-
-        $exposedPorts = [];
-        if ($container->GetInternalPort() !== 'host') {
-            foreach($container->GetPorts()->GetPorts() as $port) {
-                $exposedPorts[$port] = null;
-            }
         }
 
         $requestBody = [
@@ -350,25 +349,41 @@ class DockerActionManager
         }
 
         $requestBody['HostConfig']['RestartPolicy']['Name'] = $container->GetRestartPolicy();
+ 
+        $exposedPorts = [];
+        if ($container->GetInternalPort() !== 'host') {
+            foreach($container->GetPorts()->GetPort() as $port) {
+                
+                $exposedPorts[$port] = null;
+            }
+        }
 
         if(count($exposedPorts) > 0) {
-            $requestBody['ExposedPorts'] = $exposedPorts;
-            foreach ($container->GetPorts()->GetPorts() as $port) {
-                $portNumber = explode("/", $port);
-                if ($this->configurationManager->GetApachePort() === $portNumber[0] && $this->configurationManager->GetApacheIPBinding() !== '') {
-                    $requestBody['HostConfig']['PortBindings'][$port] = [
-                        [
-                        'HostPort' => $portNumber[0],
-                        'HostIp' => $this->configurationManager->GetApacheIPBinding(),
-                        ]
-                    ];
-                } else {
-                    $requestBody['HostConfig']['PortBindings'][$port] = [
-                        [
-                        'HostPort' => $portNumber[0],
-                        ]
-                    ];
+            foreach ($container->GetPorts() as $value) {
+                $port = $value->port;
+                if($port === '%APACHE_PORT%') {
+                    $port = $this->configurationManager->GetApachePort();
+                } elseif($port === '%TALK_PORT%') {
+                    $port = $this->configurationManager->GetTalkPort();
                 }
+                
+                $ipBinding = $value->ipBinding;
+                if($value['ip_binding'] === '%APACHE_IP_BINDING%') {
+                    $value['ip_binding'] = $this->configurationManager->GetApacheIPBinding();
+                }
+                if ($ipBinding === '') {
+                    $ipBinding = '0.0.0.0';
+                }
+
+                $protocol = $value->protocol;
+                $portWithProtocol = $port . '/' . $protocol;
+                $requestBody['ExposedPorts'][$portWithProtocol] = null;
+                $requestBody['HostConfig']['PortBindings'][$port] = [
+                    [
+                    'HostPort' => $portNumber,
+                    'HostIp' => $ipBinding,
+                    ]
+                ];
             }
         }
 

@@ -41,7 +41,20 @@
 					"ports": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "object",
+							"additionalProperties": false,
+							"minProperties": 3,
+							"properties": {
+								"port": {
+									"type": "string"
+								},
+								"ip_binding": {
+									"type": "string"
+								},
+								"protocol": {
+									"type": "string"
+								}
+							}
 						}
 					},
 					"restart": {
