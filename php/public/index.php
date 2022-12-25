@@ -77,9 +77,9 @@ $app->get('/containers', function ($request, $response, $args) use ($container) 
     return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->GetDomain(),
         'borg_backup_host_location' => $configurationManager->GetBorgBackupHostLocation(),
-        'nextcloud_password' => $configurationManager->GetSecret('NEXTCLOUD_PASSWORD'),
+        'nextcloud_password' => $configurationManager->GetAndGenerateSecret('NEXTCLOUD_PASSWORD'),
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
-        'borgbackup_password' => $configurationManager->GetSecret('BORGBACKUP_PASSWORD'),
+        'borgbackup_password' => $configurationManager->GetAndGenerateSecret('BORGBACKUP_PASSWORD'),
         'is_mastercontainer_update_available' => $dockerActionManger->IsMastercontainerUpdateAvailable(),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
         'is_backup_container_running' => $dockerActionManger->isBackupContainerRunning(),

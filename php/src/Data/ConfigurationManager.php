@@ -32,7 +32,7 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
-    public function GetSecret(string $secretId) : string {
+    public function GetAndGenerateSecret(string $secretId) : string {
         $config = $this->GetConfig();
         if(!isset($config['secrets'][$secretId])) {
             $config['secrets'][$secretId] = bin2hex(random_bytes(24));
@@ -41,6 +41,15 @@ class ConfigurationManager
 
         if ($secretId === 'BORGBACKUP_PASSWORD' && !file_exists(DataConst::GetBackupSecretFile())) {
             $this->DoubleSafeBackupSecret($config['secrets'][$secretId]);
+        }
+
+        return $config['secrets'][$secretId];
+    }
+
+    public function GetSecret(string $secretId) : string {
+        $config = $this->GetConfig();
+        if(!isset($config['secrets'][$secretId])) {
+            $config['secrets'][$secretId] = "";
         }
 
         return $config['secrets'][$secretId];
@@ -269,7 +278,7 @@ class ConfigurationManager
             }
 
             // Get Instance ID
-            $instanceID = $this->GetSecret('INSTANCE_ID');
+            $instanceID = $this->GetAndGenerateSecret('INSTANCE_ID');
 
             // set protocol
             if ($port !== '443') {
