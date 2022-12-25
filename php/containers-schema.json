@@ -48,7 +48,10 @@
 						"type": "string"
 					},
 					"secrets": {
-						"type": "array"
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
 					},
 					"volumes": {
 						"type": "array",
