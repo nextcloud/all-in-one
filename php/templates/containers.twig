@@ -38,10 +38,10 @@
         {% endif %}
 
         {% for container in containers %}
-            {% if container.GetIdentifier() not in ['nextcloud-aio-domaincheck', 'nextcloud-aio-borgbackup', 'nextcloud-aio-watchtower'] and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
+            {% if container.GetDisplayName() != '' and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
                 {% set isAnyRunning = true %}
             {% endif %}
-            {% if container.GetIdentifier() not in ['nextcloud-aio-domaincheck', 'nextcloud-aio-borgbackup', 'nextcloud-aio-watchtower'] and class(container.GetRestartingState()) == 'AIO\\Container\\State\\RestartingState' %}
+            {% if container.GetDisplayName() != '' and class(container.GetRestartingState()) == 'AIO\\Container\\State\\RestartingState' %}
                 {% set isAnyRestarting = true %}
             {% endif %}
             {% if container.GetIdentifier() == 'nextcloud-aio-watchtower' and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
@@ -219,7 +219,7 @@
                     <ul>
                         {# @var containers \AIO\Container\Container[] #}
                         {% for container in containers %}
-                            {% if container.GetIdentifier() not in ['nextcloud-aio-borgbackup', 'nextcloud-aio-watchtower', 'nextcloud-aio-domaincheck'] %}
+                            {% if container.GetDisplayName() != '' %}
                                 <li>
                                     {% if class(container.GetStartingState()) == 'AIO\\Container\\State\\StartingState' %}
                                         <span class="status running"></span>
