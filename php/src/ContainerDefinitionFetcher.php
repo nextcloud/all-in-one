@@ -88,7 +88,7 @@ class ContainerDefinitionFetcher
             }
 
             $internalPorts = new ContainerInternalPorts();
-            foreach ($entry['internalPorts'] as $internalPort) {
+            foreach ($entry['internal_ports'] as $internalPort) {
                 if($internalPort === '%APACHE_PORT%') {
                     $internalPort = $this->configurationManager->GetApachePort();
                 } elseif($internalPort === '%TALK_PORT%') {

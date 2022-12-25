@@ -32,7 +32,7 @@
 					"container_name": {
 						"type": "string"
 					},
-					"internalPorts": {
+					"internal_ports": {
 						"type": "array",
 						"items": {
 							"type": "string"

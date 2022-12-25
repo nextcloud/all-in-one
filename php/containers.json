@@ -13,7 +13,7 @@
       "ports": [
         "%APACHE_PORT%/tcp"
       ],
-      "internalPorts": [
+      "internal_ports": [
         "%APACHE_PORT%"
       ],
       "secrets": [],
@@ -49,7 +49,7 @@
       "display_name": "Database",
       "image": "nextcloud/aio-postgresql",
       "ports": [],
-      "internalPorts": [
+      "internal_ports": [
         "5432"
       ],
       "secrets": [
@@ -89,7 +89,7 @@
       "display_name": "Nextcloud",
       "image": "nextcloud/aio-nextcloud",
       "ports": [],
-      "internalPorts": [
+      "internal_ports": [
         "9000"
       ],
       "secrets": [
@@ -171,7 +171,7 @@
       "display_name": "Redis",
       "image": "nextcloud/aio-redis",
       "ports": [],
-      "internalPorts": [
+      "internal_ports": [
         "6379"
       ],
       "environment": [
@@ -198,7 +198,7 @@
       "display_name": "Collabora",
       "image": "nextcloud/aio-collabora",
       "ports": [],
-      "internalPorts": [
+      "internal_ports": [
         "9980"
       ],
       "environment": [
@@ -227,7 +227,7 @@
         "%TALK_PORT%/tcp",
         "%TALK_PORT%/udp"
       ],
-      "internalPorts": [
+      "internal_ports": [
         "%TALK_PORT%"
       ],
       "environment": [
@@ -253,7 +253,7 @@
       "display_name": "Borgbackup",
       "image": "nextcloud/aio-borgbackup",
       "ports": [],
-      "internalPorts": [],
+      "internal_ports": [],
       "environment": [
         "BORG_PASSWORD=%BORGBACKUP_PASSWORD%",
         "BORG_MODE=%BORGBACKUP_MODE%",
@@ -326,7 +326,7 @@
       "display_name": "Watchtower",
       "image": "nextcloud/aio-watchtower",
       "ports": [],
-      "internalPorts": [],
+      "internal_ports": [],
       "environment": [
         "CONTAINER_TO_UPDATE=nextcloud-aio-mastercontainer"
       ],
@@ -349,7 +349,7 @@
       "ports": [
         "%APACHE_PORT%/tcp"
       ],
-      "internalPorts": [],
+      "internal_ports": [],
       "environment": [
         "INSTANCE_ID=%INSTANCE_ID%",
         "APACHE_PORT=%APACHE_PORT%"
@@ -367,7 +367,7 @@
       "display_name": "ClamAV",
       "image": "nextcloud/aio-clamav",
       "ports": [],
-      "internalPorts": [
+      "internal_ports": [
         "3310"
       ],
       "environment": [
@@ -391,7 +391,7 @@
       "display_name": "OnlyOffice",
       "image": "nextcloud/aio-onlyoffice",
       "ports": [],
-      "internalPorts": [
+      "internal_ports": [
         "80"
       ],
       "environment": [
@@ -419,7 +419,7 @@
       "display_name": "Imaginary",
       "image": "nextcloud/aio-imaginary",
       "ports": [],
-      "internalPorts": [
+      "internal_ports": [
         "9000"
       ],
       "environment": [
@@ -436,7 +436,7 @@
       "display_name": "Fulltextsearch",
       "image": "nextcloud/aio-fulltextsearch",
       "ports": [],
-      "internalPorts": [
+      "internal_ports": [
         "9200"
       ],
       "environment": [

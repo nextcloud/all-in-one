@@ -5,7 +5,7 @@ sed -i 's|","location":"|:|g' /tmp/containers.json
 sed -i 's|","writeable":false|:ro"|g' /tmp/containers.json
 sed -i 's|","writeable":true|:rw"|g' /tmp/containers.json
 OUTPUT="$(cat /tmp/containers.json)"
-OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].internalPorts)')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].internal_ports)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].secrets)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-watchtower"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-domaincheck"))')"
