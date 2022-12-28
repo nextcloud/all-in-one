@@ -2,7 +2,7 @@
 
 # Variables
 DATADIR="/var/lib/postgresql/data"
-DUMP_DIR="/mnt/data"
+export DUMP_DIR="/mnt/data"
 DUMP_FILE="$DUMP_DIR/database-dump.sql"
 export PGPASSWORD="$POSTGRES_PASSWORD"
 
@@ -24,6 +24,16 @@ fi
 if [ -f "$DUMP_DIR/import.failed" ]; then
     echo "The database import failed. Please restore a backup and try again."
     echo "For further clues on what went wrong, look at the logs above."
+    exit 1
+fi
+
+# Don't start if initialization failed
+if [ -f "$DUMP_DIR/initialization.failed" ]; then
+    echo "The database initialization failed. Most likely was a wrong timezone selected."
+    echo "The selected timezone is '$TZ'." 
+    echo "Please check if it is in 'TZ database name' column of the timezone list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"
+    echo "For further clues on what went wrong, look at the logs above."
+    echo "You might start again from scratch by following https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance and selecting a proper timezone."
     exit 1
 fi
 
