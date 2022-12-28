@@ -347,7 +347,7 @@
         "INSTANCE_ID"
       ],
       "stop_grace_period": 1,
-      "restart": ""
+      "restart": "unless-stopped"
     },
     {
       "container_name": "nextcloud-aio-clamav",
