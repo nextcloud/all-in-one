@@ -1,4 +1,4 @@
-# From https://github.com/docker-library/postgres/blob/master/13/alpine/Dockerfile
+# From https://github.com/docker-library/postgres/blob/master/14/alpine/Dockerfile
 FROM postgres:14.6-alpine
 
 RUN apk add --update --no-cache bash openssl shadow netcat-openbsd grep mawk
