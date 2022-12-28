@@ -2,7 +2,6 @@ version: "3.8"
 
 services:
   nextcloud-aio-apache:
-    container_name: nextcloud-aio-apache
     depends_on:
       - nextcloud-aio-onlyoffice
       - nextcloud-aio-collabora
@@ -30,7 +29,6 @@ services:
       - nextcloud-aio
 
   nextcloud-aio-database:
-    container_name: nextcloud-aio-database
     image: nextcloud/aio-postgresql:${IMAGE_TAG}
     volumes:
       - nextcloud_aio_database:/var/lib/postgresql/data:rw
@@ -47,7 +45,6 @@ services:
       - nextcloud-aio
 
   nextcloud-aio-nextcloud:
-    container_name: nextcloud-aio-nextcloud
     depends_on:
       - nextcloud-aio-database
       - nextcloud-aio-redis
@@ -106,34 +103,35 @@ services:
       - nextcloud-aio
 
   nextcloud-aio-redis:
-    container_name: nextcloud-aio-redis
     image: nextcloud/aio-redis:${IMAGE_TAG}
     environment:
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
       - TZ=${TIMEZONE}
+    volumes:
+      - nextcloud_aio_redis:/data:rw
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
 
   nextcloud-aio-collabora:
-    container_name: nextcloud-aio-collabora
-    image: nextcloud/aio-collabora:${IMAGE_TAG}
     profiles: ["collabora"]
+    image: nextcloud/aio-collabora:${IMAGE_TAG}
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443
       - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true ${COLLABORA_SECCOMP_POLICY}
       - dictionaries=${COLLABORA_DICTIONARIES}
       - TZ=${TIMEZONE}
+    volumes:
+      - nextcloud_aio_collabora_fonts:/opt/cool/systemplate/tmpfonts:rw
     stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
 
   nextcloud-aio-talk:
-    container_name: nextcloud-aio-talk
-    image: nextcloud/aio-talk:${IMAGE_TAG}
     profiles: ["talk"]
+    image: nextcloud/aio-talk:${IMAGE_TAG}
     ports:
       - ${TALK_PORT}:${TALK_PORT}/tcp
       - ${TALK_PORT}:${TALK_PORT}/udp
@@ -150,11 +148,11 @@ services:
       - nextcloud-aio
 
   nextcloud-aio-clamav:
-    container_name: nextcloud-aio-clamav
-    image: nextcloud/aio-clamav:${IMAGE_TAG}
     profiles: ["clamav"]
+    image: nextcloud/aio-clamav:${IMAGE_TAG}
     environment:
       - TZ=${TIMEZONE}
+      - CLAMD_STARTUP_TIMEOUT=90
     volumes:
       - nextcloud_aio_clamav:/var/lib/clamav:rw
     stop_grace_period: 10s
@@ -163,9 +161,8 @@ services:
       - nextcloud-aio
 
   nextcloud-aio-onlyoffice:
-    container_name: nextcloud-aio-onlyoffice
-    image: nextcloud/aio-onlyoffice:${IMAGE_TAG}
     profiles: ["onlyoffice"]
+    image: nextcloud/aio-onlyoffice:${IMAGE_TAG}
     environment:
       - TZ=${TIMEZONE}
       - JWT_ENABLED=true
@@ -179,9 +176,8 @@ services:
       - nextcloud-aio
 
   nextcloud-aio-imaginary:
-    container_name: nextcloud-aio-imaginary
-    image: nextcloud/aio-imaginary:${IMAGE_TAG}
     profiles: ["imaginary"]
+    image: nextcloud/aio-imaginary:${IMAGE_TAG}
     environment:
       - TZ=${TIMEZONE}
     stop_grace_period: 10s
@@ -190,9 +186,8 @@ services:
       - nextcloud-aio
 
   nextcloud-aio-fulltextsearch:
-    container_name: nextcloud-aio-fulltextsearch
-    image: nextcloud/aio-fulltextsearch:${IMAGE_TAG}
     profiles: ["fulltextsearch"]
+    image: nextcloud/aio-fulltextsearch:${IMAGE_TAG}
     environment:
       - TZ=${TIMEZONE}
       - discovery.type=single-node
@@ -209,6 +204,8 @@ volumes:
     name: nextcloud_aio_apache
   nextcloud_aio_clamav:
     name: nextcloud_aio_clamav
+  nextcloud_aio_collabora_fonts:
+    name: nextcloud_aio_collabora_fonts
   nextcloud_aio_database:
     name: nextcloud_aio_database
   nextcloud_aio_database_dump:
@@ -219,6 +216,8 @@ volumes:
     name: nextcloud_aio_nextcloud
   nextcloud_aio_onlyoffice:
     name: nextcloud_aio_onlyoffice
+  nextcloud_aio_redis:
+    name: nextcloud_aio_redis
   nextcloud_aio_nextcloud_data:
     name: nextcloud_aio_nextcloud_data
 
