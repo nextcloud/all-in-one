@@ -19,7 +19,6 @@ RUN set -ex; \
         openssl \
         netcat \
         dpkg-dev \
-        curl \
     ; \
     rm -rf /var/lib/apt/lists/*
 

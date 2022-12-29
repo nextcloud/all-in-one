@@ -3,4 +3,12 @@ FROM elasticsearch:7.17.8
 
 RUN elasticsearch-plugin install --batch ingest-attachment
 
-HEALTHCHECK CMD curl -skfI localhost:9200 || exit 1
+RUN set -ex; \
+    \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        tzdata \
+    ; \
+    rm -rf /var/lib/apt/lists/*
+
+HEALTHCHECK CMD nc -z localhost 9200 || exit 1
