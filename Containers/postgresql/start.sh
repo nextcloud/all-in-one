@@ -101,10 +101,10 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     # Get the Owner
     DB_OWNER="$(grep "$GREP_STRING" "$DUMP_FILE" | grep -oP 'Owner:.*$' | sed 's|Owner:||;s| ||g')"
     if [ "$DB_OWNER" = "$POSTGRES_USER" ]; then
-        DIFFERENT_DB_OWNER=1
-        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-            ALTER DATABASE "$POSTGRES_DB" OWNER TO "$POSTGRES_USER";
-EOSQL
+        echo "Unfortunately was the found database owner of the dump file the same as the POSTGRES_USER $POSTGRES_USER"
+        echo "It is not possible to import a database dump from this database owner."
+        echo "However you might rename the owner in the dumpfile to something else."
+        exit 1
     elif [ "$DB_OWNER" != "oc_$POSTGRES_USER" ]; then
         DIFFERENT_DB_OWNER=1
         psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
