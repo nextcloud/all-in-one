@@ -238,7 +238,7 @@
     {
       "container_name": "nextcloud-aio-borgbackup",
       "depends_on": [],
-      "display_name": "Borgbackup",
+      "display_name": "",
       "image": "nextcloud/aio-borgbackup",
       "ports": [],
       "internal_port": "",
@@ -311,7 +311,7 @@
     {
       "container_name": "nextcloud-aio-watchtower",
       "depends_on": [],
-      "display_name": "Watchtower",
+      "display_name": "",
       "image": "nextcloud/aio-watchtower",
       "ports": [],
       "internal_port": "",
@@ -332,7 +332,7 @@
     {
       "depends_on": [],
       "container_name": "nextcloud-aio-domaincheck",
-      "display_name": "Domaincheck",
+      "display_name": "",
       "image": "nextcloud/aio-domaincheck",
       "ports": [
         "%APACHE_PORT%/tcp"
