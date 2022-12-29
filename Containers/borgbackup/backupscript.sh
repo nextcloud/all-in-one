@@ -127,7 +127,7 @@ if [ "$BORG_MODE" = backup ]; then
     # Borg options
     # auto,zstd compression seems to has the best ratio based on:
     # https://forum.level1techs.com/t/optimal-compression-for-borg-backups/145870/6
-    BORG_OPTS=(--stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
+    BORG_OPTS=(--progress --stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
     # Create the backup
     echo "Starting the backup..."
@@ -174,16 +174,19 @@ if [ "$BORG_MODE" = backup ]; then
                     exit 1
                 fi
             done
+            echo "Starting the backup for additional volumes..."
             if ! borg create "${BORG_OPTS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-docker-volumes" "/docker_volumes/"; then
                 echo "Deleting the failed backup archive..."
                 borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-docker-volumes"
                 echo "Backup of additional docker-volumes failed!"
                 exit 1
             fi
+            echo "Pruning additional volumes..."
             if ! borg prune --prefix '*_*-additional-docker-volumes' "${BORG_PRUNE_OPTS[@]}"; then
                 echo "Failed to prune additional docker-volumes archives!"
                 exit 1
             fi
+            echo "Compacting additional volumes..."
             if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
                 echo "Failed to compact archives!"
                 exit 1
@@ -201,16 +204,19 @@ if [ "$BORG_MODE" = backup ]; then
             do
                 EXCLUDE_DIRS+=(--exclude "/host_mounts/$directory/")
             done
+            echo "Starting the backup for additional host mounts..."
             if ! borg create "${BORG_OPTS[@]}" "${EXCLUDE_DIRS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts" "/host_mounts/"; then
                 echo "Deleting the failed backup archive..."
                 borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts"
                 echo "Backup of additional host-mounts failed!"
                 exit 1
             fi
+            echo "Pruning additional host mounts..."
             if ! borg prune --prefix '*_*-additional-host-mounts' "${BORG_PRUNE_OPTS[@]}"; then
                 echo "Failed to prune additional host-mount archives!"
                 exit 1
             fi
+            echo "Compacting additional host mounts..."
             if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
                 echo "Failed to compact archives!"
                 exit 1
@@ -347,7 +353,7 @@ if [ "$BORG_MODE" = check ]; then
     echo "Checking the backup integrity..."
 
     # Perform the check
-    if ! borg check --verify-data "$BORG_BACKUP_DIRECTORY"; then
+    if ! borg check --progress --verify-data "$BORG_BACKUP_DIRECTORY"; then
         echo "Some errors were found while checking the backup integrity!"
         exit 1
     fi
