@@ -200,6 +200,8 @@ RUN set -ex; \
         grep \
         coreutils \
         gcompat \
+        libjpeg \
+        librsvg \
     ; \
     rm -rf /var/lib/apt/lists/*
 

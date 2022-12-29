@@ -60,7 +60,25 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
             # shellcheck disable=SC2086
             if [ "$PHP_DEPS_ARE_INSTALLED" != 1 ]; then
                 echo "Installing PHP build dependencies..."
-                if ! apk add --no-cache --virtual .build-deps libxml2-dev libwebp-dev gmp-dev libpng-dev libjpeg-turbo-dev libheif-dev freetype-dev fontconfig-dev imagemagick-dev autoconf $PHPIZE_DEPS >/dev/null; then
+                    if ! apk add --no-cache --virtual .build-deps \
+                        lcms2-dev \
+                        libheif-dev \
+                        librsvg-dev \
+                        libxext-dev \
+                        libxml2-dev \
+                        lcms2-dev \
+                        fontconfig-dev \
+                        freetype-dev \
+                        ghostscript-dev \
+                        lcms2-dev \
+                        libjpeg-turbo-dev \
+                        libpng-dev \
+                        libtool \
+                        tiff-dev \
+                        zlib-dev \
+                        imagemagick-dev \
+                        autoconf \
+                        $PHPIZE_DEPS >/dev/null; then
                     echo "Could not install build-deps!"
                 fi
                 PHP_DEPS_ARE_INSTALLED=1
