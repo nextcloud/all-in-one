@@ -47,7 +47,7 @@ RUN set -ex; \
         ghostscript-dev \
         tiff-dev \
         zlib-dev \
-        imagemagick-dev \
+        imagemagick6-dev \
         libheif-dev \
         librsvg-dev \
         libxext-dev \
