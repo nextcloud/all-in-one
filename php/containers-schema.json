@@ -4,41 +4,38 @@
 	"additionalProperties": false,
 	"minProperties": 1,
 	"properties": {
-		"production": {
+		"services": {
 			"type": "array",
 			"items": {
 				"type": "object",
 				"additionalProperties": false,
 				"minProperties": 11,
 				"properties": {
-					"containerName": {
+					"image": {
 						"type": "string"
 					},
-					"dependsOn": {
+					"depends_on": {
 						"type": "array",
 						"items": {
 							"type": "string"
 						}
 					},
-					"displayName": {
+					"display_name": {
 						"type": "string"
 					},
-					"environmentVariables": {
+					"environment": {
 						"type": "array",
 						"items": {
 							"type": "string"
 						}
 					},
-					"identifier": {
+					"container_name": {
 						"type": "string"
 					},
-					"internalPorts": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
+					"internal_port": {
+						"type": "string"
 					},
-					"maxShutdownTime": {
+					"stop_grace_period": {
 						"type": "integer"
 					},
 					"ports": {
@@ -47,11 +44,14 @@
 							"type": "string"
 						}
 					},
-					"restartPolicy": {
+					"restart": {
 						"type": "string"
 					},
 					"secrets": {
-						"type": "array"
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
 					},
 					"volumes": {
 						"type": "array",

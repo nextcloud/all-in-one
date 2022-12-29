@@ -1,23 +1,21 @@
 {
-  "production": [
+  "services": [
     {
-      "identifier": "nextcloud-aio-apache",
-      "dependsOn": [
+      "container_name": "nextcloud-aio-apache",
+      "depends_on": [
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-talk",
         "nextcloud-aio-nextcloud"
       ],
-      "displayName": "Apache",
-      "containerName": "nextcloud/aio-apache",
+      "display_name": "Apache",
+      "image": "nextcloud/aio-apache",
       "ports": [
         "%APACHE_PORT%/tcp"
       ],
-      "internalPorts": [
-        "%APACHE_PORT%"
-      ],
+      "internal_port": "%APACHE_PORT%",
       "secrets": [],
-      "environmentVariables": [
+      "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "COLLABORA_HOST=nextcloud-aio-collabora",
@@ -40,18 +38,16 @@
           "writeable": true
         }
       ],
-      "maxShutdownTime": 10,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 10,
+      "restart": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-database",
-      "dependsOn": [],
-      "displayName": "Database",
-      "containerName": "nextcloud/aio-postgresql",
+      "container_name": "nextcloud-aio-database",
+      "depends_on": [],
+      "display_name": "Database",
+      "image": "nextcloud/aio-postgresql",
       "ports": [],
-      "internalPorts": [
-        "5432"
-      ],
+      "internal_port": "5432",
       "secrets": [
         "DATABASE_PASSWORD"
       ],
@@ -67,31 +63,29 @@
           "writeable": true
         }
       ],
-      "environmentVariables": [
+      "environment": [
         "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
         "POSTGRES_DB=nextcloud_database",
         "POSTGRES_USER=nextcloud",
         "TZ=%TIMEZONE%",
         "PGTZ=%TIMEZONE%"
       ],
-      "maxShutdownTime": 1800,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 1800,
+      "restart": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-nextcloud",
-      "dependsOn": [
+      "container_name": "nextcloud-aio-nextcloud",
+      "depends_on": [
         "nextcloud-aio-database",
         "nextcloud-aio-redis",
         "nextcloud-aio-clamav",
         "nextcloud-aio-fulltextsearch",
         "nextcloud-aio-imaginary"
       ],
-      "displayName": "Nextcloud",
-      "containerName": "nextcloud/aio-nextcloud",
+      "display_name": "Nextcloud",
+      "image": "nextcloud/aio-nextcloud",
       "ports": [],
-      "internalPorts": [
-        "9000"
-      ],
+      "internal_port": "9000",
       "secrets": [
         "DATABASE_PASSWORD",
         "REDIS_PASSWORD",
@@ -121,7 +115,7 @@
           "writeable": false
         }
       ],
-      "environmentVariables": [
+      "environment": [
         "POSTGRES_HOST=nextcloud-aio-database",
         "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
         "POSTGRES_DB=nextcloud_database",
@@ -162,19 +156,17 @@
         "ADDITIONAL_APKS=%NEXTCLOUD_ADDITIONAL_APKS%",
         "ADDITIONAL_PHP_EXTENSIONS=%NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS%"
       ],
-      "maxShutdownTime": 10,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 10,
+      "restart": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-redis",
-      "dependsOn": [],
-      "displayName": "Redis",
-      "containerName": "nextcloud/aio-redis",
+      "container_name": "nextcloud-aio-redis",
+      "depends_on": [],
+      "display_name": "Redis",
+      "image": "nextcloud/aio-redis",
       "ports": [],
-      "internalPorts": [
-        "6379"
-      ],
-      "environmentVariables": [
+      "internal_port": "6379",
+      "environment": [
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "TZ=%TIMEZONE%"
       ],
@@ -189,19 +181,17 @@
         "REDIS_PASSWORD",
         "ONLYOFFICE_SECRET"
       ],
-      "maxShutdownTime": 10,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 10,
+      "restart": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-collabora",
-      "dependsOn": [],
-      "displayName": "Collabora",
-      "containerName": "nextcloud/aio-collabora",
+      "container_name": "nextcloud-aio-collabora",
+      "depends_on": [],
+      "display_name": "Collabora",
+      "image": "nextcloud/aio-collabora",
       "ports": [],
-      "internalPorts": [
-        "9980"
-      ],
-      "environmentVariables": [
+      "internal_port": "9980",
+      "environment": [
         "aliasgroup1=https://%NC_DOMAIN%:443",
         "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true %COLLABORA_SECCOMP_POLICY%",
         "dictionaries=%COLLABORA_DICTIONARIES%",
@@ -215,22 +205,20 @@
         }
       ],
       "secrets": [],
-      "maxShutdownTime": 10,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 10,
+      "restart": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-talk",
-      "dependsOn": [],
-      "displayName": "Talk",
-      "containerName": "nextcloud/aio-talk",
+      "container_name": "nextcloud-aio-talk",
+      "depends_on": [],
+      "display_name": "Talk",
+      "image": "nextcloud/aio-talk",
       "ports": [
         "%TALK_PORT%/tcp",
         "%TALK_PORT%/udp"
       ],
-      "internalPorts": [
-        "%TALK_PORT%"
-      ],
-      "environmentVariables": [
+      "internal_port": "%TALK_PORT%",
+      "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
@@ -244,17 +232,17 @@
         "SIGNALING_SECRET",
         "JANUS_API_KEY"
       ],
-      "maxShutdownTime": 10,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 10,
+      "restart": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-borgbackup",
-      "dependsOn": [],
-      "displayName": "Borgbackup",
-      "containerName": "nextcloud/aio-borgbackup",
+      "container_name": "nextcloud-aio-borgbackup",
+      "depends_on": [],
+      "display_name": "Borgbackup",
+      "image": "nextcloud/aio-borgbackup",
       "ports": [],
-      "internalPorts": [],
-      "environmentVariables": [
+      "internal_port": "",
+      "environment": [
         "BORG_PASSWORD=%BORGBACKUP_PASSWORD%",
         "BORG_MODE=%BORGBACKUP_MODE%",
         "SELECTED_RESTORE_TIME=%SELECTED_RESTORE_TIME%",
@@ -317,17 +305,17 @@
       "secrets": [
         "BORGBACKUP_PASSWORD"
       ],
-      "maxShutdownTime": 10,
-      "restartPolicy": ""
+      "stop_grace_period": 10,
+      "restart": ""
     },
     {
-      "identifier": "nextcloud-aio-watchtower",
-      "dependsOn": [],
-      "displayName": "Watchtower",
-      "containerName": "nextcloud/aio-watchtower",
+      "container_name": "nextcloud-aio-watchtower",
+      "depends_on": [],
+      "display_name": "Watchtower",
+      "image": "nextcloud/aio-watchtower",
       "ports": [],
-      "internalPorts": [],
-      "environmentVariables": [
+      "internal_port": "",
+      "environment": [
         "CONTAINER_TO_UPDATE=nextcloud-aio-mastercontainer"
       ],
       "volumes": [
@@ -338,19 +326,19 @@
         }
       ],
       "secrets": [],
-      "maxShutdownTime": 10,
-      "restartPolicy": ""
+      "stop_grace_period": 10,
+      "restart": ""
     },
     {
-      "dependsOn": [],
-      "identifier": "nextcloud-aio-domaincheck",
-      "displayName": "Domaincheck",
-      "containerName": "nextcloud/aio-domaincheck",
+      "depends_on": [],
+      "container_name": "nextcloud-aio-domaincheck",
+      "display_name": "Domaincheck",
+      "image": "nextcloud/aio-domaincheck",
       "ports": [
         "%APACHE_PORT%/tcp"
       ],
-      "internalPorts": [],
-      "environmentVariables": [
+      "internal_port": "",
+      "environment": [
         "INSTANCE_ID=%INSTANCE_ID%",
         "APACHE_PORT=%APACHE_PORT%"
       ],
@@ -358,19 +346,17 @@
       "secrets": [
         "INSTANCE_ID"
       ],
-      "maxShutdownTime": 1,
-      "restartPolicy": ""
+      "stop_grace_period": 1,
+      "restart": ""
     },
     {
-      "identifier": "nextcloud-aio-clamav",
-      "dependsOn": [],
-      "displayName": "ClamAV",
-      "containerName": "nextcloud/aio-clamav",
+      "container_name": "nextcloud-aio-clamav",
+      "depends_on": [],
+      "display_name": "ClamAV",
+      "image": "nextcloud/aio-clamav",
       "ports": [],
-      "internalPorts": [
-        "3310"
-      ],
-      "environmentVariables": [
+      "internal_port": "3310",
+      "environment": [
         "TZ=%TIMEZONE%",
         "CLAMD_STARTUP_TIMEOUT=90"
       ],
@@ -382,19 +368,17 @@
         }
       ],
       "secrets": [],
-      "maxShutdownTime": 10,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 10,
+      "restart": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-onlyoffice",
-      "dependsOn": [],
-      "displayName": "OnlyOffice",
-      "containerName": "nextcloud/aio-onlyoffice",
+      "container_name": "nextcloud-aio-onlyoffice",
+      "depends_on": [],
+      "display_name": "OnlyOffice",
+      "image": "nextcloud/aio-onlyoffice",
       "ports": [],
-      "internalPorts": [
-        "80"
-      ],
-      "environmentVariables": [
+      "internal_port": "80",
+      "environment": [
         "TZ=%TIMEZONE%",
         "JWT_ENABLED=true",
         "JWT_HEADER=AuthorizationJwt",
@@ -410,36 +394,32 @@
       "secrets": [
         "ONLYOFFICE_SECRET"
       ],
-      "maxShutdownTime": 10,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 10,
+      "restart": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-imaginary",
-      "dependsOn": [],
-      "displayName": "Imaginary",
-      "containerName": "nextcloud/aio-imaginary",
+      "container_name": "nextcloud-aio-imaginary",
+      "depends_on": [],
+      "display_name": "Imaginary",
+      "image": "nextcloud/aio-imaginary",
       "ports": [],
-      "internalPorts": [
-        "9000"
-      ],
-      "environmentVariables": [
+      "internal_port": "9000",
+      "environment": [
         "TZ=%TIMEZONE%"
       ],
       "volumes": [],
       "secrets": [],
-      "maxShutdownTime": 10,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 10,
+      "restart": "unless-stopped"
     },
     {
-      "identifier": "nextcloud-aio-fulltextsearch",
-      "dependsOn": [],
-      "displayName": "Fulltextsearch",
-      "containerName": "nextcloud/aio-fulltextsearch",
+      "container_name": "nextcloud-aio-fulltextsearch",
+      "depends_on": [],
+      "display_name": "Fulltextsearch",
+      "image": "nextcloud/aio-fulltextsearch",
       "ports": [],
-      "internalPorts": [
-        "9200"
-      ],
-      "environmentVariables": [
+      "internal_port": "9200",
+      "environment": [
         "TZ=%TIMEZONE%",
         "discovery.type=single-node",
         "ES_JAVA_OPTS=-Xms1024M -Xmx1024M"
@@ -452,8 +432,8 @@
         }
       ],
       "secrets": [],
-      "maxShutdownTime": 10,
-      "restartPolicy": "unless-stopped"
+      "stop_grace_period": 10,
+      "restart": "unless-stopped"
     }
   ]
 }

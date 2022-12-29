@@ -5,11 +5,11 @@ sed -i 's|","location":"|:|g' /tmp/containers.json
 sed -i 's|","writeable":false|:ro"|g' /tmp/containers.json
 sed -i 's|","writeable":true|:rw"|g' /tmp/containers.json
 OUTPUT="$(cat /tmp/containers.json)"
-OUTPUT="$(echo "$OUTPUT" | jq 'del(.production[].internalPorts)')"
-OUTPUT="$(echo "$OUTPUT" | jq 'del(.production[].secrets)')"
-OUTPUT="$(echo "$OUTPUT" | jq 'del(.production[] | select(.identifier == "nextcloud-aio-watchtower"))')"
-OUTPUT="$(echo "$OUTPUT" | jq 'del(.production[] | select(.identifier == "nextcloud-aio-domaincheck"))')"
-OUTPUT="$(echo "$OUTPUT" | jq 'del(.production[] | select(.identifier == "nextcloud-aio-borgbackup"))')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].internal_port)')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].secrets)')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-watchtower"))')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-domaincheck"))')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-borgbackup"))')"
 
 snap install yq
 mkdir -p ./manual-install
@@ -17,16 +17,9 @@ echo "$OUTPUT" | yq -P > ./manual-install/containers.yml
 
 cd manual-install || exit
 sed -i "s|'||g" containers.yml
-sed -i 's|production:|services:|' containers.yml
-sed -i 's|- identifier:|  container_name:|' containers.yml
-sed -i 's|restartPolicy:|restart:|' containers.yml
-sed -i 's|environmentVariables:|environment:|' containers.yml
-sed -i '/displayName:/d' containers.yml
-sed -i 's|maxShutdownTime:|stop_grace_period:|' containers.yml
+sed -i '/display_name:/d' containers.yml
 sed -i '/stop_grace_period:/s/$/s/' containers.yml
-sed -i 's|containerName:|image:|' containers.yml
 sed -i '/: \[\]/d' containers.yml
-sed -i 's|dependsOn:|depends_on:|' containers.yml
 sed -i 's|- name: |- |' containers.yml
 
 TCP="$(grep -oP '[%A-Z0-9_]+/tcp' containers.yml | sort -u)"

@@ -14,7 +14,7 @@ class Container {
     private string $restartPolicy;
     private int $maxShutdownTime;
     private ContainerPorts $ports;
-    private ContainerInternalPorts $internalPorts;
+    private string $internalPorts;
     private ContainerVolumes $volumes;
     private ContainerEnvironmentVariables $containerEnvironmentVariables;
     /** @var string[] */
@@ -30,7 +30,7 @@ class Container {
         string $restartPolicy,
         int $maxShutdownTime,
         ContainerPorts $ports,
-        ContainerInternalPorts $internalPorts,
+        string $internalPorts,
         ContainerVolumes $volumes,
         ContainerEnvironmentVariables $containerEnvironmentVariables,
         array $dependsOn,
@@ -79,7 +79,7 @@ class Container {
         return $this->ports;
     }
 
-    public function GetInternalPorts() : ContainerInternalPorts {
+    public function GetInternalPort() : string {
         return $this->internalPorts;
     }
 

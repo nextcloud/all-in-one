@@ -46,7 +46,7 @@
       <code>$internalPort</code>
     </InvalidScalarArgument>
     <RedundantCondition occurrences="1">
-      <code>$container-&gt;GetInternalPorts() !== null</code>
+      <code>$container-&gt;GetInternalPort() !== null</code>
     </RedundantCondition>
   </file>
   <file src="src/Twig/ClassExtension.php">
