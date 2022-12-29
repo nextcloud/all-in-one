@@ -47,7 +47,7 @@ RUN set -ex; \
         ghostscript-dev \
         tiff-dev \
         zlib-dev \
-        imagemagick6-dev \
+        imagemagick-dev \
         libheif-dev \
         librsvg-dev \
         libxext-dev \
@@ -213,6 +213,7 @@ RUN set -ex; \
         gcompat \
         libjpeg \
         librsvg \
+        libheif \
     ; \
     rm -rf /var/lib/apt/lists/*
 
