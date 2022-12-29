@@ -205,40 +205,6 @@ class DockerActionManager
     public function CreateContainer(Container $container) : void {
         $volumes = [];
         foreach($container->GetVolumes()->GetVolumes() as $volume) {
-            if($volume->name === '%BORGBACKUP_HOST_LOCATION%') {
-                $volume->name = $this->configurationManager->GetBorgBackupHostLocation();
-                if($volume->name === '') {
-                    continue;
-                }
-            }
-            if($volume->name === '%NEXTCLOUD_MOUNT%') {
-                $volume->name = $this->configurationManager->GetNextcloudMount();
-                if($volume->name === '') {
-                    continue;
-                }
-            } elseif ($volume->name === '%NEXTCLOUD_DATADIR%') {
-                $volume->name = $this->configurationManager->GetNextcloudDatadirMount();
-                if ($volume->name === '') {
-                    continue;
-                }
-            } elseif ($volume->name === '%DOCKER_SOCKET_PATH%') {
-                $volume->name = $this->configurationManager->GetDockerSocketPath();
-                if($volume->name === '') {
-                    continue;
-                }
-            } elseif ($volume->name === '%NEXTCLOUD_TRUSTED_CACERTS_DIR%') {
-                $volume->name = $this->configurationManager->GetTrustedCacertsDir();
-                if($volume->name === '') {
-                    continue;
-                }
-            }
-            if ($volume->mountPoint === '%NEXTCLOUD_MOUNT%') {
-                $volume->mountPoint = $this->configurationManager->GetNextcloudMount();
-                if($volume->mountPoint === '') {
-                    continue;
-                }
-            }
-
             $volumeEntry = $volume->name . ':' . $volume->mountPoint;
             if($volume->isWritable) {
                 $volumeEntry = $volumeEntry . ':' . 'rw';
