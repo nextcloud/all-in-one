@@ -57,39 +57,25 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
     if ! [ -f "/additional-php-extensions-are-installed" ]; then
         read -ra ADDITIONAL_PHP_EXTENSIONS_ARRAY <<< "$ADDITIONAL_PHP_EXTENSIONS"
         for app in "${ADDITIONAL_PHP_EXTENSIONS_ARRAY[@]}"; do
+            if [ "$app" = imagick ]; then
+                echo "Enabling Imagick..."
+                if ! docker-php-ext-enable imagick >/dev/null; then
+                    echo "Could not install PHP extension imagick!"
+                fi
+                continue
+            fi
             # shellcheck disable=SC2086
             if [ "$PHP_DEPS_ARE_INSTALLED" != 1 ]; then
                 echo "Installing PHP build dependencies..."
                     if ! apk add --no-cache --virtual .build-deps \
-                        lcms2-dev \
-                        libheif-dev \
-                        librsvg-dev \
-                        libxext-dev \
                         libxml2-dev \
-                        lcms2-dev \
-                        fontconfig-dev \
-                        freetype-dev \
-                        ghostscript-dev \
-                        lcms2-dev \
-                        libjpeg-turbo-dev \
-                        libpng-dev \
-                        libtool \
-                        tiff-dev \
-                        zlib-dev \
-                        imagemagick-dev \
                         autoconf \
                         $PHPIZE_DEPS >/dev/null; then
                     echo "Could not install build-deps!"
                 fi
                 PHP_DEPS_ARE_INSTALLED=1
             fi
-            if [ "$app" = imagick ]; then
-                echo "Installing Imagick via PECL..."
-                pecl install imagick-3.7.0 >/dev/null
-                if ! docker-php-ext-enable imagick >/dev/null; then
-                    echo "Could not install PHP extension imagick!"
-                fi
-            elif [ "$app" = inotify ]; then
+            if [ "$app" = inotify ]; then
                 echo "Installing $app via PECL..."
                 pecl install "$app" >/dev/null
                 if ! docker-php-ext-enable "$app" >/dev/null; then

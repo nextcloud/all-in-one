@@ -41,6 +41,16 @@ RUN set -ex; \
         postgresql-dev \
         libwebp-dev \
         gmp-dev \
+        lcms2-dev \
+        fontconfig-dev \
+        freetype-dev \
+        ghostscript-dev \
+        tiff-dev \
+        zlib-dev \
+        imagemagick-dev \
+        libheif-dev \
+        librsvg-dev \
+        libxext-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
@@ -62,6 +72,7 @@ RUN set -ex; \
     pecl install APCu-5.1.22; \
     pecl install memcached-3.2.0; \
     pecl install redis-5.3.7; \
+    pecl install imagick-3.7.0; \
     \
     docker-php-ext-enable \
         apcu \
