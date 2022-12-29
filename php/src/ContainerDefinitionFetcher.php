@@ -94,6 +94,39 @@ class ContainerDefinitionFetcher
 
             $volumes = new ContainerVolumes();
             foreach ($entry['volumes'] as $value) {
+                if($value['name'] === '%BORGBACKUP_HOST_LOCATION%') {
+                    $value['name'] = $this->configurationManager->GetBorgBackupHostLocation();
+                    if($value['name'] === '') {
+                        continue;
+                    }
+                }
+                if($value['name'] === '%NEXTCLOUD_MOUNT%') {
+                    $value['name'] = $this->configurationManager->GetNextcloudMount();
+                    if($value['name'] === '') {
+                        continue;
+                    }
+                } elseif ($value['name'] === '%NEXTCLOUD_DATADIR%') {
+                    $value['name'] = $this->configurationManager->GetNextcloudDatadirMount();
+                    if ($value['name'] === '') {
+                        continue;
+                    }
+                } elseif ($value['name'] === '%DOCKER_SOCKET_PATH%') {
+                    $value['name'] = $this->configurationManager->GetDockerSocketPath();
+                    if($value['name'] === '') {
+                        continue;
+                    }
+                } elseif ($value['name'] === '%NEXTCLOUD_TRUSTED_CACERTS_DIR%') {
+                    $value['name'] = $this->configurationManager->GetTrustedCacertsDir();
+                    if($value['name'] === '') {
+                        continue;
+                    }
+                }
+                if ($value['location'] === '%NEXTCLOUD_MOUNT%') {
+                    $value['location'] = $this->configurationManager->GetNextcloudMount();
+                    if($value['location'] === '') {
+                        continue;
+                    }
+                }
                 $volumes->AddVolume(
                     new ContainerVolume(
                         $value['name'],
