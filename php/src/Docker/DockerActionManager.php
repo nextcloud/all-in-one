@@ -228,6 +228,10 @@ class DockerActionManager
             $requestBody['HostConfig']['Binds'] = $volumes;
         }
 
+        foreach($container->GetSecrets() as $secret) {
+            $this->configurationManager->GetAndGenerateSecret($secret);
+        }
+
         $envs = $container->GetEnvironmentVariables()->GetVariables();
         foreach($envs as $key => $env) {
             $patterns = ['/%(.*)%/'];
@@ -335,7 +339,11 @@ class DockerActionManager
                 } elseif ($out[1] === 'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS') {
                     $replacements[1] = $this->configurationManager->GetNextcloudAdditionalPhpExtensions();
                 } else {
-                    $replacements[1] = $this->configurationManager->GetSecret($out[1]);
+                    $secret = $this->configurationManager->GetSecret($out[1]);
+                    if ($secret === "") {
+                        throw new \Exception("The secret " . $out[1] . " is empty. Cannot substitute its value. Pleas check if it is defined in secrets of containers.json.");
+                    }
+                    $replacements[1] = $secret;
                 }
 
                 $envs[$key] = preg_replace($patterns, $replacements, $env);
