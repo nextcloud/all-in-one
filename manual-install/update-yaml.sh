@@ -1,7 +1,7 @@
 #!/bin/bash
 
 jq -c . ./php/containers.json > /tmp/containers.json
-sed -i 's|","location":"|:|g' /tmp/containers.json
+sed -i 's|","destination":"|:|g' /tmp/containers.json
 sed -i 's|","writeable":false|:ro"|g' /tmp/containers.json
 sed -i 's|","writeable":true|:rw"|g' /tmp/containers.json
 OUTPUT="$(cat /tmp/containers.json)"
@@ -20,7 +20,7 @@ sed -i "s|'||g" containers.yml
 sed -i '/display_name:/d' containers.yml
 sed -i '/stop_grace_period:/s/$/s/' containers.yml
 sed -i '/: \[\]/d' containers.yml
-sed -i 's|- name: |- |' containers.yml
+sed -i 's|- source: |- |' containers.yml
 
 TCP="$(grep -oP '[%A-Z0-9_]+/tcp' containers.yml | sort -u)"
 mapfile -t TCP <<< "$TCP"
