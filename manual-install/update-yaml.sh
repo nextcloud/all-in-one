@@ -4,6 +4,10 @@ jq -c . ./php/containers.json > /tmp/containers.json
 sed -i 's|","destination":"|:|g' /tmp/containers.json
 sed -i 's|","writeable":false|:ro"|g' /tmp/containers.json
 sed -i 's|","writeable":true|:rw"|g' /tmp/containers.json
+sed -i 's|","port_number":"|:|g' /tmp/containers.json
+sed -i 's|","protocol":"|/|g' /tmp/containers.json
+sed -i 's|"ip_binding":":|"ip_binding":"|g' /tmp/containers.json
+cat /tmp/containers.json
 OUTPUT="$(cat /tmp/containers.json)"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].internal_port)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].secrets)')"
@@ -21,13 +25,14 @@ sed -i '/display_name:/d' containers.yml
 sed -i '/stop_grace_period:/s/$/s/' containers.yml
 sed -i '/: \[\]/d' containers.yml
 sed -i 's|- source: |- |' containers.yml
+sed -i 's|- ip_binding: |- |' containers.yml
 
 TCP="$(grep -oP '[%A-Z0-9_]+/tcp' containers.yml | sort -u)"
 mapfile -t TCP <<< "$TCP"
 for port in "${TCP[@]}" 
 do
     solve_port="${port%%/tcp}"
-    sed -i "s|$port|$solve_port:$solve_port/tcp|" containers.yml
+    sed -i "s|$solve_port/tcp|$solve_port:$solve_port/tcp|" containers.yml
 done
 
 UDP="$(grep -oP '[%A-Z0-9_]+/udp' containers.yml | sort -u)"
@@ -35,7 +40,7 @@ mapfile -t UDP <<< "$UDP"
 for port in "${UDP[@]}"
 do
     solve_port="${port%%/udp}"
-    sed -i "s|$port|$solve_port:$solve_port/udp|" containers.yml
+    sed -i "s|$solve_port/udp|$solve_port:$solve_port/udp|" containers.yml
 done
 
 rm -f sample.conf
@@ -64,6 +69,7 @@ sed -i 's|NEXTCLOUD_MAX_TIME=|NEXTCLOUD_MAX_TIME=3600          # This allows to 
 sed -i 's|NEXTCLOUD_TRUSTED_CACERTS_DIR=|NEXTCLOUD_TRUSTED_CACERTS_DIR=/usr/local/share/ca-certificates/my-custom-ca          # Nextcloud container will trust all the Certification Authorities, whose certificates are included in the given directory.|' sample.conf
 sed -i 's|UPDATE_NEXTCLOUD_APPS=|UPDATE_NEXTCLOUD_APPS=no          # When setting to yes, it will automatically update all installed Nextcloud apps upon container startup on saturdays.|' sample.conf
 sed -i 's|APACHE_PORT=|APACHE_PORT=443          # Changing this to a different value than 443 will allow you to run it behind a reverse proxy.|' sample.conf
+sed -i 's|APACHE_IP_BINDING=|APACHE_IP_BINDING=0.0.0.0          # This can be changed to e.g. 127.0.0.1 if you want to run AIO behind a reverse proxy and if that is running on the same host and using localhost to connect|' sample.conf
 sed -i 's|TALK_PORT=|TALK_PORT=3478          # This allows to adjust the port that the talk container is using.|' sample.conf
 sed -i 's|AIO_TOKEN=|AIO_TOKEN=123456          # Has no function but needs to be set!|' sample.conf
 sed -i 's|AIO_URL=|AIO_URL=localhost          # Has no function but needs to be set!|' sample.conf
