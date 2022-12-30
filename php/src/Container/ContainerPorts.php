@@ -3,15 +3,15 @@
 namespace AIO\Container;
 
 class ContainerPorts {
-    /** @var string[] */
+    /** @var ContainerPort[] */
     private array $ports = [];
 
-    public function AddPort(string $port) : void {
+    public function AddPort(ContainerPort $port) : void {
         $this->ports[] = $port;
     }
 
     /**
-     * @return string[]
+     * @return ContainerPort[]
      */
     public function GetPorts() : array {
         return $this->ports;
