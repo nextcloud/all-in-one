@@ -60,10 +60,10 @@
 							"additionalProperties": false,
 							"minProperties": 3,
 							"properties": {
-								"location": {
+								"destination": {
 									"type": "string"
 								},
-								"name": {
+								"source": {
 									"type": "string"
 								},
 								"writeable": {

@@ -28,13 +28,13 @@
       ],
       "volumes": [
         {
-          "name": "nextcloud_aio_nextcloud",
-          "location": "/var/www/html",
+          "source": "nextcloud_aio_nextcloud",
+          "destination": "/var/www/html",
           "writeable": false
         },
         {
-          "name": "nextcloud_aio_apache",
-          "location": "/mnt/data",
+          "source": "nextcloud_aio_apache",
+          "destination": "/mnt/data",
           "writeable": true
         }
       ],
@@ -53,13 +53,13 @@
       ],
       "volumes": [
         {
-          "name": "nextcloud_aio_database",
-          "location": "/var/lib/postgresql/data",
+          "source": "nextcloud_aio_database",
+          "destination": "/var/lib/postgresql/data",
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_database_dump",
-          "location": "/mnt/data",
+          "source": "nextcloud_aio_database_dump",
+          "destination": "/mnt/data",
           "writeable": true
         }
       ],
@@ -95,23 +95,23 @@
       ],
       "volumes": [
         {
-          "name": "nextcloud_aio_nextcloud",
-          "location": "/var/www/html",
+          "source": "nextcloud_aio_nextcloud",
+          "destination": "/var/www/html",
           "writeable": true
         },
         {
-          "name": "%NEXTCLOUD_DATADIR%",
-          "location": "/mnt/ncdata",
+          "source": "%NEXTCLOUD_DATADIR%",
+          "destination": "/mnt/ncdata",
           "writeable": true
         },
         {
-          "name": "%NEXTCLOUD_MOUNT%",
-          "location": "%NEXTCLOUD_MOUNT%",
+          "source": "%NEXTCLOUD_MOUNT%",
+          "destination": "%NEXTCLOUD_MOUNT%",
           "writeable": true
         },
         {
-          "name": "%NEXTCLOUD_TRUSTED_CACERTS_DIR%",
-          "location": "/usr/local/share/ca-certificates",
+          "source": "%NEXTCLOUD_TRUSTED_CACERTS_DIR%",
+          "destination": "/usr/local/share/ca-certificates",
           "writeable": false
         }
       ],
@@ -172,8 +172,8 @@
       ],
       "volumes": [
         {
-          "name": "nextcloud_aio_redis",
-          "location": "/data",
+          "source": "nextcloud_aio_redis",
+          "destination": "/data",
           "writeable": true
         }
       ],
@@ -199,8 +199,8 @@
       ],
       "volumes": [
         {
-          "name": "nextcloud_aio_collabora_fonts",
-          "location": "/opt/cool/systemplate/tmpfonts",
+          "source": "nextcloud_aio_collabora_fonts",
+          "destination": "/opt/cool/systemplate/tmpfonts",
           "writeable": true
         }
       ],
@@ -252,53 +252,53 @@
       ],
       "volumes": [
         {
-          "name": "nextcloud_aio_backup_cache",
-          "location": "/root",
+          "source": "nextcloud_aio_backup_cache",
+          "destination": "/root",
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_nextcloud",
-          "location": "/nextcloud_aio_volumes/nextcloud_aio_nextcloud",
+          "source": "nextcloud_aio_nextcloud",
+          "destination": "/nextcloud_aio_volumes/nextcloud_aio_nextcloud",
           "writeable": true
         },
         {
-          "name": "%NEXTCLOUD_DATADIR%",
-          "location": "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data",
+          "source": "%NEXTCLOUD_DATADIR%",
+          "destination": "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data",
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_database",
-          "location": "/nextcloud_aio_volumes/nextcloud_aio_database",
+          "source": "nextcloud_aio_database",
+          "destination": "/nextcloud_aio_volumes/nextcloud_aio_database",
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_database_dump",
-          "location": "/nextcloud_aio_volumes/nextcloud_aio_database_dump",
+          "source": "nextcloud_aio_database_dump",
+          "destination": "/nextcloud_aio_volumes/nextcloud_aio_database_dump",
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_apache",
-          "location": "/nextcloud_aio_volumes/nextcloud_aio_apache",
+          "source": "nextcloud_aio_apache",
+          "destination": "/nextcloud_aio_volumes/nextcloud_aio_apache",
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_mastercontainer",
-          "location": "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer",
+          "source": "nextcloud_aio_mastercontainer",
+          "destination": "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer",
           "writeable": true
         },
         {
-          "name": "%BORGBACKUP_HOST_LOCATION%",
-          "location": "/mnt/borgbackup",
+          "source": "%BORGBACKUP_HOST_LOCATION%",
+          "destination": "/mnt/borgbackup",
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_elasticsearch",
-          "location": "/nextcloud_aio_volumes/nextcloud_aio_elasticsearch",
+          "source": "nextcloud_aio_elasticsearch",
+          "destination": "/nextcloud_aio_volumes/nextcloud_aio_elasticsearch",
           "writeable": true
         },
         {
-          "name": "nextcloud_aio_redis",
-          "location": "/mnt/redis",
+          "source": "nextcloud_aio_redis",
+          "destination": "/mnt/redis",
           "writeable": true
         }
       ],
@@ -320,8 +320,8 @@
       ],
       "volumes": [
         {
-          "name": "%DOCKER_SOCKET_PATH%",
-          "location": "/var/run/docker.sock",
+          "source": "%DOCKER_SOCKET_PATH%",
+          "destination": "/var/run/docker.sock",
           "writeable": false
         }
       ],
@@ -362,8 +362,8 @@
       ],
       "volumes": [
         {
-          "name": "nextcloud_aio_clamav",
-          "location": "/var/lib/clamav",
+          "source": "nextcloud_aio_clamav",
+          "destination": "/var/lib/clamav",
           "writeable": true
         }
       ],
@@ -386,8 +386,8 @@
       ],
       "volumes": [
         {
-          "name": "nextcloud_aio_onlyoffice",
-          "location": "/var/lib/onlyoffice",
+          "source": "nextcloud_aio_onlyoffice",
+          "destination": "/var/lib/onlyoffice",
           "writeable": true
         }
       ],
@@ -426,8 +426,8 @@
       ],
       "volumes": [
         {
-          "name": "nextcloud_aio_elasticsearch",
-          "location": "/usr/share/elasticsearch/data",
+          "source": "nextcloud_aio_elasticsearch",
+          "destination": "/usr/share/elasticsearch/data",
           "writeable": true
         }
       ],
