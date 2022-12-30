@@ -48,7 +48,7 @@ class ContainerDefinitionFetcher
         $data = json_decode(file_get_contents(__DIR__ . '/../containers.json'), true);
 
         $containers = [];
-        foreach ($data['services'] as $entry) {
+        foreach ($data['aio_services_v1'] as $entry) {
             if ($entry['container_name'] === 'nextcloud-aio-clamav') {
                 if (!$this->configurationManager->isClamavEnabled()) {
                     continue;

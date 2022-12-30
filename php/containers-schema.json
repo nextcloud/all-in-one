@@ -2,9 +2,9 @@
 	"type": "object",
 	"description": "AIO containers definition schema",
 	"minProperties": 1,
-	"required": ["services"],
+	"required": ["aio_services_v1"],
 	"properties": {
-		"services": {
+		"aio_services_v1": {
 			"type": "array",
 			"items": {
 				"type": "object",
