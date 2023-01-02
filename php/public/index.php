@@ -67,7 +67,7 @@ $app->post('/api/auth/logout', AIO\Controller\LoginController::class . ':Logout'
 $app->post('/api/configuration', \AIO\Controller\ConfigurationController::class . ':SetConfig');
 
 // Views
-$app->get('/containers', function (Request $request, Response $response, mixed $args) use ($container) {
+$app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
     $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
@@ -112,7 +112,7 @@ $app->get('/containers', function (Request $request, Response $response, mixed $
         'additional_backup_directories' => $configurationManager->GetAdditionalBackupDirectoriesString(),
     ]);
 })->setName('profile');
-$app->get('/login', function (Request $request, Response $response, mixed $args) use ($container) {
+$app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
     $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
@@ -120,7 +120,7 @@ $app->get('/login', function (Request $request, Response $response, mixed $args)
         'is_login_allowed' => $dockerActionManger->isLoginAllowed(),
     ]);
 });
-$app->get('/setup', function (Request $request, Response $response, mixed $args) use ($container) {
+$app->get('/setup', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Data\Setup $setup */
     $setup = $container->get(\AIO\Data\Setup::class);
@@ -142,7 +142,7 @@ $app->get('/setup', function (Request $request, Response $response, mixed $args)
 });
 
 // Auth Redirector
-$app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $response, mixed $args) use ($container) {
+$app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $response, array $args) use ($container) {
     $authManager = $container->get(\AIO\Auth\AuthManager::class);
 
     /** @var \AIO\Data\Setup $setup */
