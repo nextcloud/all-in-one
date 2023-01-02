@@ -14,7 +14,7 @@ class ClassExtension extends TwigExtension
         );
     }
 
-    public function getClassName($object) : ?string
+    public function getClassName(mixed $object) : ?string
     {
         if (!is_object($object)) {
             return null;
