@@ -251,7 +251,7 @@ RUN set -ex; \
     chmod +x /notify.sh && \
     chmod +x /notify-all.sh && \
     chmod +x /activate-collabora.sh && \
-    chmod +x healthcheck.sh
+    chmod +x /healthcheck.sh
 
 RUN set -ex; \
     mkdir /mnt/ncdata; \
@@ -265,4 +265,4 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 USER root
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD sudo -E -u www-data bash /healthcheck.sh
