@@ -250,7 +250,8 @@ RUN set -ex; \
     chmod +x /cron.sh && \
     chmod +x /notify.sh && \
     chmod +x /notify-all.sh && \
-    chmod +x /activate-collabora.sh
+    chmod +x /activate-collabora.sh && \
+    chmod +x /healthcheck.sh
 
 RUN set -ex; \
     mkdir /mnt/ncdata; \
@@ -264,4 +265,4 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 USER root
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD (sudo -u www-data nc -z "$POSTGRES_HOST" 5432 || exit 0) && (sudo -u www-data nc -z localhost 9000 && sudo -u www-data nc -z localhost 7867) || exit 1
+HEALTHCHECK CMD sudo -E -u www-data bash /healthcheck.sh
