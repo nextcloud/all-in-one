@@ -361,31 +361,19 @@ class DockerActionManager
         $exposedPorts = [];
         if ($container->GetInternalPort() !== 'host') {
             foreach($container->GetPorts()->GetPorts() as $value) {
-                $exposedPorts[$value->port] = null;
+                $portWithProtocol = $value->port . '/' . $value->protocol;
+                $exposedPorts[$portWithProtocol] = null;
             }
         }
 
         if(count($exposedPorts) > 0) {
+            $requestBody['ExposedPorts'] = $exposedPorts;
             foreach ($container->GetPorts()->GetPorts() as $value) {
                 $port = $value->port;
-                if($port === '%APACHE_PORT%') {
-                    $port = $this->configurationManager->GetApachePort();
-                } elseif($port === '%TALK_PORT%') {
-                    $port = $this->configurationManager->GetTalkPort();
-                }
-                
                 $ipBinding = $value->ipBinding;
-                if($ipBinding === '%APACHE_IP_BINDING%') {
-                    $ipBinding = $this->configurationManager->GetApacheIPBinding();
-                }
-                if ($ipBinding === '') {
-                    $ipBinding = '0.0.0.0';
-                }
-
                 $protocol = $value->protocol;
                 $portWithProtocol = $port . '/' . $protocol;
-                $requestBody['ExposedPorts'][$portWithProtocol] = null;
-                $requestBody['HostConfig']['PortBindings'][$port] = [
+                $requestBody['HostConfig']['PortBindings'][$portWithProtocol] = [
                     [
                     'HostPort' => $port,
                     'HostIp' => $ipBinding,

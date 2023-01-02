@@ -5,12 +5,12 @@ namespace AIO\Container;
 class ContainerPort {
     public string $port;
     public string $ipBinding;
-    public bool $protocol;
+    public string $protocol;
 
     public function __construct(
         string $port,
         string $ipBinding,
-        bool $protocol
+        string $protocol
     ) {
         $this->port = $port;
         $this->ipBinding = $ipBinding;
