@@ -77,6 +77,17 @@ class ContainerDefinitionFetcher
 
             $ports = new ContainerPorts();
             foreach ($entry['ports'] as $value) {
+
+                if ($value['port_number'] === '%APACHE_PORT%') {
+                    $value['port_number'] = $this->configurationManager->GetApachePort();
+                } elseif ($value['port_number'] === '%TALK_PORT%') {
+                    $value['port_number'] = $this->configurationManager->GetTalkPort();
+                }
+
+                if ($value['ip_binding'] === '%APACHE_IP_BINDING%') {
+                    $value['ip_binding'] = $this->configurationManager->GetApacheIPBinding();
+                }
+                
                 $ports->AddPort(
                     new ContainerPort(
                         $value['port_number'],
