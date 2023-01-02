@@ -17,9 +17,12 @@ RUN set -ex; \
     chown -R postgres:postgres "$PGDATA"
 
 COPY start.sh /usr/bin/
+COPY healthcheck.sh /usr/bin/
 COPY init-user-db.sh /docker-entrypoint-initdb.d/
-RUN chmod +x /usr/bin/start.sh; \
-    chmod +xr /docker-entrypoint-initdb.d/init-user-db.sh
+RUN set -ex; \
+    chmod +x /usr/bin/start.sh; \
+    chmod +xr /docker-entrypoint-initdb.d/init-user-db.sh; \
+    chmod +x /usr/bin/healthcheck.sh
 
 RUN mkdir /mnt/data; \
     chown postgres:postgres /mnt/data;
@@ -32,4 +35,4 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 USER postgres
 ENTRYPOINT ["start.sh"]
 
-HEALTHCHECK CMD (test -f "/mnt/data/backup-is-running" && exit 0) && psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/$POSTGRES_DB" -c "select now()" || exit 1
+HEALTHCHECK CMD healthcheck.sh
