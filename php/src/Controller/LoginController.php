@@ -19,7 +19,7 @@ class LoginController
         $this->dockerActionManager = $dockerActionManager;
     }
 
-    public function TryLogin(Request $request, Response $response, $args) : Response {
+    public function TryLogin(Request $request, Response $response, array $args) : Response {
         if (!$this->dockerActionManager->isLoginAllowed()) {
             return $response->withHeader('Location', '/')->withStatus(302);
         }
@@ -32,7 +32,7 @@ class LoginController
         return $response->withHeader('Location', '/')->withStatus(302);
     }
 
-    public function GetTryLogin(Request $request, Response $response, $args) : Response {
+    public function GetTryLogin(Request $request, Response $response, array $args) : Response {
         $token = $request->getQueryParams()['token'] ?? '';
         if($this->authManager->CheckToken($token)) {
             $this->authManager->SetAuthState(true);
@@ -42,7 +42,7 @@ class LoginController
         return $response->withHeader('Location', '/')->withStatus(302);
     }
 
-    public function Logout(Request $request, Response $response, $args) : Response
+    public function Logout(Request $request, Response $response, array $args) : Response
     {
         $this->authManager->SetAuthState(false);
         return $response

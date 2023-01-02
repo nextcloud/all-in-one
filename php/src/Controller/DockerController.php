@@ -49,7 +49,7 @@ class DockerController
         $this->dockerActionManager->ConnectContainerToNetwork($container);
     }
 
-    public function GetLogs(Request $request, Response $response, $args) : Response
+    public function GetLogs(Request $request, Response $response, array $args) : Response
     {
         $id = $request->getQueryParams()['id'];
         if (str_starts_with($id, 'nextcloud-aio-')) {
@@ -67,7 +67,7 @@ class DockerController
             ->withHeader('Content-Disposition', 'inline');
     }
 
-    public function StartBackupContainerBackup(Request $request, Response $response, $args) : Response {
+    public function StartBackupContainerBackup(Request $request, Response $response, array $args) : Response {
         $this->startBackup();
         return $response->withStatus(201)->withHeader('Location', '/');
     }
@@ -84,7 +84,7 @@ class DockerController
         $this->PerformRecursiveContainerStart($id);
     }
 
-    public function StartBackupContainerCheck(Request $request, Response $response, $args) : Response {
+    public function StartBackupContainerCheck(Request $request, Response $response, array $args) : Response {
         $this->checkBackup();
         return $response->withStatus(201)->withHeader('Location', '/');
     }
@@ -98,7 +98,7 @@ class DockerController
         $this->PerformRecursiveContainerStart($id);
     }
 
-    public function StartBackupContainerRestore(Request $request, Response $response, $args) : Response {
+    public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'restore';
         $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
@@ -113,7 +113,7 @@ class DockerController
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
-    public function StartBackupContainerTest(Request $request, Response $response, $args) : Response {
+    public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'test';
         $config['instance_restore_attempt'] = 0;
@@ -128,7 +128,7 @@ class DockerController
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
-    public function StartContainer(Request $request, Response $response, $args) : Response
+    public function StartContainer(Request $request, Response $response, array $args) : Response
     {
         $uri = $request->getUri();
         $host = $uri->getHost();
@@ -165,7 +165,7 @@ class DockerController
         $this->PerformRecursiveContainerStart($id, $pullContainer);
     }
 
-    public function StartWatchtowerContainer(Request $request, Response $response, $args) : Response {
+    public function StartWatchtowerContainer(Request $request, Response $response, array $args) : Response {
         $this->startWatchtower();
         return $response->withStatus(201)->withHeader('Location', '/');
     }
@@ -188,7 +188,7 @@ class DockerController
         $this->dockerActionManager->StopContainer($container);
     }
 
-    public function StopContainer(Request $request, Response $response, $args) : Response
+    public function StopContainer(Request $request, Response $response, array $args) : Response
     {
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);

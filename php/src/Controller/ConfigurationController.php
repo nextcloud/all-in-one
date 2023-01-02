@@ -19,7 +19,7 @@ class ConfigurationController
         $this->configurationManager = $configurationManager;
     }
 
-    public function SetConfig(Request $request, Response $response, $args) : Response {
+    public function SetConfig(Request $request, Response $response, array $args) : Response {
         try {
             if (isset($request->getParsedBody()['domain'])) {
                 $domain = $request->getParsedBody()['domain'] ?? '';
