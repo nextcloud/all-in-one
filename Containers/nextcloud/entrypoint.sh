@@ -263,7 +263,19 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             if [ -n "$STARTUP_APPS" ]; then
                 read -ra STARTUP_APPS_ARRAY <<< "$STARTUP_APPS"
                 for app in "${STARTUP_APPS_ARRAY[@]}"; do
-                    php /var/www/html/occ app:install "$app"
+                    if ! echo "$app" | grep -q '^-'; then 
+                        if [ -z "$(find /var/www/html/apps -type d -maxdepth 1 -mindepth 1 -name "$app" )" ]; then
+                            # If not shipped, install and enable the app
+                            php /var/www/html/occ app:install "$app"
+                        else
+                            # If shipped, enable the app
+                            php /var/www/html/occ app:enable "$app"
+                        fi
+                    else
+                        app="${app#-}"
+                        # Disable the app if '-' was provided in front of the appid
+                        php /var/www/html/occ app:disable "$app"
+                    fi
                 done
             fi
 
