@@ -363,6 +363,8 @@ class DockerActionManager
             foreach($container->GetPorts()->GetPorts() as $value) {
                 $exposedPorts[$value->port] = null;
             }
+        } else {
+            $requestBody['HostConfig']['NetworkMode'] = 'host';
         }
 
         if(count($exposedPorts) > 0) {
@@ -633,31 +635,31 @@ class DockerActionManager
     private function ConnectContainerIdToNetwork(string $id, string $internalPort) : void
     {
         if ($internalPort === 'host') {
-            $network = 'host';
-        } else {
-            $network = 'nextcloud-aio';
-            $url = $this->BuildApiUrl('networks/create');
-            try {
-                $this->guzzleClient->request(
-                    'POST',
-                    $url,
-                    [
-                        'json' => [
-                            'Name' => 'nextcloud-aio',
-                            'CheckDuplicate' => true,
-                            'Driver' => 'bridge',
-                            'Internal' => false,
-                            'Options' => [
-                                'com.docker.network.bridge.enable_icc' => 'true'
-                            ]
+            return;
+        }
+
+        $network = 'nextcloud-aio';
+        $url = $this->BuildApiUrl('networks/create');
+        try {
+            $this->guzzleClient->request(
+                'POST',
+                $url,
+                [
+                    'json' => [
+                        'Name' => 'nextcloud-aio',
+                        'CheckDuplicate' => true,
+                        'Driver' => 'bridge',
+                        'Internal' => false,
+                        'Options' => [
+                            'com.docker.network.bridge.enable_icc' => 'true'
                         ]
                     ]
-                );
-            } catch (RequestException $e) {
-                // 409 is undocumented and gets thrown if the network already exists.
-                if ($e->getCode() !== 409) {
-                    throw $e;
-                }
+                ]
+            );
+        } catch (RequestException $e) {
+            // 409 is undocumented and gets thrown if the network already exists.
+            if ($e->getCode() !== 409) {
+                throw $e;
             }
         }
 
