@@ -1,15 +1,16 @@
 {
 	"type": "object",
 	"description": "AIO containers definition schema",
-	"additionalProperties": false,
 	"minProperties": 1,
+	"required": ["aio_services_v1"],
 	"properties": {
-		"services": {
+		"aio_services_v1": {
 			"type": "array",
 			"items": {
 				"type": "object",
 				"additionalProperties": false,
-				"minProperties": 11,
+				"minProperties": 2,
+				"required": ["image", "container_name"],
 				"properties": {
 					"image": {
 						"type": "string"

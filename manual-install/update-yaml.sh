@@ -1,6 +1,7 @@
 #!/bin/bash
 
 jq -c . ./php/containers.json > /tmp/containers.json
+sed -i 's|aio_services_v1|services|g' /tmp/containers.json
 sed -i 's|","destination":"|:|g' /tmp/containers.json
 sed -i 's|","writeable":false|:ro"|g' /tmp/containers.json
 sed -i 's|","writeable":true|:rw"|g' /tmp/containers.json
