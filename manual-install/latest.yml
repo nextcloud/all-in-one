@@ -9,7 +9,7 @@ services:
       - nextcloud-aio-nextcloud
     image: nextcloud/aio-apache:${IMAGE_TAG}
     ports:
-      - ${APACHE_PORT}:${APACHE_PORT}/tcp
+      - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
     environment:
       - NC_DOMAIN=${NC_DOMAIN}
       - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
@@ -23,7 +23,6 @@ services:
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
-    stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -97,7 +96,6 @@ services:
       - STARTUP_APPS=${NEXTCLOUD_STARTUP_APPS}
       - ADDITIONAL_APKS=${NEXTCLOUD_ADDITIONAL_APKS}
       - ADDITIONAL_PHP_EXTENSIONS=${NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS}
-    stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -109,7 +107,6 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       - nextcloud_aio_redis:/data:rw
-    stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -124,7 +121,6 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       - nextcloud_aio_collabora_fonts:/opt/cool/systemplate/tmpfonts:rw
-    stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -142,7 +138,6 @@ services:
       - JANUS_API_KEY=${JANUS_API_KEY}
       - TZ=${TIMEZONE}
       - TALK_PORT=${TALK_PORT}
-    stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -155,7 +150,6 @@ services:
       - CLAMD_STARTUP_TIMEOUT=90
     volumes:
       - nextcloud_aio_clamav:/var/lib/clamav:rw
-    stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -170,7 +164,6 @@ services:
       - JWT_SECRET=${ONLYOFFICE_SECRET}
     volumes:
       - nextcloud_aio_onlyoffice:/var/lib/onlyoffice:rw
-    stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -180,7 +173,6 @@ services:
     image: nextcloud/aio-imaginary:${IMAGE_TAG}
     environment:
       - TZ=${TIMEZONE}
-    stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -194,7 +186,6 @@ services:
       - ES_JAVA_OPTS=-Xms1024M -Xmx1024M
     volumes:
       - nextcloud_aio_elasticsearch:/usr/share/elasticsearch/data:rw
-    stop_grace_period: 10s
     restart: unless-stopped
     networks:
       - nextcloud-aio
