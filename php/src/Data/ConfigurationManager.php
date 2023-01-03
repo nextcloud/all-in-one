@@ -791,4 +791,19 @@ class ConfigurationManager
             return true;
         }
     }
+
+    private function GetEnabledDriDevice() : string {
+        $envVariableName = 'NEXTCLOUD_ENABLE_DRI_DEVICE';
+        $configName = 'nextcloud_enable_dri_device';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function isDriDeviceEnabled() : bool {
+        if ($this->GetEnabledDriDevice() === 'true') {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -67,6 +67,12 @@
 							"type": "string"
 						}
 					},
+					"devices": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
 					"volumes": {
 						"type": "array",
 						"items": {

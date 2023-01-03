@@ -155,7 +155,10 @@
         "ADDITIONAL_APKS=%NEXTCLOUD_ADDITIONAL_APKS%",
         "ADDITIONAL_PHP_EXTENSIONS=%NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS%"
       ],
-      "restart": "unless-stopped"
+      "restart": "unless-stopped",
+      "devices": [
+        "/dev/dri"
+      ]
     },
     {
       "container_name": "nextcloud-aio-redis",
@@ -296,6 +299,9 @@
       ],
       "secrets": [
         "BORGBACKUP_PASSWORD"
+      ],
+      "devices": [
+        "/dev/fuse"
       ]
     },
     {

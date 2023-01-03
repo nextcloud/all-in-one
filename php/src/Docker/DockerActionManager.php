@@ -384,10 +384,21 @@ class DockerActionManager
             }
         }
 
+        $devices = [];
+        foreach($container->GetDevices() as $device) {
+            if ($device === '/dev/dri' && ! $this->configurationManager->isDriDeviceEnabled()) {
+                continue;
+            }
+            $devices[] = ["PathOnHost" => $device, "PathInContainer" => $device, "CgroupPermissions" => "rwm"];
+        }
+
+        if (count($devices) > 0) {
+            $requestBody['HostConfig']['Devices'] = $devices;
+        }
+
         // Special things for the backup container which should not be exposed in the containers.json
         if ($container->GetIdentifier() === 'nextcloud-aio-borgbackup') {
             $requestBody['HostConfig']['CapAdd'] = ["SYS_ADMIN"];
-            $requestBody['HostConfig']['Devices'] = [["PathOnHost" => "/dev/fuse", "PathInContainer" => "/dev/fuse", "CgroupPermissions" => "rwm"]];
             $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined"];
             
             // Additional backup directories

@@ -30,6 +30,18 @@ if [ -n "$TRUSTED_CACERTS_DIR" ]; then
     update-ca-certificates
 fi
 
+# Check if /dev/dri device is present and apply correct permissions
+set -x
+if ! [ -f "/dev-dri-group-was-added" ] && [ -n "$(find /dev -maxdepth 1 -mindepth 1 -name dri)" ] && [ -n "$(find /dev/dri -maxdepth 1 -mindepth 1 -name renderD128)" ]; then
+    # From https://github.com/pulsejet/memories/wiki/QSV-Transcoding#docker-installations
+    GID="$(stat -c "%g" /dev/dri/renderD128)"
+    groupadd -g "$GID" render2 || true # sometimes this is needed
+    GROUP="$(getent group "$GID" | cut -d: -f1)"
+    usermod -aG "$GROUP" www-data
+    touch "/dev-dri-group-was-added"
+fi
+set +x
+
 # Check datadir permissions
 sudo -u www-data touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
