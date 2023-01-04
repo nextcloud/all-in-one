@@ -370,7 +370,7 @@ if [ "$BORG_MODE" = "check-repair" ]; then
     echo "Checking the backup integrity and repairing it..."
 
     # Perform the check-repair
-    if ! borg check -v --repair "$BORG_BACKUP_DIRECTORY"; then
+    if ! echo YES | borg check -v --repair "$BORG_BACKUP_DIRECTORY"; then
         echo "Some errors were found while checking and repairing the backup integrity!"
         exit 1
     fi
