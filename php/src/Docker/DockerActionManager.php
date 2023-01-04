@@ -423,6 +423,10 @@ class DockerActionManager
             if(count($mounts) > 0) {
                 $requestBody['HostConfig']['Mounts'] = $mounts;
             }
+        // Special things for the talk container which should not be exposed in the containers.json
+        } elseif ($container->GetIdentifier() === 'nextcloud-aio-talk') {
+            // This is needed due to a bug in libwebsockets which cannot handle unlimited ulimits
+            $requestBody['HostConfig']['Ulimits'] = [["Name" => "nofile", "Hard" => 200000, "Soft" => 200000]];
         }
 
         $url = $this->BuildApiUrl('containers/create?name=' . $container->GetIdentifier());
