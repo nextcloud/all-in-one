@@ -127,7 +127,7 @@ if [ "$BORG_MODE" = backup ]; then
     # Borg options
     # auto,zstd compression seems to has the best ratio based on:
     # https://forum.level1techs.com/t/optimal-compression-for-borg-backups/145870/6
-    BORG_OPTS=(--progress --stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
+    BORG_OPTS=(-v --stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
     # Create the backup
     echo "Starting the backup..."
@@ -353,7 +353,7 @@ if [ "$BORG_MODE" = check ]; then
     echo "Checking the backup integrity..."
 
     # Perform the check
-    if ! borg check --progress --verify-data "$BORG_BACKUP_DIRECTORY"; then
+    if ! borg check -v --verify-data "$BORG_BACKUP_DIRECTORY"; then
         echo "Some errors were found while checking the backup integrity!"
         exit 1
     fi
