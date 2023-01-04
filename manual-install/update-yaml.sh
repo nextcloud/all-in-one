@@ -12,6 +12,7 @@ cat /tmp/containers.json
 OUTPUT="$(cat /tmp/containers.json)"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].internal_port)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].secrets)')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].devices)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-watchtower"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-domaincheck"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-borgbackup"))')"

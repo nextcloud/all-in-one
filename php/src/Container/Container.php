@@ -21,6 +21,8 @@ class Container {
     private array $dependsOn;
     /** @var string[] */
     private array $secrets;
+    /** @var string[] */
+    private array $devices;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -35,6 +37,7 @@ class Container {
         ContainerEnvironmentVariables $containerEnvironmentVariables,
         array $dependsOn,
         array $secrets,
+        array $devices,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -48,6 +51,7 @@ class Container {
         $this->containerEnvironmentVariables = $containerEnvironmentVariables;
         $this->dependsOn = $dependsOn;
         $this->secrets = $secrets;
+        $this->devices = $devices;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -73,6 +77,10 @@ class Container {
 
     public function GetSecrets() : array {
         return $this->secrets;
+    }
+
+    public function GetDevices() : array {
+        return $this->devices;
     }
 
     public function GetPorts() : ContainerPorts {
