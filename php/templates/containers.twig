@@ -118,7 +118,7 @@
                                             <form method="POST" action="/api/docker/backup-check-repair" class="xhr">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input class="button" type="submit" value="Check and repair backup integrity"/><br/>
+                                                <input class="button" type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/><br/>
                                             </form>
                                         </details><br /><br />
                                     {% endif %}
@@ -345,7 +345,7 @@
                                             <form method="POST" action="/api/docker/backup-check-repair" class="xhr">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input class="button" type="submit" value="Check and repair backup integrity"/><br/>
+                                                <input class="button" type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/><br/>
                                             </form>
                                         </details><br /><br />
                                     {% endif %}
