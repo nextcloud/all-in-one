@@ -364,6 +364,23 @@ if [ "$BORG_MODE" = check ]; then
     exit 0
 fi
 
+# Do the Backup check-repair
+if [ "$BORG_MODE" = "check-repair" ]; then
+    get_start_time
+    echo "Checking the backup integrity and repairing it..."
+
+    # Perform the check-repair
+    if ! borg check -v --repair "$BORG_BACKUP_DIRECTORY"; then
+        echo "Some errors were found while checking and repairing the backup integrity!"
+        exit 1
+    fi
+
+    # Inform user
+    get_expiration_time
+    echo "Check finished successfully on $END_DATE_READABLE ($DURATION_READABLE)"
+    exit 0
+fi
+
 # Do the backup test
 if [ "$BORG_MODE" = test ]; then
     if ! [ -d "$BORG_BACKUP_DIRECTORY" ]; then
