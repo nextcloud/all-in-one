@@ -236,8 +236,16 @@ class DockerActionManager
 
         $envs = $container->GetEnvironmentVariables()->GetVariables();
         foreach($envs as $key => $env) {
-            $patterns = ['/%(.*)%/'];
+            // TODO: This whole block below is a hack and needs to get reworked in order to support multiple substitutions per line by default for all envs
+            if (str_starts_with($env, 'extra_params=')) {
+                $env = str_replace('%COLLABORA_SECCOMP_POLICY%', $this->configurationManager->GetCollaboraSeccompPolicy(), $env);
+                $env = str_replace('%NC_DOMAIN%', $this->configurationManager->GetDomain(), $env);
+                $envs[$key] = $env;
+                continue;
+            }
 
+            // Original implementation
+            $patterns = ['/%(.*)%/'];
 
             if(preg_match($patterns[0], $env, $out) === 1) {
                 $replacements = array();
