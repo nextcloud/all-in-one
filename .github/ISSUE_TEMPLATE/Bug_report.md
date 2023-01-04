@@ -11,6 +11,12 @@ labels: bug, 0. Needs triage
 * Please don't comment if you have no relevant information to add. It's just extra noise for everyone subscribed to this issue.
 * Subscribe to receive notifications on status change and new comments. 
 
+
+<!---
+For issues with Collabora or Talk, make sure to follow https://github.com/nextcloud/all-in-one/discussions/1358. It may already resolve your issue and/or makes it easier to help you.
+--->
+
+
 <!--- Please fill out the whole template below -->
 ### Steps to reproduce
 1.
