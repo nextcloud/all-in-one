@@ -8,17 +8,25 @@
 
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
 
+    # well-known
+    redir /.well-known/carddav {$NC_WEBROOT_P}/remote.php/dav
+    redir /.well-known/caldav {$NC_WEBROOT_P}/remote.php/dav
+    redir /.well-known/webdav {$NC_WEBROOT_P}/remote.php/dav
+    redir /.well-known/webfinger {$NC_WEBROOT_P}/index.php/.well-known/webfinger
+    redir /.well-known/nodeinfo {$NC_WEBROOT_P}/index.php/.well-known/nodeinfo
+
+
     # Notify Push
-    route /push/* {
-        uri strip_prefix /push
+    route {$NC_WEBROOT_P}/push/* {
+        uri strip_prefix {$NC_WEBROOT_P}/push
         reverse_proxy {$NEXTCLOUD_HOST}:7867 {
             # trusted_proxies placeholder
         }
     }
 
     # Talk
-    route /standalone-signaling/* {
-        uri strip_prefix /standalone-signaling
+    route {$NC_WEBROOT_P}/standalone-signaling/* {
+        uri strip_prefix {$NC_WEBROOT_P}/standalone-signaling
         reverse_proxy {$TALK_HOST}:8081 {
             # trusted_proxies placeholder
         }
@@ -42,19 +50,18 @@
     }
 
     # Onlyoffice
-    route /onlyoffice/* {
-        uri strip_prefix /onlyoffice
+    route {$NC_WEBROOT_P}/onlyoffice/* {
+        uri strip_prefix {$NC_WEBROOT_P}/onlyoffice
         reverse_proxy {$ONLYOFFICE_HOST}:80 {
-            header_up X-Forwarded-Host {http.request.host}/onlyoffice
+            header_up X-Forwarded-Host {http.request.host}{$NC_WEBROOT_P}/onlyoffice
             header_up X-Forwarded-Proto https
             # trusted_proxies placeholder
         }
     }
 
     # Nextcloud
-    route {
-        rewrite /.well-known/carddav /remote.php/dav
-        rewrite /.well-known/caldav /remote.php/dav
+    route {$NC_WEBROOT_P}/* {
+        # uri_strip_webroot placeholder
         header Strict-Transport-Security max-age=31536000;
         reverse_proxy localhost:8000 {
             # See https://github.com/nextcloud/all-in-one/issues/828

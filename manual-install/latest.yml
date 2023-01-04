@@ -12,6 +12,7 @@ services:
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
     environment:
       - NC_DOMAIN=${NC_DOMAIN}
+      - NC_WEBROOT=${NC_WEBROOT}
       - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_HOST=nextcloud-aio-talk
@@ -65,6 +66,7 @@ services:
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
       - AIO_TOKEN=${AIO_TOKEN}
       - NC_DOMAIN=${NC_DOMAIN}
+      - NC_WEBROOT=${NC_WEBROOT}
       - ADMIN_USER=admin
       - ADMIN_PASSWORD=${NEXTCLOUD_PASSWORD}
       - NEXTCLOUD_DATA_DIR=/mnt/ncdata
@@ -115,7 +117,7 @@ services:
     profiles: ["collabora"]
     image: nextcloud/aio-collabora:${IMAGE_TAG}
     environment:
-      - aliasgroup1=https://${NC_DOMAIN}:443
+      - aliasgroup1=https://${NC_DOMAIN}:443${NC_WEBROOT}
       - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true ${COLLABORA_SECCOMP_POLICY} --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json
       - dictionaries=${COLLABORA_DICTIONARIES}
       - TZ=${TIMEZONE}
@@ -133,6 +135,7 @@ services:
       - ${TALK_PORT}:${TALK_PORT}/udp
     environment:
       - NC_DOMAIN=${NC_DOMAIN}
+      - NC_WEBROOT=${NC_WEBROOT}
       - TURN_SECRET=${TURN_SECRET}
       - SIGNALING_SECRET=${SIGNALING_SECRET}
       - JANUS_API_KEY=${JANUS_API_KEY}

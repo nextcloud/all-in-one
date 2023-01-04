@@ -252,6 +252,10 @@ class DockerActionManager
 
                 if($out[1] === 'NC_DOMAIN') {
                     $replacements[1] = $this->configurationManager->GetDomain();
+                } elseif ($out[1] === 'NC_DOMAIN') {
+                    $replacements[1] = '/';
+                } elseif ($out[1] === 'BORGBACKUP_MODE') {
+                    $replacements[1] = $this->configurationManager->GetBackupMode();
                 } elseif ($out[1] === 'AIO_TOKEN') {
                     $replacements[1] = $this->configurationManager->GetToken();
                 } elseif ($out[1] === 'BORGBACKUP_MODE') {
