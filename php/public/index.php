@@ -57,6 +57,7 @@ $app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . 
 $app->post('/api/docker/start', AIO\Controller\DockerController::class . ':StartContainer');
 $app->post('/api/docker/backup', AIO\Controller\DockerController::class . ':StartBackupContainerBackup');
 $app->post('/api/docker/backup-check', AIO\Controller\DockerController::class . ':StartBackupContainerCheck');
+$app->post('/api/docker/backup-check-repair', AIO\Controller\DockerController::class . ':StartBackupContainerCheckRepair');
 $app->post('/api/docker/backup-test', AIO\Controller\DockerController::class . ':StartBackupContainerTest');
 $app->post('/api/docker/restore', AIO\Controller\DockerController::class . ':StartBackupContainerRestore');
 $app->post('/api/docker/stop', AIO\Controller\DockerController::class . ':StopContainer');

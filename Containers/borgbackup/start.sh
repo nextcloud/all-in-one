@@ -20,7 +20,7 @@ export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
 # Validate BORG_MODE
-if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != restore ] && [ "$BORG_MODE" != check ] && [ "$BORG_MODE" != test ]; then
+if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != restore ] && [ "$BORG_MODE" != check ] && [ "$BORG_MODE" != "check-repair" ] && [ "$BORG_MODE" != test ]; then
     echo "No correct BORG_MODE mode applied. Valid are 'backup', 'check', 'restore' and 'test'."
     exit 1
 fi
