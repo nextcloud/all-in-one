@@ -25,4 +25,4 @@ jobs:
           labels: dependencies
           milestone: next
           branch: aio-yaml-update
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
