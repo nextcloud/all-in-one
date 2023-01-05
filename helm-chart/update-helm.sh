@@ -17,6 +17,7 @@ cd manual-install
 cp latest.yml latest.yml.backup
 cp sample.conf /tmp/
 sed -i 's|^|export |' /tmp/sample.conf
+# shellcheck disable=SC1091
 source /tmp/sample.conf
 rm /tmp/sample.conf
 sed -i "s|\${APACHE_IP_BINDING}|$APACHE_IP_BINDING|" latest.yml
@@ -35,13 +36,21 @@ cat latest.yml
 kompose convert -c -f latest.yml
 cd latest
 
+# shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 100Mi|storage: {{ .Values.MAX_STORAGE_SIZE }}|" \{} \;  
+# shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;  
+# shellcheck disable=SC1083
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_IP_BINDING|{{ .Values.APACHE_IP_BINDING }}|" \{} \;  
+# shellcheck disable=SC1083
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;  
+# shellcheck disable=SC1083
 find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} \; 
+# shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \; 
+# shellcheck disable=SC1083
 find ./ \( -not -name '*service.yaml' -name '*.yaml' \) -exec sed -i "/^status:/d" \{} \; 
+# shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "/creationTimestamp: null/d" \{} \; 
 cd ../
 mkdir -p ../helm-chart/
