@@ -36,7 +36,7 @@ find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|
 find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} \; 
 find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \; 
 cd ../
-mkdir ../helm-chart/
+mkdir -p ../helm-chart/
 rm latest/README.md
 mv latest/* ../helm-chart/
 rm -r latest
