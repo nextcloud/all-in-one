@@ -4,7 +4,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
     kompose.version: 1.27.0 (b0ed6a2c9)
-  creationTimestamp: null
   labels:
     io.kompose.service: nextcloud-aio-database
   name: nextcloud-aio-database
@@ -20,7 +19,6 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
         kompose.version: 1.27.0 (b0ed6a2c9)
-      creationTimestamp: null
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-database
@@ -37,7 +35,7 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-postgresql:latest
+          image: nextcloud/aio-postgresql:{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-database
           resources: {}
           volumeMounts:
@@ -54,4 +52,3 @@ spec:
         - name: nextcloud-aio-database-dump
           persistentVolumeClaim:
             claimName: nextcloud-aio-database-dump
-status: {}

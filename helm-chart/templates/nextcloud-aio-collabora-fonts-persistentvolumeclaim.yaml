@@ -2,8 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    io.kompose.service: nextcloud-aio-apache
-  name: nextcloud-aio-apache
+    io.kompose.service: nextcloud-aio-collabora-fonts
+  name: nextcloud-aio-collabora-fonts
 spec:
   accessModes:
     - ReadWriteOnce

@@ -4,7 +4,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
     kompose.version: 1.27.0 (b0ed6a2c9)
-  creationTimestamp: null
   labels:
     io.kompose.service: nextcloud-aio-clamav
   name: nextcloud-aio-clamav
@@ -20,25 +19,24 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
         kompose.version: 1.27.0 (b0ed6a2c9)
-      creationTimestamp: null
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-clamav
     spec:
       containers:
         - env:
+            - name: CLAMD_STARTUP_TIMEOUT
+              value: "90"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-clamav:latest
+          image: nextcloud/aio-clamav:{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-clamav
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/clamav
               name: nextcloud-aio-clamav
       restartPolicy: Always
-      terminationGracePeriodSeconds: 10
       volumes:
         - name: nextcloud-aio-clamav
           persistentVolumeClaim:
             claimName: nextcloud-aio-clamav
-status: {}

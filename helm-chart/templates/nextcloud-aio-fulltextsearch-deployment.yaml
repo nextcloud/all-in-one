@@ -4,7 +4,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
     kompose.version: 1.27.0 (b0ed6a2c9)
-  creationTimestamp: null
   labels:
     io.kompose.service: nextcloud-aio-fulltextsearch
   name: nextcloud-aio-fulltextsearch
@@ -20,7 +19,6 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
         kompose.version: 1.27.0 (b0ed6a2c9)
-      creationTimestamp: null
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-fulltextsearch
@@ -33,16 +31,14 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: discovery.type
               value: single-node
-          image: nextcloud/aio-fulltextsearch:latest
+          image: nextcloud/aio-fulltextsearch:{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-fulltextsearch
           resources: {}
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
               name: nextcloud-aio-elasticsearch
       restartPolicy: Always
-      terminationGracePeriodSeconds: 10
       volumes:
         - name: nextcloud-aio-elasticsearch
           persistentVolumeClaim:
             claimName: nextcloud-aio-elasticsearch
-status: {}

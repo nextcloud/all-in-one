@@ -4,7 +4,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
     kompose.version: 1.27.0 (b0ed6a2c9)
-  creationTimestamp: null
   labels:
     io.kompose.service: nextcloud-aio-collabora
   name: nextcloud-aio-collabora
@@ -13,13 +12,13 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-collabora
-  strategy: {}
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
         kompose.version: 1.27.0 (b0ed6a2c9)
-      creationTimestamp: null
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-collabora
@@ -33,10 +32,15 @@ spec:
             - name: dictionaries
               value: "{{ .Values.COLLABORA_DICTIONARIES }}"
             - name: extra_params
-              value: --o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true {{ .Values.COLLABORA_SECCOMP_POLICY }}
-          image: nextcloud/aio-collabora:latest
+              value: --o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true {{ .Values.COLLABORA_SECCOMP_POLICY }} --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json
+          image: nextcloud/aio-collabora:{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-collabora
           resources: {}
+          volumeMounts:
+            - mountPath: /opt/cool/systemplate/tmpfonts
+              name: nextcloud-aio-collabora-fonts
       restartPolicy: Always
-      terminationGracePeriodSeconds: 10
-status: {}
+      volumes:
+        - name: nextcloud-aio-collabora-fonts
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-collabora-fonts

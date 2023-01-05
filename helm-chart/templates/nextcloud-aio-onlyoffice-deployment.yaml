@@ -4,7 +4,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
     kompose.version: 1.27.0 (b0ed6a2c9)
-  creationTimestamp: null
   labels:
     io.kompose.service: nextcloud-aio-onlyoffice
   name: nextcloud-aio-onlyoffice
@@ -20,7 +19,6 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
         kompose.version: 1.27.0 (b0ed6a2c9)
-      creationTimestamp: null
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-onlyoffice
@@ -35,16 +33,14 @@ spec:
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-onlyoffice:latest
+          image: nextcloud/aio-onlyoffice:{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-onlyoffice
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/onlyoffice
               name: nextcloud-aio-onlyoffice
       restartPolicy: Always
-      terminationGracePeriodSeconds: 10
       volumes:
         - name: nextcloud-aio-onlyoffice
           persistentVolumeClaim:
             claimName: nextcloud-aio-onlyoffice
-status: {}

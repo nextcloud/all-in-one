@@ -4,7 +4,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
     kompose.version: 1.27.0 (b0ed6a2c9)
-  creationTimestamp: null
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
@@ -20,7 +19,6 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
         kompose.version: 1.27.0 (b0ed6a2c9)
-      creationTimestamp: null
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-nextcloud
@@ -59,8 +57,6 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_DATA_DIR
               value: /mnt/ncdata
-            - name: NEXTCLOUD_MOUNT
-              value: "{{ .Values.NEXTCLOUD_MOUNT }}"
             - name: ONLYOFFICE_ENABLED
               value: "{{ .Values.ONLYOFFICE_ENABLED }}"
             - name: ONLYOFFICE_HOST
@@ -97,15 +93,13 @@ spec:
               value: "{{ .Values.TALK_ENABLED }}"
             - name: TALK_PORT
               value: "{{ .Values.TALK_PORT }}"
-            - name: TRUSTED_CACERTS_DIR
-              value: nextcloud_aio_nextcloud_trusted_cacerts
             - name: TURN_SECRET
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:latest
+          image: nextcloud/aio-nextcloud:{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-nextcloud
           resources: {}
           volumeMounts:
@@ -119,7 +113,6 @@ spec:
               name: nextcloud-aio-nextcloud-trusted-cacerts
               readOnly: true
       restartPolicy: Always
-      terminationGracePeriodSeconds: 10
       volumes:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:
@@ -134,4 +127,3 @@ spec:
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud-trusted-cacerts
             readOnly: true
-status: {}

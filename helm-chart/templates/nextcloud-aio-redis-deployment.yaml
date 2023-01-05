@@ -4,7 +4,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
     kompose.version: 1.27.0 (b0ed6a2c9)
-  creationTimestamp: null
   labels:
     io.kompose.service: nextcloud-aio-redis
   name: nextcloud-aio-redis
@@ -13,13 +12,13 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-redis
-  strategy: {}
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
         kompose.version: 1.27.0 (b0ed6a2c9)
-      creationTimestamp: null
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-redis
@@ -30,9 +29,14 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-redis:latest
+          image: nextcloud/aio-redis:{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-redis
           resources: {}
+          volumeMounts:
+            - mountPath: /data
+              name: nextcloud-aio-redis
       restartPolicy: Always
-      terminationGracePeriodSeconds: 10
-status: {}
+      volumes:
+        - name: nextcloud-aio-redis
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-redis

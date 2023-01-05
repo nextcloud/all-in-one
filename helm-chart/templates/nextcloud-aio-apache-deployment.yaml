@@ -4,7 +4,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
     kompose.version: 1.27.0 (b0ed6a2c9)
-  creationTimestamp: null
   labels:
     io.kompose.service: nextcloud-aio-apache
   name: nextcloud-aio-apache
@@ -20,7 +19,6 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
         kompose.version: 1.27.0 (b0ed6a2c9)
-      creationTimestamp: null
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-apache
@@ -45,7 +43,7 @@ spec:
               value: nextcloud-aio-talk
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-apache:latest
+          image: nextcloud/aio-apache:{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
@@ -57,7 +55,6 @@ spec:
             - mountPath: /mnt/data
               name: nextcloud-aio-apache
       restartPolicy: Always
-      terminationGracePeriodSeconds: 10
       volumes:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:
@@ -66,4 +63,3 @@ spec:
         - name: nextcloud-aio-apache
           persistentVolumeClaim:
             claimName: nextcloud-aio-apache
-status: {}
