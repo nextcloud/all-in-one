@@ -1,0 +1,27 @@
+name: Update Helm Chart
+
+on:
+  workflow_dispatch:
+  # schedule:
+  # - cron:  '00 12 * * *'
+
+jobs:
+  psalm:
+    name: update helm chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: update helm chart
+        run: |
+          sudo bash helm-chart/update-helm.sh
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Helm Chart updates
+          signoff: true
+          title: Helm Chart updates
+          body: Automated Helm Chart updates for the yaml files. Should only be merged shortly before the next latest release.
+          labels: dependencies
+          milestone: next
+          branch: aio-helm-update
