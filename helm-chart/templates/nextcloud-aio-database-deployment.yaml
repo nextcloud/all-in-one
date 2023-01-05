@@ -35,7 +35,7 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-postgresql:{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-postgresql:20221229_091124-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-database
           resources: {}
           volumeMounts:

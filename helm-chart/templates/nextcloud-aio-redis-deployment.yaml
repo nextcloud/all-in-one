@@ -29,7 +29,7 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-redis:{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-redis:20221229_091124-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-redis
           resources: {}
           volumeMounts:

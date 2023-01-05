@@ -33,7 +33,7 @@ spec:
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-onlyoffice:{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-onlyoffice:20221229_091124-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-onlyoffice
           resources: {}
           volumeMounts:

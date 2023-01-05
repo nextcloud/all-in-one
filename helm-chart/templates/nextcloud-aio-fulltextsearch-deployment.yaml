@@ -31,7 +31,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: discovery.type
               value: single-node
-          image: nextcloud/aio-fulltextsearch:{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-fulltextsearch:20221229_091124-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-fulltextsearch
           resources: {}
           volumeMounts:
