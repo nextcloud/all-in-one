@@ -53,4 +53,6 @@ sed -i '/^\$NEXTCLOUD_MOUNT/d' /tmp/sample.conf
 sed -i '/^\$NEXTCLOUD_TRUSTED_CACERTS_DIR/d' /tmp/sample.conf
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
+chmod 777 -R ../helm-chart/
+
 set +ex
