@@ -29,17 +29,17 @@ sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}|nextcloud_aio_nextcloud_trusted_cace
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
 sed -i '/profiles: /d' latest.yml
-sed -i 's|storage: 100Mi|storage: {{ .Values.MAX_STORAGE_SIZE }}|g' latest.yml
 cat latest.yml
 kompose convert -c -f latest.yml
 cd latest
 
+find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 100Mi|storage: {{ .Values.MAX_STORAGE_SIZE }}|" \{} \;  
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;  
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_IP_BINDING|{{ .Values.APACHE_IP_BINDING }}|" \{} \;  
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;  
 find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} \; 
 find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \; 
-find ./ -name '*.yaml' -exec sed -i "/status: {}$/d" \{} \; 
+find ./ -name '*.yaml' -exec sed -i "/status: {}/d" \{} \; 
 cd ../
 mkdir -p ../helm-chart/
 rm latest/README.md
