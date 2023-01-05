@@ -10,6 +10,7 @@ jobs:
     name: update helm chart
     runs-on: ubuntu-latest
     steps:
+      # TODO: check for new docker images via docker hub repo.
       - name: Checkout code
         uses: actions/checkout@v3
       - name: update helm chart
