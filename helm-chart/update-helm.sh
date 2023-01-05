@@ -28,7 +28,7 @@ sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "s|\${NEXTCLOUD_MOUNT}:\${NEXTCLOUD_MOUNT}:|nextcloud_aio_nextcloud_mount:$NEXTCLOUD_MOUNT:|" latest.yml
 sed -i "/NEXTCLOUD_MOUNT/d" latest.yml
 sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}|nextcloud_aio_nextcloud_trusted_cacerts|g#" latest.yml
-sed -i "/NEXTCLOUD_TRUSTED_CACERTS_DIR/d" latest.yml
+sed -i "/TRUSTED_CACERTS_DIR/d" latest.yml
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
 sed -i '/profiles: /d' latest.yml
