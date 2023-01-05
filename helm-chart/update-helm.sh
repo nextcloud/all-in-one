@@ -15,7 +15,7 @@ sudo mv ./kompose /usr/local/bin/kompose
 set -ex
 
 # Conversion of docker-compose
-cd all-in-one/manual-install
+cd manual-install
 cp latest.yml latest.yml.backup
 cp sample.conf /tmp/
 sed -i 's|^|export |' /tmp/sample.conf
