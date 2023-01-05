@@ -26,4 +26,4 @@ jobs:
           labels: dependencies
           milestone: next
           branch: aio-helm-update
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
