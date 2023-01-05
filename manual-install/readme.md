@@ -37,7 +37,7 @@ Since the AIO containers may change in the future, it is highly recommended to s
 1. If your previous copy of `sample.conf` is named `my.conf`, run `mv my.conf .env` in order to rename the file to `.env`.
 1. Run `sudo docker-compose down` to stop all running containers
 1. Back up all important files and folders
-1. Run `git pull` in order to get the updated yaml files from the repository. Now bring your `docker-compose.yml` file up-to-date with the updated one from the repository. You can use `diff docker-compose.yml latest.yml` on x64 and `diff docker-compose.yml latest-arm64.yml` on arm64 for comparing.
+1. Run `git pull` in order to get the updated yaml files from the repository. Now bring your `docker-compose.yml` file up-to-date with the updated one from the repository. You can use `diff docker-compose.yml latest.yml` for comparing.
 1. Also have a look at the `sample.conf` if any variable was added or renamed and add that to your conf file as well. Here may help the diff command as well.
 1. After the file update was successful, simply run `sudo docker-compose pull` to pull the new images.
 1. At the end run `sudo docker-compose up` in order to start and update the containers with the new configuration.
