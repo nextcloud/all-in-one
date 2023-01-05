@@ -5,6 +5,9 @@ metadata:
     io.kompose.service: nextcloud-aio-elasticsearch
   name: nextcloud-aio-elasticsearch
 spec:
+  {{- if .Values.STORAGE_CLASS }}
+  storageClassName: {{ .Values.STORAGE_CLASS }}
+  {{- end }}
   accessModes:
     - ReadWriteOnce
   resources:

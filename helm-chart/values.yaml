@@ -29,3 +29,4 @@ TIMEZONE: Europe/Berlin          # TODO! This is the timezone that your containe
 TURN_SECRET: ""          # TODO! This needs to be a unique and good password!
 UPDATE_NEXTCLOUD_APPS: no          # When setting to yes, it will automatically update all installed Nextcloud apps upon container startup on saturdays.
 MAX_STORAGE_SIZE: 10Ti
+STORAGE_CLASS:

@@ -5,8 +5,11 @@ metadata:
     io.kompose.service: nextcloud-aio-nextcloud-trusted-cacerts
   name: nextcloud-aio-nextcloud-trusted-cacerts
 spec:
+  {{- if .Values.STORAGE_CLASS }}
+  storageClassName: {{ .Values.STORAGE_CLASS }}
+  {{- end }}
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: {{ .Values.MAX_STORAGE_SIZE }}

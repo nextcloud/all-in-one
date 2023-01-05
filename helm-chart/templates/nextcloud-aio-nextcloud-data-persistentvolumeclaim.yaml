@@ -5,6 +5,9 @@ metadata:
     io.kompose.service: nextcloud-aio-nextcloud-data
   name: nextcloud-aio-nextcloud-data
 spec:
+  {{- if .Values.STORAGE_CLASS }}
+  storageClassName: {{ .Values.STORAGE_CLASS }}
+  {{- end }}
   accessModes:
     - ReadWriteOnce
   resources:

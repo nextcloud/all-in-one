@@ -5,6 +5,9 @@ metadata:
     io.kompose.service: nextcloud-aio-collabora-fonts
   name: nextcloud-aio-collabora-fonts
 spec:
+  {{- if .Values.STORAGE_CLASS }}
+  storageClassName: {{ .Values.STORAGE_CLASS }}
+  {{- end }}
   accessModes:
     - ReadWriteOnce
   resources:

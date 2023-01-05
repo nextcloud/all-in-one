@@ -5,6 +5,9 @@ metadata:
     io.kompose.service: nextcloud-aio-database-dump
   name: nextcloud-aio-database-dump
 spec:
+  {{- if .Values.STORAGE_CLASS }}
+  storageClassName: {{ .Values.STORAGE_CLASS }}
+  {{- end }}
   accessModes:
     - ReadWriteOnce
   resources:
