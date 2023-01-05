@@ -42,7 +42,7 @@ find ./ -name '*apache*' -exec sed -i "s|$APACHE_IP_BINDING|{{ .Values.APACHE_IP
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;  
 find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} \; 
 find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \; 
-find ./ -name '*.yaml' -exec sed -i "/status: {}/d" \{} \; 
+find ./ -name '*.yaml' -exec sed -i "/status: \{\}/d" \{} \; 
 find ./ -name '*.yaml' -exec sed -i "/creationTimestamp: null/d" \{} \; 
 cd ../
 mkdir -p ../helm-chart/
