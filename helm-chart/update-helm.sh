@@ -20,7 +20,7 @@ cp sample.conf /tmp/
 sed -i 's|^|export |' /tmp/sample.conf
 source /tmp/sample.conf
 rm /tmp/sample.conf
-sed -i "s|\${APACHE_IP_BINDING}|$APACHE_IP_BINDING|" latest.yml
+sed -i "s|\${APACHE_IP_BINDING}|127.0.0.1|" latest.yml
 sed -i "s|\${APACHE_PORT}:\${APACHE_PORT}/|$APACHE_PORT:$APACHE_PORT/|" latest.yml
 sed -i "s|\${TALK_PORT}:\${TALK_PORT}/|$TALK_PORT:$TALK_PORT/|g" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
@@ -29,10 +29,12 @@ sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}|nextcloud_aio_nextcloud_trusted_cace
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
 sed -i '/profiles: /d' latest.yml
-sed -i 's|:ro$|:rw|' latest.yml
 cat latest.yml
 kompose convert -c -f latest.yml
 cd latest
+
+find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;  
+find ./ -name '*apache*' -exec sed -i "s|$APACHE_IP_BINDING|{{ .Values.APACHE_IP_BINDING }}|" \{} \;  
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;  
 find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} \; 
 find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \; 
