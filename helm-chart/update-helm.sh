@@ -11,7 +11,6 @@ curl -L https://github.com/kubernetes/kompose/releases/download/"$LATEST_KOMPOSE
 chmod +x kompose
 sudo mv ./kompose /usr/local/bin/kompose
 
-#!/bin/bash
 set -ex
 
 # Conversion of docker-compose
