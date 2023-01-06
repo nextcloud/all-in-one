@@ -1,3 +1,4 @@
+{{- if eq .Values.IMAGINARY_ENABLED "yes" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,3 +31,4 @@ spec:
           name: nextcloud-aio-imaginary
           resources: {}
       restartPolicy: Always
+{{- end }}
