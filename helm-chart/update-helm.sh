@@ -61,6 +61,7 @@ find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \;
 find ./ \( -not -name '*service.yaml' -name '*.yaml' \) -exec sed -i "/^status:/d" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "/creationTimestamp: null/d" \{} \; 
+
 cd ../
 mkdir -p ../helm-chart/
 rm latest/Chart.yaml
@@ -87,6 +88,22 @@ echo 'MAX_STORAGE_SIZE: 10Ti        # You can adjust the max storage that each v
 echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes' >> /tmp/sample.conf
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
-chmod 777 -R ../helm-chart/
+ENABLED_VARIABLES="$(grep -oP '^[A-Z]+_ENABLED' ../helm-chart/values.yaml)"
+mapfile -t ENABLED_VARIABLES <<< "$ENABLED_VARIABLES"
+
+cd ../helm-chart/
+for variable in "${ENABLED_VARIABLES[@]}"; do
+    name="$(echo "$variable" | sed 's|_ENABLED||g' | tr '[:upper:]' '[:lower:]')"
+    # shellcheck disable=SC1083
+    find ./ -name "*nextcloud-aio-$name-deployment.yaml" -exec sed -i "1i\\{{- if eq .Values.$variable \"yes\" }}" \{} \; 
+    # shellcheck disable=SC1083
+    find ./ -name "*nextcloud-aio-$name-deployment.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
+    # shellcheck disable=SC1083
+    find ./ -name "*nextcloud-aio-$name-service.yaml" -exec sed -i "1i\\{{- if eq .Values.$variable \"yes\" }}" \{} \; 
+    # shellcheck disable=SC1083
+    find ./ -name "*nextcloud-aio-$name-service.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
+done
+
+chmod 777 -R ./
 
 set +ex
