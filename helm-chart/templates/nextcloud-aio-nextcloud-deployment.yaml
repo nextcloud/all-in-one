@@ -12,8 +12,6 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-nextcloud
-  strategy:
-    type: Recreate
   template:
     metadata:
       annotations:
@@ -103,9 +101,8 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-nextcloud:20221229_091124-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-nextcloud
-          resources: {}
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
@@ -116,7 +113,6 @@ spec:
             - mountPath: /usr/local/share/ca-certificates
               name: nextcloud-aio-nextcloud-trusted-cacerts
               readOnly: true
-      restartPolicy: Always
       volumes:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:

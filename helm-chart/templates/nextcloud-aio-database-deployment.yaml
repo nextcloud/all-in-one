@@ -12,8 +12,6 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-database
-  strategy:
-    type: Recreate
   template:
     metadata:
       annotations:
@@ -37,13 +35,11 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-postgresql:20221229_091124-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-database
-          resources: {}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: nextcloud-aio-database
             - mountPath: /mnt/data
               name: nextcloud-aio-database-dump
-      restartPolicy: Always
       terminationGracePeriodSeconds: 1800
       volumes:
         - name: nextcloud-aio-database

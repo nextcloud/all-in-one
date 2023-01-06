@@ -13,8 +13,6 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-clamav
-  strategy:
-    type: Recreate
   template:
     metadata:
       annotations:
@@ -32,11 +30,9 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-clamav:20221229_091124-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-clamav
-          resources: {}
           volumeMounts:
             - mountPath: /var/lib/clamav
               name: nextcloud-aio-clamav
-      restartPolicy: Always
       volumes:
         - name: nextcloud-aio-clamav
           persistentVolumeClaim:

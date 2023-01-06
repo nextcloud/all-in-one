@@ -12,8 +12,6 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-apache
-  strategy:
-    type: Recreate
   template:
     metadata:
       annotations:
@@ -47,14 +45,12 @@ spec:
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
-          resources: {}
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
               readOnly: true
             - mountPath: /mnt/data
               name: nextcloud-aio-apache
-      restartPolicy: Always
       volumes:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:

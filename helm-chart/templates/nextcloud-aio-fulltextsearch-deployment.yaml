@@ -13,8 +13,6 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-fulltextsearch
-  strategy:
-    type: Recreate
   template:
     metadata:
       annotations:
@@ -34,11 +32,9 @@ spec:
               value: single-node
           image: nextcloud/aio-fulltextsearch:20221229_091124-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-fulltextsearch
-          resources: {}
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
               name: nextcloud-aio-elasticsearch
-      restartPolicy: Always
       volumes:
         - name: nextcloud-aio-elasticsearch
           persistentVolumeClaim:

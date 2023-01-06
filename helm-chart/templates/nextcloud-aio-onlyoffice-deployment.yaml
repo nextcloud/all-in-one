@@ -13,8 +13,6 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-onlyoffice
-  strategy:
-    type: Recreate
   template:
     metadata:
       annotations:
@@ -36,11 +34,9 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-onlyoffice:20221229_091124-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-onlyoffice
-          resources: {}
           volumeMounts:
             - mountPath: /var/lib/onlyoffice
               name: nextcloud-aio-onlyoffice
-      restartPolicy: Always
       volumes:
         - name: nextcloud-aio-onlyoffice
           persistentVolumeClaim:
