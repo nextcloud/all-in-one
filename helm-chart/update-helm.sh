@@ -50,6 +50,8 @@ find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ sto
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ {{- end }}" \{} \; 
 # shellcheck disable=SC1083
+find ./ -name '*deployment.yaml' -exec sed -i "/restartPolicy:/d" \{} \; 
+# shellcheck disable=SC1083
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_IP_BINDING|{{ .Values.APACHE_IP_BINDING }}|" \{} \;  
 # shellcheck disable=SC1083
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;  
@@ -58,7 +60,13 @@ find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} 
 # shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \; 
 # shellcheck disable=SC1083
+find ./ -name '*.yaml' -exec sed -i "/type: Recreate/d" \{} \; 
+# shellcheck disable=SC1083
+find ./ -name '*.yaml' -exec sed -i "/strategy:/d" \{} \; 
+# shellcheck disable=SC1083
 find ./ \( -not -name '*service.yaml' -name '*.yaml' \) -exec sed -i "/^status:/d" \{} \; 
+# shellcheck disable=SC1083
+find ./ \( -not -name '*persistentvolumeclaim.yaml' -name '*.yaml' \) -exec sed -i "/resources:/d" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "/creationTimestamp: null/d" \{} \; 
 
@@ -84,7 +92,7 @@ sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_MOUNT: .*|NEXTCLOUD_MOUNT:        # Setting this to any value allows to enable external storages in Nextcloud|' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
-echo 'MAX_STORAGE_SIZE: 10Ti        # You can adjust the max storage that each volume can use with this value' >> /tmp/sample.conf
+echo 'MAX_STORAGE_SIZE: 10Gi        # You can adjust the max storage that each volume can use with this value' >> /tmp/sample.conf
 echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes' >> /tmp/sample.conf
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
