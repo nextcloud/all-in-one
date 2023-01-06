@@ -1,0 +1,24 @@
+{{- if eq .Values.TALK_ENABLED "yes" }}
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  labels:
+    io.kompose.service: nextcloud-aio-talk
+  name: nextcloud-aio-talk
+spec:
+  ports:
+    - name: "{{ .Values.TALK_PORT }}"
+      port: {{ .Values.TALK_PORT }}
+      targetPort: {{ .Values.TALK_PORT }}
+    - name: {{ .Values.TALK_PORT }}-udp
+      port: {{ .Values.TALK_PORT }}
+      protocol: UDP
+      targetPort: {{ .Values.TALK_PORT }}
+  selector:
+    io.kompose.service: nextcloud-aio-talk
+status:
+  loadBalancer: {}
+{{- end }}

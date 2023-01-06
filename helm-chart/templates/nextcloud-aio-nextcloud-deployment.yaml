@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  labels:
+    io.kompose.service: nextcloud-aio-nextcloud
+  name: nextcloud-aio-nextcloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nextcloud-aio-nextcloud
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c -f latest.yml
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      labels:
+        io.kompose.network/nextcloud-aio: "true"
+        io.kompose.service: nextcloud-aio-nextcloud
+    spec:
+      containers:
+        - env:
+            - name: ADDITIONAL_APKS
+              value: "{{ .Values.NEXTCLOUD_ADDITIONAL_APKS }}"
+            - name: ADDITIONAL_PHP_EXTENSIONS
+              value: "{{ .Values.NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS }}"
+            - name: ADMIN_PASSWORD
+              value: "{{ .Values.NEXTCLOUD_PASSWORD }}"
+            - name: ADMIN_USER
+              value: admin
+            - name: AIO_TOKEN
+              value: "{{ .Values.AIO_TOKEN }}"
+            - name: AIO_URL
+              value: "{{ .Values.AIO_URL }}"
+            - name: CLAMAV_ENABLED
+              value: "{{ .Values.CLAMAV_ENABLED }}"
+            - name: CLAMAV_HOST
+              value: nextcloud-aio-clamav
+            - name: COLLABORA_ENABLED
+              value: "{{ .Values.COLLABORA_ENABLED }}"
+            - name: COLLABORA_HOST
+              value: nextcloud-aio-collabora
+            - name: FULLTEXTSEARCH_ENABLED
+              value: "{{ .Values.FULLTEXTSEARCH_ENABLED }}"
+            - name: FULLTEXTSEARCH_HOST
+              value: nextcloud-aio-fulltextsearch
+            - name: IMAGINARY_ENABLED
+              value: "{{ .Values.IMAGINARY_ENABLED }}"
+            - name: IMAGINARY_HOST
+              value: nextcloud-aio-imaginary
+            - name: NC_DOMAIN
+              value: "{{ .Values.NC_DOMAIN }}"
+            - name: NEXTCLOUD_DATA_DIR
+              value: /mnt/ncdata
+            - name: NEXTCLOUD_MOUNT
+              value: "{{ .Values.NEXTCLOUD_MOUNT }}"
+            - name: ONLYOFFICE_ENABLED
+              value: "{{ .Values.ONLYOFFICE_ENABLED }}"
+            - name: ONLYOFFICE_HOST
+              value: nextcloud-aio-onlyoffice
+            - name: ONLYOFFICE_SECRET
+              value: "{{ .Values.ONLYOFFICE_SECRET }}"
+            - name: OVERWRITEHOST
+              value: "{{ .Values.NC_DOMAIN }}"
+            - name: OVERWRITEPROTOCOL
+              value: https
+            - name: PHP_MAX_TIME
+              value: "{{ .Values.NEXTCLOUD_MAX_TIME }}"
+            - name: PHP_MEMORY_LIMIT
+              value: "{{ .Values.NEXTCLOUD_MEMORY_LIMIT }}"
+            - name: PHP_UPLOAD_LIMIT
+              value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
+            - name: POSTGRES_DB
+              value: nextcloud_database
+            - name: POSTGRES_HOST
+              value: nextcloud-aio-database
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.DATABASE_PASSWORD }}"
+            - name: POSTGRES_USER
+              value: nextcloud
+            - name: REDIS_HOST
+              value: nextcloud-aio-redis
+            - name: REDIS_HOST_PASSWORD
+              value: "{{ .Values.REDIS_PASSWORD }}"
+            - name: SIGNALING_SECRET
+              value: "{{ .Values.SIGNALING_SECRET }}"
+            - name: STARTUP_APPS
+              value: "{{ .Values.NEXTCLOUD_STARTUP_APPS }}"
+            - name: TALK_ENABLED
+              value: "{{ .Values.TALK_ENABLED }}"
+            - name: TALK_PORT
+              value: "{{ .Values.TALK_PORT }}"
+            - name: TRUSTED_CACERTS_DIR
+              value: "{{ .Values.NEXTCLOUD_TRUSTED_CACERTS_DIR }}"
+            - name: TURN_SECRET
+              value: "{{ .Values.TURN_SECRET }}"
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+            - name: UPDATE_NEXTCLOUD_APPS
+              value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
+          image: nextcloud/aio-nextcloud:20221229_091124-{{ .Values.IMAGE_TAG }}
+          name: nextcloud-aio-nextcloud
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: nextcloud-aio-nextcloud
+            - mountPath: /mnt/ncdata
+              name: nextcloud-aio-nextcloud-data
+            - mountPath: /mnt/
+              name: nextcloud-aio-nextcloud-mount
+            - mountPath: /usr/local/share/ca-certificates
+              name: nextcloud-aio-nextcloud-trusted-cacerts
+              readOnly: true
+      volumes:
+        - name: nextcloud-aio-nextcloud
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-nextcloud
+        - name: nextcloud-aio-nextcloud-data
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-nextcloud-data
+        - name: nextcloud-aio-nextcloud-mount
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-nextcloud-mount
+        - name: nextcloud-aio-nextcloud-trusted-cacerts
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-nextcloud-trusted-cacerts
+            readOnly: true

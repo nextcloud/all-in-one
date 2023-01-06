@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    io.kompose.service: nextcloud-aio-redis
+  name: nextcloud-aio-redis
+spec:
+  {{- if .Values.STORAGE_CLASS }}
+  storageClassName: {{ .Values.STORAGE_CLASS }}
+  {{- end }}
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.MAX_STORAGE_SIZE }}

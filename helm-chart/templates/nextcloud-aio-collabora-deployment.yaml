@@ -1,0 +1,44 @@
+{{- if eq .Values.COLLABORA_ENABLED "yes" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  labels:
+    io.kompose.service: nextcloud-aio-collabora
+  name: nextcloud-aio-collabora
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nextcloud-aio-collabora
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c -f latest.yml
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      labels:
+        io.kompose.network/nextcloud-aio: "true"
+        io.kompose.service: nextcloud-aio-collabora
+    spec:
+      containers:
+        - env:
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+            - name: aliasgroup1
+              value: https://{{ .Values.NC_DOMAIN }}:443
+            - name: dictionaries
+              value: "{{ .Values.COLLABORA_DICTIONARIES }}"
+            - name: extra_params
+              value: --o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true {{ .Values.COLLABORA_SECCOMP_POLICY }} --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json
+          image: nextcloud/aio-collabora:20221229_091124-{{ .Values.IMAGE_TAG }}
+          name: nextcloud-aio-collabora
+          volumeMounts:
+            - mountPath: /opt/cool/systemplate/tmpfonts
+              name: nextcloud-aio-collabora-fonts
+      volumes:
+        - name: nextcloud-aio-collabora-fonts
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-collabora-fonts
+{{- end }}

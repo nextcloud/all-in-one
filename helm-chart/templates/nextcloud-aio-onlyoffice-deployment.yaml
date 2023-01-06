@@ -1,0 +1,44 @@
+{{- if eq .Values.ONLYOFFICE_ENABLED "yes" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  labels:
+    io.kompose.service: nextcloud-aio-onlyoffice
+  name: nextcloud-aio-onlyoffice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nextcloud-aio-onlyoffice
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c -f latest.yml
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      labels:
+        io.kompose.network/nextcloud-aio: "true"
+        io.kompose.service: nextcloud-aio-onlyoffice
+    spec:
+      containers:
+        - env:
+            - name: JWT_ENABLED
+              value: "true"
+            - name: JWT_HEADER
+              value: AuthorizationJwt
+            - name: JWT_SECRET
+              value: "{{ .Values.ONLYOFFICE_SECRET }}"
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+          image: nextcloud/aio-onlyoffice:20221229_091124-{{ .Values.IMAGE_TAG }}
+          name: nextcloud-aio-onlyoffice
+          volumeMounts:
+            - mountPath: /var/lib/onlyoffice
+              name: nextcloud-aio-onlyoffice
+      volumes:
+        - name: nextcloud-aio-onlyoffice
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-onlyoffice
+{{- end }}

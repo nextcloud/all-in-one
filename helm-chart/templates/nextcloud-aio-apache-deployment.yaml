@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  labels:
+    io.kompose.service: nextcloud-aio-apache
+  name: nextcloud-aio-apache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nextcloud-aio-apache
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c -f latest.yml
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      labels:
+        io.kompose.network/nextcloud-aio: "true"
+        io.kompose.service: nextcloud-aio-apache
+    spec:
+      containers:
+        - env:
+            - name: APACHE_MAX_SIZE
+              value: "{{ .Values.APACHE_MAX_SIZE }}"
+            - name: APACHE_MAX_TIME
+              value: "{{ .Values.NEXTCLOUD_MAX_TIME }}"
+            - name: APACHE_PORT
+              value: "{{ .Values.APACHE_PORT }}"
+            - name: COLLABORA_HOST
+              value: nextcloud-aio-collabora
+            - name: NC_DOMAIN
+              value: "{{ .Values.NC_DOMAIN }}"
+            - name: NEXTCLOUD_HOST
+              value: nextcloud-aio-nextcloud
+            - name: ONLYOFFICE_HOST
+              value: nextcloud-aio-onlyoffice
+            - name: TALK_HOST
+              value: nextcloud-aio-talk
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+          image: nextcloud/aio-apache:20221229_091124-{{ .Values.IMAGE_TAG }}
+          name: nextcloud-aio-apache
+          ports:
+            - containerPort: {{ .Values.APACHE_PORT }}
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: nextcloud-aio-nextcloud
+              readOnly: true
+            - mountPath: /mnt/data
+              name: nextcloud-aio-apache
+      volumes:
+        - name: nextcloud-aio-nextcloud
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-nextcloud
+            readOnly: true
+        - name: nextcloud-aio-apache
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-apache

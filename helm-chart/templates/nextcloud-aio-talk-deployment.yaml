@@ -1,0 +1,45 @@
+{{- if eq .Values.TALK_ENABLED "yes" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  labels:
+    io.kompose.service: nextcloud-aio-talk
+  name: nextcloud-aio-talk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nextcloud-aio-talk
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c -f latest.yml
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      labels:
+        io.kompose.network/nextcloud-aio: "true"
+        io.kompose.service: nextcloud-aio-talk
+    spec:
+      containers:
+        - env:
+            - name: JANUS_API_KEY
+              value: "{{ .Values.JANUS_API_KEY }}"
+            - name: NC_DOMAIN
+              value: "{{ .Values.NC_DOMAIN }}"
+            - name: SIGNALING_SECRET
+              value: "{{ .Values.SIGNALING_SECRET }}"
+            - name: TALK_PORT
+              value: "{{ .Values.TALK_PORT }}"
+            - name: TURN_SECRET
+              value: "{{ .Values.TURN_SECRET }}"
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+          image: nextcloud/aio-talk:20221229_091124-{{ .Values.IMAGE_TAG }}
+          name: nextcloud-aio-talk
+          ports:
+            - containerPort: {{ .Values.TALK_PORT }}
+            - containerPort: {{ .Values.TALK_PORT }}
+              protocol: UDP
+{{- end }}

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  labels:
+    io.kompose.service: nextcloud-aio-redis
+  name: nextcloud-aio-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nextcloud-aio-redis
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c -f latest.yml
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      labels:
+        io.kompose.network/nextcloud-aio: "true"
+        io.kompose.service: nextcloud-aio-redis
+    spec:
+      containers:
+        - env:
+            - name: REDIS_HOST_PASSWORD
+              value: "{{ .Values.REDIS_PASSWORD }}"
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+          image: nextcloud/aio-redis:20221229_091124-{{ .Values.IMAGE_TAG }}
+          name: nextcloud-aio-redis
+          volumeMounts:
+            - mountPath: /data
+              name: nextcloud-aio-redis
+      volumes:
+        - name: nextcloud-aio-redis
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-redis
