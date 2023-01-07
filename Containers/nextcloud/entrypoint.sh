@@ -592,10 +592,11 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
         echo "Waiting 10s before activating FTS..."
         sleep 10
         echo "Activating fulltextsearch..."
-        if php /var/www/html/occ fulltextsearch:test && php /var/www/html/occ fulltextsearch:index; then
+        if php /var/www/html/occ fulltextsearch:test && php /var/www/html/occ fulltextsearch:index "{\"errors\": \"reset\"}" --no-readline; then
             touch "$NEXTCLOUD_DATA_DIR/fts-index.done"
         else
             echo "Fulltextsearch failed. Could not index."
+            echo "Feel free to follow https://github.com/nextcloud/all-in-one/discussions/1709 if you want to skip the indexing in the future."
         fi
     fi
 else
