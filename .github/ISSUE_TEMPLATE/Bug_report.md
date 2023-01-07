@@ -5,7 +5,7 @@ labels: bug, 0. Needs triage
 ---
 
 <!---
-For issues with Collabora or Talk, make sure to follow https://github.com/nextcloud/all-in-one/discussions/1358. It may already resolve your issue and/or makes it easier to help you.
+For issues with Collabora or Talk, make sure to follow https://github.com/nextcloud/all-in-one/discussions/1358. It may already resolve your issue and makes it easier to help you.
 --->
 
 <!--- Please fill out the whole template below -->
