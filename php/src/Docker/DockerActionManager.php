@@ -322,6 +322,8 @@ class DockerActionManager
                     } else {
                         $replacements[1] = '';
                     }
+                } elseif ($out[1] === 'FULLTEXTSEARCH_INDEX_ONCE') {
+                    $replacements[1] = 'no';
                 } elseif ($out[1] === 'NEXTCLOUD_UPLOAD_LIMIT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
                 } elseif ($out[1] === 'NEXTCLOUD_MEMORY_LIMIT') {
