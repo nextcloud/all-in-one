@@ -390,7 +390,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
     ```toml
     [http.middlewares.chain-nc]
         [http.middlewares.chain-nc.chain]
-            middlewares = [ "middlewares-rate-limit", "nc-middlewares-secure-headers"]
+            middlewares = [ "nc-middlewares-secure-headers"]
     ```
 
 ---
