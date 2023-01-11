@@ -257,8 +257,8 @@ server {
     server_name <your-nc-domain>;
 
     location / {
-        resolver localhost;
-        proxy_pass http://localhost:11000$request_uri;
+        resolver localhost; # Note: you need to set a valid dns resolver here or use 127.0.0.1 / [::1] instead of localhost in the line below. See https://stackoverflow.com/a/49642310 for a better explanation
+        proxy_pass http://localhost:11000$request_uri; # Note: you need to change localhost to 127.0.0.1 or [::1], if you don't use a valid dns resolver in the line above
 
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
