@@ -362,7 +362,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
             entryPoints = ["https"]
             rule = "Host(<your-nc-domain>)"
             service = "nc-svc"
-            middlewares = ["chain-no-auth"]
+            middlewares = ["chain-nc"]
             [http.routers.nc-rtr.tls]
                 certresolver = "le"
 
