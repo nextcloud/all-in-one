@@ -382,9 +382,12 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
     [http.middlewares.nc-middlewares-secure-headers]
         [http.middlewares.nc-middlewares-secure-headers.headers]
             hostsProxyHeaders = ["X-Forwarded-Host"]
-            sslRedirect = true
             referrerPolicy = "same-origin"
-            X-Robots-Tag = "none"
+            [http.middlewares.nc-middlewares-secure-headers.headers.customResponseHeaders]
+                X-Robots-Tag = "none"
+    
+    [http.middlewares.https-redirect.redirectscheme]
+        scheme = "https"
     ```
 
 3. Add to the bottom of the `middleware-chains.toml` file in the Traefik rules folder the following content:
@@ -392,7 +395,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
     ```toml
     [http.middlewares.chain-nc]
         [http.middlewares.chain-nc.chain]
-            middlewares = [ "nc-middlewares-secure-headers"]
+            middlewares = [ "https-redirect", "nc-middlewares-secure-headers"]
     ```
 
 ---
