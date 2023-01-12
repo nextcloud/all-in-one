@@ -11,7 +11,7 @@
         <form method="POST" action="/api/auth/logout">
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input class="button" type="submit" value="Log out" />
+            <input class="button" type="submit" id="logout" value="Log out" />
         </form>
     </header>
 

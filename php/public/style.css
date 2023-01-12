@@ -23,6 +23,10 @@ a {
     outline: none;
 }
 
+#logout {
+    margin-top: 7px;
+}
+
 summary {
     cursor: pointer;
 }
