@@ -26,7 +26,7 @@ jobs:
           commit-message: Helm Chart updates
           signoff: true
           title: Helm Chart updates
-          body: Automated Helm Chart updates for the yaml files. Should only be merged shortly before the next latest release.
+          body: Automated Helm Chart updates for the yaml files. It can be merged if it looks good at any time which will automatically trigger a new release of the helm chart.
           labels: dependencies
           milestone: next
           branch: aio-helm-update
