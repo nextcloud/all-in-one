@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Build NC_WEBROOT_P
+export NC_WEBROOT_P=$([  "$NC_WEBROOT" = "/" ] && echo "" || echo "$NC_WEBROOT")
+
 # version_greater A B returns whether A > B
 version_greater() {
     [ "$(printf '%s\n' "$@" | sort -t '.' -n -k1,1 -k2,2 -k3,3 -k4,4 | head -n 1)" != "$1" ]
@@ -385,7 +388,8 @@ php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/
 # Apply network settings
 echo "Applying network settings..."
 php /var/www/html/occ config:system:set trusted_domains 1 --value="$NC_DOMAIN"
-php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_DOMAIN/"
+php /var/www/html/occ config:system:set overwrite.cli.url --value="https://${NC_DOMAIN}${NC_WEBROOT_P}"
+php /var/www/html/occ config:system:set overwritewebroot --value="${NC_WEBROOT_P}"
 php /var/www/html/occ config:system:set htaccess.RewriteBase --value="/"
 php /var/www/html/occ maintenance:update:htaccess
 
@@ -411,7 +415,7 @@ elif [ "$SKIP_UPDATE" != 1 ]; then
 fi
 php /var/www/html/occ config:system:set trusted_proxies 0 --value="127.0.0.1"
 php /var/www/html/occ config:system:set trusted_proxies 1 --value="::1"
-php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://$NC_DOMAIN/push"
+php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://${NC_DOMAIN}${NC_WEBROOT_P}/push"
 
 # Collabora
 if [ "$COLLABORA_ENABLED" = 'yes' ]; then
@@ -422,7 +426,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update richdocuments
     fi
-    php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
+    php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN${NC_WEBROOT_P}"
     # Fix https://github.com/nextcloud/all-in-one/issues/188:
     php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
     # Make collabora more save
@@ -484,7 +488,7 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
     fi
     php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
     php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
-    php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$NC_DOMAIN/onlyoffice"
+    php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://${NC_DOMAIN}${NC_WEBROOT_P}/onlyoffice"
     php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
 else
     if [ -d "/var/www/html/custom_apps/onlyoffice" ] && [ -n "$ONLYOFFICE_SECRET" ] && [ "$(php /var/www/html/occ config:system:get onlyoffice jwt_secret)" = "$ONLYOFFICE_SECRET" ]; then
@@ -509,8 +513,8 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
         php /var/www/html/occ talk:stun:add "$NC_DOMAIN:$TALK_PORT"
         php /var/www/html/occ talk:stun:delete "stun.nextcloud.com:443"
     fi
-    if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://$NC_DOMAIN/standalone-signaling/"; then
-        php /var/www/html/occ talk:signaling:add "https://$NC_DOMAIN/standalone-signaling/" "$SIGNALING_SECRET" --verify
+    if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://${NC_DOMAIN}${NC_WEBROOT_P}/standalone-signaling/"; then
+        php /var/www/html/occ talk:signaling:add "https://${NC_DOMAIN}${NC_WEBROOT_P}/standalone-signaling/" "$SIGNALING_SECRET" --verify
     fi
 else
     if [ -d "/var/www/html/custom_apps/spreed" ]; then

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Build NC_WEBROOT_P
+export NC_WEBROOT_P=$([  "$NC_WEBROOT" = "/" ] && echo "" || echo "$NC_WEBROOT")
+
 # Variables
 if [ -z "$NC_DOMAIN" ]; then
     echo "You need to provide the NC_DOMAIN."
@@ -72,7 +75,7 @@ timeout = 10
 connectionsperhost = 8
 
 [backend-1]
-url = https://${NC_DOMAIN}
+url = https://${NC_DOMAIN}${NC_WEBROOT_P}
 secret = ${SIGNALING_SECRET}
 
 [nats]

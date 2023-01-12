@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Build NC_WEBROOT_P
+export NC_WEBROOT_P=$([  "$NC_WEBROOT" = "/" ] && echo "" || echo "$NC_WEBROOT")
+
 if [ -z "$NC_DOMAIN" ]; then
     echo "NC_DOMAIN and NEXTCLOUD_HOST need to be provided. Exiting!"
     exit 1
@@ -44,6 +47,12 @@ else
     CADDYFILE="$(sed 's|trusted_proxies private_ranges|# trusted_proxies placeholder|' /Caddyfile)"
 fi
 echo "$CADDYFILE" > /Caddyfile
+
+# Strip uri prefix, if NC_WEBROOT
+if [ "$NC_WEBROOT_P" != '' ]; then
+    CADDYFILE="$(sed 's|# uri_strip_webroot placeholder|uri strip_prefix {$NC_WEBROOT_P}|' /Caddyfile)"
+    echo "$CADDYFILE" > /Caddyfile
+fi
 
 # Add caddy path
 mkdir -p /mnt/data/caddy/
