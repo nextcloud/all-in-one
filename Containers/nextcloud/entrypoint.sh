@@ -397,16 +397,14 @@ else
 fi
 
 # AIO app
-if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" = "" ]; then
-    php /var/www/html/occ app:enable nextcloud-aio
-elif [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" = "no" ]; then
+if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" != "yes" ]; then
     php /var/www/html/occ app:enable nextcloud-aio
 fi
 
 # Notify push
 if ! [ -d "/var/www/html/custom_apps/notify_push" ]; then
     php /var/www/html/occ app:install notify_push
-elif [ "$(php /var/www/html/occ config:app:get notify_push enabled)" = "no" ]; then
+elif [ "$(php /var/www/html/occ config:app:get notify_push enabled)" != "yes" ]; then
     php /var/www/html/occ app:enable notify_push
 elif [ "$SKIP_UPDATE" != 1 ]; then
     php /var/www/html/occ app:update notify_push
@@ -419,7 +417,7 @@ php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://
 if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ app:install richdocuments
-    elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" = "no" ]; then
+    elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable richdocuments
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update richdocuments
@@ -479,7 +477,7 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
     done
     if ! [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
         php /var/www/html/occ app:install onlyoffice
-    elif [ "$(php /var/www/html/occ config:app:get onlyoffice enabled)" = "no" ]; then
+    elif [ "$(php /var/www/html/occ config:app:get onlyoffice enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable onlyoffice
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update onlyoffice
@@ -498,7 +496,7 @@ fi
 if [ "$TALK_ENABLED" = 'yes' ]; then
     if ! [ -d "/var/www/html/custom_apps/spreed" ]; then
         php /var/www/html/occ app:install spreed
-    elif [ "$(php /var/www/html/occ config:app:get spreed enabled)" = "no" ]; then
+    elif [ "$(php /var/www/html/occ config:app:get spreed enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable spreed
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update spreed
@@ -528,7 +526,7 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
     done
     if ! [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
         php /var/www/html/occ app:install files_antivirus
-    elif [ "$(php /var/www/html/occ config:app:get files_antivirus enabled)" = "no" ]; then
+    elif [ "$(php /var/www/html/occ config:app:get files_antivirus enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable files_antivirus
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update files_antivirus
@@ -564,21 +562,21 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
     done
     if ! [ -d "/var/www/html/custom_apps/fulltextsearch" ]; then
         php /var/www/html/occ app:install fulltextsearch
-    elif [ "$(php /var/www/html/occ config:app:get fulltextsearch enabled)" = "no" ]; then
+    elif [ "$(php /var/www/html/occ config:app:get fulltextsearch enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable fulltextsearch
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update fulltextsearch
     fi    
     if ! [ -d "/var/www/html/custom_apps/fulltextsearch_elasticsearch" ]; then
         php /var/www/html/occ app:install fulltextsearch_elasticsearch
-    elif [ "$(php /var/www/html/occ config:app:get fulltextsearch_elasticsearch enabled)" = "no" ]; then
+    elif [ "$(php /var/www/html/occ config:app:get fulltextsearch_elasticsearch enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable fulltextsearch_elasticsearch
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update fulltextsearch_elasticsearch
     fi    
     if ! [ -d "/var/www/html/custom_apps/files_fulltextsearch" ]; then
         php /var/www/html/occ app:install files_fulltextsearch
-    elif [ "$(php /var/www/html/occ config:app:get files_fulltextsearch enabled)" = "no" ]; then
+    elif [ "$(php /var/www/html/occ config:app:get files_fulltextsearch enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable files_fulltextsearch
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update files_fulltextsearch
