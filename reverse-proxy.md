@@ -383,7 +383,8 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
         [http.middlewares.nc-middlewares-secure-headers.headers]
             hostsProxyHeaders = ["X-Forwarded-Host"]
             referrerPolicy = "same-origin"
-            X-Robots-Tag = "none"
+            [http.middlewares.nc-middlewares-secure-headers.headers.customResponseHeaders]
+                X-Robots-Tag = "none"
     
     [http.middlewares.https-redirect.redirectscheme]
         scheme = "https"
