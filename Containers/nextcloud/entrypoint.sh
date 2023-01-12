@@ -397,9 +397,7 @@ else
 fi
 
 # AIO app
-if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" = "" ]; then
-    php /var/www/html/occ app:enable nextcloud-aio
-elif [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" = "no" ]; then
+if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" != "yes" ]; then
     php /var/www/html/occ app:enable nextcloud-aio
 fi
 
