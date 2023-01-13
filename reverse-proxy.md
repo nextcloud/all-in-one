@@ -356,51 +356,61 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 **Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
 
-1. Add a `nextcloud.toml` to the Treafik rules folder with the following content:
+1. Add a `nextcloud.yml` to the Treafik rules folder with the following content
 
-    ```toml
-    [http.routers]
-        [http.routers.nc-rtr]
-            entryPoints = ["https"]
-            rule = "Host(<your-nc-domain>)"
-            service = "nc-svc"
-            middlewares = ["chain-nc"]
-            [http.routers.nc-rtr.tls]
-                certresolver = "le"
-
-    [http.services]
-        [http.services.nc-svc]
-            [http.services.nc-svc.loadBalancer]
-                passHostHeader = true
-                [[http.services.nc-svc.loadBalancer.servers]]
-                    url = "http://localhost:11000"
+    ```yml
+    http:
+        routers:
+            nextcloud:
+                rule: "Host(<your-nextcloud-domain>)"
+                entrypoints:
+                    - "https"
+                service: nextcloud
+                middlewares:
+                    - nextcloud-chain
+                tls:
+                    certresolver: "le"
+        services:
+            nextcloud:
+                loadBalancer:
+                    servers:
+                        - url: "http://localhost:11000"
     ```
 
-2. Add to the bottom of the `middlewares.toml` file in the Treafik rules folder the following content:
+2. Add to the bottom of the `middlewares.yml` file in the Treafik rules folder the following content:
 
-    ```toml
-    [http.middlewares.nc-middlewares-secure-headers]
-        [http.middlewares.nc-middlewares-secure-headers.headers]
-            hostsProxyHeaders = ["X-Forwarded-Host"]
-            referrerPolicy = "same-origin"
-            [http.middlewares.nc-middlewares-secure-headers.headers.customResponseHeaders]
-                X-Robots-Tag = "none"
-    
-    [http.middlewares.https-redirect.redirectscheme]
-        scheme = "https"
+    ```yml
+    http:
+        middlewares:
+            nextcloud-secure-headers:
+                headers:
+                    hostsProxyHeaders:
+                        - "X-Forwarded-Host"
+                    referrerPolicy: "same-origin"
+                    customResponseHeaders:
+                        X-Robots-Tag: "none"
+
+            https-redirect:
+                redirectscheme:
+                    scheme: https
     ```
 
-3. Add to the bottom of the `middleware-chains.toml` file in the Traefik rules folder the following content:
+3. Add to the bottom of the `middleware-chains.yml` file in the Traefik rules folder the following content:
 
-    ```toml
-    [http.middlewares.chain-nc]
-        [http.middlewares.chain-nc.chain]
-            middlewares = [ "https-redirect", "nc-middlewares-secure-headers"]
+    ```yml
+    http:
+        middlewares:
+            nextcloud-chain:
+                chain:
+                    middlewares:
+                        # - ... (e.g. rate limiting middleware)
+                        - "https-redirect"
+                        - "nextcloud-secure-headers"
     ```
 
 ---
 
-Of course you need to modify `<your-nc-domain>` in the nextcloud.toml to the domain on which you want to run Nextcloud. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
+Of course you need to modify `<your-nextcloud-domain>` in the nextcloud.toml to the domain on which you want to run Nextcloud. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
 
 </details>
 
