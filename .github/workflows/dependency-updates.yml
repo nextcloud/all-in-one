@@ -19,6 +19,7 @@ jobs:
       run: |
         set -x
         rm /home/runner/.composer/composer.json
+        composer global require php-di/php-di ^6.0.0
         cd ./php
         composer update
         set +e
