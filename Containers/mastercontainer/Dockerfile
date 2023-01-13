@@ -41,7 +41,8 @@ RUN set -ex; \
     docker-php-ext-enable apcu
 
 RUN set -e && \
-    curl -sS https://getcomposer.org/installer | php && \
+    curl -sL https://getcomposer.org/installer -o /tmp/composer-setup.php && \
+    php /tmp/composer-setup.php --6 && \
     mv composer.phar /usr/local/bin/composer && \
     chmod +x /usr/local/bin/composer && \
     cd /var/www/docker-aio; \
