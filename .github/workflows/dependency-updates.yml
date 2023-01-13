@@ -19,6 +19,7 @@ jobs:
     - name: Run dependency update script
       run: |
         set -x
+        find / -name composer.json
         curl -sL https://getcomposer.org/installer -o /tmp/composer-setup.php
         php /tmp/composer-setup.php --6
         mv composer.phar /usr/local/bin/composer
