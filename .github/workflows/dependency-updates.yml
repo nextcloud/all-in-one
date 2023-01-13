@@ -24,11 +24,11 @@ jobs:
         cd ./php
         composer update
         set +e
-        ALL_LINES="$(composer outdated | grep -v "psr/container\|^$\|Direct dependencies\|Everything up to date\|Transitive dependencies")"
+        ALL_LINES="$(composer outdated | grep -v "^$\|Direct dependencies\|Everything up to date\|Transitive dependencies")"
         set -e
         while [ -n "$ALL_LINES" ]; do
           CURRENT_LINE="$(echo "$ALL_LINES" | head -1)"
-          composer require "$(echo "$CURRENT_LINE" | awk '{print $1}')" "^$(echo "$CURRENT_LINE" | awk '{print $4}')"
+          composer require "$(echo "$CURRENT_LINE" | awk '{print $1}')" "^$(echo "$CURRENT_LINE" | awk '{print $4}')" --with-all-dependencies
           ALL_LINES="$(echo "$ALL_LINES" | sed '1d')"
         done
         echo "outdated dependencies:
