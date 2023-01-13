@@ -18,7 +18,7 @@ jobs:
     - name: Run dependency update script
       run: |
         set -x
-        composer global --no-update require php-di/php-di ^6.0.0
+        composer global require php-di/php-di ^6.0.0
         composer global update -W php-di/php-di
         cd ./php
         composer update
