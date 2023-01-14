@@ -374,9 +374,34 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 **Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
 
+Traefik's building blocks (router, service, middlewares) need to be defined using dynamic configuration similar to [this](https://doc.traefik.io/traefik/providers/file/#configuration-examples) official Traefik configuration example. Using **docker labels _won't work_** because of the nature of the project.
+
 The examples below define the dynamic configuration in YAML files. If you rather prefer TOML, use a YAML to TOML converter.
 
-1. Add a `nextcloud.yml` to the Treafik rules folder with the following content
+1. In Traefik's static configuration define a [file provider](https://doc.traefik.io/traefik/providers/file/) for Nextcloud related dynamic configuration:
+
+    ```yml
+    # STATIC CONFIGURATION
+   
+    entryPoints:
+        https:
+            address: ":443" # Create an entrypoint called "https" that uses port 443
+    
+    certificatesResolvers:
+        # Define "letsencrypt" certificate resolver
+        letsencrypt:
+            acme:
+                storage: /letsencrypt/acme.json # Defines the path where certificates should be stored
+                email: <your-email-address> # Where LE sends notification about certificates expiring
+                tlschallenge: true
+   
+    providers:
+        file:
+            directory: "/path/to/dynamic/conf" # Adjust the path according your needs.
+            watch: true
+    ```
+
+1. Declare the router, service and middlewares for Nextcloud in `/path/to/dynamic/conf/nextcloud.yml`:
 
     ```yml
     http:
@@ -389,19 +414,14 @@ The examples below define the dynamic configuration in YAML files. If you rather
                 middlewares:
                     - nextcloud-chain
                 tls:
-                    certresolver: "le"
+                    certresolver: "letsencrypt"
 
         services:
             nextcloud:
                 loadBalancer:
                     servers:
-                        - url: "http://localhost:11000"
-    ```
+                        - url: "http://localhost:11000" # Use the host's IP address if Traefik runs outside the host network
 
-2. Add to the bottom of the `middlewares.yml` file in the Treafik rules folder the following content:
-
-    ```yml
-    http:
         middlewares:
             nextcloud-secure-headers:
                 headers:
@@ -413,25 +433,21 @@ The examples below define the dynamic configuration in YAML files. If you rather
 
             https-redirect:
                 redirectscheme:
-                    scheme: https
-    ```
-
-3. Add to the bottom of the `middleware-chains.yml` file in the Traefik rules folder the following content:
-
-    ```yml
-    http:
-        middlewares:
+                    scheme: https 
+   
             nextcloud-chain:
                 chain:
                     middlewares:
                         # - ... (e.g. rate limiting middleware)
-                        - "https-redirect"
-                        - "nextcloud-secure-headers"
+                        - https-redirect
+                        - nextcloud-secure-headers
     ```
 
 ---
 
-Of course you need to modify `<your-nextcloud-domain>` in the nextcloud.toml to the domain on which you want to run Nextcloud. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
+Of course you need to modify `<your-nextcloud-domain>` in the `nextcloud.yml` to the domain on which you want to run Nextcloud. Also make sure to adjust the port `11000` to match the chosen `APACHE_PORT`. 
+    
+**Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
 
 </details>
 
