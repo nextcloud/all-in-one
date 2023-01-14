@@ -355,6 +355,8 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 <summary>click here to expand</summary>
 
 **Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+    
+The examples below define the dynamic configuration in YAML files. If you rather prefer TOML, use a YAML to TOML converter. 
 
 1. Add a `nextcloud.yml` to the Treafik rules folder with the following content
 
