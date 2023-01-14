@@ -378,7 +378,7 @@ Traefik's building blocks (router, service, middlewares) need to be defined usin
 
 The examples below define the dynamic configuration in YAML files. If you rather prefer TOML, use a YAML to TOML converter.
 
-1. In Traefik's static configuration define a [file provider](https://doc.traefik.io/traefik/providers/file/) for Nextcloud related dynamic configuration:
+1. In Traefik's static configuration define a [file provider](https://doc.traefik.io/traefik/providers/file/) for dynamic providers:
 
     ```yml
     # STATIC CONFIGURATION
