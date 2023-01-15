@@ -1,5 +1,5 @@
 FROM alpine:3.17.1
-RUN apk add --update --no-cache lighttpd bash netcat-openbsd
+RUN apk add --no-cache lighttpd bash netcat-openbsd
 
 RUN adduser -S www-data -G www-data
 RUN rm -rf /etc/lighttpd/lighttpd.conf

@@ -3,7 +3,7 @@ FROM containrrr/watchtower:1.5.1 as watchtower
 
 FROM alpine:3.17.1
 
-RUN apk add --update --no-cache bash
+RUN apk add --no-cache bash
 COPY --from=watchtower /watchtower /
 
 COPY start.sh /
