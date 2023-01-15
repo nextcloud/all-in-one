@@ -126,6 +126,7 @@ Also, you may be interested in adjusting Nextcloud's Datadir to store the files 
 The easiest way to run it with Portainer on Linux is to use Portainer's stacks feature and use [this docker-compose file](./docker-compose.yml) in order to start AIO correctly. 
 
 ### Notes on Cloudflare (proxy/tunnel)
+- It is known that the domain validation may not work correctly behind Cloudflare. You can simply skip it in that case by following: https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation
 - Make sure to [disable Cloudflares Rocket Loader feature](https://help.nextcloud.com/t/login-page-not-working-solved/149417/8) as otherwise Nextcloud's login prompt will not be shown.
 - Cloudflare only supports uploading files up to 100 MB in the free plan, if you try to upload bigger files you will get an error (413 - Payload Too Large). If you need to upload bigger files, you need to disable the proxy option in your DNS settings, or you must use another proxy than Cloudflare tunnels. Both options will disable Cloudflare DDoS protection.
 - It is very likely that the in AIO included collabora (Nextcloud Office) does not work out of the box behind Cloudflare. You need to follow https://github.com/nextcloud/all-in-one/discussions/1358 in order to resolve this yourself. There is unfortunately no secure way to automate this for you.
