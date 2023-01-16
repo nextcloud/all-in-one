@@ -1,6 +1,6 @@
 # Reverse Proxy Documentation
 
-**Please note:** Publishing the AIO interface with a valid certificate to the public internet is **not** the goal of this documentation! Instead, the main goal is to publish Nextcloud with a valid certificate to the public internet which is **not** running inside the mastercontainer but in a different container! If you need a valid certificate for the AIO interface, see [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface). 
+**Please note:** Publishing the AIO interface with a valid certificate to the public internet is **not** the goal of this documentation! Instead, the main goal is to publish Nextcloud with a valid certificate to the public internet which is **not** running inside the mastercontainer but in a different container! If you need a valid certificate for the AIO interface, see [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface).
 
 In order to run Nextcloud behind a reverse proxy, you need to specify the port that the Apache container shall use, add a specific config to your reverse proxy and modify the startup command a bit. All examples below will use port `11000` as example Apache port which will be exposed on the host. Modify it to your needings.
 
@@ -54,6 +54,9 @@ Add this as a new Apache site config:
 
     # Enable h2, h2c and http1.1
     Protocols h2 h2c http/1.1
+    
+    # Solves slow upload speeds caused by http2
+    H2WindowSize 1048576
 
     # SSL
     SSLEngine on
@@ -117,7 +120,7 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
         }
     }
     ```
-    Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. You also need to adjust `<provider>` and `<key>` to match your case. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
+   Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. You also need to adjust `<provider>` and `<key>` to match your case. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
 1. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `-e SKIP_DOMAIN_VALIDATION=true` to the docker run command which will disable the dommain validation (because it is known that the domain validation will not when using the DNS-challenge since no port is publicly opened.
 
 **Advice:** In order to make it work in your home network, you may add the internal ipv4-address of your reverse proxy as A DNS-record to your domain and disable the dns-rebind-protection in your router. Another way it to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-adddress of your reverse proxy (see https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally). If both is not possible, you may add the domain to the hosts file which is needed then for any devices that shall use the server.
@@ -255,6 +258,9 @@ server {
 
     listen 443 ssl http2;
     listen [::]:443 ssl http2; # comment to disable IPv6
+    
+    # Solves slow upload speeds caused by http2
+    http2_body_preread_size 1048576;
 
     server_name <your-nc-domain>;
 
@@ -286,7 +292,7 @@ server {
 }
 
 ```
-    
+
 Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also make sure to adjust the port 11000 to match the chosen APACHE_PORT. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
 
 **Advice:** You may have a look at [this](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-2811152) for a more complete example.
@@ -355,8 +361,8 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 <summary>click here to expand</summary>
 
 **Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
-    
-The examples below define the dynamic configuration in YAML files. If you rather prefer TOML, use a YAML to TOML converter. 
+
+The examples below define the dynamic configuration in YAML files. If you rather prefer TOML, use a YAML to TOML converter.
 
 1. Add a `nextcloud.yml` to the Treafik rules folder with the following content
 
