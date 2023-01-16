@@ -122,6 +122,8 @@ docker volume create ^
 
 Also, you may be interested in adjusting Nextcloud's Datadir to store the files on the host system. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
 
+⚠️ **Please note:** Almost all commands in this project's documentation use `sudo docker ...`. Since `sudo` is not available on Windows, you simply remove `sudo` from the commands and they should work.  
+
 ### How to run AIO with Portainer?
 The easiest way to run it with Portainer on Linux is to use Portainer's stacks feature and use [this docker-compose file](./docker-compose.yml) in order to start AIO correctly. 
 
