@@ -55,7 +55,7 @@ Add this as a new Apache site config:
     # Enable h2, h2c and http1.1
     Protocols h2 h2c http/1.1
     
-    #Solves slow upload speeds caused by http2
+    # Solves slow upload speeds caused by http2
     H2WindowSize 1048576
 
     # SSL
@@ -259,7 +259,7 @@ server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2; # comment to disable IPv6
     
-    #Solves slow upload speeds caused by http2
+    # Solves slow upload speeds caused by http2
     http2_body_preread_size 1048576;
 
     server_name <your-nc-domain>;
