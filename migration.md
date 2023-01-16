@@ -10,12 +10,12 @@ There are basically three ways how to migrate from an already existing Nextcloud
 **Please note**: If you used groupfolders or encrypted your files before, you will need to restore the database, as well!
 
 The procedure for migrating only the files works like this:
-1. Take a backup of your former instance (especially from your datadirectory)
+1. Take a backup of your former instance (especially from your datadirectory, see 'datadictionary' in your `config.php`)
 1. Install Nextcloud AIO on a new server/linux installation, enter your domain and wait until all containers are running
 1. Recreate all users that were present on your former installation
 1. Take a backup using Nextcloud AIO's built-in backup solution (so that you can easily restore to this state again) (Note: this will stop all containers and is expected: don't start the container again at this point!)
-1. Restore the datadirectory of your former instance into the following directory: `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/`
-1. Next, run `sudo chown -R 33:0 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` and `sudo chmod -R 750 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` to apply the correct permissions
+1. Restore the datadirectory of your former instance: for `/path/to/nextcloud/data/` run `sudo docker cp --follow-links /path/to/nextcloud/data/ nextcloud-aio-nextcloud:/mnt/ncdata/` Note: the `/` at the end are necessary.
+1. Next, run `sudo docker exec nextcloud-aio-nextcloud chown -R 33:0 /mnt/ncdata/*` and `sudo docker exec nextcloud-aio-nextcloud chmod -R 750 /mnt/ncdata/*` to apply the correct permissions
 1. Start the containers again and wait until all containers are running
 1. Run `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ files:scan-app-data && sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ files:scan --all` in order to scan all files in the datadirectory.
 
@@ -68,14 +68,14 @@ The procedure for migrating the files and the database works like this:
     1. **Please note:** Unfortunately it is not possible to import a database dump from a former database owner with the name `nextcloud`. You can check if that is the case with this command: `grep "Name: oc_appconfig; Type: TABLE; Schema: public; Owner:" database-dump.sql | grep -oP 'Owner:.*$' | sed 's|Owner:||;s| ||g'`. If it returns `nextcloud`, you need to rename the owner in the dump file manually. A command like the following should work, however please note that it is possible that it will overwrite wrong lines. You can thus first check which lines it will change with `grep "Owner: nextcloud$" database-dump.sql`. If only correct  looking lines get returned, feel free to change them with `sed -i 's|Owner: nextcloud$|Owner: ncadmin|' database-dump.sql`. 
 1. Next, copy the database dump into the correct place and prepare the database container which will import from the database dump automatically the next container start: 
     ```
-    sudo rm /var/lib/docker/volumes/nextcloud_aio_database_dump/_data/database-dump.sql
-    sudo cp database-dump.sql /var/lib/docker/volumes/nextcloud_aio_database_dump/_data/
-    sudo chmod 777 /var/lib/docker/volumes/nextcloud_aio_database_dump/_data/database-dump.sql
-    sudo rm /var/lib/docker/volumes/nextcloud_aio_database_dump/_data/initial-cleanup-done
+    sudo docker exec nextcloud-aio-database rm /mnt/data/database-dump.sql
+    sudo docker cp database-dump.sql nextcloud-aio-database:/mnt/data/
+    sudo docker exec nextcloud-aio-database chmod 777 /mnt/data/database-dump.sql
+    sudo docker exec nextcloud-aio-database rm /mnt/data/initial-cleanup-done
     ```
-1. If the commands above were executed successfully, restore the datadirectory of your former instance into your datadirectory: `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/`. Be aware if you have changed the standard path of your datadirectory like described [here](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir).
-1. Next, run `sudo chown -R 33:0 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*` and `sudo chmod -R 750 /var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/*`to apply the correct permissions on the datadirectory.
-1. Edit the Nextcloud AIO config.php file that is stored in `/var/lib/docker/volumes/nextcloud_aio_nextcloud/_data/config/config.php` and modify only `passwordsalt`, `secret`, `instanceid` and set it to the old values that you used on your old installation. If you are brave, feel free to modify further values e.g. add your old LDAP config or S3 storage config. (Some things like Mail server config can be added back using Nextcloud's webinterface later on).
+1. If the commands above were executed successfully, restore the datadirectory of your former instance into your datadirectory: `sudo docker cp --follow-links /path/to/nextcloud/data/ nextcloud-aio-nextcloud:/mnt/ncdata/` Note: the `/` at the end are necessary . Be aware if you have changed the standard path of your datadirectory like described [here](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir).
+1. Next, run `sudo docker exec nextcloud-aio-nextcloud chown -R 33:0 /mnt/ncdata/*` and `sudo docker exec nextcloud-aio-nextcloud chmod -R 750 /mnt/ncdata/*` to apply the correct permissions on the datadirectory.
+1. Edit the Nextcloud AIO config.php file that is stored in `nextcloud-aio-nextcloud:/var/www/html/config/config.php` and modify only `passwordsalt`, `secret`, `instanceid` and set it to the old values that you used on your old installation. If you are brave, feel free to modify further values e.g. add your old LDAP config or S3 storage config. (Some things like Mail server config can be added back using Nextcloud's webinterface later on).
 1. When you are done and saved your changes to the file, finally start the containers again and wait until all containers are running.
 1. As last step, install all apps again that were installed before on your old instance by using the webinterface.
 
