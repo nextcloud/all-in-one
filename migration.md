@@ -10,7 +10,7 @@ There are basically three ways how to migrate from an already existing Nextcloud
 **Please note**: If you used groupfolders or encrypted your files before, you will need to restore the database, as well!
 
 The procedure for migrating only the files works like this:
-1. Take a backup of your former instance (especially from your datadirectory, see 'datadictionary' in your `config.php`)
+1. Take a backup of your former instance (especially from your datadirectory, see `'datadirectory'` in your `config.php`)
 1. Install Nextcloud AIO on a new server/linux installation, enter your domain and wait until all containers are running
 1. Recreate all users that were present on your former installation
 1. Take a backup using Nextcloud AIO's built-in backup solution (so that you can easily restore to this state again) (Note: this will stop all containers and is expected: don't start the container again at this point!)
