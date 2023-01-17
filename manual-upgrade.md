@@ -6,8 +6,9 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
 
 1. Start all containers from the aio interface (now, it will report that Nextcloud is restarting because it is not able to start due to the above mentioned problem)
 1. Do **not** click on `Stop containers` because you will need them running going forward, see below
+1. Find out with which PHP version your installed Nextcloud is compatible by running `sudo docker exec nextcloud-aio-nextcloud cat lib/versioncheck.php`. (There you will find information about the max. supported PHP version.)
+
 1. Stop the Nextcloud container and the Apache container by running `sudo docker stop nextcloud-aio-nextcloud && sudo docker stop nextcloud-aio-apache`.
-1. Find out with which PHP version your installed Nextcloud is compatible by running `sudo cat /var/lib/docker/volumes/nextcloud_aio_nextcloud/_data/lib/versioncheck.php`. (There you will find information about the max. supported PHP version.)
 1. Run the following commands in order to reverse engineer the Nextcloud container:
     ```bash
         sudo docker pull assaflavie/runlike
