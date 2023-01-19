@@ -258,9 +258,6 @@ server {
 
     listen 443 ssl http2;
     listen [::]:443 ssl http2; # comment to disable IPv6
-    
-    # Solves slow upload speeds caused by http2
-    http2_body_preread_size 1048576;
 
     server_name <your-nc-domain>;
 
@@ -268,9 +265,16 @@ server {
         resolver localhost; # Note: you need to set a valid dns resolver here or use 127.0.0.1 / [::1] instead of localhost in the line below. See https://stackoverflow.com/a/49642310 for a better explanation
         proxy_pass http://localhost:11000$request_uri; # Note: you need to change localhost to 127.0.0.1 or [::1], if you don't use a valid dns resolver in the line above
 
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Early-Data $ssl_early_data;
+        proxy_set_header X-Forwarded-Scheme $scheme;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Accept-Encoding "";
+        proxy_set_header Host $host;
+    
+        client_body_buffer_size 512k;
         proxy_read_timeout 86400s;
         client_max_body_size 0;
 
@@ -283,6 +287,7 @@ server {
     ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
     ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
 
+    ssl_early_data on;
     ssl_session_timeout 1d;
     ssl_session_cache shared:MozSSL:10m; # about 40000 sessions
     ssl_session_tickets off;
