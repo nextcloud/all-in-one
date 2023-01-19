@@ -271,6 +271,7 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 3600; # set it to the same value as this env: https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud
         client_max_body_size 0;
 
         # Websocket
