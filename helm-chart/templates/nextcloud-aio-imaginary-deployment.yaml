@@ -26,6 +26,6 @@ spec:
         - env:
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-imaginary:20221229_091124-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-imaginary:20230112_091330-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-imaginary
 {{- end }}
