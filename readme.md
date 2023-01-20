@@ -124,6 +124,70 @@ Also, you may be interested in adjusting Nextcloud's Datadir to store the files 
 
 ⚠️ **Please note:** Almost all commands in this project's documentation use `sudo docker ...`. Since `sudo` is not available on Windows, you simply remove `sudo` from the commands and they should work.  
 
+
+### Synology DSM Setup
+<details>
+    <summary>For a AIO setup in Docker on a Synology NAS, there are a few adjustments necessary to make it run well, especially when running the integrated reverse proxy or firewall.</summary>
+    
+    
+The main issue is that installing AIO through the **Docker GUI doesn't work**, so you need to either use SSH or create a user-defined script task in the task scheduler as the user 'root' and run it.
+
+The compose script without reverse proxy
+```
+sudo docker run \
+--sig-proxy=false \
+--name nextcloud-aio-mastercontainer \
+--restart always \
+--publish 80:80 \
+--publish 8080:8080 \
+--publish 8443:8443 \
+--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+--volume /volume1/docker/docker.sock:/var/run/docker.sock:ro \
+-e NEXTCLOUD_DATADIR="/volume1/docker/nextcloud/data" \
+-e DOCKER_SOCKET_PATH="/volume1/docker/docker.sock" \
+nextcloud/all-in-one:latest 
+```
+
+ <details>
+ <summary>Setup with reverse proxy </summary>
+
+The compose script with reverse proxy which points to `localhost` at port 11000 with **HTTP** internally
+
+```
+sudo docker run \
+--sig-proxy=false \
+--name nextcloud-aio-mastercontainer \
+--restart always \
+--publish 8080:8080 \
+-e APACHE_PORT=11000 \
+-e APACHE_IP_BINDING=127.0.0.1 \
+--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+--volume /volume1/docker/docker.sock:/var/run/docker.sock:ro \
+-e NEXTCLOUD_DATADIR="/volume1/docker/nextcloud/data" \
+-e DOCKER_SOCKET_PATH="/volume1/docker/docker.sock" \
+nextcloud/all-in-one:latest
+```
+
+![Screenshot 2023-01-20 at 11 54 41](https://user-images.githubusercontent.com/70434961/213679766-96c44fd8-12e7-4f81-9227-48476c58aaef.jpg)
+![Screenshot 2023-01-20 at 11 55 06](https://user-images.githubusercontent.com/70434961/213680608-0e11c6dc-0fa2-4961-9f55-4f7f8c977e69.jpg)
+
+     
+</details>
+
+- The Synology DSM is vulnerable to attacks with it's open ports and login interfaces, which is why a firewall setup is always recommended. If a firewall is activated it is necessary to have exceptions for ports 80,443, the subnet of the docker bridge which includes the nextcloud containers (in my case 2 bridges), your public static IP (if you don't use DDNS) and if applicable your NC-Talk ports 3478 TCP+UDP:
+
+![Screenshot 2023-01-19 at 14 13 48](https://user-images.githubusercontent.com/70434961/213677995-71a9f364-e5d2-49e5-831e-4579f217c95c.png)
+    
+    
+- If you decide to run the commands through the task scheduler and want to run the command to solve the phone region error you need to remove the `-it` from it:
+
+ `sudo docker exec --user www-data nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue" `
+ 
+ - If you have the NAS setup on your local network (which is most often the case) you will need to setup the Synology DNS to be able to access Nextcloud from your network via its domain. Also don't forget to add the new DNS to your DHCP server and your fixed IP settings:
+ 
+![Screenshot 2023-01-20 at 12 13 44](https://user-images.githubusercontent.com/70434961/213683295-0b39a2bd-7a26-414c-a408-127dd4f07826.png)
+</details>
+
 ### How to run AIO with Portainer?
 The easiest way to run it with Portainer on Linux is to use Portainer's stacks feature and use [this docker-compose file](./docker-compose.yml) in order to start AIO correctly. 
 
@@ -433,7 +497,6 @@ You can configure the Nextcloud container to use a specific directory on your ho
 
 - An example for Linux is `-e NEXTCLOUD_DATADIR="/mnt/ncdata"`.
 - On macOS it might be `-e NEXTCLOUD_DATADIR="/var/nextcloud-data"`
-- For Synology it may be `-e NEXTCLOUD_DATADIR="/volume1/docker/nextcloud/data"`. 
 - On Windows it must be `-e NEXTCLOUD_DATADIR="nextcloud_aio_nextcloud_datadir"`. In order to use this, you need to create the `nextcloud_aio_nextcloud_datadir` volume beforehand:
     ```
     docker volume create ^
@@ -640,3 +703,9 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/automa
 1. Open the cronjob with `sudo crontab -u root -e` (and choose your editor of choice if not already done. I'd recommend nano). 
 1. Add the following new line to the crontab if not already present: `0 5 * * * /root/automatic-updates.sh` which will run the script at 05:00 each day. 
 1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
+
+
+
+ 
+
+
