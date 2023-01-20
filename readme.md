@@ -131,6 +131,7 @@ Also, you may be interested in adjusting Nextcloud's Datadir to store the files 
     
     
 The main issue is that installing AIO through the **Docker GUI doesn't work**, so you need to either use SSH or create a user-defined script task in the task scheduler as the user 'root' and run it.
+Before you start make sure to create two folders on you NAS `/volume1/docker/nextcloud/data` `/volume1/docker/nextcloud/backup`
 
 The compose script without reverse proxy
 ```
@@ -171,6 +172,7 @@ nextcloud/all-in-one:latest
 ![Screenshot 2023-01-20 at 11 54 41](https://user-images.githubusercontent.com/70434961/213679766-96c44fd8-12e7-4f81-9227-48476c58aaef.jpg)
 ![Screenshot 2023-01-20 at 11 55 06](https://user-images.githubusercontent.com/70434961/213680608-0e11c6dc-0fa2-4961-9f55-4f7f8c977e69.jpg)
 
+- The standard backup directory doesn't work, but you can just point it to the previously created folder `/volume1/docker/nextcloud/backup`
      
 </details>
 
