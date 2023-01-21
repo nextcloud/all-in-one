@@ -165,12 +165,14 @@ RUN set -ex; \
         openssl-dev \
         samba-dev \
         bzip2-dev \
+        libpq-dev \
     ; \
     \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install \
         bz2 \
         imap \
+        pgsql \
     ; \
     pecl install smbclient; \
     docker-php-ext-enable smbclient; \
