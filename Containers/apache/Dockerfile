@@ -1,59 +1,61 @@
 # Caddy is a requirement
 FROM caddy:2.6.2-alpine as caddy
 
-FROM debian:bullseye-20230109-slim
+FROM httpd:2.4.54-alpine3.17
 
 RUN mkdir -p /mnt/data; \
     chown www-data:www-data /mnt/data;
 
 VOLUME /mnt/data
 
+RUN apk add --no-cache bash \
+		       wget \
+		       tzdata \
+		       coreutils \
+		       supervisor \
+		       ca-certificates \
+		       openssl \
+		       netcat-openbsd
+
+
 RUN set -ex; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        apache2 \
-        supervisor \
-        wget \
-        ca-certificates \
-        openssl \
-        netcat \
-        dpkg-dev \
-    ; \
-    rm -rf /var/lib/apt/lists/*
+    apk add --no-cache shadow; \
+    deluser www-data; \
+    groupmod -g 333 xfs; \
+    usermod -u 333 -g 333 xfs; \
+    addgroup -g 33 -S www-data; \
+    adduser -u 33 -D -S -G www-data www-data ; 
+    apk del --no-cache shadow
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/
 RUN chmod +x /usr/bin/caddy
 
-RUN a2enmod rewrite \
-    headers \
-    proxy \
-    proxy_fcgi \
-    setenvif \
-    env \
-    mime \
-    dir \
-    authz_core \
-    alias
+RUN sed -i \
+		-e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_headers.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_proxy.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_proxy_fcgi.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_setenvif.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_env.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_mime.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_dir.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_alias.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
+		-e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
+		-e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
+		conf/httpd.conf
 
-COPY nextcloud.conf /etc/apache2/sites-available/
+COPY nextcloud.conf conf
+RUN echo Include conf/nextcloud.conf | tee -a conf/httpd.conf
 
-RUN rm /etc/apache2/ports.conf; \
-    sed -s -i -e "s/Include ports.conf//" /etc/apache2/apache2.conf; \
-    sed -i "/^Listen /d" /etc/apache2/apache2.conf
+RUN sed -i "/^Listen /d" conf/httpd.conf
+echo "ServerName localhost" | tee -a conf/httpd.conf
 
 RUN set -ex; \
-    a2dissite 000-default && \
-    a2dissite default-ssl && \
-    rm -f /etc/apache2/sites-enabled/000-default.conf && \
-    rm -f /etc/apache2/sites-enabled/default-ssl.conf && \
-    rm /etc/apache2/sites-available/000-default.conf && \
-    rm /etc/apache2/sites-available/default-ssl.conf && \
-    a2ensite nextcloud.conf && \
+    rm -rf conf/original conf/original && \
     rm -rf /var/www/html/* && \
-    chown www-data:www-data -R /var/log/apache2; \
-    mkdir -p /var/run/apache2; \
-    chown -R www-data:www-data /var/run/apache2; \
+    mkdir /var/www && \
     chown -R www-data:www-data /var/www;
 
 RUN mkdir /var/log/supervisord; \
@@ -70,7 +72,8 @@ RUN chmod +x /usr/bin/start.sh; \
     chmod +x /usr/bin/healthcheck.sh; \
     chmod +r /supervisord.conf; \
     chown www-data:www-data /Caddyfile; \
-    chmod +r -R /etc/apache2
+    chown -R www-data:www-data /usr/local/apache2; \
+    chmod +r -R /usr/local/apache2
 
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
