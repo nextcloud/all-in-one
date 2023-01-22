@@ -258,6 +258,9 @@ server {
 
     listen 443 ssl http2;
     listen [::]:443 ssl http2; # comment to disable IPv6
+    
+    # Solves slow upload speeds caused by http2
+    http2_body_preread_size 1048576;
 
     server_name <your-nc-domain>;
 
@@ -270,8 +273,6 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_read_timeout 86400s;
         client_max_body_size 0;
-        # Solves slow upload speeds caused by http2
-        client_body_buffer_size 512k;
 
         # Websocket
         proxy_http_version 1.1;
