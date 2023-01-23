@@ -142,6 +142,11 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 ### Strato Linux VPS
 Stratos VPS are not recommended for running AIO, since they crash/freeze/make errors when they reach an extremely low PID limit, which is very quickly reached by AIO, see [here](https://github.com/nextcloud/all-in-one/discussions/1747#discussioncomment-4716164), Strato does normally not increase this limit.
 
+### Note on storage options
+- SD-cards are discrecommended for AIO since they cripple the performance and they are not meant for many write operations which is needed for the database and other parts
+- SSD storage is recommended
+- HDD storage should work as well but is of course much slower than SSD storage
+
 ### How to get Nextcloud running using the ACME DNS-challenge?
 You can install AIO in reverse proxy mode where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section).
 
