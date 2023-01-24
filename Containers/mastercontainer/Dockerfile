@@ -63,8 +63,6 @@ RUN chmod +x /usr/bin/caddy
 COPY --from=dind /usr/local/bin/docker /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker
 
-WORKDIR /var/www/docker-aio
-
 RUN set -e && \
     apk add --no-cache git; \
     wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer; \
