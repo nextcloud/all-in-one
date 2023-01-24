@@ -135,7 +135,7 @@ You'll also need to adjust Synology's firewall, see below:
 <details>
 <summary>Click here to expand</summary>
 
-The Synology DSM is vulnerable to attacks with it's open ports and login interfaces, which is why a firewall setup is always recommended. If a firewall is activated it is necessary to have exceptions for ports 80,443, the subnet of the docker bridge which includes the nextcloud containers (in my case 2 bridges), your public static IP (if you don't use DDNS) and if applicable your NC-Talk ports 3478 TCP+UDP:
+The Synology DSM is vulnerable to attacks with it's open ports and login interfaces, which is why a firewall setup is always recommended. If a firewall is activated it is necessary to have exceptions for ports 80,443, the subnet of the docker bridge which includes the nextcloud containers, your public static IP (if you don't use DDNS) and if applicable your NC-Talk ports 3478 TCP+UDP:
 
 ![Screenshot 2023-01-19 at 14 13 48](https://user-images.githubusercontent.com/70434961/213677995-71a9f364-e5d2-49e5-831e-4579f217c95c.png)
 
