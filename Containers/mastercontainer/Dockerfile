@@ -7,6 +7,15 @@ FROM caddy:2.6.2-alpine as caddy
 # From https://github.com/docker-library/php/blob/master/8.1/alpine3.17/fpm/Dockerfile
 FROM php:8.1.14-fpm-alpine3.17
 
+RUN set -ex; \
+    apk add --no-cache shadow; \
+    deluser apache2; \
+    groupmod -g 333 xfs; \
+    usermod -u 333 -g 333 xfs; \
+    addgroup -g 33 -S www-data; \
+    adduser -u 33 -D -S -G www-data www-data ; 
+    apk del --no-cache shadow
+
 EXPOSE 80
 EXPOSE 8080
 EXPOSE 8443
@@ -20,28 +29,32 @@ RUN mkdir -p /var/www/docker-aio;
 WORKDIR /var/www/docker-aio
 
 RUN set -ex; \
-    apk add --no-cache ca-certificates \
-                       wget \
-		       tzdata \
-		       bash \
-		       apache2 \
-		       supervisor \
-		       openssl \
-		       netcat-openbsd \
-		       autoconf \
-		       build-base; \
-    pecl install APCu-5.1.22; \
-    docker-php-ext-enable apcu; \
-    apk del --no-cache autoconf build-base
+    apk add --no-cache 
+        ca-certificates \
+        wget \
+        tzdata \
+        bash \
+        apache2 \
+        supervisor \
+        openssl \
+        netcat-openbsd
 
 RUN set -ex; \
-    apk add --no-cache shadow; \
-    deluser apache2; \
-    groupmod -g 333 xfs; \
-    usermod -u 333 -g 333 xfs; \
-    addgroup -g 33 -S www-data; \
-    adduser -u 33 -D -S -G www-data www-data ; 
-    apk del --no-cache shadow
+    apk add --no-cache --virtual .build-deps \
+        autoconf \
+        build-base; \
+    pecl install APCu-5.1.22; \
+    docker-php-ext-enable apcu; \
+    rm -r /tmp/pear; \
+    \
+    runDeps="$( \
+        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
+            | tr ',' '\n' \
+            | sort -u \
+            | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )"; \
+    apk add --virtual .nextcloud-aio-rundeps $runDeps; \
+    apk del .build-deps
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/
 RUN chmod +x /usr/bin/caddy
