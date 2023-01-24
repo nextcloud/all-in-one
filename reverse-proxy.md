@@ -56,7 +56,7 @@ Add this as a new Apache site config:
     Protocols h2 h2c http/1.1
     
     # Solves slow upload speeds caused by http2
-    H2WindowSize 1048576
+    H2WindowSize 5242880
 
     # SSL
     SSLEngine on
