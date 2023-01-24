@@ -130,7 +130,7 @@ On Synology, there are two things different in comparison to Linux: instead of u
 
 Also, you may be interested in adjusting Nextcloud's Datadir to store the files on the host system. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
 
-#### Note about Synology's firewall
+You'll also need to adjust Synology's firewall, see below:
 
 <details>
 <summary>Click here to expand</summary>
