@@ -131,6 +131,10 @@ On Synology, there are two things different in comparison to Linux: instead of u
 Also, you may be interested in adjusting Nextcloud's Datadir to store the files on the host system. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
 
 #### Note about Synology's firewall
+
+<details>
+<summary>Click here to expand</summary>
+
 The Synology DSM is vulnerable to attacks with it's open ports and login interfaces, which is why a firewall setup is always recommended. If a firewall is activated it is necessary to have exceptions for ports 80,443, the subnet of the docker bridge which includes the nextcloud containers (in my case 2 bridges), your public static IP (if you don't use DDNS) and if applicable your NC-Talk ports 3478 TCP+UDP:
 
 ![Screenshot 2023-01-19 at 14 13 48](https://user-images.githubusercontent.com/70434961/213677995-71a9f364-e5d2-49e5-831e-4579f217c95c.png)
@@ -138,6 +142,7 @@ The Synology DSM is vulnerable to attacks with it's open ports and login interfa
 If you have the NAS setup on your local network (which is most often the case) you will need to setup the Synology DNS to be able to access Nextcloud from your network via its domain. Also don't forget to add the new DNS to your DHCP server and your fixed IP settings:
  
 ![Screenshot 2023-01-20 at 12 13 44](https://user-images.githubusercontent.com/70434961/213683295-0b39a2bd-7a26-414c-a408-127dd4f07826.png)
+</details>
 
 ### How to run AIO with Portainer?
 The easiest way to run it with Portainer on Linux is to use Portainer's stacks feature and use [this docker-compose file](./docker-compose.yml) in order to start AIO correctly. 
