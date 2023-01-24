@@ -139,8 +139,12 @@ The easiest way to run it with Portainer on Linux is to use Portainer's stacks f
 ### How to run Nextcloud behind a Cloudflare Tunnel?
 Although it does not seems like it is the case but from AIO perspective a Cloudflare Tunnel works like a reverse proxy. So please follow the [reverse proxy documentation](./reverse-proxy.md) where is documented how to make it run behind a Cloudflare Tunnel.
 
-### Strato Linux VPS
-Stratos VPS are not recommended for running AIO, since they crash/freeze/make errors when they reach an extremely low PID limit, which is very quickly reached by AIO, see [here](https://github.com/nextcloud/all-in-one/discussions/1747#discussioncomment-4716164), Strato does normally not increase this limit.
+### Disrecommended VPS providers
+- Stratos VPS crash/freeze/make errors when they reach an extremely low PID limit, which is very quickly reached by AIO, see [here](https://github.com/nextcloud/all-in-one/discussions/1747#discussioncomment-4716164), Strato does normally not increase this limit.
+- Hostingers VPS seem to miss a specifc Kernel feature which is required for AIO to run correctly. See [here](https://help.nextcloud.com/t/help-installing-nc-via-aio-on-vps/153956).
+
+### Recommended VPS
+In general recommended VPS are those that are KVM/non-virtualized as Docker should work best on them.
 
 ### How to get Nextcloud running using the ACME DNS-challenge?
 You can install AIO in reverse proxy mode where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section).
