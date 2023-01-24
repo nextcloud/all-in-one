@@ -143,6 +143,9 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 - Stratos VPS crash/freeze/make errors when they reach an extremely low PID limit, which is very quickly reached by AIO, see [here](https://github.com/nextcloud/all-in-one/discussions/1747#discussioncomment-4716164), Strato does normally not increase this limit.
 - Hostingers VPS seem to miss a specifc Kernel feature which is required for AIO to run correctly. See [here](https://help.nextcloud.com/t/help-installing-nc-via-aio-on-vps/153956).
 
+### Recommended VPS
+In general recommended VPS are those that are KVM/non-virtualized as Docker should work best on them.
+
 ### How to get Nextcloud running using the ACME DNS-challenge?
 You can install AIO in reverse proxy mode where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section).
 
