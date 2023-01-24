@@ -79,7 +79,6 @@ RUN sed -i \
 		-e '/^Listen /d' \
 		-e 's/User apache/User www-data/g' \
 		-e 's/Group apache/Group www-data/g' \
-		-e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
 		-e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
 		-e 's/^#\(LoadModule .*mod_headers.so\)/\1/' \
 		-e 's/^#\(LoadModule .*mod_env.so\)/\1/' \
