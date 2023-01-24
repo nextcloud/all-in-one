@@ -30,26 +30,25 @@ COPY --from=caddy /usr/bin/caddy /usr/bin/
 RUN chmod +x /usr/bin/caddy
 
 RUN sed -i \
-		-e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_headers.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_proxy.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_proxy_fcgi.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_setenvif.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_env.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_mime.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_dir.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_alias.so\)/\1/' \
-		-e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
-		-e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
-		-e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
-		conf/httpd.conf
-
+                -e '/^Listen /d' \
+                -e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_headers.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_proxy.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_proxy_fcgi.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_setenvif.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_env.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_mime.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_dir.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_alias.so\)/\1/' \
+                -e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
+                -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
+                -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
+                conf/httpd.conf; \
+		echo "Include conf/nextcloud.conf" | tee -a conf/httpd.conf; \
+                echo "ServerName localhost" | tee -a conf/httpd.conf
+		
 COPY nextcloud.conf conf
-RUN echo Include conf/nextcloud.conf | tee -a conf/httpd.conf
-
-RUN sed -i "/^Listen /d" conf/httpd.conf
-echo "ServerName localhost" | tee -a conf/httpd.conf
 
 RUN set -ex; \
     rm -rf conf/original conf/original && \
