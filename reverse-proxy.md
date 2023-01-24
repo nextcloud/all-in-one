@@ -494,6 +494,8 @@ nextcloud/all-in-one:latest
 
 </details>
 
+On macOS see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-synology-dsm
+
 ### Inspiration for a docker-compose file
 
 Simply translate the docker run command into a docker-compose file. You can have a look at [this file](https://github.com/nextcloud/all-in-one/blob/main/docker-compose.yml) for some inspiration but you will need to modify it either way. You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
