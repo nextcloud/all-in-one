@@ -3,29 +3,28 @@ FROM caddy:2.6.2-alpine as caddy
 
 FROM httpd:2.4.54-alpine3.17
 
-RUN mkdir -p /mnt/data; \
-    chown www-data:www-data /mnt/data;
-
-VOLUME /mnt/data
-
-RUN apk add --no-cache bash \
-		       wget \
-		       tzdata \
-		       coreutils \
-		       supervisor \
-		       ca-certificates \
-		       openssl \
-		       netcat-openbsd
-
-
 RUN set -ex; \
     apk add --no-cache shadow; \
-    deluser www-data; \
     groupmod -g 333 xfs; \
     usermod -u 333 -g 333 xfs; \
     addgroup -g 33 -S www-data; \
     adduser -u 33 -D -S -G www-data www-data ; 
     apk del --no-cache shadow
+
+RUN mkdir -p /mnt/data; \
+    chown www-data:www-data /mnt/data;
+
+VOLUME /mnt/data
+
+RUN set -ex; \
+    apk add --no-cache \
+        bash \
+        supervisor \
+        wget \
+        tzdata \
+        ca-certificates \
+        openssl \
+        netcat-openbsd
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/
 RUN chmod +x /usr/bin/caddy
