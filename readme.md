@@ -203,7 +203,7 @@ See https://dev.to/ozorest/fedora-32-how-to-solve-docker-internal-network-issue-
 Simply run the following: `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ your-command`. Of course `your-command` needs to be exchanged with the command that you want to run.
 
 ### How to resolve `Security & setup warnings displays the "missing default phone region" after initial install`?
-Simply run the following command: `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue"`. Of course you need to modify `yourvalue` based on your location. Examples are `DE`, `EN` and `GB`. See this list for more codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
+Simply run the following command: `sudo docker exec --user www-data nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue"`. Of course you need to modify `yourvalue` based on your location. Examples are `DE`, `EN` and `GB`. See this list for more codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
 
 ### How to run multiple AIO instances on one server?
 See [multiple-instances.md](./multiple-instances.md) for some documentation on this.
