@@ -49,6 +49,6 @@ echo "$CADDYFILE" > /Caddyfile
 mkdir -p /mnt/data/caddy/
 
 # Fix apache startup
-rm -f logs/httpd.pid
+rm -f /usr/local/apache2/logs/httpd.pid
 
 exec "$@"
