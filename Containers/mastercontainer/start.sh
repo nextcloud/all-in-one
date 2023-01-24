@@ -277,4 +277,7 @@ https://your-domain-that-points-to-this-server.tld:8443"
 # Set the timezone to UTC
 export TZ=UTC
 
+# Fix apache startup
+rm -f /var/run/apache2/httpd.pid
+
 exec "$@"
