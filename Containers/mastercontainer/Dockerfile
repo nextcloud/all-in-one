@@ -11,8 +11,8 @@ RUN set -ex; \
     apk add --no-cache shadow; \
     groupmod -g 333 xfs; \
     usermod -u 333 -g 333 xfs; \
-    addgroup -g 33 -S www-data; \
-    adduser -u 33 -D -S -G www-data www-data ; 
+    groupmod -g 33 www-data; \
+    usermod -u 33 -g 33 www-data; \
     apk del --no-cache shadow
 
 EXPOSE 80
@@ -28,7 +28,7 @@ RUN mkdir -p /var/www/docker-aio;
 WORKDIR /var/www/docker-aio
 
 RUN set -ex; \
-    apk add --no-cache 
+    apk add --no-cache \
         ca-certificates \
         wget \
         tzdata \
@@ -96,6 +96,9 @@ RUN sed -i \
 		-e 's/^#\(LoadModule .*mod_mime.so\)/\1/' \
 		-e 's/^#\(LoadModule .*mod_dir.so\)/\1/' \
 		-e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_proxy.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_proxy_http.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_ssl.so\)/\1/' \
 		-e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
 		-e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
 		-e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
