@@ -75,7 +75,6 @@ RUN set -e && \
     cd ..; \
     rm -f /usr/local/bin/composer; \
     chmod 770 -R ./; \
-    chmod 777 -R /root; \
     chown www-data:www-data -R /var/www; \
     rm -r ./php/data; \
     rm -r ./php/session; \
