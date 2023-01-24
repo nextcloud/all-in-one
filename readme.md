@@ -471,6 +471,7 @@ You can configure the Nextcloud container to use a specific directory on your ho
 
 - An example for Linux is `-e NEXTCLOUD_DATADIR="/mnt/ncdata"`.
 - On macOS it might be `-e NEXTCLOUD_DATADIR="/var/nextcloud-data"`
+- For Synology it may be `-e NEXTCLOUD_DATADIR="/volume1/docker/nextcloud/data"`. 
 - On Windows it must be `-e NEXTCLOUD_DATADIR="nextcloud_aio_nextcloud_datadir"`. In order to use this, you need to create the `nextcloud_aio_nextcloud_datadir` volume beforehand:
     ```
     docker volume create ^
