@@ -147,28 +147,6 @@ sudo docker run \
 nextcloud/all-in-one:latest 
 ```
 
- <details>
- <summary>Setup with reverse proxy </summary>
-
-The compose script with reverse proxy which points to `localhost` at port 11000 with **HTTP** internally
-
-```
-sudo docker run \
---sig-proxy=false \
---name nextcloud-aio-mastercontainer \
---restart always \
---publish 8080:8080 \
--e APACHE_PORT=11000 \
--e APACHE_IP_BINDING=127.0.0.1 \
---volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
---volume /volume1/docker/docker.sock:/var/run/docker.sock:ro \
--e NEXTCLOUD_DATADIR="/volume1/docker/nextcloud/data" \
--e DOCKER_SOCKET_PATH="/volume1/docker/docker.sock" \
-nextcloud/all-in-one:latest
-```
-
-![Screenshot 2023-01-20 at 11 54 41](https://user-images.githubusercontent.com/70434961/213679766-96c44fd8-12e7-4f81-9227-48476c58aaef.jpg)
-![Screenshot 2023-01-20 at 11 55 06](https://user-images.githubusercontent.com/70434961/213680608-0e11c6dc-0fa2-4961-9f55-4f7f8c977e69.jpg)
 
 For backups, enter `/volume1/docker/nextcloud/backup` as location in the AIO interface
      
