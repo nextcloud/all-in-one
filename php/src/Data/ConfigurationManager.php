@@ -134,6 +134,10 @@ class ConfigurationManager
     }
 
     public function isClamavEnabled() : bool {
+        if (!$this->isx64Platform()) {
+            return false;
+        }
+        
         $config = $this->GetConfig();
         if (isset($config['isClamavEnabled']) && $config['isClamavEnabled'] === 1) {
             return true;
