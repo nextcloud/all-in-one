@@ -148,6 +148,11 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 ### Recommended VPS
 In general recommended VPS are those that are KVM/non-virtualized as Docker should work best on them.
 
+### Note on storage options
+- SD-cards are discrecommended for AIO since they cripple the performance and they are not meant for many write operations which is needed for the database and other parts
+- SSD storage is recommended
+- HDD storage should work as well but is of course much slower than SSD storage
+
 ### How to get Nextcloud running using the ACME DNS-challenge?
 You can install AIO in reverse proxy mode where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section).
 
