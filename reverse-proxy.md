@@ -494,7 +494,7 @@ nextcloud/all-in-one:latest
 
 </details>
 
-On macOS see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-synology-dsm
+On Synology DSM see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-synology-dsm
 
 ### Inspiration for a docker-compose file
 
