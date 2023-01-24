@@ -181,9 +181,6 @@ nextcloud/all-in-one:latest
 ![Screenshot 2023-01-19 at 14 13 48](https://user-images.githubusercontent.com/70434961/213677995-71a9f364-e5d2-49e5-831e-4579f217c95c.png)
     
     
-- If you decide to run the commands through the task scheduler and want to run the command to solve the phone region error you need to remove the `-it` from it:
-
- `sudo docker exec --user www-data nextcloud-aio-nextcloud php occ config:system:set default_phone_region --value="yourvalue" `
  
  - If you have the NAS setup on your local network (which is most often the case) you will need to setup the Synology DNS to be able to access Nextcloud from your network via its domain. Also don't forget to add the new DNS to your DHCP server and your fixed IP settings:
  
