@@ -99,9 +99,8 @@ RUN sed -i \
 		-e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
 		-e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
 		-e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
-		/etc/apache2/httpd.conf
-
-RUN echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf
+        /etc/apache2/httpd.conf; \
+        echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf
 
 RUN set -ex; \
     rm -f /etc/apache2/conf.d/default.conf \
