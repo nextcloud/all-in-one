@@ -503,6 +503,8 @@ docker run ^
 nextcloud/all-in-one:latest
 ```
 
+Also, you may be interested in adjusting Nextcloud's Datadir to store the files on the host system. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
+
 </details>
 
 ### Inspiration for a docker-compose file
