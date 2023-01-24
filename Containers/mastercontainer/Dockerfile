@@ -87,21 +87,21 @@ RUN mkdir -p /etc/apache2/certs && \
 COPY mastercontainer.conf /etc/apache2/sites-available/
 
 RUN sed -i \
-                -e '/^Listen /d' \
-                -e 's/User apache/User www-data/g' \
-                -e 's/Group apache/Group www-data/g' \
-                -e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
-                -e 's/^#\(LoadModule .*mod_headers.so\)/\1/' \
-                -e 's/^#\(LoadModule .*mod_env.so\)/\1/' \
-                -e 's/^#\(LoadModule .*mod_mime.so\)/\1/' \
-                -e 's/^#\(LoadModule .*mod_dir.so\)/\1/' \
-                -e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
-                -e 's/^#\(LoadModule .*mod_proxy.so\)/\1/' \
-                -e 's/^#\(LoadModule .*mod_proxy_http.so\)/\1/' \
-                -e 's/^#\(LoadModule .*mod_ssl.so\)/\1/' \
-                -e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
-                -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
-                -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
+            -e '/^Listen /d' \
+            -e 's/User apache/User www-data/g' \
+            -e 's/Group apache/Group www-data/g' \
+            -e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_headers.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_env.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_mime.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_dir.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_proxy.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_proxy_http.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_ssl.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
+            -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
+            -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
         /etc/apache2/httpd.conf; \
         echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf
 
