@@ -172,7 +172,6 @@ nextcloud/all-in-one:latest
 
 For backups, enter `/volume1/docker/nextcloud/backup` as location in the AIO interface
      
-</details>
 
 - The Synology DSM is vulnerable to attacks with it's open ports and login interfaces, which is why a firewall setup is always recommended. If a firewall is activated it is necessary to have exceptions for ports 80,443, the subnet of the docker bridge which includes the nextcloud containers (in my case 2 bridges), your public static IP (if you don't use DDNS) and if applicable your NC-Talk ports 3478 TCP+UDP:
 
