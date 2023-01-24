@@ -9,7 +9,6 @@ FROM php:8.1.14-fpm-alpine3.17
 
 RUN set -ex; \
     apk add --no-cache shadow; \
-    deluser apache2; \
     groupmod -g 333 xfs; \
     usermod -u 333 -g 333 xfs; \
     addgroup -g 33 -S www-data; \
