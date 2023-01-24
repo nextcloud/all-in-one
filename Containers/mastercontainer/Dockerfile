@@ -37,6 +37,7 @@ RUN set -ex; \
         apache2 \
         supervisor \
         openssl \
+        sudo \
         netcat-openbsd
 
 RUN set -ex; \
