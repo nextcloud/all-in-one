@@ -126,26 +126,9 @@ Also, you may be interested in adjusting Nextcloud's Datadir to store the files 
 
 
 ### Synology DSM Setup
-For a AIO setup in Docker on a Synology NAS, there are a few adjustments necessary to make it run well. See below.
-    
-    
-The main issue is that installing AIO through the **Synology Docker GUI doesn't work**, so you need to either use SSH or create a user-defined script task in the task scheduler as the user 'root' and run it.
+On Synology, there are two things different in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /volume1/docker/docker.sock:/var/run/docker.sock:ro` to run it. You also need to add `-e DOCKER_SOCKET_PATH="/volume1/docker/docker.sock"`to the startup command. Apart from that it should work and behave the same like on Linux. Obviously the Synology Docker GUI will not work with that so you will need to either use SSH or create a user-defined script task in the task scheduler as the user 'root' in order to run the command.
 
-The docker run command without reverse proxy. For reverse proxy situation see https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
-```
-sudo docker run \
---sig-proxy=false \
---name nextcloud-aio-mastercontainer \
---restart always \
---publish 80:80 \
---publish 8080:8080 \
---publish 8443:8443 \
---volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
---volume /volume1/docker/docker.sock:/var/run/docker.sock:ro \
--e NEXTCLOUD_DATADIR="/volume1/docker/nextcloud/data" \
--e DOCKER_SOCKET_PATH="/volume1/docker/docker.sock" \
-nextcloud/all-in-one:latest 
-```
+Also, you may be interested in adjusting Nextcloud's Datadir to store the files on the host system. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
 
 
      
