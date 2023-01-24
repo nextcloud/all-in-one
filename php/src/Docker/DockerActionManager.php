@@ -539,6 +539,7 @@ class DockerActionManager
             apcu_add($cacheKey, $tag);
             /**
              * @psalm-suppress TypeDoesNotContainNull
+             * @psalm-suppress DocblockTypeContradiction
              */
             if ($tag === null) {
                 error_log("No tag was found when getting the current channel. You probably did not follow the documentation correctly. Changing the channel to the default 'latest'.");
