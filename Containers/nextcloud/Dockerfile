@@ -212,7 +212,6 @@ RUN set -ex; \
         sudo \
         grep \
         coreutils \
-        gcompat \
         libjpeg \
         librsvg \
         libheif \
