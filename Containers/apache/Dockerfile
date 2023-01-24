@@ -8,7 +8,7 @@ RUN set -ex; \
     groupmod -g 333 xfs; \
     usermod -u 333 -g 333 xfs; \
     groupmod -g 33 www-data; \
-    usermod -u 33 -g 333 www-data; \
+    usermod -u 33 -g 33 www-data; \
     apk del --no-cache shadow
 
 RUN mkdir -p /mnt/data; \
