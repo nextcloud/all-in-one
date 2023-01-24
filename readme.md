@@ -126,8 +126,7 @@ Also, you may be interested in adjusting Nextcloud's Datadir to store the files 
 
 
 ### Synology DSM Setup
-<details>
-    <summary>For a AIO setup in Docker on a Synology NAS, there are a few adjustments necessary to make it run well, especially when running the integrated reverse proxy or firewall.</summary>
+For a AIO setup in Docker on a Synology NAS, there are a few adjustments necessary to make it run well. See below.
     
     
 The main issue is that installing AIO through the **Synology Docker GUI doesn't work**, so you need to either use SSH or create a user-defined script task in the task scheduler as the user 'root' and run it.
