@@ -170,7 +170,7 @@ nextcloud/all-in-one:latest
 ![Screenshot 2023-01-20 at 11 54 41](https://user-images.githubusercontent.com/70434961/213679766-96c44fd8-12e7-4f81-9227-48476c58aaef.jpg)
 ![Screenshot 2023-01-20 at 11 55 06](https://user-images.githubusercontent.com/70434961/213680608-0e11c6dc-0fa2-4961-9f55-4f7f8c977e69.jpg)
 
-- The standard backup directory doesn't work, but you can just point it to the previously created folder `/volume1/docker/nextcloud/backup`
+For backups, enter `/volume1/docker/nextcloud/backup` as location in the AIO interface
      
 </details>
 
