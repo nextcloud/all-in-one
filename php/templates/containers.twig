@@ -488,9 +488,9 @@
                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                         <input type="hidden" name="options-form" value="options-form">
                         {% if is_clamav_enabled == true %}
-                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (only supported on x64, needs ~1GB additional RAM)</label><br>
+                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label><br>
                         {% else %}
-                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (only supported on x64, needs ~1GB additional RAM)</label><br>
+                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label><br>
                         {% endif %}
                         {% if is_collabora_enabled == true %}
                             <input type="checkbox" id="collabora" name="collabora" checked="checked"><label for="collabora">Collabora (Nextcloud Office)</label><br>
