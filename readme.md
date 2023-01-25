@@ -8,7 +8,7 @@ Included are:
 - High performance backend for Nextcloud Talk
 - Backup solution (based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
 - Imaginary
-- ClamAV
+- ClamAV (Antivirus backend for Nextcloud)
 - Fulltextsearch
 
 ## How to use this?
