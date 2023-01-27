@@ -103,6 +103,7 @@ RUN sed -i \
             -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
         /etc/apache2/httpd.conf; \
         mkdir -p /etc/apache2/logs; \
+        rm /etc/apache2/conf.d/ssl.conf; \
         echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf; \
         echo "Include /etc/apache2/sites-available/mastercontainer.conf" | tee -a /etc/apache2/httpd.conf
 
