@@ -239,8 +239,8 @@ chown root:root -R /mnt/docker-aio-config/certs/
 
 # Don't allow access to the AIO interface from the Nextcloud container
 # Probably more cosmetic than anything but at least an attempt
-if ! grep -q '# nextcloud-aio-block' /etc/apache2/apache2.conf; then
-    cat << APACHE_CONF >> /etc/apache2/apache2.conf
+if ! grep -q '# nextcloud-aio-block' /etc/apache2/httpd.conf; then
+    cat << APACHE_CONF >> /etc/apache2/httpd.conf
 # nextcloud-aio-block-start
 <Location />
 order allow,deny

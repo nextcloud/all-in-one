@@ -103,7 +103,9 @@ RUN sed -i \
             -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
             -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
         /etc/apache2/httpd.conf; \
-        echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf
+        mkdir -p /etc/apache2/logs; \
+        echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf; \
+        echo "Include /etc/apache2/sites-available/mastercontainer.conf" | tee -a /etc/apache2/httpd.conf
 
 RUN set -ex; \
     rm -f /etc/apache2/conf.d/default.conf \
