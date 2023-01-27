@@ -48,7 +48,7 @@ echo "$CADDYFILE" > /Caddyfile
 # Add caddy path
 mkdir -p /mnt/data/caddy/
 
-# Fix apache sturtup
-rm -f /var/run/apache2/apache2.pid
+# Fix apache startup
+rm -f /usr/local/apache2/logs/httpd.pid
 
 exec "$@"
