@@ -34,6 +34,7 @@ RUN set -ex; \
         bash \
         apache2 \
         apache2-proxy \
+        apache2-ssl \
         supervisor \
         openssl \
         sudo \
@@ -97,10 +98,6 @@ RUN sed -i \
             -e 's/^#\(LoadModule .*mod_mime.so\)/\1/' \
             -e 's/^#\(LoadModule .*mod_dir.so\)/\1/' \
             -e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_proxy.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_proxy_http.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_proxy_fcgi.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_ssl.so\)/\1/' \
             -e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
             -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
             -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
