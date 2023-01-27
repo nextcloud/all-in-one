@@ -36,7 +36,8 @@ RUN set -ex; \
         supervisor \
         openssl \
         sudo \
-        netcat-openbsd
+        netcat-openbsd \
+        grep
 
 RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
