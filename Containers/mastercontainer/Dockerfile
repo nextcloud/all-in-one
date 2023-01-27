@@ -33,6 +33,7 @@ RUN set -ex; \
         tzdata \
         bash \
         apache2 \
+        apache2-proxy \
         supervisor \
         openssl \
         sudo \
