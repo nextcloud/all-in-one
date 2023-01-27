@@ -39,6 +39,7 @@ RUN set -ex; \
         openssl \
         sudo \
         netcat-openbsd \
+        curl \
         grep
 
 RUN set -ex; \
