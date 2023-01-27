@@ -105,6 +105,7 @@ RUN sed -i \
         mkdir -p /etc/apache2/logs; \
         rm /etc/apache2/conf.d/ssl.conf; \
         echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf; \
+        echo "LoadModule ssl_module modules/mod_ssl.so" | tee -a /etc/apache2/httpd.conf; \
         echo "Include /etc/apache2/sites-available/mastercontainer.conf" | tee -a /etc/apache2/httpd.conf
 
 RUN set -ex; \
