@@ -21,6 +21,9 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-redis
     spec:
+      securityContext:
+        fsGroup: 65534
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
         - env:
             - name: REDIS_HOST_PASSWORD

@@ -21,6 +21,9 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-apache
     spec:
+      securityContext:
+        fsGroup: 65534
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
         - env:
             - name: APACHE_MAX_SIZE

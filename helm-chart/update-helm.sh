@@ -46,6 +46,8 @@ find ./ -name '*service.yaml' -exec sed -i "/^status:/,$ d" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
 # shellcheck disable=SC1083
+find ./ -name '*deployment.yaml' -exec sed -i "/^    spec:/a\ \ \ \ \ \ securityContext:\n\ \ \ \ \ \ \ \ fsGroup: 65534\n\ \ \ \ \ \ \ \ fsGroupChangePolicy: \"OnRootMismatch\"" \{} \; 
+# shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 100Mi|storage: 1Gi|" \{} \;  
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;   
