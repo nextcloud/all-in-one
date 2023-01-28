@@ -58,8 +58,6 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_DATA_DIR
               value: /mnt/ncdata
-            - name: NEXTCLOUD_MOUNT
-              value: "{{ .Values.NEXTCLOUD_MOUNT }}"
             - name: ONLYOFFICE_ENABLED
               value: "{{ .Values.ONLYOFFICE_ENABLED }}"
             - name: ONLYOFFICE_HOST
@@ -111,8 +109,6 @@ spec:
               name: nextcloud-aio-nextcloud
             - mountPath: /mnt/ncdata
               name: nextcloud-aio-nextcloud-data
-            - mountPath: /mnt
-              name: nextcloud-aio-nextcloud-mount
             - mountPath: /usr/local/share/ca-certificates
               name: nextcloud-aio-nextcloud-trusted-cacerts
               readOnly: true
@@ -123,9 +119,6 @@ spec:
         - name: nextcloud-aio-nextcloud-data
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud-data
-        - name: nextcloud-aio-nextcloud-mount
-          persistentVolumeClaim:
-            claimName: nextcloud-aio-nextcloud-mount
         - name: nextcloud-aio-nextcloud-trusted-cacerts
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud-trusted-cacerts

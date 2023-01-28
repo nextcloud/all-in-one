@@ -28,8 +28,7 @@ sed -i "s|\${APACHE_PORT}:\${APACHE_PORT}/|$APACHE_PORT:$APACHE_PORT/|" latest.y
 sed -i "s|\${TALK_PORT}:\${TALK_PORT}/|$TALK_PORT:$TALK_PORT/|g" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
-sed -i "s|\${NEXTCLOUD_MOUNT}:\${NEXTCLOUD_MOUNT}:|nextcloud_aio_nextcloud_mount:$NEXTCLOUD_MOUNT:|" latest.yml
-sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_mount:\n \ \ \ \ name: nextcloud_aio_nextcloud_mount" latest.yml
+sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
 sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name: nextcloud_aio_nextcloud_trusted_cacerts" latest.yml
 sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cacerts:|g#" latest.yml
 sed -i 's|\${|{{ .Values.|g' latest.yml
@@ -48,7 +47,15 @@ find ./ -name '*deployment.yaml' -exec sed -i "s|manual-install-nextcloud-aio|ne
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "/^    spec:/a\ \ \ \ \ \ securityContext:\n\ \ \ \ \ \ \ \ fsGroup: 65534\n\ \ \ \ \ \ \ \ fsGroupChangePolicy: \"OnRootMismatch\"" \{} \; 
 # shellcheck disable=SC1083
-find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 100Mi|storage: 1Gi|" \{} \;  
+find ./ \( -not -name '*apache*' -not -name '*collabora-fonts*' -not -name '*trusted-cacerts*' -name '*persistentvolumeclaim.yaml' \) -exec sed -i "s|storage: 100Mi|storage: 1Gi|" \{} \;  
+# shellcheck disable=SC1083
+find ./ -name '*nextcloud-persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: 2Gi|" \{} \;  
+# shellcheck disable=SC1083
+find ./ -name '*nextcloud-data-persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.NEXTCLOUD_DATA_STORAGE_SIZE }}|" \{} \;  
+# shellcheck disable=SC1083
+find ./ -name '*database*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.DATABASE_STORAGE_SIZE }}|" \{} \;  
+# shellcheck disable=SC1083
+find ./ -name '*elasticsearch-persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.FULLTEXTSEARCH_STORAGE_SIZE }}|" \{} \;  
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;   
 # shellcheck disable=SC1083
@@ -97,9 +104,16 @@ sed -i 's|"||g' /tmp/sample.conf
 sed -i 's|=|: |' /tmp/sample.conf
 sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
-sed -i 's|^NEXTCLOUD_MOUNT: .*|NEXTCLOUD_MOUNT:        # Setting this to any value allows to enable external storages in Nextcloud|' /tmp/sample.conf
+sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
+# shellcheck disable=SC2129
 echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes' >> /tmp/sample.conf
+# shellcheck disable=SC2129
+echo 'NEXTCLOUD_DATA_STORAGE_SIZE: 10Gi       # You can change the size of Nextclouds Datadir with this value' >> /tmp/sample.conf
+# shellcheck disable=SC2129
+echo 'DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volume with this value' >> /tmp/sample.conf
+# shellcheck disable=SC2129
+echo 'FULLTEXTSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the fulltextsearch volume with this value' >> /tmp/sample.conf
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
 ENABLED_VARIABLES="$(grep -oP '^[A-Z]+_ENABLED' ../helm-chart/values.yaml)"
