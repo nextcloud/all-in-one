@@ -29,20 +29,26 @@ sed -i "s|\${TALK_PORT}:\${TALK_PORT}/|$TALK_PORT:$TALK_PORT/|g" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "s|\${NEXTCLOUD_MOUNT}:\${NEXTCLOUD_MOUNT}:|nextcloud_aio_nextcloud_mount:$NEXTCLOUD_MOUNT:|" latest.yml
+sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_mount:\n \ \ \ \ name: nextcloud_aio_nextcloud_mount" latest.yml
+sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name: nextcloud_aio_nextcloud_trusted_cacerts" latest.yml
 sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cacerts:|g#" latest.yml
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
-sed -i '/profiles: /d' latest.yml
 cat latest.yml
 kompose convert -c -f latest.yml
 cd latest
 
+mv ./templates/manual-install-nextcloud-aio-networkpolicy.yaml ./templates/nextcloud-aio-networkpolicy.yaml
 # shellcheck disable=SC1083
-find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 100Mi|storage: {{ .Values.MAX_STORAGE_SIZE }}|" \{} \;  
+find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
 # shellcheck disable=SC1083
-find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteMany|" \{} \;  
+find ./ -name '*service.yaml' -exec sed -i "/^status:/,$ d" \{} \; 
 # shellcheck disable=SC1083
-find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadWriteOnce|ReadWriteMany|" \{} \;  
+find ./ -name '*deployment.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
+# shellcheck disable=SC1083
+find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 100Mi|storage: 1Gi|" \{} \;  
+# shellcheck disable=SC1083
+find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;   
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ {{- if .Values.STORAGE_CLASS }}" \{} \;  
 # shellcheck disable=SC1083
@@ -85,14 +91,12 @@ sed -i "s|^version:.*|version: $AIO_VERSION|" ../helm-chart/Chart.yaml
 
 # Conversion of sample.conf
 cp sample.conf /tmp/
-sed -i "/^APACHE_IP_BINDING/d" /tmp/sample.conf
 sed -i 's|"||g' /tmp/sample.conf
 sed -i 's|=|: |' /tmp/sample.conf
 sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_MOUNT: .*|NEXTCLOUD_MOUNT:        # Setting this to any value allows to enable external storages in Nextcloud|' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
-echo 'MAX_STORAGE_SIZE: 10Gi        # You can adjust the max storage that each volume can use with this value' >> /tmp/sample.conf
 echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes' >> /tmp/sample.conf
 mv /tmp/sample.conf ../helm-chart/values.yaml
 

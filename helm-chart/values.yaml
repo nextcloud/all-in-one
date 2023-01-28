@@ -30,5 +30,4 @@ TALK_PORT: 3478          # This allows to adjust the port that the talk containe
 TIMEZONE: Europe/Berlin          # TODO! This is the timezone that your containers will use.
 TURN_SECRET:           # TODO! This needs to be a unique and good password!
 UPDATE_NEXTCLOUD_APPS: no          # When setting to yes, it will automatically update all installed Nextcloud apps upon container startup on saturdays.
-MAX_STORAGE_SIZE: 10Gi        # You can adjust the max storage that each volume can use with this value
 STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes
