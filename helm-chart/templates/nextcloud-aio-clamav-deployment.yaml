@@ -22,6 +22,9 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-clamav
     spec:
+      securityContext:
+        fsGroup: 65534
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
         - env:
             - name: CLAMD_STARTUP_TIMEOUT

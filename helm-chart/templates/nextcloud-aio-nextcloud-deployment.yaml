@@ -21,6 +21,9 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
+      securityContext:
+        fsGroup: 65534
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
         - env:
             - name: ADDITIONAL_APKS
@@ -101,7 +104,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230124_100031-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-nextcloud:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-nextcloud
           volumeMounts:
             - mountPath: /var/www/html
