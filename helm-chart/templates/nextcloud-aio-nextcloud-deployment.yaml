@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.27.0 (b0ed6a2c9)
+    kompose.version: 1.28.0 (c4137012e)
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
@@ -16,7 +16,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.27.0 (b0ed6a2c9)
+        kompose.version: 1.28.0 (c4137012e)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-nextcloud
@@ -101,14 +101,14 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20221229_091124-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-nextcloud:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-nextcloud
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
             - mountPath: /mnt/ncdata
               name: nextcloud-aio-nextcloud-data
-            - mountPath: /mnt/
+            - mountPath: /mnt
               name: nextcloud-aio-nextcloud-mount
             - mountPath: /usr/local/share/ca-certificates
               name: nextcloud-aio-nextcloud-trusted-cacerts
