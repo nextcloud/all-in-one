@@ -27,6 +27,7 @@ RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
         autoconf \
+        libtool \
         freetype-dev \
         icu-dev \
         libevent-dev \
