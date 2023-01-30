@@ -14,3 +14,4 @@ USER nobody
 ENTRYPOINT ["/usr/local/bin/imaginary", "-return-size"]
 
 HEALTHCHECK CMD nc -z localhost 9000 || exit 1
+LABEL com.centurylinklabs.watchtower.monitor-only="true"
