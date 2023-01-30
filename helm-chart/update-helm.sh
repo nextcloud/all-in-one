@@ -117,9 +117,9 @@ echo 'DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database
 # shellcheck disable=SC2129
 echo 'FULLTEXTSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the fulltextsearch volume with this value' >> /tmp/sample.conf
 # shellcheck disable=SC2129
-echo 'DEFAULT_100M_STORAGE_SIZE: 100Mi       # You can change the size of volumes that default to 100Mi with this value' >> /tmp/sample.conf
+echo 'DEFAULT_100M_STORAGE_SIZE: 100Mi       # You can change the size of the remaining volumes that default to 100Mi with this value' >> /tmp/sample.conf
 # shellcheck disable=SC2129
-echo 'DEFAULT_1G_STORAGE_SIZE: 1Gi       # You can change the size of volumes that default to 1Gi with this value' >> /tmp/sample.conf
+echo 'DEFAULT_1G_STORAGE_SIZE: 1Gi       # You can change the size of the remaining volumes that default to 1Gi with this value' >> /tmp/sample.conf
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
 ENABLED_VARIABLES="$(grep -oP '^[A-Z]+_ENABLED' ../helm-chart/values.yaml)"
