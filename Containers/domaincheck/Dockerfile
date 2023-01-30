@@ -16,3 +16,4 @@ RUN mkdir -p /var/www/domaincheck/
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD nc -z localhost $APACHE_PORT || exit 1
+LABEL com.centurylinklabs.watchtower.monitor-only="true"

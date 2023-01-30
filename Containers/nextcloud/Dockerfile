@@ -267,3 +267,4 @@ USER root
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD sudo -E -u www-data bash /healthcheck.sh
+LABEL com.centurylinklabs.watchtower.monitor-only="true"

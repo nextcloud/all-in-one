@@ -36,3 +36,4 @@ USER postgres
 ENTRYPOINT ["start.sh"]
 
 HEALTHCHECK CMD healthcheck.sh
+LABEL com.centurylinklabs.watchtower.monitor-only="true"

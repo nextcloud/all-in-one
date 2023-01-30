@@ -4,3 +4,4 @@ FROM clamav/clamav:0.105.1-7
 RUN apk add --no-cache tzdata
 COPY clamav.conf /tmp/
 RUN cat /tmp/clamav.conf >> /etc/clamav/clamd.conf
+LABEL com.centurylinklabs.watchtower.monitor-only="true"
