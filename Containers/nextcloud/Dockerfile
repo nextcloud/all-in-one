@@ -51,6 +51,7 @@ RUN set -ex; \
         libheif-dev \
         librsvg-dev \
         libxext-dev \
+        ghostscript-fonts \
     ; \
     \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
@@ -215,8 +216,8 @@ RUN set -ex; \
         libjpeg \
         librsvg \
         libheif \
-    ; \
-    rm -rf /var/lib/apt/lists/*
+        libpng \
+        ghostscript-fonts;
 
 RUN set -ex; \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
