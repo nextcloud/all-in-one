@@ -34,3 +34,5 @@ STORAGE_CLASS:        # By setting this, you can adjust the storage class for yo
 NEXTCLOUD_DATA_STORAGE_SIZE: 10Gi       # You can change the size of Nextclouds Datadir with this value
 DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volume with this value
 FULLTEXTSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the fulltextsearch volume with this value
+DEFAULT_100M_STORAGE_SIZE: 100Mi       # You can change the size of the remaining volumes that default to 100Mi with this value
+DEFAULT_1G_STORAGE_SIZE: 1Gi       # You can change the size of the remaining volumes that default to 1Gi with this value

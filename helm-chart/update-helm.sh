@@ -49,13 +49,15 @@ find ./ -name '*deployment.yaml' -exec sed -i "/^    spec:/a\ \ \ \ \ \ security
 # shellcheck disable=SC1083
 find ./ \( -not -name '*apache*' -not -name '*collabora-fonts*' -not -name '*trusted-cacerts*' -name '*persistentvolumeclaim.yaml' \) -exec sed -i "s|storage: 100Mi|storage: 1Gi|" \{} \;  
 # shellcheck disable=SC1083
-find ./ -name '*nextcloud-persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: 2Gi|" \{} \;  
-# shellcheck disable=SC1083
 find ./ -name '*nextcloud-data-persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.NEXTCLOUD_DATA_STORAGE_SIZE }}|" \{} \;  
 # shellcheck disable=SC1083
 find ./ -name '*database*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.DATABASE_STORAGE_SIZE }}|" \{} \;  
 # shellcheck disable=SC1083
 find ./ -name '*elasticsearch-persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.FULLTEXTSEARCH_STORAGE_SIZE }}|" \{} \;  
+# shellcheck disable=SC1083
+find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 100Mi|storage: {{ .Values.DEFAULT_100M_STORAGE_SIZE }}|" \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.DEFAULT_1G_STORAGE_SIZE }}|" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;   
 # shellcheck disable=SC1083
@@ -114,6 +116,10 @@ echo 'NEXTCLOUD_DATA_STORAGE_SIZE: 10Gi       # You can change the size of Nextc
 echo 'DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volume with this value' >> /tmp/sample.conf
 # shellcheck disable=SC2129
 echo 'FULLTEXTSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the fulltextsearch volume with this value' >> /tmp/sample.conf
+# shellcheck disable=SC2129
+echo 'DEFAULT_100M_STORAGE_SIZE: 100Mi       # You can change the size of the remaining volumes that default to 100Mi with this value' >> /tmp/sample.conf
+# shellcheck disable=SC2129
+echo 'DEFAULT_1G_STORAGE_SIZE: 1Gi       # You can change the size of the remaining volumes that default to 1Gi with this value' >> /tmp/sample.conf
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
 ENABLED_VARIABLES="$(grep -oP '^[A-Z]+_ENABLED' ../helm-chart/values.yaml)"
