@@ -27,8 +27,7 @@ spec:
           image: alpine
           command:
             - chmod
-            - -R
-            - 777
+            - "777"
             - /nextcloud-aio-collabora-fonts
           volumeMounts:
             - name: nextcloud-aio-collabora-fonts
