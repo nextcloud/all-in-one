@@ -11,7 +11,7 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*
 USER nobody
 
-ENTRYPOINT ["/usr/local/bin/imaginary", "-return-size"]
+ENTRYPOINT ["/usr/local/bin/imaginary", "-return-size", "-max-allowed-resolution", "222.2"]
 
 HEALTHCHECK CMD nc -z localhost 9000 || exit 1
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
