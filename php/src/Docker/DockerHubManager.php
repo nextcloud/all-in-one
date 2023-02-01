@@ -26,29 +26,31 @@ class DockerHubManager
         // If one of the links below should ever become outdated, we can still upgrade the mastercontainer via the webinterface manually by opening '/api/docker/getwatchtower'
 
         try {
-            $authTokenRequest = $this->guzzleClient->request(
+            $request = $this->guzzleClient->request(
                 'GET',
-                'https://auth.docker.io/token?service=registry.docker.io&scope=repository:' . $name . ':pull'
+                'https://hub.docker.com/v2/repositories/' . $name . '/tags?page_size=128'
             );
-            $body = $authTokenRequest->getBody()->getContents();
+            $body = $request->getBody()->getContents();
             $decodedBody = json_decode($body, true);
-            if(isset($decodedBody['token'])) {
-                $authToken = $decodedBody['token'];
-                $manifestRequest = $this->guzzleClient->request(
-                    'GET',
-                    'https://registry-1.docker.io/v2/'.$name.'/manifests/' . $tag,
-                    [
-                        'headers' => [
-                            'Accept' => 'application/vnd.docker.distribution.manifest.v2+json,application/vnd.oci.image.index.v1+json',
-                            'Authorization' => 'Bearer ' . $authToken,
-                        ],
-                    ]
-                );
-                $responseHeaders = $manifestRequest->getHeader('docker-content-digest');
-                if(count($responseHeaders) === 1) {
-                    $latestVersion = $responseHeaders[0];
-                    apcu_add($cacheKey, $latestVersion, 600);
-                    return $latestVersion;
+
+            if (isset($decodedBody['results'])) {
+                $arch = php_uname('m') === 'x86_64' ? 'amd64' : 'arm64';
+                foreach($decodedBody['results'] as $values) {
+                    if (isset($values['name'])
+                    && $values['name'] === $tag
+                    && isset($values['images'])
+                    && is_array($values['images'])) {
+                        foreach ($values['images'] as $images) {
+                            if (isset($images['architecture'])
+                            && $images['architecture'] === $arch
+                            && isset($images['digest'])
+                            && is_string($images['digest'])) {
+                                $latestVersion = $images['digest'];
+                                apcu_add($cacheKey, $latestVersion, 600);
+                                return $latestVersion;
+                            }
+                        }
+                    }
                 }
             }
 
