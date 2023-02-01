@@ -21,9 +21,17 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-redis
     spec:
-      securityContext:
-        fsGroup: 65534
-        fsGroupChangePolicy: "OnRootMismatch"
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - -R
+            - 777
+            - /nextcloud-aio-redis
+          volumeMounts:
+            - name: nextcloud-aio-redis
+              mountPath: /nextcloud-aio-redis
       containers:
         - env:
             - name: REDIS_HOST_PASSWORD

@@ -21,9 +21,20 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-database
     spec:
-      securityContext:
-        fsGroup: 65534
-        fsGroupChangePolicy: "OnRootMismatch"
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - -R
+            - 777
+            - /nextcloud-aio-database
+            - /nextcloud-aio-database-dump
+          volumeMounts:
+            - name: nextcloud-aio-database-dump
+              mountPath: /nextcloud-aio-database-dump
+            - name: nextcloud-aio-database
+              mountPath: /nextcloud-aio-database
       containers:
         - env:
             - name: PGTZ

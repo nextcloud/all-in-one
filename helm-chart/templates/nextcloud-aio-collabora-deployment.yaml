@@ -22,9 +22,17 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-collabora
     spec:
-      securityContext:
-        fsGroup: 65534
-        fsGroupChangePolicy: "OnRootMismatch"
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - -R
+            - 777
+            - /nextcloud-aio-collabora-fonts
+          volumeMounts:
+            - name: nextcloud-aio-collabora-fonts
+              mountPath: /nextcloud-aio-collabora-fonts
       containers:
         - env:
             - name: TZ

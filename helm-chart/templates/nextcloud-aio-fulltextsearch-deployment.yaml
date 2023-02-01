@@ -22,9 +22,17 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-fulltextsearch
     spec:
-      securityContext:
-        fsGroup: 65534
-        fsGroupChangePolicy: "OnRootMismatch"
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - -R
+            - 777
+            - /nextcloud-aio-elasticsearch
+          volumeMounts:
+            - name: nextcloud-aio-elasticsearch
+              mountPath: /nextcloud-aio-elasticsearch
       containers:
         - env:
             - name: ES_JAVA_OPTS
