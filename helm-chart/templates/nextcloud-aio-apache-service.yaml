@@ -3,7 +3,7 @@ kind: Service
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.27.0 (b0ed6a2c9)
+    kompose.version: 1.28.0 (c4137012e)
   labels:
     io.kompose.service: nextcloud-aio-apache
   name: nextcloud-aio-apache
@@ -14,5 +14,3 @@ spec:
       targetPort: {{ .Values.APACHE_PORT }}
   selector:
     io.kompose.service: nextcloud-aio-apache
-status:
-  loadBalancer: {}

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.27.0 (b0ed6a2c9)
+    kompose.version: 1.28.0 (c4137012e)
   labels:
     io.kompose.service: nextcloud-aio-database
   name: nextcloud-aio-database
@@ -16,11 +16,24 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.27.0 (b0ed6a2c9)
+        kompose.version: 1.28.0 (c4137012e)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-database
     spec:
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - "777"
+            - /nextcloud-aio-database
+            - /nextcloud-aio-database-dump
+          volumeMounts:
+            - name: nextcloud-aio-database-dump
+              mountPath: /nextcloud-aio-database-dump
+            - name: nextcloud-aio-database
+              mountPath: /nextcloud-aio-database
       containers:
         - env:
             - name: PGTZ
@@ -33,7 +46,7 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-postgresql:20221229_091124-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-postgresql:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-database
           volumeMounts:
             - mountPath: /var/lib/postgresql/data

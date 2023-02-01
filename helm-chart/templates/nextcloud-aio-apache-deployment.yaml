@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.27.0 (b0ed6a2c9)
+    kompose.version: 1.28.0 (c4137012e)
   labels:
     io.kompose.service: nextcloud-aio-apache
   name: nextcloud-aio-apache
@@ -16,11 +16,24 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.27.0 (b0ed6a2c9)
+        kompose.version: 1.28.0 (c4137012e)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-apache
     spec:
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - "777"
+            - /nextcloud-aio-nextcloud
+            - /nextcloud-aio-apache
+          volumeMounts:
+            - name: nextcloud-aio-apache
+              mountPath: /nextcloud-aio-apache
+            - name: nextcloud-aio-nextcloud
+              mountPath: /nextcloud-aio-nextcloud
       containers:
         - env:
             - name: APACHE_MAX_SIZE
@@ -41,10 +54,11 @@ spec:
               value: nextcloud-aio-talk
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-apache:20221229_091124-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-apache:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
+              hostIP: {{ .Values.APACHE_IP_BINDING }}
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud

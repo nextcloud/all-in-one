@@ -9,7 +9,7 @@ spec:
   storageClassName: {{ .Values.STORAGE_CLASS }}
   {{- end }}
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.MAX_STORAGE_SIZE }}
+      storage: {{ .Values.APACHE_STORAGE_SIZE }}

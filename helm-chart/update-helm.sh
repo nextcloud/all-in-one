@@ -28,21 +28,48 @@ sed -i "s|\${APACHE_PORT}:\${APACHE_PORT}/|$APACHE_PORT:$APACHE_PORT/|" latest.y
 sed -i "s|\${TALK_PORT}:\${TALK_PORT}/|$TALK_PORT:$TALK_PORT/|g" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
-sed -i "s|\${NEXTCLOUD_MOUNT}:\${NEXTCLOUD_MOUNT}:|nextcloud_aio_nextcloud_mount:$NEXTCLOUD_MOUNT:|" latest.yml
+sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
+sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name: nextcloud_aio_nextcloud_trusted_cacerts" latest.yml
 sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cacerts:|g#" latest.yml
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
-sed -i '/profiles: /d' latest.yml
 cat latest.yml
 kompose convert -c -f latest.yml
 cd latest
 
+mv ./templates/manual-install-nextcloud-aio-networkpolicy.yaml ./templates/nextcloud-aio-networkpolicy.yaml
 # shellcheck disable=SC1083
-find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 100Mi|storage: {{ .Values.MAX_STORAGE_SIZE }}|" \{} \;  
+find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
+cat << EOL > /tmp/initcontainers
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - "777"
+          volumeMountsInitContainer:
+EOL
 # shellcheck disable=SC1083
-find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteMany|" \{} \;  
+DEPLOYMENTS="$(find ./ -name '*deployment.yaml')"
+mapfile -t DEPLOYMENTS <<< "$DEPLOYMENTS"
+for variable in "${DEPLOYMENTS[@]}"; do
+    if grep -q volumeMounts "$variable"; then
+        sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
+        volumeNames="$(grep -A1 mountPath "$variable" | grep -v mountPath | sed 's|.*name: ||' | sed '/^--$/d')"
+        mapfile -t volumeNames <<< "$volumeNames"
+        for volumeName in "${volumeNames[@]}"; do
+            sed -i "/^.*volumeMountsInitContainer:/i\ \ \ \ \ \ \ \ \ \ \ \ - /$volumeName" "$variable"
+            sed -i "/volumeMountsInitContainer:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
+        done
+        sed -i "s|volumeMountsInitContainer|volumeMounts|" "$variable"
+    fi
+done
 # shellcheck disable=SC1083
-find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadWriteOnce|ReadWriteMany|" \{} \;  
+find ./ -name '*service.yaml' -exec sed -i "/^status:/,$ d" \{} \; 
+# shellcheck disable=SC1083
+find ./ -name '*deployment.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
+# shellcheck disable=SC1083
+find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;   
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ {{- if .Values.STORAGE_CLASS }}" \{} \;  
 # shellcheck disable=SC1083
@@ -69,6 +96,14 @@ find ./ \( -not -name '*service.yaml' -name '*.yaml' \) -exec sed -i "/^status:/
 find ./ \( -not -name '*persistentvolumeclaim.yaml' -name '*.yaml' \) -exec sed -i "/resources:/d" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "/creationTimestamp: null/d" \{} \; 
+VOLUMES="$(find ./ -name '*persistentvolumeclaim.yaml' | sed 's|-persistentvolumeclaim.yaml||g;s|.*nextcloud-aio-||g')"
+mapfile -t VOLUMES <<< "$VOLUMES"
+for variable in "${VOLUMES[@]}"; do
+    name="$(echo "$variable" | sed 's|-|_|g' | tr '[:lower:]' '[:upper:]')_STORAGE_SIZE"
+    VOLUME_VARIABLE+=("$name")
+    # shellcheck disable=SC1083
+    find ./ -name "*nextcloud-aio-$variable-persistentvolumeclaim.yaml" -exec sed -i "s|storage: 100Mi|storage: {{ .Values.$name }}|" \{} \; 
+done
 
 cd ../
 mkdir -p ../helm-chart/
@@ -85,15 +120,17 @@ sed -i "s|^version:.*|version: $AIO_VERSION|" ../helm-chart/Chart.yaml
 
 # Conversion of sample.conf
 cp sample.conf /tmp/
-sed -i "/^APACHE_IP_BINDING/d" /tmp/sample.conf
 sed -i 's|"||g' /tmp/sample.conf
 sed -i 's|=|: |' /tmp/sample.conf
 sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
-sed -i 's|^NEXTCLOUD_MOUNT: .*|NEXTCLOUD_MOUNT:        # Setting this to any value allows to enable external storages in Nextcloud|' /tmp/sample.conf
+sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
-echo 'MAX_STORAGE_SIZE: 10Gi        # You can adjust the max storage that each volume can use with this value' >> /tmp/sample.conf
+# shellcheck disable=SC2129
 echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes' >> /tmp/sample.conf
+for variable in "${VOLUME_VARIABLE[@]}"; do
+    echo "$variable: 1Gi       # You can change the size of the $(echo "$variable" | sed 's|_STORAGE_SIZE||;s|_|-|g' | tr '[:upper:]' '[:lower:]') volume that default to 1Gi with this value" >> /tmp/sample.conf
+done
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
 ENABLED_VARIABLES="$(grep -oP '^[A-Z]+_ENABLED' ../helm-chart/values.yaml)"

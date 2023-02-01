@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.27.0 (b0ed6a2c9)
+    kompose.version: 1.28.0 (c4137012e)
   labels:
     io.kompose.service: nextcloud-aio-fulltextsearch
   name: nextcloud-aio-fulltextsearch
@@ -17,11 +17,21 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.27.0 (b0ed6a2c9)
+        kompose.version: 1.28.0 (c4137012e)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-fulltextsearch
     spec:
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - "777"
+            - /nextcloud-aio-elasticsearch
+          volumeMounts:
+            - name: nextcloud-aio-elasticsearch
+              mountPath: /nextcloud-aio-elasticsearch
       containers:
         - env:
             - name: ES_JAVA_OPTS
@@ -30,7 +40,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: discovery.type
               value: single-node
-          image: nextcloud/aio-fulltextsearch:20221229_091124-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-fulltextsearch:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-fulltextsearch
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data

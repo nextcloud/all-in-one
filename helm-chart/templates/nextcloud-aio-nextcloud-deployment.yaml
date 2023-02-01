@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.27.0 (b0ed6a2c9)
+    kompose.version: 1.28.0 (c4137012e)
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
@@ -16,11 +16,27 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.27.0 (b0ed6a2c9)
+        kompose.version: 1.28.0 (c4137012e)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - "777"
+            - /nextcloud-aio-nextcloud
+            - /nextcloud-aio-nextcloud-data
+            - /nextcloud-aio-nextcloud-trusted-cacerts
+          volumeMounts:
+            - name: nextcloud-aio-nextcloud-trusted-cacerts
+              mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
+            - name: nextcloud-aio-nextcloud-data
+              mountPath: /nextcloud-aio-nextcloud-data
+            - name: nextcloud-aio-nextcloud
+              mountPath: /nextcloud-aio-nextcloud
       containers:
         - env:
             - name: ADDITIONAL_APKS
@@ -55,8 +71,6 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_DATA_DIR
               value: /mnt/ncdata
-            - name: NEXTCLOUD_MOUNT
-              value: "{{ .Values.NEXTCLOUD_MOUNT }}"
             - name: ONLYOFFICE_ENABLED
               value: "{{ .Values.ONLYOFFICE_ENABLED }}"
             - name: ONLYOFFICE_HOST
@@ -101,15 +115,13 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20221229_091124-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-nextcloud:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-nextcloud
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
             - mountPath: /mnt/ncdata
               name: nextcloud-aio-nextcloud-data
-            - mountPath: /mnt/
-              name: nextcloud-aio-nextcloud-mount
             - mountPath: /usr/local/share/ca-certificates
               name: nextcloud-aio-nextcloud-trusted-cacerts
               readOnly: true
@@ -120,9 +132,6 @@ spec:
         - name: nextcloud-aio-nextcloud-data
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud-data
-        - name: nextcloud-aio-nextcloud-mount
-          persistentVolumeClaim:
-            claimName: nextcloud-aio-nextcloud-mount
         - name: nextcloud-aio-nextcloud-trusted-cacerts
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud-trusted-cacerts
