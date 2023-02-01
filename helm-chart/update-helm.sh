@@ -47,18 +47,6 @@ find ./ -name '*deployment.yaml' -exec sed -i "s|manual-install-nextcloud-aio|ne
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "/^    spec:/a\ \ \ \ \ \ securityContext:\n\ \ \ \ \ \ \ \ fsGroup: 65534\n\ \ \ \ \ \ \ \ fsGroupChangePolicy: \"OnRootMismatch\"" \{} \; 
 # shellcheck disable=SC1083
-find ./ \( -not -name '*apache*' -not -name '*collabora-fonts*' -not -name '*trusted-cacerts*' -name '*persistentvolumeclaim.yaml' \) -exec sed -i "s|storage: 100Mi|storage: 1Gi|" \{} \;  
-# shellcheck disable=SC1083
-find ./ -name '*nextcloud-data-persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.NEXTCLOUD_DATA_STORAGE_SIZE }}|" \{} \;  
-# shellcheck disable=SC1083
-find ./ -name '*database*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.DATABASE_STORAGE_SIZE }}|" \{} \;  
-# shellcheck disable=SC1083
-find ./ -name '*elasticsearch-persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.FULLTEXTSEARCH_STORAGE_SIZE }}|" \{} \;  
-# shellcheck disable=SC1083
-find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 100Mi|storage: {{ .Values.DEFAULT_100M_STORAGE_SIZE }}|" \{} \;
-# shellcheck disable=SC1083
-find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|storage: 1Gi|storage: {{ .Values.DEFAULT_1G_STORAGE_SIZE }}|" \{} \;
-# shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;   
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ {{- if .Values.STORAGE_CLASS }}" \{} \;  
@@ -86,6 +74,14 @@ find ./ \( -not -name '*service.yaml' -name '*.yaml' \) -exec sed -i "/^status:/
 find ./ \( -not -name '*persistentvolumeclaim.yaml' -name '*.yaml' \) -exec sed -i "/resources:/d" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "/creationTimestamp: null/d" \{} \; 
+VOLUMES="$(find ./ -name '*persistentvolumeclaim.yaml' | sed 's|-persistentvolumeclaim.yaml||g;s|.*nextcloud-aio-||g')"
+mapfile -t VOLUMES <<< "$VOLUMES"
+for variable in "${VOLUMES[@]}"; do
+    name="$(echo "$variable" | sed 's|-|_|g' | tr '[:lower:]' '[:upper:]')_STORAGE_SIZE"
+    VOLUME_VARIABLE+=("$name")
+    # shellcheck disable=SC1083
+    find ./ -name "*nextcloud-aio-$variable-persistentvolumeclaim.yaml" -exec sed -i "s|storage: 100Mi|storage: {{ .Values.$name }}|" \{} \; 
+done
 
 cd ../
 mkdir -p ../helm-chart/
@@ -110,16 +106,9 @@ sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
 # shellcheck disable=SC2129
 echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes' >> /tmp/sample.conf
-# shellcheck disable=SC2129
-echo 'NEXTCLOUD_DATA_STORAGE_SIZE: 10Gi       # You can change the size of Nextclouds Datadir with this value' >> /tmp/sample.conf
-# shellcheck disable=SC2129
-echo 'DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volume with this value' >> /tmp/sample.conf
-# shellcheck disable=SC2129
-echo 'FULLTEXTSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the fulltextsearch volume with this value' >> /tmp/sample.conf
-# shellcheck disable=SC2129
-echo 'DEFAULT_100M_STORAGE_SIZE: 100Mi       # You can change the size of the remaining volumes that default to 100Mi with this value' >> /tmp/sample.conf
-# shellcheck disable=SC2129
-echo 'DEFAULT_1G_STORAGE_SIZE: 1Gi       # You can change the size of the remaining volumes that default to 1Gi with this value' >> /tmp/sample.conf
+for variable in "${VOLUME_VARIABLE[@]}"; do
+    echo "$variable: 1Gi       # You can change the size of the $(echo "$variable" | sed 's|_STORAGE_SIZE||;s|_|-|g' | tr '[:upper:]' '[:lower:]') volume that default to 1Gi with this value" >> /tmp/sample.conf
+done
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
 ENABLED_VARIABLES="$(grep -oP '^[A-Z]+_ENABLED' ../helm-chart/values.yaml)"

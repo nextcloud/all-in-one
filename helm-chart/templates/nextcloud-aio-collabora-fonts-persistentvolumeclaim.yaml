@@ -12,4 +12,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.DEFAULT_100M_STORAGE_SIZE }}
+      storage: {{ .Values.COLLABORA_FONTS_STORAGE_SIZE }}
