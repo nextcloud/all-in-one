@@ -40,12 +40,35 @@ cd latest
 mv ./templates/manual-install-nextcloud-aio-networkpolicy.yaml ./templates/nextcloud-aio-networkpolicy.yaml
 # shellcheck disable=SC1083
 find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
+cat << EOL > /tmp/initcontainers
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - -R
+            - 777
+          volumeMountsInitContainer:
+EOL
+# shellcheck disable=SC1083
+DEPLOYMENTS="$(find ./ -name '*deployment.yaml')"
+mapfile -t DEPLOYMENTS <<< "$DEPLOYMENTS"
+for variable in "${DEPLOYMENTS[@]}"; do
+    if grep -q volumeMounts "$variable"; then
+        sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
+        volumeNames="$(grep -A1 mountPath "$variable" | grep -v mountPath | sed 's|.*name: ||' | sed '/^--$/d')"
+        mapfile -t volumeNames <<< "$volumeNames"
+        for volumeName in "${volumeNames[@]}"; do
+            sed -i "/^.*volumeMountsInitContainer:/i\ \ \ \ \ \ \ \ \ \ \ \ - /$volumeName" "$variable"
+            sed -i "/volumeMountsInitContainer:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
+        done
+        sed -i "s|volumeMountsInitContainer|volumeMounts|" "$variable"
+    fi
+done
 # shellcheck disable=SC1083
 find ./ -name '*service.yaml' -exec sed -i "/^status:/,$ d" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
-# shellcheck disable=SC1083
-find ./ -name '*deployment.yaml' -exec sed -i "/^    spec:/a\ \ \ \ \ \ securityContext:\n\ \ \ \ \ \ \ \ fsGroup: 65534\n\ \ \ \ \ \ \ \ fsGroupChangePolicy: \"OnRootMismatch\"" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;   
 # shellcheck disable=SC1083
