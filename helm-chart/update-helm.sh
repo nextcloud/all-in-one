@@ -46,8 +46,7 @@ cat << EOL > /tmp/initcontainers
           image: alpine
           command:
             - chmod
-            - -R
-            - 777
+            - "777"
           volumeMountsInitContainer:
 EOL
 # shellcheck disable=SC1083

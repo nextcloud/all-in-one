@@ -26,8 +26,7 @@ spec:
           image: alpine
           command:
             - chmod
-            - -R
-            - 777
+            - "777"
             - /nextcloud-aio-nextcloud
             - /nextcloud-aio-nextcloud-data
             - /nextcloud-aio-nextcloud-trusted-cacerts
