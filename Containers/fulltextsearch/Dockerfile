@@ -11,5 +11,10 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*
 
+COPY start.sh /
+
+RUN chmod +x /start.sh
+ENTRYPOINT ["/start.sh"]
+
 HEALTHCHECK CMD nc -z localhost 9200 || exit 1
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
