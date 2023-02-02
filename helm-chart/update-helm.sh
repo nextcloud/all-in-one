@@ -62,6 +62,14 @@ for variable in "${DEPLOYMENTS[@]}"; do
             sed -i "/volumeMountsInitContainer:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
         done
         sed -i "s|volumeMountsInitContainer|volumeMounts|" "$variable"
+    elif grep -q claimName "$variable"; then
+        volumeNames="$(claimName "$variable")"
+        mapfile -t volumeNames <<< "$volumeNames"
+        for volumeName in "${volumeNames[@]}"; do
+            if grep -A1 "$volumeName" "$variable" | grep -q "readOnly: true"; then
+                sed -i -e "/$volumeName/,1 d" "$variable"
+            fi
+        done
     fi
 done
 # shellcheck disable=SC1083
