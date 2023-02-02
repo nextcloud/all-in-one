@@ -21,6 +21,7 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-database
     spec:
+      initContainers:
         - name: init-volumes
           image: alpine
           command:

@@ -52,6 +52,7 @@ cat << EOL > /tmp/initcontainers
           volumeMountsInitContainer:
 EOL
 cat << EOL > /tmp/initcontainers.database
+      initContainers:
         - name: init-volumes
           image: alpine
           command:
