@@ -25,10 +25,10 @@ spec:
         - name: init-volumes
           image: alpine
           command:
-            - chmod
-            - "777"
-            - /nextcloud-aio-database
-            - /nextcloud-aio-database-dump
+            - sh
+            - -c
+            - "chmod 777 /nextcloud-aio-database /nextcloud-aio-database-dump
+                && chown 999:999 /nextcloud-aio-database"
           volumeMounts:
             - name: nextcloud-aio-database-dump
               mountPath: /nextcloud-aio-database-dump
