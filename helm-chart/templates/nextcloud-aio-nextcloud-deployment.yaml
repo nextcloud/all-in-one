@@ -115,7 +115,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230124_100031-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-nextcloud:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-nextcloud
           volumeMounts:
             - mountPath: /var/www/html
@@ -135,4 +135,3 @@ spec:
         - name: nextcloud-aio-nextcloud-trusted-cacerts
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud-trusted-cacerts
-            readOnly: true
