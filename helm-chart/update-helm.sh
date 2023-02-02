@@ -26,6 +26,8 @@ sed -i "s|\${IMAGE_TAG}|$DOCKER_TAG\${IMAGE_TAG}|" latest.yml
 sed -i "s|\${APACHE_IP_BINDING}|$APACHE_IP_BINDING|" latest.yml
 sed -i "s|\${APACHE_PORT}:\${APACHE_PORT}/|$APACHE_PORT:$APACHE_PORT/|" latest.yml
 sed -i "s|\${TALK_PORT}:\${TALK_PORT}/|$TALK_PORT:$TALK_PORT/|g" latest.yml
+sed -i "s|- \${APACHE_PORT}|- $APACHE_PORT|" latest.yml
+sed -i "s|- \${TALK_PORT}|- $TALK_PORT|" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
