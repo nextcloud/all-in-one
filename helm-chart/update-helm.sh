@@ -161,6 +161,9 @@ for variable in "${ENABLED_VARIABLES[@]}"; do
     find ./ -name "*nextcloud-aio-$name-service.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 done
 
+# Copy network config into templates
+cp network.yaml templates/
+
 chmod 777 -R ./
 
 set +ex

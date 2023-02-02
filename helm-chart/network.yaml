@@ -1,0 +1,136 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-apache
+spec:
+  selector:
+    app: nextcloud-aio-apache
+  ports:
+    - port: {{ Values.APACHE_PORT }}
+      protocol: TCP
+      name: nextcloud-aio-apache
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-clamav
+spec:
+  selector:
+    app: nextcloud-aio-clamav
+  ports:
+    - port: 3310
+      protocol: TCP
+      name: nextcloud-aio-clamav
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-collabora
+spec:
+  selector:
+    app: nextcloud-aio-collabora
+  ports:
+    - port: 9980
+      protocol: TCP
+      name: nextcloud-aio-collabora
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-fulltextsearch
+spec:
+  selector:
+    app: nextcloud-aio-fulltextsearch
+  ports:
+    - port: 9200
+      protocol: TCP
+      name: nextcloud-aio-fulltextsearch
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-imaginary
+spec:
+  selector:
+    app: nextcloud-aio-imaginary
+  ports:
+    - port: 9000
+      protocol: TCP
+      name: nextcloud-aio-imaginary
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-nextcloud
+spec:
+  selector:
+    app: nextcloud-aio-nextcloud
+  ports:
+    - port: 9000
+      protocol: TCP
+      name: nextcloud-aio-nextcloud-php
+    - port: 7867
+      protocol: TCP
+      name: nextcloud-aio-nextcloud-notify_push
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-onlyoffice
+spec:
+  selector:
+    app: nextcloud-aio-onlyoffice
+  ports:
+    - port: 80
+      protocol: TCP
+      name: nextcloud-aio-onlyoffice
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-database
+spec:
+  selector:
+    app: nextcloud-aio-database
+  ports:
+    - port: 5432
+      protocol: TCP
+      name: nextcloud-aio-database
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-redis
+spec:
+  selector:
+    app: nextcloud-aio-redis
+  ports:
+    - port: 6379
+      protocol: TCP
+      name: nextcloud-aio-redis
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nextcloud-aio-talk
+spec:
+  selector:
+    app: nextcloud-aio-talk
+  ports:
+    - port: {{ .Values.TALK_PORT }}
+      protocol: TCP
+      name: nextcloud-aio-talk-tcp
+    - port: {{ .Values.TALK_PORT }}
+      protocol: UDP
+      name: nextcloud-aio-talk-udp
+  type: ClusterIP
