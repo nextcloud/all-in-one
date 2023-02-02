@@ -59,8 +59,8 @@ do
     sed -i "s|$variable|\${$sole_variable}|g" containers.yml
 done
 
-sed -i 's|_ENABLED=|_ENABLED=no          # Setting this to "yes" enables the option in Nextcloud automatically.|' sample.conf
-sed -i 's|CLAMAV_ENABLED=no.*|CLAMAV_ENABLED=no          # Setting this to "yes" enables the option in Nextcloud automatically. Note: latest-arm64 has no clamav support|' sample.conf
+sed -i 's|_ENABLED=|_ENABLED=no          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.|' sample.conf
+sed -i 's|CLAMAV_ENABLED=no.*|CLAMAV_ENABLED=no          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically. Note: latest-arm64 has no clamav support|' sample.conf
 sed -i 's|TALK_ENABLED=no|TALK_ENABLED=yes|' sample.conf
 sed -i 's|COLLABORA_ENABLED=no|COLLABORA_ENABLED=yes|' sample.conf
 sed -i 's|COLLABORA_DICTIONARIES=|COLLABORA_DICTIONARIES="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru"        # You can change this in order to enable other dictionaries for collabora|' sample.conf
@@ -71,7 +71,7 @@ sed -i 's|NEXTCLOUD_MEMORY_LIMIT=|NEXTCLOUD_MEMORY_LIMIT=512M          # This al
 sed -i 's|APACHE_MAX_SIZE=|APACHE_MAX_SIZE=10737418240          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT|' sample.conf
 sed -i 's|NEXTCLOUD_MAX_TIME=|NEXTCLOUD_MAX_TIME=3600          # This allows to change the upload time limit of the Nextcloud container|' sample.conf
 sed -i 's|NEXTCLOUD_TRUSTED_CACERTS_DIR=|NEXTCLOUD_TRUSTED_CACERTS_DIR=/usr/local/share/ca-certificates/my-custom-ca          # Nextcloud container will trust all the Certification Authorities, whose certificates are included in the given directory.|' sample.conf
-sed -i 's|UPDATE_NEXTCLOUD_APPS=|UPDATE_NEXTCLOUD_APPS=no          # When setting to yes, it will automatically update all installed Nextcloud apps upon container startup on saturdays.|' sample.conf
+sed -i 's|UPDATE_NEXTCLOUD_APPS=|UPDATE_NEXTCLOUD_APPS=no          # When setting to "yes" (with quotes), it will automatically update all installed Nextcloud apps upon container startup on saturdays.|' sample.conf
 sed -i 's|APACHE_PORT=|APACHE_PORT=443          # Changing this to a different value than 443 will allow you to run it behind a reverse proxy.|' sample.conf
 sed -i 's|APACHE_IP_BINDING=|APACHE_IP_BINDING=0.0.0.0          # This can be changed to e.g. 127.0.0.1 if you want to run AIO behind a reverse proxy and if that is running on the same host and using localhost to connect|' sample.conf
 sed -i 's|TALK_PORT=|TALK_PORT=3478          # This allows to adjust the port that the talk container is using.|' sample.conf
