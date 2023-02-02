@@ -26,6 +26,8 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
+    expose:
+      - 3306
 
   nextcloud-aio-database:
     image: nextcloud/aio-postgresql:${IMAGE_TAG}
