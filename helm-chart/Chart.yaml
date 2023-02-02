@@ -4,5 +4,6 @@ version: 4.2.0
 apiVersion: v2
 keywords:
   - latest
-sources: https://github.com/nextcloud/all-in-one/tree/main/helm-chart
+sources:
+  - https://github.com/nextcloud/all-in-one/tree/main/helm-chart
 home: https://github.com/nextcloud/all-in-one/tree/main/helm-chart
