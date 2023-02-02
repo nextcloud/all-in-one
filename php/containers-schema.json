@@ -15,6 +15,12 @@
 					"image": {
 						"type": "string"
 					},
+					"expose": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
 					"depends_on": {
 						"type": "array",
 						"items": {
