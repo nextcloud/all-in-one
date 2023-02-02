@@ -21,14 +21,13 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-database
     spec:
-      initContainers:
         - name: init-volumes
           image: alpine
           command:
-            - sh
-            - -c
-            - "chmod 777 /nextcloud-aio-database /nextcloud-aio-database-dump
-                && chown 999:999 /nextcloud-aio-database"
+            - chown
+            - 999:999
+            - /nextcloud-aio-database
+            - /nextcloud-aio-database-dump
           volumeMounts:
             - name: nextcloud-aio-database-dump
               mountPath: /nextcloud-aio-database-dump
