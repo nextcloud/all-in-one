@@ -184,6 +184,7 @@ services:
       - TZ=${TIMEZONE}
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms1024M -Xmx1024M
+      - POSTGRES_HOST=nextcloud-aio-database
     volumes:
       - nextcloud_aio_elasticsearch:/usr/share/elasticsearch/data:rw
     restart: unless-stopped
