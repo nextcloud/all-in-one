@@ -17,9 +17,6 @@
           "protocol": "tcp"
         }
       ],
-      "expose": [
-        "%APACHE_PORT%"
-      ],
       "internal_port": "%APACHE_PORT%",
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
@@ -233,9 +230,6 @@
           "port_number": "%TALK_PORT%",
           "protocol": "udp"
         }
-      ],
-      "expose": [
-        "%TALK_PORT%"
       ],
       "internal_port": "%TALK_PORT%",
       "environment": [
