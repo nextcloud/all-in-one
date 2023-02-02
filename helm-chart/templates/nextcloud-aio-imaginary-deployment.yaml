@@ -28,4 +28,6 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-imaginary:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-imaginary
+          ports:
+            - containerPort: 9000
 {{- end }}

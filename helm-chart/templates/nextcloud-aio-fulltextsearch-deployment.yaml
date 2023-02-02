@@ -42,6 +42,8 @@ spec:
               value: single-node
           image: nextcloud/aio-fulltextsearch:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-fulltextsearch
+          ports:
+            - containerPort: 9200
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
               name: nextcloud-aio-elasticsearch
