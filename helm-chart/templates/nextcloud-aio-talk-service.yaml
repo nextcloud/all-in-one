@@ -17,6 +17,9 @@ spec:
       port: {{ .Values.TALK_PORT }}
       protocol: UDP
       targetPort: {{ .Values.TALK_PORT }}
+    - name: {{ .Values.TALK_PORT }}-tcp
+      port: {{ .Values.TALK_PORT }}
+      targetPort: {{ .Values.TALK_PORT }}
   selector:
     io.kompose.service: nextcloud-aio-talk
 {{- end }}

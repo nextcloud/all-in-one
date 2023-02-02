@@ -36,12 +36,16 @@ spec:
         - env:
             - name: ES_JAVA_OPTS
               value: -Xms1024M -Xmx1024M
+            - name: POSTGRES_HOST
+              value: nextcloud-aio-database
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
             - name: discovery.type
               value: single-node
           image: nextcloud/aio-fulltextsearch:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-fulltextsearch
+          ports:
+            - containerPort: 9200
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
               name: nextcloud-aio-elasticsearch

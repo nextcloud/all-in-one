@@ -40,6 +40,8 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-clamav:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-clamav
+          ports:
+            - containerPort: 3310
           volumeMounts:
             - mountPath: /var/lib/clamav
               name: nextcloud-aio-clamav

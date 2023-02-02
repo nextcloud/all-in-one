@@ -12,5 +12,8 @@ spec:
     - name: "{{ .Values.APACHE_PORT }}"
       port: {{ .Values.APACHE_PORT }}
       targetPort: {{ .Values.APACHE_PORT }}
+    - name: {{ .Values.APACHE_PORT }}-tcp
+      port: {{ .Values.APACHE_PORT }}
+      targetPort: {{ .Values.APACHE_PORT }}
   selector:
     io.kompose.service: nextcloud-aio-apache
