@@ -69,6 +69,7 @@ spec:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud
+            readOnly: true
         - name: nextcloud-aio-apache
           persistentVolumeClaim:
             claimName: nextcloud-aio-apache
