@@ -13,6 +13,6 @@ if [ "$(sysctl -n vm.max_map_count)" -le 65530 ]; then
 fi
 
 # Run initial entrypoint
-/bin/tini -- /usr/local/bin/docker-entrypoint.sh
+/usr/local/bin/docker-entrypoint.sh
 
 exec "$@"
