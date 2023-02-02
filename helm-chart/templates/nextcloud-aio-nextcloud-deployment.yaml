@@ -135,4 +135,3 @@ spec:
         - name: nextcloud-aio-nextcloud-trusted-cacerts
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud-trusted-cacerts
-            readOnly: true
