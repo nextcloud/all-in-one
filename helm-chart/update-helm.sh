@@ -49,12 +49,24 @@ cat << EOL > /tmp/initcontainers
             - "777"
           volumeMountsInitContainer:
 EOL
+cat << EOL > /tmp/initcontainers.database
+        - name: init-volumes
+          image: alpine
+          command:
+            - chown
+            - 999:999
+          volumeMountsInitContainer:
+EOL
 # shellcheck disable=SC1083
 DEPLOYMENTS="$(find ./ -name '*deployment.yaml')"
 mapfile -t DEPLOYMENTS <<< "$DEPLOYMENTS"
 for variable in "${DEPLOYMENTS[@]}"; do
     if grep -q volumeMounts "$variable"; then
-        sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
+        if ! echo "$variable" | grep -q database; then
+            sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
+        else
+            sed -i "/^    spec:/r /tmp/initcontainers.database" "$variable"
+        fi
         volumeNames="$(grep -A1 mountPath "$variable" | grep -v mountPath | sed 's|.*name: ||' | sed '/^--$/d')"
         mapfile -t volumeNames <<< "$volumeNames"
         for volumeName in "${volumeNames[@]}"; do
