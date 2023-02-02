@@ -117,6 +117,9 @@ spec:
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
           image: nextcloud/aio-nextcloud:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-nextcloud
+          ports:
+            - containerPort: 9000
+            - containerPort: 7867
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud

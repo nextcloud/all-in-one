@@ -44,6 +44,8 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-onlyoffice:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-onlyoffice
+          ports:
+            - containerPort: 80
           volumeMounts:
             - mountPath: /var/lib/onlyoffice
               name: nextcloud-aio-onlyoffice

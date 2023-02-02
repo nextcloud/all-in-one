@@ -39,6 +39,8 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-redis:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-redis
+          ports:
+            - containerPort: 6379
           volumeMounts:
             - mountPath: /data
               name: nextcloud-aio-redis

@@ -1,0 +1,18 @@
+{{- if eq .Values.FULLTEXTSEARCH_ENABLED "yes" }}
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.28.0 (c4137012e)
+  labels:
+    io.kompose.service: nextcloud-aio-fulltextsearch
+  name: nextcloud-aio-fulltextsearch
+spec:
+  ports:
+    - name: "9200"
+      port: 9200
+      targetPort: 9200
+  selector:
+    io.kompose.service: nextcloud-aio-fulltextsearch
+{{- end }}

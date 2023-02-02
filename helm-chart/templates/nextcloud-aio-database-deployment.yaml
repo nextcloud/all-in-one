@@ -25,10 +25,10 @@ spec:
         - name: init-volumes
           image: alpine
           command:
-            - sh
-            - -c
-            - "chmod 777 /nextcloud-aio-database /nextcloud-aio-database-dump
-                && chown 999:999 /nextcloud-aio-database"
+            - chown
+            - 999:999
+            - /nextcloud-aio-database
+            - /nextcloud-aio-database-dump
           volumeMounts:
             - name: nextcloud-aio-database-dump
               mountPath: /nextcloud-aio-database-dump
@@ -48,6 +48,8 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-postgresql:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-database
+          ports:
+            - containerPort: 5432
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: nextcloud-aio-database
