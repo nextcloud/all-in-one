@@ -26,31 +26,29 @@ class DockerHubManager
         // If one of the links below should ever become outdated, we can still upgrade the mastercontainer via the webinterface manually by opening '/api/docker/getwatchtower'
 
         try {
-            $request = $this->guzzleClient->request(
+            $authTokenRequest = $this->guzzleClient->request(
                 'GET',
-                'https://hub.docker.com/v2/repositories/' . $name . '/tags?page_size=128'
+                'https://auth.docker.io/token?service=registry.docker.io&scope=repository:' . $name . ':pull'
             );
-            $body = $request->getBody()->getContents();
+            $body = $authTokenRequest->getBody()->getContents();
             $decodedBody = json_decode($body, true);
-
-            if (isset($decodedBody['results'])) {
-                $arch = php_uname('m') === 'x86_64' ? 'amd64' : 'arm64';
-                foreach($decodedBody['results'] as $values) {
-                    if (isset($values['name'])
-                    && $values['name'] === $tag
-                    && isset($values['images'])
-                    && is_array($values['images'])) {
-                        foreach ($values['images'] as $images) {
-                            if (isset($images['architecture'])
-                            && $images['architecture'] === $arch
-                            && isset($images['digest'])
-                            && is_string($images['digest'])) {
-                                $latestVersion = $images['digest'];
-                                apcu_add($cacheKey, $latestVersion, 600);
-                                return $latestVersion;
-                            }
-                        }
-                    }
+            if(isset($decodedBody['token'])) {
+                $authToken = $decodedBody['token'];
+                $manifestRequest = $this->guzzleClient->request(
+                    'GET',
+                    'https://registry-1.docker.io/v2/'.$name.'/manifests/' . $tag,
+                    [
+                        'headers' => [
+                            'Accept' => 'application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json,application/vnd.docker.distribution.manifest.v2+json',
+                            'Authorization' => 'Bearer ' . $authToken,
+                        ],
+                    ]
+                );
+                $responseHeaders = $manifestRequest->getHeader('docker-content-digest');
+                if(count($responseHeaders) === 1) {
+                    $latestVersion = $responseHeaders[0];
+                    apcu_add($cacheKey, $latestVersion, 600);
+                    return $latestVersion;
                 }
             }
 
