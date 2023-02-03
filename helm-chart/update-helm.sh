@@ -23,7 +23,7 @@ sed -i 's|^|export |' /tmp/sample.conf
 source /tmp/sample.conf
 rm /tmp/sample.conf
 sed -i "s|\${IMAGE_TAG}|$DOCKER_TAG\${IMAGE_TAG}|" latest.yml
-sed -i "s|\${APACHE_IP_BINDING}|$APACHE_IP_BINDING|" latest.yml
+sed -i "s|\${APACHE_IP_BINDING}:||" latest.yml
 sed -i "s|\${APACHE_PORT}:\${APACHE_PORT}/|$APACHE_PORT:$APACHE_PORT/|" latest.yml
 sed -i "s|\${TALK_PORT}:\${TALK_PORT}/|$TALK_PORT:$TALK_PORT/|g" latest.yml
 sed -i "s|- \${APACHE_PORT}|- $APACHE_PORT|" latest.yml
@@ -101,13 +101,15 @@ find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ sto
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ {{- end }}" \{} \; 
 # shellcheck disable=SC1083
-find ./ -name '*deployment.yaml' -exec sed -i "/restartPolicy:/d" \{} \; 
+find ./ -name '*deployment.yaml' -exec sed -i "/restartPolicy:/d" \{} \;  
 # shellcheck disable=SC1083
-find ./ -name '*apache*' -exec sed -i "s|$APACHE_IP_BINDING|{{ .Values.APACHE_IP_BINDING }}|" \{} \;  
+find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;
 # shellcheck disable=SC1083
-find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;  
+find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} \;
 # shellcheck disable=SC1083
-find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} \; 
+find ./ -name '*apache-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*talk-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \; 
 # shellcheck disable=SC1083
@@ -148,6 +150,7 @@ sed -i 's|"||g' /tmp/sample.conf
 sed -i 's|=|: |' /tmp/sample.conf
 sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
+sed -i '/^APACHE_IP_BINDING/d' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
 sed -i '/_ENABLED.*/s/ yes / "yes" /' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
