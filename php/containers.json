@@ -231,6 +231,9 @@
           "protocol": "udp"
         }
       ],
+      "expose": [
+        "8081"
+      ],
       "internal_port": "%TALK_PORT%",
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
