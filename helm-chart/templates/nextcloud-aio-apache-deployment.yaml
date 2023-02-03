@@ -58,7 +58,6 @@ spec:
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
-              hostIP: {{ .Values.APACHE_IP_BINDING }}
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud

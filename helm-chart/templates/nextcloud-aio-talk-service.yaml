@@ -9,6 +9,7 @@ metadata:
     io.kompose.service: nextcloud-aio-talk
   name: nextcloud-aio-talk
 spec:
+  type: LoadBalancer
   ports:
     - name: "{{ .Values.TALK_PORT }}"
       port: {{ .Values.TALK_PORT }}

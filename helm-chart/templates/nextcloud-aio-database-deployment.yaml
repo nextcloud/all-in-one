@@ -48,8 +48,6 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-postgresql:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-database
-          ports:
-            - containerPort: 5432
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: nextcloud-aio-database
