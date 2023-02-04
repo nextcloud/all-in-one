@@ -29,6 +29,8 @@ services:
 
   nextcloud-aio-database:
     image: nextcloud/aio-postgresql:${IMAGE_TAG}
+    expose:
+      - "5432"
     volumes:
       - nextcloud_aio_database:/var/lib/postgresql/data:rw
       - nextcloud_aio_database_dump:/mnt/data:rw
@@ -51,6 +53,9 @@ services:
       - nextcloud-aio-fulltextsearch
       - nextcloud-aio-imaginary
     image: nextcloud/aio-nextcloud:${IMAGE_TAG}
+    expose:
+      - "9000"
+      - "7867"
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:rw
       - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
@@ -102,6 +107,8 @@ services:
 
   nextcloud-aio-redis:
     image: nextcloud/aio-redis:${IMAGE_TAG}
+    expose:
+      - "6379"
     environment:
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
       - TZ=${TIMEZONE}
@@ -114,6 +121,8 @@ services:
   nextcloud-aio-collabora:
     profiles: ["collabora"]
     image: nextcloud/aio-collabora:${IMAGE_TAG}
+    expose:
+      - "9980"
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443
       - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true ${COLLABORA_SECCOMP_POLICY} --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json
@@ -131,6 +140,8 @@ services:
     ports:
       - ${TALK_PORT}:${TALK_PORT}/tcp
       - ${TALK_PORT}:${TALK_PORT}/udp
+    expose:
+      - "8081"
     environment:
       - NC_DOMAIN=${NC_DOMAIN}
       - TURN_SECRET=${TURN_SECRET}
@@ -145,6 +156,8 @@ services:
   nextcloud-aio-clamav:
     profiles: ["clamav"]
     image: nextcloud/aio-clamav:${IMAGE_TAG}
+    expose:
+      - "3310"
     environment:
       - TZ=${TIMEZONE}
       - CLAMD_STARTUP_TIMEOUT=90
@@ -157,6 +170,8 @@ services:
   nextcloud-aio-onlyoffice:
     profiles: ["onlyoffice"]
     image: nextcloud/aio-onlyoffice:${IMAGE_TAG}
+    expose:
+      - "80"
     environment:
       - TZ=${TIMEZONE}
       - JWT_ENABLED=true
@@ -171,6 +186,8 @@ services:
   nextcloud-aio-imaginary:
     profiles: ["imaginary"]
     image: nextcloud/aio-imaginary:${IMAGE_TAG}
+    expose:
+      - "9000"
     environment:
       - TZ=${TIMEZONE}
     restart: unless-stopped
@@ -180,10 +197,13 @@ services:
   nextcloud-aio-fulltextsearch:
     profiles: ["fulltextsearch"]
     image: nextcloud/aio-fulltextsearch:${IMAGE_TAG}
+    expose:
+      - "9200"
     environment:
       - TZ=${TIMEZONE}
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms1024M -Xmx1024M
+      - POSTGRES_HOST=nextcloud-aio-database
     volumes:
       - nextcloud_aio_elasticsearch:/usr/share/elasticsearch/data:rw
     restart: unless-stopped
