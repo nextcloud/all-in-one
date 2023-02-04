@@ -526,8 +526,14 @@ By default is each PHP process in the Nextcloud container limited to a max of 51
 ### What can I do to fix the internal or reserved ip-address error?
 If you get an error during the domain validation which states that your ip-address is an internal or reserved ip-address, you can fix this by first making sure that your domain indeed has the correct public ip-address that points to the server and then adding `--add-host yourdomain.com:<public-ip-address>` to the initial docker run command which will allow the domain validation to work correctly. And so that you know: even if the `A` record of your domain should change over time, this is no problem since the mastercontainer will not make any attempt to access the chosen domain after the initial domain validation.
 
-### How to run this with docker rootless?
+### Can I run this with Docker swarm?
+Yes. For that to work, you need to use and follow the [manual-install documentation](./manual-install/).
+
+### How to run this with Docker rootless?
 You can run AIO also with docker rootless. How to do this is documented here: [docker-rootless.md](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md)
+
+### Can I run this with Podman instead of Docker?
+No. Since Podman is not 100% compatible with the Docker API, you cannot use Podman instead of Docker (since that would add yet another platform where the maintaner would need to test on). However you can use and follow the [manual-install documentation](./manual-install/) to get AIO's containers running with Podman or use Docker rootless, as described in the above section.
 
 ### How to change the Nextcloud apps that are installed on the first startup?
 You might want to adjust the Nextcloud apps that are installed upon the first startup of the Nextcloud container. You can do so by adding `-e NEXTCLOUD_STARTUP_APPS="deck twofactor_totp tasks calendar contacts"` to the docker run command of the mastercontainer and customize the value to your fitting. It must be a string with small letters a-z, spaces and hyphens or '_'. You can disable shipped and by default enabled apps by adding a hyphen in front of the appid. E.g. `-contactsinteraction`.
