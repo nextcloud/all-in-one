@@ -110,6 +110,22 @@ find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} 
 find ./ -name '*apache-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*talk-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
+echo '---' > /tmp/talk-service.copy
+# shellcheck disable=SC1083
+find ./ -name '*talk-service.yaml' -exec cat \{} \; >> /tmp/talk-service.copy
+sed -i 's|name: nextcloud-aio-talk|name: nextcloud-aio-talk-public|' /tmp/talk-service.copy
+# shellcheck disable=SC1083
+INTERNAL_TALK_PORTS="$(find ./ -name '*talk-deployment.yaml' -exec grep -oP 'containerPort: [0-9]+' \{} \;)"
+mapfile -t INTERNAL_TALK_PORTS <<< "$INTERNAL_TALK_PORTS"
+for port in "${INTERNAL_TALK_PORTS[@]}"; do
+    port="$(echo "$port" | grep -oP '[0-9]+')"
+    sed -i "/$port/d" /tmp/talk-service.copy
+done
+echo '---' >>  /tmp/talk-service.copy
+# shellcheck disable=SC1083
+find ./ -name '*talk-service.yaml' -exec grep -v '{{ .Values.*}}\|protocol: UDP\|type: LoadBalancer' \{} \; >> /tmp/talk-service.copy
+# shellcheck disable=SC1083
+find ./ -name '*talk-service.yaml' -exec mv /tmp/talk-service.copy \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \; 
 # shellcheck disable=SC1083
