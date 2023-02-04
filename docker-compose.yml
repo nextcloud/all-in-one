@@ -13,12 +13,12 @@ services:
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed
       - /var/run/docker.sock:/var/run/docker.sock:ro # May be changed on macOS, Windows or docker rootless. See the applicable documentation. If adjusting, don't forget to also set 'DOCKER_SOCKET_PATH'!
     ports:
-      - 80:80 # Can be removed when running behind a reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      - 80:80 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       - 8080:8080
-      - 8443:8443 # Can be removed when running behind a reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      - 8443:8443 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
     # environment: # Is needed when using any of the options below
-      # - APACHE_PORT=11000 # Is needed when running behind a reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
-      # - APACHE_IP_BINDING=127.0.0.1 # Should be set when running behind a reverse proxy that is running on the same host. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      # - APACHE_PORT=11000 # Is needed when running behind a web server or reverse proxy (like Apache, Nginx and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      # - APACHE_IP_BINDING=127.0.0.1 # Should be set when running behind a web server or reverse proxy (like Apache, Nginx and else) that is running on the same host. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       # - COLLABORA_SECCOMP_DISABLED=false # Setting this to true allows to disable Collabora's Seccomp feature. See https://github.com/nextcloud/all-in-one#how-to-disable-collaboras-seccomp-feature
       # - DOCKER_SOCKET_PATH=/var/run/docker.sock # Needs to be specified if the docker socket on the host is not located in the default '/var/run/docker.sock'. Otherwise mastercontainer updates will fail. For macos it needs to be '/var/run/docker.sock'
       # - DISABLE_BACKUP_SECTION=false # Setting this to true allows to hide the backup section in the AIO interface.
