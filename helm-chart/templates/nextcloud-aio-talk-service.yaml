@@ -8,7 +8,7 @@ metadata:
     kompose.version: 1.28.0 (c4137012e)
   labels:
     io.kompose.service: nextcloud-aio-talk
-  name: nextcloud-aio-talk
+  name: nextcloud-aio-talk-public
 spec:
   type: LoadBalancer
   ports:
