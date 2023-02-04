@@ -28,13 +28,10 @@ spec:
             - chmod
             - "777"
             - /nextcloud-aio-nextcloud
-            - /nextcloud-aio-nextcloud-data
             - /nextcloud-aio-nextcloud-trusted-cacerts
           volumeMounts:
             - name: nextcloud-aio-nextcloud-trusted-cacerts
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
-            - name: nextcloud-aio-nextcloud-data
-              mountPath: /nextcloud-aio-nextcloud-data
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
       containers:
@@ -115,7 +112,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230124_100031-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-nextcloud:20230124_100035-{{ .Values.IMAGE_TAG }}
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
