@@ -36,6 +36,8 @@ spec:
         - env:
             - name: ES_JAVA_OPTS
               value: -Xms1024M -Xmx1024M
+            - name: POSTGRES_HOST
+              value: nextcloud-aio-database
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
             - name: discovery.type
