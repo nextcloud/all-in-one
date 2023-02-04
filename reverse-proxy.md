@@ -1,8 +1,10 @@
 # Reverse Proxy Documentation
 
+A [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) is basically a web server that enables computers on the internet to access a service in a [private subnet](https://en.wikipedia.org/wiki/Private_network).
+
 **Please note:** Publishing the AIO interface with a valid certificate to the public internet is **not** the goal of this documentation! Instead, the main goal is to publish Nextcloud with a valid certificate to the public internet which is **not** running inside the mastercontainer but in a different container! If you need a valid certificate for the AIO interface, see [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface).
 
-In order to run Nextcloud behind a reverse proxy, you need to specify the port that the Apache container shall use, add a specific config to your reverse proxy and modify the startup command a bit. All examples below will use port `11000` as example Apache port which will be exposed on the host. Modify it to your needings.
+In order to run Nextcloud behind a web server or reverse proxy (like Apache, Nginx and else), you need to specify the port that AIO's Apache container shall use, add a specific config to your web server or reverse proxy and modify the startup command a bit. All examples below will use port `11000` as example Apache port which will be exposed on the host. Modify the port to your needings.
 
 **Attention:** The process to run Nextcloud behind a reverse proxy consists of at least steps 1, 2 and 4:
 1. **Configure the reverse proxy! See [point 1](#1-add-this-to-your-reverse-proxy-config)**
@@ -14,7 +16,7 @@ In order to run Nextcloud behind a reverse proxy, you need to specify the port t
 
 ## 1. Add this to your reverse proxy config
 
-**Please note:** Since the Apache container gets spawned by the mastercontainer, there is **NO** way to provide custom docker labels or custom environmental variables for the Apache container. So please do not attempt to do this because you will fail! Only the documented way will work!
+**Please note:** Since the Apache container gets created by the mastercontainer, there is **NO** way to provide custom docker labels or custom environmental variables for the Apache container. So please do not attempt to do this because you will fail! Only the documented way will work!
 
 ### Apache
 
