@@ -12,16 +12,16 @@ Included are:
 - Fulltextsearch
 
 ## How to use this?
-The following instructions are especially meant for Linux. For macOS see [this](#how-to-run-aio-on-macos), for Windows see [this](#how-to-run-aio-on-windows) and for Synology see [this](#how-to-run-aio-on-synology-dsm). Also, the instructions are meant for installations without a reverse proxy already being in place. If you want to run AIO behind a reverse proxy, see the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md).
+The following instructions are meant for installations without a web server or reverse proxy (like Apache, Nginx and else) already being in place. If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx and else), see the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md). Also, the instructions below are especially meant for Linux. For macOS see [this](#how-to-run-aio-on-macos), for Windows see [this](#how-to-run-aio-on-windows) and for Synology see [this](#how-to-run-aio-on-synology-dsm).
 1. Install Docker on your Linux installation by following the official documentation: https://docs.docker.com/engine/install/#server. The easiest way is installing it by **using the convenience script**:  
     ```sh
     curl -fsSL get.docker.com | sudo sh
     ```
 1. If you need ipv6 support, you should enable it by following https://docs.docker.com/config/daemon/ipv6/.
 2. Run the command below in order to start the container:<br><br>
-    (For people that cannot use ports 80 and/or 443 on this server, please follow the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) because port 443 is used by this project and opened on the host by default even though it does not look like this is the case. Otherwise please run the command below!)
+    (For people that cannot use ports 80 and/or 443 on this server e.g. because it is already taken by a different web server, please follow the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) because port 443 is used by this project and opened on the host by default even though it does not look like this is the case. Otherwise please run the command below!)
     ```
-    # For x64 CPUs and without reverse proxy already in place:
+    # For x64 CPUs and without a web server or reverse proxy (like Apache, Nginx and else) already in place:
     sudo docker run \
     --sig-proxy=false \
     --name nextcloud-aio-mastercontainer \
@@ -37,7 +37,7 @@ The following instructions are especially meant for Linux. For macOS see [this](
     <summary>Command for arm64 CPUs like the Raspberry Pi 4</summary>
 
     ```
-    # For arm64 CPUs and without reverse proxy already in place:
+    # For arm64 CPUs and without a web server or reverse proxy (like Apache, Nginx and else) already in place:
     sudo docker run \
     --sig-proxy=false \
     --name nextcloud-aio-mastercontainer \
@@ -59,9 +59,9 @@ The following instructions are especially meant for Linux. For macOS see [this](
     - `--sig-proxy=false` This option allows to exit the container shell that gets attached automatically when using `docker run` by using `[CTRL] + [C]` without shutting down the container.
     - `--name nextcloud-aio-mastercontainer` This is the name of the container. This line is not allowed to be changed, since mastercontainer updates would fail.
     - `--restart always` This is the "restart policy". `always` means that the container should always get started with the Docker daemon. See the Docker documentation for further detail about restart policies: https://docs.docker.com/config/containers/start-containers-automatically/
-    - `--publish 80:80` This means that port 80 of the container should get published on the host using port 80. It is used for getting valid certificates for the AIO interface if you want to use port 8443. It is not needed if you run AIO behind a reverse proxy and can get removed in that case as you can simply use port 8080 for the AIO interface then.
+    - `--publish 80:80` This means that port 80 of the container should get published on the host using port 80. It is used for getting valid certificates for the AIO interface if you want to use port 8443. It is not needed if you run AIO behind a web server or reverse proxy and can get removed in that case as you can simply use port 8080 for the AIO interface then.
     - `--publish 8080:8080` This means that port 8080 of the container should get published on the host using port 8080. This port is used for the AIO interface and uses a self-signed certificate by default. You can also use a different host port if port 8080 is already used on your host, for example `--publish 8081:8080` (only the first port can be changed for the host, the second port is for the container and must remain at 8080).
-    - `--publish 8443:8443` This means that port 8443 of the container should get published on the host using port 8443. If you publish port 80 and 8443 to the public internet, you can access the AIO interface via this port with a valid certificate. It is not needed if you run AIO behind a reverse proxy and can get removed in that case as you can simply use port 8080 for the AIO interface then.
+    - `--publish 8443:8443` This means that port 8443 of the container should get published on the host using port 8443. If you publish port 80 and 8443 to the public internet, you can access the AIO interface via this port with a valid certificate. It is not needed if you run AIO behind a web server or reverse proxy and can get removed in that case as you can simply use port 8080 for the AIO interface then.
     - `--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config` This means that the files that are created by the mastercontainer will be stored in a docker volume that is called `nextcloud_aio_mastercontainer`. This line is not allowed to be changed, since built-in backups would fail later on.
     - `--volume /var/run/docker.sock:/var/run/docker.sock:ro` The docker socket is mounted into the container which is used for spinning up all the other containers and for further features. It needs to be adjusted on Windows/macOS and on docker rootless. See the applicable documentation on this. If adjusting, don't forget to also set `DOCKER_SOCKET_PATH`! If you dislike this, see https://github.com/nextcloud/all-in-one/discussions/500#discussioncomment-2740767 and the whole thread for options.
     - `nextcloud/all-in-one:latest` or `nextcloud/all-in-one:latest-arm64` This is the docker container image that is used. See https://github.com/nextcloud/all-in-one/discussions/490 for why there are different images for the different CPU architectures.
