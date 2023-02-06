@@ -211,6 +211,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 touch "$NEXTCLOUD_DATA_DIR/install.failed"
                 exit 1
             fi
+            
             max_retries=10
             try=0
             while [ -z "$(find "$NEXTCLOUD_DATA_DIR/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ] && [ "$try" -lt "$max_retries" ]; do
@@ -218,17 +219,16 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 try=$((try+1))
                 sleep 10s
             done
+
             if [ "$try" -ge "$max_retries" ]; then
                 echo "Installation of Nextcloud failed!"
+                echo "Install errors: $(cat /var/www/html/data/nextcloud.log)"
                 touch "$NEXTCLOUD_DATA_DIR/install.failed"
                 exit 1
             fi
 
             # unset admin password
             unset ADMIN_PASSWORD
-
-            # Post Install logs: For questions like https://help.nextcloud.com/t/nextcloud-aio-error-could-not-get-appdata-folder-after-container-has-already-written-data-in-it/151122/5
-            echo "Install errors: $(cat /var/www/html/data/nextcloud.log)"
 
             # Apply log settings
             echo "Applying default settings..."
