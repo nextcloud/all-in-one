@@ -211,7 +211,10 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 touch "$NEXTCLOUD_DATA_DIR/install.failed"
                 exit 1
             fi
-            
+
+            # Try to force generation of appdata dir:
+            php /var/www/html/occ maintenance:repair
+
             max_retries=10
             try=0
             while [ -z "$(find "$NEXTCLOUD_DATA_DIR/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ] && [ "$try" -lt "$max_retries" ]; do
