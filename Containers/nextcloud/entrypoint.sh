@@ -204,17 +204,17 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             echo "Installing with PostgreSQL database"
             INSTALL_OPTIONS+=(--database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST")
 
-            echo "starting nextcloud installation"
+            echo "Starting Nextcloud installation..."
             max_retries=10
             try=0
             until php /var/www/html/occ maintenance:install "${INSTALL_OPTIONS[@]}" || [ "$try" -gt "$max_retries" ]
             do
-                echo "retrying install..."
+                echo "Retrying install..."
                 try=$((try+1))
                 sleep 10s
             done
-            if [ "$try" -gt "$max_retries" ]; then
-                echo "installing of nextcloud failed!"
+            if [ "$try" -gt "$max_retries" ] || [ -z "$(find "$NEXTCLOUD_DATA_DIR/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ]; then
+                echo "Installation of Nextcloud failed!"
                 touch "$NEXTCLOUD_DATA_DIR/install.failed"
                 exit 1
             fi
