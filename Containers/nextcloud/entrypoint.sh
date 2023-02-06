@@ -98,10 +98,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             # Write output to logfile.
             exec > >(tee -i "/var/www/html/data/update.log")
             exec 2>&1
-        else
-            # Write output to logfile.
-            exec > >(tee -i "/var/www/html/data/install.log")
-            exec 2>&1
         fi
 
         if [ "$installed_version" != "0.0.0.0" ] && [ "$((IMAGE_MAJOR - INSTALLED_MAJOR))" -gt 1 ]; then
@@ -194,7 +190,12 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 
         #install
         if [ "$installed_version" = "0.0.0.0" ]; then
-            echo "New nextcloud instance"
+            echo "New Nextcloud instance."
+
+            # Write output to logfile.
+            mkdir -p /var/www/html/data
+            exec > >(tee -i "/var/www/html/data/install.log")
+            exec 2>&1
 
             INSTALL_OPTIONS=(-n --admin-user "$ADMIN_USER" --admin-pass "$ADMIN_PASSWORD")
             if [ -n "${NEXTCLOUD_DATA_DIR}" ]; then
@@ -205,15 +206,19 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             INSTALL_OPTIONS+=(--database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST")
 
             echo "Starting Nextcloud installation..."
+            if ! php /var/www/html/occ maintenance:install "${INSTALL_OPTIONS[@]}"; then
+                echo "Installation of Nextcloud failed!"
+                touch "$NEXTCLOUD_DATA_DIR/install.failed"
+                exit 1
+            fi
             max_retries=10
             try=0
-            until php /var/www/html/occ maintenance:install "${INSTALL_OPTIONS[@]}" || [ "$try" -gt "$max_retries" ]
-            do
-                echo "Retrying install..."
+            while [ -z "$(find "$NEXTCLOUD_DATA_DIR/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ] && [ "$try" -lt "$max_retries" ]; do
+                echo "Waiting for appdata to become available..."
                 try=$((try+1))
                 sleep 10s
             done
-            if [ "$try" -gt "$max_retries" ] || [ -z "$(find "$NEXTCLOUD_DATA_DIR/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ]; then
+            if [ "$try" -ge "$max_retries" ]; then
                 echo "Installation of Nextcloud failed!"
                 touch "$NEXTCLOUD_DATA_DIR/install.failed"
                 exit 1
