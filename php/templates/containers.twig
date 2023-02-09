@@ -165,7 +165,8 @@
                             An example for Linux is <b>/mnt/backup</b>.<br>
                             On Synology it could be <b>/volume1/docker/nextcloud/backup</b>.<br>
                             For macOS it may be <b>/var/backup</b>.<br>
-                            On Windows it must be <b>nextcloud_aio_backupdir</b>. You need to create the 'nextcloud_aio_backupdir' volume beforehand by following this documentation: <a href="https://github.com/nextcloud/all-in-one#how-to-run-aio-on-windows"><b>click here</b></a><br><br>
+                            On Windows it might be <b>/run/desktop/mnt/host/c/backup</b>. (This path is equivalent to 'C:\backup' on your Windows host so you need to translate the path accordingly. Hint: the path that you enter needs to start with '/run/desktop/mnt/host'. Append to that the exact location on your windows host, e.g. 'c/backup' which is equivalent to 'C:\backup'.)<br>
+                            Another option is to enter a specific volume name here: <b>nextcloud_aio_backupdir</b>. This volume needs to be created beforehand manually by you in order to be able to use it.<br><br>
                             ⚠️ Please note that the backup archive must be located in a subfolder of the folder that you enter here and the subfolder which contains the archive must be named 'borg'. Otherwise will the backup container not find the backup archive!<br><br>
                         {% endif %}
                     {% else %}
@@ -328,7 +329,8 @@
                             An example for Linux is <b>/mnt/backup</b>.<br>
                             On Synology it could be <b>/volume1/docker/nextcloud/backup</b>.<br>
                             For macOS it may be <b>/var/backup</b>.<br>
-                            On Windows it must be <b>nextcloud_aio_backupdir</b>. You need to create the 'nextcloud_aio_backupdir' volume beforehand by following this documentation: <a href="https://github.com/nextcloud/all-in-one#how-to-run-aio-on-windows"><b>click here</b></a><br><br>
+                            On Windows it might be <b>/run/desktop/mnt/host/c/backup</b>. (This path is equivalent to 'C:\backup' on your Windows host so you need to translate the path accordingly. Hint: the path that you enter needs to start with '/run/desktop/mnt/host'. Append to that the exact location on your windows host, e.g. 'c/backup' which is equivalent to 'C:\backup'.)<br>
+                            Another option is to enter a specific volume name here: <b>nextcloud_aio_backupdir</b>. This volume needs to be created beforehand manually by you in order to be able to use it.<br><br>
                         {% endif %}
                     {% endif %}
 

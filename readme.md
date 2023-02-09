@@ -114,21 +114,9 @@ docker run ^
 nextcloud/all-in-one:latest
 ```
 
-**Please note:** In order to make the built-in backup solution able to back up to the host system, you need to create a volume with the name `nextcloud_aio_backupdir` beforehand:
-```
-docker volume create ^
---driver local ^
---name nextcloud_aio_backupdir ^
--o device="/host_mnt/c/your/backup/path" ^
--o type="none" ^
--o o="bind"
-```
-(The value `/host_mnt/c/your/backup/path` in this example would be equivalent to `C:\your\backup\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
-
 Also, you may be interested in adjusting Nextcloud's Datadir to store the files on the host system. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
 
 ⚠️ **Please note:** Almost all commands in this project's documentation use `sudo docker ...`. Since `sudo` is not available on Windows, you simply remove `sudo` from the commands and they should work.  
-
 
 ### How to run AIO on Synology DSM
 On Synology, there are two things different in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /volume1/docker/docker.sock:/var/run/docker.sock:ro` to run it. You also need to add `-e DOCKER_SOCKET_PATH="/volume1/docker/docker.sock"`to the startup command. Apart from that it should work and behave the same like on Linux. Obviously the Synology Docker GUI will not work with that so you will need to either use SSH or create a user-defined script task in the task scheduler as the user 'root' in order to run the command.
@@ -468,7 +456,8 @@ You can configure the Nextcloud container to use a specific directory on your ho
 - An example for Linux is `-e NEXTCLOUD_DATADIR="/mnt/ncdata"`.
 - On macOS it might be `-e NEXTCLOUD_DATADIR="/var/nextcloud-data"`
 - For Synology it may be `-e NEXTCLOUD_DATADIR="/volume1/docker/nextcloud/data"`. 
-- On Windows it must be `-e NEXTCLOUD_DATADIR="nextcloud_aio_nextcloud_datadir"`. In order to use this, you need to create the `nextcloud_aio_nextcloud_datadir` volume beforehand:
+- On Windows it might be `-e NEXTCLOUD_DATADIR="/run/desktop/mnt/host/c/ncdata"`. (This path is equivalent to `C:\backup` on your Windows host so you need to translate the path accordingly. Hint: the path that you enter needs to start with '/run/desktop/mnt/host'. Append to that the exact location on your windows host, e.g. 'c/ncdata' which is equivalent to 'C:\ncdata'.)
+- Another option is to provide a specific volume name here with: `-e NEXTCLOUD_DATADIR="nextcloud_aio_nextcloud_datadir"`. This volume needs to be created beforehand manually by you in order to be able to use it. e.g. with:
     ```
     docker volume create ^
     --driver local ^
@@ -477,7 +466,6 @@ You can configure the Nextcloud container to use a specific directory on your ho
     -o type="none" ^
     -o o="bind"
     ```
-(The value `/host_mnt/c/your/data/path` in this example would be equivalent to `C:\your\data\path` on the Windows host. So you need to translate the path that you want to use into the correct format.) ⚠️️ **Attention**: Make sure that the path exists on the host before you create the volume! Otherwise everything will bug out!
 
 ### Can I use a CIFS/SMB share as Nextcloud's datadir?
 
