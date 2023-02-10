@@ -58,6 +58,9 @@ RUN set -ex; \
     )"; \
     apk add --virtual .nextcloud-aio-rundeps $runDeps; \
     apk del .build-deps; \
+    grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm.max_children =.*/pm.max_children = 80/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/
