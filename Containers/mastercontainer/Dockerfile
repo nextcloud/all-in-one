@@ -2,7 +2,7 @@
 FROM docker:20.10.23-dind as dind
 
 # Caddy is a requirement
-FROM caddy:2.6.2-alpine as caddy
+FROM caddy:2.6.3-alpine as caddy
 
 # From https://github.com/docker-library/php/blob/master/8.1/alpine3.17/fpm/Dockerfile
 FROM php:8.1.15-fpm-alpine3.17
