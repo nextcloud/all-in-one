@@ -42,4 +42,5 @@ spec:
             - containerPort: {{ .Values.TALK_PORT }}
             - containerPort: {{ .Values.TALK_PORT }}
               protocol: UDP
+            - containerPort: 8081
 {{- end }}

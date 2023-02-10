@@ -28,13 +28,10 @@ spec:
             - chmod
             - "777"
             - /nextcloud-aio-nextcloud
-            - /nextcloud-aio-nextcloud-data
             - /nextcloud-aio-nextcloud-trusted-cacerts
           volumeMounts:
             - name: nextcloud-aio-nextcloud-trusted-cacerts
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
-            - name: nextcloud-aio-nextcloud-data
-              mountPath: /nextcloud-aio-nextcloud-data
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
       containers:

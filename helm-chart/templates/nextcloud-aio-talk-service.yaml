@@ -1,4 +1,27 @@
 {{- if eq .Values.TALK_ENABLED "yes" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f latest.yml
+    kompose.version: 1.28.0 (c4137012e)
+  labels:
+    io.kompose.service: nextcloud-aio-talk
+  name: nextcloud-aio-talk-public
+spec:
+  type: LoadBalancer
+  ports:
+    - name: "{{ .Values.TALK_PORT }}"
+      port: {{ .Values.TALK_PORT }}
+      targetPort: {{ .Values.TALK_PORT }}
+    - name: {{ .Values.TALK_PORT }}-udp
+      port: {{ .Values.TALK_PORT }}
+      protocol: UDP
+      targetPort: {{ .Values.TALK_PORT }}
+  selector:
+    io.kompose.service: nextcloud-aio-talk
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,13 +33,9 @@ metadata:
   name: nextcloud-aio-talk
 spec:
   ports:
-    - name: "{{ .Values.TALK_PORT }}"
-      port: {{ .Values.TALK_PORT }}
-      targetPort: {{ .Values.TALK_PORT }}
-    - name: {{ .Values.TALK_PORT }}-udp
-      port: {{ .Values.TALK_PORT }}
-      protocol: UDP
-      targetPort: {{ .Values.TALK_PORT }}
+    - name: "8081"
+      port: 8081
+      targetPort: 8081
   selector:
     io.kompose.service: nextcloud-aio-talk
 {{- end }}
