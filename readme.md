@@ -244,6 +244,7 @@ Here is how to reset the AIO instance properly:
 1. Stop all containers if they are running from the AIO interface
 1. Stop the mastercontainer with `sudo docker stop nextcloud-aio-mastercontainer`
 1. If the domaincheck container is still running, stop it with `sudo docker stop nextcloud-aio-domaincheck`
+1. Check that no AIO containers are running anymore by running `sudo docker ps --format {{.Names}}`. If no `nextcloud-aio` containers are listed, you can proceed with the steps below. If there should be some, you will need to stop them with `sudo docker stop <container_name>` until no one is listed anymore.
 1. Check which containers are stopped: `sudo docker ps --filter "status=exited"`
 1. Now remove all these stopped containers with `sudo docker container prune`
 1. Delete the docker network with `sudo docker network rm nextcloud-aio`
