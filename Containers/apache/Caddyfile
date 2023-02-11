@@ -4,6 +4,10 @@
     storage file_system {
         root /mnt/data/caddy
     }
+
+    log {
+        level ERROR
+    }
 }
 
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {

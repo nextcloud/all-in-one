@@ -6,6 +6,10 @@
     storage file_system {
         root /mnt/docker-aio-config/caddy/
     }
+
+    log {
+        level ERROR
+    }
 }
 
 http://:80 {

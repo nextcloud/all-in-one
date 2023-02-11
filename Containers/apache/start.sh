@@ -45,6 +45,9 @@ else
 fi
 echo "$CADDYFILE" > /Caddyfile
 
+# Fix the Caddyfile format
+caddy fmt --overwrite /Caddyfile
+
 # Add caddy path
 mkdir -p /mnt/data/caddy/
 
