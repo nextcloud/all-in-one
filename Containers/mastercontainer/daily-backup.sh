@@ -11,7 +11,7 @@ fi
 # Delete all active sessions and create a lock file
 # But don't kick out the user if the mastercontainer was just updated since we block the interface either way with the lock file
 if [ "$LOCK_FILE_PRESENT" = 0 ] || ! [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
-    rm -f "/mnt/docker-aio-config/session/"*
+    find "/mnt/docker-aio-config/session/" -mindepth 1 -delete
 fi
 sudo -u www-data touch "/mnt/docker-aio-config/data/daily_backup_running"
 
