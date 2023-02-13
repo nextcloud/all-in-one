@@ -272,9 +272,8 @@ if [ "$BORG_MODE" = restore ]; then
     --exclude "nextcloud_aio_mastercontainer/data/session_date_file" \
     --exclude "nextcloud_aio_mastercontainer/session/"** \
     /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
+        RESTORE_FAILED=1
         echo "Something failed while restoring from backup."
-        umount /tmp/borg
-        exit 1
     fi
 
     # Save current aio password
@@ -294,9 +293,8 @@ if [ "$BORG_MODE" = restore ]; then
     if ! rsync --archive --human-readable -vv \
     /tmp/borg/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json \
     /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json; then
+        RESTORE_FAILED=1
         echo "Something failed while restoring the configuration.json."
-        umount /tmp/borg
-        exit 1
     fi
 
     # Set backup-mode to restore since it was a restore
@@ -330,6 +328,10 @@ if [ "$BORG_MODE" = restore ]; then
     fi
 
     umount /tmp/borg
+
+    if [ "$RESTORE_FAILED" = 1 ]; then
+        exit 1
+    fi
 
     # Inform user
     get_expiration_time
