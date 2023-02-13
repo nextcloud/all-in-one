@@ -453,10 +453,12 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
         $df = disk_free_space(DataConst::GetDataDirectory());
-        if ($df !== false && (int)$df < 10240) {
+        $content = json_encode($config, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $size = strlen($content) + 10240;
+        if ($df !== false && (int)$df < $size) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
         }
-        file_put_contents(DataConst::GetConfigFile(), json_encode($config, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
+        file_put_contents(DataConst::GetConfigFile(), $content);
     }
 
     private function GetEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
