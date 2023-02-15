@@ -430,8 +430,6 @@ The examples below define the dynamic configuration in YAML files. If you rather
                     hostsProxyHeaders:
                         - "X-Forwarded-Host"
                     referrerPolicy: "same-origin"
-                    customResponseHeaders:
-                        X-Robots-Tag: "none"
 
             https-redirect:
                 redirectscheme:
