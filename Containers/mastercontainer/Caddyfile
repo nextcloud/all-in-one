@@ -27,5 +27,8 @@ https://*.*.*.*.*.*:8443 {
 
     tls {
         on_demand
+        issuer acme {
+            disable_tlsalpn_challenge
+        }
     }
 }
