@@ -7,7 +7,7 @@ services:
       - nextcloud-aio-collabora
       - nextcloud-aio-talk
       - nextcloud-aio-nextcloud
-    image: nextcloud/aio-apache:${IMAGE_TAG}
+    image: nextcloud/aio-apache:latest
     ports:
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
     environment:
@@ -28,7 +28,7 @@ services:
       - nextcloud-aio
 
   nextcloud-aio-database:
-    image: nextcloud/aio-postgresql:${IMAGE_TAG}
+    image: nextcloud/aio-postgresql:latest
     expose:
       - "5432"
     volumes:
@@ -52,7 +52,7 @@ services:
       - nextcloud-aio-clamav
       - nextcloud-aio-fulltextsearch
       - nextcloud-aio-imaginary
-    image: nextcloud/aio-nextcloud:${IMAGE_TAG}
+    image: nextcloud/aio-nextcloud:latest
     expose:
       - "9000"
       - "7867"
@@ -106,7 +106,7 @@ services:
       - nextcloud-aio
 
   nextcloud-aio-redis:
-    image: nextcloud/aio-redis:${IMAGE_TAG}
+    image: nextcloud/aio-redis:latest
     expose:
       - "6379"
     environment:
@@ -120,7 +120,7 @@ services:
 
   nextcloud-aio-collabora:
     profiles: ["collabora"]
-    image: nextcloud/aio-collabora:${IMAGE_TAG}
+    image: nextcloud/aio-collabora:latest
     expose:
       - "9980"
     environment:
@@ -137,7 +137,7 @@ services:
 
   nextcloud-aio-talk:
     profiles: ["talk"]
-    image: nextcloud/aio-talk:${IMAGE_TAG}
+    image: nextcloud/aio-talk:latest
     ports:
       - ${TALK_PORT}:${TALK_PORT}/tcp
       - ${TALK_PORT}:${TALK_PORT}/udp
@@ -156,7 +156,7 @@ services:
 
   nextcloud-aio-clamav:
     profiles: ["clamav"]
-    image: nextcloud/aio-clamav:${IMAGE_TAG}
+    image: nextcloud/aio-clamav:latest
     expose:
       - "3310"
     environment:
@@ -170,7 +170,7 @@ services:
 
   nextcloud-aio-onlyoffice:
     profiles: ["onlyoffice"]
-    image: nextcloud/aio-onlyoffice:${IMAGE_TAG}
+    image: nextcloud/aio-onlyoffice:latest
     expose:
       - "80"
     environment:
@@ -186,7 +186,7 @@ services:
 
   nextcloud-aio-imaginary:
     profiles: ["imaginary"]
-    image: nextcloud/aio-imaginary:${IMAGE_TAG}
+    image: nextcloud/aio-imaginary:latest
     expose:
       - "9000"
     environment:
@@ -197,7 +197,7 @@ services:
 
   nextcloud-aio-fulltextsearch:
     profiles: ["fulltextsearch"]
-    image: nextcloud/aio-fulltextsearch:${IMAGE_TAG}
+    image: nextcloud/aio-fulltextsearch:latest
     expose:
       - "9200"
     environment:
