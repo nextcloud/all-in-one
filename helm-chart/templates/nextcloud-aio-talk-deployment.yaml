@@ -36,7 +36,7 @@ spec:
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-talk:20230124_100035-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-talk:20230216_152733-latest
           name: nextcloud-aio-talk
           ports:
             - containerPort: {{ .Values.TALK_PORT }}
