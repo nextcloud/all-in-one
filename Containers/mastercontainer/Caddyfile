@@ -6,17 +6,29 @@
     storage file_system {
         root /mnt/docker-aio-config/caddy/
     }
+
+    log {
+        level ERROR
+    }
 }
 
 http://:80 {
   redir https://{host}{uri}
 }
 
-https://:8443 {
+# Match only host names and not ip-addresses:
+https://*.*:8443,
+https://*.*.*:8443,
+https://*.*.*.*:8443,
+https://*.*.*.*.*:8443,
+https://*.*.*.*.*.*:8443 {
 
     reverse_proxy localhost:8000
 
     tls {
         on_demand
+        issuer acme {
+            disable_tlsalpn_challenge
+        }
     }
 }

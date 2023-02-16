@@ -280,4 +280,10 @@ export TZ=UTC
 # Fix apache startup
 rm -f /var/run/apache2/httpd.pid
 
+# Fix the Caddyfile format
+caddy fmt --overwrite /Caddyfile
+
+# Fix caddy log 
+chmod 777 /root
+
 exec "$@"
