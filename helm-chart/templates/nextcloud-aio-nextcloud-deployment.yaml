@@ -112,7 +112,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230124_100035-{{ .Values.IMAGE_TAG }}
+          image: nextcloud/aio-nextcloud:20230216_152733-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
