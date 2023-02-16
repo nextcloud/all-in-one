@@ -21,7 +21,7 @@ The following instructions are meant for installations without a web server or r
 2. Run the command below in order to start the container:<br><br>
     (For people that cannot use ports 80 and/or 443 on this server e.g. because it is already taken by a different web server, please follow the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) because port 443 is used by this project and opened on the host by default even though it does not look like this is the case. Otherwise please run the command below!)
     ```
-    # For x64 CPUs and without a web server or reverse proxy (like Apache, Nginx and else) already in place:
+    # For Linux and without a web server or reverse proxy (like Apache, Nginx and else) already in place:
     sudo docker run \
     --sig-proxy=false \
     --name nextcloud-aio-mastercontainer \
@@ -34,25 +34,6 @@ The following instructions are meant for installations without a web server or r
     nextcloud/all-in-one:latest
     ```
     <details>
-    <summary>Command for arm64 CPUs like the Raspberry Pi 4</summary>
-
-    ```
-    # For arm64 CPUs and without a web server or reverse proxy (like Apache, Nginx and else) already in place:
-    sudo docker run \
-    --sig-proxy=false \
-    --name nextcloud-aio-mastercontainer \
-    --restart always \
-    --publish 80:80 \
-    --publish 8080:8080 \
-    --publish 8443:8443 \
-    --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
-    --volume /var/run/docker.sock:/var/run/docker.sock:ro \
-    nextcloud/all-in-one:latest-arm64
-    ```
-
-    </details>
-
-    <details>
     <summary>Explanation of the command</summary>
 
     - `sudo docker run` This command spins up a new docker container. Docker commands can optionally be used without `sudo` if the user is added to the docker group (this is not the same as docker rootless, see FAQ below).
@@ -64,7 +45,7 @@ The following instructions are meant for installations without a web server or r
     - `--publish 8443:8443` This means that port 8443 of the container should get published on the host using port 8443. If you publish port 80 and 8443 to the public internet, you can access the AIO interface via this port with a valid certificate. It is not needed if you run AIO behind a web server or reverse proxy and can get removed in that case as you can simply use port 8080 for the AIO interface then.
     - `--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config` This means that the files that are created by the mastercontainer will be stored in a docker volume that is called `nextcloud_aio_mastercontainer`. This line is not allowed to be changed, since built-in backups would fail later on.
     - `--volume /var/run/docker.sock:/var/run/docker.sock:ro` The docker socket is mounted into the container which is used for spinning up all the other containers and for further features. It needs to be adjusted on Windows/macOS and on docker rootless. See the applicable documentation on this. If adjusting, don't forget to also set `DOCKER_SOCKET_PATH`! If you dislike this, see https://github.com/nextcloud/all-in-one/discussions/500#discussioncomment-2740767 and the whole thread for options.
-    - `nextcloud/all-in-one:latest` or `nextcloud/all-in-one:latest-arm64` This is the docker container image that is used. See https://github.com/nextcloud/all-in-one/discussions/490 for why there are different images for the different CPU architectures.
+    - `nextcloud/all-in-one:latest` This is the docker container image that is used.
     - Further options can be set using environment variables, for example `-e NEXTCLOUD_DATADIR="/mnt/ncdata"` (This is an example for Linux. See [this](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) for other OS' and for an explanation of what this value does. This specific one needs to be specified upon the first startup if you want to change it to a specific path instead of the default Docker volume). To see explanations and examples for further variables (like changing the location of Nextcloud's datadir or mounting some locations as external storage into the Nextcloud container), read through this readme and look at the docker-compose file: https://github.com/nextcloud/all-in-one/blob/main/docker-compose.yml
     </details>
 
@@ -217,7 +198,7 @@ Nextcloud features a built-in bruteforce protection which may get triggered and 
 This project values stability over new features. That means that when a new major Nextcloud update gets introduced, we will wait at least until the first patch release, e.g. `24.0.1` is out before upgrading to it. Also we will wait with the upgrade until all important apps are compatible with the new major version. Minor or patch releases for Nextcloud and all dependencies as well as all containers will be updated to new versions as soon as possible but we try to give all updates first a good test round before pushing them. That means that it can take around 2 weeks before new updates reach the `latest` channel. If you want to help testing, you can switch to the `beta` channel by following [this documentation](#how-to-switch-the-channel) which will also give you the updates earlier.
 
 ### How to switch the channel?
-You can switch to a different channel like e.g. the beta channel or from the beta channel back to the latest channel by stopping the mastercontainer, removing it (no data will be lost) and recreating the container using the same command that you used initially to create the mastercontainer. For the beta channel on x64 you need to change the last line `nextcloud/all-in-one:latest` to `nextcloud/all-in-one:beta` and vice versa. For arm64 it is `nextcloud/all-in-one:latest-arm64` and `nextcloud/all-in-one:beta-arm64`, respectively.
+You can switch to a different channel like e.g. the beta channel or from the beta channel back to the latest channel by stopping the mastercontainer, removing it (no data will be lost) and recreating the container using the same command that you used initially to create the mastercontainer. You simply need to change the last line `nextcloud/all-in-one:latest` to `nextcloud/all-in-one:beta` and vice versa.
 
 ### How to update the containers?
 If we push new containers to `latest`, you will see in the AIO interface below the `containers` section that new container updates were found. In this case, just press `Stop containers` and `Start containers` in order to update the containers. The mastercontainer has its own update procedure though. See below. And don't forget to back up the current state of your instance using the built-in backup solution before starting the containers again! Otherwise you won't be able to restore your instance easily if something should break during the update. 

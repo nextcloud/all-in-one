@@ -6,7 +6,7 @@ volumes:
 
 services:
   nextcloud:
-    image: nextcloud/all-in-one:latest # Must be changed to 'nextcloud/all-in-one:latest-arm64' when used with an arm64 CPU
+    image: nextcloud/all-in-one:latest
     restart: always
     container_name: nextcloud-aio-mastercontainer # This line is not allowed to be changed
     volumes:

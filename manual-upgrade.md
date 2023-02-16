@@ -16,7 +16,7 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
         sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p nextcloud-aio-nextcloud >> /tmp/nextcloud-aio-nextcloud
         sudo chown root:root /tmp/nextcloud-aio-nextcloud
     ```
-1. Now open the file with e.g. nano: `sudo nano /tmp/nextcloud-aio-nextcloud` and change the line that should probably be `nextcloud/aio-nextcloud:latest` on x64 or `nextcloud/aio-nextcloud:latest-arm64` on arm64 to the highest compatible PHP version: E.g. `nextcloud/aio-nextcloud:php8.0-latest` on x64 or `nextcloud/aio-nextcloud:php8.0-latest-arm64` on arm64. Then save the file and close it with `[Ctrl]+[o]` -> `[Enter]` and `[Ctrl]+[x]`.
+1. Now open the file with e.g. nano: `sudo nano /tmp/nextcloud-aio-nextcloud` and change the line that should probably be `nextcloud/aio-nextcloud:latest` on x64 or `nextcloud/aio-nextcloud:latest-arm64` on arm64 to the highest compatible PHP version: E.g. `nextcloud/aio-nextcloud:php8.0-latest`. Then save the file and close it with `[Ctrl]+[o]` -> `[Enter]` and `[Ctrl]+[x]`.
 1. After doing so, remove the Nextcloud container with `sudo docker rm nextcloud-aio-nextcloud`.
 1. Now start the Nextcloud container with the new tag by simply running `sudo bash /tmp/nextcloud-aio-nextcloud` which at startup should automatically upgrade Nextcloud to a more recent version. If not, make sure that there is no `skip.update` file in the Nextcloud datadir. If there is such a file, simply delete the file and restart the container again.<br>
 **Info**: You can open the Nextcloud container logs with `sudo docker logs -f nextcloud-aio-nextcloud`.

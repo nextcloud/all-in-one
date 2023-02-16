@@ -468,7 +468,7 @@ After adjusting your reverse proxy config, use the following command to start AI
 (For an docker-compose example, see the example further [below](#inspiration-for-a-docker-compose-file).)
 
 ```
-# For x64 CPUs:
+# For Linux:
 sudo docker run \
 --sig-proxy=false \
 --name nextcloud-aio-mastercontainer \
@@ -480,26 +480,7 @@ sudo docker run \
 nextcloud/all-in-one:latest
 ```
 
-You should also think about limiting the apache container to listen only on localhost in case the reverse proxy is running on the same host by providing an additional environmental variable to this docker run command. See [point 3](#3-if-the-reverse-proxy-is-installed-on-the-same-host-you-should-configure-the-apache-container-to-only-listen-on-localhost).
-
-<details>
-
-<summary>Command for arm64 CPUs like the Raspberry Pi 4</summary>
-
-```
-# For arm64 CPUs:
-sudo docker run \
---sig-proxy=false \
---name nextcloud-aio-mastercontainer \
---restart always \
---publish 8080:8080 \
--e APACHE_PORT=11000 \
---volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
---volume /var/run/docker.sock:/var/run/docker.sock:ro \
-nextcloud/all-in-one:latest-arm64
-```
-
-</details>
+You should also think about limiting the apache container to listen only on localhost in case the reverse proxy is running on the same host and if localhost is used, by providing an additional environmental variable to this docker run command. See [point 3](#3-if-the-reverse-proxy-is-installed-on-the-same-host-you-should-configure-the-apache-container-to-only-listen-on-localhost).
 
 On macOS see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-macos.
 
