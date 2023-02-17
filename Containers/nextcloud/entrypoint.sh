@@ -439,10 +439,10 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
     # Make collabora more save
     COLLABORA_IPv4_ADDRESS="$(echo "<?php echo gethostbyname('$NC_DOMAIN');" | php | head -1)"
-    COLLABORA_IPv6_Address="<?php \$record = dns_get_record('$NC_DOMAIN', DNS_AAAA);"
+    COLLABORA_IPv6_ADDRESS="<?php \$record = dns_get_record('$NC_DOMAIN', DNS_AAAA);"
     # shellcheck disable=SC2016
-    COLLABORA_IPv6_Address+='if (!empty($record)) {echo $record[0]["ipv6"];}'
-    COLLABORA_IPv6_Address="$(echo "$COLLABORA_IPv6_Address" | php | head -1)"
+    COLLABORA_IPv6_ADDRESS+='if (!empty($record)) {echo $record[0]["ipv6"];}'
+    COLLABORA_IPv6_ADDRESS="$(echo "$COLLABORA_IPv6_ADDRESS" | php | head -1)"
     COLLABORA_ALLOW_LIST="$(php /var/www/html/occ config:app:get richdocuments wopi_allowlist)"
     if [ -n "$COLLABORA_IPv4_ADDRESS" ]; then
         if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$COLLABORA_IPv4_ADDRESS"; then
