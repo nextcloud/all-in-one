@@ -85,7 +85,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     exec docker-entrypoint.sh postgres &
 
     # Wait for creation
-    while ! nc -z localhost 11000; do
+    while ! psql -d "postgresql://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:11000/$POSTGRES_DB" -c "select now()"; do
         echo "Waiting for the database to start."
         sleep 5
     done
