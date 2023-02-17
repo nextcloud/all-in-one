@@ -1,7 +1,7 @@
 # From https://github.com/docker-library/postgres/blob/master/15/alpine/Dockerfile
 FROM postgres:15.2-alpine
 
-RUN apk add --no-cache bash openssl shadow netcat-openbsd grep mawk
+RUN apk add --no-cache bash openssl shadow grep mawk
 
 # We need to use the same gid and uid as on old installations
 RUN set -ex; \
