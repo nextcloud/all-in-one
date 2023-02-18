@@ -141,7 +141,7 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 In general recommended VPS are those that are KVM/non-virtualized as Docker should work best on them.
 
 ### Note on storage options
-- SD-cards are discrecommended for AIO since they cripple the performance and they are not meant for many write operations which is needed for the database and other parts
+- SD-cards are disrecommended for AIO since they cripple the performance and they are not meant for many write operations which is needed for the database and other parts
 - SSD storage is recommended
 - HDD storage should work as well but is of course much slower than SSD storage
 
