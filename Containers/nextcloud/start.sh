@@ -50,6 +50,17 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
 fi
 sudo -u www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 
+# Correctly set CPU_ARCH for notify_push
+CPU_ARCH="$(uname -m)"
+export CPU_ARCH
+if [ -z "$CPU_ARCH" ]; then
+    echo "Could not get processor architecture. Exiting."
+    exit 1
+elif [ "$CPU_ARCH" != "x86_64" ]; then
+    export CPU_ARCH="aarch64"
+    ADDITIONAL_APKS+=" gcompat"
+fi
+
 # Install additional dependencies
 if [ -n "$ADDITIONAL_APKS" ]; then
     if ! [ -f "/additional-apks-are-installed" ]; then
@@ -128,16 +139,6 @@ fi
 # Run original entrypoint
 if ! sudo -E -u www-data bash /entrypoint.sh; then
     exit 1
-fi
-
-# Correctly set CPU_ARCH for notify_push
-CPU_ARCH="$(uname -m)"
-export CPU_ARCH
-if [ -z "$CPU_ARCH" ]; then
-    echo "Could not get processor architecture. Exiting."
-    exit 1
-elif [ "$CPU_ARCH" != "x86_64" ]; then
-    export CPU_ARCH="aarch64"
 fi
 
 exec "$@"
