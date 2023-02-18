@@ -48,7 +48,10 @@ Add this as a new Apache site config:
     RewriteEngine On
     ProxyPreserveHost On
     AllowEncodedSlashes NoDecode
+    
     ProxyPass / http://localhost:11000/ nocanon
+    ProxyPassReverse / http://localhost:11000/
+    
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
     RewriteCond %{THE_REQUEST} "^[a-zA-Z]+ /(.*) HTTP/\d+(\.\d+)?$"
