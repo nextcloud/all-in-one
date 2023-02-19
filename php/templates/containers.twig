@@ -279,8 +279,6 @@
                 {% else %}
                     {% if isRestoreRunning == true %}
                         Restore currently running. Cannot start the containers until that's done.<br /><br />
-                    {% elseif has_update_available == true and isBackupOrRestoreRunning == true %}
-                        Restore or Backup currently running and container update available. Cannot start the containers until that's done.<br /><br />
                     {% else %}
                         {% if was_start_button_clicked == false %}
                             Clicking on the button below will download all docker containers and start them. This can take a lot of time depending on your internect connection. Since the overall size is a few GB, this will take around 5-10 min or more. So be aware and patient!<br><br>
