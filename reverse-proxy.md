@@ -9,7 +9,7 @@ In order to run Nextcloud behind a web server or reverse proxy (like Apache, Ngi
 **Attention:** The process to run Nextcloud behind a reverse proxy consists of at least steps 1, 2 and 4:
 1. **Configure the reverse proxy! See [point 1](#1-add-this-to-your-reverse-proxy-config)**
 1. **Use the in this document provided startup command! See [point 2](#2-use-this-startup-command)**
-1. Optional: If the reverse proxy is installed on the same host, you should limit the apache container to only listen on localhost. See [point 3](#3-if-the-reverse-proxy-is-installed-on-the-same-host-you-should-configure-the-apache-container-to-only-listen-on-localhost)
+1. Optional: If the reverse proxy is installed on the same host and in the host network, you should limit the apache container to only listen on localhost. See [point 3](#3-limit-the-access-to-the-apache-container)
 1. **Open the AIO interface. See [point 4](#4-open-the-aio-interface)**
 1. Optional: Get a valid certificate for the AIO interface! See [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface)
 1. Optional: How to debug things? See [point 6](#6-how-to-debug-things)
@@ -478,12 +478,15 @@ sudo docker run \
 --restart always \
 --publish 8080:8080 \
 -e APACHE_PORT=11000 \
+-e APACHE_IP_BINDING=0.0.0.0 \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
 nextcloud/all-in-one:latest
 ```
 
-You should also think about limiting the apache container to listen only on localhost in case the reverse proxy is running on the same host and if localhost is used, by providing an additional environmental variable to this docker run command. See [point 3](#3-if-the-reverse-proxy-is-installed-on-the-same-host-you-should-configure-the-apache-container-to-only-listen-on-localhost).
+Note: You may be interested in adjusting Nextcloud’s datadir to store the files in a different location than the default docker volume. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
+
+You should also think about limiting the apache container to listen only on localhost in case the reverse proxy is running on the same host and in the host network, by providing an additional environmental variable to this docker run command. See [point 3](#3-limit-the-access-to-the-apache-container).
 
 On macOS see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-macos.
 
@@ -498,6 +501,7 @@ docker run ^
 --restart always ^
 --publish 8080:8080 ^
 -e APACHE_PORT=11000 ^
+-e APACHE_IP_BINDING=0.0.0.0 ^
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config ^
 --volume //var/run/docker.sock:/var/run/docker.sock:ro ^
 nextcloud/all-in-one:latest
@@ -513,9 +517,9 @@ On Synology DSM see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-sy
 
 Simply translate the docker run command into a docker-compose file. You can have a look at [this file](https://github.com/nextcloud/all-in-one/blob/main/docker-compose.yml) for some inspiration but you will need to modify it either way. You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
 
-## 3. If the reverse proxy is installed on the same host, you should configure the apache container to only listen on localhost.
+## 3. Limit the access to the apache container
 
-Use this envorinmental variable during the initial startup of the mastercontainer to make the apache container only listen on localhost: `-e APACHE_IP_BINDING=127.0.0.1`. **Attention:** This is only recommended to be set if you use `localhost` in your reverse proxy config to connect to your AIO instance. If you use an ip-address, you can either simply skip this step or set it to `0.0.0.0` if you are unsure what the correct value is.
+Use this envorinmental variable during the initial startup of the mastercontainer to make the apache container only listen on localhost: `-e APACHE_IP_BINDING=127.0.0.1`. **Attention:** This is only recommended to be set if you use `localhost` in your reverse proxy config to connect to your AIO instance. If you use an ip-address instead of localhost, you should set it to or set it to `0.0.0.0`.
 
 ## 4. Open the AIO interface.
 After starting AIO, you should be able to access the AIO Interface via `https://ip.address.of.the.host:8080`. Enter your domain that you've entered in the reverse proxy config and you should be done. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
