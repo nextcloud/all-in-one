@@ -18,8 +18,7 @@ The following instructions are meant for installations without a web server or r
     curl -fsSL get.docker.com | sudo sh
     ```
 1. If you need ipv6 support, you should enable it by following https://docs.docker.com/config/daemon/ipv6/.
-2. Run the command below in order to start the container:<br><br>
-    (For people that cannot use ports 80 and/or 443 on this server e.g. because it is already taken by a different web server, please follow the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) because port 443 is used by this project and opened on the host by default even though it does not look like this is the case. Otherwise please run the command below!)
+2. Run the command below in order to start the container:
     ```
     # For Linux and without a web server or reverse proxy (like Apache, Nginx and else) already in place:
     sudo docker run \
@@ -48,6 +47,8 @@ The following instructions are meant for installations without a web server or r
     - `nextcloud/all-in-one:latest` This is the docker container image that is used.
     - Further options can be set using environment variables, for example `-e NEXTCLOUD_DATADIR="/mnt/ncdata"` (This is an example for Linux. See [this](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) for other OS' and for an explanation of what this value does. This specific one needs to be specified upon the first startup if you want to change it to a specific path instead of the default Docker volume). To see explanations and examples for further variables (like changing the location of Nextcloud's datadir or mounting some locations as external storage into the Nextcloud container), read through this readme and look at the docker-compose file: https://github.com/nextcloud/all-in-one/blob/main/docker-compose.yml
     </details>
+
+    Note: You may be interested in adjusting Nextcloud’s datadir to store the files in a different location than the default docker volume. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
 
 3. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
 E.g. `https://ip.address.of.this.server:8080`<br><br>
