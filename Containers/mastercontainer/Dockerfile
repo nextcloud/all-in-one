@@ -28,6 +28,7 @@ WORKDIR /var/www/docker-aio
 
 RUN set -ex; \
     apk add --no-cache \
+        util-linux-misc \
         ca-certificates \
         wget \
         tzdata \
