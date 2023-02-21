@@ -438,8 +438,8 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     # Fix https://github.com/nextcloud/all-in-one/issues/188:
     php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
     # Make collabora more save
-    COLLABORA_IPv4_ADDRESS="$(echo "<?php echo gethostbyname('$NC_DOMAIN');" | php | head -1)"
-    COLLABORA_IPv6_ADDRESS="<?php \$record = dns_get_record('$NC_DOMAIN', DNS_AAAA);"
+    COLLABORA_IPv4_ADDRESS="$(echo "<?php echo gethostbyname('$COLLABORA_HOST');" | php | head -1)"
+    COLLABORA_IPv6_ADDRESS="<?php \$record = dns_get_record('$COLLABORA_HOST', DNS_AAAA);"
     # shellcheck disable=SC2016
     COLLABORA_IPv6_ADDRESS+='if (!empty($record)) {echo $record[0]["ipv6"];}'
     COLLABORA_IPv6_ADDRESS="$(echo "$COLLABORA_IPv6_ADDRESS" | php | head -1)"
@@ -453,7 +453,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
             fi
         fi
     else
-        echo "Warning: No ipv4-address found for $NC_DOMAIN."
+        echo "Warning: No ipv4-address found for $COLLABORA_HOST."
     fi
     if [ -n "$COLLABORA_IPv6_ADDRESS" ]; then
         if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$COLLABORA_IPv6_ADDRESS"; then
@@ -464,13 +464,9 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
             fi
         fi
     else
-        echo "No ipv6-address found for $NC_DOMAIN."
+        echo "No ipv6-address found for $COLLABORA_HOST."
     fi
     if [ -n "$COLLABORA_ALLOW_LIST" ]; then
-        PRIVATE_IP_RANGES='127.0.0.1/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,fd00::/8,::1'
-        if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$PRIVATE_IP_RANGES"; then
-            COLLABORA_ALLOW_LIST+=",$PRIVATE_IP_RANGES"
-        fi
         php /var/www/html/occ config:app:set richdocuments wopi_allowlist --value="$COLLABORA_ALLOW_LIST"
     else
         echo "Warning: wopi_allowlist is empty which should not be the case!"
