@@ -18,8 +18,7 @@ The following instructions are meant for installations without a web server or r
     curl -fsSL get.docker.com | sudo sh
     ```
 1. If you need ipv6 support, you should enable it by following https://docs.docker.com/config/daemon/ipv6/.
-1. Disable the userland proxy as it changes the remote_ip of the requests. Basically simply add `userland-proxy=false` to the daemon.json like described in the ipv6 documentation above.
-1. Run the command below in order to start the container:
+2. Run the command below in order to start the container:
     ```
     # For Linux and without a web server or reverse proxy (like Apache, Nginx and else) already in place:
     sudo docker run \
@@ -50,11 +49,12 @@ The following instructions are meant for installations without a web server or r
     </details>
 
     Note: You may be interested in adjusting Nextcloud’s datadir to store the files in a different location than the default docker volume. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
-1. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
+
+3. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
 E.g. `https://ip.address.of.this.server:8080`<br><br>
 If your firewall/router has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatically by opening the Nextcloud AIO Interface via:<br>
 `https://your-domain-that-points-to-this-server.tld:8443`
-1. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
+4. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
 ## FAQ
 ### How does it work?
