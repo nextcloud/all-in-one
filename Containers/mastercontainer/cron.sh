@@ -54,7 +54,7 @@ while true; do
     sudo -u www-data docker image prune --force
     
     # Remove dangling volumes
-    for image in $(docker volume ls --quiet --filter dangling=true | grep -E "^[a-z0-9]{64}$"); do docker volume remove "$image"; done
+    for volume in $(docker volume ls --quiet --filter dangling=true | grep -E "^[a-z0-9]{64}$"); do docker volume remove "$volume"; done
 
     # Wait 60s so that the whole loop will not be executed again
     sleep 60
