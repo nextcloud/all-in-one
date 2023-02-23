@@ -17,10 +17,11 @@ if [ -f "/var/www/html/config/config.php" ]; then
         echo "Waiting for the database to start..."
         sleep 5
     done
-    if [ "$POSTGRES_USER" = "oc_nextcloud" ] && echo "$POSTGRES_PASSWORD" | grep -q '^[a-z0-9]\+$'; then
-        # this was introduced with https://github.com/nextcloud/all-in-one/pull/218
+    if [ "$POSTGRES_USER" = "oc_nextcloud" ] && [ "$POSTGRES_DB" = "nextcloud_database" ] && echo "$POSTGRES_PASSWORD" | grep -q '^[a-z0-9]\+$'; then
+        # This was introduced with https://github.com/nextcloud/all-in-one/pull/218
         sed -i "s|'dbuser'.*=>.*$|'dbuser' => '$POSTGRES_USER',|" /var/www/html/config/config.php
         sed -i "s|'dbpassword'.*=>.*$|'dbpassword' => '$POSTGRES_PASSWORD',|" /var/www/html/config/config.php
+        sed -i "s|'db_name'.*=>.*$|'db_name' => '$POSTGRES_DB',|" /var/www/html/config/config.php
     fi
 fi
 
