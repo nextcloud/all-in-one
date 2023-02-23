@@ -29,14 +29,14 @@ TIMEZONE: Europe/Berlin          # TODO! This is the timezone that your containe
 TURN_SECRET:           # TODO! This needs to be a unique and good password!
 UPDATE_NEXTCLOUD_APPS: no          # When setting to yes (with quotes), it will automatically update all installed Nextcloud apps upon container startup on saturdays.
 STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes
-ELASTICSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the elasticsearch volume that default to 1Gi with this value
-NEXTCLOUD_TRUSTED_CACERTS_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud-trusted-cacerts volume that default to 1Gi with this value
-COLLABORA_FONTS_STORAGE_SIZE: 1Gi       # You can change the size of the collabora-fonts volume that default to 1Gi with this value
-ONLYOFFICE_STORAGE_SIZE: 1Gi       # You can change the size of the onlyoffice volume that default to 1Gi with this value
-CLAMAV_STORAGE_SIZE: 1Gi       # You can change the size of the clamav volume that default to 1Gi with this value
-DATABASE_DUMP_STORAGE_SIZE: 1Gi       # You can change the size of the database-dump volume that default to 1Gi with this value
-NEXTCLOUD_DATA_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud-data volume that default to 1Gi with this value
-NEXTCLOUD_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud volume that default to 1Gi with this value
-REDIS_STORAGE_SIZE: 1Gi       # You can change the size of the redis volume that default to 1Gi with this value
-DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volume that default to 1Gi with this value
 APACHE_STORAGE_SIZE: 1Gi       # You can change the size of the apache volume that default to 1Gi with this value
+CLAMAV_STORAGE_SIZE: 1Gi       # You can change the size of the clamav volume that default to 1Gi with this value
+COLLABORA_FONTS_STORAGE_SIZE: 1Gi       # You can change the size of the collabora-fonts volume that default to 1Gi with this value
+DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volume that default to 1Gi with this value
+DATABASE_DUMP_STORAGE_SIZE: 1Gi       # You can change the size of the database-dump volume that default to 1Gi with this value
+ELASTICSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the elasticsearch volume that default to 1Gi with this value
+NEXTCLOUD_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud volume that default to 1Gi with this value
+NEXTCLOUD_DATA_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud-data volume that default to 1Gi with this value
+NEXTCLOUD_TRUSTED_CACERTS_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud-trusted-cacerts volume that default to 1Gi with this value
+ONLYOFFICE_STORAGE_SIZE: 1Gi       # You can change the size of the onlyoffice volume that default to 1Gi with this value
+REDIS_STORAGE_SIZE: 1Gi       # You can change the size of the redis volume that default to 1Gi with this value
