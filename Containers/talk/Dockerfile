@@ -10,6 +10,7 @@ RUN set -ex; \
         curl \
         ca-certificates \
         netcat \
+        dnsutils \
     ; \
     rm -rf /var/lib/apt/lists/*
 
