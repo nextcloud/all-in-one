@@ -48,7 +48,7 @@ while true; do
     find "/mnt/docker-aio-config/session/" -mindepth 1 -mmin +1440 -delete
 
     # Remove nextcloud-aio-domaincheck container
-    if sudo -u www-data docker ps --format "{{.Names}}" --filter "status=exited" | grep -qw "^nextcloud-aio-domaincheck$"; then
+    if sudo -u www-data docker ps --format "{{.Names}}" --filter "status=exited" | grep -q "^nextcloud-aio-domaincheck$"; then
         sudo -u www-data docker container remove nextcloud-aio-domaincheck
     fi
 
