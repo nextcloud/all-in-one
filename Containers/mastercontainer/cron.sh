@@ -48,13 +48,13 @@ while true; do
     find "/mnt/docker-aio-config/session/" -mindepth 1 -mmin +1440 -delete
 
     # Remove nextcloud-aio-domaincheck container
-    docker container remove nextcloud-aio-domaincheck --force
+    sudo -u www-data docker container remove nextcloud-aio-domaincheck --force
 
     # Remove dangling images
     sudo -u www-data docker image prune --force
     
     # Remove dangling volumes
-    for volume in $(docker volume ls --quiet --filter dangling=true | grep -E "^[a-z0-9]{64}$"); do docker volume remove "$volume"; done
+    for volume in $(sudo -u www-data docker volume ls --quiet --filter dangling=true | grep -E "^[a-z0-9]{64}$"); do sudo -u www-data docker volume remove "$volume"; done
 
     # Wait 60s so that the whole loop will not be executed again
     sleep 60
