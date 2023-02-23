@@ -24,14 +24,10 @@
         {% set isAnyRunning = false %}
         {% set isAnyRestarting = false %}
         {% set isWatchtowerRunning = false %}
-        {% set isRestoreRunning = false %}
         {% set isBackupOrRestoreRunning = false %}
         {% set isApacheStarting = false %}
 
         {% if is_backup_container_running == true %}
-            {% if borg_backup_mode == 'restore' %}
-                {% set isRestoreRunning = true %}
-            {% endif %}
             {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
                 {% set isBackupOrRestoreRunning = true %}
             {% endif %}
@@ -249,7 +245,7 @@
 
                     {% if has_update_available == true %}
                         {% if is_mastercontainer_update_available == false %}
-                            ⚠️ Container updates are available. Click on 'Stop Containers' and 'Start Containers' to update them. You should consider creating a backup first.<br><br>
+                            ⚠️ Container updates are available. Click on <b>Stop Containers</b> and <b>Start Containers</b> to update them. You should consider creating a backup first.<br><br>
                         {% endif %}
                     {% else %}
                         {% if is_mastercontainer_update_available == false %}
@@ -277,10 +273,8 @@
                         </form>
                     {% endif %}
                 {% else %}
-                    {% if isRestoreRunning == true %}
-                        Restore currently running. Cannot start the containers until that's done.<br /><br />
-                    {% elseif has_update_available == true and isBackupOrRestoreRunning == true %}
-                        Restore or Backup currently running and container update available. Cannot start the containers until that's done.<br /><br />
+                    {% if isBackupOrRestoreRunning == true %}
+                        Restore or Backup currently running. Cannot start the containers until that's done.<br /><br />
                     {% else %}
                         {% if was_start_button_clicked == false %}
                             Clicking on the button below will download all docker containers and start them. This can take a lot of time depending on your internect connection. Since the overall size is a few GB, this will take around 5-10 min or more. So be aware and patient!<br><br>

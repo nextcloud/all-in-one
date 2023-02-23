@@ -38,9 +38,10 @@ if [ "$AUTOMATIC_UPDATES" = 1 ]; then
 fi
 
 # Wait for watchtower to stop
-if [ "$AUTOMATIC_UPDATES" = 1 ] && ! docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-watchtower$"; then
-    echo "Something seems to be wrong: Watchtower should be started at this step."
-else
+if [ "$AUTOMATIC_UPDATES" = 1 ]; then
+    if ! docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-watchtower$"; then
+        echo "Something seems to be wrong: Watchtower should be started at this step."
+    fi
     while docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-watchtower$"; do
         echo "Waiting for watchtower to stop"
         sleep 30
@@ -58,6 +59,13 @@ fi
 if [ "$DAILY_BACKUP" = 1 ]; then
     echo "Creating daily backup..."
     sudo -u www-data php /var/www/docker-aio/php/src/Cron/CreateBackup.php
+    if ! docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-borgbackup$"; then
+        echo "Something seems to be wrong: the borg container should be started at this step."
+    fi
+    while docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-borgbackup$"; do
+        echo "Waiting for backup container to stop"
+        sleep 30
+    done
 fi
 
 # Execute backup check
