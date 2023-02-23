@@ -64,7 +64,8 @@ Nextcloud AIO is inspired by projects like Portainer that manage the docker daem
 Yes. Please refer to the following documentation on this: [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
 
 ### Which CPU architectures are supported?
-- x64/x86_64/amd64
+You can check this on Linux by running: `uname -m`
+- x86_64/x64/amd64
 - aarch64/arm64/armv8 (Note: ClamAV is currently not supported on this CPU architecture)
 
 ### Which ports are mandatory to be open in your firewall/router?
