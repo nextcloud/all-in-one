@@ -60,7 +60,7 @@ sed -i 's|keyfile =|#keyfile =|g' /etc/janus/janus.transport.mqtt.jcfg
 set +x
 
 # Signling
-cat << SIGNALING_CONF > "/etc/signaling/server.conf"
+cat << SIGNALING_CONF > "/etc/signaling.conf"
 [http]
 listen = 0.0.0.0:8081
 

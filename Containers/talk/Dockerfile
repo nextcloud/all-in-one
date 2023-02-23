@@ -1,69 +1,46 @@
-FROM ubuntu:focal-20230126
+FROM alpine:3.17.2
+USER root
 
-RUN set -ex; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        openssl \
-        coturn \
-        supervisor \
-        curl \
-        ca-certificates \
-        netcat \
-        dnsutils \
-    ; \
-    rm -rf /var/lib/apt/lists/*
+COPY --from=nats:2.9.14-scratch /nats-server /usr/local/bin/nats-server
+COPY --from=strukturag/nextcloud-spreed-signaling:1.1.1 /usr/bin/nextcloud-spreed-signaling /usr/local/bin/signaling
 
-RUN set -ex; \
-    curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nats-server.asc" "https://packaging.gitlab.io/nats-server/gpg.key"; \
-    echo "deb https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list; \
-    . /etc/lsb-release; \
-    curl -sL -o "/etc/apt/trusted.gpg.d/morph027-janus.asc" "https://packaging.gitlab.io/janus/gpg.key"; \
-    echo "deb https://packaging.gitlab.io/janus/$DISTRIB_CODENAME $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-janus.list; \
-    curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc" "https://packaging.gitlab.io/nextcloud-spreed-signaling/gpg.key"; \
-    echo "deb https://packaging.gitlab.io/nextcloud-spreed-signaling signaling main" > /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list
-
-RUN set -ex; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        nats-server \
-        janus \
-        nextcloud-spreed-signaling \
-    ; \
-    rm -rf /var/lib/apt/lists/*
-
-RUN adduser --system --group talk
-
-RUN mkdir /var/log/supervisord; \
-    mkdir /var/run/supervisord; \
-    chown talk:talk /var/run/supervisord; \
-    chown talk:talk /var/log/supervisord;
-
-COPY start.sh /usr/bin/
-COPY supervisord.conf /
-RUN chmod +x /usr/bin/start.sh; \
-    chmod +r /supervisord.conf; \
-    touch /etc/turnserver.conf; \
-    chown talk:talk /etc/turnserver.conf; \
-    sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn; \
-    mkdir -p /var/tmp;
-
-RUN curl -sL -o "/usr/share/janus/lua/json.lua" "https://raw.githubusercontent.com/rxi/json.lua/master/json.lua"; \
-    curl -sL -o "/usr/share/janus/lua/ansicolors.lua" "https://raw.githubusercontent.com/kikito/ansicolors.lua/master/ansicolors.lua"
-
-RUN mkdir -p /etc/nats; \
-    echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf; \
-    mkdir /var/lib/turn; \
-    chown talk:talk /etc; \
-    chown talk:talk -R /etc/nats; \
-    chown talk:talk -R /etc/janus; \
-    chown talk:talk -R /etc/signaling; \
-    chown talk:talk -R /usr; \
-    chown talk:talk -R /var/lib/turn;
+RUN apk add --no-cache ca-certificates tzdata bash \
+                       coturn \
+                       openssl \
+                       supervisor \
+                       bind-tools \
+                       netcat-openbsd; \
+    apk add --no-cache janus-gateway --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
+    apk add --no-cache shadow; \
+    useradd --system talk; \
+    apk del --no-cache shadow;
 
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
+
+COPY --chmod=775 start.sh /usr/bin/
+COPY --chmod=664 supervisord.conf /
+RUN for sampleconf in /etc/janus/*.sample; do mv "$sampleconf" "$(echo $sampleconf | sed "s|.sample||g")"; done
+
+RUN wget https://raw.githubusercontent.com/rxi/json.lua/master/json.lua -O /usr/share/janus/lua/json.lua; \
+    wget https://raw.githubusercontent.com/kikito/ansicolors.lua/master/ansicolors.lua -O /usr/share/janus/lua/ansicolors.lua
+
+RUN touch /etc/nats.conf \
+          /etc/signaling.conf \
+          /etc/turnserver.conf; \
+    echo "listen: 127.0.0.1:4222" | tee /etc/nats.conf; \
+    mkdir -p /var/tmp \
+             /var/lib/turn \
+             /var/log/supervisord \
+             /var/run/supervisord; \
+    chown talk:talk -R /usr \
+                       /etc/janus \
+                       /etc/nats.conf \
+                       /etc/signaling.conf \
+                       /etc/turnserver.conf \
+                       /var/lib/turn \
+                       /var/log/supervisord \
+                       /var/run/supervisord;
 
 # Set default talk port https://github.com/nextcloud/all-in-one/issues/1011
 ENV TALK_PORT=3478
