@@ -47,8 +47,13 @@ while true; do
     # Remove sessions older than 24h
     find "/mnt/docker-aio-config/session/" -mindepth 1 -mmin +1440 -delete
 
+    # Remove nextcloud-aio-domaincheck container
+    if sudo -u www-data docker ps --format "{{.Names}}" --filter "status=exited" | grep -q "^nextcloud-aio-domaincheck$"; then
+        sudo -u www-data docker container remove nextcloud-aio-domaincheck
+    fi
+
     # Remove dangling images
-    sudo -u www-data docker image prune -f
+    sudo -u www-data docker image prune --force
 
     # Wait 60s so that the whole loop will not be executed again
     sleep 60
