@@ -736,6 +736,14 @@ class ConfigurationManager
         return false;
     }
 
+    public function shouldDataDirectoryPermissionCheckGetSkipped() : bool {
+        $datadir = $this->GetNextcloudDatadirMount();
+        if ($datadir === 'nextcloud_aio_nextcloud_datadir' || str_starts_with($datadir, '/run/desktop/mnt/host/')) {
+            return true;
+        }
+        return false;
+    }
+
     public function GetNextcloudStartupApps() : string {
         $apps = getenv('NEXTCLOUD_STARTUP_APPS');
         if (is_string($apps)) {
