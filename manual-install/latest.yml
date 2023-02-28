@@ -147,7 +147,6 @@ services:
       - NC_DOMAIN=${NC_DOMAIN}
       - TURN_SECRET=${TURN_SECRET}
       - SIGNALING_SECRET=${SIGNALING_SECRET}
-      - JANUS_API_KEY=${JANUS_API_KEY}
       - TZ=${TIMEZONE}
       - TALK_PORT=${TALK_PORT}
     restart: unless-stopped
