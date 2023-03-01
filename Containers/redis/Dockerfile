@@ -1,5 +1,5 @@
 # From https://github.com/docker-library/redis/blob/master/7.0/alpine/Dockerfile
-FROM redis:7.0.8-alpine
+FROM redis:7.0.9-alpine
 
 RUN apk add --no-cache openssl bash
 
