@@ -1,7 +1,7 @@
 FROM alpine:3.17.2
 USER root
 
-COPY --from=nats:2.9.14-scratch /nats-server /usr/local/bin/nats-server
+COPY --from=nats:2.9.15-scratch /nats-server /usr/local/bin/nats-server
 COPY --from=strukturag/nextcloud-spreed-signaling:1.1.1 /usr/bin/nextcloud-spreed-signaling /usr/local/bin/signaling
 
 RUN apk add --no-cache ca-certificates tzdata bash \
