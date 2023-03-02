@@ -24,8 +24,6 @@ spec:
     spec:
       containers:
         - env:
-            - name: JANUS_API_KEY
-              value: "{{ .Values.JANUS_API_KEY }}"
             - name: NC_DOMAIN
               value: "{{ .Values.NC_DOMAIN }}"
             - name: SIGNALING_SECRET
@@ -36,7 +34,7 @@ spec:
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-talk:20230223_085216-latest
+          image: nextcloud/aio-talk:20230302_085724-latest
           name: nextcloud-aio-talk
           ports:
             - containerPort: {{ .Values.TALK_PORT }}

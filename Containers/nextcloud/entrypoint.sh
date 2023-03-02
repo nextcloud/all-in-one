@@ -212,6 +212,10 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 exit 1
             fi
 
+            if [ "$SKIP_DATA_DIRECTORY_PERMISSION_CHECK" = yes ]; then
+                php /var/www/html/occ config:system:set check_data_directory_permissions --value=false --type=bool
+            fi
+
             # Try to force generation of appdata dir:
             php /var/www/html/occ maintenance:repair
 
@@ -534,23 +538,30 @@ fi
 
 # Clamav
 if [ "$CLAMAV_ENABLED" = 'yes' ]; then
-    while ! nc -z "$CLAMAV_HOST" 3310; do
+    count=0
+    while ! nc -z "$CLAMAV_HOST" 3310 && [ "$count" -lt 90 ]; do
         echo "waiting for clamav to become available..."
+        count=$((count+5))
         sleep 5
     done
-    if ! [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
-        php /var/www/html/occ app:install files_antivirus
-    elif [ "$(php /var/www/html/occ config:app:get files_antivirus enabled)" != "yes" ]; then
-        php /var/www/html/occ app:enable files_antivirus
-    elif [ "$SKIP_UPDATE" != 1 ]; then
-        php /var/www/html/occ app:update files_antivirus
+    if [ "$count" -ge 90 ]; then
+        echo "Clamav did not start in time. Skipping initialization and disabling files_antivirus app."
+        php /var/www/html/occ app:disable files_antivirus
+    else
+        if ! [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
+            php /var/www/html/occ app:install files_antivirus
+        elif [ "$(php /var/www/html/occ config:app:get files_antivirus enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable files_antivirus
+        elif [ "$SKIP_UPDATE" != 1 ]; then
+            php /var/www/html/occ app:update files_antivirus
+        fi
+        php /var/www/html/occ config:app:set files_antivirus av_mode --value="daemon"
+        php /var/www/html/occ config:app:set files_antivirus av_port --value="3310"
+        php /var/www/html/occ config:app:set files_antivirus av_host --value="$CLAMAV_HOST"
+        php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="104857600"
+        php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="-1"
+        php /var/www/html/occ config:app:set files_antivirus av_infected_action --value="only_log"
     fi
-    php /var/www/html/occ config:app:set files_antivirus av_mode --value="daemon"
-    php /var/www/html/occ config:app:set files_antivirus av_port --value="3310"
-    php /var/www/html/occ config:app:set files_antivirus av_host --value="$CLAMAV_HOST"
-    php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="104857600"
-    php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="-1"
-    php /var/www/html/occ config:app:set files_antivirus av_infected_action --value="only_log"
 else
     if [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
         php /var/www/html/occ app:remove files_antivirus
