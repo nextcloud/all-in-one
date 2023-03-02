@@ -77,7 +77,7 @@ elif echo "$STORAGE_DRIVER" | grep -q fuse-overlayfs; then
 fi
 
 # Check if startup command was executed correctly
-if ! sudo -u www-data docker ps --format "{{.Name}}" | grep -q "^nextcloud-aio-mastercontainer$"; then
+if ! sudo -u www-data docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-mastercontainer$"; then
     echo "It seems like you did not give the mastercontainer the correct name?
 Using a different name is not supported!"
     exit 1
