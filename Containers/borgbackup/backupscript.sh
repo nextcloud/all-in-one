@@ -129,10 +129,13 @@ if [ "$BORG_MODE" = backup ]; then
     # https://forum.level1techs.com/t/optimal-compression-for-borg-backups/145870/6
     BORG_OPTS=(-v --stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
+    # Exclude the nextcloud log and audit log for GDPR reasons
+    BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log"* --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log")
+
     # Create the backup
     echo "Starting the backup..."
     get_start_time
-    if ! borg create "${BORG_OPTS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/"; then
+    if ! borg create "${BORG_OPTS[@]}" "${BORG_EXCLUDE[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/"; then
         echo "Deleting the failed backup archive..."
         borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio"
         echo "Backup failed!"
@@ -266,6 +269,8 @@ if [ "$BORG_MODE" = restore ]; then
     if ! rsync --stats --archive --human-readable -vv --delete \
     --exclude "nextcloud_aio_apache/caddy/"** \
     --exclude "nextcloud_aio_mastercontainer/caddy/"** \
+    --exclude "nextcloud_aio_nextcloud/data/nextcloud.log"* \
+    --exclude "nextcloud_aio_nextcloud/data/audit.log" \
     --exclude "nextcloud_aio_mastercontainer/certs/"** \
     --exclude "nextcloud_aio_mastercontainer/data/configuration.json" \
     --exclude "nextcloud_aio_mastercontainer/data/daily_backup_running" \
