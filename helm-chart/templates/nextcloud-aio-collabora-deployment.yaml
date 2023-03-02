@@ -44,7 +44,7 @@ spec:
               value: --o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning --o:home_mode.enable=true {{ .Values.COLLABORA_SECCOMP_POLICY }} --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json
             - name: server_name
               value: "{{ .Values.NC_DOMAIN }}"
-          image: nextcloud/aio-collabora:20230223_085216-latest
+          image: nextcloud/aio-collabora:20230302_085724-latest
           name: nextcloud-aio-collabora
           ports:
             - containerPort: 9980
