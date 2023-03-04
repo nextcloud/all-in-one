@@ -85,6 +85,10 @@ elif ! sudo -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nextcl
     echo "It seems like you did not give the mastercontainer volume the correct name?
 Using a different name is not supported!"
     exit 1
+elif ! sudo -u www-data docker inspect nextcloud-aio-mastercontainer | grep -q "nextcloud_aio_mastercontainer"; then
+    echo "It seems like you did not attach the nextcloud_aio_mastercontainer volume to the mastercontainer?
+This is not supported!"
+    exit 1
 fi
 
 # Check for other options
