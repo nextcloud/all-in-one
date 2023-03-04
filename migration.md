@@ -20,7 +20,7 @@ The procedure for migrating only the files works like this:
 1. Run `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ files:scan-app-data && sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ files:scan --all` in order to scan all files in the datadirectory.
 
 ## Migrate the files and the database
-**Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned! Also, this will not work on former snap installations as the snap is read-only and thus you cannot install the necessary `pdo_pgsql` PHP extension.
+**Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned! Also, this will not work on former snap installations as the snap is read-only and thus you cannot install the necessary `pdo_pgsql` PHP extension. So if migrating from snap, you will need to use one of the other methods. However you could try to ask if the snaps maintainer could add this one small PHP extension to the snap here: https://github.com/nextcloud-snap/nextcloud-snap/issues which would allow for an easy migration.
 
 The procedure for migrating the files and the database works like this:
 1. Make sure that your old instance is on exactly the same version like the version used in Nextcloud AIO. (e.g. 23.0.0) You can find the used version here: [click here](https://github.com/nextcloud/all-in-one/search?l=Dockerfile&q=NEXTCLOUD_VERSION&type=). If not, simply upgrade your former installation to that version or wait until the version used in Nextcloud AIO got updated to the same version of your former installation or the other way around.
