@@ -212,9 +212,8 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 exit 1
             fi
 
-            if [ "$SKIP_DATA_DIRECTORY_PERMISSION_CHECK" = yes ]; then
-                php /var/www/html/occ config:system:set check_data_directory_permissions --value=false --type=bool
-            fi
+            # We do our own permission check so the permission check is not needed
+            php /var/www/html/occ config:system:set check_data_directory_permissions --value=false --type=bool
 
             # Try to force generation of appdata dir:
             php /var/www/html/occ maintenance:repair
@@ -295,6 +294,11 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                         php /var/www/html/occ app:disable "$app"
                     fi
                 done
+            fi
+
+            # Set the permission check to its default value again if not set
+            if [ "$SKIP_DATA_DIRECTORY_PERMISSION_CHECK" = yes ]; then
+                php /var/www/html/occ config:system:set check_data_directory_permissions --value=true --type=bool
             fi
 
         #upgrade
