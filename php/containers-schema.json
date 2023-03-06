@@ -21,6 +21,12 @@
 							"type": "string"
 						}
 					},
+					"cap_add": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
 					"depends_on": {
 						"type": "array",
 						"items": {

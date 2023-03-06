@@ -23,6 +23,8 @@ class Container {
     private array $secrets;
     /** @var string[] */
     private array $devices;
+    /** @var string[] */
+    private array $capAdd;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -38,6 +40,7 @@ class Container {
         array $dependsOn,
         array $secrets,
         array $devices,
+        array $capAdd,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -52,6 +55,7 @@ class Container {
         $this->dependsOn = $dependsOn;
         $this->secrets = $secrets;
         $this->devices = $devices;
+        $this->capAdd = $capAdd;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -81,6 +85,10 @@ class Container {
 
     public function GetDevices() : array {
         return $this->devices;
+    }
+
+    public function GetCapAdds() : array {
+        return $this->capAdd;
     }
 
     public function GetPorts() : ContainerPorts {

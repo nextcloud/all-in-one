@@ -411,9 +411,13 @@ class DockerActionManager
             $requestBody['HostConfig']['Devices'] = $devices;
         }
 
+        $capAdds = $container->GetCapAdds();
+        if (count($capAdds) > 0) {
+            $requestBody['HostConfig']['CapAdd'] = $capAdds;
+        }
+
         // Special things for the backup container which should not be exposed in the containers.json
         if ($container->GetIdentifier() === 'nextcloud-aio-borgbackup') {
-            $requestBody['HostConfig']['CapAdd'] = ["SYS_ADMIN"];
             $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined"];
             
             // Additional backup directories

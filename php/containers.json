@@ -318,6 +318,9 @@
       ],
       "devices": [
         "/dev/fuse"
+      ],
+      "cap_add": [
+        "SYS_ADMIN"
       ]
     },
     {
@@ -411,7 +414,10 @@
       "environment": [
         "TZ=%TIMEZONE%"
       ],
-      "restart": "unless-stopped"
+      "restart": "unless-stopped",
+      "cap_add": [
+        "SYS_NICE"
+      ]
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
