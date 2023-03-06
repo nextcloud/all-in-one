@@ -4,9 +4,16 @@ FROM nextcloud/imaginary:20230301
 USER root
 RUN set -ex; \
     \
+    echo "deb http://deb.debian.org/debian sid main" > /etc/apt/sources.list.d/sid.list \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         netcat \
+    ; \
+    apt-get install -t sid -y --no-install-recommends \
+        libheif1 \
+        libde265-0 \
+        libx265-199 \
+        libvips \
     ; \
     rm -rf /var/lib/apt/lists/*
 USER nobody
