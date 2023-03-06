@@ -459,7 +459,7 @@ You can configure the Nextcloud container to use a specific directory on your ho
 ### Can I use a CIFS/SMB share as Nextcloud's datadir?
 
 Sure. Add this to the `/etc/fstab` file: <br>
-`<your-storage-host-and-subpath> <your-mount-dir> cifs rw,credentials=<your-credentials-file>,uid=33,gid=0,file_mode=0770,dir_mode=0770 0 0`<br>
+`<your-storage-host-and-subpath> <your-mount-dir> cifs rw,mfsymlinks,seal,credentials=<your-credentials-file>,uid=33,gid=0,file_mode=0770,dir_mode=0770 0 0`<br>
 (Of course you need to modify `<your-storage-host-and-subpath>`, `<your-mount-dir>` and `<your-credentials-file>` for your specific case.)
 
 One example could look like this:<br>
