@@ -8,6 +8,15 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         netcat \
     ; \
+    echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list.d/bookworm.list \
+    apt-get update; \
+    apt-get install -t bookworm -y --no-install-recommends \
+        libheif1 \
+        libde265-0 \
+        libx265-199 \
+        libvips \
+    ; \
+    rm /etc/apt/sources.list.d/bookworm.list; \
     rm -rf /var/lib/apt/lists/*
 USER nobody
 
