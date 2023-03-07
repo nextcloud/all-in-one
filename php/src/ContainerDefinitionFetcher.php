@@ -213,6 +213,11 @@ class ContainerDefinitionFetcher
                 $devices = $entry['devices'];
             }
 
+            $capAdd = [];
+            if (isset($entry['cap_add'])) {
+                $capAdd = $entry['cap_add'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -226,6 +231,7 @@ class ContainerDefinitionFetcher
                 $dependsOn,
                 $secrets,
                 $devices,
+                $capAdd,
                 $this->container->get(DockerActionManager::class)
             );
         }
