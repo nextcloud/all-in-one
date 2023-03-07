@@ -103,6 +103,7 @@ services:
       - TALK_RECORDING_ENABLED=${TALK_RECORDING_ENABLED}
       - RECORDING_SECRET=${RECORDING_SECRET}
       - TALK_RECORDING_HOST=nextcloud-aio-talk-recording
+      - SKIP_DATA_DIRECTORY_PERMISSION_CHECK=${SKIP_DATA_DIRECTORY_PERMISSION_CHECK}
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -220,6 +221,8 @@ services:
       - imaginary
     networks:
       - nextcloud-aio
+    cap_add:
+      - SYS_NICE
 
   nextcloud-aio-fulltextsearch:
     image: nextcloud/aio-fulltextsearch:latest
