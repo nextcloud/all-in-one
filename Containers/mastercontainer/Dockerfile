@@ -27,7 +27,6 @@ RUN set -ex; \
         util-linux-misc \
         ca-certificates \
         wget \
-        tzdata \
         bash \
         apache2 \
         apache2-proxy \
