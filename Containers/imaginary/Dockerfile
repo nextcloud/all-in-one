@@ -4,12 +4,12 @@ FROM nextcloud/imaginary:20230301
 USER root
 RUN set -ex; \
     \
-    echo "deb http://deb.debian.org/debian sid main" > /etc/apt/sources.list.d/sid.list \
+    echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list.d/bookworm.list \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         netcat \
     ; \
-    apt-get install -t sid -y --no-install-recommends \
+    apt-get install -t bookworm -y --no-install-recommends \
         libheif1 \
         libde265-0 \
         libx265-199 \
