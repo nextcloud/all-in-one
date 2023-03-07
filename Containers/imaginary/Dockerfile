@@ -8,7 +8,7 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         netcat \
     ; \
-    echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list.d/bookworm.list \
+    echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list.d/bookworm.list; \
     apt-get update; \
     apt-get install -t bookworm -y --no-install-recommends \
         libheif1 \
