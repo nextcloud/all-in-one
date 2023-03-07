@@ -477,6 +477,7 @@ Now you can use `/mnt/storagebox` as Nextcloud's datadir like described in the s
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the initial startup of the mastercontainer. Allowed values for that variable are strings that start with `/` and are not equal to `/`.
 
 - Two examples for Linux are `-e NEXTCLOUD_MOUNT="/mnt/"` and `-e NEXTCLOUD_MOUNT="/media/"`.
+- On macOS it might be `-e NEXTCLOUD_DATADIR="/Volumes/your_drive/"`
 - For Synology it may be `-e NEXTCLOUD_MOUNT="/volume1/"`.
 - On Windows is this option not supported.
 
