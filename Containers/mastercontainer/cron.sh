@@ -38,8 +38,10 @@ while true; do
     # Make sure to delete the lock file always
     rm -f "/mnt/docker-aio-config/data/daily_backup_running"
 
-    # Check for updates and send notification if yes
-    sudo -u www-data php /var/www/docker-aio/php/src/Cron/UpdateNotification.php
+    # Check for updates and send notification if yes on saturdays
+    if [ "$(date +%u)" = 6 ]; then
+        sudo -u www-data php /var/www/docker-aio/php/src/Cron/UpdateNotification.php
+    fi
 
     # Check if AIO is outdated
     sudo -u www-data php /var/www/docker-aio/php/src/Cron/OutdatedNotification.php
