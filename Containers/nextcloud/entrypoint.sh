@@ -297,7 +297,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             fi
 
             # Set the permission check to its default value again if not set
-            if [ "$SKIP_DATA_DIRECTORY_PERMISSION_CHECK" = yes ]; then
+            if [ "$SKIP_DATA_DIRECTORY_PERMISSION_CHECK" != yes ]; then
                 php /var/www/html/occ config:system:set check_data_directory_permissions --value=true --type=bool
             fi
 
