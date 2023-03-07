@@ -130,7 +130,7 @@ if [ "$BORG_MODE" = backup ]; then
     BORG_OPTS=(-v --stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
     # Exclude the nextcloud log and audit log for GDPR reasons
-    BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log"* --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log")
+    BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log")
 
     # Create the backup
     echo "Starting the backup..."
@@ -267,15 +267,15 @@ if [ "$BORG_MODE" = restore ]; then
 
     # Restore everything except the configuration file
     if ! rsync --stats --archive --human-readable -vv --delete \
-    --exclude "nextcloud_aio_apache/caddy/"** \
-    --exclude "nextcloud_aio_mastercontainer/caddy/"** \
-    --exclude "nextcloud_aio_nextcloud/data/nextcloud.log"* \
+    --exclude "nextcloud_aio_apache/caddy/**" \
+    --exclude "nextcloud_aio_mastercontainer/caddy/**" \
+    --exclude "nextcloud_aio_nextcloud/data/nextcloud.log*" \
     --exclude "nextcloud_aio_nextcloud/data/audit.log" \
-    --exclude "nextcloud_aio_mastercontainer/certs/"** \
+    --exclude "nextcloud_aio_mastercontainer/certs/**" \
     --exclude "nextcloud_aio_mastercontainer/data/configuration.json" \
     --exclude "nextcloud_aio_mastercontainer/data/daily_backup_running" \
     --exclude "nextcloud_aio_mastercontainer/data/session_date_file" \
-    --exclude "nextcloud_aio_mastercontainer/session/"** \
+    --exclude "nextcloud_aio_mastercontainer/session/**" \
     /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
         RESTORE_FAILED=1
         echo "Something failed while restoring from backup."
