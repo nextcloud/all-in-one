@@ -24,3 +24,6 @@ ENTRYPOINT ["/usr/local/bin/imaginary", "-return-size", "-max-allowed-resolution
 
 HEALTHCHECK CMD nc -z localhost 9000 || exit 1
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
+
+# https://github.com/h2non/imaginary#memory-issues
+ENV MALLOC_ARENA_MAX=2
