@@ -12,14 +12,8 @@ elif [ -z "$SIGNALING_SECRET" ]; then
     exit 1
 fi
 
-while [ -z "$(dig nextcloud-aio-apache A +short)" ]; do
-    echo "Waiting for nextcloud-aio-apache to be started"
-    sleep 5
-done
-
 set -x
 IPv4_ADDRESS_TALK="$(dig nextcloud-aio-talk A +short)"
-IPv4_ADDRESS_APACHE="$(dig nextcloud-aio-apache A +short)"
 set +x
 
 # Turn
@@ -41,7 +35,6 @@ no-dtls
 userdb=/var/lib/turn/turndb
 # Based on https://nextcloud-talk.readthedocs.io/en/latest/TURN/#turn-server-and-internal-networks
 allowed-peer-ip=$IPv4_ADDRESS_TALK
-allowed-peer-ip=$IPv4_ADDRESS_APACHE
 denied-peer-ip=0.0.0.0-0.255.255.255
 denied-peer-ip=10.0.0.0-10.255.255.255
 denied-peer-ip=100.64.0.0-100.127.255.255
