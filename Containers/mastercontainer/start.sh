@@ -223,7 +223,8 @@ curl https://nextcloud.com &>/dev/null
 if [ "$?" = 6 ]; then
     echo "Could not resolve the host nextcloud.com."
     echo "Most likely the DNS resolving does not work."
-    echo "You should be able to fix this by adding the '--dns=\"ip.address.of.dns.server\"' option to the docker run command."
+    echo "You should be able to fix this by following https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html"
+    echo "Apart from that, there has been this: https://github.com/nextcloud/all-in-one/discussions/2065"
     exit 1
 fi
 
