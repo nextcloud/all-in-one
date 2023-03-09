@@ -12,6 +12,11 @@ elif [ -z "$SIGNALING_SECRET" ]; then
     exit 1
 fi
 
+while [ -z "$(dig nextcloud-aio-apache A +short)" ]; do
+    echo "Waiting for nextcloud-aio-apache to be started"
+    sleep 5
+done
+
 set -x
 IPv4_ADDRESS_TALK="$(dig nextcloud-aio-talk A +short)"
 IPv4_ADDRESS_APACHE="$(dig nextcloud-aio-apache A +short)"
