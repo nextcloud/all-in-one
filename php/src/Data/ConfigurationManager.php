@@ -78,7 +78,10 @@ class ConfigurationManager
         }
 
         $lastBackupLines = explode("\n", $content);
-        $lastBackupLine = $lastBackupLines[sizeof($lastBackupLines) - 2];
+        $lastBackupLine = "";
+        if (count($lastBackupLines) >= 2) {
+            $lastBackupLine = $lastBackupLines[sizeof($lastBackupLines) - 2];
+        }
         if ($lastBackupLine === "") {
             return '';
         }
