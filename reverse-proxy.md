@@ -272,7 +272,6 @@ server {
 
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Port $server_port;
-        proxy_set_header Early-Data $ssl_early_data;
         proxy_set_header X-Forwarded-Scheme $scheme;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Real-IP $remote_addr;
@@ -292,7 +291,6 @@ server {
     ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
     ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
 
-    ssl_early_data on;
     ssl_session_timeout 1d;
     ssl_session_cache shared:MozSSL:10m; # about 40000 sessions
     ssl_session_tickets off;
