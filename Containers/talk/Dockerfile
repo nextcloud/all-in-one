@@ -1,18 +1,21 @@
+FROM nats:2.9.15-scratch as nats
+FROM strukturag/nextcloud-spreed-signaling:1.1.2 as signaling
 FROM alpine:3.17.2
 USER root
 
-COPY --from=nats:2.9.15-scratch /nats-server /usr/local/bin/nats-server
-COPY --from=strukturag/nextcloud-spreed-signaling:1.1.2 /usr/bin/nextcloud-spreed-signaling /usr/local/bin/signaling
+COPY --from=nats /nats-server /usr/local/bin/nats-server
+COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/signaling
 
-RUN apk add --no-cache ca-certificates \
-                       tzdata \
-                       bash \
-                       shadow \
-                       coturn \
-                       openssl \
-                       supervisor \
-                       bind-tools \
-                       netcat-openbsd; \
+RUN apk add --no-cache \
+        ca-certificates \
+        tzdata \
+        bash \
+        shadow \
+        coturn \
+        openssl \
+        supervisor \
+        bind-tools \
+        netcat-openbsd; \
     apk add --no-cache janus-gateway --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
     useradd --system talk; \
     apk del --no-cache shadow;
@@ -20,26 +23,29 @@ RUN apk add --no-cache ca-certificates \
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 
-COPY --chmod=775 start.sh /usr/bin/
-COPY --chmod=664 supervisord.conf /
+COPY --chmod=775 start.sh /usr/bin/start.sh
+COPY --chmod=664 supervisord.conf /supervisord.conf
 RUN for sampleconf in /etc/janus/*.sample; do mv "$sampleconf" "$(echo $sampleconf | sed "s|.sample||g")"; done
 
-RUN touch /etc/nats.conf \
-          /etc/signaling.conf \
-          /etc/turnserver.conf; \
+RUN touch \
+        /etc/nats.conf \
+        /etc/signaling.conf \
+        /etc/turnserver.conf; \
     echo "listen: 127.0.0.1:4222" | tee /etc/nats.conf; \
-    mkdir -p /var/tmp \
-             /var/lib/turn \
-             /var/log/supervisord \
-             /var/run/supervisord; \
-    chown talk:talk -R /usr \
-                       /etc/janus \
-                       /etc/nats.conf \
-                       /etc/signaling.conf \
-                       /etc/turnserver.conf \
-                       /var/lib/turn \
-                       /var/log/supervisord \
-                       /var/run/supervisord;
+    mkdir -p \
+        /var/tmp \
+        /var/lib/turn \
+        /var/log/supervisord \
+        /var/run/supervisord; \
+    chown talk:talk -R \
+        /usr \
+        /etc/janus \
+        /etc/nats.conf \
+        /etc/signaling.conf \
+        /etc/turnserver.conf \
+        /var/lib/turn \
+        /var/log/supervisord \
+        /var/run/supervisord;
 
 # Set default talk port https://github.com/nextcloud/all-in-one/issues/1011
 ENV TALK_PORT=3478
