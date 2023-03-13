@@ -115,7 +115,7 @@ You'll also need to adjust Synology's firewall, see below:
 <details>
 <summary>Click here to expand</summary>
 
-The Synology DSM is vulnerable to attacks with it's open ports and login interfaces, which is why a firewall setup is always recommended. If a firewall is activated it is necessary to have exceptions for ports 80,443, the subnet of the docker bridge which includes the nextcloud containers, your public static IP (if you don't use DDNS) and if applicable your NC-Talk ports 3478 TCP+UDP:
+The Synology DSM is vulnerable to attacks with it's open ports and login interfaces, which is why a firewall setup is always recommended. If a firewall is activated it is necessary to have exceptions for ports 80,443, the subnet of the docker bridge which includes the Nextcloud containers, your public static IP (if you don't use DDNS) and if applicable your NC-Talk ports 3478 TCP+UDP:
 
 ![Screenshot 2023-01-19 at 14 13 48](https://user-images.githubusercontent.com/70434961/213677995-71a9f364-e5d2-49e5-831e-4579f217c95c.png)
 
@@ -163,7 +163,7 @@ No and they will not be. If you want to run it locally, without opening Nextclou
 ### Can I use an ip-address for Nextcloud instead of a domain?
 No and it will not be added. If you only want to run it locally, you may have a look at the following documentation: [local-instance.md](./local-instance.md)
 
-### Are other ports than then default 443 for Nextcloud supported?
+### Are other ports than the default 443 for Nextcloud supported?
 No and they will not be. Please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). If port 443 and/or 80 is blocked for you, you may use the ACME DNS-challenge or a Cloudflare Tunnel.
 
 ### Can I run Nextcloud in a subdirectory on my domain?
