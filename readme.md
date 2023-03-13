@@ -15,7 +15,7 @@ Included are:
 The following instructions are meant for installations without a web server or reverse proxy (like Apache, Nginx and else) already being in place. If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx and else), see the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md). Also, the instructions below are especially meant for Linux. For macOS see [this](#how-to-run-aio-on-macos), for Windows see [this](#how-to-run-aio-on-windows) and for Synology see [this](#how-to-run-aio-on-synology-dsm).
 1. Install Docker on your Linux installation by following the official documentation: https://docs.docker.com/engine/install/#server. The easiest way is installing it by **using the convenience script**:  
     ```sh
-    curl -fsSL get.docker.com | sudo sh
+    curl -fsSL https://get.docker.com | sudo sh
     ```
 1. If you need ipv6 support, you should enable it by following https://docs.docker.com/config/daemon/ipv6/.
 2. Run the command below in order to start the container:
