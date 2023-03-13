@@ -6,7 +6,8 @@ USER root
 COPY --from=nats /nats-server /usr/local/bin/nats-server
 COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/signaling
 
-RUN apk add --no-cache \
+RUN set -ex; \
+    apk add --no-cache \
         ca-certificates \
         tzdata \
         bash \
@@ -27,7 +28,8 @@ COPY --chmod=775 start.sh /usr/bin/start.sh
 COPY --chmod=664 supervisord.conf /supervisord.conf
 RUN for sampleconf in /etc/janus/*.sample; do mv "$sampleconf" "$(echo $sampleconf | sed "s|.sample||g")"; done
 
-RUN touch \
+RUN set -ex; \
+    touch \
         /etc/nats.conf \
         /etc/signaling.conf \
         /etc/turnserver.conf; \
