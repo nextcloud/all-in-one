@@ -55,8 +55,6 @@ TURN_CONF
 set -x
 sed -i 's|#interface.*|interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
 sed -i 's|#ws_interface.*|ws_interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
-sed -i 's|certfile =|#certfile =|g' /etc/janus/janus.transport.mqtt.jcfg
-sed -i 's|keyfile =|#keyfile =|g' /etc/janus/janus.transport.mqtt.jcfg
 set +x
 
 # Signling
