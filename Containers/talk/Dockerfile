@@ -4,14 +4,16 @@ USER root
 COPY --from=nats:2.9.15-scratch /nats-server /usr/local/bin/nats-server
 COPY --from=strukturag/nextcloud-spreed-signaling:1.1.2 /usr/bin/nextcloud-spreed-signaling /usr/local/bin/signaling
 
-RUN apk add --no-cache ca-certificates tzdata bash \
+RUN apk add --no-cache ca-certificates \
+                       tzdata \
+                       bash \
+                       shadow \
                        coturn \
                        openssl \
                        supervisor \
                        bind-tools \
                        netcat-openbsd; \
     apk add --no-cache janus-gateway --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
-    apk add --no-cache shadow; \
     useradd --system talk; \
     apk del --no-cache shadow;
 
@@ -21,9 +23,6 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 COPY --chmod=775 start.sh /usr/bin/
 COPY --chmod=664 supervisord.conf /
 RUN for sampleconf in /etc/janus/*.sample; do mv "$sampleconf" "$(echo $sampleconf | sed "s|.sample||g")"; done
-
-RUN wget https://raw.githubusercontent.com/rxi/json.lua/master/json.lua -O /usr/share/janus/lua/json.lua; \
-    wget https://raw.githubusercontent.com/kikito/ansicolors.lua/master/ansicolors.lua -O /usr/share/janus/lua/ansicolors.lua
 
 RUN touch /etc/nats.conf \
           /etc/signaling.conf \
