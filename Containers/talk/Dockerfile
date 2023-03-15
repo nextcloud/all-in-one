@@ -22,7 +22,7 @@ RUN set -ex; \
         luarocks5.3; \
     apk add --no-cache janus-gateway --repository http://dl-cdn.alpinelinux.org/alpine/edge/community; \
     useradd --system talk; \
-    luarocks5.3 install luajson ansicolors; \
+    luarocks-5.3 install luajson ansicolors; \
     apk del --no-cache \
         shadow \
         build-base \
