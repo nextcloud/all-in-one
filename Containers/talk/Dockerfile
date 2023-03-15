@@ -17,17 +17,17 @@ RUN set -ex; \
         bind-tools \
         netcat-openbsd \
         shadow \
-        luarock5.3 \
+        build-base \
         lua5.3-dev \
-        build-base; \
+        luarocks5.3; \
     apk add --no-cache janus-gateway --repository http://dl-cdn.alpinelinux.org/alpine/edge/community; \
     useradd --system talk; \
     luarock5.3 install luajson ansicolors; \
     apk del --no-cache \
         shadow \
-        luarock5.3 \
+        build-base \
         lua5.3-dev \
-        build-base;
+        luarocks5.3;
 
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
