@@ -11,15 +11,23 @@ RUN set -ex; \
         ca-certificates \
         tzdata \
         bash \
-        shadow \
         coturn \
         openssl \
         supervisor \
         bind-tools \
-        netcat-openbsd; \
+        netcat-openbsd \
+        shadow \
+        luarock5.3 \
+        lua5.3-dev \
+        build-base; \
     apk add --no-cache janus-gateway --repository http://dl-cdn.alpinelinux.org/alpine/edge/community; \
     useradd --system talk; \
-    apk del --no-cache shadow;
+    luarock5.3 install luajson ansicolors; \
+    apk del --no-cache \
+        shadow \
+        luarock5.3 \
+        lua5.3-dev \
+        build-base;
 
 # Give root a random password
 RUN echo "root:$(openssl rand -base64 12)" | chpasswd
@@ -48,9 +56,6 @@ RUN set -ex; \
         /var/lib/turn \
         /var/log/supervisord \
         /var/run/supervisord;
-
-RUN wget https://raw.githubusercontent.com/rxi/json.lua/master/json.lua -O /usr/share/janus/lua/json.lua; \
-    wget https://raw.githubusercontent.com/kikito/ansicolors.lua/master/ansicolors.lua -O /usr/share/janus/lua/ansicolors.lua
 
 # Set default talk port https://github.com/nextcloud/all-in-one/issues/1011
 ENV TALK_PORT=3478
