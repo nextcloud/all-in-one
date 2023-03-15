@@ -17,7 +17,7 @@ RUN set -ex; \
         supervisor \
         bind-tools \
         netcat-openbsd; \
-    apk add --no-cache janus-gateway --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
+    apk add --no-cache janus-gateway --repository http://dl-cdn.alpinelinux.org/alpine/edge/community; \
     useradd --system talk; \
     apk del --no-cache shadow;
 
