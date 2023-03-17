@@ -4,7 +4,7 @@ FROM alpine:3.17.2
 USER root
 
 COPY --from=nats /nats-server /usr/local/bin/nats-server
-COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/signaling
+COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
 
 RUN set -ex; \
     apk add --no-cache \
