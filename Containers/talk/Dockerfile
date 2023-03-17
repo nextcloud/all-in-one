@@ -17,6 +17,7 @@ RUN set -ex; \
         bind-tools \
         netcat-openbsd \
         shadow \
+        util-linux \
         build-base \
         lua5.3-dev \
         luarocks5.3; \
@@ -24,8 +25,10 @@ RUN set -ex; \
     useradd --system talk; \
     luarocks-5.3 install luajson; \
     luarocks-5.3 install ansicolors; \
+    rename -v ".jcfg.sample" ".jcfg" /etc/janus/*.sample; \
     apk del --no-cache \
         shadow \
+        util-linux \
         build-base \
         lua5.3-dev \
         luarocks5.3;
@@ -35,7 +38,6 @@ RUN echo "root:$(openssl rand -base64 12)" | chpasswd
 
 COPY --chmod=775 start.sh /usr/bin/start.sh
 COPY --chmod=664 supervisord.conf /supervisord.conf
-RUN for sampleconf in /etc/janus/*.sample; do mv "$sampleconf" "$(echo $sampleconf | sed "s|.sample||g")"; done
 
 RUN set -ex; \
     touch \
