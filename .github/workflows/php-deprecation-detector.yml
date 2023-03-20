@@ -26,4 +26,7 @@ jobs:
           cd php
           composer global require wapmorgan/php-deprecation-detector dev-master
           composer install
-          composer run php-deprecation-detector
+          composer run php-deprecation-detector | tee -i ./phpdd.log >/dev/null
+          if grep "Total issues:" ./phpdd.log; then
+            exit 1
+          fi
