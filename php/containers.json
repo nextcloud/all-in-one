@@ -215,7 +215,10 @@
           "writeable": true
         }
       ],
-      "restart": "unless-stopped"
+      "restart": "unless-stopped",
+      "cap_add": [
+        "MKNOD"
+      ]
     },
     {
       "container_name": "nextcloud-aio-talk",
