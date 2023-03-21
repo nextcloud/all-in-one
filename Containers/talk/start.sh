@@ -51,16 +51,8 @@ denied-peer-ip=203.0.113.0-203.0.113.255
 denied-peer-ip=240.0.0.0-255.255.255.255
 TURN_CONF
 
-# Janus
-set -x
-sed -i 's|#interface.*|interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
-sed -i 's|#ws_interface.*|ws_interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
-sed -i 's|certfile =|#certfile =|g' /etc/janus/janus.transport.mqtt.jcfg
-sed -i 's|keyfile =|#keyfile =|g' /etc/janus/janus.transport.mqtt.jcfg
-set +x
-
 # Signling
-cat << SIGNALING_CONF > "/etc/signaling/server.conf"
+cat << SIGNALING_CONF > "/etc/signaling.conf"
 [http]
 listen = 0.0.0.0:8081
 
