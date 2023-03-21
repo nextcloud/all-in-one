@@ -529,7 +529,8 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     if [ -z "$(php /var/www/html/occ talk:turn:list --output="plain")" ]; then
         php /var/www/html/occ talk:turn:add turn "$NC_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
     fi
-    if php /var/www/html/occ talk:stun:list --output="plain" | grep -oP '[a-zA-Z.:0-9]+' | grep -q "^stun.nextcloud.com:443$"; then
+    STUN_SERVER="$(php /var/www/html/occ talk:stun:list --output="plain")"
+    if [ -z "$STUN_SERVER" ] || echo "$STUN_SERVER" | grep -oP '[a-zA-Z.:0-9]+' | grep -q "^stun.nextcloud.com:443$"; then
         php /var/www/html/occ talk:stun:add "$NC_DOMAIN:$TALK_PORT"
         php /var/www/html/occ talk:stun:delete "stun.nextcloud.com:443"
     fi
