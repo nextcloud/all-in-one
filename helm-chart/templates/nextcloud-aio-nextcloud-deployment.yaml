@@ -98,6 +98,8 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: SIGNALING_SECRET
               value: "{{ .Values.SIGNALING_SECRET }}"
+            - name: SKIP_DATA_DIRECTORY_PERMISSION_CHECK
+              value: "{{ .Values.SKIP_DATA_DIRECTORY_PERMISSION_CHECK }}"
             - name: STARTUP_APPS
               value: "{{ .Values.NEXTCLOUD_STARTUP_APPS }}"
             - name: TALK_ENABLED
@@ -112,7 +114,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230302_085724-latest
+          image: nextcloud/aio-nextcloud:20230315_112022-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
