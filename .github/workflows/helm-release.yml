@@ -40,7 +40,6 @@ jobs:
         # TODO: switch back @main to a specific version like @v1.5.1 or higher
         uses: helm/chart-releaser-action@main
         with:
-          charts_repo_url: https://nextcloud.github.io/all-in-one
           charts_dir: helm-chart
           mark_as_latest: false
         env:
