@@ -6,6 +6,7 @@ keywords:
   - latest
   - nextcloud
   - helm-chart
+  - open-source
 sources:
   - https://github.com/nextcloud/all-in-one/tree/main/helm-chart
 home: https://github.com/nextcloud/all-in-one/tree/main/helm-chart
