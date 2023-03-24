@@ -37,7 +37,8 @@ jobs:
           version: v3.6.3
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.4.1
+        # TODO: switch back @main to a specific version like @v1.5.1 or higher
+        uses: helm/chart-releaser-action@main
         with:
           charts_repo_url: https://nextcloud.github.io/all-in-one
           charts_dir: helm-chart
