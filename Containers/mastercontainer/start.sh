@@ -98,7 +98,7 @@ if [ -n "$NEXTCLOUD_DATADIR" ]; then
         echo "NEXTCLOUD_DATADIR is set to $NEXTCLOUD_DATADIR"
     elif ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/" || [ "$NEXTCLOUD_DATADIR" = "/" ]; then
         echo "You've set NEXTCLOUD_DATADIR but not to an allowed value.
-The string must start with '/' and must not be equal to '/'.
+The string must start with '/' and must not be equal to '/'. Also allowed is 'nextcloud_aio_nextcloud_datadir'.
 It is set to '$NEXTCLOUD_DATADIR'."
         exit 1
     fi
