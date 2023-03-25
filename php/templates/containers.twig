@@ -250,6 +250,12 @@
                     {% else %}
                         {% if is_mastercontainer_update_available == false %}
                             Your containers are up-to-date.<br><br>
+                            {% if isAnyRunning == true %}
+                                <details>
+                                <summary>Note about <b>Nextcloud 26</b></summary><br>
+                                    If you want to upgrade to Nextcloud 26 now, you can do so by following <b><a href="https://github.com/nextcloud/all-in-one/discussions/2208">this documentation</a></b><br/>
+                                </details><br>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% endif %}
