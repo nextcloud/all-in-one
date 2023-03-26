@@ -194,9 +194,9 @@ It is set to '$NEXTCLOUD_TRUSTED_CACERTS_DIR '."
     fi
 fi
 if [ -n "$NEXTCLOUD_STARTUP_APPS" ]; then
-    if ! echo "$NEXTCLOUD_STARTUP_APPS" | grep -q "^[a-z _-]\+$"; then
+    if ! echo "$NEXTCLOUD_STARTUP_APPS" | grep -q "^[a-z0-9 _-]\+$"; then
         echo "You've set NEXTCLOUD_STARTUP_APPS but not to an allowed value.
-It needs to be a string. Allowed are small letters a-z, spaces, hyphens and '_'.
+It needs to be a string. Allowed are small letters a-z, 0-9, spaces, hyphens and '_'.
 It is set to '$NEXTCLOUD_STARTUP_APPS'."
         exit 1
     fi
