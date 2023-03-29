@@ -73,6 +73,9 @@
 					"restart": {
 						"type": "string"
 					},
+					"shm_size": {
+						"type": "integer"
+					},
 					"secrets": {
 						"type": "array",
 						"items": {

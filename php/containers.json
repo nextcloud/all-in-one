@@ -74,7 +74,8 @@
         "PGTZ=%TIMEZONE%"
       ],
       "stop_grace_period": 1800,
-      "restart": "unless-stopped"
+      "restart": "unless-stopped",
+      "shm_size": 268435456
     },
     {
       "container_name": "nextcloud-aio-nextcloud",

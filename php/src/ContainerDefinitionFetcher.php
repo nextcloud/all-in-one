@@ -218,6 +218,11 @@ class ContainerDefinitionFetcher
                 $capAdd = $entry['cap_add'];
             }
 
+            $shmSize = '';
+            if (isset($entry['shm_size'])) {
+                $shmSize = $entry['shm_size'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -232,6 +237,7 @@ class ContainerDefinitionFetcher
                 $secrets,
                 $devices,
                 $capAdd,
+                $shmSize,
                 $this->container->get(DockerActionManager::class)
             );
         }
