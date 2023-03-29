@@ -250,6 +250,21 @@ DATADIR_PERMISSION_CONF
             # unset admin password
             unset ADMIN_PASSWORD
 
+            if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
+                php /var/www/html/occ config:system:set updater.release.channel --value=beta
+                php /var/www/html/updater/updater.phar --no-interaction
+                php /var/www/html/occ app:enable nextcloud-aio --force
+                if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
+                    echo "Installation of Nextcloud failed!"
+                    touch "$NEXTCLOUD_DATA_DIR/install.failed"
+                fi
+                php /var/www/html/occ config:system:set updater.release.channel --value=stable
+                php /var/www/html/occ db:add-missing-indices
+                php /var/www/html/occ db:add-missing-columns
+                php /var/www/html/occ db:add-missing-primary-keys
+                yes | php /var/www/html/occ db:convert-filecache-bigint
+            fi
+
             # Apply log settings
             echo "Applying default settings..."
             mkdir -p /var/www/html/data

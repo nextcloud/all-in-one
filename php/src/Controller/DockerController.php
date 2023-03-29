@@ -154,11 +154,19 @@ class DockerController
             $port = 443;
         }
 
+        if (isset($request->getParsedBody()['install_latest_major'])) {
+            $installLatestMajor = 26;
+        } else {
+            $installLatestMajor = "";
+        }
+
         $config = $this->configurationManager->GetConfig();
         // set AIO_URL
         $config['AIO_URL'] = $host . ':' . $port;
         // set wasStartButtonClicked
         $config['wasStartButtonClicked'] = 1;
+        // set install_latest_major
+        $config['install_latest_major'] = $installLatestMajor;
         $this->configurationManager->WriteConfig($config);
 
         // Start container

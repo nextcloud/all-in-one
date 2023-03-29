@@ -26,6 +26,8 @@
         {% set isWatchtowerRunning = false %}
         {% set isBackupOrRestoreRunning = false %}
         {% set isApacheStarting = false %}
+        {# Setting newMajorVersion to '' will hide corresponding options/elements #}
+        {% set newMajorVersion = 26 %}
 
         {% if is_backup_container_running == true %}
             {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
@@ -250,10 +252,10 @@
                     {% else %}
                         {% if is_mastercontainer_update_available == false %}
                             Your containers are up-to-date.<br><br>
-                            {% if isAnyRunning == true %}
+                            {% if newMajorVersion != '' && isAnyRunning == true %}
                                 <details>
-                                <summary>Note about <b>Nextcloud 26</b></summary><br>
-                                    If you want to upgrade to Nextcloud 26 now, you can do so by following <b><a href="https://github.com/nextcloud/all-in-one/discussions/2208">this documentation</a></b><br/>
+                                <summary>Note about <b>Nextcloud {{ newMajorVersion }}</b></summary><br>
+                                    If you haven't upgraded to Nextcloud {{ newMajorVersion }} yet and want to do that now, feel free to follow <b><a href="https://github.com/nextcloud/all-in-one/discussions/2208">this documentation</a></b><br/>
                                 </details><br>
                             {% endif %}
                         {% endif %}
@@ -293,7 +295,16 @@
                                 <input class="button" type="submit" value="Update mastercontainer" />
                             </form>
                         {% else %}
-                            {% if was_start_button_clicked == false or has_update_available == false %}
+                            {% if was_start_button_clicked == false %}
+                                <form method="POST" action="/api/docker/start" class="xhr">
+                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                    {% if newMajorVersion != '' %}
+                                        <input type="checkbox" id="install_latest_major" name="install_latest_major"><label for="install_latest_major">Install Nextcloud {{ newMajorVersion }} (if unchecked, Nextcloud {{ newMajorVersion - 1 }} will get installed)</label><br>
+                                    {% endif %}
+                                    <input class="button" type="submit" value="Download and start containers" />
+                                </form>
+                            {% elseif has_update_available == false %}
                                 <form method="POST" action="/api/docker/start" class="xhr">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">

@@ -348,6 +348,12 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetNextcloudAdditionalApks();
                 } elseif ($out[1] === 'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS') {
                     $replacements[1] = $this->configurationManager->GetNextcloudAdditionalPhpExtensions();
+                } elseif ($out[1] === 'INSTALL_LATEST_MAJOR') {
+                    if ($this->configurationManager->shouldLatestMajorGetInstalled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
                 } else {
                     $secret = $this->configurationManager->GetSecret($out[1]);
                     if ($secret === "") {

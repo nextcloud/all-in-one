@@ -677,6 +677,14 @@ class ConfigurationManager
         }
     }
 
+    public function shouldLatestMajorGetInstalled() : bool {
+        $config = $this->GetConfig();
+        if(!isset($config['install_latest_major'])) {
+            $config['install_latest_major'] = '';
+        }
+        return $config['install_latest_major'] !== '';
+    }
+
     public function GetAdditionalBackupDirectoriesString() : string {
         if (!file_exists(DataConst::GetAdditionalBackupDirectoriesFile())) {
             return '';
