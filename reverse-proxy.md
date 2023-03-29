@@ -447,8 +447,10 @@ The examples below define the dynamic configuration in YAML files. If you rather
 ---
 
 Of course you need to modify `<your-nextcloud-domain>` in the `nextcloud.yml` to the domain on which you want to run Nextcloud. Also make sure to adjust the port `11000` to match the chosen `APACHE_PORT`. 
-    
+
 **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. If that is not an option for you, you can alternatively instead of `localhost` use the ip-address that is displayed after running the following command on the host OS: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` (the command only works on Linux)
+
+**Hint:** Possibly the following link is useful to understand how AIO configures things: https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml
 
 </details>
 
