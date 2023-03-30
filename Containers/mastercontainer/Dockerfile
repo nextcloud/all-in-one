@@ -1,5 +1,5 @@
 # Docker CLI is a requirement
-FROM docker:23.0.1-dind as dind
+FROM docker:23.0.2-cli as docker
 
 # Caddy is a requirement
 FROM caddy:2.6.4-alpine as caddy
@@ -62,7 +62,7 @@ RUN set -ex; \
 COPY --from=caddy /usr/bin/caddy /usr/bin/
 RUN chmod +x /usr/bin/caddy
 
-COPY --from=dind /usr/local/bin/docker /usr/local/bin/
+COPY --from=docker /usr/local/bin/docker /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker
 
 RUN set -e && \
