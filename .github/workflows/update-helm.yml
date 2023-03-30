@@ -17,8 +17,8 @@ jobs:
           DOCKER_TAG="$(curl -L -s 'https://registry.hub.docker.com/v2/repositories/nextcloud/all-in-one/tags?page_size=1024' | jq '."results"[]["name"]' | sed 's|"||g' | grep '^20' | sort -r | head -1)"
           DOCKER_TAG="${DOCKER_TAG%%-latest*}"
           export DOCKER_TAG
-          if [ -n "$DOCKER_TAG" ] && ! grep -q "$DOCKER_TAG" ./helm-chart/templates/nextcloud-aio-nextcloud-deployment.yaml; then
-            sudo bash helm-chart/update-helm.sh "$DOCKER_TAG"
+          if [ -n "$DOCKER_TAG" ] && ! grep -q "$DOCKER_TAG" ./nextcloud-aio-helm-chart/templates/nextcloud-aio-nextcloud-deployment.yaml; then
+            sudo bash nextcloud-aio-helm-chart/update-helm.sh "$DOCKER_TAG"
           fi
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
