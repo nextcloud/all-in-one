@@ -8,5 +8,5 @@ keywords:
   - helm-chart
   - open-source
 sources:
-  - https://github.com/nextcloud/all-in-one/tree/main/helm-chart
-home: https://github.com/nextcloud/all-in-one/tree/main/helm-chart
+  - https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
+home: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
