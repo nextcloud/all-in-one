@@ -216,6 +216,12 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             fi
 
             # We do our own permission check so the permission check is not needed
+            cat << DATADIR_PERMISSION_CONF > /var/www/html/config/datadir.permission.config.php
+<?php
+\$CONFIG = array (
+  'check_data_directory_permissions' => false
+);
+DATADIR_PERMISSION_CONF
             php /var/www/html/occ config:system:set check_data_directory_permissions --value=false --type=bool
 
             # Try to force generation of appdata dir:
@@ -237,6 +243,9 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                     exit 1
                 fi
             fi
+
+            # This autoconfig is not needed anymore and should be able to be overwritten by the user
+            rm /var/www/html/config/datadir.permission.config.php
 
             # unset admin password
             unset ADMIN_PASSWORD
@@ -297,11 +306,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                         php /var/www/html/occ app:disable "$app"
                     fi
                 done
-            fi
-
-            # Set the permission check to its default value again if not set
-            if [ "$SKIP_DATA_DIRECTORY_PERMISSION_CHECK" != yes ]; then
-                php /var/www/html/occ config:system:set check_data_directory_permissions --value=true --type=bool
             fi
 
         #upgrade
