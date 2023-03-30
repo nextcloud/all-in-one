@@ -25,6 +25,7 @@ class Container {
     private array $devices;
     /** @var string[] */
     private array $capAdd;
+    private string $shmSize;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -41,6 +42,7 @@ class Container {
         array $secrets,
         array $devices,
         array $capAdd,
+        string $shmSize,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -56,6 +58,7 @@ class Container {
         $this->secrets = $secrets;
         $this->devices = $devices;
         $this->capAdd = $capAdd;
+        $this->shmSize = $shmSize;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -73,6 +76,10 @@ class Container {
 
     public function GetRestartPolicy() : string {
         return $this->restartPolicy;
+    }
+
+    public function GetShmSize() : string {
+        return $this->shmSize;
     }
 
     public function GetMaxShutdownTime() : int {
