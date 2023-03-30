@@ -268,11 +268,10 @@ class ConfigurationManager
             $port = $this->GetApachePort();
 
             if (!filter_var($dnsRecordIP, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                $errorMessage = "It seems like the ip-address is set to an internal or reserved ip-address. This is not supported. (It was found to be set to '" . $dnsRecordIP . "')";
                 if ($port === '443') {
-                    throw new InvalidSettingConfigurationException($errorMessage);
+                    throw new InvalidSettingConfigurationException("It seems like the ip-address is set to an internal or reserved ip-address. This is not supported. (It was found to be set to '" . $dnsRecordIP . "')");
                 } else {
-                    error_log($errorMessage);
+                    error_log("It seems like the ip-address of " . $domain . " is set to an internal or reserved ip-address. (It was found to be set to '" . $dnsRecordIP . "')");
                 }
             }
 
