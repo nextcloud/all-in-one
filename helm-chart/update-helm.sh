@@ -199,4 +199,9 @@ done
 
 chmod 777 -R ./
 
+# Seems like the dir needs to match the name of the chart
+cd ../
+rm -rf ./nextcloud-aio-helm-chart
+mv ./helm-chart ./nextcloud-aio-helm-chart
+
 set +ex

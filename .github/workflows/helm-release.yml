@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'helm-chart/**'
+      - 'nextcloud-aio-helm-chart/**'
 
 jobs:
   release:
@@ -40,7 +40,7 @@ jobs:
         # TODO: switch back @main to a specific version like @v1.5.1 or higher
         uses: helm/chart-releaser-action@main
         with:
-          charts_dir: helm-chart
+          charts_dir: '.'
           mark_as_latest: false
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
