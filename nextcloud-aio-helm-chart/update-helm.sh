@@ -2,6 +2,9 @@
 
 DOCKER_TAG="$1"
 
+# The logic needs the files in ./helm-chart
+mv ./nextcloud-aio-helm-chart ./helm-chart
+
 # Clean
 rm -f ./helm-chart/values.yaml
 rm -rf ./helm-chart/templates
@@ -198,5 +201,10 @@ for variable in "${ENABLED_VARIABLES[@]}"; do
 done
 
 chmod 777 -R ./
+
+# Seems like the dir needs to match the name of the chart
+cd ../
+rm -rf ./nextcloud-aio-helm-chart
+mv ./helm-chart ./nextcloud-aio-helm-chart
 
 set +ex
