@@ -514,6 +514,7 @@
                             {#<input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice</label><br>#}
                         {% endif %}
                         <input id="options-form-submit" class="button" type="submit" value="Save changes" />
+                        <script type="text/javascript" src="options-form-submit.js"></script>
                     </form>
                     <b>Minimal system requirements:</b> When any optional addon is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV or Fulltextsearch, at least 3GB RAM are required. When enabling everything, at least 4GB RAM are required. Recommended are at least 1GB more RAM than the minimal requirement.<br><br>
                     {% if isAnyRunning == true or is_x64_platform == false %}
