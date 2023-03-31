@@ -406,7 +406,7 @@ class DockerActionManager
         }
 
         $shmSize = $container->GetShmSize();
-        if ($shmSize !== '') {
+        if ($shmSize > 0) {
             $requestBody['HostConfig']['ShmSize'] = $shmSize;
         }
 

@@ -218,7 +218,7 @@ class ContainerDefinitionFetcher
                 $capAdd = $entry['cap_add'];
             }
 
-            $shmSize = '';
+            $shmSize = -1;
             if (isset($entry['shm_size'])) {
                 $shmSize = $entry['shm_size'];
             }

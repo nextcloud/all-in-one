@@ -25,7 +25,7 @@ class Container {
     private array $devices;
     /** @var string[] */
     private array $capAdd;
-    private string $shmSize;
+    private int $shmSize;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -42,7 +42,7 @@ class Container {
         array $secrets,
         array $devices,
         array $capAdd,
-        string $shmSize,
+        int $shmSize,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -78,7 +78,7 @@ class Container {
         return $this->restartPolicy;
     }
 
-    public function GetShmSize() : string {
+    public function GetShmSize() : int {
         return $this->shmSize;
     }
 
