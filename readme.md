@@ -465,7 +465,7 @@ Sure. Add this to the `/etc/fstab` file: <br>
 (Of course you need to modify `<your-storage-host-and-subpath>`, `<your-mount-dir>` and `<your-credentials-file>` for your specific case.)
 
 One example could look like this:<br>
-`//your-storage-host/subpath /mnt/storagebox cifs rw,credentials=/etc/storage-credentials,uid=33,gid=0,file_mode=0770,dir_mode=0770 0 0`<br>
+`//your-storage-host/subpath /mnt/storagebox cifs rw,mfsymlinks,seal,credentials=/etc/storage-credentials,uid=33,gid=0,file_mode=0770,dir_mode=0770 0 0`<br>
 and add into `/etc/storage-credentials`:
 ```
 username=<smb/cifs username>
