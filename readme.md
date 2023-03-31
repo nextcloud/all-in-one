@@ -269,7 +269,16 @@ The backups itself get encrypted with an encryption key that gets shown to you i
 
 Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app.
 
-Note that this implementation does not provide remote backups, for this you can use the [backup app](https://apps.nextcloud.com/apps/backup).
+---
+
+#### Are remote borg backups supported?
+
+Not directly but you have multiple options to achieve this:
+- Mount a network FS like SSHFS, SMB or NFS in the directory that you enter in AIO as backup directory
+- Use rsync or rclone for syncing the borg backup archive that AIO creates locally to a remote target (make sure to lock the backup archive correctly before starting the sync; search for "aio-lockfile"; you can find a local example script here: https://github.com/nextcloud/all-in-one#sync-the-backup-regularly-to-another-drive)
+- You can find a well written guide that uses rclone and e.g. BorgBase for remote backups here: https://github.com/nextcloud/all-in-one/discussions/2247
+- create your own backup solution using a script and borg, borgmatic or any other to backup tool for backing up to a remote target (make sure to stop and start the AIO containers correctly following https://github.com/nextcloud/all-in-one#how-to-enable-automatic-updates-without-creating-a-backup-beforehand)
+- Additionally, there is the [backup app](https://apps.nextcloud.com/apps/backup) for remote backups
 
 ---
 
