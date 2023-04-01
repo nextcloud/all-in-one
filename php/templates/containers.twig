@@ -252,7 +252,7 @@
                     {% else %}
                         {% if is_mastercontainer_update_available == false %}
                             Your containers are up-to-date.<br><br>
-                            {% if newMajorVersion != '' and isAnyRunning == true %}
+                            {% if newMajorVersion != '' and isAnyRunning == true and isApacheStarting != true %}
                                 <details>
                                 <summary>Note about <b>Nextcloud {{ newMajorVersion }}</b></summary><br>
                                     If you haven't upgraded to Nextcloud {{ newMajorVersion }} yet and want to do that now, feel free to follow <b><a href="https://github.com/nextcloud/all-in-one/discussions/2208">this documentation</a></b><br/>
