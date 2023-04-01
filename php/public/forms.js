@@ -20,8 +20,10 @@
     if (xhr.status === 201) {
       window.location.replace(xhr.getResponseHeader('Location'));
     } else if (xhr.status === 422) {
+      disableSpinner()
       showError(xhr.response);
     } else if (xhr.status === 500) {
+      disableSpinner()
       showError("Server error. Please check the mastercontainer logs for details.");
     } else {
       // If the responose is not one of the above, we should reload to show the latest content
@@ -29,16 +31,12 @@
     }
   }
 
-  function disable(element) {
+  function disableSpinnerSpinner() {
     document.getElementById('overlay').classList.add('loading');
-    element.classList.add('loading');
-    element.disabled = true;
   }
 
-  function enable(element) {
+  function disableSpinner() {
     document.getElementById('overlay').classList.remove('loading');
-    element.classList.remove('loading');
-    element.disabled = false;
   }
 
   function initForm(form) {
@@ -50,11 +48,10 @@
       var xhr = new XMLHttpRequest();
       xhr.addEventListener('load', handleEvent);
       xhr.addEventListener('error', () => showError("Failed to talk to server."));
-      xhr.addEventListener('load', () => enable(event.submitter));
-      xhr.addEventListener('error', () => enable(event.submitter));
+      xhr.addEventListener('error', () => disableSpinner());
       xhr.open(form.method, form.getAttribute("action"));
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      disable(event.submitter);
+      disableSpinnerSpinner();
       xhr.send(new URLSearchParams(new FormData(form)));
       event.preventDefault();
     }
