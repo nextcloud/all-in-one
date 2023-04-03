@@ -252,11 +252,13 @@ DATADIR_PERMISSION_CONF
 
             if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
                 php /var/www/html/occ config:system:set updater.release.channel --value=beta
+                php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
                 php /var/www/html/updater/updater.phar --no-interaction
                 php /var/www/html/occ app:enable nextcloud-aio --force
                 if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
                     echo "Installation of Nextcloud failed!"
                     touch "$NEXTCLOUD_DATA_DIR/install.failed"
+                    exit 1
                 fi
                 php /var/www/html/occ config:system:set updater.release.channel --value=stable
                 php /var/www/html/occ db:add-missing-indices
@@ -427,6 +429,7 @@ php /var/www/html/occ app:enable support
 echo "Adjusting log files..."
 php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
 php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
+php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
 
 # Apply network settings
 echo "Applying network settings..."
