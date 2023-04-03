@@ -66,6 +66,7 @@ RUN set -ex; \
         opcache \
         pcntl \
         pdo_pgsql \
+        sysvsem \
         zip \
         gmp \
     ; \
