@@ -303,6 +303,8 @@ class ConfigurationManager
             $testUrl = $protocol . $domain . ':443';
             curl_setopt($ch, CURLOPT_URL, $testUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             $response = (string)curl_exec($ch);
             # Get rid of trailing \n
             $response = str_replace("\n", "", $response);
