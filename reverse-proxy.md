@@ -455,6 +455,91 @@ Of course you need to modify `<your-nextcloud-domain>` in the `nextcloud.yml` to
 
 </details>
 
+### Citrix ADC VPX / Citrix Netscaler 
+<details>
+<summary>click here to expand</summary>
+
+**Disclaimer:** This guide assumes you already have created a Citrix Content Switching Virtual Server on your ADC VPX / Netscaler
+
+1.First you need to create the NextCloud Service. This is under Traffic Management > Services > Add
+
+![image](https://user-images.githubusercontent.com/119460913/231899216-db1c7240-dcd4-4c16-8dbb-a8e09a1a8e62.png)
+
+2.Give the service a unique name, enter in the local IP address of your NextCloud AIO instance, make the Protocol HTTP, and the Port Number 11000
+
+![image](https://user-images.githubusercontent.com/119460913/231899348-de5f6eaf-5951-4f83-a4f9-159c0d884914.png)
+
+3.Now we need to create a Virtual Server. This is under Traffic Management > Virtual Servers > Add
+
+![image](https://user-images.githubusercontent.com/119460913/231899409-12488585-653f-4af9-a939-3b318a2b01af.png)
+
+4.Give the Virtual Server a unique Name, Putting LB in the name makes it easier to identify later. Change the protocol to HTTP and the IP Address Type to Non Addressable.
+
+![image](https://user-images.githubusercontent.com/119460913/231899476-1aa787bd-f586-4936-ae92-1257f0af5f12.png)
+
+5.We now need to bind the Service to the Virtual Server. Click the Bindings section under Services and Service Groups on the Virtual Server.
+
+![image](https://user-images.githubusercontent.com/119460913/231899538-6b80117f-df11-430d-9726-00756f90a83a.png)
+
+6.Click into the Select Service.
+
+![image](https://user-images.githubusercontent.com/119460913/231899576-abb8dfce-d02a-489f-bb1b-7d9860c9ce20.png)
+
+7.Select your Service from the list, then press Select.
+
+![image](https://user-images.githubusercontent.com/119460913/231899613-81937157-46da-4203-b09a-28b9459632e5.png)
+
+8.Select Bind.
+
+![image](https://user-images.githubusercontent.com/119460913/231899668-56f67685-c3e8-4efb-b35b-a7587a45ad1d.png)
+
+9.Now we will create the Content Switching Action. This is under Traffic Management > Content Switching > Actions > Add
+
+![image](https://user-images.githubusercontent.com/119460913/231899746-e1638bb5-e05c-48bd-8a9d-73bddc307dae.png)
+
+10.Create a Unique name for the CS Action, I would recommend adding a CS_Action in the name to make it easier later on. Make sure the Choose Virtual Server or Expression is set to Loadbalancing Virtual Server. Click into the Target Load Balancing Virtual Server section.
+
+![image](https://user-images.githubusercontent.com/119460913/231899792-5bc30796-515a-426c-8691-eda5249c7321.png)
+
+11.Select your LB Nextcloud from the Virtual Servers List and press select. Press Bind.
+
+![image](https://user-images.githubusercontent.com/119460913/231899844-ce64a0d8-2b0d-4e20-92e7-9bc0a5882c9c.png)
+
+12.Now we need to create a Content Switching Policy. This is under Traffic Management > Content Switching > Policies > Add.
+
+![image](https://user-images.githubusercontent.com/119460913/231899889-3b3c48b2-3d49-4181-8771-db7e5ec4921a.png)
+
+13.Create a Unique name for the Content Switching Policy, I recommend adding a CS_Policy in the name to make it easier later. In the Action Section, Select your CS_Action from the list and then in the Expression area add what is shown below. Substitute nextcloud.yourdomain.com for what you want the reverse DNS to look for.
+
+```
+HTTP.REQ.HOSTNAME.CONTAINS("nextcloud.yourdomain.com")
+```
+
+![image](https://user-images.githubusercontent.com/119460913/231900102-9c953783-a929-4a81-999d-6592fd7c4df4.png)
+
+14.Now we need to add the CS_Policy to the Content Switching Virtual Server. This is under Traffic Management > Virtual Servers. You will select your Content Switching Virtual Server from the list and press Edit.
+
+![image](https://user-images.githubusercontent.com/119460913/231900156-755ccdbe-556f-4c47-b10f-3a7bfd9d4a6e.png)
+
+15.Select the Content Switching Policies under the Content Switching Policy Binding. 
+
+![image](https://user-images.githubusercontent.com/119460913/231900205-51b0662c-204f-47df-9713-1e81f7f29e05.png)
+
+16.Click Add Binding.
+
+![image](https://user-images.githubusercontent.com/119460913/231900239-372d3c2e-b3b7-4cb3-90f9-19abbad46d1a.png)
+
+17.Click into the Policy section.
+
+![image](https://user-images.githubusercontent.com/119460913/231900288-89a34fdb-1a00-4254-b70b-53706d3142d0.png)
+
+18.Click your CS_Policy from the list and press select and then Bind.
+
+![image](https://user-images.githubusercontent.com/119460913/231900321-8c5a4602-7a35-45cf-9ed1-bbeebfa76bb7.png)
+
+</details>
+
+
 ### Others
 
 <details>
