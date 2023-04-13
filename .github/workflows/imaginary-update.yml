@@ -1,0 +1,36 @@
+# Inspired by https://github.com/nextcloud/docker/blob/master/.github/workflows/update-sh.yml
+name: imaginary-update
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '00 12 * * *'
+
+jobs:
+  run_update:
+    name: update to latest imaginary commit on master branch
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run imaginary-update
+      run: |
+        # Inspired by https://github.com/nextcloud/docker/blob/master/update.sh
+
+        # Imaginary
+        imaginary_version="$(
+          git ls-remote https://github.com/h2non/imaginary master \
+            | cut -f1 \
+            | tail -1
+        )"
+        sed -i "s|go install github.com/h2non/imaginaryq.*;|go install github.com/h2non/imaginary@$imaginary_version|" ./Containers/imaginary/Dockerfile
+        
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: imaginary-update automated change
+        signoff: true
+        title: Imaginary update
+        body: Automated Imaginary container update
+        labels: dependencies, enhancement
+        milestone: next
+        branch: imaginary-container-update
