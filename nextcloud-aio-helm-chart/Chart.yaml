@@ -7,6 +7,7 @@ keywords:
   - nextcloud
   - helm-chart
   - open-source
+  - cloud
 sources:
   - https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
 home: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
