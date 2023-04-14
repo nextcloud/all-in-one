@@ -44,6 +44,7 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
+    shm_size: 268435456
 
   nextcloud-aio-nextcloud:
     depends_on:
@@ -101,7 +102,7 @@ services:
       - STARTUP_APPS=${NEXTCLOUD_STARTUP_APPS}
       - ADDITIONAL_APKS=${NEXTCLOUD_ADDITIONAL_APKS}
       - ADDITIONAL_PHP_EXTENSIONS=${NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS}
-      - SKIP_DATA_DIRECTORY_PERMISSION_CHECK=${SKIP_DATA_DIRECTORY_PERMISSION_CHECK}
+      - INSTALL_LATEST_MAJOR=${INSTALL_LATEST_MAJOR}
     restart: unless-stopped
     networks:
       - nextcloud-aio
