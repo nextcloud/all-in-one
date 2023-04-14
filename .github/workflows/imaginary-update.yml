@@ -22,7 +22,7 @@ jobs:
             | cut -f1 \
             | tail -1
         )"
-        sed -i "s|go install github.com/h2non/imaginaryq.*;|go install github.com/h2non/imaginary@$imaginary_version|" ./Containers/imaginary/Dockerfile
+        sed -i "s|go install github.com/h2non/imaginaryq.*|go install github.com/h2non/imaginary@$imaginary_version|" ./Containers/imaginary/Dockerfile
         
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
