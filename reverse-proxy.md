@@ -352,6 +352,89 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 </details>
 
+### Node.js with Express
+
+<details>
+
+<summary>click here to expand</summary>
+
+For Node.js, we will use the npm package `http-proxy`. WebSockets must be handled separately.
+
+This example only uses `http`, but if your Express server already uses a `https` server, then follow the same instructions for `https`.
+
+```js
+const HttpProxy = require('http-proxy');
+const express = require('express');
+const http = require('http');
+
+const app = express();
+const proxy = HttpProxy.createProxyServer({
+	target: 'http://localhost:11000',
+	// Timeout can be changed to your liking.
+	timeout: 1000 * 60 * 3,
+	proxyTimeout: 1000 * 60 * 3,
+	// Not 100% certain whether autoRewrite is necessary, but enabling it SEEMS to make it behave more stably.
+	autoRewrite: true,
+	// Do not enable followRedirects.
+	followRedirects: false,
+});
+
+// Handle errors with proxy.web and proxy.ws
+function onProxyError(err, req, res, target) {
+	// Handle errors however you like. Here's an example:
+	if (err.code === 'ECONNREFUSED') {
+		return res.status(503).send('Nextcloud server is currently not running. It may be down for temporary maintenance.');
+	}
+	// other errors
+	else {
+		console.error(err);
+		return res.status(500).send(String(err));
+	}
+}
+
+app.use((req, res) => {
+	proxy.web(req, res, {}, onProxyError);
+});
+
+const httpServer = http.createServer(app);
+httpServer.listen('80');
+
+// Listen for an upgrade to a WebSocket connection.
+httpServer.on('upgrade', (req, socket, head) => {
+	proxy.ws(req, socket, head, {}, onProxyError);
+});
+```
+
+If you are using the Express package `vhost` for your app, you can use `proxy.web` inside the vhosted express function (see the following code snippet), but `proxy.ws` still needs to be done "globally" on your http server. Nextcloud should automatically ignore websocket requests for other domains.
+
+```js
+const HttpProxy = require('http-proxy');
+const express = require('express');
+const http = require('http');
+
+const myNextcloudApp = express();
+const myOtherApp = express();
+const vhost = express();
+
+// Definitions for proxy and onProxyError unchanged. (see above)
+
+myNextcloudApp.use((req, res) => {
+	proxy.web(req, res, {}, onProxyError);
+});
+
+vhost.use(vhostFunc('nextcloud.example.com', myNextcloudApp));
+vhost.use(vhostFunc('www.example.com', myOtherApp));
+
+const httpServer = http.createServer(app);
+httpServer.listen('80');
+
+// Listen for an upgrade to a WebSocket connection.
+httpServer.on('upgrade', (req, socket, head) => {
+	proxy.ws(req, socket, head, {}, onProxyError);
+});
+```
+</details>
+
 ### Synology Reverse Proxy
 
 <details>
