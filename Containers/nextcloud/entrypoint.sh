@@ -616,6 +616,11 @@ if version_greater "$installed_version" "24.0.0.0"; then
     fi
 fi
 
+# Migration to ES8 is pending, thus disabling FTS for now.
+if [ "$INSTALL_LATEST_MAJOR" = yes ] || version_greater "$installed_version" "26.0.0.0"; then
+    export FULLTEXTSEARCH_ENABLED=no
+fi
+
 # Fulltextsearch
 if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
     while ! nc -z "$FULLTEXTSEARCH_HOST" 9200; do
