@@ -205,6 +205,7 @@ RUN set -ex; \
         mawk \
         sudo \
         grep \
+        nodejs \
         coreutils;
 
 RUN set -ex; \
