@@ -1,7 +1,7 @@
 # Caddy is a requirement
 FROM caddy:2.6.4-alpine as caddy
 
-FROM httpd:2.4.56-alpine3.17
+FROM httpd:2.4.57-alpine3.17
 
 RUN set -ex; \
     apk add --no-cache shadow; \
