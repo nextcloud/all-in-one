@@ -14,8 +14,6 @@ jobs:
     - uses: actions/checkout@v3
     - name: Run imaginary-update
       run: |
-        # Inspired by https://github.com/nextcloud/docker/blob/master/update.sh
-
         # Imaginary
         imaginary_version="$(
           git ls-remote https://github.com/h2non/imaginary master \
