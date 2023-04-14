@@ -1,6 +1,6 @@
 FROM nats:2.9.15-scratch as nats
 FROM strukturag/nextcloud-spreed-signaling:1.1.2 as signaling
-FROM coturn/cotrun:4.6.2-r0-alpine
+FROM coturn/coturn:4.6.2-alpine
 USER root
 
 COPY --from=nats /nats-server /usr/local/bin/nats-server
