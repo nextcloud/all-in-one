@@ -1,29 +1,21 @@
-# From https://github.com/h2non/imaginary/blob/master/Dockerfile
-FROM nextcloud/imaginary:20230301
+FROM golang:1.20.3-alpine3.17 as go
+RUN apk add --no-cache \
+        vips-dev \
+        build-base; \
+    go install github.com/h2non/imaginary@b632dae
 
-USER root
-RUN set -ex; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        netcat \
-    ; \
-    echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list.d/bookworm.list; \
-    apt-get update; \
-    apt-get install -t bookworm -y --no-install-recommends \
-        libheif1 \
-        libde265-0 \
-        libx265-199 \
-        libvips \
-    ; \
-    rm /etc/apt/sources.list.d/bookworm.list; \
-    rm -rf /var/lib/apt/lists/*
-USER nobody
+FROM alpine:3.17.3
+RUN apk add --no-cache \
+        tzdata \
+        ca-certificates \
+        netcat-openbsd \
+        vips-dev
 
-ENTRYPOINT ["/usr/local/bin/imaginary", "-return-size", "-max-allowed-resolution", "222.2"]
-
-HEALTHCHECK CMD nc -z localhost 9000 || exit 1
-LABEL com.centurylinklabs.watchtower.monitor-only="true"
+COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
 
 # https://github.com/h2non/imaginary#memory-issues
 ENV MALLOC_ARENA_MAX=2
+ENTRYPOINT ["imaginary", "-p", "9000", "-return-size", "-max-allowed-resolution", "222.2"]
+
+HEALTHCHECK CMD nc -z localhost 9000 || exit 1
+LABEL com.centurylinklabs.watchtower.monitor-only="true"
