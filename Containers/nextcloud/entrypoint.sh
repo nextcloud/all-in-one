@@ -619,6 +619,7 @@ fi
 # Migration to ES8 is pending, thus disabling FTS for now.
 if [ "$INSTALL_LATEST_MAJOR" = yes ] || version_greater "$installed_version" "26.0.0.0"; then
     export FULLTEXTSEARCH_ENABLED=no
+    echo "Fulltextsearch is not compatible with Nextcloud 26 and is getting disabled."
 fi
 
 # Fulltextsearch
