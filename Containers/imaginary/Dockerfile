@@ -2,6 +2,9 @@ FROM golang:1.20.3-alpine3.17 as go
 RUN set -ex; \
     apk add --no-cache \
         vips-dev \
+        vips-magick \
+        vips-heif \
+        vips-jxl
         build-base; \
     go install github.com/h2non/imaginary@b632dae8cc321452c3f85bcae79c580b1ae1ed84
 
@@ -11,7 +14,10 @@ RUN set -ex; \
         tzdata \
         ca-certificates \
         netcat-openbsd \
-        vips-dev
+        vips \
+        vips-magick \
+        vips-heif \
+        vips-jxl
 
 COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
 
