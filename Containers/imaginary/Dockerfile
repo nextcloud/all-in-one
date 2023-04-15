@@ -15,6 +15,8 @@ RUN set -ex; \
 
 COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
 
+USER nobody
+
 # https://github.com/h2non/imaginary#memory-issues
 ENV MALLOC_ARENA_MAX=2
 ENTRYPOINT ["imaginary", "-p", "9000", "-return-size", "-max-allowed-resolution", "222.2"]
