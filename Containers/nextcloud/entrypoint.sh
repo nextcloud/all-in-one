@@ -260,6 +260,20 @@ DATADIR_PERMISSION_CONF
                     touch "$NEXTCLOUD_DATA_DIR/install.failed"
                     exit 1
                 fi
+                # shellcheck disable=SC2016
+                installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+                INSTALLED_MAJOR="${installed_version%%.*}"
+                IMAGE_MAJOR="${image_version%%.*}"
+                if ! [ "$INSTALLED_MAJOR" -gt "$IMAGE_MAJOR" ]; then
+                    php /var/www/html/occ config:system:set updater.release.channel --value=beta
+                    php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
+                    php /var/www/html/updater/updater.phar --no-interaction
+                    if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
+                        echo "Installation of Nextcloud failed!"
+                        touch "$NEXTCLOUD_DATA_DIR/install.failed"
+                        exit 1
+                    fi
+                fi
                 php /var/www/html/occ config:system:set updater.release.channel --value=stable
                 php /var/www/html/occ db:add-missing-indices
                 php /var/www/html/occ db:add-missing-columns
