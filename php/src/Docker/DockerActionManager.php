@@ -378,7 +378,7 @@ class DockerActionManager
                 $portWithProtocol = $value->port . '/' . $value->protocol;
                 $exposedPorts[$portWithProtocol] = null;
             }
-            $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio';
+            // $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio';
         } else {
             $requestBody['HostConfig']['NetworkMode'] = 'host';
         }
@@ -677,10 +677,6 @@ class DockerActionManager
                         'CheckDuplicate' => true,
                         'Driver' => 'bridge',
                         'Internal' => false,
-                        'Options' => [
-                            'com.docker.network.bridge.enable_icc' => 'true',
-                            'com.docker.network.bridge.enable_ip_masquerade' => 'true'
-                        ]
                     ]
                 ]
             );
