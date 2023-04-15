@@ -2,7 +2,7 @@ FROM golang:1.20.3-alpine3.17 as go
 RUN apk add --no-cache \
         vips-dev \
         build-base; \
-    go install github.com/h2non/imaginary@b632dae
+    go install github.com/h2non/imaginary@b632dae8cc321452c3f85bcae79c580b1ae1ed84
 
 FROM alpine:3.17.3
 RUN apk add --no-cache \
