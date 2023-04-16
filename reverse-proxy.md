@@ -329,7 +329,9 @@ Apart from that, there is this: [manual-install](https://github.com/nextcloud/al
 
 <summary>click here to expand</summary>
 
-See these screenshots for a working config:
+First, please make sure that the environmental variables `PUID` and `PGID` in the docker-compose.yml file for NPM are either unset or set to `0`.
+
+Second, see these screenshots for a working config:
 
 ![grafik](https://user-images.githubusercontent.com/75573284/213889707-b7841ca0-3ea7-4321-acf6-50e1c1649442.png)
 
