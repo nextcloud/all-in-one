@@ -20,7 +20,7 @@ Before you can use IPv6 in Docker containers or swarm services, you need to enab
 2.  Reload the Docker configuration file.
 
     ```console
-    sudo systemctl reload docker
+    sudo systemctl restart docker
     ```
 
 You can now create networks with the `--ipv6` flag and assign containers IPv6 addresses using the `--ip6` flag.
