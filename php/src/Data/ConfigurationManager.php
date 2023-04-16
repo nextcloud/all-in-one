@@ -801,7 +801,7 @@ class ConfigurationManager
     }
 
     private function GetDisableBackupSection() : string {
-        $envVariableName = 'DISABLE_BACKUP_SECTION';
+        $envVariableName = 'AIO_DISABLE_BACKUP_SECTION';
         $configName = 'disable_backup_section';
         $defaultValue = '';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);

@@ -509,7 +509,7 @@ One example for this would be `sudo docker exec -it --env DAILY_BACKUP=1 nextclo
 ⚠️ Please note that none of the option returns error codes. So you need to check for the correct result yourself.
 
 ### How to disable the backup section?
-If you already have a backup solution in place, you may want to hide the backup section. You can do so by adding `--env DISABLE_BACKUP_SECTION=true` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used).
+If you already have a backup solution in place, you may want to hide the backup section. You can do so by adding `--env AIO_DISABLE_BACKUP_SECTION=true` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used).
 
 ### How to change the default location of Nextcloud's Datadir?
 ⚠️ **Attention:** It is very important to change the datadir **before** Nextcloud is installed/started the first time and not to change it afterwards! If you still want to do it afterwards, see [this](https://github.com/nextcloud/all-in-one/discussions/890#discussioncomment-3089903) on how to do it.
