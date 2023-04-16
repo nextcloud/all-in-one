@@ -332,7 +332,7 @@
       ],
       "volumes": [
         {
-          "source": "%DOCKER_SOCKET_PATH%",
+          "source": "%WATCHTOWER_DOCKER_SOCKET_PATH%",
           "destination": "/var/run/docker.sock",
           "writeable": false
         }
