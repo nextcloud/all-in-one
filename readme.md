@@ -29,6 +29,8 @@ Included are:
 - Defaults to a max of 512 MB RAM per PHP process, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud)
 - Automatic TLS included (by using Let's Encrypt)
 - HTTP/2 and HTTP/3 enabled
+- "Pretty URLs" for Nextcloud are enabled by default (removes the index.php from all links)
+- Video previews work out of the box and when Imaginary is enabled, many recent image formats as well!
 - Only one domain and not multiple domains are required for everything to work (usually you would need to have one domain for each service which is much more complex)
 - [Adjustable location](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) of Nextcloud's datadir (e.g. good for easy file-sharing with host system on Windows and MacOS)
 - By default confined (good for security) but can [allow access to additional storages](https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host) in order to enable the usage of the local external storage feature
@@ -39,6 +41,7 @@ Included are:
 - Possibility included to [pass the needed device for hardware transcoding](https://github.com/nextcloud/all-in-one#how-to-enable-hardware-transcoding-for-nextcloud) to the Nextcloud containe
 - Possibility included to [store all docker related files on a separate drive](https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive)
 - [LDAP](https://github.com/nextcloud/all-in-one/tree/main#ldap) can be used as user backend for Nextcloud
+- Migration from any former Nextcloud installation to AIO is possible. See [this documentation](https://github.com/nextcloud/all-in-one/blob/main/migration.md)
 - [Fail2Ban can be added](https://github.com/nextcloud/all-in-one#fail2ban)
 - [phpMyAdmin, Adminer or pgAdmin can be added](https://github.com/nextcloud/all-in-one#phpmyadmin-adminer-or-pgadmin)
 - [Mail server can be added](https://github.com/nextcloud/all-in-one#mail-server)
