@@ -139,6 +139,7 @@ if [ "$BORG_MODE" = backup ]; then
         echo "Deleting the failed backup archive..."
         borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio"
         echo "Backup failed!"
+        echo "You might want to check the backup integrity via the AIO interface."
         if [ "$NEW_REPOSITORY" = 1 ]; then
             echo "Deleting borg.config file so that you can choose a different location for the backup."
             rm "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"
@@ -379,6 +380,7 @@ if [ "$BORG_MODE" = "check-repair" ]; then
     # Perform the check-repair
     if ! echo YES | borg check -v --repair "$BORG_BACKUP_DIRECTORY"; then
         echo "Some errors were found while checking and repairing the backup integrity!"
+        echo "Check the AIO interface for advices on how to proceed now!"
         exit 1
     fi
 
