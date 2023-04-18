@@ -10,7 +10,7 @@ Included are:
 - Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
 - ClamAV (Antivirus backend for Nextcloud)
 - Fulltextsearch
-<details><summary>And more</summary>
+<details><summary>And much more:</summary>
 
 - Simple web interface included that enables easy installation and maintenance
 - [Easy updates included](https://github.com/nextcloud/all-in-one#how-to-update-the-containers)
