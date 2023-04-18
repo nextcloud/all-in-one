@@ -1,5 +1,5 @@
-# Nextcloud All In One
-Nextcloud AIO stands for Nextcloud All In One and provides easy deployment and maintenance with most features included in this one Nextcloud instance. 
+# Nextcloud All-in-One
+Nextcloud AIO stands for Nextcloud All-in-One and provides easy deployment and maintenance with most features included in this one Nextcloud instance. 
 
 Included are:
 - Nextcloud
