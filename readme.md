@@ -15,7 +15,7 @@ Included are:
 - Simple web interface included that enables easy installation and maintenance
 - [Easy updates included](https://github.com/nextcloud/all-in-one#how-to-update-the-containers)
 - Update and backup notifications included
-- Daily backups can get enabled from the AIO interface which also allows to update all containers, Nextcloud and Nextcloud apps afterwards automatically
+- Daily backups can get enabled from the AIO interface which also allows to update all containers, Nextcloud and its apps afterwards automatically
 - Instance restore from backup archive via the AIO interface included (you only need the archive and the password in order to restore the whole instance on a new AIO instance)
 - APCU as local cache
 - Redis as distributed cache and for file locking
