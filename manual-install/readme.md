@@ -11,7 +11,7 @@ You can run the containers that are build for AIO with docker-compose. This come
 - You lose the AIO interface
 - You lose update notifications and automatic updates
 - You lose all AIO backup and restore features
-- You need to know what you are doing, especially when modifying the docker-compose file
+- **You need to know what you are doing, especially when modifying the docker-compose file**
 - For updating, you need to strictly follow the at the bottom described update routine
 - Probably more
 
