@@ -495,6 +495,8 @@ On macOS see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-macos.
 
 <summary>Command for Windows</summary>
 
+On Windows, install [Docker Desktop](https://www.docker.com/products/docker-desktop/) (and don't forget to [enable ipv6](https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md) if you should need that) and run the following command in the command prompt:
+
 ```
 docker run ^
 --sig-proxy=false ^
