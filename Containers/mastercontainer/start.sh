@@ -159,6 +159,11 @@ It is set to '$NEXTCLOUD_MEMORY_LIMIT'."
 else
     echo "The environmental variable NEXTCLOUD_MEMORY_LIMIT was not set which usually means that a memory limit of up to '512M' per PHP process should be applied."
 fi
+if [ "$NEXTCLOUD_ENABLE_DRI_DEVICE" = "true" ]; then
+    echo "The environmental variable NEXTCLOUD_ENABLE_DRI_DEVICE is set to true which means that the '/dev/dri' device will be attached to the Nextcloud container which enables hardware transcoding. However it also means that starting the Nextcloud container potentially fails if the '/dev/dri' device should not be present on your host. So make sure to check that before starting your containers from the AIO interface!"
+else
+    echo "The environmental variable NEXTCLOUD_ENABLE_DRI_DEVICE is not set to true which usually means that the '/dev/dri' device will not be attached to the Nextcloud container. Thus, hardware transcoding is usually disabled."
+fi
 if [ -n "$APACHE_PORT" ]; then
     if ! check_if_number "$APACHE_PORT"; then
         echo "You provided an Apache port but did not only use numbers.
