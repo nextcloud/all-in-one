@@ -14,6 +14,6 @@ Below is described more in detail how the the second way works.
 1. Next create your Caddyfile with multiple entries and domains for the different instances like described in step 1 of the [reverse proxy documentation](./reverse-proxy.md). Obviously each domain needs to point correctly to the chosen `APACHE_PORT` that you've configured before. Then start Caddy which should automatically get the needed certificates for you if your domains are configured correctly and ports 80 and 443 are forwarded to your server.
 1. Now open each of the AIO interfaces by opening `https://ip.address.of.this.server:8080` or e.g. `https://ip.address.of.this.server:8081` or as chosen during step 3 of this documentation. 
 1. Finally type in the domain that you've configured for each of the instances during step 5 of this documentation and you are done.
-1. Please also do not forget to open each chosen `TALK_PORT` UPD and TCP in your firewall/router as otherwise Talk will not work correctly!
+1. Please also do not forget to open/forward each chosen `TALK_PORT` UPD and TCP in your firewall/router as otherwise Talk will not work correctly!
 
 Now everything should be set up correctly and you should have created multiple working instances of AIO on the same server!
