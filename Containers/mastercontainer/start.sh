@@ -102,6 +102,9 @@ The string must start with '/' and must not be equal to '/'. Also allowed is 'ne
 It is set to '$NEXTCLOUD_DATADIR'."
         exit 1
     fi
+    echo "The environmental variable NEXTCLOUD_DATADIR is set which means that Nextcloud's datadir is getting stored in the '$NEXTCLOUD_DATADIR' directory."
+else
+    echo "The environmental variable NEXTCLOUD_DATADIR was not set which means that Nextcloud's datadir is getting stored in the nextcloud_aio_nextcloud_data Docker volume."
 fi
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
     if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/" || [ "$NEXTCLOUD_MOUNT" = "/" ]; then
@@ -113,6 +116,9 @@ It is set to '$NEXTCLOUD_MOUNT'."
         echo "'/mnt/ncdata' and '/mnt/ncdata/' are not allowed as values for NEXTCLOUD_MOUNT."
         exit 1
     fi
+    echo "The environmental variable NEXTCLOUD_MOUNT is set which means that the Nextcloud container will get access to the '$NEXTCLOUD_MOUNT' directory and local external storage in Nextcloud will get enabled."
+else
+    echo "The environmental variable NEXTCLOUD_MOUNT was not set which usually means that the Nextcloud container will be confined and local external storage in Nextcloud will be disabled."
 fi
 if [ -n "$NEXTCLOUD_DATADIR" ] && [ -n "$NEXTCLOUD_MOUNT" ]; then
     if [ "$NEXTCLOUD_DATADIR" = "$NEXTCLOUD_MOUNT" ]; then
@@ -127,6 +133,9 @@ The string must start with a number and end with 'G'.
 It is set to '$NEXTCLOUD_UPLOAD_LIMIT'."
         exit 1
     fi
+    echo "The environmental variable NEXTCLOUD_UPLOAD_LIMIT is set which means that uploads of up to '$NEXTCLOUD_UPLOAD_LIMIT' should be possible."
+else
+    echo "The environmental variable NEXTCLOUD_UPLOAD_LIMIT was not set which usually means that uploads of up to '10G' should be possible."
 fi
 if [ -n "$NEXTCLOUD_MAX_TIME" ]; then
     if ! echo "$NEXTCLOUD_MAX_TIME" | grep -q '^[0-9]\+$'; then
@@ -135,6 +144,9 @@ The string must be a number. E.g. '3600'.
 It is set to '$NEXTCLOUD_MAX_TIME'."
         exit 1
     fi
+    echo "The environmental variable NEXTCLOUD_MAX_TIME is set which means that a timeout of '$NEXTCLOUD_MAX_TIME' seconds will be applied (important for big file uploads)."
+else
+    echo "The environmental variable NEXTCLOUD_MAX_TIME was not set which usually means that a timeout of '3600' seconds should be applied (important for big file uploads)."
 fi
 if [ -n "$NEXTCLOUD_MEMORY_LIMIT" ]; then
     if ! echo "$NEXTCLOUD_MEMORY_LIMIT" | grep -q '^[0-9]\+M$'; then
@@ -143,6 +155,9 @@ The string must start with a number and end with 'M'.
 It is set to '$NEXTCLOUD_MEMORY_LIMIT'."
         exit 1
     fi
+    echo "The environmental variable NEXTCLOUD_MEMORY_LIMIT is set which means that a memory limit of up to '$NEXTCLOUD_MEMORY_LIMIT' per PHP process will be applied."
+else
+    echo "The environmental variable NEXTCLOUD_MEMORY_LIMIT was not set which usually means that a memory limit of up to '512M' per PHP process should be applied."
 fi
 if [ -n "$APACHE_PORT" ]; then
     if ! check_if_number "$APACHE_PORT"; then
@@ -153,12 +168,24 @@ It is set to '$APACHE_PORT'."
         echo "The provided Apache port is invalid. It must be between 1 and 65535"
         exit 1
     fi
+    echo "The environmental variable APACHE_PORT is set which means that the Apache container will use '$APACHE_PORT/tcp' as port."
+    if [ "$APACHE_PORT" != 443  ]; then
+        echo "It also means that AIO can now be run behind a reverse proxy (like Apache, Nginx and else)."
+    else
+        echo "Since port 443 is specified, that also means that Nextcloud will not run behind a reverse proxy (like Apache, Nginx and else), unless you specify a different port."
+    fi
+else
+    echo "The environmental variable APACHE_PORT was not set which usually means that the Apache container will use '443/tcp' as port. Make sure to open/forward port 443 TCP in your firewall/router. It also means that Nextcloud will usually not run behind a reverse proxy (like Apache, Nginx and else), unless you specify a different port."
 fi
 if [ -n "$APACHE_IP_BINDING" ]; then
     if ! echo "$APACHE_IP_BINDING" | grep -q '^[0-9.]\+$'; then
-        echo "You provided an ip-address for the apache container's ip-binding but it was not a valid ip-address.
+        echo "You provided an ip-address for the Apache container's ip-binding but it was not a valid ip-address.
 It is set to '$APACHE_IP_BINDING'."
         exit 1
+    fi
+    echo "The environmental variable APACHE_IP_BINDING is set which means that Apache will use an ip-binding of '$APACHE_IP_BINDING'."
+    if [ "$APACHE_PORT" != "0.0.0.0"  ]; then
+        echo "If in doubt about the correctness of '$APACHE_IP_BINDING', set it to '0.0.0.0' instead."
     fi
 fi
 if [ -n "$TALK_PORT" ]; then
@@ -170,6 +197,7 @@ It is set to '$TALK_PORT'."
         echo "The provided Talk port is invalid. It must be between 1 and 65535"
         exit 1
     fi
+    echo "The environmental variable TALK_PORT is set which means that the Talk container will use port '$TALK_PORT/tcp' and '$TALK_PORT/udp' which will be exposed on the host. Make sure to open/forward both in your router/firewall."
 fi
 if [ -n "$APACHE_PORT" ] && [ -n "$TALK_PORT" ]; then
     if [ "$APACHE_PORT" = "$TALK_PORT" ]; then
@@ -184,6 +212,9 @@ The string must start with '/' and must not end with '/'.
 It is set to '$DOCKER_SOCKET_PATH'."
         exit 1
     fi
+    echo "The environmental variable DOCKER_SOCKET_PATH is set which means that the Watchtower container will use '$DOCKER_SOCKET_PATH' as docker socket path for mastercontainer updates."
+else
+    echo "The environmental variable DOCKER_SOCKET_PATH was not set which usually means that the Watchtower container will use '/var/run/docker.sock' as docker socket path for mastercontainer updates. If that should be incorrect, mastercontainer updates will fail."
 fi
 if [ -n "$NEXTCLOUD_TRUSTED_CACERTS_DIR" ]; then
     if ! echo "$NEXTCLOUD_TRUSTED_CACERTS_DIR" | grep -q "^/" || echo "$NEXTCLOUD_TRUSTED_CACERTS_DIR" | grep -q "/$"; then
@@ -192,6 +223,7 @@ It should be an absolute path to a directory that starts with '/' but not end wi
 It is set to '$NEXTCLOUD_TRUSTED_CACERTS_DIR '."
         exit 1
     fi
+    echo "The environmental variable NEXTCLOUD_TRUSTED_CACERTS_DIR is set which means that '$NEXTCLOUD_TRUSTED_CACERTS_DIR' will be mounted into the Nextcloud container and in there present certificates automatically trusted."
 fi
 if [ -n "$NEXTCLOUD_STARTUP_APPS" ]; then
     if ! echo "$NEXTCLOUD_STARTUP_APPS" | grep -q "^[a-z0-9 _-]\+$"; then
@@ -200,6 +232,7 @@ It needs to be a string. Allowed are small letters a-z, 0-9, spaces, hyphens and
 It is set to '$NEXTCLOUD_STARTUP_APPS'."
         exit 1
     fi
+    echo "The environmental variable NEXTCLOUD_STARTUP_APPS is set which means that additional apps will be instealled/uninstalled upon the initial installation of Nextcloud."
 fi
 if [ -n "$NEXTCLOUD_ADDITIONAL_APKS" ]; then
     if ! echo "$NEXTCLOUD_ADDITIONAL_APKS" | grep -q "^[a-z0-9 ._-]\+$"; then
@@ -208,6 +241,7 @@ It needs to be a string. Allowed are small letters a-z, digits 0-9, spaces, hyph
 It is set to '$NEXTCLOUD_ADDITIONAL_APKS'."
         exit 1
     fi
+    echo "The environmental variable NEXTCLOUD_ADDITIONAL_APKS is set which means that the following APKS will be added permanently to the Nextcloud container: '$NEXTCLOUD_ADDITIONAL_APKS'"
 fi
 if [ -n "$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS" ]; then
     if ! echo "$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS" | grep -q "^[a-z0-9 ._-]\+$"; then
@@ -216,6 +250,7 @@ It needs to be a string. Allowed are small letters a-z, digits 0-9, spaces, hyph
 It is set to '$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS'."
         exit 1
     fi
+    echo "The environmental variable NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS is set which means that the following PHP extensions will be added permanently to the Nextcloud container: '$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS'"
 fi
 
 # Check DNS resolution
