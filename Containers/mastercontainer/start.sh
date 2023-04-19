@@ -217,7 +217,7 @@ The string must start with '/' and must not end with '/'.
 It is set to '$DOCKER_SOCKET_PATH'."
         exit 1
     fi
-    echo "The environmental variable DOCKER_SOCKET_PATH is set which means that the Watchtower container will use '$DOCKER_SOCKET_PATH' as docker socket path for mastercontainer updates."
+    echo "The environmental variable DOCKER_SOCKET_PATH is set which means that the Watchtower container will use '$DOCKER_SOCKET_PATH' as docker socket path for mastercontainer updates. If that should be incorrect, mastercontainer updates will fail."
 fi
 if [ -n "$NEXTCLOUD_TRUSTED_CACERTS_DIR" ]; then
     if ! echo "$NEXTCLOUD_TRUSTED_CACERTS_DIR" | grep -q "^/" || echo "$NEXTCLOUD_TRUSTED_CACERTS_DIR" | grep -q "/$"; then
