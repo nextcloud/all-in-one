@@ -104,7 +104,7 @@ It is set to '$NEXTCLOUD_DATADIR'."
     fi
     echo "The environmental variable NEXTCLOUD_DATADIR is set which means that Nextcloud's datadir is getting stored in the '$NEXTCLOUD_DATADIR' directory."
 else
-    echo "The environmental variable NEXTCLOUD_DATADIR was not set which means that Nextcloud's datadir is getting stored in the nextcloud_aio_nextcloud_data Docker volume."
+    echo "The environmental variable NEXTCLOUD_DATADIR was not set which means that Nextcloud's datadir is getting stored in the nextcloud_aio_nextcloud_data Docker volume. See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir on how to change this."
 fi
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
     if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/" || [ "$NEXTCLOUD_MOUNT" = "/" ]; then
@@ -118,7 +118,7 @@ It is set to '$NEXTCLOUD_MOUNT'."
     fi
     echo "The environmental variable NEXTCLOUD_MOUNT is set which means that the Nextcloud container will get access to the '$NEXTCLOUD_MOUNT' directory and local external storage in Nextcloud will get enabled."
 else
-    echo "The environmental variable NEXTCLOUD_MOUNT was not set which usually means that the Nextcloud container will be confined and local external storage in Nextcloud will be disabled."
+    echo "The environmental variable NEXTCLOUD_MOUNT was not set which usually means that the Nextcloud container will be confined and local external storage in Nextcloud will be disabled. See https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host on how to set this."
 fi
 if [ -n "$NEXTCLOUD_DATADIR" ] && [ -n "$NEXTCLOUD_MOUNT" ]; then
     if [ "$NEXTCLOUD_DATADIR" = "$NEXTCLOUD_MOUNT" ]; then
@@ -135,7 +135,7 @@ It is set to '$NEXTCLOUD_UPLOAD_LIMIT'."
     fi
     echo "The environmental variable NEXTCLOUD_UPLOAD_LIMIT is set which means that uploads of up to '$NEXTCLOUD_UPLOAD_LIMIT' should be possible."
 else
-    echo "The environmental variable NEXTCLOUD_UPLOAD_LIMIT was not set which usually means that uploads of up to '10G' should be possible."
+    echo "The environmental variable NEXTCLOUD_UPLOAD_LIMIT was not set which usually means that uploads of up to '10G' should be possible. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud on how to adjust this."
 fi
 if [ -n "$NEXTCLOUD_MAX_TIME" ]; then
     if ! echo "$NEXTCLOUD_MAX_TIME" | grep -q '^[0-9]\+$'; then
@@ -146,7 +146,7 @@ It is set to '$NEXTCLOUD_MAX_TIME'."
     fi
     echo "The environmental variable NEXTCLOUD_MAX_TIME is set which means that a timeout of '$NEXTCLOUD_MAX_TIME' seconds will be applied (important for big file uploads)."
 else
-    echo "The environmental variable NEXTCLOUD_MAX_TIME was not set which usually means that a timeout of '3600' seconds should be applied (important for big file uploads)."
+    echo "The environmental variable NEXTCLOUD_MAX_TIME was not set which usually means that a timeout of '3600' seconds should be applied (important for big file uploads). See https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud on how to adjust this."
 fi
 if [ -n "$NEXTCLOUD_MEMORY_LIMIT" ]; then
     if ! echo "$NEXTCLOUD_MEMORY_LIMIT" | grep -q '^[0-9]\+M$'; then
@@ -157,12 +157,12 @@ It is set to '$NEXTCLOUD_MEMORY_LIMIT'."
     fi
     echo "The environmental variable NEXTCLOUD_MEMORY_LIMIT is set which means that a memory limit of up to '$NEXTCLOUD_MEMORY_LIMIT' per PHP process will be applied."
 else
-    echo "The environmental variable NEXTCLOUD_MEMORY_LIMIT was not set which usually means that a memory limit of up to '512M' per PHP process should be applied."
+    echo "The environmental variable NEXTCLOUD_MEMORY_LIMIT was not set which usually means that a memory limit of up to '512M' per PHP process should be applied. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud on how to adjust this."
 fi
 if [ "$NEXTCLOUD_ENABLE_DRI_DEVICE" = "true" ]; then
     echo "The environmental variable NEXTCLOUD_ENABLE_DRI_DEVICE is set to true which means that the '/dev/dri' device will be attached to the Nextcloud container which enables hardware transcoding. However it also means that starting the Nextcloud container potentially fails if the '/dev/dri' device should not be present on your host. So make sure to check that before starting your containers from the AIO interface!"
 else
-    echo "The environmental variable NEXTCLOUD_ENABLE_DRI_DEVICE is not set to true which usually means that the '/dev/dri' device will not be attached to the Nextcloud container. Thus, hardware transcoding is usually disabled."
+    echo "The environmental variable NEXTCLOUD_ENABLE_DRI_DEVICE is not set to true which usually means that the '/dev/dri' device will not be attached to the Nextcloud container. Thus, hardware transcoding is usually disabled. See https://github.com/nextcloud/all-in-one#how-to-enable-hardware-transcoding-for-nextcloud on how to set this."
 fi
 if [ -n "$APACHE_PORT" ]; then
     if ! check_if_number "$APACHE_PORT"; then
@@ -180,7 +180,7 @@ It is set to '$APACHE_PORT'."
         echo "Since port 443 is specified, that also means that Nextcloud will not run behind a reverse proxy (like Apache, Nginx and else), unless you specify a different port."
     fi
 else
-    echo "The environmental variable APACHE_PORT was not set which usually means that the Apache container will use '443/tcp' as port. Make sure to open/forward port 443 TCP in your firewall/router. It also means that Nextcloud will usually not run behind a reverse proxy (like Apache, Nginx and else), unless you specify a different port."
+    echo "The environmental variable APACHE_PORT was not set which usually means that the Apache container will use '443/tcp' as port. Make sure to open/forward port 443 TCP in your firewall/router. It also means that Nextcloud will usually not run behind a reverse proxy (like Apache, Nginx and else), unless you specify a different port. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md if you want to run AIO behind a reverse proxy (like Apache, Nginx and else)."
 fi
 if [ -n "$APACHE_IP_BINDING" ]; then
     if ! echo "$APACHE_IP_BINDING" | grep -q '^[0-9.]\+$'; then
@@ -218,8 +218,6 @@ It is set to '$DOCKER_SOCKET_PATH'."
         exit 1
     fi
     echo "The environmental variable DOCKER_SOCKET_PATH is set which means that the Watchtower container will use '$DOCKER_SOCKET_PATH' as docker socket path for mastercontainer updates."
-else
-    echo "The environmental variable DOCKER_SOCKET_PATH was not set which usually means that the Watchtower container will use '/var/run/docker.sock' as docker socket path for mastercontainer updates. If that should be incorrect, mastercontainer updates will fail."
 fi
 if [ -n "$NEXTCLOUD_TRUSTED_CACERTS_DIR" ]; then
     if ! echo "$NEXTCLOUD_TRUSTED_CACERTS_DIR" | grep -q "^/" || echo "$NEXTCLOUD_TRUSTED_CACERTS_DIR" | grep -q "/$"; then
