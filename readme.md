@@ -514,7 +514,7 @@ If you already have a backup solution in place, you may want to hide the backup 
 ### How to change the default location of Nextcloud's Datadir?
 ⚠️ **Attention:** It is very important to change the datadir **before** Nextcloud is installed/started the first time and not to change it afterwards! If you still want to do it afterwards, see [this](https://github.com/nextcloud/all-in-one/discussions/890#discussioncomment-3089903) on how to do it.
 
-You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). Allowed values for that variable are strings that start with `/` and are not equal to `/`.
+You can configure the Nextcloud container to use a specific directory on your host as data directory. You can do so by adding the environmental variable `NEXTCLOUD_DATADIR` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). Allowed values for that variable are strings that start with `/` and are not equal to `/`. The chosen directory or volume will then be mounted to `/mnt/ncdata` inside the container.
 
 - An example for Linux is `--env NEXTCLOUD_DATADIR="/mnt/ncdata"`.
 - On macOS it might be `--env NEXTCLOUD_DATADIR="/var/nextcloud-data"`
