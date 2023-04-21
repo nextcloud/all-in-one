@@ -111,6 +111,12 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled(),
         'is_fulltextsearch_enabled' => $configurationManager->isFulltextsearchEnabled(),
         'additional_backup_directories' => $configurationManager->GetAdditionalBackupDirectoriesString(),
+        'nextcloud_datadir' => $configurationManager->GetNextcloudDatadirMount(),
+        'nextcloud_mount' => $configurationManager->GetNextcloudMount(),
+        'nextcloud_upload_limit' => $configurationManager->GetNextcloudUploadLimit(),
+        'nextcloud_max_time' => $configurationManager->GetNextcloudMaxTime(),
+        'nextcloud_memory_limit' => $configurationManager->GetNextcloudMemoryLimit(),
+        'is_dri_device_enabled' => $configurationManager->isDriDeviceEnabled(),
     ]);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
