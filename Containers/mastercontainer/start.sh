@@ -6,6 +6,12 @@ print_green() {
     printf "%b%s%b\n" "\e[0;92m" "$TEXT" "\e[0m"
 }
 
+# Function to show text in red
+print_red() {
+    local TEXT="$1"
+    printf "%b%s%b\n" "\e[0;31m" "$TEXT" "\e[0m"
+}
+
 # Function to check if number was provided
 check_if_number() {
 case "${1}" in
@@ -16,11 +22,11 @@ esac
 
 # Check if socket is available and readable
 if ! [ -a "/var/run/docker.sock" ]; then
-    echo "Docker socket is not available. Cannot continue."
+    print_red "Docker socket is not available. Cannot continue."
     echo "If you did this by purpose because you don't want the container to have access to the docker socket, see https://github.com/nextcloud/all-in-one/tree/main/manual-install."
     exit 1
 elif ! mountpoint -q "/mnt/docker-aio-config"; then
-    echo "/mnt/docker-aio-config is not a mountpoint. Cannot proceed!"
+    print_red "/mnt/docker-aio-config is not a mountpoint. Cannot proceed!"
     exit 1
 elif ! sudo -u www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
@@ -41,14 +47,14 @@ elif ! sudo -u www-data test -r /var/run/docker.sock; then
         usermod -aG docker www-data
     fi
     if ! sudo -u www-data test -r /var/run/docker.sock; then
-        echo "Docker socket is not readable by the www-data user. Cannot continue."
+        print_red "Docker socket is not readable by the www-data user. Cannot continue."
         exit 1
     fi
 fi
 
 # Check if api version is supported
 if ! sudo -u www-data docker info &>/dev/null; then
-    echo "Cannot connect to the docker socket. Cannot proceed."
+    print_red "Cannot connect to the docker socket. Cannot proceed."
     exit 1
 fi
 API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
@@ -58,7 +64,7 @@ API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
 LOCAL_API_VERSION_NUMB="$(sudo -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
 if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
     if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
-        echo "Docker API v$API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
+        print_red "Docker API v$API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
         exit 1
     fi
 else
@@ -79,16 +85,16 @@ fi
 
 # Check if startup command was executed correctly
 if ! sudo -u www-data docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-mastercontainer$"; then
-    echo "It seems like you did not give the mastercontainer the correct name? (The 'nextcloud-aio-mastercontainer' container was not found.)
+    print_red "It seems like you did not give the mastercontainer the correct name? (The 'nextcloud-aio-mastercontainer' container was not found.)
 Using a different name is not supported since mastercontainer updates will not work in that case!
 If you are on docker swarm and try to run AIO, see https://github.com/nextcloud/all-in-one#can-i-run-this-with-docker-swarm"
     exit 1
 elif ! sudo -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nextcloud_aio_mastercontainer$"; then
-    echo "It seems like you did not give the mastercontainer volume the correct name? (The 'nextcloud_aio_mastercontainer' volume was not found.)
+    print_red "It seems like you did not give the mastercontainer volume the correct name? (The 'nextcloud_aio_mastercontainer' volume was not found.)
 Using a different name is not supported since the built-in backup solution will not work in that case!"
     exit 1
 elif ! sudo -u www-data docker inspect nextcloud-aio-mastercontainer | grep -q "nextcloud_aio_mastercontainer"; then
-    echo "It seems like you did not attach the 'nextcloud_aio_mastercontainer' volume to the mastercontainer?
+    print_red "It seems like you did not attach the 'nextcloud_aio_mastercontainer' volume to the mastercontainer?
 This is not supported since the built-in backup solution will not work in that case!"
     exit 1
 fi
@@ -98,7 +104,7 @@ if [ -n "$NEXTCLOUD_DATADIR" ]; then
     if [ "$NEXTCLOUD_DATADIR" = "nextcloud_aio_nextcloud_datadir" ]; then
         sleep 1
     elif ! echo "$NEXTCLOUD_DATADIR" | grep -q "^/" || [ "$NEXTCLOUD_DATADIR" = "/" ]; then
-        echo "You've set NEXTCLOUD_DATADIR but not to an allowed value.
+        print_red "You've set NEXTCLOUD_DATADIR but not to an allowed value.
 The string must start with '/' and must not be equal to '/'. Also allowed is 'nextcloud_aio_nextcloud_datadir'.
 It is set to '$NEXTCLOUD_DATADIR'."
         exit 1
@@ -106,24 +112,24 @@ It is set to '$NEXTCLOUD_DATADIR'."
 fi
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
     if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/" || [ "$NEXTCLOUD_MOUNT" = "/" ]; then
-        echo "You've set NEXCLOUD_MOUNT but not to an allowed value.
+        print_red "You've set NEXCLOUD_MOUNT but not to an allowed value.
 The string must start with '/' and must not be equal to '/'.
 It is set to '$NEXTCLOUD_MOUNT'."
         exit 1
     elif [ "$NEXTCLOUD_MOUNT" = "/mnt/ncdata" ] || echo "$NEXTCLOUD_MOUNT" | grep -q "^/mnt/ncdata/"; then
-        echo "'/mnt/ncdata' and '/mnt/ncdata/' are not allowed as values for NEXTCLOUD_MOUNT."
+        print_red "'/mnt/ncdata' and '/mnt/ncdata/' are not allowed as values for NEXTCLOUD_MOUNT."
         exit 1
     fi
 fi
 if [ -n "$NEXTCLOUD_DATADIR" ] && [ -n "$NEXTCLOUD_MOUNT" ]; then
     if [ "$NEXTCLOUD_DATADIR" = "$NEXTCLOUD_MOUNT" ]; then
-        echo "NEXTCLOUD_DATADIR and NEXTCLOUD_MOUNT are not allowed to be equal."
+        print_red "NEXTCLOUD_DATADIR and NEXTCLOUD_MOUNT are not allowed to be equal."
         exit 1
     fi
 fi
 if [ -n "$NEXTCLOUD_UPLOAD_LIMIT" ]; then
     if ! echo "$NEXTCLOUD_UPLOAD_LIMIT" | grep -q '^[0-9]\+G$'; then
-        echo "You've set NEXTCLOUD_UPLOAD_LIMIT but not to an allowed value.
+        print_red "You've set NEXTCLOUD_UPLOAD_LIMIT but not to an allowed value.
 The string must start with a number and end with 'G'.
 It is set to '$NEXTCLOUD_UPLOAD_LIMIT'."
         exit 1
@@ -131,7 +137,7 @@ It is set to '$NEXTCLOUD_UPLOAD_LIMIT'."
 fi
 if [ -n "$NEXTCLOUD_MAX_TIME" ]; then
     if ! echo "$NEXTCLOUD_MAX_TIME" | grep -q '^[0-9]\+$'; then
-        echo "You've set NEXTCLOUD_MAX_TIME but not to an allowed value.
+        print_red "You've set NEXTCLOUD_MAX_TIME but not to an allowed value.
 The string must be a number. E.g. '3600'.
 It is set to '$NEXTCLOUD_MAX_TIME'."
         exit 1
@@ -139,7 +145,7 @@ It is set to '$NEXTCLOUD_MAX_TIME'."
 fi
 if [ -n "$NEXTCLOUD_MEMORY_LIMIT" ]; then
     if ! echo "$NEXTCLOUD_MEMORY_LIMIT" | grep -q '^[0-9]\+M$'; then
-        echo "You've set NEXTCLOUD_MEMORY_LIMIT but not to an allowed value.
+        print_red "You've set NEXTCLOUD_MEMORY_LIMIT but not to an allowed value.
 The string must start with a number and end with 'M'.
 It is set to '$NEXTCLOUD_MEMORY_LIMIT'."
         exit 1
@@ -147,40 +153,40 @@ It is set to '$NEXTCLOUD_MEMORY_LIMIT'."
 fi
 if [ -n "$APACHE_PORT" ]; then
     if ! check_if_number "$APACHE_PORT"; then
-        echo "You provided an Apache port but did not only use numbers.
+        print_red "You provided an Apache port but did not only use numbers.
 It is set to '$APACHE_PORT'."
         exit 1
     elif ! [ "$APACHE_PORT" -le 65535 ] || ! [ "$APACHE_PORT" -ge 1 ]; then
-        echo "The provided Apache port is invalid. It must be between 1 and 65535"
+        print_red "The provided Apache port is invalid. It must be between 1 and 65535"
         exit 1
     fi
 fi
 if [ -n "$APACHE_IP_BINDING" ]; then
     if ! echo "$APACHE_IP_BINDING" | grep -q '^[0-9.]\+$'; then
-        echo "You provided an ip-address for the apache container's ip-binding but it was not a valid ip-address.
+        print_red "You provided an ip-address for the apache container's ip-binding but it was not a valid ip-address.
 It is set to '$APACHE_IP_BINDING'."
         exit 1
     fi
 fi
 if [ -n "$TALK_PORT" ]; then
     if ! check_if_number "$TALK_PORT"; then
-        echo "You provided an Talk port but did not only use numbers.
+        print_red "You provided an Talk port but did not only use numbers.
 It is set to '$TALK_PORT'."
         exit 1
     elif ! [ "$TALK_PORT" -le 65535 ] || ! [ "$TALK_PORT" -ge 1 ]; then
-        echo "The provided Talk port is invalid. It must be between 1 and 65535"
+        print_red "The provided Talk port is invalid. It must be between 1 and 65535"
         exit 1
     fi
 fi
 if [ -n "$APACHE_PORT" ] && [ -n "$TALK_PORT" ]; then
     if [ "$APACHE_PORT" = "$TALK_PORT" ]; then
-        echo "APACHE_PORT and TALK_PORT are not allowed to be equal."
+        print_red "APACHE_PORT and TALK_PORT are not allowed to be equal."
         exit 1
     fi
 fi
 if [ -n "$WATCHTOWER_DOCKER_SOCKET_PATH" ]; then
     if ! echo "$WATCHTOWER_DOCKER_SOCKET_PATH" | grep -q "^/" || echo "$WATCHTOWER_DOCKER_SOCKET_PATH" | grep -q "/$"; then
-        echo "You've set WATCHTOWER_DOCKER_SOCKET_PATH but not to an allowed value.
+        print_red "You've set WATCHTOWER_DOCKER_SOCKET_PATH but not to an allowed value.
 The string must start with '/' and must not end with '/'.
 It is set to '$WATCHTOWER_DOCKER_SOCKET_PATH'."
         exit 1
@@ -188,7 +194,7 @@ It is set to '$WATCHTOWER_DOCKER_SOCKET_PATH'."
 fi
 if [ -n "$NEXTCLOUD_TRUSTED_CACERTS_DIR" ]; then
     if ! echo "$NEXTCLOUD_TRUSTED_CACERTS_DIR" | grep -q "^/" || echo "$NEXTCLOUD_TRUSTED_CACERTS_DIR" | grep -q "/$"; then
-        echo "You've set NEXTCLOUD_TRUSTED_CACERTS_DIR but not to an allowed value.
+        print_red "You've set NEXTCLOUD_TRUSTED_CACERTS_DIR but not to an allowed value.
 It should be an absolute path to a directory that starts with '/' but not end with '/'.
 It is set to '$NEXTCLOUD_TRUSTED_CACERTS_DIR '."
         exit 1
@@ -196,7 +202,7 @@ It is set to '$NEXTCLOUD_TRUSTED_CACERTS_DIR '."
 fi
 if [ -n "$NEXTCLOUD_STARTUP_APPS" ]; then
     if ! echo "$NEXTCLOUD_STARTUP_APPS" | grep -q "^[a-z0-9 _-]\+$"; then
-        echo "You've set NEXTCLOUD_STARTUP_APPS but not to an allowed value.
+        print_red "You've set NEXTCLOUD_STARTUP_APPS but not to an allowed value.
 It needs to be a string. Allowed are small letters a-z, 0-9, spaces, hyphens and '_'.
 It is set to '$NEXTCLOUD_STARTUP_APPS'."
         exit 1
@@ -204,7 +210,7 @@ It is set to '$NEXTCLOUD_STARTUP_APPS'."
 fi
 if [ -n "$NEXTCLOUD_ADDITIONAL_APKS" ]; then
     if ! echo "$NEXTCLOUD_ADDITIONAL_APKS" | grep -q "^[a-z0-9 ._-]\+$"; then
-        echo "You've set NEXTCLOUD_ADDITIONAL_APKS but not to an allowed value.
+        print_red "You've set NEXTCLOUD_ADDITIONAL_APKS but not to an allowed value.
 It needs to be a string. Allowed are small letters a-z, digits 0-9, spaces, hyphens, dots and '_'.
 It is set to '$NEXTCLOUD_ADDITIONAL_APKS'."
         exit 1
@@ -212,7 +218,7 @@ It is set to '$NEXTCLOUD_ADDITIONAL_APKS'."
 fi
 if [ -n "$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS" ]; then
     if ! echo "$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS" | grep -q "^[a-z0-9 ._-]\+$"; then
-        echo "You've set NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS but not to an allowed value.
+        print_red "You've set NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS but not to an allowed value.
 It needs to be a string. Allowed are small letters a-z, digits 0-9, spaces, hyphens, dots and '_'.
 It is set to '$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS'."
         exit 1
@@ -223,7 +229,7 @@ fi
 # Prevents issues like https://github.com/nextcloud/all-in-one/discussions/565
 curl https://nextcloud.com &>/dev/null
 if [ "$?" = 6 ]; then
-    echo "Could not resolve the host nextcloud.com."
+    print_red "Could not resolve the host nextcloud.com."
     echo "Most likely the DNS resolving does not work."
     echo "You should be able to fix this by following https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html"
     echo "Apart from that, there has been this: https://github.com/nextcloud/all-in-one/discussions/2065"
