@@ -239,6 +239,16 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("Domain must contain at least one dot!");
         }
 
+        // Validate that no slashes are contained
+        if (strpos($domain, '/') !== false) {
+            throw new InvalidSettingConfigurationException("Domain must not contain slashes!");
+        }
+
+        // Validate that no colons are contained
+        if (strpos($domain, ':') !== false) {
+            throw new InvalidSettingConfigurationException("Domain must not contain colons!");
+        }
+
         // Validate domain
         if (!filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
             throw new InvalidSettingConfigurationException("Domain is not a valid domain!");
