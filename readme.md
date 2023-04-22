@@ -585,6 +585,9 @@ If you get an error during the domain validation which states that your ip-addre
 ### Can I run this with Docker swarm?
 Yes. For that to work, you need to use and follow the [manual-install documentation](./manual-install/).
 
+### Can I run this with Kubernetes?
+Yes. For that to work, you need to use and follow the [helm-chart documentation](./nextcloud-aio-helm-chart/).
+
 ### How to run this with Docker rootless?
 You can run AIO also with docker rootless. How to do this is documented here: [docker-rootless.md](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md)
 
