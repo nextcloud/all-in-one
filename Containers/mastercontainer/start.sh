@@ -273,7 +273,7 @@ if [ -f ./ssl.crt ] && [ -f ./ssl.key ]; then
     cp "$GENERATED_CERTS/ssl.key" ./
 fi
 
-print_green "Initial startup of Nextcloud All In One complete!
+print_green "Initial startup of Nextcloud All-in-One complete!
 You should be able to open the Nextcloud AIO Interface now on port 8080 of this server!
 E.g. https://internal.ip.of.this.server:8080
 

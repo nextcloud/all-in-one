@@ -2,9 +2,9 @@
 <info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
 	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
 	<id>nextcloud-aio</id>
-	<name>Nextcloud All In One</name>
+	<name>Nextcloud All-in-One</name>
 	<summary>Provides a login link for admins.</summary>
-	<description>Add a link to the admin settings that gives access to the Nextcloud All In One admin interface</description>
+	<description>Add a link to the admin settings that gives access to the Nextcloud All-in-One admin interface</description>
 	<version>0.3.0</version>
 	<licence>agpl</licence>
 	<author>Azul</author>
