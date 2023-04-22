@@ -17,6 +17,7 @@ esac
 # Check if socket is available and readable
 if ! [ -a "/var/run/docker.sock" ]; then
     echo "Docker socket is not available. Cannot continue."
+    echo "If you did this by purpose because you don't want the container to have access to the docker socket, see https://github.com/nextcloud/all-in-one/tree/main/manual-install."
     exit 1
 elif ! mountpoint -q "/mnt/docker-aio-config"; then
     echo "/mnt/docker-aio-config is not a mountpoint. Cannot proceed!"
