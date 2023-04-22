@@ -206,7 +206,10 @@
                         {% else %}
                             <b>{{ nextcloud_password }}</b><br><br>
                         {% endif %}
-                        <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/>
+                        <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/><br>
+                        {% if borg_backup_host_location != '' %}
+                            If your Nextcloud does not open when clicking the button above, see <b><a href="https://github.com/nextcloud/all-in-one/discussions/2105">this documentation<a/></b><br><br>
+                        {% endif %}
                     {% else %}
                         {% if isAnyRestarting == false %}
                             <span class="status running"></span> Containers are currently starting.<br /><br />
