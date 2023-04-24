@@ -417,9 +417,9 @@
                                 The backup itself uses a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup"><b>BorgBackup</b><a/> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
                                 Backups get created in the following directory on the host: <b>{{ borg_backup_host_location }}/borg</b> <br /><br/>
                                 Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app - but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.<br><br>
-                                Regarding backup retention, see <b><a href="https://github.com/nextcloud/all-in-one/discussions/1675">this documentation</a></b><br><br>
+                                Regarding backup retention, see <b><a href="https://github.com/nextcloud/all-in-one/discussions/1675">this</a></b><br><br>
                                 Daily backups can get enabled after the initial backup is done. Enabling this also allows to enable an option that allows to update all containers, Nextcloud and its apps automatically.<br><br>
-                                For further documentation and options on this backup solution refer to <b><a href="https://github.com/nextcloud/all-in-one#backup-solution">this documentation<a/></b> and below.
+                                For further documentation and options on this backup solution refer to <b><a href="https://github.com/nextcloud/all-in-one#backup-solution">this section<a/></b> and below.
 
                                 {% if isApacheStarting != true %}
                                     <h3>Backup creation</h3>
