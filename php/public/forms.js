@@ -31,7 +31,7 @@
     }
   }
 
-  function disableSpinnerSpinner() {
+  function enableSpinner() {
     document.getElementById('overlay').classList.add('loading');
   }
 
@@ -51,7 +51,7 @@
       xhr.addEventListener('error', () => disableSpinner());
       xhr.open(form.method, form.getAttribute("action"));
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      disableSpinnerSpinner();
+      enableSpinner();
       xhr.send(new URLSearchParams(new FormData(form)));
       event.preventDefault();
     }
