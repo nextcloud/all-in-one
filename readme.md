@@ -279,7 +279,7 @@ If your Nextcloud is running and you are logged in as admin in your Nextcloud, y
 **⚠️ Please note:** Editing the configuration.json manually and making a mistake may break your instance so please create a backup first!
 
 If you set up a new AIO instance, you need to enter a domain. Currently there is no way to change this domain afterwards from the AIO interface. So in order to change it, you need to edit the configuration.json manually using `sudo docker run -it --rm --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config:rw alpine sh -c "apk add --no-cache nano && nano /mnt/docker-aio-config/data/configuration.json"`, subsitute each occurrence of your old domain with your new domain and save and write out the file. Afterwards restart your containers from the AIO interface and everything should work as expected if the new domain is correctly configured.<br>
-If you are running AIO behind a reverse proxy, you need to obviously also change the domain in your reverse proxy config.
+If you are running AIO behind a web server or reverse proxy (like Apache, Nginx and else), you need to obviously also change the domain in your reverse proxy config.
 
 ### How to properly reset the instance?
 If something goes unexpected routes during the initial installation, you might want to reset the AIO installation to be able to start from scratch.
