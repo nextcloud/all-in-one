@@ -1,0 +1,36 @@
+<details>
+    <summary>Click here to view the current AIO config and documentation links</summary><br />
+    {% if domain != '' %}
+        Nextclouds config.php file is stored in the nextcloud_aio_nextcloud Docker volume and can by edited by following the <b><a href="https://github.com/nextcloud/all-in-one#how-to-edit-nextclouds-configphp-file-with-a-texteditor">config.php documentation</a></b><br><br>
+        You can run Nextcloud's usual occ commands by following the <b><a href="https://github.com/nextcloud/all-in-one#how-to-edit-nextclouds-configphp-file-with-a-texteditor">occ documentation</a></b><br><br>
+    {% endif %}
+    
+    {% if nextcloud_datadir starts with '/' %}
+        Nextcloud's datadir is getting stored in the {{ nextcloud_datadir }} directory.
+    {% else %}
+        Nextcloud's datadir is getting stored in the {{ nextcloud_datadir }} Docker volume.
+    {% endif %}
+    See the <b><a href="https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir">NEXTCLOUD_DATADIR documentation</a></b> on how to change this.<br><br>
+
+    {% if nextcloud_mount == '' %}
+        The Nextcloud container is currently confied and local external storage in Nextcloud is disabled.
+    {% else %}
+        The Nextcloud container currently gets access to the {{ nextcloud_mount }} directory and local external storage in Nextcloud is enabled.
+    {% endif %}
+    See the <b><a href="https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host">NEXTCLOUD_MOUNT documentation</a></b> on how to change this.<br><br>
+
+    Nextcloud currently has an upload limit of {{ nextcloud_upload_limit }} configured (for public link uploads. Bigger uploads are always possible when users are logged in). See the <b><a href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud">NEXTCLOUD_UPLOAD_LIMIT documentation</a></b> on how to change this.<br><br>
+
+    For Nextcloud, a memory limit of {{ nextcloud_memory_limit }} per PHP process is currently configured. See the <b><a href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud">NEXTCLOUD_MEMORY_LIMIT documentation</a></b> on how to change this.<br><br>
+
+    Nextcloud currently has a timeout of {{ nextcloud_max_time }} seconds configured (important for big file uploads). See the <b><a href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud">NEXTCLOUD_MAX_TIME documentation</a></b> on how to change this.<br><br>
+
+    {% if is_dri_device_enabled == true %}
+        The /dev/dri device which is needed for hardware transcoding is currently attached to the Nextcloud container.
+    {% else %}
+        The /dev/dri device which is needed for hardware transcoding is currently not attached to the Nextcloud container.
+    {% endif %}
+    See the <b><a href="https://github.com/nextcloud/all-in-one#how-to-enable-hardware-transcoding-for-nextcloud">NEXTCLOUD_ENABLE_DRI_DEVICE documentation</a></b> on how to change this.<br><br>
+
+    For further documentation on AIO, refer to <b><a href="https://github.com/nextcloud/all-in-one#nextcloud-all-in-one">this page</a></b>. You can use the browser search [CTRL]+[F] to search through the documentation. Additional documentation can be found <b><a href="https://github.com/nextcloud/all-in-one/discussions/categories/wiki">here</a></b>.<br>
+</details><br />
