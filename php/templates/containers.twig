@@ -109,8 +109,8 @@
                                 {% if apache_port != '443' %}
                                     If you run into issues getting your domain accepted, see <b><a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things">these steps</a></b> for how to debug things. <br /><br/>
                                 {% endif %}
-                                <b>Hint:</b> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.
-                            </details><br /><br />
+                                <b>Hint:</b> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.<br />
+                            </details><br />
                         {% endif %}
 
                         <h2>Restore former AIO instance from backup</h2>
@@ -133,8 +133,8 @@
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <input class="button" type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/><br/>
-                                            </form>
-                                        </details><br /><br />
+                                            </form><br />
+                                        </details><br />
                                     {% endif %}
                                 {% elseif backup_exit_code == 0 %}
                                     <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
@@ -218,7 +218,7 @@
                                 Initial Nextcloud password: 
                         {% if borg_backup_host_location != '' %}
                             {# nextcloud_password needs to be duplicated due to a bug in Firefox. See https://github.com/nextcloud/all-in-one/issues/638. #}
-                            <b>{{ nextcloud_password }}</b></details><br /><br />
+                            <b>{{ nextcloud_password }}</b><br /></details><br />
                         {% else %}
                             <b>{{ nextcloud_password }}</b><br><br>
                         {% endif %}
@@ -384,8 +384,8 @@
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <input class="button" type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/><br/>
-                                            </form>
-                                        </details><br /><br />
+                                            </form><br />
+                                        </details><br />
                                     {% endif %}
                                     {% if has_backup_run_once == false %}
                                         You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on 'Create Backup' for testing the new value.<br /><br />
@@ -419,7 +419,7 @@
                                 Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app - but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.<br><br>
                                 Regarding backup retention, see <b><a href="https://github.com/nextcloud/all-in-one/discussions/1675">this</a></b><br><br>
                                 Daily backups can get enabled after the initial backup is done. Enabling this also allows to enable an option that allows to update all containers, Nextcloud and its apps automatically.<br><br>
-                                For further documentation and options on this backup solution refer to <b><a href="https://github.com/nextcloud/all-in-one#backup-solution">this section</a></b> and below.
+                                For further documentation and options on this backup solution refer to <b><a href="https://github.com/nextcloud/all-in-one#backup-solution">this section</a></b> and below.<br>
 
                                 {% if isApacheStarting != true %}
                                     <h3>Backup creation</h3>
@@ -493,9 +493,9 @@
                                     {% endif %}
                                 {% endif %}
                                 {% if has_backup_run_once == false %}
-                                    <br /><br />
+                                    <br />
                                 {% else %}
-                                    </details><br /><br />
+                                    </details><br />
                                 {% endif %}
                             {% endif %}
                         {% endif %}
