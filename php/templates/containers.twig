@@ -84,9 +84,9 @@
                         {{ include('includes/aio-config.twig') }}
                         <h2>New AIO instance</h2>
                         {% if apache_port == '443' %}
-                            AIO is currently in "normal" mode which means that it handles the TLS proxying itself. This also means that it cannot be installed behind a web server or reverse proxy (like Apache, Nginx and else). If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx and else), see the <b><a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></b>.<br><br>
+                            AIO is currently in "normal mode" which means that it handles the TLS proxying itself. This also means that it cannot be installed behind a web server or reverse proxy (like Apache, Nginx and else). If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx and else), see the <b><a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></b>.<br><br>
                         {% else %}
-                            AIO is currently in "reverse proxy" mode which means that it can be installed behind a web server or reverse proxy (like Apache Nginx and else) and does not do the TLS proxying itself.<br><br>
+                            AIO is currently in "reverse proxy mode" which means that it can be installed behind a web server or reverse proxy (like Apache Nginx and else) and does not do the TLS proxying itself.<br><br>
                         {% endif %}
                         Please type in the domain into the input field below that will be used for Nextcloud in order to create a new AIO instance.<br><br />
                         {% if skip_domain_validation == true %}
