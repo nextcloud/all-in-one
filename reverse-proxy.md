@@ -28,7 +28,7 @@ In order to run Nextcloud behind a web server or reverse proxy (like Apache, Ngi
 
 Add this as a new Apache site config:
 
-(The config below assumse that you are using certbot to get your certificates. You need to create them first in order to make it work.)
+(The config below assumes that you are using certbot to get your certificates. You need to create them first in order to make it work.)
 
 ```
 <VirtualHost *:80>
