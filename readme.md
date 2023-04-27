@@ -80,7 +80,7 @@ The following instructions are meant for installations without a web server or r
     curl -fsSL https://get.docker.com | sudo sh
     ```
 1. If you need ipv6 support, you should enable it by following https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md.
-2. Run the command below in order to start the container:
+2. Run the command below in order to start the container on Linux and without a web server or reverse proxy (like Apache, Nginx and else) already in place:
     ```
     # For Linux and without a web server or reverse proxy (like Apache, Nginx and else) already in place:
     sudo docker run \
