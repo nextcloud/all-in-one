@@ -22,6 +22,8 @@ Simply use https://github.com/nextcloud/all-in-one/issues/180 as template.
 Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/repo-sync.yml and run the workflow that will first sync the repo and then build new container that automatically get published to `develop` and `develop-arm64`.
 
 ## How to test things correctly?
+Before testing, make sure that at least the amd64 containers are built successfully by checking the last workflow here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml. 
+
 There is a testing-VM available for the maintainer of AIO that allows for some final testing before releasing new version. See [this](https://cloud.nextcloud.com/apps/collectives/Nextcloud%20Handbook/Technical/AIO%20testing%20VM?fileId=6350152) for details.
 
 ## How to promote builds from develop to beta
