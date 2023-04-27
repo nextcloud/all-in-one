@@ -42,7 +42,8 @@ jobs:
           # Make sure we can open multiple PRs
           branch-suffix: timestamp
           title: '[Automated] Update psalm-baseline.xml'
+          milestone: next
           body: |
             Auto-generated update psalm-baseline.xml with fixed psalm warnings
           labels: |
-            3. to review
+            3. to review, dependencies

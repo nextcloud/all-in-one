@@ -50,6 +50,6 @@ jobs:
         signoff: true
         title: Dependency updates
         body: Automated dependency updates since dependabot does not support grouped updates
-        labels: dependencies, enhancement
+        labels: dependencies, 3. to review
         milestone: next
         branch: aio-dependency-update

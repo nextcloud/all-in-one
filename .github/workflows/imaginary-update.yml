@@ -28,6 +28,6 @@ jobs:
         signoff: true
         title: Imaginary update
         body: Automated Imaginary container update
-        labels: dependencies, enhancement
+        labels: dependencies, 3. to review
         milestone: next
         branch: imaginary-container-update

@@ -22,7 +22,7 @@ jobs:
           signoff: true
           title: Yaml updates
           body: Automated yaml updates for the docker-compose files. Should only be merged shortly before the next latest release.
-          labels: dependencies
+          labels: dependencies, 3. to review
           milestone: next
           branch: aio-yaml-update
           token: ${{ secrets.GITHUB_TOKEN }}

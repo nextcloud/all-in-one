@@ -27,7 +27,7 @@ jobs:
           signoff: true
           title: Helm Chart updates
           body: Automated Helm Chart updates for the yaml files. It can be merged if it looks good at any time which will automatically trigger a new release of the helm chart.
-          labels: dependencies
+          labels: dependencies, 3. to review
           milestone: next
           branch: aio-helm-update
           token: ${{ secrets.GITHUB_TOKEN }}

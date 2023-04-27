@@ -72,6 +72,6 @@ jobs:
         signoff: true
         title: Nextcloud update
         body: Automated Nextcloud container update
-        labels: dependencies, enhancement
+        labels: dependencies, 3. to review
         milestone: next
         branch: nextcloud-container-update
