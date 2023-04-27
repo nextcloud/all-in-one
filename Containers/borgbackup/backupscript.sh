@@ -151,11 +151,13 @@ if [ "$BORG_MODE" = backup ]; then
     rm -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
 
     # Prune options
-    BORG_PRUNE_OPTS=(--stats --keep-within=7d --keep-weekly=4 --keep-monthly=6 "$BORG_BACKUP_DIRECTORY")
+    set -x
+    read -ra BORG_PRUNE_OPTS <<< "$BORG_RETENTION_POLICY"
+    set +x
 
     # Prune archives
     echo "Pruning the archives..."
-    if ! borg prune --glob-archives '*_*-nextcloud-aio' "${BORG_PRUNE_OPTS[@]}"; then
+    if ! borg prune --stats --glob-archives '*_*-nextcloud-aio' "${BORG_PRUNE_OPTS[@]}" "$BORG_BACKUP_DIRECTORY"; then
         echo "Failed to prune archives!"
         exit 1
     fi
@@ -186,7 +188,7 @@ if [ "$BORG_MODE" = backup ]; then
                 exit 1
             fi
             echo "Pruning additional volumes..."
-            if ! borg prune --glob-archives '*_*-additional-docker-volumes' "${BORG_PRUNE_OPTS[@]}"; then
+            if ! borg prune --stats --glob-archives '*_*-additional-docker-volumes' "${BORG_PRUNE_OPTS[@]}" "$BORG_BACKUP_DIRECTORY"; then
                 echo "Failed to prune additional docker-volumes archives!"
                 exit 1
             fi
@@ -216,7 +218,7 @@ if [ "$BORG_MODE" = backup ]; then
                 exit 1
             fi
             echo "Pruning additional host mounts..."
-            if ! borg prune --glob-archives '*_*-additional-host-mounts' "${BORG_PRUNE_OPTS[@]}"; then
+            if ! borg prune --stats --glob-archives '*_*-additional-host-mounts' "${BORG_PRUNE_OPTS[@]}" "$BORG_BACKUP_DIRECTORY"; then
                 echo "Failed to prune additional host-mount archives!"
                 exit 1
             fi

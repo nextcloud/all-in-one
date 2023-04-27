@@ -21,3 +21,4 @@ RUN chmod +x /usr/bin/start.sh; \
 USER root
 ENTRYPOINT ["start.sh"]
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
+ENV BORG_RETENTION_POLICY="--keep-within=7d --keep-weekly=4 --keep-monthly=6"
