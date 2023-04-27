@@ -88,6 +88,9 @@
 							"type": "string"
 						}
 					},
+					"apparmor_unconfined": {
+						"type": "boolean"
+					},
 					"volumes": {
 						"type": "array",
 						"items": {
