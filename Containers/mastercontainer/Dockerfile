@@ -71,6 +71,7 @@ RUN set -e && \
     chmod +x /usr/local/bin/composer; \
     cd /var/www/docker-aio; \
     git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
+    find ./ -not -path ./php -maxdepth 1 -mindepth 1 -delete; \
     cd php; \
     composer install --no-dev; \
     composer clearcache; \
