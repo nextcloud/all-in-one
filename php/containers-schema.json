@@ -13,40 +13,49 @@
 				"required": ["image", "container_name"],
 				"properties": {
 					"image": {
-						"type": "string"
+						"type": "string",
+						"minLength": 1
 					},
 					"expose": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "string",
+							"pattern": "^([0-9]{1,5})$"
 						}
 					},
 					"cap_add": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "string",
+							"pattern": "^[A-Z_]+$"
 						}
 					},
 					"depends_on": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "string",
+							"pattern": "^nextcloud-aio-[a-z-]+$"
 						}
 					},
 					"display_name": {
-						"type": "string"
+						"type": "string",
+						"pattern": "^[A-Za-z ]+$"
 					},
 					"environment": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "string",
+							"pattern": "^.*=.*$",
+							"minlength": 1
 						}
 					},
 					"container_name": {
-						"type": "string"
+						"type": "string",
+						"pattern": "^nextcloud-aio-[a-z-]+$"
 					},
 					"internal_port": {
-						"type": "string"
+						"type": "string",
+						"pattern": "^([0-9]{1,5})?(host)?(%[A-Z_]+%)?$"
 					},
 					"stop_grace_period": {
 						"type": "integer"
@@ -59,19 +68,25 @@
 							"minProperties": 3,
 							"properties": {
 								"ip_binding": {
-									"type": "string"
+									"type": "string",
+									"pattern": "^(%[A-Z_]+%)?$"
 								},
 								"port_number": {
-									"type": "string"
+									"type": "string",
+									"pattern": "^(%[A-Z_]+%)$"
 								},
 								"protocol": {
-									"type": "string"
+									"type": "string",
+									"pattern": "^(tcp)?(udp)?$",
+									"minlength": 3,
+									"maxlength": 3
 								}
 							}
 						}
 					},
 					"restart": {
-						"type": "string"
+						"type": "string",
+						"pattern": "^unless-stopped$"
 					},
 					"shm_size": {
 						"type": "integer"
@@ -79,13 +94,15 @@
 					"secrets": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "string",
+							"pattern": "^[A-Z_]+$"
 						}
 					},
 					"devices": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "string",
+							"pattern": "^/dev/[a-z]+$"
 						}
 					},
 					"volumes": {
@@ -96,10 +113,14 @@
 							"minProperties": 3,
 							"properties": {
 								"destination": {
-									"type": "string"
+									"type": "string",
+									"pattern": "^(/[a-z_/.-]+)?(%[A-Z_]+%)?$",
+									"minlength": 2
 								},
 								"source": {
-									"type": "string"
+									"type": "string",
+									"pattern": "^([a-z_]+)?(%[A-Z_]+%)?$",
+									"minlength": 2
 								},
 								"writeable": {
 									"type": "boolean"
