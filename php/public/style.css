@@ -23,6 +23,11 @@ a {
     outline: none;
 }
 
+.button:focus {
+    color:black;
+    border: 2px solid black;
+}
+
 #logout {
     margin-top: 7px;
 }
