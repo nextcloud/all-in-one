@@ -132,6 +132,16 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
 
 </details>
 
+### Citrix ADC VPX / Citrix Netscaler 
+
+<details>
+
+<summary>click here to expand</summary>
+
+For a reverse proxy example guide for Citrix ADC VPX / Citrix Netscaler, see this guide by @esmith443: https://github.com/nextcloud/all-in-one/discussions/2452
+
+</details>
+
 ### Cloudflare Tunnel
 
 <details>
@@ -454,17 +464,6 @@ Of course you need to modify `<your-nextcloud-domain>` in the `nextcloud.yml` to
 **Hint:** Possibly the following link is useful to understand how AIO configures things: https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml
 
 </details>
-
-### Citrix ADC VPX / Citrix Netscaler 
-<details>
-<summary>click here to expand</summary>
-
-The below link will take you to the Citrix Reverse Proxy Guide.
-
-https://github.com/nextcloud/all-in-one/discussions/2452
-
-</details>
-
 
 ### Others
 
