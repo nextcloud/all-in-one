@@ -113,6 +113,14 @@
 							"pattern": "^nextcloud_aio_[a-z_]+$"
 						}
 					},
+					"nextcloud_exec_commands": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"pattern": "^(php /var/www/html/occ .*|echo .*)$",
+							"minlength": 1
+						}
+					},
 					"volumes": {
 						"type": "array",
 						"items": {

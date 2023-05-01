@@ -233,6 +233,11 @@ class ContainerDefinitionFetcher
                 $backupVolumes = $entry['backup_volumes'];
             }
 
+            $nextcloudExecCommands = [];
+            if (isset($entry['nextcloud_exec_commands'])) {
+                $nextcloudExecCommands = $entry['nextcloud_exec_commands'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -250,6 +255,7 @@ class ContainerDefinitionFetcher
                 $shmSize,
                 $apparmorUnconfined,
                 $backupVolumes,
+                $nextcloudExecCommands,
                 $this->container->get(DockerActionManager::class)
             );
         }

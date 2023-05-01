@@ -29,6 +29,7 @@ class Container {
     private bool $apparmorUnconfined;
     /** @var string[] */
     private array $backupVolumes;
+    private array $nextcloudExecCommands;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -48,6 +49,7 @@ class Container {
         int $shmSize,
         bool $apparmorUnconfined,
         array $backupVolumes,
+        array $nextcloudExecCommands,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -66,6 +68,7 @@ class Container {
         $this->shmSize = $shmSize;
         $this->apparmorUnconfined = $apparmorUnconfined;
         $this->backupVolumes = $backupVolumes;
+        $this->nextcloudExecCommands = $nextcloudExecCommands;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -146,6 +149,10 @@ class Container {
      */
     public function GetDependsOn() : array {
         return $this->dependsOn;
+    }
+
+    public function GetNextcloudExecCommands() : array {
+        return $this->nextcloudExecCommands;
     }
 
     public function GetEnvironmentVariables() : ContainerEnvironmentVariables {

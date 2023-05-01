@@ -235,6 +235,10 @@ class DockerActionManager
         }
 
         $envs = $container->GetEnvironmentVariables()->GetVariables();
+        // Special thing for the nextcloud container
+        if ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
+            $envs[] = $this->GetAllNextcloudExecCommands();
+        }
         foreach($envs as $key => $env) {
             // TODO: This whole block below is a hack and needs to get reworked in order to support multiple substitutions per line by default for all envs
             if (str_starts_with($env, 'extra_params=')) {
@@ -531,6 +535,26 @@ class DockerActionManager
             $use_keys = false
         );
         return array_unique($backupVolumesArrayFlat);
+    }
+
+    private function GetNextcloudExecCommands(string $id) : string
+    {
+        $container = $this->containerDefinitionFetcher->GetContainerById($id);
+
+        $nextcloudExecCommands = '';
+        foreach ($container->GetNextcloudExecCommands() as $execCommand) {
+            $nextcloudExecCommands .= $execCommand . PHP_EOL;
+        }
+        foreach ($container->GetDependsOn() as $dependency) {
+            $nextcloudExecCommands .= $this->GetNextcloudExecCommands($dependency);
+        }
+        return $nextcloudExecCommands;
+    }
+
+    private function GetAllNextcloudExecCommands() : string
+    {
+        $id = 'nextcloud-aio-apache';
+        return 'NEXTCLOUD_EXEC_COMMANDS=' . $this->GetNextcloudExecCommands($id);
     }
 
     private function GetRepoDigestsOfContainer(string $containerName) : ?array {
