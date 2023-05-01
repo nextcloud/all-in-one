@@ -45,6 +45,9 @@ else
 fi
 echo "$CADDYFILE" > /Caddyfile
 
+# Overwrite nextcloud conf
+cat /nextcloud > /mnt/data/nextcloud
+
 # Fix the Caddyfile format
 caddy fmt --overwrite /Caddyfile
 

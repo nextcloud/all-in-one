@@ -7,7 +7,8 @@ COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
 COPY --chown=www-data:www-data Caddyfile /Caddyfile
 COPY --chmod=664 nextcloud.conf /usr/local/apache2/conf/nextcloud.conf
-
+COPY --chmod=664 nextcloud /nextcloud
+COPY --chmod=664 caddy-imports/* /caddy-imports/
 COPY --chmod=664 supervisord.conf /supervisord.conf
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
