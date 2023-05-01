@@ -2,11 +2,10 @@
 FROM collabora/code:22.05.13.1.1
 
 USER root
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -ex; \
-    \
     apt-get update; \
-    export DEBIAN_FRONTEND=noninteractive; \
     apt-get install -y --no-install-recommends \
         tzdata \
         netcat \
