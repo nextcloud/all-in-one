@@ -223,6 +223,11 @@ class ContainerDefinitionFetcher
                 $shmSize = $entry['shm_size'];
             }
 
+            $apparmorUnconfined = false;
+            if (isset($entry['apparmor_unconfined'])) {
+                $apparmorUnconfined = $entry['apparmor_unconfined'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -238,6 +243,7 @@ class ContainerDefinitionFetcher
                 $devices,
                 $capAdd,
                 $shmSize,
+                $apparmorUnconfined,
                 $this->container->get(DockerActionManager::class)
             );
         }

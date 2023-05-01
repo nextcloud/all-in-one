@@ -105,6 +105,9 @@
 							"pattern": "^/dev/[a-z]+$"
 						}
 					},
+					"apparmor_unconfined": {
+						"type": "boolean"
+					},
 					"volumes": {
 						"type": "array",
 						"items": {

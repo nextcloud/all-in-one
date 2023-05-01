@@ -26,6 +26,7 @@ class Container {
     /** @var string[] */
     private array $capAdd;
     private int $shmSize;
+    private bool $apparmorUnconfined;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -43,6 +44,7 @@ class Container {
         array $devices,
         array $capAdd,
         int $shmSize,
+        bool $apparmorUnconfined,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -59,6 +61,7 @@ class Container {
         $this->devices = $devices;
         $this->capAdd = $capAdd;
         $this->shmSize = $shmSize;
+        $this->apparmorUnconfined = $apparmorUnconfined;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -80,6 +83,10 @@ class Container {
 
     public function GetShmSize() : int {
         return $this->shmSize;
+    }
+
+    public function isApparmorUnconfined() : bool {
+        return $this->apparmorUnconfined;
     }
 
     public function GetMaxShutdownTime() : int {
