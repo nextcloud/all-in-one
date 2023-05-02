@@ -131,6 +131,7 @@ services:
       - dictionaries=${COLLABORA_DICTIONARIES}
       - TZ=${TIMEZONE}
       - server_name=${NC_DOMAIN}
+      - DONT_GEN_SSL_CERT=1
     volumes:
       - nextcloud_aio_collabora_fonts:/opt/cool/systemplate/tmpfonts:rw
     restart: unless-stopped
