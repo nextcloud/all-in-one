@@ -27,6 +27,7 @@ spec:
           command:
             - chown
             - 999:999
+            - "-R"
             - /nextcloud-aio-database
             - /nextcloud-aio-database-dump
           volumeMounts:
@@ -52,6 +53,7 @@ spec:
             - containerPort: 5432
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
+n             subPath: data
               name: nextcloud-aio-database
             - mountPath: /mnt/data
               name: nextcloud-aio-database-dump
