@@ -48,6 +48,7 @@ do
 done
 
 rm -f sample.conf
+echo 'IPV6_NETWORK=fd12:3456:789a:2::/64 # IPv6 subnet to use' | tee -a sample.conf
 VARIABLES="$(grep -oP '%[A-Z_a-z0-6]+%' containers.yml | sort -u)"
 mapfile -t VARIABLES <<< "$VARIABLES"
 for variable in "${VARIABLES[@]}"
@@ -137,7 +138,7 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: \${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
+        - subnet: \${IPV6_NETWORK}
 NETWORK
 
 cat containers.yml > latest.yml

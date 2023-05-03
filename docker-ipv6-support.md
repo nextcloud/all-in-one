@@ -3,12 +3,12 @@
 Before you can use IPv6 in Docker containers or swarm services, you need to enable IPv6 support in the Docker daemon. Afterward, you can choose to use either IPv4 or IPv6 (or both) with any container, service, or network.
 
 ## Docker on Linux and Docker-rootless
-1.  Edit `/etc/docker/daemon.json` (or `~/.config/docker/daemon.json` in case of docker-rootless), set the `ipv6` key to `true` and the `fixed-cidr-v6` key to your IPv6 subnet. In this example we are setting it to `2001:db8:1::/64`. Additionally set `experimental` to `true` and `ip6tables` to `true` as well.
+1.  Edit `/etc/docker/daemon.json` (or `~/.config/docker/daemon.json` in case of docker-rootless), set the `ipv6` key to `true` and the `fixed-cidr-v6` key to your IPv6 subnet. In this example we are setting it to `fd12:3456:789a:1::/64`. Additionally set `experimental` to `true` and `ip6tables` to `true` as well. If you enabled IPv6 with the update.sh from mailcow, you can keep their deamon.json, it will work too.
 
     ```json
     {
       "ipv6": true,
-      "fixed-cidr-v6": "2001:db8:1::/64",
+      "fixed-cidr-v6": "fd12:3456:789a:1::/64",
       "experimental": true,
       "ip6tables": true
     }
@@ -21,22 +21,22 @@ Before you can use IPv6 in Docker containers or swarm services, you need to enab
     ```console
     sudo systemctl restart docker
     ```
-3. Make sure that ipv6 is enabled for the internal `nextcloud-aio` network by running `sudo docker network inspect nextcloud-aio`. On a new instance, this command should return that it did not find a network with this name. Then you can run `sudo docker network create --subnet="2001:db8:2::/64" --driver bridge --ipv6 nextcloud-aio` in order to create the network with ipv6-support. If it finds the network though and its value `EnableIPv6` is set to false, make sure to follow https://github.com/nextcloud/all-in-one/discussions/2045 in order to recreate the network and enable ipv6 for it.
+3. Make sure that ipv6 is enabled for the internal `nextcloud-aio` network by running `sudo docker network inspect nextcloud-aio`. On a new instance, this command should return that it did not find a network with this name. Then you can run `sudo docker network create --subnet="fd12:3456:789a:2::/64" --driver bridge --ipv6 nextcloud-aio` in order to create the network with ipv6-support. If it finds the network though and its value `EnableIPv6` is set to false, make sure to follow https://github.com/nextcloud/all-in-one/discussions/2045 in order to recreate the network and enable ipv6 for it.
 
 ## Docker Desktop (Windows and macOS)
 On Windows and macOS which use Docker Desktop, you need to go into the settings, and select `Docker Engine`. There you should see the currently used daemon.json file. 
 
-1. You need to now adjust this json file by setting the `ipv6` key to `true` and the `fixed-cidr-v6` key to your IPv6 subnet. In this example we are setting it to `2001:db8:1::/64`. Additionally set `experimental` to `true` and `ip6tables` to `true` as well.
+1. You need to now adjust this json file by setting the `ipv6` key to `true` and the `fixed-cidr-v6` key to your IPv6 subnet. In this example we are setting it to `fd12:3456:789a:1::/64`. Additionally set `experimental` to `true` and `ip6tables` to `true` as well.
 
     ```
     "ipv6": true,
-    "fixed-cidr-v6": "2001:db8:1::/64",
+    "fixed-cidr-v6": "fd12:3456:789a:1::/64s",
     "experimental": true,
     "ip6tables": true
     ```
 
 2. Add these values to the json and make sure to keep the other currently values and that you don't see `Unexpected token in JSON at position ...` before attempting to restart by clicking on `Apply & restart`.
-3. Make sure that ipv6 is enabled for the internal `nextcloud-aio` network by running `docker network inspect nextcloud-aio`. On a new instance, this command should return that it did not find a network with this name. Then you can run `docker network create --subnet="2001:db8:2::/64" --driver bridge --ipv6 nextcloud-aio` in order to create the network with ipv6-support. If it finds the network though and its value `EnableIPv6` is set to false, make sure to follow https://github.com/nextcloud/all-in-one/discussions/2045 in order to recreate the network and enable ipv6 for it.
+3. Make sure that ipv6 is enabled for the internal `nextcloud-aio` network by running `docker network inspect nextcloud-aio`. On a new instance, this command should return that it did not find a network with this name. Then you can run `docker network create --subnet="fd12:3456:789a:2::/64" --driver bridge --ipv6 nextcloud-aio` in order to create the network with ipv6-support. If it finds the network though and its value `EnableIPv6` is set to false, make sure to follow https://github.com/nextcloud/all-in-one/discussions/2045 in order to recreate the network and enable ipv6 for it.
 
 ---
 
