@@ -55,7 +55,7 @@ services:
 # # Inspired by https://github.com/mailcow/mailcow-dockerized/blob/master/docker-compose.yml
 # networks:
 #   nextcloud-aio:
-#     name: nextcloud-aio # This line is not allowed to be changed
+#     name: nextcloud-aio # This line is not allowed to be changed as otherwise the created network will not be used by the other containers of AIO
 #     driver: bridge
 #     enable_ipv6: true
 #     ipam:
