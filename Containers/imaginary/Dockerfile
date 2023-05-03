@@ -1,4 +1,4 @@
-FROM golang:1.20.3-alpine3.17 as go
+FROM golang:1.20.4-alpine3.17 as go
 RUN set -ex; \
     apk add --no-cache \
         vips-dev \
