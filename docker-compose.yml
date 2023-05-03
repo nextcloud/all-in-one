@@ -50,7 +50,8 @@ services:
   #     - ./sites:/srv
   #   network_mode: "host"
 
-# # Optional: If you need ipv6, follow step 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md first and then uncomment the below config in order to activate ipv6 for the internal nextcloud-aio network. Please make sure to uncomment also the networking lines of the mastercontainer above.
+# # Optional: If you need ipv6, follow step 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md first and then uncomment the below config in order to activate ipv6 for the internal nextcloud-aio network.
+# # Please make sure to uncomment also the networking lines of the mastercontainer above in order to actually create the network with docker-compose
 # # Inspired by https://github.com/mailcow/mailcow-dockerized/blob/master/docker-compose.yml
 # networks:
 #   nextcloud-aio:
