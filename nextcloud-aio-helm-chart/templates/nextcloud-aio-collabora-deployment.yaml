@@ -34,6 +34,8 @@ spec:
               mountPath: /nextcloud-aio-collabora-fonts
       containers:
         - env:
+            - name: DONT_GEN_SSL_CERT
+              value: "1"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
             - name: aliasgroup1
