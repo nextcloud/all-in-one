@@ -35,7 +35,7 @@ RUN set -ex; \
         lua5.3-dev \
         luarocks5.3; \
     \
-    # Give root a random password
+# Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     \
     touch \
