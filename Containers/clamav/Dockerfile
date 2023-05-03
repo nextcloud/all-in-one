@@ -3,6 +3,8 @@ FROM clamav/clamav:1.1.0-1
 
 COPY clamav.conf /tmp/clamav.conf
 
-RUN apk add --no-cache tzdata; \
-    tee -a /etc/clamav/clamd.conf < /tmp/clamav.conf
+RUN set -ex; \
+    apk add --no-cache tzdata; \
+    cat /tmp/clamav.conf | tee -a /etc/clamav/clamd.conf; \
+    rm /tmp/clamav.conf
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
