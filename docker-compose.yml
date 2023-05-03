@@ -2,15 +2,15 @@ version: "3.8"
 
 volumes:
   nextcloud_aio_mastercontainer:
-    name: nextcloud_aio_mastercontainer # This line is not allowed to be changed
+    name: nextcloud_aio_mastercontainer # This line is not allowed to be changed as otherwise the built-in backup solution will not work
 
 services:
   nextcloud:
     image: nextcloud/all-in-one:latest
     restart: always
-    container_name: nextcloud-aio-mastercontainer # This line is not allowed to be changed
+    container_name: nextcloud-aio-mastercontainer # This line is not allowed to be changed as otherwise AIO will not work correctly
     volumes:
-      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed as otherwise the built-in backup solution will not work
       - /var/run/docker.sock:/var/run/docker.sock:ro # May be changed on macOS, Windows or docker rootless. See the applicable documentation. If adjusting, don't forget to also set 'WATCHTOWER_DOCKER_SOCKET_PATH'!
     ports:
       - 80:80 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
