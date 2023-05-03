@@ -38,6 +38,7 @@ Since the AIO containers may change in the future, it is highly recommended to s
 1. Run `sudo docker-compose down` to stop all running containers
 1. Back up all important files and folders
 1. Run `git pull` in order to get the updated yaml files from the repository. Now bring your `docker-compose.yml` file up-to-date with the updated one from the repository. You can use `diff docker-compose.yml latest.yml` for comparing.
+1. Starting with AIO v5.1.0, ipv6 networking will be enabled by default, so make sure to either enable it first by following steps 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md and then proceed with the steps below or disable ipv6 networking by editing the docker-compose file and removing ipv6 from the network.
 1. Also have a look at the `sample.conf` if any variable was added or renamed and add that to your conf file as well. Here may help the diff command as well.
 1. After the file update was successful, simply run `sudo docker-compose pull` to pull the new images.
 1. At the end run `sudo docker-compose up` in order to start and update the containers with the new configuration.
