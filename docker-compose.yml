@@ -47,3 +47,15 @@ services:
   #     - ./data:/data
   #     - ./sites:/srv
   #   network_mode: "host"
+
+# # Optional: If you need ipv6, follow step 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md first and then uncomment the below config in order to activate ipv6 for the internal nextcloud-aio network
+# # Inspired by https://github.com/mailcow/mailcow-dockerized/blob/master/docker-compose.yml
+# networks:
+#   nextcloud-aio:
+#     name: nextcloud-aio
+#     driver: bridge
+#     enable_ipv6: true
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
