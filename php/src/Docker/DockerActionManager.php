@@ -678,10 +678,15 @@ class DockerActionManager
                         'Name' => 'nextcloud-aio',
                         'CheckDuplicate' => true,
                         'Driver' => 'bridge',
-                        'Internal' => false,
-                        'Options' => [
-                            'com.docker.network.bridge.enable_icc' => 'true',
-                            'com.docker.network.bridge.enable_ip_masquerade' => 'true'
+                        // Todo retreiive isipv6enabled from the default network and enable based on this
+                        'EnableIPv6' => $this->isIpv6Enabled() ? true : false,
+                        'IPAM' => [
+                            'Config' => [
+                                // TODO: retreive the ipv4 subnet from the default network and make sure that it does not overlap
+                                [ "Subnet" => '172.30.1.0/24' ],
+                                // TODO: only add this if ipv6 is enabled and also retreive the ipv6 subnet from the default network and make sure that it does not overlap
+                                [ "Subnet" => '2001:db8:2::/64' ],
+                            ]
                         ]
                     ]
                 ]
