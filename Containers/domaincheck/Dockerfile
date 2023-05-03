@@ -3,9 +3,9 @@ RUN set -ex; \
     apk add --no-cache bash lighttpd netcat-openbsd; \
     adduser -S www-data -G www-data; \
     rm -rf /etc/lighttpd/lighttpd.conf; \
-    chmod +r -R /etc/lighttpd && \
-    chown www-data:www-data -R /var/www && \
-    mkdir -p /var/www/domaincheck
+    chmod +r -R /etc/lighttpd; \
+    mkdir -p /var/www/domaincheck; \
+    chown www-data:www-data -R /var/www
 COPY --chown=www-data:www-data lighttpd.conf /etc/lighttpd/lighttpd.conf
 
 COPY --chmod=775 start.sh /start.sh
