@@ -6,7 +6,7 @@ FROM alpine:3.17.3
 RUN apk add --no-cache bash
 COPY --from=watchtower /watchtower /watchtower
 
-COPY --chmod=775 start.sh / start.sh
+COPY --chmod=775 start.sh /start.sh
 
 ENTRYPOINT ["/start.sh"]
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
