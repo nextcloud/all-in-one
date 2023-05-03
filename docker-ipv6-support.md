@@ -21,6 +21,7 @@ Before you can use IPv6 in Docker containers or swarm services, you need to enab
     ```console
     sudo systemctl restart docker
     ```
+3. Make sure that ipv6 is enabled for the internal `nextcloud-aio` network by running `sudo docker network inspect nextcloud-aio`. On a new instance, this command should return that it did not find a network with this name. Then you can run `sudo docker network create --subnet="172.30.1.0/24" --subnet="2001:db8:2::/64" --driver bridge --ipv6 nextcloud-aio` in order to create the network with ipv6-support. If it finds the network though and its value `EnableIPv6` is set to false, make sure to follow https://github.com/nextcloud/all-in-one/discussions/2045 in order to recreate the network and enable ipv6 for it.
 
 ## Docker Desktop (Windows and macOS)
 On Windows and macOS which use Docker Desktop, you need to go into the settings, and select `Docker Engine`. There you should see the currently used daemon.json file. 
@@ -35,6 +36,7 @@ On Windows and macOS which use Docker Desktop, you need to go into the settings,
     ```
 
 2. Add these values to the json and make sure to keep the other currently values and that you don't see `Unexpected token in JSON at position ...` before attempting to restart by clicking on `Apply & restart`.
+3. Make sure that ipv6 is enabled for the internal `nextcloud-aio` network by running `docker network inspect nextcloud-aio`. On a new instance, this command should return that it did not find a network with this name. Then you can run `docker network create --subnet="172.30.1.0/24" --subnet="2001:db8:2::/64" --driver bridge --ipv6 nextcloud-aio` in order to create the network with ipv6-support. If it finds the network though and its value `EnableIPv6` is set to false, make sure to follow https://github.com/nextcloud/all-in-one/discussions/2045 in order to recreate the network and enable ipv6 for it.
 
 ---
 
