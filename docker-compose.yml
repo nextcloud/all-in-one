@@ -61,4 +61,4 @@ services:
 #     ipam:
 #       driver: default
 #       config:
-#         - subnet: ${IPV6_NETWORK:-fd12:3456:789a:2::/64}
+#         - subnet: fd12:3456:789a:2::/64 # IPv6 subnet to use
