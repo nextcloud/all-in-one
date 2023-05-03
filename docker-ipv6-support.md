@@ -30,7 +30,7 @@ On Windows and macOS which use Docker Desktop, you need to go into the settings,
 
     ```
     "ipv6": true,
-    "fixed-cidr-v6": "fd12:3456:789a:1::/64s",
+    "fixed-cidr-v6": "fd12:3456:789a:1::/64",
     "experimental": true,
     "ip6tables": true
     ```
