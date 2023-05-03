@@ -1,6 +1,27 @@
 # From https://github.com/nextcloud/docker/blob/master/23/fpm-alpine/Dockerfile
 FROM php:8.1.19-fpm-alpine3.17
 
+VOLUME /var/www/html
+
+ENV PHP_MEMORY_LIMIT 512M
+ENV PHP_UPLOAD_LIMIT 10G
+ENV PHP_MAX_TIME 3600
+
+ENV NEXTCLOUD_VERSION 26.0.2
+
+COPY *.sh upgrade.exclude /
+COPY config/* /usr/src/nextcloud/config/
+
+ENV NEXTCLOUD_UPDATE=1
+
+COPY supervisord.conf /supervisord.conf
+
+COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 notify.sh /notify.sh
+COPY --chmod=775 notify-all.sh /notify-all.sh
+
+VOLUME /mnt/ncdata
+
 # Custom: change id of www-data user as it needs to be the same like on old installations
 RUN set -ex; \
     apk add --no-cache shadow; \
@@ -8,22 +29,14 @@ RUN set -ex; \
     groupmod -g 333 xfs; \
     usermod -u 333 -g 333 xfs; \
     addgroup -g 33 -S www-data; \
-    adduser -u 33 -D -S -G www-data www-data
-
-# entrypoint.sh and cron.sh dependencies
-RUN set -ex; \
+    adduser -u 33 -D -S -G www-data www-data; \
     \
+# entrypoint.sh and cron.sh dependencies
     apk add --no-cache \
         rsync \
-    ;
-
+    ; \
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
-ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 10G
-ENV PHP_MAX_TIME 3600
-RUN set -ex; \
-    \
     apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
         autoconf \
@@ -80,11 +93,11 @@ RUN set -ex; \
             | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
     )"; \
     apk add --virtual .nextcloud-phpext-rundeps $runDeps; \
-    apk del .build-deps
-
+    apk del .build-deps; \
+    \
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
-RUN { \
+    { \
         echo 'opcache.interned_strings_buffer=32'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
@@ -104,13 +117,8 @@ RUN { \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
-    chmod -R g=u /var/www
-
-VOLUME /var/www/html
-
-ENV NEXTCLOUD_VERSION 26.0.2
-
-RUN set -ex; \
+    chmod -R g=u /var/www; \
+    \
     apk add --no-cache --virtual .fetch-deps \
         bzip2 \
         gnupg \
@@ -130,27 +138,16 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
-    apk del .fetch-deps
-
-COPY *.sh upgrade.exclude /
-COPY config/* /usr/src/nextcloud/config/
-
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
-
-# Template from https://github.com/nextcloud/docker/blob/master/.examples/dockerfiles/full/fpm-alpine/Dockerfile
-
-RUN set -ex; \
+    apk del .fetch-deps; \
     \
+# Template from https://github.com/nextcloud/docker/blob/master/.examples/dockerfiles/full/fpm-alpine/Dockerfile
     apk add --no-cache \
         ffmpeg \
         procps \
         samba-client \
         supervisor \
 #       libreoffice \
-    ;
-
-RUN set -ex; \
+    ; \
     \
     apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
@@ -178,21 +175,12 @@ RUN set -ex; \
             | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
     )"; \
     apk add --virtual .nextcloud-phpext-rundeps $runDeps; \
-    apk del .build-deps
-
-RUN mkdir -p \
+    apk del .build-deps; \
+    \
+    mkdir -p \
     /var/log/supervisord \
     /var/run/supervisord \
-;
-
-COPY supervisord.conf /
-
-ENV NEXTCLOUD_UPDATE=1
-
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
-
-# Custom:
-RUN set -ex; \
+    ; \
     \
     apk add --no-cache \
         bash \
@@ -206,60 +194,39 @@ RUN set -ex; \
         sudo \
         grep \
         nodejs \
-        coreutils;
-
-RUN set -ex; \
+        coreutils; \
+    \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 80/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm.start_servers =.*/pm.start_servers = 2/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm.min_spare_servers =.*/pm.min_spare_servers = 1/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm.max_spare_servers =.*/pm.max_spare_servers = 3/' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf
-
-RUN set -ex; \
+    sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
+    \
     rm -rf /tmp/nextcloud-aio && \
     mkdir -p /tmp/nextcloud-aio && \
     cd /tmp/nextcloud-aio && \
     git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
     mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
-    cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/
-
-RUN set -ex; \
+    cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/; \
+    \
     chown www-data:root -R /usr/src && \
     chown www-data:root -R /usr/local/etc/php/conf.d && \
     chown www-data:root -R /usr/local/etc/php-fpm.d && \
-    rm -r /usr/src/nextcloud/apps/updatenotification
-
-COPY start.sh /
-COPY notify.sh /
-COPY notify-all.sh /
-RUN set -ex; \
-    chmod +x /start.sh && \
-    chmod +x /entrypoint.sh && \
-    chmod +r /upgrade.exclude && \
-    chmod +x /cron.sh && \
-    chmod +x /notify.sh && \
-    chmod +x /notify-all.sh && \
-    chmod +x /run-exec-commands.sh && \
-    chmod +x /healthcheck.sh
-
-RUN set -ex; \
-    mkdir /mnt/ncdata; \
-    chown www-data:www-data /mnt/ncdata;
-
-VOLUME /mnt/ncdata
-
-RUN set -ex; \
+    rm -r /usr/src/nextcloud/apps/updatenotification; \
+    chown www-data:www-data /mnt/ncdata; \
+    \
     mkdir -p /nc-updater; \
     chown -R www-data:www-data /nc-updater; \
-    chmod -R 770 /nc-updater
-
+    chmod -R 770 /nc-updater; \
+    \
 # Give root a random password
-RUN echo "root:$(openssl rand -base64 12)" | chpasswd
+    echo "root:$(openssl rand -base64 12)" | chpasswd
 
 USER root
 ENTRYPOINT ["/start.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD sudo -E -u www-data bash /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
