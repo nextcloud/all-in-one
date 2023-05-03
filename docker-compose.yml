@@ -52,6 +52,7 @@ services:
 # # Inspired by https://github.com/mailcow/mailcow-dockerized/blob/master/docker-compose.yml
 # networks:
 #   nextcloud-aio:
+#     name: nextcloud-aio
 #     driver: bridge
 #     driver_opts:
 #       com.docker.network.bridge.name: nextcloud-aio
