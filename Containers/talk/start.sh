@@ -20,7 +20,6 @@ set +x
 cat << TURN_CONF > "/etc/turnserver.conf"
 listening-port=$TALK_PORT
 fingerprint
-lt-cred-mech
 use-auth-secret
 static-auth-secret=$TURN_SECRET
 realm=$NC_DOMAIN
