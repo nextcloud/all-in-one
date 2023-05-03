@@ -189,7 +189,7 @@
                 {% endif %}
             {% endif %}
 
-            {% if domain != "" and was_start_button_clicked == true %}
+            {% if was_start_button_clicked == true %}
                 {% if current_channel starts with 'latest' or current_channel starts with 'beta' or current_channel starts with 'develop' %}
                     You are running the <a href="https://github.com/nextcloud/all-in-one#how-to-switch-the-channel"><b>{{ current_channel }}</b></a> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
                 {% else %}
@@ -202,7 +202,7 @@
                 <a href="" class="button reload">Reload ↻</a><br/><br>
             {% endif %}
 
-            {% if domain != "" %}
+            {% if was_start_button_clicked == true %}
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
                         {% if borg_backup_host_location != '' %}
