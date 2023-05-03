@@ -33,6 +33,8 @@ services:
       # - NEXTCLOUD_ENABLE_DRI_DEVICE=true # This allows to enable the /dev/dri device in the Nextcloud container which is needed for hardware-transcoding. See https://github.com/nextcloud/all-in-one#how-to-enable-hardware-transcoding-for-nextcloud
       # - TALK_PORT=3478 # This allows to adjust the port that the talk container is using.
       # - WATCHTOWER_DOCKER_SOCKET_PATH=/var/run/docker.sock # Needs to be specified if the docker socket on the host is not located in the default '/var/run/docker.sock'. Otherwise mastercontainer updates will fail. For macos it needs to be '/var/run/docker.sock'
+    # networks: # Is needed when you want to create the nextcloud-aio network with ipv6-support using this file, see the network config at the bottom of the file
+      # - nextcloud-aio # Is needed when you want to create the nextcloud-aio network with ipv6-support using this file, see the network config at the bottom of the file
 
   # # Optional: Caddy reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
   # # You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
@@ -48,14 +50,15 @@ services:
   #     - ./sites:/srv
   #   network_mode: "host"
 
-# # Optional: If you need ipv6, follow step 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md first and then uncomment the below config in order to activate ipv6 for the internal nextcloud-aio network
+# # Optional: If you need ipv6, follow step 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md first and then uncomment the below config in order to activate ipv6 for the internal nextcloud-aio network.
+# # Please make sure to uncomment also the networking lines of the mastercontainer above in order to actually create the network with docker-compose
 # # Inspired by https://github.com/mailcow/mailcow-dockerized/blob/master/docker-compose.yml
 # networks:
 #   nextcloud-aio:
-#     name: nextcloud-aio
+#     name: nextcloud-aio # This line is not allowed to be changed as otherwise the created network will not be used by the other containers of AIO
 #     driver: bridge
 #     enable_ipv6: true
 #     ipam:
 #       driver: default
 #       config:
-#         - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
+#         - subnet: fd12:3456:789a:2::/64 # IPv6 subnet to use
