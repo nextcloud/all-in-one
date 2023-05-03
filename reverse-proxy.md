@@ -558,7 +558,7 @@ Afterwards should the AIO interface be accessible via `https://ip.address.of.the
 ## 6. How to debug things?
 If something does not work, follow the steps below:
 1. Make sure to exactly follow the whole reverse proxy documentation step-for-step from top to bottom!
-1. Make sure that you used the docker run command that is described in this reverse proxy documentation.
+1. Make sure that you used the docker run command that is described in this reverse proxy documentation. Hint: make sure that you have set the APACHE_PORT during the docker run command!
 1. Make sure to set the `APACHE_IP_BINDING` variable correctly. If in doubt, set it to `--env APACHE_IP_BINDING=0.0.0.0`
 1. Make sure that all ports match the chosen `APACHE_PORT`.
 1. Make sure that the reverse proxy is running on the host OS or if running in a container, connected to the host network. If that is not possible (e.g. on Windows or if the reverse proxy is running on a different host), substitute `localhost` or `127.0.0.1` in the default configurations by the private ip-address of the host that is running the docker daemon. If you are not sure how to retrieve that, you can run: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'`. If the command returns a public ip-address, use `ip a | grep "scope global" | grep docker0 | awk '{print $2}' | sed 's|/.*||'` instead (the commands only work on Linux)
