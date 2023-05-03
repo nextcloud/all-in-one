@@ -6,7 +6,7 @@ COPY --chmod=775 start.sh /usr/bin/start.sh
 RUN set -ex; \
     apk add --no-cache openssl bash; \
     \
-    # Give root a random password
+# Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd
 
 USER redis
