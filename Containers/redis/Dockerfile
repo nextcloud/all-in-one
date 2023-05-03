@@ -1,13 +1,13 @@
 # From https://github.com/docker-library/redis/blob/master/7.0/alpine/Dockerfile
 FROM redis:7.0.11-alpine
 
-RUN apk add --no-cache openssl bash
+COPY --chmod=775 start.sh /usr/bin/start.sh
 
-COPY start.sh /usr/bin/
-RUN chmod +x /usr/bin/start.sh
-
+RUN set -ex; \
+    apk add --no-cache openssl bash; \
+    \
 # Give root a random password
-RUN echo "root:$(openssl rand -base64 12)" | chpasswd
+    echo "root:$(openssl rand -base64 12)" | chpasswd
 
 USER redis
 ENTRYPOINT ["start.sh"]
