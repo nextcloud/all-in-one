@@ -56,12 +56,16 @@ cat << EOL > /tmp/initcontainers
 EOL
 cat << EOL > /tmp/initcontainers.database
       initContainers:
-        - name: init-volumes
+        - init-subpath
           image: alpine
           command:
             - mkdir
             - "-p"
-            - /nextcloud-aio-database/data;
+            - /nextcloud-aio-database/data
+          volumeMountsInitContainer:
+        - name: init-volumes
+          image: alpine
+          command:
             - chown
             - 999:999
             - "-R"
