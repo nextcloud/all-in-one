@@ -16,6 +16,9 @@ services:
       - 80:80 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       - 8080:8080
       - 8443:8443 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+    # network_mode: bridge # Is needed when you want to create the nextcloud-aio network usinh this file
+    # networks: # Is needed when you want to create the nextcloud-aio network usinh this file
+      # - nextcloud-aio # Is needed when you want to create the nextcloud-aio network usinh this file
     # environment: # Is needed when using any of the options below
       # - AIO_DISABLE_BACKUP_SECTION=false # Setting this to true allows to hide the backup section in the AIO interface.
       # - APACHE_PORT=11000 # Is needed when running behind a web server or reverse proxy (like Apache, Nginx and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
@@ -48,7 +51,7 @@ services:
   #     - ./sites:/srv
   #   network_mode: "host"
 
-# # Optional: If you need ipv6, follow step 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md first and then uncomment the below config in order to activate ipv6 for the internal nextcloud-aio network
+# # Optional: If you need ipv6, follow step 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md first and then uncomment the below config in order to activate ipv6 for the internal nextcloud-aio network. Please make sure to uncomment also the networking lines of the mastercontainer above.
 # # Inspired by https://github.com/mailcow/mailcow-dockerized/blob/master/docker-compose.yml
 # networks:
 #   nextcloud-aio:
