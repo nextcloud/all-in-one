@@ -54,8 +54,6 @@ services:
 #   nextcloud-aio:
 #     name: nextcloud-aio
 #     driver: bridge
-#     driver_opts:
-#       com.docker.network.bridge.name: nextcloud-aio
 #     enable_ipv6: true
 #     ipam:
 #       driver: default
