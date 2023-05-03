@@ -3,7 +3,8 @@ FROM redis:7.0.11-alpine
 
 COPY --chmod=775 start.sh /usr/bin/start.sh
 
-RUN apk add --no-cache openssl bash; \
+RUN set -ex; \
+    apk add --no-cache openssl bash; \
     \
     # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd
