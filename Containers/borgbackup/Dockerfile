@@ -13,8 +13,8 @@ RUN set -ex; \
 
 VOLUME /root
 
-COPY --chmod=775 start.sh /usr/bin/start.sh
-COPY --chmod=775 backupscript.sh /backupscript.sh
+COPY --chmod=770 *.sh /
 
-ENTRYPOINT ["start.sh"]
+ENTRYPOINT ["/start.sh"]
+
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
