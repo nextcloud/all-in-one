@@ -70,13 +70,15 @@ $app->post('/api/configuration', \AIO\Controller\ConfigurationController::class 
 // Views
 $app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
+    $view->addExtension(new \AIO\Twig\ClassExtension());
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
     $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
+    /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
     $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
-    $dockerActionManger->ConnectMasterContainerToNetwork();
+    /** @var \AIO\Controller\DockerController $dockerController */
     $dockerController = $container->get(\AIO\Controller\DockerController::class);
     $dockerController->StartDomaincheckContainer();
-    $view->addExtension(new \AIO\Twig\ClassExtension());
+    $dockerActionManger->ConnectMasterContainerToNetwork();
     return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->GetDomain(),
         'apache_port' => $configurationManager->GetApachePort(),
@@ -151,6 +153,7 @@ $app->get('/setup', function (Request $request, Response $response, array $args)
 
 // Auth Redirector
 $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $response, array $args) use ($container) {
+    /** @var \AIO\Auth\AuthManager $authManager */
     $authManager = $container->get(\AIO\Auth\AuthManager::class);
 
     /** @var \AIO\Data\Setup $setup */
