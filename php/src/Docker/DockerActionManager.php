@@ -490,6 +490,10 @@ class DockerActionManager
     }
 
     public function isAnyUpdateAvailable() : bool {
+        // return early if instance is not installed
+        if (!$this->configurationManager->wasStartButtonClicked()) {
+            return false;
+        }
         $id = 'nextcloud-aio-apache';
 
         if ($this->isContainerUpdateAvailable($id) !== "") {
