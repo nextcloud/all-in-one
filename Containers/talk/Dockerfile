@@ -6,6 +6,9 @@ USER root
 COPY --from=nats /nats-server /usr/local/bin/nats-server
 COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
 
+COPY --chmod=775 start.sh /usr/bin/start.sh
+COPY --chmod=664 supervisord.conf /supervisord.conf
+
 RUN set -ex; \
     apk add --no-cache \
         ca-certificates \
@@ -30,15 +33,11 @@ RUN set -ex; \
         util-linux \
         build-base \
         lua5.3-dev \
-        luarocks5.3;
-
+        luarocks5.3; \
+    \
 # Give root a random password
-RUN echo "root:$(openssl rand -base64 12)" | chpasswd
-
-COPY --chmod=775 start.sh /usr/bin/start.sh
-COPY --chmod=664 supervisord.conf /supervisord.conf
-
-RUN set -ex; \
+    echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    \
     touch \
         /etc/nats.conf \
         /etc/signaling.conf \
