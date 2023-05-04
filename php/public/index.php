@@ -77,8 +77,8 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
     /** @var \AIO\Controller\DockerController $dockerController */
     $dockerController = $container->get(\AIO\Controller\DockerController::class);
-    $dockerController->StartDomaincheckContainer();
     $dockerActionManger->ConnectMasterContainerToNetwork();
+    $dockerController->StartDomaincheckContainer();
     return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->GetDomain(),
         'apache_port' => $configurationManager->GetApachePort(),
