@@ -362,6 +362,94 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 </details>
 
+### Node.js with Express
+
+<details>
+
+<summary>click here to expand</summary>
+
+**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+
+For Node.js, we will use the npm package `http-proxy`. WebSockets must be handled separately.
+
+This example only uses `http`, but if your Express server already uses a `https` server, then follow the same instructions for `https`.
+
+```js
+const HttpProxy = require('http-proxy');
+const express = require('express');
+const http = require('http');
+
+const app = express();
+const proxy = HttpProxy.createProxyServer({
+	target: 'http://localhost:11000',
+	// Timeout can be changed to your liking.
+	timeout: 1000 * 60 * 3,
+	proxyTimeout: 1000 * 60 * 3,
+	// Not 100% certain whether autoRewrite is necessary, but enabling it SEEMS to make it behave more stably.
+	autoRewrite: true,
+	// Do not enable followRedirects.
+	followRedirects: false,
+});
+
+// Handle errors with proxy.web and proxy.ws
+function onProxyError(err, req, res, target) {
+	// Handle errors however you like. Here's an example:
+	if (err.code === 'ECONNREFUSED') {
+		return res.status(503).send('Nextcloud server is currently not running. It may be down for temporary maintenance.');
+	}
+	// other errors
+	else {
+		console.error(err);
+		return res.status(500).send(String(err));
+	}
+}
+
+app.use((req, res) => {
+	proxy.web(req, res, {}, onProxyError);
+});
+
+const httpServer = http.createServer(app);
+httpServer.listen('80');
+
+// Listen for an upgrade to a WebSocket connection.
+httpServer.on('upgrade', (req, socket, head) => {
+	proxy.ws(req, socket, head, {}, onProxyError);
+});
+```
+
+If you are using the Express package `vhost` for your app, you can use `proxy.web` inside the vhosted express function (see the following code snippet), but `proxy.ws` still needs to be done "globally" on your http server. Nextcloud should automatically ignore websocket requests for other domains.
+
+```js
+const HttpProxy = require('http-proxy');
+const express = require('express');
+const http = require('http');
+
+const myNextcloudApp = express();
+const myOtherApp = express();
+const vhost = express();
+
+// Definitions for proxy and onProxyError unchanged. (see above)
+
+myNextcloudApp.use((req, res) => {
+	proxy.web(req, res, {}, onProxyError);
+});
+
+vhost.use(vhostFunc('<your-nextcloud-domain>', myNextcloudApp));
+
+const httpServer = http.createServer(app);
+httpServer.listen('80');
+
+// Listen for an upgrade to a WebSocket connection.
+httpServer.on('upgrade', (req, socket, head) => {
+	proxy.ws(req, socket, head, {}, onProxyError);
+});
+```
+
+Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also make sure to adjust the port 11000 to match the chosen `APACHE_PORT`. 
+**Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. ***If that is not an option or not possible for you (like e.g. on Windows or if the reverse proxy is running on a different host), you can alternatively instead of `localhost` use the private ip-address of the host that is running the docker daemon. If you are not sure how to retrieve that, you can run: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'`. If the command returns a public ip-address, use `ip a | grep "scope global" | grep docker0 | awk '{print $2}' | sed 's|/.*||'` instead (the commands only work on Linux)***
+
+</details>
+
 ### Synology Reverse Proxy
 
 <details>
