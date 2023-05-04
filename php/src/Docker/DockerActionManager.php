@@ -132,7 +132,7 @@ class DockerActionManager
         }
         
         if ($internalPort !== "" && $internalPort !== 'host') {
-            $connection = @fsockopen($containerName, (int)$internalPort, $errno, $errstr, 0.1);
+            $connection = @fsockopen($containerName, (int)$internalPort, $errno, $errstr, 0.2);
             if ($connection) {
                 fclose($connection);
                 return new RunningState();
