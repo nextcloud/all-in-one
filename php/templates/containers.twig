@@ -202,7 +202,7 @@
                 <a href="" class="button reload">Reload ↻</a><br/><br>
             {% endif %}
 
-            {% if was_start_button_clicked == true %}
+            {% if domain != "" %}
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
                         {% if borg_backup_host_location != '' %}
