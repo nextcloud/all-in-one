@@ -20,6 +20,11 @@ case "${1}" in
 esac
 }
 
+if [ "$(whoami)" != "root" ] || [ "$(id -u)" != "0" ] || [ "$(id -g)" != "0" ]; then
+    print_red "Container does not run as root. Cannot continue."
+    exit 1
+fi
+
 # Check if socket is available and readable
 if ! [ -a "/var/run/docker.sock" ]; then
     print_red "Docker socket is not available. Cannot continue."
