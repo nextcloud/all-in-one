@@ -20,8 +20,9 @@ case "${1}" in
 esac
 }
 
-if [ "$(whoami)" != "root" ] || [ "$(id -u)" != "0" ] || [ "$(id -g)" != "0" ]; then
-    print_red "Container does not run as root. Cannot continue."
+# Check if running as root user
+if [ "$EUID" != "0" ]; then
+    print_red "Container does not run as root user. This is not supported."
     exit 1
 fi
 
