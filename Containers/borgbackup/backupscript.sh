@@ -86,8 +86,9 @@ if [ "$BORG_MODE" = backup ]; then
     if ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
         # Don't initialize if already initialized
         if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
-            echo "Cannot initialize a new repository as that was already done at least one time."
-            echo "If you still want to do so, you may delete the 'borg.config' file that is stored in the mastercontainer volume manually, which will allow you to initialize a new borg repository in the chosen directory:"
+            echo "No borg config file was found in the targeted directory."
+            echo "This might happen if the targeted directory is located on an external drive and the drive not connected anymore. You should check this."
+            echo "If you instead want to initialize a new backup repository, you may delete the 'borg.config' file that is stored in the mastercontainer volume manually, which will allow you to initialize a new borg repository in the chosen directory:"
             echo "sudo docker exec nextcloud-aio-mastercontainer rm /mnt/docker-aio-config/data/borg.config"
             exit 1
         fi
@@ -131,6 +132,13 @@ if [ "$BORG_MODE" = backup ]; then
 
     # Exclude the nextcloud log and audit log for GDPR reasons
     BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log")
+
+    # Make sure that there is always a borg.config file before creating a new backup
+    if ! [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
+        echo "Did not find borg.config file in the mastercontainer volume."
+        echo "Cannot create a backup as this is wrong."
+        exit 1
+    fi
 
     # Create the backup
     echo "Starting the backup..."
