@@ -5,7 +5,7 @@
         }
     },
     "require": {
-        "php": "8.1.*",
+        "php": "8.2.*",
         "ext-json": "*",
         "ext-sodium": "*",
         "ext-curl": "*",
@@ -22,6 +22,6 @@
 		"psalm": "psalm --threads=1",
 		"psalm:update-baseline": "psalm --threads=1 --update-baseline",
 		"lint": "find . -name \\*.php -not -path './vendor/*' -exec php -l {} \\;",
-		"php-deprecation-detector": "find . -name \\*.php -not -path './vendor/*' -exec phpdd scan {} -n -t 8.1 \\;"
+		"php-deprecation-detector": "find . -name \\*.php -not -path './vendor/*' -exec phpdd scan {} -n -t 8.2 \\;"
 	}
 }
