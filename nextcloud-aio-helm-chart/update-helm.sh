@@ -57,7 +57,7 @@ cat << EOL > /tmp/initcontainers
 EOL
 cat << EOL > /tmp/initcontainers.database
       initContainers:
-        - init-subpath
+        - name: init-subpath
           image: alpine
           command:
             - mkdir
