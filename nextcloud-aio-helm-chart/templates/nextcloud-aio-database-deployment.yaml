@@ -22,11 +22,25 @@ spec:
         io.kompose.service: nextcloud-aio-database
     spec:
       initContainers:
+        - name: init-subpath
+          image: alpine
+          command:
+            - mkdir
+            - "-p"
+            - /nextcloud-aio-database/data
+            - /nextcloud-aio-database
+            - /nextcloud-aio-database-dump
+          volumeMounts:
+            - name: nextcloud-aio-database-dump
+              mountPath: /nextcloud-aio-database-dump
+            - name: nextcloud-aio-database
+              mountPath: /nextcloud-aio-database
         - name: init-volumes
           image: alpine
           command:
             - chown
             - 999:999
+            - "-R"
             - /nextcloud-aio-database
             - /nextcloud-aio-database-dump
           volumeMounts:
@@ -46,12 +60,13 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-postgresql:20230501_090621-latest
+          image: nextcloud/aio-postgresql:20230511_075831-latest
           name: nextcloud-aio-database
           ports:
             - containerPort: 5432
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
+              subPath: data
               name: nextcloud-aio-database
             - mountPath: /mnt/data
               name: nextcloud-aio-database-dump
