@@ -1,8 +1,8 @@
 # From https://github.com/docker-library/postgres/blob/master/15/alpine/Dockerfile
 FROM postgres:15.2-alpine
 
-COPY --chmod=775 start.sh /usr/bin/start.sh
-COPY --chmod=775 healthcheck.sh /usr/bin/healthcheck.sh
+COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=775 init-user-db.sh /docker-entrypoint-initdb.d/init-user-db.sh
 
 RUN set -ex; \
@@ -29,7 +29,7 @@ RUN set -ex; \
 VOLUME /mnt/data
 
 USER postgres
-ENTRYPOINT ["start.sh"]
+ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD healthcheck.sh
+HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
