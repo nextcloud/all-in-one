@@ -20,6 +20,12 @@ case "${1}" in
 esac
 }
 
+# Check if running as root user
+if [ "$EUID" != "0" ]; then
+    print_red "Container does not run as root user. This is not supported."
+    exit 1
+fi
+
 # Check if socket is available and readable
 if ! [ -a "/var/run/docker.sock" ]; then
     print_red "Docker socket is not available. Cannot continue."
