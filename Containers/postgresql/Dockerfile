@@ -5,8 +5,6 @@ COPY --chmod=775 start.sh /usr/bin/start.sh
 COPY --chmod=775 healthcheck.sh /usr/bin/healthcheck.sh
 COPY --chmod=775 init-user-db.sh /docker-entrypoint-initdb.d/init-user-db.sh
 
-VOLUME /mnt/data
-
 RUN set -ex; \
     apk add --no-cache bash openssl shadow grep mawk; \
     \
@@ -15,6 +13,7 @@ RUN set -ex; \
     groupmod -g 9999 ping; \
     addgroup -g 999 -S postgres; \
     adduser -u 999 -S -D -G postgres -H -h /var/lib/postgresql -s /bin/sh postgres; \
+    apk del --no-cache shadow; \
     \
 # Fix default permissions
     chown -R postgres:postgres /var/lib/postgresql; \
@@ -26,6 +25,8 @@ RUN set -ex; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd
+
+VOLUME /mnt/data
 
 USER postgres
 ENTRYPOINT ["start.sh"]
