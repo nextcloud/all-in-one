@@ -32,6 +32,7 @@ sed -i "s|\${TALK_PORT}:\${TALK_PORT}/|$TALK_PORT:$TALK_PORT/|g" latest.yml
 sed -i "s|- \${APACHE_PORT}|- $APACHE_PORT|" latest.yml
 sed -i "s|- \${TALK_PORT}|- $TALK_PORT|" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
+sed -i "/name: nextcloud-aio/,$ d" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
 sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name: nextcloud_aio_nextcloud_trusted_cacerts" latest.yml
@@ -187,6 +188,7 @@ sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
 sed -i '/^APACHE_IP_BINDING/d' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
+sed -i '/^IPV6_NETWORK/d' /tmp/sample.conf
 sed -i '/_ENABLED.*/s/ yes / "yes" /' /tmp/sample.conf
 sed -i '/_ENABLED.*/s/ no / "no" /' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
