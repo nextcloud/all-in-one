@@ -108,18 +108,13 @@ RUN set -ex; \
     mkdir /var/log/supervisord; \
     mkdir /var/run/supervisord;
 
+COPY --chmod=775 *.sh /
 COPY --chmod=664 Caddyfile /Caddyfile
-COPY --chmod=775 start.sh /usr/bin/start.sh
-COPY --chmod=775 backup-time-file-watcher.sh /backup-time-file-watcher.sh
-COPY --chmod=775 session-deduplicator.sh /session-deduplicator.sh
-COPY --chmod=775 cron.sh /cron.sh
-COPY --chmod=775 daily-backup.sh /daily-backup.sh
 COPY --chmod=664 supervisord.conf /supervisord.conf
-COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 USER root
 
-ENTRYPOINT ["start.sh"]
+ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
