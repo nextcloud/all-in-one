@@ -23,11 +23,13 @@ RUN set -ex; \
 
 COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
 
+ENV PORT 9000
+
 USER nobody
 
 # https://github.com/h2non/imaginary#memory-issues
 ENV MALLOC_ARENA_MAX=2
-ENTRYPOINT ["imaginary", "-p", "9000", "-return-size", "-max-allowed-resolution", "222.2"]
+ENTRYPOINT ["imaginary", "-return-size", "-max-allowed-resolution", "222.2"]
 
-HEALTHCHECK CMD nc -z localhost 9000 || exit 1
+HEALTHCHECK CMD nc -z localhost "$PORT" || exit 1
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
