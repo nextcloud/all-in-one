@@ -9,8 +9,8 @@ COPY --chown=www-data:www-data Caddyfile /Caddyfile
 COPY --chmod=664 nextcloud.conf /usr/local/apache2/conf/nextcloud.conf
 
 COPY --chmod=664 supervisord.conf /supervisord.conf
-COPY --chmod=775 start.sh /usr/bin/start.sh
-COPY --chmod=775 healthcheck.sh /usr/bin/healthcheck.sh
+COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 VOLUME /mnt/data
 
@@ -68,8 +68,8 @@ RUN set -ex; \
 
 USER www-data
 
-ENTRYPOINT ["start.sh"]
+ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD healthcheck.sh
+HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
