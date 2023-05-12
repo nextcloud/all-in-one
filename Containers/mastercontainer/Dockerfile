@@ -11,8 +11,6 @@ EXPOSE 80
 EXPOSE 8080
 EXPOSE 8443
 
-COPY mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
-
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
 
@@ -111,6 +109,7 @@ RUN set -ex; \
 COPY --chmod=775 *.sh /
 COPY --chmod=664 Caddyfile /Caddyfile
 COPY --chmod=664 supervisord.conf /supervisord.conf
+COPY mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
 
 USER root
 
