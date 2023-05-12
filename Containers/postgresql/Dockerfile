@@ -1,5 +1,5 @@
 # From https://github.com/docker-library/postgres/blob/master/15/alpine/Dockerfile
-FROM postgres:15.2-alpine
+FROM postgres:15.3-alpine
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
