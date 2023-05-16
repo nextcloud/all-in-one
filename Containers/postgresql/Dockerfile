@@ -21,7 +21,7 @@ RUN set -ex; \
     chown -R postgres:postgres "$PGDATA"; \
     \
     mkdir /mnt/data; \
-    chown postgres:postgres /mnt/data;
+    chown postgres:postgres /mnt/data; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd
