@@ -1,6 +1,8 @@
 # IPv6-Support for Docker
 
-Before you can use IPv6 in Docker containers or swarm services, you need to enable IPv6 support in the Docker daemon. Afterward, you can choose to use either IPv4 or IPv6 (or both) with any container, service, or network.
+Before enabling IPv6-Support for Docker, please note that there are still some unresolved problems in regards to IPv6-Support in Docker. See https://github.com/nextcloud/all-in-one/discussions/2557 for more details on this.
+
+Now that this was mentioned, see the instructions below on how to enable IPv6 for Docker.
 
 ## Docker on Linux and Docker-rootless
 1.  Edit `/etc/docker/daemon.json` (or `~/.config/docker/daemon.json` in case of docker-rootless), set the `ipv6` key to `true` and the `fixed-cidr-v6` key to your IPv6 subnet. In this example we are setting it to `fd12:3456:789a:1::/64`. Additionally set `experimental` to `true` and `ip6tables` to `true` as well. If you are using mailcow and enabled IPv6 with the update.sh, you can keep their daemon.json, it will work too.
