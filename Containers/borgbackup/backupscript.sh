@@ -24,6 +24,14 @@ for directory in "${VOLUME_DIRS[@]}"; do
         exit 1
     fi
 done
+# Test if default volumes are there
+DEFAULT_VOLUMES=(nextcloud_aio_apache nextcloud_aio_nextcloud nextcloud_aio_database nextcloud_aio_database_dump nextcloud_aio_elasticsearch nextcloud_aio_nextcloud_data nextcloud_aio_mastercontainer)
+for volume in "${DEFAULT_VOLUMES[@]}"; do
+    if ! mountpoint -q "/nextcloud_aio_volumes/$volume"; then
+        echo "$volume is missing which is not intended."
+        exit 1
+    fi
+done
 
 # Check if target is mountpoint
 if ! mountpoint -q /mnt/borgbackup; then

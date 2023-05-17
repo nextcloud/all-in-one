@@ -228,6 +228,11 @@ class ContainerDefinitionFetcher
                 $apparmorUnconfined = $entry['apparmor_unconfined'];
             }
 
+            $backupVolumes = [];
+            if (isset($entry['backup_volumes'])) {
+                $backupVolumes = $entry['backup_volumes'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -244,6 +249,7 @@ class ContainerDefinitionFetcher
                 $capAdd,
                 $shmSize,
                 $apparmorUnconfined,
+                $backupVolumes,
                 $this->container->get(DockerActionManager::class)
             );
         }

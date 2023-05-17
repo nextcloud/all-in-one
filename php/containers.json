@@ -41,7 +41,11 @@
           "writeable": true
         }
       ],
-      "restart": "unless-stopped"
+      "restart": "unless-stopped",
+      "backup_volumes": [
+        "nextcloud_aio_nextcloud",
+        "nextcloud_aio_apache"
+      ]
     },
     {
       "container_name": "nextcloud-aio-database",
@@ -75,7 +79,11 @@
       ],
       "stop_grace_period": 1800,
       "restart": "unless-stopped",
-      "shm_size": 268435456
+      "shm_size": 268435456,
+      "backup_volumes": [
+        "nextcloud_aio_database",
+        "nextcloud_aio_database_dump"
+      ]
     },
     {
       "container_name": "nextcloud-aio-nextcloud",
@@ -167,6 +175,9 @@
       "restart": "unless-stopped",
       "devices": [
         "/dev/dri"
+      ],
+      "backup_volumes": [
+        "nextcloud_aio_nextcloud"
       ]
     },
     {
@@ -271,28 +282,8 @@
           "writeable": true
         },
         {
-          "source": "nextcloud_aio_nextcloud",
-          "destination": "/nextcloud_aio_volumes/nextcloud_aio_nextcloud",
-          "writeable": true
-        },
-        {
           "source": "%NEXTCLOUD_DATADIR%",
           "destination": "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data",
-          "writeable": true
-        },
-        {
-          "source": "nextcloud_aio_database",
-          "destination": "/nextcloud_aio_volumes/nextcloud_aio_database",
-          "writeable": true
-        },
-        {
-          "source": "nextcloud_aio_database_dump",
-          "destination": "/nextcloud_aio_volumes/nextcloud_aio_database_dump",
-          "writeable": true
-        },
-        {
-          "source": "nextcloud_aio_apache",
-          "destination": "/nextcloud_aio_volumes/nextcloud_aio_apache",
           "writeable": true
         },
         {

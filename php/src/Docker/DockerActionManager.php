@@ -429,6 +429,11 @@ class DockerActionManager
         if ($container->GetIdentifier() === 'nextcloud-aio-borgbackup') {
             // Additional backup directories
             $mounts = [];
+            foreach ($this->getAllBackupVolumes() as $additionalBackupVolumes) {
+                if ($additionalBackupVolumes !== '') {
+                    $mounts[] = ["Type" => "volume", "Source" => $additionalBackupVolumes, "Target" => "/nextcloud_aio_volumes/" . $additionalBackupVolumes, "ReadOnly" => false];
+                }
+            }
             foreach ($this->configurationManager->GetAdditionalBackupDirectoriesArray() as $additionalBackupDirectories) {
                 if ($additionalBackupDirectories !== '') {
                     if (!str_starts_with($additionalBackupDirectories, '/')) {
@@ -501,6 +506,24 @@ class DockerActionManager
         } else {
             return false;
         }
+    }
+
+    private function getBackupVolumes(string $id) : array
+    {
+        $container = $this->containerDefinitionFetcher->GetContainerById($id);
+
+        $backupVolumes = $container->GetBackupVolumes();
+
+        foreach ($container->GetDependsOn() as $dependency) {
+            $backupVolumes[] = $this->getBackupVolumes($dependency);
+        }
+        return $backupVolumes;
+    }
+
+    private function getAllBackupVolumes() : array {
+        $id = 'nextcloud-aio-apache';
+
+        return array_unique($this->getBackupVolumes($id));
     }
 
     private function GetRepoDigestsOfContainer(string $containerName) : ?array {

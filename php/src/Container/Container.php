@@ -27,6 +27,8 @@ class Container {
     private array $capAdd;
     private int $shmSize;
     private bool $apparmorUnconfined;
+    /** @var string[] */
+    private array $backupVolumes;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -45,6 +47,7 @@ class Container {
         array $capAdd,
         int $shmSize,
         bool $apparmorUnconfined,
+        array $backupVolumes,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -62,6 +65,7 @@ class Container {
         $this->capAdd = $capAdd;
         $this->shmSize = $shmSize;
         $this->apparmorUnconfined = $apparmorUnconfined;
+        $this->backupVolumes = $backupVolumes;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -103,6 +107,10 @@ class Container {
 
     public function GetCapAdds() : array {
         return $this->capAdd;
+    }
+
+    public function GetBackupVolumes() : array {
+        return $this->backupVolumes;
     }
 
     public function GetPorts() : ContainerPorts {
