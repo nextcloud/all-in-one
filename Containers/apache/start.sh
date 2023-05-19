@@ -46,7 +46,7 @@ fi
 echo "$CADDYFILE" > /Caddyfile
 
 # Overwrite nextcloud conf
-cat /nextcloud > /mnt/data/nextcloud
+cat /nextcloud > /mnt/data/caddy-imports/nextcloud
 
 # Fix the Caddyfile format
 caddy fmt --overwrite /Caddyfile

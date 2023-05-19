@@ -22,9 +22,6 @@
     # Others
     import /mnt/data/caddy-imports/*
 
-    # Nextcloud
-    import /mnt/data/nextcloud
-
     # TLS options
     tls {
         issuer acme {

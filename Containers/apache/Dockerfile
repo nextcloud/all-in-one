@@ -5,7 +5,7 @@ FROM httpd:2.4.57-alpine3.17
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
-COPY --chown=www-data:www-data Caddyfile /Caddyfile
+COPY --chown=33:33 Caddyfile /Caddyfile
 COPY --chmod=664 nextcloud.conf /usr/local/apache2/conf/nextcloud.conf
 COPY --chmod=664 nextcloud /nextcloud
 COPY --chmod=664 caddy-imports/* /caddy-imports/
