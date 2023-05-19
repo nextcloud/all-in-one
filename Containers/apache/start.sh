@@ -39,9 +39,9 @@ echo "$CADDYFILE" > /Caddyfile
 
 # Change the trusted_proxies in case of reverse proxies
 if [ "$APACHE_PORT" != '443' ]; then
-    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies private_ranges|' /Caddyfile)"
+    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies static private_ranges|' /Caddyfile)"
 else
-    CADDYFILE="$(sed 's|trusted_proxies private_ranges|# trusted_proxies placeholder|' /Caddyfile)"
+    CADDYFILE="$(sed 's|trusted_proxies.*private_ranges|# trusted_proxies placeholder|' /Caddyfile)"
 fi
 echo "$CADDYFILE" > /Caddyfile
 
