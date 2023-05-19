@@ -522,8 +522,15 @@ class DockerActionManager
 
     private function getAllBackupVolumes() : array {
         $id = 'nextcloud-aio-apache';
-
-        return array_unique($this->getBackupVolumes($id));
+        $backupVolumesArray = $this->getBackupVolumes($id);
+        // Flatten array
+        $backupVolumesArrayFlat = iterator_to_array(
+            new \RecursiveIteratorIterator(
+                new \RecursiveArrayIterator($backupVolumesArray)
+            ),
+            $use_keys = false
+        );
+        return array_unique($backupVolumesArrayFlat);
     }
 
     private function GetRepoDigestsOfContainer(string $containerName) : ?array {
