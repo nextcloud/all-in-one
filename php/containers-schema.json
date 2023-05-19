@@ -106,6 +106,13 @@
 					"apparmor_unconfined": {
 						"type": "boolean"
 					},
+					"backup_volumes": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"pattern": "^nextcloud_aio_[a-z_]+$"
+						}
+					},
 					"volumes": {
 						"type": "array",
 						"items": {
@@ -119,7 +126,8 @@
 								},
 								"source": {
 									"type": "string",
-									"pattern": "^(([a-z_]+)|(%[A-Z_]+%))$"								},
+									"pattern": "^((nextcloud_aio_[a-z_]+)|(%[A-Z_]+%))$"
+								},
 								"writeable": {
 									"type": "boolean"
 								}
