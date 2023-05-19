@@ -1,0 +1,5 @@
+# Talk
+route /standalone-signaling/* {
+    uri strip_prefix /standalone-signaling
+    reverse_proxy {$TALK_HOST}:8081
+}

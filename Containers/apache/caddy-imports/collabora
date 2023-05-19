@@ -1,0 +1,10 @@
+# Collabora
+route /browser/* {
+    reverse_proxy {$COLLABORA_HOST}:9980
+}
+route /hosting/* {
+    reverse_proxy {$COLLABORA_HOST}:9980
+}
+route /cool/* {
+    reverse_proxy {$COLLABORA_HOST}:9980
+}

@@ -5,6 +5,10 @@
         root /mnt/data/caddy
     }
 
+    servers {
+        # trusted_proxies placeholder
+    }
+
     log {
         level ERROR
     }
@@ -12,59 +16,14 @@
 
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
 
-    # Notify Push
-    route /push/* {
-        uri strip_prefix /push
-        reverse_proxy {$NEXTCLOUD_HOST}:7867 {
-            # trusted_proxies placeholder
-        }
-    }
+    # Bundled
+    import /caddy-imports/*
 
-    # Talk
-    route /standalone-signaling/* {
-        uri strip_prefix /standalone-signaling
-        reverse_proxy {$TALK_HOST}:8081 {
-            # trusted_proxies placeholder
-        }
-    }
-
-    # Collabora
-    route /browser/* {
-        reverse_proxy {$COLLABORA_HOST}:9980 {
-            # trusted_proxies placeholder
-        }
-    }
-    route /hosting/* {
-        reverse_proxy {$COLLABORA_HOST}:9980 {
-            # trusted_proxies placeholder
-        }
-    }
-    route /cool/* {
-        reverse_proxy {$COLLABORA_HOST}:9980 {
-            # trusted_proxies placeholder
-        }
-    }
-
-    # Onlyoffice
-    route /onlyoffice/* {
-        uri strip_prefix /onlyoffice
-        reverse_proxy {$ONLYOFFICE_HOST}:80 {
-            header_up X-Forwarded-Host {http.request.host}/onlyoffice
-            header_up X-Forwarded-Proto https
-            # trusted_proxies placeholder
-        }
-    }
+    # Others
+    import /mnt/data/caddy-imports/*
 
     # Nextcloud
-    route {
-        rewrite /.well-known/carddav /remote.php/dav
-        rewrite /.well-known/caldav /remote.php/dav
-        header Strict-Transport-Security max-age=31536000;
-        reverse_proxy localhost:8000 {
-            # See https://github.com/nextcloud/all-in-one/issues/828
-            # trusted_proxies placeholder
-        }
-    }
+    import /mnt/data/nextcloud
 
     # TLS options
     tls {
