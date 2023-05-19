@@ -54,6 +54,9 @@ caddy fmt --overwrite /Caddyfile
 # Add caddy path
 mkdir -p /mnt/data/caddy/
 
+# Add caddy import path
+mkdir -p /mnt/data/caddy-imports
+
 # Fix apache startup
 rm -f /usr/local/apache2/logs/httpd.pid
 
