@@ -54,6 +54,9 @@ mkdir -p /mnt/data/caddy/
 # Add caddy import path
 mkdir -p /mnt/data/caddy-imports
 
+# Remove falsely added Nextcloud conf
+rm -f /mnt/data/caddy-imports/nextcloud
+
 # Makre sure that the caddy-imports dir is not empty
 echo "" > /mnt/data/caddy-imports/empty
 
