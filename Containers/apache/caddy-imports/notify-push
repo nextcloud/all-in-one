@@ -1,5 +1,0 @@
-# Notify Push
-route /push/* {
-    uri strip_prefix /push
-    reverse_proxy {$NEXTCLOUD_HOST}:7867
-}

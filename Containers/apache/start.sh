@@ -45,9 +45,6 @@ else
 fi
 echo "$CADDYFILE" > /Caddyfile
 
-# Overwrite nextcloud conf
-cat /nextcloud > /mnt/data/caddy-imports/nextcloud
-
 # Fix the Caddyfile format
 caddy fmt --overwrite /Caddyfile
 
@@ -56,6 +53,9 @@ mkdir -p /mnt/data/caddy/
 
 # Add caddy import path
 mkdir -p /mnt/data/caddy-imports
+
+# Makre sure that the caddy-imports dir is not empty
+echo "" > /mnt/data/caddy-imports/empty
 
 # Fix apache startup
 rm -f /usr/local/apache2/logs/httpd.pid
