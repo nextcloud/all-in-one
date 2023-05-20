@@ -39,14 +39,11 @@ echo "$CADDYFILE" > /Caddyfile
 
 # Change the trusted_proxies in case of reverse proxies
 if [ "$APACHE_PORT" != '443' ]; then
-    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies private_ranges|' /Caddyfile)"
+    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies static private_ranges|' /Caddyfile)"
 else
-    CADDYFILE="$(sed 's|trusted_proxies private_ranges|# trusted_proxies placeholder|' /Caddyfile)"
+    CADDYFILE="$(sed 's|trusted_proxies.*private_ranges|# trusted_proxies placeholder|' /Caddyfile)"
 fi
 echo "$CADDYFILE" > /Caddyfile
-
-# Overwrite nextcloud conf
-cat /nextcloud > /mnt/data/caddy-imports/nextcloud
 
 # Fix the Caddyfile format
 caddy fmt --overwrite /Caddyfile
@@ -56,6 +53,12 @@ mkdir -p /mnt/data/caddy/
 
 # Add caddy import path
 mkdir -p /mnt/data/caddy-imports
+
+# Remove falsely added Nextcloud conf
+rm -f /mnt/data/caddy-imports/nextcloud
+
+# Makre sure that the caddy-imports dir is not empty
+echo "" > /mnt/data/caddy-imports/empty
 
 # Fix apache startup
 rm -f /usr/local/apache2/logs/httpd.pid
