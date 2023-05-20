@@ -58,7 +58,7 @@ mkdir -p /mnt/data/caddy-imports
 rm -f /mnt/data/caddy-imports/nextcloud
 
 # Makre sure that the caddy-imports dir is not empty
-echo "" > /mnt/data/caddy-imports/empty
+echo "# empty file so that caddy does not print a warning" > /mnt/data/caddy-imports/empty
 
 # Fix apache startup
 rm -f /usr/local/apache2/logs/httpd.pid
