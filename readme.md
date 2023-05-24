@@ -239,7 +239,7 @@ No and it will not be added. Please use a dedicated domain for Nextcloud and set
 The recommended way is to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-adddress of your server that runs Nextcloud AIO. Below are some guides:
 - https://www.howtogeek.com/devops/how-to-run-your-own-dns-server-on-your-local-network/
 - https://help.nextcloud.com/t/need-help-to-configure-internal-access/156075/6
-- https://howchoo.com/pi/pi-hole-setup together with https://docs.callitkarma.me/posts/PiHole-Local-DNS/
+- https://howchoo.com/pi/pi-hole-setup together with https://web.archive.org/web/20221203223505/https://docs.callitkarma.me/posts/PiHole-Local-DNS/
 - https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html
 
 ### How to skip the domain validation?
