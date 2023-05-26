@@ -1,26 +1,18 @@
 # From https://github.com/nextcloud/docker/blob/master/23/fpm-alpine/Dockerfile
 FROM php:8.1.19-fpm-alpine3.17
 
-VOLUME /var/www/html
-
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 10G
 ENV PHP_MAX_TIME 3600
-
 ENV NEXTCLOUD_VERSION 26.0.2
 
-COPY *.sh upgrade.exclude /
+COPY --chmod=775 *.sh /
+COPY upgrade.exclude /upgrade.exclude
 COPY config/* /usr/src/nextcloud/config/
-
-ENV NEXTCLOUD_UPDATE=1
-
 COPY supervisord.conf /supervisord.conf
 
-COPY --chmod=775 start.sh /start.sh
-COPY --chmod=775 notify.sh /notify.sh
-COPY --chmod=775 notify-all.sh /notify-all.sh
-
 VOLUME /mnt/ncdata
+VOLUME /var/www/html
 
 # Custom: change id of www-data user as it needs to be the same like on old installations
 RUN set -ex; \
