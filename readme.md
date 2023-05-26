@@ -20,7 +20,7 @@ Included are:
 - APCU as local cache
 - Redis as distributed cache and for file locking
 - Postgresql as database
-- PHP-FPM with performance-optimized config
+- PHP-FPM with performance-optimized config (e.g. Opcache and JIT enabled by default)
 - A+ security in Nextcloud security scan
 - Ready to be used behind existing [Reverse proxies](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
 - Can be used behind [Cloudflare Tunnel](https://github.com/nextcloud/all-in-one#how-to-run-nextcloud-behind-a-cloudflare-tunnel)
