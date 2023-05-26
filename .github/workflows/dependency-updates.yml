@@ -19,7 +19,7 @@ jobs:
       run: |
         set -x
         cd ./php
-        composer update --with-all-dependencies
+        composer require justinrainbow/json-schema
         # Disable dependency updates for now
         # set +e
         # ALL_LINES="$(composer outdated | grep -v "^$\|Direct dependencies\|Everything up to date\|Transitive dependencies")"
