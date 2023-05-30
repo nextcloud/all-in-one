@@ -273,7 +273,8 @@
         "BACKUP_RESTORE_PASSWORD=%BACKUP_RESTORE_PASSWORD%",
         "ADDITIONAL_DIRECTORIES_BACKUP=%ADDITIONAL_DIRECTORIES_BACKUP%",
         "BORGBACKUP_HOST_LOCATION=%BORGBACKUP_HOST_LOCATION%",
-        "BORG_HOST_ID=nextcloud-aio-borgbackup"
+        "BORG_HOST_ID=nextcloud-aio-borgbackup",
+        "BORG_RETENTION_POLICY=%BORG_RETENTION_POLICY%"
       ],
       "volumes": [
         {
