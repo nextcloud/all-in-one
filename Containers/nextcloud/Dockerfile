@@ -7,8 +7,8 @@ ENV PHP_MAX_TIME 3600
 ENV NEXTCLOUD_VERSION 26.0.2
 
 COPY --chmod=775 *.sh /
-COPY upgrade.exclude /upgrade.exclude
-COPY config/* /usr/src/nextcloud/config/
+COPY --chmod=774 upgrade.exclude /upgrade.exclude
+COPY config/*.php /
 COPY supervisord.conf /supervisord.conf
 
 VOLUME /mnt/ncdata
@@ -130,6 +130,8 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
+    mkdir -p /usr/src/nextcloud/config; \
+    mv /*.php /usr/src/nextcloud/config/; \
     apk del .fetch-deps; \
     \
 # Template from https://github.com/nextcloud/docker/blob/master/.examples/dockerfiles/full/fpm-alpine/Dockerfile
