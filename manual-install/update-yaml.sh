@@ -89,6 +89,15 @@ sed -i 's|INSTALL_LATEST_MAJOR=|INSTALL_LATEST_MAJOR=no        # Setting this to
 sed -i 's|=$|=          # TODO! This needs to be a unique and good password!|' sample.conf
 echo 'IPV6_NETWORK=fd12:3456:789a:2::/64 # IPv6 subnet to use' >> sample.conf
 
+grep  '# TODO!' sample.conf > todo.conf
+grep -v '# TODO!\|_ENABLED' sample.conf > temp.conf
+grep '_ENABLED' sample.conf > enabled.conf
+cat todo.conf > sample.conf
+echo '' >> sample.conf
+cat enabled.conf >> sample.conf
+echo '' >> sample.conf
+cat temp.conf >> sample.conf
+rm todo.conf temp.conf enabled.conf
 cat sample.conf
 
 OUTPUT="$(cat containers.yml)"
