@@ -107,7 +107,7 @@ RUN set -ex; \
         echo 'max_input_time=${PHP_MAX_TIME}'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
-    mkdir /var/www/data; \
+    mkdir -p /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www; \
     \
@@ -209,7 +209,6 @@ RUN set -ex; \
     chown www-data:root -R /usr/local/etc/php/conf.d && \
     chown www-data:root -R /usr/local/etc/php-fpm.d && \
     rm -r /usr/src/nextcloud/apps/updatenotification; \
-    chown www-data:www-data /mnt/ncdata; \
     \
     mkdir -p /nc-updater; \
     chown -R www-data:www-data /nc-updater; \
