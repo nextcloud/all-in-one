@@ -157,10 +157,10 @@ class ConfigurationManager
 
     public function isImaginaryEnabled() : bool {
         $config = $this->GetConfig();
-        if (isset($config['isImaginaryEnabled']) && $config['isImaginaryEnabled'] === 1) {
-            return true;
-        } else {
+        if (isset($config['isImaginaryEnabled']) && $config['isImaginaryEnabled'] === 0) {
             return false;
+        } else {
+            return true;
         }
     }
 
