@@ -109,14 +109,7 @@ do
     if [ "$name" != "nextcloud-aio-apache" ]; then
         OUTPUT="$(echo "$OUTPUT" | sed "/  $name:/i\ ")"
     fi
-    if ! echo "$name" | grep "apache$" && ! echo "$name" | grep "database$" && ! echo "$name" | grep "nextcloud$" && ! echo "$name" | grep "redis$"; then
-        sed -i '/container_name/d' containers.yml
-        SLIM_NAME="${name##nextcloud-aio-}"
-        OUTPUT="$(echo "$OUTPUT" | sed "/container_name: $name$/a\ \ \ \ profiles:\ \[\"$SLIM_NAME\"\]")"
-    fi
 done
-
-OUTPUT="$(echo "$OUTPUT" | sed "/restart: /a\ \ \ \ networks:\n\ \ \ \ \ \ - nextcloud-aio")"
 
 echo "$OUTPUT" > containers.yml
 
