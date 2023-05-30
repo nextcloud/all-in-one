@@ -93,6 +93,7 @@ grep  '# TODO!' sample.conf > todo.conf
 grep -v '# TODO!\|_ENABLED' sample.conf > temp.conf
 grep '_ENABLED' sample.conf > enabled.conf
 cat todo.conf > sample.conf
+# shellcheck disable=SC2129
 echo '' >> sample.conf
 cat enabled.conf >> sample.conf
 echo '' >> sample.conf
