@@ -514,29 +514,24 @@ class DockerActionManager
         }
     }
 
-    private function getBackupVolumes(string $id) : array
+    private function getBackupVolumes(string $id) : string
     {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
-        $backupVolumes = $container->GetBackupVolumes();
-
+        $backupVolumes = '';
+        foreach ($container->GetBackupVolumes() as $backupVolume) {
+            $backupVolumes .= $backupVolume . ' ';
+        }
         foreach ($container->GetDependsOn() as $dependency) {
-            $backupVolumes[] = $this->getBackupVolumes($dependency);
+            $backupVolumes .= $this->getBackupVolumes($dependency);
         }
         return $backupVolumes;
     }
 
     private function getAllBackupVolumes() : array {
         $id = 'nextcloud-aio-apache';
-        $backupVolumesArray = $this->getBackupVolumes($id);
-        // Flatten array
-        $backupVolumesArrayFlat = iterator_to_array(
-            new \RecursiveIteratorIterator(
-                new \RecursiveArrayIterator($backupVolumesArray)
-            ),
-            $use_keys = false
-        );
-        return array_unique($backupVolumesArrayFlat);
+        $backupVolumesArray = explode(' ', $this->getBackupVolumes($id));
+        return array_unique($backupVolumesArray);
     }
 
     private function GetNextcloudExecCommands(string $id) : string
