@@ -205,6 +205,14 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 INSTALL_OPTIONS+=(--data-dir "$NEXTCLOUD_DATA_DIR")
             fi
 
+            # We do our own permission check so the permission check is not needed
+            cat << DATADIR_PERMISSION_CONF > /var/www/html/config/datadir.permission.config.php
+<?php
+    \$CONFIG = array (
+    'check_data_directory_permissions' => false
+);
+DATADIR_PERMISSION_CONF
+
             echo "Installing with PostgreSQL database"
             INSTALL_OPTIONS+=(--database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST")
 
@@ -214,15 +222,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 touch "$NEXTCLOUD_DATA_DIR/install.failed"
                 exit 1
             fi
-
-            # We do our own permission check so the permission check is not needed
-            cat << DATADIR_PERMISSION_CONF > /var/www/html/config/datadir.permission.config.php
-<?php
-\$CONFIG = array (
-  'check_data_directory_permissions' => false
-);
-DATADIR_PERMISSION_CONF
-            php /var/www/html/occ config:system:set check_data_directory_permissions --value=false --type=bool
 
             # Try to force generation of appdata dir:
             php /var/www/html/occ maintenance:repair
