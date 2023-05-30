@@ -172,6 +172,9 @@ class DockerController
         // Start container
         $this->startTopContainer(true);
 
+        // Clear apcu cache in order to check if container updates are available
+        apcu_clear_cache();
+
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
