@@ -241,7 +241,7 @@ RUN set -ex; \
     chmod +x /cron.sh && \
     chmod +x /notify.sh && \
     chmod +x /notify-all.sh && \
-    chmod +x /activate-collabora.sh && \
+    chmod +x /run-exec-commands.sh && \
     chmod +x /healthcheck.sh
 
 RUN set -ex; \

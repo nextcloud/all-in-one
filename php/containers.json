@@ -228,7 +228,11 @@
           "writeable": true
         }
       ],
-      "restart": "unless-stopped"
+      "restart": "unless-stopped",
+      "nextcloud_exec_commands": [
+        "echo 'Activating collabora config...'",
+        "php /var/www/html/occ richdocuments:activate-config"
+      ]
     },
     {
       "container_name": "nextcloud-aio-talk",
