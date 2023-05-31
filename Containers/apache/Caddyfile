@@ -47,6 +47,10 @@
         uri strip_prefix /standalone-signaling
         reverse_proxy {$TALK_HOST}:8081
     }
+    route /recording/* {
+        uri strip_prefix /recording
+        reverse_proxy {$TALK_HOST}:1234
+    }
 
     # Others
     import /mnt/data/caddy-imports/*
