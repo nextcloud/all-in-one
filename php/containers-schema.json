@@ -121,6 +121,9 @@
 							"minlength": 1
 						}
 					},
+					"read_only": {
+						"type": "boolean"
+					},
 					"volumes": {
 						"type": "array",
 						"items": {

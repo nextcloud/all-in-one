@@ -377,6 +377,8 @@ class DockerActionManager
         }
 
         $requestBody['HostConfig']['RestartPolicy']['Name'] = $container->GetRestartPolicy();
+
+        $requestBody['HostConfig']['ReadonlyRootfs'] = $container->GetReadOnlySetting();
  
         $exposedPorts = [];
         if ($container->GetInternalPort() !== 'host') {
