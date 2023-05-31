@@ -39,7 +39,7 @@
 					},
 					"display_name": {
 						"type": "string",
-						"pattern": "^[A-Za-z ]+$"
+						"pattern": "^[A-Za-z 0-9]+$"
 					},
 					"environment": {
 						"type": "array",
@@ -51,7 +51,7 @@
 					},
 					"container_name": {
 						"type": "string",
-						"pattern": "^nextcloud-aio-[a-z-]+$"
+						"pattern": "^nextcloud-aio-[a-z-0-9]+$"
 					},
 					"internal_port": {
 						"type": "string",

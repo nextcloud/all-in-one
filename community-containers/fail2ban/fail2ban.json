@@ -1,0 +1,26 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-fail2ban",
+            "display_name": "Fail2ban",
+            "image": "szaimen/aio-fail2ban",
+            "image_tag": "%AIO_CHANNEL%",
+            "internal_port": "host",
+            "restart": "unless-stopped",
+            "cap_add": [
+                "NET_ADMIN",
+                "NET_RAW"
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_nextcloud",
+                    "destination": "/nextcloud",
+                    "writeable": false
+                }
+            ]
+        }
+    ]
+}
