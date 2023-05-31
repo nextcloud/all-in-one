@@ -32,6 +32,11 @@ sed -i '/stop_grace_period:/s/$/s/' containers.yml
 sed -i '/: \[\]/d' containers.yml
 sed -i 's|- source: |- |' containers.yml
 sed -i 's|- ip_binding: |- |' containers.yml
+sed -i '/AIO_TOKEN/d' containers.yml
+sed -i '/AIO_URL/d' containers.yml
+
+sed -i '/AIO_TOKEN/d' sample.conf
+sed -i '/AIO_URL/d' sample.conf
 
 TCP="$(grep -oP '[%A-Z0-9_]+/tcp' containers.yml | sort -u)"
 mapfile -t TCP <<< "$TCP"
@@ -76,8 +81,6 @@ sed -i 's|UPDATE_NEXTCLOUD_APPS=|UPDATE_NEXTCLOUD_APPS="no"          # When sett
 sed -i 's|APACHE_PORT=|APACHE_PORT=443          # Changing this to a different value than 443 will allow you to run it behind a web server or reverse proxy (like Apache, Nginx and else).|' sample.conf
 sed -i 's|APACHE_IP_BINDING=|APACHE_IP_BINDING=0.0.0.0          # This can be changed to e.g. 127.0.0.1 if you want to run AIO behind a web server or reverse proxy (like Apache, Nginx and else) and if that is running on the same host and using localhost to connect|' sample.conf
 sed -i 's|TALK_PORT=|TALK_PORT=3478          # This allows to adjust the port that the talk container is using.|' sample.conf
-sed -i 's|AIO_TOKEN=|AIO_TOKEN=123456          # Has no function but needs to be set!|' sample.conf
-sed -i 's|AIO_URL=|AIO_URL=localhost          # Has no function but needs to be set!|' sample.conf
 sed -i 's|NC_DOMAIN=|NC_DOMAIN=yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.|' sample.conf
 sed -i 's|NEXTCLOUD_PASSWORD=|NEXTCLOUD_PASSWORD=          # TODO! This is the password of the initially created Nextcloud admin with username "admin".|' sample.conf
 sed -i 's|TIMEZONE=|TIMEZONE=Europe/Berlin          # TODO! This is the timezone that your containers will use.|' sample.conf
