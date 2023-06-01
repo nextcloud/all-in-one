@@ -11,19 +11,19 @@ You can run the containers that are build for AIO with docker-compose. This come
 - You lose the AIO interface
 - You lose update notifications and automatic updates
 - You lose all AIO backup and restore features
-- **You need to know what you are doing, especially when modifying the docker-compose file**
+- **You need to know what you are doing, especially when modifying the compose.yaml file**
 - For updating, you need to strictly follow the at the bottom described update routine
 - Probably more
 
 ## How to use this?
-First, install docker and docker-compose if not already done. Then simply run the following:
+First, install docker and docker-compose (v2) if not already done. Then simply run the following:
 ```bash
 git clone https://github.com/nextcloud/all-in-one.git
 cd all-in-one/manual-install
 ```
 Then copy the sample.conf to default environment file, e.g. `cp sample.conf .env`, open the new conf file, e.g. with `nano .env`, edit all values that are marked with `# TODO!`, close and save the file. (Note: there is no clamav image for arm64).
 
-Now copy the provided yaml file to a docker-compose file by running `cp latest.yml docker-compose.yml`.
+Now copy the provided yaml file to a compose.yaml file by running `cp latest.yml compose.yaml`.
 
 Now you should be ready to go with `sudo docker-compose up`.
 
@@ -34,10 +34,11 @@ For a complete all-in-one with collabora use `sudo docker-compose --profile coll
 
 ## How to update?
 Since the AIO containers may change in the future, it is highly recommended to strictly follow the following procedure whenever you want to upgrade your containers.
-1. If your previous copy of `sample.conf` is named `my.conf`, run `mv my.conf .env` in order to rename the file to `.env`.
+1. If your previous copy of `sample.conf` is named `my.conf`, run `mv -vn my.conf .env` in order to rename the file to `.env`.
 1. Run `sudo docker-compose down` to stop all running containers
 1. Back up all important files and folders
-1. Run `git pull` in order to get the updated yaml files from the repository. Now bring your `docker-compose.yml` file up-to-date with the updated one from the repository. You can use `diff docker-compose.yml latest.yml` for comparing. ⚠️ **Please note**: Starting with AIO v5.1.0, ipv6 networking will be enabled by default, so make sure to either enable it first by following steps 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md and then proceed with the steps below or disable ipv6 networking by editing the docker-compose file and removing ipv6 from the network.
+1. If your compose file is still named `docker-compose.yml` rename it to `compose.yaml` by running `mv -vn docker-compose.yml compose.yaml`
+1. Run `git pull` in order to get the updated yaml files from the repository. Now bring your `compose.yaml` file up-to-date with the updated one from the repository. You can use `diff compose.yaml latest.yml` for comparing. ⚠️ **Please note**: Starting with AIO v5.1.0, ipv6 networking will be enabled by default, so make sure to either enable it first by following steps 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md and then proceed with the steps below or disable ipv6 networking by editing the compose.yaml file and removing ipv6 from the network.
 1. Also have a look at the `sample.conf` if any variable was added or renamed and add that to your conf file as well. Here may help the diff command as well.
 1. After the file update was successful, simply run `sudo docker-compose pull` to pull the new images.
 1. At the end run `sudo docker-compose up` in order to start and update the containers with the new configuration.

@@ -119,10 +119,7 @@ done
 
 OUTPUT="$(echo "$OUTPUT" | sed "/restart: /a\ \ \ \ networks:\n\ \ \ \ \ \ - nextcloud-aio")"
 
-echo 'version: "3.8"' > containers.yml
-echo "" >> containers.yml
-
-echo "$OUTPUT" >> containers.yml
+echo "$OUTPUT" > containers.yml
 
 sed -i '/container_name/d' containers.yml
 sed -i 's|^ $||' containers.yml
