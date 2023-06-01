@@ -221,13 +221,6 @@
         "server_name=%NC_DOMAIN%",
         "DONT_GEN_SSL_CERT=1"
       ],
-      "volumes": [
-        {
-          "source": "nextcloud_aio_collabora_fonts",
-          "destination": "/opt/cool/systemplate/tmpfonts",
-          "writeable": true
-        }
-      ],
       "restart": "unless-stopped",
       "nextcloud_exec_commands": [
         "echo 'Activating collabora config...'",
