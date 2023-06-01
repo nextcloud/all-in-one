@@ -568,7 +568,7 @@ Config examples for other reverse proxies are currently not documented. Pull req
 
 After adjusting your reverse proxy config, use the following command to start AIO:<br>
 
-(For an docker-compose example, see the example further [below](#inspiration-for-a-docker-compose-file).)
+(For a docker-compose example, see the example further [below](#inspiration-for-a-docker-compose-file).)
 
 ```
 # For Linux:

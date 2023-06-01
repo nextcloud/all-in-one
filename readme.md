@@ -53,7 +53,7 @@ Included are:
 - Can be used with [Docker rootles](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md) (good for additional security)
 - Runs on all platforms Docker supports (e.g. also on Windows and Macos)
 - Included containers easy to debug by having the possibility to check their logs directly from the AIO interface
-- [Docker-compose ready](https://github.com/nextcloud/all-in-one/blob/main/compose.yaml)
+- [Docker-compose ready](./compose.yaml)
 - Can be installed [without a container having access to the docker socket](https://github.com/nextcloud/all-in-one/tree/main/manual-install)
 - Can be installed with [Docker Swarm](https://github.com/nextcloud/all-in-one#can-i-run-this-with-docker-swarm)
 - Can be installed with [Kubernetes](https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart)
