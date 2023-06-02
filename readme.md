@@ -225,6 +225,9 @@ You can install AIO in reverse proxy mode where is also documented how to get it
 ### How to run Nextcloud locally?
 If you do not want to open Nextcloud to the public internet, you may have a look at the following documentation how to set it up locally: [local-instance.md](./local-instance.md)
 
+### Can I run AIO offline or in an airgapped system?
+No. This is not possible and will not be added due to multiple reasons: update checks, app installs via app-store, downloading additional docker images on demand and more.
+
 ### Are self-signed certificates supported for Nextcloud?
 No and they will not be. If you want to run it locally, without opening Nextcloud to the public internet, please have a look at the [local instance documentation](./local-instance.md).
 
