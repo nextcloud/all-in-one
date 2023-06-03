@@ -1,0 +1,49 @@
+name: Docker Lint
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency: 
+  group: docker-lint-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  docker-lint:
+    runs-on: ubuntu-latest
+
+    name: docker-lint
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install npm and dockerfilelint
+        run: |
+          sudo apt-get install nodejs npm -y
+          npm install -g dockerfilelint
+          wget https://github.com/replicatedhq/dockerfilelint/pull/184.patch -O /usr/local/lib/node_modules/dockerfilelint/184.patch
+          CURRENT_DIR=$PWD
+          cd /usr/local/lib/node_modules/dockerfilelint/
+          git apply 184.patch
+          cd $CURRENT_DIR
+          cat << RULES > ./.dockerfilelintrc
+          rules:
+            sudo_usage: off
+          RULES
+
+      - name: run lint
+        run: |
+          DOCKERFILES="$(find ./Containers -name Dockerfile)"
+          mapfile -t DOCKERFILES <<< "$DOCKERFILES"
+          for file in "${DOCKERFILES[@]}"; do
+            dockerfilelint "$file" --config ./ | tee -a ./dockerfilelint.log
+          done
+          if grep "^Issues: [0-9]" ./dockerfilelint.log; then
+            exit 1
+          fi

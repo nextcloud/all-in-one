@@ -16,10 +16,6 @@ concurrency:
 jobs:
   twig-lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-versions: ["8.2"]
-
     name: twig-lint
 
     steps:
@@ -29,7 +25,7 @@ jobs:
       - name: Set up php ${{ matrix.php-versions }}
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: 8.2
           extensions: apcu
           coverage: none
 
@@ -40,17 +36,3 @@ jobs:
           composer install
           chmod +x ./vendor/bin/twig-linter
           ./vendor/bin/twig-linter lint ./templates
-
-  summary:
-    permissions:
-      contents: none
-    runs-on: ubuntu-latest
-    needs: twig-lint
-
-    if: always()
-
-    name: twig-lint-summary
-
-    steps:
-      - name: Summary status
-        run: if ${{ needs.twig-lint.result != 'success' && needs.twig-lint.result != 'skipped' }}; then exit 1; fi
