@@ -3,7 +3,7 @@
 # https://github.com/nextcloud/.github
 # https://docs.github.com/en/actions/learn-github-actions/sharing-workflows-with-your-organization
 
-name: Lint php
+name: Static analysis
 
 on:
   pull_request:
@@ -15,48 +15,35 @@ on:
     paths:
       - 'php/**'
 
-permissions:
-  contents: read
-
 concurrency:
-  group: lint-php-${{ github.head_ref || github.run_id }}
+  group: psalm-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  php-lint:
+  static-analysis:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-versions: [ "8.2" ]
 
-    name: php-lint
-
+    name: Nextcloud
     steps:
       - name: Checkout
         uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 
-      - name: Set up php ${{ matrix.php-versions }}
+      - name: Set up php
         uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: 8.2
+          extensions: apcu
           coverage: none
           ini-file: development
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Lint
-        run: cd php && composer run lint
+      - name: Install dependencies
+        run: |
+          set -x
+          cd php
+          composer global require vimeo/psalm --prefer-dist --no-progress --dev
+          composer install
 
-  summary:
-    permissions:
-      contents: none
-    runs-on: ubuntu-latest
-    needs: php-lint
-
-    if: always()
-
-    name: php-lint-summary
-
-    steps:
-      - name: Summary status
-        run: if ${{ needs.php-lint.result != 'success' && needs.php-lint.result != 'skipped' }}; then exit 1; fi
+      - name: Run coding standards check
+        run: composer run psalm

@@ -3,9 +3,13 @@ name: PHP Deprecation Detector
 
 on:
   pull_request:
+    paths:
+      - 'php/**'
   push:
     branches:
       - main
+    paths:
+      - 'php/**'
 
 jobs:
   psalm:

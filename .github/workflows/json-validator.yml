@@ -2,9 +2,13 @@ name: Json Validator
 
 on:
   pull_request:
+    paths:
+      - '**.json'
   push:
     branches:
       - main
+    paths:
+      - '**.json'
 
 jobs:
   psalm:
