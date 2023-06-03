@@ -362,6 +362,7 @@ DATADIR_PERMISSION_CONF
                         if [ "${APPSTORAGE[$app]}" != "no" ]; then
                             echo "Enabling $app..."
                             if ! php /var/www/html/occ app:enable "$app" >/dev/null; then
+                                php /var/www/html/occ app:disable "$app" >/dev/null
                                 echo "The $app app could not get enabled. Probably because it is not compatible with the new Nextcloud version."
                                 if [ "$app" = apporder ]; then
                                     CUSTOM_HINT="The apporder app was deprecated. A possible replacement is the side_menu app, aka 'Custom menu'."
