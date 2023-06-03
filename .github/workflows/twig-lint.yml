@@ -2,9 +2,13 @@ name: Twig Lint
 
 on:
   pull_request:
+    paths:
+      - '**.twig'
   push:
     branches:
       - main
+    paths:
+      - '**.twig'
 
 permissions:
   contents: read

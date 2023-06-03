@@ -2,9 +2,13 @@ name: Docker Lint
 
 on:
   pull_request:
+    paths:
+      - 'Containers/**'
   push:
     branches:
       - main
+    paths:
+      - 'Containers/**'
 
 permissions:
   contents: read
