@@ -62,7 +62,7 @@ RUN set -ex; \
     chown www-data:www-data /var/log/supervisord; \
     \
     chown -R www-data:www-data /usr/local/apache2; \
-    chmod +r -R /usr/local/apache2; \
+    chmod +r -R /usr/local/apache2;
     \
     echo "root:$(openssl rand -base64 12)" | chpasswd
 
