@@ -38,12 +38,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
+      - name: Install dependencies and run psalm
         run: |
           set -x
           cd php
           composer global require vimeo/psalm --prefer-dist --no-progress --dev
           composer install
-
-      - name: Run coding standards check
-        run: composer run psalm
+          composer run psalm
