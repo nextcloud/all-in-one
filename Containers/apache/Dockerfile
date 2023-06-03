@@ -1,4 +1,3 @@
-# Caddy is a requirement
 FROM caddy:2.6.4-alpine as caddy
 
 FROM httpd:2.4.57-alpine3.17
