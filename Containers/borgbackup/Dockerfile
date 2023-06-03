@@ -16,6 +16,7 @@ VOLUME /root
 COPY --chmod=770 *.sh /
 
 ENTRYPOINT ["/start.sh"]
+USER root
 
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
 ENV BORG_RETENTION_POLICY="--keep-within=7d --keep-weekly=4 --keep-monthly=6"
