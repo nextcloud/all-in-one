@@ -57,6 +57,11 @@ while true; do
     # Remove dangling images
     sudo -u www-data docker image prune --force
 
+    # Remove mastercontainer from default bridge network
+    if sudo -u www-data docker inspect nextcloud-aio-mastercontainer  --format "{{.NetworkSettings.Networks}}" | grep -q "bridge"; then
+        sudo -u www-data docker network disconnect bridge nextcloud-aio-mastercontainer
+    fi
+
     # Wait 60s so that the whole loop will not be executed again
     sleep 60
 done
