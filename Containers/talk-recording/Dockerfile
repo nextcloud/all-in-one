@@ -1,6 +1,6 @@
 FROM python:3.11.3-alpine3.18
 
-COPY --chmod=775 start.sh /usr/bin/start.sh
+COPY --chmod=775 start.sh /start.sh
 COPY --chmod=664 recording.conf /etc/recording.conf
 
 RUN set -ex; \
@@ -34,7 +34,7 @@ RUN set -ex; \
         /tmp;
 
 USER recordning
-ENTRYPOINT ["start.sh"]
+ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/etc/recording.conf"]
 
 HEALTHCHECK CMD nc -z localhost 1234 || exit 1
