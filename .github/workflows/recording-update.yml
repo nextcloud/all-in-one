@@ -22,7 +22,7 @@ jobs:
             | tail -1
         )"
         sed -i "s|git clone --recursive https://github.com/nextcloud/spreed --branch .* /src; \\\|git clone --recursive https://github.com/nextcloud/spreed --branch $spreed_version /src; \\\|" ./Containers/talk-recording/Dockerfile
-        curl -L "https://raw.githubusercontent.com/nextcloud/spreed/$spreed_version/recording/server.conf.in" -o Containers/recording/recording.conf
+        curl -L "https://raw.githubusercontent.com/nextcloud/spreed/$spreed_version/talk-recording/server.conf.in" -o Containers/recording/recording.conf
         
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
