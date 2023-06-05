@@ -17,7 +17,7 @@ RUN set -ex; \
         shadow; \
     # xvfb firefox chromium chromium-chromedriver?
     # apk add --no-cache geckodriver --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
-    useradd --system recordning; \
+    useradd --system recording; \
     git clone --recursive https://github.com/nextcloud/spreed --branch v16.0.3 /src; \
     mv -v /src/recording/pyproject.toml /src/recording/src/pyproject.toml; \
     python3 -m pip install /src/recording/src; \
@@ -30,10 +30,10 @@ RUN set -ex; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     \
-    chown recordning:recordning -R \
+    chown recording:recording -R \
         /tmp;
 
-USER recordning
+USER recording
 ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/etc/recording.conf"]
 
