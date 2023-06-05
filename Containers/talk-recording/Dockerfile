@@ -18,7 +18,7 @@ RUN set -ex; \
     # xvfb firefox chromium chromium-chromedriver?
     # apk add --no-cache geckodriver --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
     useradd -d /tmp --system recording; \
-    git clone --recursive https://github.com/nextcloud/spreed --branch v16.0.3 /src; \
+    git clone --recursive https://github.com/nextcloud/spreed --depth=1 --single-branch --branch v16.0.3 /src; \
     mv -v /src/recording/pyproject.toml /src/recording/src/pyproject.toml; \
     python3 -m pip install /src/recording/src; \
     rm -rf /src; \
