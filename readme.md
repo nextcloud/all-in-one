@@ -264,6 +264,9 @@ Afterwards it should work.<br>
 
 See https://dev.to/ozorest/fedora-32-how-to-solve-docker-internal-network-issue-22me for more details on this. This limitation is even mentioned on the official firewalld website: https://firewalld.org/#who-is-using-it
 
+### Are there known problems when SELinux is enabled?
+Yes. If SELinux is enabled, you might need to add the `--security-opt label=disabled` option to the docker run command of the mastercontainer in order to allow it to access the docker socket. See https://github.com/nextcloud/all-in-one/discussions/485
+
 ### How to run `occ` commands?
 Simply run the following: `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ your-command`. Of course `your-command` needs to be exchanged with the command that you want to run.
 
