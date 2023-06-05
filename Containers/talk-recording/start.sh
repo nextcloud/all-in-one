@@ -23,22 +23,22 @@ listen = 0.0.0.0:1234
 allowall = false
 # TODO: remove secret below when https://github.com/nextcloud/spreed/issues/9580 is fixed
 secret = ${RECORDING_SECRET}
-backends = backend-id
+backends = backend-1
 skipverify = false
 maxmessagesize = 1024
 videowidth = 1920
 videoheight = 1080
 directory = /tmp
 
-[backend-id]
+[backend-1]
 url = https://${NC_DOMAIN}
 secret = ${RECORDING_SECRET}
 skipverify = false
 
 [signaling]
-signalings = signaling-id
+signalings = signaling-1
 
-[signaling-id]
+[signaling-1]
 url = https://${NC_DOMAIN}/standalone-signaling/
 internalsecret = ${INTERNAL_SECRET}
 
