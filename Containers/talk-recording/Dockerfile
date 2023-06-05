@@ -20,7 +20,7 @@ RUN set -ex; \
     # apk add --no-cache geckodriver --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
     useradd -d /tmp --system recording; \
 # Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd;
+    echo "root:$(openssl rand -base64 12)" | chpasswd; \
     git clone --recursive https://github.com/nextcloud/spreed --depth=1 --single-branch --branch v16.0.3 /src; \
     mv -v /src/recording/pyproject.toml /src/recording/src/pyproject.toml; \
     python3 -m pip install /src/recording/src; \
