@@ -1,0 +1,35 @@
+name: signaling-conf-update
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '00 12 * * *'
+
+jobs:
+  run_update:
+    name: update signaling
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run signaling-conf-update
+      run: |
+        # Signaling
+        signaling_version="$(
+          git ls-remote https://github.com/strukturag/nextcloud-spreed-signaling v*.*.* \
+            | cut -d/ -f3 \
+            | sort -V \
+            | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+$" \
+            | tail -1
+        )"
+        curl -L "https://raw.githubusercontent.com/strukturag/nextcloud-spreed-signaling/$signaling_version/server.conf.in" -o Containers/talk/signaling.conf
+        
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: signaling-conf-update automated change
+        signoff: true
+        title: signaling update
+        body: Automated signaling conf update
+        labels: dependencies, 3. to review
+        milestone: next
+        branch: signaling-conf-update
