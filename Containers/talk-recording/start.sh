@@ -12,11 +12,6 @@ elif [ -z "$RECORDING_SECRET" ]; then
     exit 1
 fi
 
-set -x
-IPv4_ADDRESS_TALK="$(dig nextcloud-aio-talk A +short)"
-set +x
-
-# TODO: Check if using IP of signaling container is enough or if nc_domain/standalone-signaling is enough
 cat << RECORDING_CONF > "/etc/recording.conf"
 [logs]
 level = 30
