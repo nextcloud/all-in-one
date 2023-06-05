@@ -6,6 +6,7 @@ Included are:
 - Nextcloud Office
 - High performance backend for Nextcloud Files
 - High performance backend for Nextcloud Talk and TURN-server
+- Nextcloud Talk Recording-server
 - Backup solution (based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
 - Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
 - ClamAV (Antivirus backend for Nextcloud)

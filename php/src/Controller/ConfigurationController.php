@@ -95,6 +95,11 @@ class ConfigurationController
                 } else {
                     $this->configurationManager->SetTalkEnabledState(0);
                 }
+                if (isset($request->getParsedBody()['talk-recording'])) {
+                    $this->configurationManager->SetTalkRecordingEnabledState(1);
+                } else {
+                    $this->configurationManager->SetTalkRecordingEnabledState(0);
+                }
                 if (isset($request->getParsedBody()['imaginary'])) {
                     $this->configurationManager->SetImaginaryEnabledState(1);
                 } else {

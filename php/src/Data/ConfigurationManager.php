@@ -230,6 +230,27 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function isTalkRecordingEnabled() : bool {
+        if (!$this->isTalkEnabled()) {
+            return false;
+        }
+        $config = $this->GetConfig();
+        if (isset($config['isTalkRecordingEnabled']) && $config['isTalkRecordingEnabled'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function SetTalkRecordingEnabledState(int $value) : void {
+        if (!$this->isTalkEnabled()) {
+            $value = 0;
+        }
+        $config = $this->GetConfig();
+        $config['isTalkRecordingEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */

@@ -6,6 +6,7 @@
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-talk",
+        "nextcloud-aio-talk-recording",
         "nextcloud-aio-nextcloud"
       ],
       "display_name": "Apache",
@@ -23,6 +24,7 @@
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_HOST=nextcloud-aio-talk",
+        "TALK_RECORDING_HOST=nextcloud-aio-talk-recording",
         "APACHE_PORT=%APACHE_PORT%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
         "TZ=%TIMEZONE%",
@@ -170,7 +172,9 @@
         "STARTUP_APPS=%NEXTCLOUD_STARTUP_APPS%",
         "ADDITIONAL_APKS=%NEXTCLOUD_ADDITIONAL_APKS%",
         "ADDITIONAL_PHP_EXTENSIONS=%NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS%",
-        "INSTALL_LATEST_MAJOR=%INSTALL_LATEST_MAJOR%"
+        "INSTALL_LATEST_MAJOR=%INSTALL_LATEST_MAJOR%",
+        "TALK_RECORDING_ENABLED=%TALK_RECORDING_ENABLED%",
+        "RECORDING_SECRET=%RECORDING_SECRET%"
       ],
       "restart": "unless-stopped",
       "devices": [
@@ -259,11 +263,34 @@
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
         "TZ=%TIMEZONE%",
-        "TALK_PORT=%TALK_PORT%"
+        "TALK_PORT=%TALK_PORT%",
+        "INTERNAL_SECRET=%TALK_INTERNAL_SECRET%"
       ],
       "secrets": [
         "TURN_SECRET",
-        "SIGNALING_SECRET"
+        "SIGNALING_SECRET",
+        "TALK_INTERNAL_SECRET"
+      ],
+      "restart": "unless-stopped"
+    },
+    {
+      "container_name": "nextcloud-aio-talk-recording",
+      "display_name": "Talk Recording",
+      "image": "nextcloud/aio-talk-recording",
+      "expose": [
+        "1234"
+      ],
+      "internal_port": "1234",
+      "environment": [
+        "NC_DOMAIN=%NC_DOMAIN%",
+        "TZ=%TIMEZONE%",
+        "RECORDING_SECRET=%RECORDING_SECRET%",
+        "INTERNAL_SECRET=%TALK_INTERNAL_SECRET%"
+      ],
+      "shm_size": 2147483648,
+      "secrets": [
+        "RECORDING_SECRET",
+        "TALK_INTERNAL_SECRET"
       ],
       "restart": "unless-stopped"
     },
