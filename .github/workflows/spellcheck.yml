@@ -1,4 +1,4 @@
-name: 'Spellcheck'
+name: Check Spelling
 
 on:
   pull_request:
@@ -7,17 +7,87 @@ on:
       - main
 
 jobs:
-  spellcheck:
-    name: Check spelling
+  spelling:
+    name: Check Spelling
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      security-events: write
+    outputs:
+      followup: ${{ steps.spelling.outputs.followup }}
     runs-on: ubuntu-latest
+    if: "contains(github.event_name, 'pull_request') || github.event_name == 'push'"
+    concurrency:
+      group: spelling-${{ github.event.pull_request.number || github.ref }}
+      # note: If you use only_check_changed_files, you do not want cancel-in-progress
+      cancel-in-progress: true
     steps:
-      - name: spelling or typos
-        uses: actions/checkout@v3
-      - name: fix permission for reviewdog
-        run: sudo chown -R root:root $GITHUB_WORKSPACE
-      - name: misspell
-        uses: reviewdog/action-misspell@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          locale: "US"
-          fail_on_error: true
+    - name: check-spelling
+      id: spelling
+      uses: check-spelling/check-spelling@main
+      with:
+        suppress_push_for_open_pull_request: 1
+        checkout: true
+        check_file_names: 1
+        spell_check_this: check-spelling/spell-check-this@prerelease
+        post_comment: 0
+        use_magic_file: 1
+        experimental_apply_changes_via_bot: 1
+        use_sarif: 1
+        extra_dictionary_limit: 10
+
+  comment-push:
+    name: Report (Push)
+    # If your workflow isn't running on push, you can remove this job
+    runs-on: ubuntu-latest
+    needs: spelling
+    permissions:
+      contents: write
+    if: (success() || failure()) && needs.spelling.outputs.followup && github.event_name == 'push'
+    steps:
+    - name: comment
+      uses: check-spelling/check-spelling@main
+      with:
+        checkout: true
+        spell_check_this: check-spelling/spell-check-this@prerelease
+        task: ${{ needs.spelling.outputs.followup }}
+
+  comment-pr:
+    name: Report (PR)
+    # If you workflow isn't running on pull_request*, you can remove this job
+    runs-on: ubuntu-latest
+    needs: spelling
+    permissions:
+      pull-requests: write
+    if: (success() || failure()) && needs.spelling.outputs.followup && contains(github.event_name, 'pull_request')
+    steps:
+    - name: comment
+      uses: check-spelling/check-spelling@main
+      with:
+        checkout: true
+        spell_check_this: check-spelling/spell-check-this@prerelease
+        task: ${{ needs.spelling.outputs.followup }}
+        experimental_apply_changes_via_bot: 1
+
+  update:
+    name: Update PR
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    runs-on: ubuntu-latest
+    if: ${{
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        contains(github.event.comment.body, '@check-spelling-bot apply')
+      }}
+    concurrency:
+      group: spelling-update-${{ github.event.issue.number }}
+      cancel-in-progress: false
+    steps:
+    - name: apply spelling updates
+      uses: check-spelling/check-spelling@main
+      with:
+        experimental_apply_changes_via_bot: 1
+        checkout: true
