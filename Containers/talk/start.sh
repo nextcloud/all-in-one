@@ -10,6 +10,9 @@ elif [ -z "$TURN_SECRET" ]; then
 elif [ -z "$SIGNALING_SECRET" ]; then
     echo "You need to provide the SIGNALING_SECRET."
     exit 1
+elif [ -z "$INTERNAL_SECRET" ]; then
+    echo "You need to provide the INTERNAL_SECRET."
+    exit 1
 fi
 
 set -x
@@ -63,7 +66,7 @@ hashkey = $(openssl rand -hex 16)
 blockkey = $(openssl rand -hex 16)
 
 [clients]
-internalsecret = $(openssl rand -hex 16)
+internalsecret = ${INTERNAL_SECRET}
 
 [backend]
 backends = backend-1

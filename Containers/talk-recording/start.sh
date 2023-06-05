@@ -4,11 +4,11 @@
 if [ -z "$NC_DOMAIN" ]; then
     echo "You need to provide the NC_DOMAIN."
     exit 1
-elif [ -z "$SIGNALING_SECRET" ]; then
-    echo "You need to provide the SIGNALING_SECRET."
-    exit 1
 elif [ -z "$RECORDING_SECRET" ]; then
     echo "You need to provide the RECORDING_SECRET."
+    exit 1
+elif [ -z "$INTERNAL_SECRET" ]; then
+    echo "You need to provide the INTERNAL_SECRET."
     exit 1
 fi
 
@@ -21,8 +21,8 @@ listen = 0.0.0.0:1234
 
 [backend]
 allowall = false
-# Not sure if the secret is needed here if we set it in backend-id
-# secret = ${RECORDING_SECRET}
+# TODO: remove secret below when https://github.com/nextcloud/spreed/issues/9580 is fixed
+secret = ${RECORDING_SECRET}
 backends = backend-id
 skipverify = false
 maxmessagesize = 1024
@@ -36,13 +36,11 @@ secret = ${RECORDING_SECRET}
 skipverify = false
 
 [signaling]
-# Not sure if the secret is needed here if we set it in signaling-id
-# internalsecret = ${SIGNALING_SECRET}
 signalings = signaling-id
 
 [signaling-id]
 url = https://${NC_DOMAIN}/standalone-signaling/
-internalsecret = ${SIGNALING_SECRET}
+internalsecret = ${INTERNAL_SECRET}
 
 [ffmpeg]
 # outputaudio = -c:a libopus
