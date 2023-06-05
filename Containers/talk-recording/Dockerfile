@@ -8,7 +8,9 @@ RUN set -ex; \
         ca-certificates \
         tzdata \
         bash \
+        xvfb \
         ffmpeg \
+        firefox \
         libpulse \
         bind-tools \
         netcat-openbsd \
@@ -16,8 +18,8 @@ RUN set -ex; \
         wget \
         shadow \
         openssl; \
-    # xvfb firefox chromium chromium-chromedriver?
-    # apk add --no-cache geckodriver --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
+    # chromium chromium-chromedriver?
+    apk add --no-cache geckodriver --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
     useradd -d /tmp --system recording; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
