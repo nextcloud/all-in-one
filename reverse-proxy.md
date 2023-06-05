@@ -274,6 +274,11 @@ server {
 
     listen 443 ssl http2;
     listen [::]:443 ssl http2; # comment to disable IPv6
+	
+    # http3 on;              # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # listen 443 quic;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # listen [::]:443 quic;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # add_header alt-svc 'h3=":443"; ma=86400, h3-29=":443"; ma=86400'; # uncomment to enable HTTP3/QUIC - supported on nginx v1.25.0+
 
     server_name <your-nc-domain>;
 
