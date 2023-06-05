@@ -24,7 +24,6 @@
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_HOST=nextcloud-aio-talk",
-        "TALK_RECORDING_HOST=nextcloud-aio-talk-recording",
         "APACHE_PORT=%APACHE_PORT%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
         "TZ=%TIMEZONE%",
@@ -174,7 +173,8 @@
         "ADDITIONAL_PHP_EXTENSIONS=%NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS%",
         "INSTALL_LATEST_MAJOR=%INSTALL_LATEST_MAJOR%",
         "TALK_RECORDING_ENABLED=%TALK_RECORDING_ENABLED%",
-        "RECORDING_SECRET=%RECORDING_SECRET%"
+        "RECORDING_SECRET=%RECORDING_SECRET%",
+        "TALK_RECORDING_HOST=nextcloud-aio-talk-recording"
       ],
       "restart": "unless-stopped",
       "devices": [
