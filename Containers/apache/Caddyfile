@@ -48,12 +48,6 @@
         reverse_proxy {$TALK_HOST}:8081
     }
 
-    # Talk recording
-    route /talk-recording/* {
-        uri strip_prefix /talk-recording
-        reverse_proxy {$TALK_RECORDING_HOST}:1234
-    }
-
     # Others
     import /mnt/data/caddy-imports/*
 
