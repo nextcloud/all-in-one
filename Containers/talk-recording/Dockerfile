@@ -2,6 +2,8 @@ FROM python:3.11.3-alpine3.18
 
 COPY --chmod=775 start.sh /start.sh
 
+ENV RECORDING_VERSION v16.0.3
+
 RUN set -ex; \
     apk add --no-cache \
         ca-certificates \
@@ -22,7 +24,7 @@ RUN set -ex; \
     useradd -d /tmp --system recording; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    git clone --recursive https://github.com/nextcloud/spreed --depth=1 --single-branch --branch v16.0.3 /src; \
+    git clone --recursive https://github.com/nextcloud/spreed --depth=1 --single-branch --branch "$RECORDING_VERSION" /src; \
     mv -v /src/recording/pyproject.toml /src/recording/src/pyproject.toml; \
     python3 -m pip install /src/recording/src; \
     rm -rf /src; \
