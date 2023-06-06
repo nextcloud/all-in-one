@@ -1,7 +1,7 @@
 if (document.hasFocus()) {
     // hide reload button if the site reloads automatically
-    var list = document.getElementsByClassName("reload button");
-    for (var i = 0; i < list.length; i++) {
+    let list = document.getElementsByClassName("reload button");
+    for (let i = 0; i < list.length; i++) {
         // list[i] is a node with the desired class name
         list[i].style.display = 'none';
     }

@@ -545,9 +545,9 @@
                             <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label><br><br>
                         {% endif %}
                         {% if is_talk_recording_enabled == true %}
-                            <input type="checkbox" id="talk-recording" name="talk-recording" checked="checked"><label for="talk-recording">Talk Recording (needs ~1GB additional RAM)</label><br>
+                            <input type="checkbox" id="talk-recording" name="talk-recording" checked="checked"><label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM and ~2 additional vCPUs)</label><br>
                         {% else %}
-                            <input type="checkbox" id="talk-recording" name="talk-recording"><label for="talk-recording">Talk Recording (needs ~1GB additional RAM)</label><br>
+                            <input type="checkbox" id="talk-recording" name="talk-recording"><label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM ~2 additional vCPUs)</label><br>
                         {% endif %}
                         {% if is_onlyoffice_enabled == true %}
                             <input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice</label><br>
@@ -557,7 +557,7 @@
                         <input id="options-form-submit" class="button" type="submit" value="Save changes" />
                         <script type="text/javascript" src="options-form-submit.js"></script>
                     </form>
-                    <b>Minimal system requirements:</b> When any optional addon is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV, Talk Recording or Fulltextsearch, at least 3GB RAM are required. When enabling everything, at least 5GB RAM are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advices and recommendations see <b><a href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></b><br><br>
+                    <b>Minimal system requirements:</b> When any optional addon is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advices and recommendations see <b><a href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></b><br><br>
                     {% if isAnyRunning == true or is_x64_platform == false %}
                         <script type="text/javascript" src="disable-clamav.js"></script>
                     {% endif %}

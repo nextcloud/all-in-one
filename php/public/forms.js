@@ -1,6 +1,6 @@
 "use strict";
 (function (){
-  var lastError;
+  let lastError;
 
   function showError(message) {
     const body = document.getElementsByTagName('body')[0]
@@ -45,7 +45,7 @@
       if (lastError) {
         lastError.remove()
       }
-      var xhr = new XMLHttpRequest();
+      let xhr = new XMLHttpRequest();
       xhr.addEventListener('load', handleEvent);
       xhr.addEventListener('error', () => showError("Failed to talk to server."));
       xhr.addEventListener('error', () => disableSpinner());
