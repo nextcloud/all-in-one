@@ -1,0 +1,314 @@
+[http]
+# IP and port to listen on for HTTP requests.
+# Comment line to disable the listener.
+#listen = 127.0.0.1:8080
+
+# HTTP socket read timeout in seconds.
+#readtimeout = 15
+
+# HTTP socket write timeout in seconds.
+#writetimeout = 15
+
+[https]
+# IP and port to listen on for HTTPS requests.
+# Comment line to disable the listener.
+#listen = 127.0.0.1:8443
+
+# HTTPS socket read timeout in seconds.
+#readtimeout = 15
+
+# HTTPS socket write timeout in seconds.
+#writetimeout = 15
+
+# Certificate / private key to use for the HTTPS server.
+certificate = /etc/nginx/ssl/server.crt
+key = /etc/nginx/ssl/server.key
+
+[app]
+# Set to "true" to install pprof debug handlers.
+# See "https://golang.org/pkg/net/http/pprof/" for further information.
+debug = false
+
+# Set to "true" to allow subscribing any streams. This is insecure and should
+# only be enabled for testing. By default only streams of users in the same
+# room and call can be subscribed.
+#allowsubscribeany = false
+
+[sessions]
+# Secret value used to generate checksums of sessions. This should be a random
+# string of 32 or 64 bytes.
+hashkey = the-secret-for-session-checksums
+
+# Optional key for encrypting data in the sessions. Must be either 16, 24 or
+# 32 bytes.
+# If no key is specified, data will not be encrypted (not recommended).
+blockkey = -encryption-key-
+
+[clients]
+# Shared secret for connections from internal clients. This must be the same
+# value as configured in the respective internal services.
+internalsecret = the-shared-secret-for-internal-clients
+
+[backend]
+# Type of backend configuration.
+# Defaults to "static".
+#
+# Possible values:
+# - static: A comma-separated list of backends is given in the "backends" option.
+# - etcd: Backends are retrieved from an etcd cluster.
+#backendtype = static
+
+# For backend type "static":
+# Comma-separated list of backend ids from which clients are allowed to connect
+# from. Each backend will have isolated rooms, i.e. clients connecting to room
+# "abc12345" on backend 1 will be in a different room than clients connected to
+# a room with the same name on backend 2. Also sessions connected from different
+# backends will not be able to communicate with each other.
+#backends = backend-id, another-backend
+
+# For backend type "etcd":
+# Key prefix of backend entries. All keys below will be watched and assumed to
+# contain a JSON document with the following entries:
+# - "url": Url of the Nextcloud instance.
+# - "secret": Shared secret for requests from and to the backend servers.
+#
+# Additional optional entries:
+# - "maxstreambitrate": Maximum bitrate per publishing stream (in bits per second).
+# - "maxscreenbitrate": Maximum bitrate per screensharing stream (in bits per second).
+# - "sessionlimit": Number of sessions that are allowed to connect.
+#
+# Example:
+# "/signaling/backend/one" -> {"url": "https://nextcloud.domain1.invalid", ...}
+# "/signaling/backend/two" -> {"url": "https://domain2.invalid/nextcloud", ...}
+#backendprefix = /signaling/backend
+
+# Allow any hostname as backend endpoint. This is extremely insecure and should
+# only be used while running the benchmark client against the server.
+allowall = false
+
+# Common shared secret for requests from and to the backend servers if
+# "allowall" is enabled. This must be the same value as configured in the
+# Nextcloud admin ui.
+#secret = the-shared-secret
+
+# Timeout in seconds for requests to the backend.
+timeout = 10
+
+# Maximum number of concurrent backend connections per host.
+connectionsperhost = 8
+
+# If set to "true", certificate validation of backend endpoints will be skipped.
+# This should only be enabled during development, e.g. to work with self-signed
+# certificates.
+#skipverify = false
+
+# For backendtype "static":
+# Backend configurations as defined in the "[backend]" section above. The
+# section names must match the ids used in "backends" above.
+#[backend-id]
+# URL of the Nextcloud instance
+#url = https://cloud.domain.invalid
+
+# Shared secret for requests from and to the backend servers. This must be the
+# same value as configured in the Nextcloud admin ui.
+#secret = the-shared-secret
+
+# Limit the number of sessions that are allowed to connect to this backend.
+# Omit or set to 0 to not limit the number of sessions.
+#sessionlimit = 10
+
+# The maximum bitrate per publishing stream (in bits per second).
+# Defaults to the maximum bitrate configured for the proxy / MCU.
+#maxstreambitrate = 1048576
+
+# The maximum bitrate per screensharing stream (in bits per second).
+# Defaults to the maximum bitrate configured for the proxy / MCU.
+#maxscreenbitrate = 2097152
+
+#[another-backend]
+# URL of the Nextcloud instance
+#url = https://cloud.otherdomain.invalid
+
+# Shared secret for requests from and to the backend servers. This must be the
+# same value as configured in the Nextcloud admin ui.
+#secret = the-shared-secret
+
+[nats]
+# Url of NATS backend to use. This can also be a list of URLs to connect to
+# multiple backends. For local development, this can be set to "nats://loopback"
+# to process NATS messages internally instead of sending them through an
+# external NATS backend.
+#url = nats://localhost:4222
+
+[mcu]
+# The type of the MCU to use. Currently only "janus" and "proxy" are supported.
+# Leave empty to disable MCU functionality.
+#type =
+
+# For type "janus": the URL to the websocket endpoint of the MCU server.
+# For type "proxy": a space-separated list of proxy URLs to connect to.
+#url =
+
+# The maximum bitrate per publishing stream (in bits per second).
+# Defaults to 1 mbit/sec.
+# For type "proxy": will be capped to the maximum bitrate configured at the
+# proxy server that is used.
+#maxstreambitrate = 1048576
+
+# The maximum bitrate per screensharing stream (in bits per second).
+# Default is 2 mbit/sec.
+# For type "proxy": will be capped to the maximum bitrate configured at the
+# proxy server that is used.
+#maxscreenbitrate = 2097152
+
+# For type "proxy": timeout in seconds for requests to the proxy server.
+#proxytimeout = 2
+
+# For type "proxy": type of URL configuration for proxy servers.
+# Defaults to "static".
+#
+# Possible values:
+# - static: A space-separated list of proxy URLs is given in the "url" option.
+# - etcd: Proxy URLs are retrieved from an etcd cluster (see below).
+#urltype = static
+
+# If set to "true", certificate validation of proxy servers will be skipped.
+# This should only be enabled during development, e.g. to work with self-signed
+# certificates.
+#skipverify = false
+
+# For type "proxy": the id of the token to use when connecting to proxy servers.
+#token_id = server1
+
+# For type "proxy": the private key for the configured token id to use when
+# connecting to proxy servers.
+#token_key = privkey.pem
+
+# For url type "static": Enable DNS discovery on hostname of configured URL.
+# If the hostname resolves to multiple IP addresses, a connection is established
+# to each of them.
+# Changes to the DNS are monitored regularly and proxy connections are created
+# or deleted as necessary.
+#dnsdiscovery = true
+
+# For url type "etcd": Key prefix of MCU proxy entries. All keys below will be
+# watched and assumed to contain a JSON document. The entry "address" from this
+# document will be used as proxy URL, other contents in the document will be
+# ignored.
+#
+# Example:
+# "/signaling/proxy/server/one" -> {"address": "https://proxy1.domain.invalid"}
+# "/signaling/proxy/server/two" -> {"address": "https://proxy2.domain.invalid"}
+#keyprefix = /signaling/proxy/server
+
+[turn]
+# API key that the MCU will need to send when requesting TURN credentials.
+#apikey = the-api-key-for-the-rest-service
+
+# The shared secret to use for generating TURN credentials. This must be the
+# same as on the TURN server.
+#secret = 6d1c17a7-c736-4e22-b02c-e2955b7ecc64
+
+# A comma-separated list of TURN servers to use. Leave empty to disable the
+# TURN REST API.
+#servers = turn:1.2.3.4:9991?transport=udp,turn:1.2.3.4:9991?transport=tcp
+
+[geoip]
+# License key to use when downloading the MaxMind GeoIP database. You can
+# register an account at "https://www.maxmind.com/en/geolite2/signup" for
+# free. See "https://dev.maxmind.com/geoip/geoip2/geolite2/" for further
+# information.
+# Leave empty to disable GeoIP lookups.
+#license =
+
+# Optional URL to download a MaxMind GeoIP database from. Will be generated if
+# "license" is provided above. Can be a "file://" url if a local file should
+# be used. Please note that the database must provide a country field when
+# looking up IP addresses.
+#url =
+
+[geoip-overrides]
+# Optional overrides for GeoIP lookups. The key is an IP address / range, the
+# value the associated country code.
+#127.0.0.1 = DE
+#192.168.0.0/24 = DE
+
+[continent-overrides]
+# Optional overrides for continent mappings. The key is a continent code, the
+# value a comma-separated list of continent codes to map the continent to.
+# Use European servers for clients in Africa.
+#AF = EU
+# Use servers in North Africa for clients in South America.
+#SA = NA
+
+[stats]
+# Comma-separated list of IP addresses that are allowed to access the stats
+# endpoint. Leave empty (or commented) to only allow access from "127.0.0.1".
+#allowed_ips =
+
+[etcd]
+# Comma-separated list of static etcd endpoints to connect to.
+#endpoints = 127.0.0.1:2379,127.0.0.1:22379,127.0.0.1:32379
+
+# Options to perform endpoint discovery through DNS SRV.
+# Only used if no endpoints are configured manually.
+#discoverysrv = example.com
+#discoveryservice = foo
+
+# Path to private key, client certificate and CA certificate if TLS
+# authentication should be used.
+#clientkey = /path/to/etcd-client.key
+#clientcert = /path/to/etcd-client.crt
+#cacert = /path/to/etcd-ca.crt
+
+[grpc]
+# IP and port to listen on for GRPC requests.
+# Comment line to disable the listener.
+#listen = 0.0.0.0:9090
+
+# Certificate / private key to use for the GRPC server.
+# Omit to use unencrypted connections.
+#servercertificate = /path/to/grpc-server.crt
+#serverkey = /path/to/grpc-server.key
+
+# CA certificate that is allowed to issue certificates of GRPC servers.
+# Omit to expect unencrypted connections.
+#serverca = /path/to/grpc-ca.crt
+
+# Certificate / private key to use for the GRPC client.
+# Omit if clients don't need to authenticate on the server.
+#clientcertificate = /path/to/grpc-client.crt
+#clientkey = /path/to/grpc-client.key
+
+# CA certificate that is allowed to issue certificates of GRPC clients.
+# Omit to allow any clients to connect.
+#clientca = /path/to/grpc-ca.crt
+
+# Type of GRPC target configuration.
+# Defaults to "static".
+#
+# Possible values:
+# - static: A comma-separated list of targets is given in the "targets" option.
+# - etcd: Target URLs are retrieved from an etcd cluster.
+#targettype = static
+
+# For target type "static": Comma-separated list of GRPC targets to connect to
+# for clustering mode.
+#targets = 192.168.0.1:9090, 192.168.0.2:9090
+
+# For target type "static": Enable DNS discovery on hostnames of GRPC target.
+# If a hostname resolves to multiple IP addresses, a connection is established
+# to each of them.
+# Changes to the DNS are monitored regularly and GRPC clients are created or
+# deleted as necessary.
+#dnsdiscovery = true
+
+# For target type "etcd": Key prefix of GRPC target entries. All keys below will
+# be watched and assumed to contain a JSON document. The entry "address" from
+# this document will be used as target URL, other contents in the document will
+# be ignored.
+#
+# Example:
+# "/signaling/cluster/grpc/one" -> {"address": "192.168.0.1:9090"}
+# "/signaling/cluster/grpc/two" -> {"address": "192.168.0.2:9090"}
+#targetprefix = /signaling/cluster/grpc
