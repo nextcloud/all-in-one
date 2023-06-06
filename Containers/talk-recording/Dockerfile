@@ -27,7 +27,7 @@ RUN set -ex; \
     mv -v /src/recording/pyproject.toml /src/recording/src/pyproject.toml; \
     python3 -m pip install /src/recording/src; \
     rm -rf /src; \
-    chown recording:recording-R \
+    chown recording:recording -R \
         /tmp; \
     apk del --no-cache \
         git \
