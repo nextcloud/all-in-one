@@ -6,7 +6,7 @@ on:
   - cron:  '00 12 * * *'
 
 jobs:
-  psalm:
+  update-yaml:
     name: update yaml files
     runs-on: ubuntu-latest
     steps:

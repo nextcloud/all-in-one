@@ -11,7 +11,7 @@ on:
       - '**.json'
 
 jobs:
-  psalm:
+  json-validator:
     name: Json Validator
     runs-on: ubuntu-latest
     steps:

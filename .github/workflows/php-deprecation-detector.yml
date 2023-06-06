@@ -12,7 +12,7 @@ on:
       - 'php/**'
 
 jobs:
-  psalm:
+  phpdd:
     name: PHP Deprecation Detector
     runs-on: ubuntu-latest
     steps:

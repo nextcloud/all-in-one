@@ -6,7 +6,7 @@ on:
   - cron:  '00 12 * * *'
 
 jobs:
-  psalm:
+  update-helm:
     name: update helm chart
     runs-on: ubuntu-latest
     steps:

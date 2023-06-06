@@ -6,7 +6,7 @@ on:
   - cron:  '00 12 * * *'
 
 jobs:
-  run_update:
+  talk-update:
     name: update talk
     runs-on: ubuntu-latest
     steps:
