@@ -2,7 +2,7 @@ FROM python:3.11.3-alpine3.18
 
 COPY --chmod=775 start.sh /start.sh
 
-ENV RECORDING_VERSION v16.0.3
+ENV RECORDING_VERSION v16.0.4
 
 RUN set -ex; \
     apk add --no-cache \
