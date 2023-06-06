@@ -1,7 +1,6 @@
 FROM python:3.11.3-alpine3.18
 
 COPY --chmod=775 start.sh /start.sh
-COPY --chmod=664 recording.conf /etc/recording.conf
 
 RUN set -ex; \
     apk add --no-cache \
@@ -28,6 +27,7 @@ RUN set -ex; \
     mv -v /src/recording/pyproject.toml /src/recording/src/pyproject.toml; \
     python3 -m pip install /src/recording/src; \
     rm -rf /src; \
+    touch /etc/recording.conf; \
     chown recording:recording -R \
         /tmp /etc/recording.conf; \
     apk del --no-cache \
