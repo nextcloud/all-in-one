@@ -17,6 +17,7 @@ RUN set -ex; \
         git \
         wget \
         shadow \
+        pulseaudio \
         openssl; \
     # chromium chromium-chromedriver?
     apk add --no-cache geckodriver --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
@@ -28,13 +29,14 @@ RUN set -ex; \
     python3 -m pip install /src/recording/src; \
     rm -rf /src; \
     chown recording:recording -R \
-        /tmp; \
+        /tmp /etc/recording.conf; \
     apk del --no-cache \
         git \
         wget \
         shadow \
         openssl;
 
+WORKDIR /tmp
 USER recording
 ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/etc/recording.conf"]
