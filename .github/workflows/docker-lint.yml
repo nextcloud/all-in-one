@@ -29,7 +29,8 @@ jobs:
 
       - name: Install npm and dockerfilelint
         run: |
-          sudo apt-get install nodejs npm -y
+          sudo apt-get update
+          sudo apt-get install nodejs npm -y --no-install-recommends
           npm install -g dockerfilelint
           wget https://github.com/replicatedhq/dockerfilelint/pull/184.patch -O /usr/local/lib/node_modules/dockerfilelint/184.patch
           CURRENT_DIR=$PWD
