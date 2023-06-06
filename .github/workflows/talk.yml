@@ -1,0 +1,46 @@
+name: talk-update
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '00 12 * * *'
+
+jobs:
+  run_update:
+    name: update talk
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run talk-update
+      run: |
+        # Spreed
+        spreed_version="$(
+          git ls-remote https://github.com/nextcloud/spreed v*.*.* \
+            | cut -d/ -f3 \
+            | sort -V \
+            | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+$" \
+            | tail -1
+        )"
+        sed -i "s|git clone --recursive https://github.com/nextcloud/spreed --branch .* /src; \\\|git clone --recursive https://github.com/nextcloud/spreed --depth=1 --single-branch --branch $spreed_version /src; \\\|" ./Containers/talk-recording/Dockerfile
+        curl -L "https://raw.githubusercontent.com/nextcloud/spreed/$spreed_version/recording/server.conf.in" -o Containers/talk-recording/recording.conf
+        
+        # Signaling
+        signaling_version="$(
+          git ls-remote https://github.com/strukturag/nextcloud-spreed-signaling v*.*.* \
+            | cut -d/ -f3 \
+            | sort -V \
+            | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+$" \
+            | tail -1
+        )"
+        curl -L "https://raw.githubusercontent.com/strukturag/nextcloud-spreed-signaling/$signaling_version/server.conf.in" -o Containers/talk/server.conf.in
+        
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: talk-update automated change
+        signoff: true
+        title: talk update
+        body: Automated talk container update
+        labels: dependencies, 3. to review
+        milestone: next
+        branch: talk-container-update

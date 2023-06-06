@@ -109,6 +109,15 @@ updates:
   - 3. to review
   - dependencies
 - package-ecosystem: "docker"
+  directory: "/Containers/talk-recording"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  labels:
+  - 3. to review
+  - dependencies
+- package-ecosystem: "docker"
   directory: "/Containers/watchtower"
   schedule:
     interval: "daily"

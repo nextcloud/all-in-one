@@ -63,7 +63,7 @@ ENV TALK_PORT=3478
 
 USER talk
 ENTRYPOINT ["start.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD (nc -z localhost 8081 && nc -z localhost 8188 && nc -z localhost 4222 && nc -z localhost "$TALK_PORT" && nc -z "$NC_DOMAIN" "$TALK_PORT") || exit 1
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
