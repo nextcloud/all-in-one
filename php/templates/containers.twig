@@ -27,7 +27,7 @@
         {% set isBackupOrRestoreRunning = false %}
         {% set isApacheStarting = false %}
         {# Setting newMajorVersion to '' will hide corresponding options/elements, can be set to an integer like 26 in order to show corresponding elements. If set, also increase installLatestMajor in https://github.com/nextcloud/all-in-one/blob/main/php/src/Controller/DockerController.php #}
-        {% set newMajorVersion = '' %}
+        {% set newMajorVersion = 27 %}
 
         {% if is_backup_container_running == true %}
             {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
@@ -273,7 +273,7 @@
                             {% if newMajorVersion != '' and isAnyRunning == true and isApacheStarting != true %}
                                 <details>
                                 <summary>Note about <b>Nextcloud {{ newMajorVersion }}</b></summary><br>
-                                    If you haven't upgraded to Nextcloud {{ newMajorVersion }} yet and want to do that now, feel free to follow <b><a href="https://github.com/nextcloud/all-in-one/discussions/2208">this documentation</a></b><br/>
+                                    If you haven't upgraded to Nextcloud {{ newMajorVersion }} yet and want to do that now, feel free to follow <b><a href="https://github.com/nextcloud/all-in-one/discussions/2692">this documentation</a></b><br/>
                                 </details><br>
                             {% endif %}
                         {% endif %}

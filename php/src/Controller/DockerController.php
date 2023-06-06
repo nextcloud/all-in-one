@@ -155,7 +155,7 @@ class DockerController
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = 26;
+            $installLatestMajor = 27;
         } else {
             $installLatestMajor = "";
         }
