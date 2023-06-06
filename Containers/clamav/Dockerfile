@@ -8,6 +8,6 @@ RUN set -ex; \
     cat /tmp/clamav.conf | tee -a /etc/clamav/clamd.conf; \
     rm /tmp/clamav.conf
 
-USER clamav
+# USER root is probably used
 
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
