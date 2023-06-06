@@ -183,7 +183,6 @@ RUN set -ex; \
         git \
         postgresql-client \
         tzdata \
-        mawk \
         sudo \
         grep \
         nodejs \

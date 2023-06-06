@@ -147,7 +147,7 @@ if ! [ -f "$DATADIR/PG_VERSION" ] && ! [ -f "$DUMP_FILE" ]; then
 fi
 
 echo "Setting max connections..."
-MEMORY=$(mawk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
+MEMORY=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
 MAX_CONNECTIONS=$((MEMORY/50+3))
 if [ -n "$MAX_CONNECTIONS" ]; then
     sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
