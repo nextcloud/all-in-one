@@ -134,6 +134,9 @@
 							"pattern": "^nextcloud-aio$"
 						}
 					},
+					"read_only": {
+						"type": "boolean"
+					},
 					"volumes": {
 						"type": "array",
 						"items": {

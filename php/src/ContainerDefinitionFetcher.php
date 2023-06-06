@@ -262,6 +262,11 @@ class ContainerDefinitionFetcher
                 $nextcloudExecCommands = $entry['nextcloud_exec_commands'];
             }
 
+            $readOnlyRootFs = false;
+            if (isset($entry['read_only'])) {
+                $readOnlyRootFs = $entry['read_only'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -280,6 +285,7 @@ class ContainerDefinitionFetcher
                 $apparmorUnconfined,
                 $backupVolumes,
                 $nextcloudExecCommands,
+                $readOnlyRootFs,
                 $this->container->get(DockerActionManager::class)
             );
         }

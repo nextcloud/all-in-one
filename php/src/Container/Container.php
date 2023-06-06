@@ -30,6 +30,7 @@ class Container {
     /** @var string[] */
     private array $backupVolumes;
     private array $nextcloudExecCommands;
+    private bool $readOnlyRootFs;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -50,6 +51,7 @@ class Container {
         bool $apparmorUnconfined,
         array $backupVolumes,
         array $nextcloudExecCommands,
+        bool $readOnlyRootFs,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -69,6 +71,7 @@ class Container {
         $this->apparmorUnconfined = $apparmorUnconfined;
         $this->backupVolumes = $backupVolumes;
         $this->nextcloudExecCommands = $nextcloudExecCommands;
+        $this->readOnlyRootFs = $readOnlyRootFs;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -86,6 +89,10 @@ class Container {
 
     public function GetRestartPolicy() : string {
         return $this->restartPolicy;
+    }
+
+    public function GetReadOnlySetting() : bool {
+        return $this->readOnlyRootFs;
     }
 
     public function GetShmSize() : int {
