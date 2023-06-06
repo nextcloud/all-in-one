@@ -1,4 +1,3 @@
-# From https://github.com/nextcloud/docker/blob/master/23/fpm-alpine/Dockerfile
 FROM php:8.1.19-fpm-alpine3.17
 
 ENV PHP_MEMORY_LIMIT 512M
