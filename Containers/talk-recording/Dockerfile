@@ -10,7 +10,6 @@ RUN set -ex; \
         xvfb \
         ffmpeg \
         firefox \
-        libpulse \
         bind-tools \
         netcat-openbsd \
         git \
