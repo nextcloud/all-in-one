@@ -583,6 +583,21 @@ else
     fi
 fi
 
+# Talk recording
+if [ -d "/var/www/html/custom_apps/spreed" ]; then
+    if [ "$TALK_RECORDING_ENABLED" = 'yes' ]; then
+        while ! nc -z "$TALK_RECORDING_HOST" 1234; do
+            echo "waiting for Talk Recording to become available..."
+            sleep 5
+        done
+        # TODO: migrate to occ command if that becomes available
+        RECORDING_SERVERS_STRING="{\"servers\":[{\"server\":\"http://$TALK_RECORDING_HOST:1234/\",\"verify\":true}],\"secret\":\"$RECORDING_SECRET\"}"
+        php /var/www/html/occ config:app:set spreed recording_servers --value="$RECORDING_SERVERS_STRING"
+    else
+        php /var/www/html/occ config:app:delete spreed recording_servers
+    fi
+fi
+
 # Clamav
 if [ "$CLAMAV_ENABLED" = 'yes' ]; then
     count=0

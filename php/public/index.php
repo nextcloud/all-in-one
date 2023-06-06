@@ -120,6 +120,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_max_time' => $configurationManager->GetNextcloudMaxTime(),
         'nextcloud_memory_limit' => $configurationManager->GetNextcloudMemoryLimit(),
         'is_dri_device_enabled' => $configurationManager->isDriDeviceEnabled(),
+        'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled(),
     ]);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
