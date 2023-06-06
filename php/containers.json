@@ -214,7 +214,8 @@
       ],
       "secrets": [
         "REDIS_PASSWORD",
-        "ONLYOFFICE_SECRET"
+        "ONLYOFFICE_SECRET",
+        "RECORDING_SECRET"
       ],
       "restart": "unless-stopped",
       "networks": [
