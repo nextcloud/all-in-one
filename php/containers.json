@@ -6,7 +6,6 @@
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-talk",
-        "nextcloud-aio-talk-recording",
         "nextcloud-aio-nextcloud"
       ],
       "display_name": "Apache",
@@ -99,6 +98,7 @@
         "nextcloud-aio-redis",
         "nextcloud-aio-clamav",
         "nextcloud-aio-fulltextsearch",
+        "nextcloud-aio-talk-recording",
         "nextcloud-aio-imaginary"
       ],
       "display_name": "Nextcloud",
