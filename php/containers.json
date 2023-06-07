@@ -112,8 +112,8 @@
         "DATABASE_PASSWORD",
         "REDIS_PASSWORD",
         "NEXTCLOUD_PASSWORD",
-        "TURN_SECRET",
-        "SIGNALING_SECRET"
+        "TALK_TURN_SECRET",
+        "TALK_SIGNALING_SECRET"
       ],
       "volumes": [
         {
@@ -151,8 +151,8 @@
         "NEXTCLOUD_DATA_DIR=/mnt/ncdata",
         "OVERWRITEHOST=%NC_DOMAIN%",
         "OVERWRITEPROTOCOL=https",
-        "TURN_SECRET=%TURN_SECRET%",
-        "SIGNALING_SECRET=%SIGNALING_SECRET%",
+        "TURN_SECRET=%TALK_TURN_SECRET%",
+        "SIGNALING_SECRET=%TALK_SIGNALING_SECRET%",
         "ONLYOFFICE_SECRET=%ONLYOFFICE_SECRET%",
         "AIO_URL=%AIO_URL%",
         "NEXTCLOUD_MOUNT=%NEXTCLOUD_MOUNT%",
@@ -273,15 +273,15 @@
       "internal_port": "%TALK_PORT%",
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
-        "TURN_SECRET=%TURN_SECRET%",
-        "SIGNALING_SECRET=%SIGNALING_SECRET%",
+        "TURN_SECRET=%TALK_TURN_SECRET%",
+        "SIGNALING_SECRET=%TALK_SIGNALING_SECRET%",
         "TZ=%TIMEZONE%",
         "TALK_PORT=%TALK_PORT%",
         "INTERNAL_SECRET=%TALK_INTERNAL_SECRET%"
       ],
       "secrets": [
-        "TURN_SECRET",
-        "SIGNALING_SECRET",
+        "TALK_TURN_SECRET",
+        "TALK_SIGNALING_SECRET",
         "TALK_INTERNAL_SECRET"
       ],
       "restart": "unless-stopped",
