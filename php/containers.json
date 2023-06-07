@@ -388,7 +388,8 @@
           "destination": "/var/run/docker.sock",
           "writeable": false
         }
-      ]
+      ],
+      "read_only": true
     },
     {
       "container_name": "nextcloud-aio-domaincheck",
