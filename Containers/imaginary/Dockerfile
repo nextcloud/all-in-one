@@ -1,4 +1,4 @@
-FROM golang:1.20.4-alpine3.17 as go
+FROM golang:1.20.5-alpine3.17 as go
 
 ENV IMAGINARY_HASH b632dae8cc321452c3f85bcae79c580b1ae1ed84
 
