@@ -499,10 +499,18 @@
       ],
       "internal_port": "9200",
       "environment": [
+        "POSTGRES_HOST=nextcloud-aio-database",
         "TZ=%TIMEZONE%",
+        "ES_JAVA_OPTS=-Xms1024M -Xmx1024M -Des.enforce.bootstrap.checks=true",
+        "xpack.license.self_generated.type=basic",
+        "xpack.security.enabled=false",
+        "xpack.watcher.enabled=false",
+        "xpack.graph.enabled=false",
+        "xpack.ml.enabled=false",
+        "bootstrap.memory_lock=true",
+        "cluster.name=nextcloud-aio",
         "discovery.type=single-node",
-        "ES_JAVA_OPTS=-Xms1024M -Xmx1024M",
-        "POSTGRES_HOST=nextcloud-aio-database"
+        "thread_pool.write.queue_size=1000"
       ],
       "volumes": [
         {
