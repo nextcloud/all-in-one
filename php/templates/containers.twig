@@ -96,7 +96,7 @@
                             <input type="text" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                            <input class="button" type="submit" value="Submit" />
+                            <input class="button" type="submit" value="Submit domain" />
                         </form>
                         {% if skip_domain_validation == false %}
                             Make sure that this server is reachable on port 443 (port 443/tcp is open/forwarded in your firewall/router) and that you've correctly set up the DNS config for the domain that you enter (set the A record to your public ipv4-address and if you need ipv6, set the AAAA record to your public ipv6-address. A CNAME record if of course also possible). You should see hints on what went wrong if your domain does not get accepted in the top right corner.<br><br>
@@ -173,7 +173,7 @@
                                 <input type="text" name="borg_restore_password" value="{{borg_restore_password}}" placeholder="enter the borg password"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit" />
+                                <input class="button" type="submit" value="Submit location and password" />
                             </form>
                             {{ include('includes/backup-dirs.twig') }}
                             ⚠️ Please note that the backup archive must be located in a subfolder of the folder that you enter here and the subfolder which contains the archive must be named 'borg'. Otherwise will the backup container not find the backup archive!<br><br>
@@ -352,7 +352,7 @@
                                 <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit" />
+                                <input class="button" type="submit" value="Submit backup location" />
                             </form>
                             {{ include('includes/backup-dirs.twig') }}
                         {% endif %}
@@ -380,10 +380,10 @@
                                     {% if has_backup_run_once == false %}
                                         You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on 'Create Backup' for testing the new value.<br /><br />
                                         <form method="POST" action="/api/configuration" class="xhr">
-                                            <input type="text" value="{{borg_backup_host_location}}" name="borg_backup_host_location" placeholder="/mnt/backup"/>
+                                            <input type="text" value="{{borg_backup_host_location}}" name="borg_backup_host_location" placeholder="/mnt/backup" />
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input class="button" type="submit" value="Submit" />
+                                            <input class="button" type="submit" value="Set backup location again" />
                                         </form>
                                     {% endif %}
                                 {% elseif backup_exit_code == 0 %}
@@ -449,7 +449,7 @@
                                                 <input type="text" name="daily_backup_time" value="04:00" placeholder="04:00"/>
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input class="button" type="submit" value="Submit" /><br>
+                                                <input class="button" type="submit" value="Submit backup time" /><br>
                                                 <input type="checkbox" id="automatic_updates" name="automatic_updates" checked="checked"><label for="automatic_updates">Automatically update all containers, the mastercontainer and on saturdays your Nextcloud apps</label><br>
                                             </form>
                                         {% else %}
@@ -472,7 +472,7 @@
                                             <textarea id="additional_backup_directories" name="additional_backup_directories" rows="4" cols="50" placeholder="/directory/on/the/host&#10;my_custom_docker_volume">{{ additional_backup_directories }}</textarea>
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input class="button" type="submit" value="Submit" /><br>
+                                            <input class="button" type="submit" value="Submit additional backup locations" /><br>
                                         </form>
                                         Each line and entry needs to start with a slash or letter/digit. Allowed are only <b>a-z</b>, <b>A-Z</b>, <b>.</b>, <b>0-9</b>, <b>_</b>, <b>-</b>, and <b>/</b>. If the entry begins with a letter/digit are slashes not supported. Two valid entries are <b>/directory/on/the/host</b> and <b>my_custom_docker_volume</b>. You need to make sure yourself that all given directories exist. Otherwise the backup container will fail starting!<br><br/>
                                         Make sure to specify all storages that you want to back up separately since storages will not be mounted recursively. E.g. providing <b>/</b> as additional backup directory will only back up files and folders that are stored on the root partition and not on the EFI partition or any other. Excluded by the backup will be caches and a few other directories. You should make sure to stop all services before the backup can run correctly if you want to back up the root partition. For automating this see <a href="https://github.com/nextcloud/all-in-one#how-to-stopstartupdate-containers-or-trigger-the-daily-backup-from-a-script-externally">this documentation</a><br><br/>
@@ -502,7 +502,7 @@
                                     <input type="text" autocomplete="new-password" name="new-master-password" placeholder="Your new AIO password"/>
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                    <input class="button" type="submit" value="Submit" />
+                                    <input class="button" type="submit" value="Submit password change" />
                                 </form>
                                 The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><b>latin characters</b></a> <b>a-z</b>, <b>A-Z</b>, <b>0-9</b> and <b>spaces</b>.<br>
                             </details><br>
@@ -514,6 +514,9 @@
                     In this section you can enable or disable optional addons.<br><br>
                     {% if isAnyRunning == true %}
                         <b>Please note:</b> You can enable or disable them when your containers are stopped.<br><br>
+                    {% else %}
+                    
+                        <b>Please note:</b> Make sure to save your changes by clicking on the button <b>Save changes</b> that is positioned below the list of optional addons. The changes will not be auto-saved.<br><br>
                     {% endif %}
                     <form id="options-form" method="POST" action="/api/configuration" class="xhr">
                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -579,7 +582,7 @@
                                 <input type="text" name="collabora_dictionaries" placeholder="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru" />
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit" />
+                                <input class="button" type="submit" value="Submit collabora dictionaries" />
                             </form>
                             You need to make sure that the dictionaries that you enter are valid. An example is <b>de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru</b>.<br><br>
                         {% else %}
@@ -607,7 +610,7 @@
                                 <input type="text" name="timezone" placeholder="Europe/Berlin" />
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit" onclick="return confirm('Are you sure that this is a valid timezone? Please double check by following the wikipedia article and checking the correct column since if not, it will break the startup since the database will not get correctly initialized and you will end in a startup loop.')" />
+                                <input class="button" type="submit" value="Submit timezone" onclick="return confirm('Are you sure that this is a valid timezone? Please double check by following the wikipedia article and checking the correct column since if not, it will break the startup since the database will not get correctly initialized and you will end in a startup loop.')" />
                             </form>
                             You need to make sure that the timezone that you enter is valid. An example is <b>Europe/Berlin</b>. You can get valid values by looking at the 'TZ database name' column of this list: <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"><b>click here</b></a>.<br><br>
                         {% else %}
