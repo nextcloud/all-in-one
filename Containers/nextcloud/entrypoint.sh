@@ -12,6 +12,8 @@ directory_empty() {
 
 run_upgrade_if_needed_due_to_app_update() {
     if php /var/www/html/occ status | grep needsDbUpgrade | grep -q true; then
+        # Disable integrity check temporarily until next update
+        php /var/www/html/occ config:system:set integrity.check.disabled --type bool --value true
         php /var/www/html/occ upgrade
         php /var/www/html/occ app:enable nextcloud-aio --force
     fi
@@ -354,6 +356,7 @@ DATADIR_PERMISSION_CONF
         else
             touch "$NEXTCLOUD_DATA_DIR/update.failed"
             echo "Upgrading nextcloud from $installed_version to $image_version..."
+            php /var/www/html/occ config:system:delete integrity.check.disabled
             if ! php /var/www/html/occ upgrade || ! php /var/www/html/occ -V; then
                 echo "Upgrade failed. Please restore from backup."
                 bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup!"
