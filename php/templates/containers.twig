@@ -420,6 +420,17 @@
                                         <input class="button" type="submit" value="Create backup" onclick="return confirm('Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.')" />
                                     </form>
 
+                                    {% if has_backup_run_once == false %}
+                                        <h3>Reset backup host location</h3>
+                                        If the configured backup host location <b>{{ borg_backup_host_location }}</b> is wrong, you can reset it by clicking on the button below.<br><br/>
+                                        <form method="POST" action="/api/configuration" class="xhr">
+                                            <input type="hidden" name="delete_borg_backup_host_location" value="yes"/>
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input class="button" type="submit" value="Reset backup location" />
+                                        </form>
+                                    {% endif %}
+
                                     {% if has_backup_run_once == true %}
                                         <h3>Backup check</h3>
                                         Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact but it should't be needed in most situtations.<br><br/>
