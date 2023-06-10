@@ -421,8 +421,6 @@ DATADIR_PERMISSION_CONF
     # Performing update of all apps if daily backups are enabled, running and successful and if it is saturday
     if [ "$UPDATE_NEXTCLOUD_APPS" = 'yes' ] && [ "$(date +%u)" = 6 ]; then
         UPDATED_APPS="$(php /var/www/html/occ app:update --all)"
-        # Update all apps again and try to prevent something like https://github.com/nextcloud/polls/issues/2793 from happening
-        php /var/www/html/occ app:update --all
         run_upgrade_if_needed_due_to_app_update
         if [ -n "$UPDATED_APPS" ]; then
              bash /notify.sh "Your apps just got updated!" "$UPDATED_APPS"
