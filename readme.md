@@ -235,6 +235,9 @@ No and they will not be. If you want to run it locally, without opening Nextclou
 ### Can I use an ip-address for Nextcloud instead of a domain?
 No and it will not be added. If you only want to run it locally, you may have a look at the following documentation: [local-instance.md](./local-instance.md)
 
+### Can I use AIO with multiple domains?
+No and it will not be added. However you can use [this feature](https://github.com/nextcloud/all-in-one/blob/main/multiple-instances.md) in order to create mutiple AIO instances, one for each domain.
+
 ### Are other ports than the default 443 for Nextcloud supported?
 No and they will not be. Please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). If port 443 and/or 80 is blocked for you, you may use the ACME DNS-challenge or a Cloudflare Tunnel.
 
