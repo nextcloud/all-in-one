@@ -13,7 +13,7 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*
 
-USER 104
+USER 100
 
 HEALTHCHECK CMD nc -z localhost 9980 || exit 1
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
