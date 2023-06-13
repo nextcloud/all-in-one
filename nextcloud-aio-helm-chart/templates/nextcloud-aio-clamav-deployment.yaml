@@ -38,7 +38,7 @@ spec:
               value: "90"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-clamav:20230606_070951-latest
+          image: nextcloud/aio-clamav:20230613_065816-latest
           name: nextcloud-aio-clamav
           ports:
             - containerPort: 3310

@@ -2,8 +2,10 @@ DATABASE_PASSWORD:           # TODO! This needs to be a unique and good password
 NC_DOMAIN: yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.
 NEXTCLOUD_PASSWORD:           # TODO! This is the password of the initially created Nextcloud admin with username admin.
 ONLYOFFICE_SECRET:           # TODO! This needs to be a unique and good password!
+RECORDING_SECRET:           # TODO! This needs to be a unique and good password!
 REDIS_PASSWORD:           # TODO! This needs to be a unique and good password!
 SIGNALING_SECRET:           # TODO! This needs to be a unique and good password!
+TALK_INTERNAL_SECRET:           # TODO! This needs to be a unique and good password!
 TIMEZONE: Europe/Berlin          # TODO! This is the timezone that your containers will use.
 TURN_SECRET:           # TODO! This needs to be a unique and good password!
 
@@ -13,9 +15,8 @@ FULLTEXTSEARCH_ENABLED: "no"          # Setting this to "yes" (with quotes) enab
 IMAGINARY_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 ONLYOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 TALK_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
+TALK_RECORDING_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 
-AIO_TOKEN: 123456          # Has no function but needs to be set!
-AIO_URL: localhost          # Has no function but needs to be set!
 APACHE_MAX_SIZE: "10737418240"          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT
 APACHE_PORT: 443          # Changing this to a different value than 443 will allow you to run it behind a web server or reverse proxy (like Apache, Nginx and else).
 COLLABORA_DICTIONARIES: de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru        # You can change this in order to enable other dictionaries for collabora
@@ -33,7 +34,6 @@ UPDATE_NEXTCLOUD_APPS: no          # When setting to yes (with quotes), it will 
 STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes
 APACHE_STORAGE_SIZE: 1Gi       # You can change the size of the apache volume that default to 1Gi with this value
 CLAMAV_STORAGE_SIZE: 1Gi       # You can change the size of the clamav volume that default to 1Gi with this value
-COLLABORA_FONTS_STORAGE_SIZE: 1Gi       # You can change the size of the collabora-fonts volume that default to 1Gi with this value
 DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volume that default to 1Gi with this value
 DATABASE_DUMP_STORAGE_SIZE: 1Gi       # You can change the size of the database-dump volume that default to 1Gi with this value
 ELASTICSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the elasticsearch volume that default to 1Gi with this value

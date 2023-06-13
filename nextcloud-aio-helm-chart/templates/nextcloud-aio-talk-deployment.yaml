@@ -24,6 +24,8 @@ spec:
     spec:
       containers:
         - env:
+            - name: INTERNAL_SECRET
+              value: "{{ .Values.TALK_INTERNAL_SECRET }}"
             - name: NC_DOMAIN
               value: "{{ .Values.NC_DOMAIN }}"
             - name: SIGNALING_SECRET
@@ -34,7 +36,7 @@ spec:
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-talk:20230606_070951-latest
+          image: nextcloud/aio-talk:20230613_065816-latest
           name: nextcloud-aio-talk
           ports:
             - containerPort: {{ .Values.TALK_PORT }}
