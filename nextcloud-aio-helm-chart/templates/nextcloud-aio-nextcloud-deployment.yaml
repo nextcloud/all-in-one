@@ -44,10 +44,6 @@ spec:
               value: "{{ .Values.NEXTCLOUD_PASSWORD }}"
             - name: ADMIN_USER
               value: admin
-            - name: AIO_TOKEN
-              value: "{{ .Values.AIO_TOKEN }}"
-            - name: AIO_URL
-              value: "{{ .Values.AIO_URL }}"
             - name: CLAMAV_ENABLED
               value: "{{ .Values.CLAMAV_ENABLED }}"
             - name: CLAMAV_HOST
@@ -94,6 +90,8 @@ spec:
               value: "{{ .Values.DATABASE_PASSWORD }}"
             - name: POSTGRES_USER
               value: nextcloud
+            - name: RECORDING_SECRET
+              value: "{{ .Values.RECORDING_SECRET }}"
             - name: REDIS_HOST
               value: nextcloud-aio-redis
             - name: REDIS_HOST_PASSWORD
@@ -106,6 +104,10 @@ spec:
               value: "{{ .Values.TALK_ENABLED }}"
             - name: TALK_PORT
               value: "{{ .Values.TALK_PORT }}"
+            - name: TALK_RECORDING_ENABLED
+              value: "{{ .Values.TALK_RECORDING_ENABLED }}"
+            - name: TALK_RECORDING_HOST
+              value: nextcloud-aio-talk-recording
             - name: TRUSTED_CACERTS_DIR
               value: "{{ .Values.NEXTCLOUD_TRUSTED_CACERTS_DIR }}"
             - name: TURN_SECRET
@@ -114,7 +116,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230606_070951-latest
+          image: nextcloud/aio-nextcloud:20230613_065816-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
