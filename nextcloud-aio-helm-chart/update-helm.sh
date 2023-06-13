@@ -200,12 +200,12 @@ for variable in "${VOLUME_VARIABLE[@]}"; do
 done
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
-ENABLED_VARIABLES="$(grep -oP '^[A-Z]+_ENABLED' ../helm-chart/values.yaml)"
+ENABLED_VARIABLES="$(grep -oP '^[A-Z_]+_ENABLED' ../helm-chart/values.yaml)"
 mapfile -t ENABLED_VARIABLES <<< "$ENABLED_VARIABLES"
 
 cd ../helm-chart/
 for variable in "${ENABLED_VARIABLES[@]}"; do
-    name="$(echo "$variable" | sed 's|_ENABLED||g' | tr '[:upper:]' '[:lower:]')"
+    name="$(echo "$variable" | sed 's|_ENABLED||g;s|_|-|g' | tr '[:upper:]' '[:lower:]')"
     # shellcheck disable=SC1083
     find ./ -name "*nextcloud-aio-$name-deployment.yaml" -exec sed -i "1i\\{{- if eq .Values.$variable \"yes\" }}" \{} \; 
     # shellcheck disable=SC1083
