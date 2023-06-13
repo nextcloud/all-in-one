@@ -1,4 +1,4 @@
-FROM php:8.1.19-fpm-alpine3.17
+FROM php:8.1.20-fpm-alpine3.17
 
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 10G
