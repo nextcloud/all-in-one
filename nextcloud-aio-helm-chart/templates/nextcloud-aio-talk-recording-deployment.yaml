@@ -1,3 +1,4 @@
+{{- if eq .Values.TALK_RECORDING_ENABLED "yes" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -35,3 +36,4 @@ spec:
           name: nextcloud-aio-talk-recording
           ports:
             - containerPort: 1234
+{{- end }}
