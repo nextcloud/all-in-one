@@ -91,11 +91,12 @@ RUN set -ex; \
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
     { \
-        echo 'opcache.interned_strings_buffer=32'; \
+        echo 'opcache.memory_consumption=256'; \
+        echo 'opcache.interned_strings_buffer=64'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
         echo 'opcache.jit=1255'; \
-        echo 'opcache.jit_buffer_size=128M'; \
+        echo 'opcache.jit_buffer_size=8M'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
