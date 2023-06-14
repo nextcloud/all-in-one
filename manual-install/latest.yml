@@ -56,6 +56,7 @@ services:
     expose:
       - "9000"
       - "7867"
+    user: www-data
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:rw
       - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
