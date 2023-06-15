@@ -277,7 +277,7 @@ server {
     # listen 443 ssl;      # for nginx v1.25.1+
     # listen [::]:443 ssl; # for nginx v1.25.1+ - comment to disable IPv6
 	
-    # http2 on;              # uncomment to enable HTTP/2 - supported on supported on nginx v1.25.1+
+    # http2 on;              # uncomment to enable HTTP/2 - supported on nginx v1.25.1+
     # http3 on;              # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
     # listen 443 quic;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
     # listen [::]:443 quic;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
