@@ -1,6 +1,6 @@
 FROM nats:2.9.17-scratch as nats
 FROM strukturag/nextcloud-spreed-signaling:1.1.2 as signaling
-FROM coturn/coturn:4.6.2-r0-alpine
+FROM coturn/coturn:4.6.2-r3-alpine
 USER root
 
 COPY --from=nats /nats-server /usr/local/bin/nats-server
@@ -14,26 +14,28 @@ RUN set -ex; \
         ca-certificates \
         tzdata \
         bash \
+        janus-gateway \
         openssl \
         supervisor \
         bind-tools \
         netcat-openbsd \
+        wget \
         shadow \
         util-linux \
         build-base \
-        lua5.3-dev \
-        luarocks5.3; \
-    apk add --no-cache janus-gateway --repository http://dl-cdn.alpinelinux.org/alpine/edge/community; \
+        lua5.4-dev \
+        luarocks5.4; \
     useradd --system talk; \
-    luarocks-5.3 install luajson; \
-    luarocks-5.3 install ansicolors; \
+    luarocks-5.4 install luajson; \
+    luarocks-5.4 install ansicolors; \
     rename -v ".jcfg.sample" ".jcfg" /etc/janus/*.sample; \
     apk del --no-cache \
+        wget \
         shadow \
         util-linux \
         build-base \
-        lua5.3-dev \
-        luarocks5.3; \
+        lua5.4-dev \
+        luarocks5.4; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
