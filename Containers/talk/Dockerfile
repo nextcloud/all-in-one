@@ -23,19 +23,19 @@ RUN set -ex; \
         shadow \
         util-linux \
         build-base \
-        lua5.4-dev \
-        luarocks5.4; \
+        lua5.3-dev \
+        luarocks5.3; \
     useradd --system talk; \
-    luarocks-5.4 install luajson; \
-    luarocks-5.4 install ansicolors; \
+    luarocks-5.3 install luajson; \
+    luarocks-5.3 install ansicolors; \
     rename -v ".jcfg.sample" ".jcfg" /etc/janus/*.sample; \
     apk del --no-cache \
         wget \
         shadow \
         util-linux \
         build-base \
-        lua5.4-dev \
-        luarocks5.4; \
+        lua5.3-dev \
+        luarocks5.3; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
