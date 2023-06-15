@@ -19,7 +19,7 @@ jobs:
             | cut -f1 \
             | tail -1
         )"
-        sed -i "s|^ENV IMAGINARY_HASH.*|ENV IMAGINARY_HASH $imaginary_version|" ./Containers/imaginary/Dockerfile
+        sed -i "s|^ENV IMAGINARY_HASH.*$|ENV IMAGINARY_HASH $imaginary_version|" ./Containers/imaginary/Dockerfile
         
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
