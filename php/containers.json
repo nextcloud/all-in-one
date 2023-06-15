@@ -6,6 +6,7 @@
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-talk",
+        "nextcloud-aio-notify-push",
         "nextcloud-aio-nextcloud"
       ],
       "display_name": "Apache",
@@ -27,7 +28,8 @@
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
         "TZ=%TIMEZONE%",
         "APACHE_MAX_SIZE=%APACHE_MAX_SIZE%",
-        "APACHE_MAX_TIME=%NEXTCLOUD_MAX_TIME%"
+        "APACHE_MAX_TIME=%NEXTCLOUD_MAX_TIME%",
+        "NOTIFY_PUSH_HOST=nextcloud-aio-notify-push"
       ],
       "volumes": [
         {
@@ -104,8 +106,7 @@
       "display_name": "Nextcloud",
       "image": "nextcloud/aio-nextcloud",
       "expose": [
-        "9000",
-        "7867"
+        "9000"
       ],
       "internal_port": "9000",
       "secrets": [
@@ -192,6 +193,41 @@
       "networks": [
         "nextcloud-aio"
       ]
+    },
+    {
+      "container_name": "nextcloud-aio-notify-push",
+      "display_name": "Notify Push",
+      "image": "nextcloud/aio-notify-push",
+      "expose": [
+        "7867"
+      ],
+      "internal_port": "7876",
+      "secrets": [
+        "REDIS_PASSWORD",
+        "POSTGRES_PASSWORD"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_nextcloud",
+          "destination": "/nextcloud",
+          "writeable": false
+        }
+      ],
+      "environment": [
+        "NC_DOMAIN=%NC_DOMAIN%",
+        "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
+        "REDIS_HOST=nextcloud-aio-redis",
+        "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
+        "POSTGRES_HOST=nextcloud-aio-database",
+        "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
+        "POSTGRES_DB=nextcloud_database",
+        "POSTGRES_USER=nextcloud"
+      ],
+      "restart": "unless-stopped",
+      "networks": [
+        "nextcloud-aio"
+      ],
+      "read_only": true
     },
     {
       "container_name": "nextcloud-aio-redis",

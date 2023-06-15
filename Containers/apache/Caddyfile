@@ -30,7 +30,7 @@
     # Notify Push
     route /push/* {
         uri strip_prefix /push
-        reverse_proxy {$NEXTCLOUD_HOST}:7867
+        reverse_proxy {$NOTIFY_PUSH_HOST}:7867
     }
 
     # Onlyoffice
