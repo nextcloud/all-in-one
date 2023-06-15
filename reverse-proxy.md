@@ -254,7 +254,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 <summary>click here to expand</summary>
 
-Add this to you nginx config
+Add this to you nginx config <br>
 **Note:** please check your nginx version by running: `nginx -v` and adjust it the lines marked with version notes, so that they fit your nginx version
 
 ```
