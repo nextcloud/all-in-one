@@ -201,7 +201,7 @@
       "expose": [
         "7867"
       ],
-      "internal_port": "7876",
+      "internal_port": "7867",
       "secrets": [
         "REDIS_PASSWORD",
         "POSTGRES_PASSWORD"
