@@ -410,8 +410,7 @@
       "cap_add": [
         "SYS_ADMIN"
       ],
-      "apparmor_unconfined": true,
-      "read_only": true
+      "apparmor_unconfined": true
     },
     {
       "container_name": "nextcloud-aio-watchtower",
