@@ -325,7 +325,7 @@ server {
     # ssl_trusted_certificate /etc/letsencrypt/live/<your-nc-domain>/chain.pem;
 
     # replace with the IP address of your resolver
-    # resolver 127.0.0.1; # like 94.140.15.15 for adguard / 1.1.1.1 for cloudflared or 8.8.8.8 for google - you can use the same nameserver as listed in your /etc/resolv.conf file
+    # resolver 127.0.0.1; # needed for oscp stapling: e.g. use 94.140.15.15 for adguard / 1.1.1.1 for cloudflared or 8.8.8.8 for google - you can use the same nameserver as listed in your /etc/resolv.conf file
 }
 
 ```
