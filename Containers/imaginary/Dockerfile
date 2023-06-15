@@ -1,4 +1,4 @@
-FROM golang:1.20.5-alpine3.17 as go
+FROM golang:1.20.5-alpine3.18 as go
 
 ENV IMAGINARY_HASH b632dae8cc321452c3f85bcae79c580b1ae1ed84
 
@@ -12,7 +12,7 @@ RUN set -ex; \
         build-base; \
     go install github.com/h2non/imaginary@"$IMAGINARY_HASH";
 
-FROM alpine:3.17.3
+FROM alpine:3.18.2
 RUN set -ex; \
     apk add --no-cache \
         tzdata \
