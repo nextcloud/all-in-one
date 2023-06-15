@@ -413,6 +413,12 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function DeleteBorgBackupHostLocation() : void {
+        $config = $this->GetConfig();
+        $config['borg_backup_host_location'] = '';
+        $this->WriteConfig($config);
+    }
+
         /**
      * @throws InvalidSettingConfigurationException
      */

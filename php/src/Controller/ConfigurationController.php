@@ -121,6 +121,10 @@ class ConfigurationController
                 $this->configurationManager->SetCollaboraDictionaries($collaboraDictionaries);
             }
 
+            if (isset($request->getParsedBody()['delete_borg_backup_host_location'])) {
+                $this->configurationManager->DeleteBorgBackupHostLocation();
+            }
+
             return $response->withStatus(201)->withHeader('Location', '/');
         } catch (InvalidSettingConfigurationException $ex) {
             $response->getBody()->write($ex->getMessage());
