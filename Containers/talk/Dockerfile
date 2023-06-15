@@ -19,7 +19,6 @@ RUN set -ex; \
         supervisor \
         bind-tools \
         netcat-openbsd \
-        wget \
         shadow \
         util-linux \
         build-base \
@@ -30,7 +29,6 @@ RUN set -ex; \
     luarocks-5.3 install ansicolors; \
     rename -v ".jcfg.sample" ".jcfg" /etc/janus/*.sample; \
     apk del --no-cache \
-        wget \
         shadow \
         util-linux \
         build-base \
