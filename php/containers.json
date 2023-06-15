@@ -6,8 +6,8 @@
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-talk",
-        "nextcloud-aio-notify-push",
-        "nextcloud-aio-nextcloud"
+        "nextcloud-aio-nextcloud",
+        "nextcloud-aio-notify-push"
       ],
       "display_name": "Apache",
       "image": "nextcloud/aio-apache",
