@@ -254,9 +254,11 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 <summary>click here to expand</summary>
 
-**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+**Disclaimer:** This config was tested and should normally work on all modern nginx version if you configure it correctly. Improvements to the config are very welcome!
 
-Add this to you nginx config:
+Add the below template to you nginx config.
+
+**Note:** please check your nginx version by running: `nginx -v` and adjust it the lines marked with version notes, so that they fit your nginx version.
 
 ```
 map $http_upgrade $connection_upgrade {
@@ -272,9 +274,13 @@ server {
         return 301 https://$host$request_uri;
     }
 
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2; # comment to disable IPv6
+    listen 443 ssl http2;      # for nginx versions below v1.25.1
+    listen [::]:443 ssl http2; # for nginx versions below v1.25.1 - comment to disable IPv6
+
+    # listen 443 ssl;      # for nginx v1.25.1+
+    # listen [::]:443 ssl; # for nginx v1.25.1+ - keep comment to disable IPv6
 	
+    # http2 on;              # uncomment to enable HTTP/2 - supported on nginx v1.25.1+
     # http3 on;              # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
     # listen 443 quic;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
     # listen [::]:443 quic;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
@@ -311,8 +317,18 @@ server {
     ssl_session_tickets off;
 
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
-    ssl_prefer_server_ciphers off;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305;
+    ssl_prefer_server_ciphers on;
+
+    # Optional settings:
+
+    # OCSP stapling
+    # ssl_stapling on;
+    # ssl_stapling_verify on;
+    # ssl_trusted_certificate /etc/letsencrypt/live/<your-nc-domain>/chain.pem;
+
+    # replace with the IP address of your resolver
+    # resolver 127.0.0.1; # needed for oscp stapling: e.g. use 94.140.15.15 for adguard / 1.1.1.1 for cloudflared or 8.8.8.8 for google - you can use the same nameserver as listed in your /etc/resolv.conf file
 }
 
 ```
@@ -345,6 +361,7 @@ Apart from that, there is this: [manual-install](https://github.com/nextcloud/al
 <summary>click here to expand</summary>
 
 First, please make sure that the environmental variables `PUID` and `PGID` in the compose.yaml file for NPM are either unset or set to `0`.
+If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. Note: this will cause that non root users can bind privilleged ports.
 
 Second, see these screenshots for a working config:
 
@@ -363,8 +380,6 @@ client_max_body_size 0;
 ```
 
 Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also change `<you>@<your-mail-provider-domain>` to a mail address of yours. Also make sure to adjust the port 11000 to match the chosen `APACHE_PORT`. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network. ***If that is not an option or not possible for you (like e.g. on Windows or if the reverse proxy is running on a different host), you can alternatively instead of `localhost` use the private ip-address of the host that is running the docker daemon. If you are not sure how to retrieve that, you can run: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'`. If the command returns a public ip-address, use `ip a | grep "scope global" | grep docker0 | awk '{print $2}' | sed 's|/.*||'` instead (the commands only work on Linux)***
-
-**Advice:** You may have a look at [this](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-3040493) for a more complete example.
 
 </details>
 
