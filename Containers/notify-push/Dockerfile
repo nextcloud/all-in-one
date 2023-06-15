@@ -1,4 +1,4 @@
-FROM alpine:3.18.1
+FROM alpine:3.18.2
 
 COPY --chmod=775 start.sh /start.sh
 
