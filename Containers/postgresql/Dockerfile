@@ -27,10 +27,6 @@ RUN set -ex; \
     mkdir /mnt/data; \
     chown postgres:postgres /mnt/data; \
     \
-# Modify conf
-    grep -q "#log_checkpoints" /var/lib/postgresql/data/postgresql.conf; \
-    sed -i 's|#log_checkpoints.*|log_checkpoints = off|' /var/lib/postgresql/data/postgresql.conf; \
-    \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     apk --no-cache del openssl;
