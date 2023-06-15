@@ -254,8 +254,11 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 <summary>click here to expand</summary>
 
-Add this to you nginx config <br>
-**Note:** please check your nginx version by running: `nginx -v` and adjust it the lines marked with version notes, so that they fit your nginx version
+**Disclaimer:** This config was tested and should normally work on all modern nginx version if you configure it correctly. Improvements to the config are very welcome!
+
+Add the below template to you nginx config.
+
+**Note:** please check your nginx version by running: `nginx -v` and adjust it the lines marked with version notes, so that they fit your nginx version.
 
 ```
 map $http_upgrade $connection_upgrade {
