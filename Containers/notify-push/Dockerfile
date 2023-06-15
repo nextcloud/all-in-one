@@ -5,6 +5,7 @@ COPY --chmod=775 start.sh /start.sh
 RUN set -ex; \
     apk add --no-cache \
         ca-certificates \
+        netcat-openbsd \
         tzdata \
         bash \
         openssl; \
