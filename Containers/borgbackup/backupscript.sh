@@ -137,6 +137,9 @@ if [ "$BORG_MODE" = backup ]; then
     # auto,zstd compression seems to has the best ratio based on:
     # https://forum.level1techs.com/t/optimal-compression-for-borg-backups/145870/6
     BORG_OPTS=(-v --stats --compression "auto,zstd" --exclude-caches)
+    if [ "$NEW_REPOSITORY" = 1 ]; then
+        BORG_OPTS+=(--progress)
+    fi
 
     # Exclude the nextcloud log and audit log for GDPR reasons
     BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log")
