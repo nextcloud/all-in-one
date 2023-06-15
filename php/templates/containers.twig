@@ -110,7 +110,7 @@
                                     If you run into issues getting your domain accepted, see <a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things">these steps</a> for how to debug things. <br /><br/>
                                 {% endif %}
                                 <b>Hint:</b> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.<br />
-                            </details><br />
+                            </details>
                         {% endif %}
 
                         <h2>Restore former AIO instance from backup</h2>
@@ -485,7 +485,7 @@
                                 {% if has_backup_run_once == false %}
                                     <br />
                                 {% else %}
-                                    </details><br />
+                                    </details>
                                 {% endif %}
                             {% endif %}
                         {% endif %}
@@ -505,7 +505,7 @@
                                     <input class="button" type="submit" value="Submit" />
                                 </form>
                                 The new password needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><b>latin characters</b></a> <b>a-z</b>, <b>A-Z</b>, <b>0-9</b> and <b>spaces</b>.<br>
-                            </details><br>
+                            </details>
                         {% endif %}
                     {% endif %}
                 {% endif %}
@@ -520,9 +520,9 @@
                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                         <input type="hidden" name="options-form" value="options-form">
                         {% if is_clamav_enabled == true %}
-                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label><br>
+                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label><br><br>
                         {% else %}
-                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label><br>
+                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label><br><br>
                         {% endif %}
                         {% if is_collabora_enabled == true %}
                             <input type="checkbox" id="collabora" name="collabora" checked="checked"><label for="collabora">Collabora (Nextcloud Office)</label><br>
@@ -535,9 +535,9 @@
                             <input type="checkbox" id="fulltextsearch" name="fulltextsearch"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM)</label><br>
                         {% endif %}
                         {% if is_imaginary_enabled == true %}
-                            <input type="checkbox" id="imaginary" name="imaginary" checked="checked"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp)</label><br>
+                            <input type="checkbox" id="imaginary" name="imaginary" checked="checked"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp)</label><br><br>
                         {% else %}
-                            <input type="checkbox" id="imaginary" name="imaginary"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp)</label><br>
+                            <input type="checkbox" id="imaginary" name="imaginary"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp)</label><br><br>
                         {% endif %}
                         {% if is_talk_enabled == true %}
                             <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label><br><br>
