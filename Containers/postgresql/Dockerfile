@@ -6,7 +6,11 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=775 init-user-db.sh /docker-entrypoint-initdb.d/init-user-db.sh
 
 RUN set -ex; \
-    apk add --no-cache bash openssl shadow grep; \
+    apk add --no-cache \
+        bash \
+        openssl \
+        shadow \
+        grep; \
     \
 # We need to use the same gid and uid as on old installations
     deluser postgres; \
@@ -23,8 +27,13 @@ RUN set -ex; \
     mkdir /mnt/data; \
     chown postgres:postgres /mnt/data; \
     \
+# Modify conf
+    grep -q "#log_checkpoints" /var/lib/postgresql/data/postgresql.conf; \
+    sed -i 's|#log_checkpoints.*|log_checkpoints = off|' /var/lib/postgresql/data/postgresql.conf; \
+    \
 # Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd
+    echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    apk --no-cache del openssl;
 
 VOLUME /mnt/data
 
