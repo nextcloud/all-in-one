@@ -28,7 +28,7 @@ Now copy the provided yaml file to a compose.yaml file by running `cp latest.yml
 Now you should be ready to go with `sudo docker-compose up`.
 
 ## Docker profiles
-The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, onlyoffice, talk, talk-recording, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`. (Note: there is no clamav image for arm64).
+The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, talk-recording, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`. (Note: there is no clamav image for arm64).
 
 For a complete all-in-one with collabora use `sudo docker-compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch up`. (Note: there is no clamav image for arm64).
 
