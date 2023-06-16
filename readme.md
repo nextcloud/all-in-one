@@ -60,6 +60,7 @@ Included are:
 - Can be installed with [Kubernetes](https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart)
 - Almost all included containers Alpine Linux based (good for security and size)
 - Many of the included containers run as non-root user (good for security)
+- Some of the included containers have a read-only root-FS (good for security)
 - Included containers run in its own docker network (good for security) and only really necessary ports are exposed on the host
 - [Multiple instances on one server](https://github.com/nextcloud/all-in-one/blob/main/multiple-instances.md) are doable without having to deal with VMs
 - Adjustable backup path from the AIO interface (good to put the backups e.g. on a different drive)
