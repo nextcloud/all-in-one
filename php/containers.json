@@ -525,7 +525,8 @@
       ],
       "networks": [
         "nextcloud-aio"
-      ]
+      ],
+      "read_only": true
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
