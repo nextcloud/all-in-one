@@ -378,7 +378,7 @@
                                         </details><br />
                                     {% endif %}
                                     {% if has_backup_run_once == false %}
-                                        You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on 'Create Backup' for testing the new value.<br /><br />
+                                        You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on <b>Create Backup</b> for testing the new value.<br /><br />
                                         <form method="POST" action="/api/configuration" class="xhr">
                                             <input type="text" value="{{borg_backup_host_location}}" name="borg_backup_host_location" placeholder="/mnt/backup" />
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
