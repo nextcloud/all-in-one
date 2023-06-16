@@ -204,7 +204,7 @@
       "internal_port": "7867",
       "secrets": [
         "REDIS_PASSWORD",
-        "POSTGRES_PASSWORD"
+        "DATABASE_PASSWORD"
       ],
       "volumes": [
         {
