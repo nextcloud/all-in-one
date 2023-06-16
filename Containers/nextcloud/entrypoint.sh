@@ -10,6 +10,15 @@ directory_empty() {
     [ -z "$(ls -A "$1/")" ]
 }
 
+run_upgrade_if_needed_due_to_app_update() {
+    if php /var/www/html/occ status | grep needsDbUpgrade | grep -q true; then
+        # Disable integrity check temporarily until next update
+        php /var/www/html/occ config:system:set integrity.check.disabled --type bool --value true
+        php /var/www/html/occ upgrade
+        php /var/www/html/occ app:enable nextcloud-aio --force
+    fi
+}
+
 echo "Configuring Redis as session handler..."
 cat << REDIS_CONF > /usr/local/etc/php/conf.d/redis-session.ini
 session.save_handler = redis
@@ -147,6 +156,8 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 fi
             done
 
+            run_upgrade_if_needed_due_to_app_update
+
             php /var/www/html/occ maintenance:mode --off
 
             echo "Getting and backing up the status of apps for later, this might take a while..."
@@ -169,6 +180,8 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             fi
 
             php /var/www/html/occ app:update --all
+
+            run_upgrade_if_needed_due_to_app_update
 
             # Fix removing the updatenotification for old instances
             UPDATENOTIFICATION_STATUS="$(php /var/www/html/occ config:app:get updatenotification enabled)"
@@ -343,6 +356,7 @@ DATADIR_PERMISSION_CONF
         else
             touch "$NEXTCLOUD_DATA_DIR/update.failed"
             echo "Upgrading nextcloud from $installed_version to $image_version..."
+            php /var/www/html/occ config:system:delete integrity.check.disabled
             if ! php /var/www/html/occ upgrade || ! php /var/www/html/occ -V; then
                 echo "Upgrade failed. Please restore from backup."
                 bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup!"
@@ -353,6 +367,8 @@ DATADIR_PERMISSION_CONF
             bash /notify.sh "Nextcloud update to $image_version successful!" "Feel free to inspect the Nextcloud container logs for more info."
 
             php /var/www/html/occ app:update --all
+
+            run_upgrade_if_needed_due_to_app_update
 
             # Restore app status
             if [ "${APPSTORAGE[0]}" != "no-export-done" ]; then
@@ -367,6 +383,7 @@ DATADIR_PERMISSION_CONF
                                     rm -r "/var/www/html/custom_apps/$app"
                                     php /var/www/html/occ maintenance:mode --off
                                 fi
+                                run_upgrade_if_needed_due_to_app_update
                                 echo "The $app app could not get enabled. Probably because it is not compatible with the new Nextcloud version."
                                 if [ "$app" = apporder ]; then
                                     CUSTOM_HINT="The apporder app was deprecated. A possible replacement is the side_menu app, aka 'Custom menu'."
@@ -387,6 +404,8 @@ DATADIR_PERMISSION_CONF
 
             php /var/www/html/occ app:update --all
 
+            run_upgrade_if_needed_due_to_app_update
+
             # Apply optimization
             echo "Doing some optimizations..."
             php /var/www/html/occ maintenance:repair
@@ -402,8 +421,7 @@ DATADIR_PERMISSION_CONF
     # Performing update of all apps if daily backups are enabled, running and successful and if it is saturday
     if [ "$UPDATE_NEXTCLOUD_APPS" = 'yes' ] && [ "$(date +%u)" = 6 ]; then
         UPDATED_APPS="$(php /var/www/html/occ app:update --all)"
-        # Update all apps again and try to prevent something like https://github.com/nextcloud/polls/issues/2793 from happening
-        php /var/www/html/occ app:update --all
+        run_upgrade_if_needed_due_to_app_update
         if [ -n "$UPDATED_APPS" ]; then
              bash /notify.sh "Your apps just got updated!" "$UPDATED_APPS"
         fi
@@ -411,6 +429,8 @@ DATADIR_PERMISSION_CONF
 else
     SKIP_UPDATE=1
 fi
+
+run_upgrade_if_needed_due_to_app_update
 
 if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
     # Check if appdata is present
@@ -446,6 +466,7 @@ php /var/www/html/occ app:enable support
 
 # Adjusting log files to be stored on a volume
 echo "Adjusting log files..."
+php /var/www/html/occ config:system:set upgrade.cli-upgrade-link --value="https://github.com/nextcloud/all-in-one/discussions/2726"
 php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
 php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
