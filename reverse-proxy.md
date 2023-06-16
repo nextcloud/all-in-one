@@ -280,11 +280,12 @@ server {
     # listen 443 ssl;      # for nginx v1.25.1+
     # listen [::]:443 ssl; # for nginx v1.25.1+ - keep comment to disable IPv6
 	
-    # http2 on;              # uncomment to enable HTTP/2 - supported on nginx v1.25.1+
-    # http3 on;              # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # listen 443 quic;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # listen [::]:443 quic;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # add_header alt-svc 'h3=":443"; ma=86400, h3-29=":443"; ma=86400'; # uncomment to enable HTTP3/QUIC - supported on nginx v1.25.0+
+    # http2 on;                                 # uncomment to enable HTTP/2        - supported on nginx v1.25.1+
+    # http3 on;                                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # listen 443 quic reuseport;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport
+    # listen [::]:443 quic reuseport;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport - keep comment to disable IPv6
 
     server_name <your-nc-domain>;
 
