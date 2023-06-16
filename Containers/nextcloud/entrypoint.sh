@@ -436,8 +436,9 @@ if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
     # Check if appdata is present
     # If not, something broke (e.g. changing ncdatadir after aio was first started)
     if [ -z "$(find "$NEXTCLOUD_DATA_DIR/" -maxdepth 1 -mindepth 1 -type d -name "appdata_*")" ]; then
-        echo "Appdata is not present. Did you maybe change the datadir after aio was first started?"
+        echo "Appdata is not present. Did you maybe change the datadir after the initial Nextcloud installation? This is not supported!"
         echo "See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir"
+        echo "If you adjusted the datadir to be located on an external drive, make sure that the drive is still mounted!"
         echo "In the datadir was found:"
         ls -la "$NEXTCLOUD_DATA_DIR/"
         exit 1
