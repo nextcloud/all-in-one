@@ -146,16 +146,19 @@ if ! [ -f "$DATADIR/PG_VERSION" ] && ! [ -f "$DUMP_FILE" ]; then
     rm -rf "${DATADIR:?}/"*
 fi
 
-echo "Setting max connections..."
-MEMORY=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
-MAX_CONNECTIONS=$((MEMORY/50+3))
-if [ -n "$MAX_CONNECTIONS" ]; then
-    sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
-fi
+# Modify postgresql.conf
+if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
+    echo "Setting max connections..."
+    MEMORY=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
+    MAX_CONNECTIONS=$((MEMORY/50+3))
+    if [ -n "$MAX_CONNECTIONS" ]; then
+        sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
+    fi
 
-# Modify conf
-if grep -q "#log_checkpoints" /var/lib/postgresql/data/postgresql.conf; then
-    sed -i 's|#log_checkpoints.*|log_checkpoints = off|' /var/lib/postgresql/data/postgresql.conf
+    # Modify conf
+    if grep -q "#log_checkpoints" /var/lib/postgresql/data/postgresql.conf; then
+        sed -i 's|#log_checkpoints.*|log_checkpoints = off|' /var/lib/postgresql/data/postgresql.conf
+    fi
 fi
 
 # Catch docker stop attempts
