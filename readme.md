@@ -29,7 +29,7 @@ Included are:
 - PHP and web server timeouts set to 3600s, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud) (important for big file uploads)
 - Defaults to a max of 512 MB RAM per PHP process, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud)
 - Automatic TLS included (by using Let's Encrypt)
-- Brotli compression enabled by default for javascript files which reduces Nextcloud load times
+- Brotli compression enabled by default for javascript, css and svg files which reduces Nextcloud load times
 - HTTP/2 and HTTP/3 enabled
 - "Pretty URLs" for Nextcloud are enabled by default (removes the index.php from all links)
 - Video previews work out of the box and when Imaginary is enabled, many recent image formats as well!
