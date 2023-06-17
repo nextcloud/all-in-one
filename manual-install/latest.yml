@@ -23,6 +23,7 @@ services:
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
+      - /tmp
     restart: unless-stopped
     networks:
       - nextcloud-aio
