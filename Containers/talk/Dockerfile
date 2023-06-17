@@ -22,6 +22,7 @@ RUN set -ex; \
         shadow \
         util-linux \
         build-base \
+        wget \
         lua5.3-dev \
         luarocks5.3; \
     useradd --system talk; \
@@ -32,6 +33,7 @@ RUN set -ex; \
         shadow \
         util-linux \
         build-base \
+        wget \
         lua5.3-dev \
         luarocks5.3; \
     \
