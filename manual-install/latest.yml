@@ -5,6 +5,7 @@ services:
       - nextcloud-aio-collabora
       - nextcloud-aio-talk
       - nextcloud-aio-nextcloud
+      - nextcloud-aio-notify-push
     image: nextcloud/aio-apache:latest
     ports:
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
@@ -18,6 +19,7 @@ services:
       - TZ=${TIMEZONE}
       - APACHE_MAX_SIZE=${APACHE_MAX_SIZE}
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
+      - NOTIFY_PUSH_HOST=nextcloud-aio-notify-push
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
@@ -55,7 +57,6 @@ services:
     image: nextcloud/aio-nextcloud:latest
     expose:
       - "9000"
-      - "7867"
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:rw
       - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
@@ -106,6 +107,26 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
+
+  nextcloud-aio-notify-push:
+    image: nextcloud/aio-notify-push:latest
+    expose:
+      - "7867"
+    volumes:
+      - nextcloud_aio_nextcloud:/nextcloud:ro
+    environment:
+      - NC_DOMAIN=${NC_DOMAIN}
+      - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
+      - REDIS_HOST=nextcloud-aio-redis
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - POSTGRES_HOST=nextcloud-aio-database
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=nextcloud_database
+      - POSTGRES_USER=nextcloud
+    restart: unless-stopped
+    networks:
+      - nextcloud-aio
+    read_only: true
 
   nextcloud-aio-redis:
     image: nextcloud/aio-redis:latest
@@ -220,6 +241,7 @@ services:
       - imaginary
     networks:
       - nextcloud-aio
+    read_only: true
 
   nextcloud-aio-fulltextsearch:
     image: nextcloud/aio-fulltextsearch:latest
