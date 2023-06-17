@@ -80,6 +80,8 @@ RUN set -ex; \
     \
     sed -i \
             -e '/^Listen /d' \
+            -e 's/^LogLevel .*/LogLevel error/' \
+            -e 's|^ErrorLog .*|ErrorLog /proc/self/fd/2|' \
             -e 's/User apache/User www-data/g' \
             -e 's/Group apache/Group www-data/g' \
             -e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
@@ -95,6 +97,9 @@ RUN set -ex; \
         mkdir -p /etc/apache2/logs; \
         rm /etc/apache2/conf.d/ssl.conf; \
         echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf; \
+        grep -q '^LoadModule lbmethod_heartbeat_module' /etc/apache2/conf.d/proxy.conf; \
+        sed -i 's|^LoadModule lbmethod_heartbeat_module.*|#LoadModule lbmethod_heartbeat_module|' /etc/apache2/conf.d/proxy.conf; \
+        echo "SSLSessionCache nonenotnull" | tee -a /etc/apache2/httpd.conf; \
         echo "LoadModule ssl_module modules/mod_ssl.so" | tee -a /etc/apache2/httpd.conf; \
         echo "LoadModule socache_shmcb_module modules/mod_socache_shmcb.so" | tee -a /etc/apache2/httpd.conf; \
         echo "Include /etc/apache2/sites-available/mastercontainer.conf" | tee -a /etc/apache2/httpd.conf; \
