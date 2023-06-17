@@ -8,9 +8,10 @@
             {% if is_login_allowed == true %}
                 <p>Log in using your Nextcloud AIO password:</p>
                 <form method="POST" action="/api/auth/login" class="xhr">
-                    <input type="text" autocomplete="off" name="password" placeholder="Password" />
+                    <input name="password" placeholder="Password" autocomplete="on" type="password" wfd-id="id0" id="Password" oninput="mirrorPassword()">
                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                    <a>Password: </a><a id="mirroredPassword"></a><br><br>
                     <input type="submit" class="button" value="Log in" />
                 </form>
             {% else %}

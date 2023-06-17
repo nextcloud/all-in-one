@@ -39,6 +39,12 @@
     document.getElementById('overlay').classList.remove('loading');
   }
 
+  function mirrorPassword() {
+    var Password = document.getElementById("Password");
+    var mirroredPassword = document.getElementById("mirroredPassword");
+    mirroredPassword.innerText = Password.value;
+  }
+
   function initForm(form) {
     function submit(event)
     {
