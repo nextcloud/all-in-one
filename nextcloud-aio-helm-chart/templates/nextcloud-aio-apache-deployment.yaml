@@ -29,7 +29,10 @@ spec:
             - "777"
             - /nextcloud-aio-nextcloud
             - /nextcloud-aio-apache
+            - /nextcloud-aio-apache-claim2
           volumeMounts:
+            - name: nextcloud-aio-apache-claim2
+              mountPath: /nextcloud-aio-apache-claim2
             - name: nextcloud-aio-apache
               mountPath: /nextcloud-aio-apache
             - name: nextcloud-aio-nextcloud
@@ -48,6 +51,8 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
               value: nextcloud-aio-nextcloud
+            - name: NOTIFY_PUSH_HOST
+              value: nextcloud-aio-notify-push
             - name: ONLYOFFICE_HOST
               value: nextcloud-aio-onlyoffice
             - name: TALK_HOST
@@ -64,6 +69,8 @@ spec:
               readOnly: true
             - mountPath: /mnt/data
               name: nextcloud-aio-apache
+            - mountPath: /tmp
+              name: nextcloud-aio-apache-claim2
       volumes:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:
@@ -71,3 +78,6 @@ spec:
         - name: nextcloud-aio-apache
           persistentVolumeClaim:
             claimName: nextcloud-aio-apache
+        - name: nextcloud-aio-apache-claim2
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-apache-claim2

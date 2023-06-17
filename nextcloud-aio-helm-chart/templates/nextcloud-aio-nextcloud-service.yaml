@@ -12,8 +12,5 @@ spec:
     - name: "9000"
       port: 9000
       targetPort: 9000
-    - name: "7867"
-      port: 7867
-      targetPort: 7867
   selector:
     io.kompose.service: nextcloud-aio-nextcloud
