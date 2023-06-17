@@ -369,7 +369,7 @@ class DockerActionManager
                 } else {
                     $secret = $this->configurationManager->GetSecret($out[1]);
                     if ($secret === "") {
-                        throw new \Exception("The secret " . $out[1] . " is empty. Cannot substitute its value. Pleas check if it is defined in secrets of containers.json.");
+                        throw new \Exception("The secret " . $out[1] . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
                     }
                     $replacements[1] = $secret;
                 }

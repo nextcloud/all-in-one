@@ -5,6 +5,6 @@
 - [ ] If not already set, it should show an input field where you can enter a timezone
 - [ ] `Europe/Berlin` should be accepted, e.g. `Europe Berlin` not
 - [ ] When it is set, it should show that it is set to which timezone and display a button that allows to reset it again which does this on a press
-- [ ] When it is set, running `date` inside Nextcloud releated containers should return the correct timezone
+- [ ] When it is set, running `date` inside Nextcloud related containers should return the correct timezone
 
 You can now continue with [080-daily-backup-script.md](./080-daily-backup-script.md)

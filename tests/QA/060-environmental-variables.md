@@ -14,7 +14,7 @@
 - [ ] When starting the mastercontainer with `--env WATCHTOWER_DOCKER_SOCKET_PATH="$XDG_RUNTIME_DIR/docker.sock"` it should map `$XDG_RUNTIME_DIR/docker.sock` to `/var/run/docker.sock` inside the watchtower container which allow to update the mastercontainer on docker rootless.
 - [ ] When starting the mastercontainer with `--env AIO_DISABLE_BACKUP_SECTION=true` it should hide the backup section that gets shown after AIO is set up (everything of [020-backup-and-restore](./020-backup-and-restore.md)) and simply show that the backup section is disabled.
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_TRUSTED_CACERTS_DIR=/path/to/my/cacerts`, the resulting nextcloud container should trust all the Certification Authorities, whose certificates are included in the directory `/path/to/my/cacerts` on the host.
-See https://github.com/nextcloud/all-in-one#how-to-trust-user-defiend-certification-authorities-ca
+See https://github.com/nextcloud/all-in-one#how-to-trust-user-defined-certification-authorities-ca
 - [ ] When starting the mastercontainer with `--env COLLABORA_SECCOMP_DISABLED=true`, the resulting collabora container should have `--o:security.seccomp=false` applied to it.
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_STARTUP_APPS=deck`, the resulting Nextcloud should have only installed the deck app and not the other apps that get installed by default. Default are `deck twofactor_totp tasks calendar contacts notes`.
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_ADDITIONAL_APKS=zip`, the resulting Nextcloud container should have the zip package installed and not imagemagick.

@@ -433,7 +433,7 @@
 
                                     {% if has_backup_run_once == true %}
                                         <h3>Backup check</h3>
-                                        Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact but it should't be needed in most situtations.<br><br/>
+                                        Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact but it shouldn't be needed in most situations.<br><br/>
                                         <form method="POST" action="/api/docker/backup-check" class="xhr">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
