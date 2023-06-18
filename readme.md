@@ -195,7 +195,7 @@ If you have the NAS setup on your local network (which is most often the case) y
 The easiest way to run it with Portainer on Linux is to use Portainer's stacks feature and use [this docker-compose file](./compose.yaml) in order to start AIO correctly. 
 
 ### Can I run AIO on TrueNAS SCALE?
-On TrueNAS SCALE, there are two options to run AIO. The preferred one is to run AIO inside a VM. This is necessary since they do not expose the docker socket for containers on the host, you also cannot use docker-compose on it thus and it is also not possible to run custom helm-charts that are not explicitly written for TrueNAS SCALE.
+On TrueNAS SCALE, there are two ways to run AIO. The preferred one is to run AIO inside a VM. This is necessary since they do not expose the docker socket for containers on the host, you also cannot use docker-compose on it thus and it is also not possible to run custom helm-charts that are not explicitly written for TrueNAS SCALE.
 
 Another but untested way is to install Portainer on your TrueNAS SCALE from here https://truecharts.org/charts/stable/portainer/installation-notes and add the Helm-chart repository https://nextcloud.github.io/all-in-one/ into Portainer by following https://docs.portainer.io/user/kubernetes/helm. More docs on AIOs Helm Chart are available here: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart#nextcloud-aio-helm-chart.
 
