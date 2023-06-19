@@ -297,7 +297,7 @@ if [ "$BORG_MODE" = restore ]; then
     --exclude "nextcloud_aio_mastercontainer/data/daily_backup_running" \
     --exclude "nextcloud_aio_mastercontainer/data/session_date_file" \
     --exclude "nextcloud_aio_mastercontainer/session/**" \
-    /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes; then
+    /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes/; then
         RESTORE_FAILED=1
         echo "Something failed while restoring from backup."
     fi
