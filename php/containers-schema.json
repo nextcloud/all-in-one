@@ -141,7 +141,7 @@
 						"type": "array",
 						"items": {
 							"type": "string",
-							"pattern": "^/[a-z/]+$"
+							"pattern": "^/[a-z/_]+$"
 						}
 					},
 					"volumes": {
