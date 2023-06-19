@@ -267,6 +267,11 @@ class ContainerDefinitionFetcher
                 $readOnlyRootFs = $entry['read_only'];
             }
 
+            $tmpfs = [];
+            if (isset($entry['tmpfs'])) {
+                $tmpfs = $entry['tmpfs'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -286,6 +291,7 @@ class ContainerDefinitionFetcher
                 $backupVolumes,
                 $nextcloudExecCommands,
                 $readOnlyRootFs,
+                $tmpfs,
                 $this->container->get(DockerActionManager::class)
             );
         }

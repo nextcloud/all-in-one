@@ -31,6 +31,7 @@ class Container {
     private array $backupVolumes;
     private array $nextcloudExecCommands;
     private bool $readOnlyRootFs;
+    private array $tmpfs;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -52,6 +53,7 @@ class Container {
         array $backupVolumes,
         array $nextcloudExecCommands,
         bool $readOnlyRootFs,
+        array $tmpfs,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -72,6 +74,7 @@ class Container {
         $this->backupVolumes = $backupVolumes;
         $this->nextcloudExecCommands = $nextcloudExecCommands;
         $this->readOnlyRootFs = $readOnlyRootFs;
+        $this->tmpfs = $tmpfs;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -109,6 +112,10 @@ class Container {
 
     public function GetSecrets() : array {
         return $this->secrets;
+    }
+
+    public function GetTmpfs() : array {
+        return $this->tmpfs;
     }
 
     public function GetDevices() : array {
