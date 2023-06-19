@@ -115,7 +115,7 @@ find ./ -name '*deployment.yaml' -exec sed -i "s|manual-install-nextcloud-aio|ne
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "/medium: Memory/d" \{} \;
 # shellcheck disable=SC1083
-find ./ -name '*deployment.yaml' -exec sed -i "s|emptyDir:|emptyDir: {}|" \{} \; 
+find ./ -name '*deployment.yaml' -exec sed -i "s|emptyDir:|emptyDir: \{\}|" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;   
 # shellcheck disable=SC1083
