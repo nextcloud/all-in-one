@@ -48,6 +48,8 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
               value: nextcloud-aio-nextcloud
+            - name: NOTIFY_PUSH_HOST
+              value: nextcloud-aio-notify-push
             - name: ONLYOFFICE_HOST
               value: nextcloud-aio-onlyoffice
             - name: TALK_HOST
