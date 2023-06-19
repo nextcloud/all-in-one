@@ -430,6 +430,11 @@ class DockerActionManager
             $requestBody['HostConfig']['ShmSize'] = $shmSize;
         }
 
+        $tmpfs = $container->GetTmpfs();
+        if (count($tmpfs) > 0) {
+            $requestBody['HostConfig']['Tmpfs'] = $tmpfs;
+        }
+
         $capAdds = $container->GetCapAdds();
         if (count($capAdds) > 0) {
             $requestBody['HostConfig']['CapAdd'] = $capAdds;

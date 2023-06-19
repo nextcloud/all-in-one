@@ -137,6 +137,13 @@
 					"read_only": {
 						"type": "boolean"
 					},
+					"tmpfs": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"pattern": "^/[a-z/]$"
+						}
+					},
 					"volumes": {
 						"type": "array",
 						"items": {
