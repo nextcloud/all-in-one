@@ -413,7 +413,8 @@
       "apparmor_unconfined": true,
       "read_only": true,
       "tmpfs": [
-        "/tmp"
+        "/tmp",
+        "/nextcloud_aio_volumes"
       ]
     },
     {
