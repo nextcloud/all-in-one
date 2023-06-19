@@ -1,7 +1,7 @@
 # From https://github.com/docker-library/redis/blob/master/7.0/alpine/Dockerfile
 FROM redis:7.0.11-alpine
 
-COPY --chmod=775 start.sh /usr/bin/start.sh
+COPY --chmod=775 start.sh /start.sh
 
 RUN set -ex; \
     apk add --no-cache openssl bash; \
@@ -10,7 +10,7 @@ RUN set -ex; \
     echo "root:$(openssl rand -base64 12)" | chpasswd
 
 USER redis
-ENTRYPOINT ["start.sh"]
+ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD redis-cli -a $REDIS_HOST_PASSWORD PING || exit 1
 LABEL com.centurylinklabs.watchtower.monitor-only="true"
