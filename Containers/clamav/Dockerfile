@@ -9,7 +9,7 @@ RUN set -ex; \
     rm /tmp/clamav.conf; \
     mkdir -p /var/run/clamav /run/lock; \
     chown -R clamav:clamav /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock; \
-    chmod 770 -R /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock
+    chmod 777 -R /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock /tmp
 
 VOLUME /var/lib/clamav
 
