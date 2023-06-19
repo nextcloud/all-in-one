@@ -476,6 +476,12 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/var/lock",
+        "/var/log/clamav",
+        "/tmp"
       ]
     },
     {
