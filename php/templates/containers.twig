@@ -548,9 +548,9 @@
                             <input type="checkbox" id="fulltextsearch" name="fulltextsearch"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM)</label><br>
                         {% endif %}
                         {% if is_imaginary_enabled == true %}
-                            <input type="checkbox" id="imaginary" name="imaginary" checked="checked"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp)</label><br><br>
+                            <input type="checkbox" id="imaginary" name="imaginary" checked="checked"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label><br><br>
                         {% else %}
-                            <input type="checkbox" id="imaginary" name="imaginary"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp)</label><br><br>
+                            <input type="checkbox" id="imaginary" name="imaginary"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label><br><br>
                         {% endif %}
                         {% if is_talk_enabled == true %}
                             <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label><br><br>
