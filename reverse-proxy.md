@@ -340,21 +340,6 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 </details>
 
-### Nginx-Proxy
-
-<details>
-
-<summary>click here to expand</summary>
-
-Unfortunately it is not possible to configure nginx-proxy in a way that works because it completely relies on environmental variables of the docker containers itself. Providing these variables does not work as stated above.
-
-If you really want to use AIO, we recommend you to switch to caddy. It is simply amazing!<br>
-Of course understandable if that is not possible for you.
-
-Apart from that, there is this: [manual-install](https://github.com/nextcloud/all-in-one/tree/main/manual-install)
-
-</details>
-
 ### Nginx-Proxy-Manager
 
 <details>
@@ -381,6 +366,21 @@ client_max_body_size 0;
 ```
 
 Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also change `<you>@<your-mail-provider-domain>` to a mail address of yours. Also make sure to adjust the port 11000 to match the chosen `APACHE_PORT`. **Please note:** The above configuration will only work if your reverse proxy is running directly on the host that is running the docker daemon. If the reverse proxy is running in a docker container, you can use the `--network host` option (or `network_mode: host` for docker-compose) when starting the reverse proxy container in order to connect the reverse proxy container to the host network (if you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy in that case manually). ***If that is not an option or not possible for you (like e.g. on Windows or if the reverse proxy is running on a different host), you can alternatively instead of `localhost` use the private ip-address of the host that is running the docker daemon. If you are not sure how to retrieve that, you can run: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'`. If the command returns a public ip-address, use `ip a | grep "scope global" | grep docker0 | awk '{print $2}' | sed 's|/.*||'` instead (the commands only work on Linux)***
+
+</details>
+
+### Nginx-Proxy
+
+<details>
+
+<summary>click here to expand</summary>
+
+Unfortunately it is not possible to configure nginx-proxy in a way that works because it completely relies on environmental variables of the docker containers itself. Providing these variables does not work as stated above.
+
+If you really want to use AIO, we recommend you to switch to caddy. It is simply amazing!<br>
+Of course understandable if that is not possible for you.
+
+Apart from that, there is this: [manual-install](https://github.com/nextcloud/all-in-one/tree/main/manual-install)
 
 </details>
 
