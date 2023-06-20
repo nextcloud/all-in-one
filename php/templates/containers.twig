@@ -99,7 +99,7 @@
                             <input class="button" type="submit" value="Submit domain" />
                         </form>
                         {% if skip_domain_validation == false %}
-                            Make sure that this server is reachable on port 443 (port 443/tcp is open/forwarded in your firewall/router) and that you've correctly set up the DNS config for the domain that you enter (set the A record to your public ipv4-address and if you need ipv6, set the AAAA record to your public ipv6-address. A CNAME record if of course also possible). You should see hints on what went wrong if your domain does not get accepted in the top right corner.<br><br>
+                            Make sure that this server is reachable on port 443 (port 443/tcp is open/forwarded in your firewall/router and 443/udp as well if you want to enable http3) and that you've correctly set up the DNS config for the domain that you enter (set the A record to your public ipv4-address and if you need ipv6, set the AAAA record to your public ipv6-address. A CNAME record if of course also possible). You should see hints on what went wrong if your domain does not get accepted in the top right corner.<br><br>
                             <details>
                                 <summary>Click here for further hints</summary><br />
                                 If you should not have a domain yet, you can get one for free e.g. from duckdns.org and others.<br><br>
