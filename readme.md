@@ -641,9 +641,6 @@ The [facerecognition app](https://apps.nextcloud.com/apps/facerecognition) requi
 
 The [memories app](https://apps.nextcloud.com/apps/memories) allows to enable hardware transcoding for videos. In order to use that, you need to add `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) which will mount the `/dev/dri` device into the container. Additionally, you need to add required packets to the Nextcloud container by using [this feature](https://github.com/nextcloud/all-in-one#how-to-add-os-packages-permanently-to-the-nextcloud-container) and adding the required Alpine packages that are documented [here](https://github.com/pulsejet/memories/wiki/QSV-Transcoding).
 
-### Huge docker logs
-When your containers run for a few days without a restart, the container logs that you can view from the AIO interface can get really huge. You can limit the loge sizes by enabling logrotate for docker container logs. Feel free to enable this by following those instructions: https://sandro-keil.de/blog/logrotate-for-docker-container/
-
 ### Access/Edit Nextcloud files/folders manually
 The files and folders that you add to Nextcloud are by default stored in the following docker directory: `nextcloud_aio_nextcloud:/mnt/ncdata/` (usually `/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/` on linux host systems). If needed, you can modify/add/delete files/folders there but **ATTENTION**: be very careful when doing so because you might corrupt your AIO installation! Best is to create a backup using the built-in backup solution before editing/changing files/folders in there because you will then be able to restore your instance to the backed up state.
 
