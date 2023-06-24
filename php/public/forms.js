@@ -41,7 +41,7 @@
 
   function showPassword() {
     var Password = document.getElementById("Password");
-    if (Password.value !== "" && x.type === "password") {
+    if (Password.value !== "" && Password.type === "password") {
       Password.type = "text";
     } else {
       Password.type = "password";
