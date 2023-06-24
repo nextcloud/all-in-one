@@ -14,6 +14,7 @@ fi
 
 cat << RECORDING_CONF > "/etc/recording.conf"
 [logs]
+# 30 means Warning
 level = 30
 
 [http]
