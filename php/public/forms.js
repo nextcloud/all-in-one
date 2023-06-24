@@ -39,10 +39,13 @@
     document.getElementById('overlay').classList.remove('loading');
   }
 
-  function mirrorPassword() {
+  function showPassword() {
     var Password = document.getElementById("Password");
-    var mirroredPassword = document.getElementById("mirroredPassword");
-    mirroredPassword.innerText = Password.value;
+    if (Password.value !== "" && x.type === "password") {
+      Password.type = "text";
+    } else {
+      Password.type = "password";
+    }
   }
 
   function initForm(form) {
