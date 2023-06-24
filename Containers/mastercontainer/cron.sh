@@ -57,6 +57,9 @@ while true; do
     # Remove dangling images
     sudo -u www-data docker image prune --force
 
+    # Check for available free space
+    sudo -u www-data php /var/www/docker-aio/php/src/Cron/CheckFreeDiskSpace.php
+
     # Remove mastercontainer from default bridge network
     if sudo -u www-data docker inspect nextcloud-aio-mastercontainer  --format "{{.NetworkSettings.Networks}}" | grep -q "bridge"; then
         sudo -u www-data docker network disconnect bridge nextcloud-aio-mastercontainer
