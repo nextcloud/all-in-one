@@ -445,11 +445,16 @@ if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
     fi
 
     # Configure tempdirectory
-    mkdir -p "$NEXTCLOUD_DATA_DIR/tmp/"
-    if ! grep -q upload_tmp_dir /usr/local/etc/php/conf.d/nextcloud.ini; then
-        echo "upload_tmp_dir = $NEXTCLOUD_DATA_DIR/tmp/" >> /usr/local/etc/php/conf.d/nextcloud.ini
+    if [ -z "$NEXTCLOUD_TEMP_DIR" ]; then
+        mkdir -p "$NEXTCLOUD_DATA_DIR/tmp/"
+        if ! grep -q upload_tmp_dir /usr/local/etc/php/conf.d/nextcloud.ini; then
+            echo "upload_tmp_dir = $NEXTCLOUD_DATA_DIR/tmp/" >> /usr/local/etc/php/conf.d/nextcloud.ini
+        fi
+    else
+        if ! grep -q upload_tmp_dir /usr/local/etc/php/conf.d/nextcloud.ini; then
+            echo "upload_tmp_dir = $NEXTCLOUD_TEMP_DIR" >> /usr/local/etc/php/conf.d/nextcloud.ini
+        fi
     fi
-    php /var/www/html/occ config:system:set tempdirectory --value="$NEXTCLOUD_DATA_DIR/tmp/"
 fi
 
 # Perform fingerprint update if instance was restored
