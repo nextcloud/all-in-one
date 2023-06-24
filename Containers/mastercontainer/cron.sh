@@ -1,6 +1,9 @@
 #!/bin/bash
 
-while true; do
+if [ ! -f "/tmp/cron.lock" ]; then
+    # create cron lockfile
+    touch /tmp/cron.lock
+
     if [ -f "/mnt/docker-aio-config/data/daily_backup_time" ]; then
         set -x
         BACKUP_TIME="$(head -1 "/mnt/docker-aio-config/data/daily_backup_time")"
@@ -62,6 +65,6 @@ while true; do
         sudo -u www-data docker network disconnect bridge nextcloud-aio-mastercontainer
     fi
 
-    # Wait 60s so that the whole loop will not be executed again
-    sleep 60
-done
+    # delete cron lockfile
+    rm -rf /tmp/cron.lock
+fi

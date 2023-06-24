@@ -24,10 +24,12 @@ RUN set -ex; \
     addgroup -g 33 -S www-data; \
     adduser -u 33 -D -S -G www-data www-data; \
     \
-# entrypoint.sh and cron.sh dependencies
+# entrypoint.sh and cron dependencies
     apk add --no-cache \
         rsync \
+        cronie \
     ; \
+    echo '*/5 * * * * php -f /var/www/html/cron.php' | tee /etc/crontabs/www-data; \
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
     apk add --no-cache --virtual .build-deps \

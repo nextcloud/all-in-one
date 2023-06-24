@@ -36,7 +36,8 @@ RUN set -ex; \
         sudo \
         netcat-openbsd \
         curl \
-        grep; \
+        grep \
+        cronie; \
     \
     apk add --no-cache --virtual .build-deps \
         autoconf \
@@ -109,7 +110,8 @@ RUN set -ex; \
           /etc/apache2/conf.d/info.conf; \
     \
     mkdir /var/log/supervisord; \
-    mkdir /var/run/supervisord;
+    mkdir /var/run/supervisord; \
+    echo '* * * * * /cron.sh' | tee /etc/crontabs/root
 
 COPY --chmod=775 *.sh /
 COPY --chmod=664 Caddyfile /Caddyfile
