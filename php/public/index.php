@@ -116,6 +116,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'additional_backup_directories' => $configurationManager->GetAdditionalBackupDirectoriesString(),
         'nextcloud_datadir' => $configurationManager->GetNextcloudDatadirMount(),
         'nextcloud_mount' => $configurationManager->GetNextcloudMount(),
+        'nextcloud_temp_dir' => $configurationManager->GetNextcloudTempDir(),
         'nextcloud_upload_limit' => $configurationManager->GetNextcloudUploadLimit(),
         'nextcloud_max_time' => $configurationManager->GetNextcloudMaxTime(),
         'nextcloud_memory_limit' => $configurationManager->GetNextcloudMemoryLimit(),
