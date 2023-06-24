@@ -170,7 +170,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 declare -Ag APPSTORAGE
                 echo "Disabling apps before the update in order to make the update procedure more safe. This can take a while..."
                 for app in "${NC_APPS_ARRAY[@]}"; do
-                    APPSTORAGE[$app]=$(php /var/www/html/occ config:app:get "$app" enabled)
+                    APPSTORAGE[$app]=$(php /var/www/html/occ config:app:get "$app" enabled)ƒ
                     php /var/www/html/occ app:disable "$app"
                 done
             fi
@@ -450,11 +450,13 @@ if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
         if ! grep -q upload_tmp_dir /usr/local/etc/php/conf.d/nextcloud.ini; then
             echo "upload_tmp_dir = $NEXTCLOUD_DATA_DIR/tmp/" >> /usr/local/etc/php/conf.d/nextcloud.ini
         fi
+            php /var/www/html/occ config:system:set tempdirectory --value="$NEXTCLOUD_DATA_DIR/tmp/"
     else
         if ! grep -q upload_tmp_dir /usr/local/etc/php/conf.d/nextcloud.ini; then
             echo "upload_tmp_dir = $NEXTCLOUD_TEMP_DIR" >> /usr/local/etc/php/conf.d/nextcloud.ini
         fi
-    fi
+            php /var/www/html/occ config:system:set tempdirectory --value="$NEXTCLOUD_TEMP_DIR"
+        fi
 fi
 
 # Perform fingerprint update if instance was restored
