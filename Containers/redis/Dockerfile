@@ -13,4 +13,4 @@ USER redis
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD redis-cli -a $REDIS_HOST_PASSWORD PING || exit 1
-LABEL com.centurylinklabs.watchtower.monitor-only="true"
+LABEL com.centurylinklabs.watchtower.enable="false"

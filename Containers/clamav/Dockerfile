@@ -15,4 +15,4 @@ VOLUME /var/lib/clamav
 
 USER clamav
 
-LABEL com.centurylinklabs.watchtower.monitor-only="true"
+LABEL com.centurylinklabs.watchtower.enable="false"

@@ -14,4 +14,4 @@ USER www-data
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD nc -z localhost $APACHE_PORT || exit 1
-LABEL com.centurylinklabs.watchtower.monitor-only="true"
+LABEL com.centurylinklabs.watchtower.enable="false"

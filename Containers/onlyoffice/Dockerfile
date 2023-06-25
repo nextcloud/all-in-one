@@ -4,4 +4,4 @@ FROM onlyoffice/documentserver:7.4.0.1
 # USER root is probably used
 
 HEALTHCHECK CMD nc -z localhost 80 || exit 1
-LABEL com.centurylinklabs.watchtower.monitor-only="true"
+LABEL com.centurylinklabs.watchtower.enable="false"
