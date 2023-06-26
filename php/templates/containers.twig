@@ -468,7 +468,7 @@
                                             {% if automatic_updates == true %}
                                                 Also your containers, the mastercontainer and on saturdays your Nextcloud apps will be automatically updated. 
                                             {% endif %}
-                                            You can disable this option again by clicking on the button below.<br><br/>
+                                            To change your backup time, first disable Daily Backups and then re-enable them with your new backup time.<br><br/>
                                             <form method="POST" action="/api/configuration" class="xhr">
                                                 <input type="hidden" name="delete_daily_backup_time" value="yes"/>
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
