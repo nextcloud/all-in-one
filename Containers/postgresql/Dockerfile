@@ -22,6 +22,7 @@ RUN set -ex; \
 # Fix default permissions
     chown -R postgres:postgres /var/lib/postgresql; \
     chown -R postgres:postgres /var/run/postgresql; \
+    chmod -R 777 /var/run/postgresql; \
     chown -R postgres:postgres "$PGDATA"; \
     \
     mkdir /mnt/data; \

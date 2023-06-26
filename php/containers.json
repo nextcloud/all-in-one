@@ -96,6 +96,10 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/var/run/postgresql"
       ]
     },
     {
