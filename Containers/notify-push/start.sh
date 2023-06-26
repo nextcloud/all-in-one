@@ -27,12 +27,14 @@ elif [ "$CPU_ARCH" != "x86_64" ]; then
     export CPU_ARCH="aarch64"
 fi
 
+# Set sensitive values as env
+export DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
+export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST"
+
 # Run it
 /nextcloud/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
     --database-prefix="oc_" \
     --nextcloud-url "https://$NC_DOMAIN" \
-    --port 7867 \
-    --redis-url "redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST" \
-    --database-url "postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
+    --port 7867
 
 exec "$@"
