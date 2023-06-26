@@ -11,7 +11,7 @@ if [ -z "$APACHE_PORT" ]; then
     export APACHE_PORT="443"
 fi
 
-CONF_FILE="$(sed "s|ipv6-placeholder|\[::\]:$APACHE_PORT|" /etc/lighttpd/lighttpd.conf)"
+CONF_FILE="$(sed "s|ipv6-placeholder|\[::\]:$APACHE_PORT|" /lighttpd.conf)"
 echo "$CONF_FILE" > /etc/lighttpd/lighttpd.conf
 
 # Check config file

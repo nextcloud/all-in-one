@@ -454,7 +454,12 @@
       "secrets": [
         "INSTANCE_ID"
       ],
-      "stop_grace_period": 1
+      "stop_grace_period": 1,
+      "read_only": true,
+      "tmpfs": [
+        "/etc/lighttpd",
+        "/var/www/domaincheck"
+      ]
     },
     {
       "container_name": "nextcloud-aio-clamav",
