@@ -10,7 +10,6 @@
                 <form method="POST" action="/api/auth/login" class="xhr">
                     <input type="password" autocomplete="current-password" name="password" placeholder="Password" id="master-password" oninput="showPassword('master-password')">
 
-
                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                     <input type="submit" class="button" value="Log in" />
