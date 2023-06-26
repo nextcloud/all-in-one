@@ -1,6 +1,6 @@
 FROM nats:2.9.19-scratch as nats
 FROM strukturag/nextcloud-spreed-signaling:1.1.2 as signaling
-FROM coturn/coturn:4.6.2-r3-alpine
+FROM coturn/coturn:4.6.2-alpine
 USER root
 # Pin alpine version manually as long as https://github.com/coturn/coturn/issues/1226 is not done
 ENV ALPINE_VERSION=3.18
