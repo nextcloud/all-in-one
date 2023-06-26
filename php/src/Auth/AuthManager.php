@@ -28,6 +28,12 @@ class AuthManager {
             $date = new DateTime();
             $dateTime = $date->getTimestamp();
             $_SESSION['date_time'] = $dateTime;
+
+            $df = disk_free_space(DataConst::GetSessionDirectory());
+            if ($df !== false && (int)$df < 10240) {
+                error_log(DataConst::GetSessionDirectory() . " has only less than 10KB free space. The login might not succeed because of that!");
+            }
+
             file_put_contents(DataConst::GetSessionDateFile(), (string)$dateTime);
         }
 
