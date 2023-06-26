@@ -39,12 +39,12 @@
     document.getElementById('overlay').classList.remove('loading');
   }
 
-  function showPassword() {
-    var Password = document.getElementById("Password");
-    if (Password.value !== "" && Password.type === "password") {
-      Password.type = "text";
-    } else {
-      Password.type = "password";
+  function showPassword(id) {
+    let passwordField = document.getElementById(id);
+    if (passwordField.value !== "" && passwordField.type !== "text") {
+      passwordField.type = "text";
+    } else if (passwordField.value === "" && passwordField.type !== "password") {
+      passwordField.type = "password";
     }
   }
 
