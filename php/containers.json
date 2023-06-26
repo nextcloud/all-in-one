@@ -290,6 +290,10 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/opt/cool/child-roots"
       ]
     },
     {
