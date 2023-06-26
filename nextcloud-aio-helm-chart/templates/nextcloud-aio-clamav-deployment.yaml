@@ -29,7 +29,16 @@ spec:
             - chmod
             - "777"
             - /nextcloud-aio-clamav
+            - /nextcloud-aio-clamav-tmpfs0
+            - /nextcloud-aio-clamav-tmpfs1
+            - /nextcloud-aio-clamav-tmpfs2
           volumeMounts:
+            - name: nextcloud-aio-clamav-tmpfs2
+              mountPath: /nextcloud-aio-clamav-tmpfs2
+            - name: nextcloud-aio-clamav-tmpfs1
+              mountPath: /nextcloud-aio-clamav-tmpfs1
+            - name: nextcloud-aio-clamav-tmpfs0
+              mountPath: /nextcloud-aio-clamav-tmpfs0
             - name: nextcloud-aio-clamav
               mountPath: /nextcloud-aio-clamav
       containers:
@@ -38,15 +47,27 @@ spec:
               value: "90"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-clamav:20230613_120442-latest
+          image: nextcloud/aio-clamav:20230626_101439-latest
           name: nextcloud-aio-clamav
           ports:
             - containerPort: 3310
           volumeMounts:
             - mountPath: /var/lib/clamav
               name: nextcloud-aio-clamav
+            - mountPath: /var/lock
+              name: nextcloud-aio-clamav-tmpfs0
+            - mountPath: /var/log/clamav
+              name: nextcloud-aio-clamav-tmpfs1
+            - mountPath: /tmp
+              name: nextcloud-aio-clamav-tmpfs2
       volumes:
         - name: nextcloud-aio-clamav
           persistentVolumeClaim:
             claimName: nextcloud-aio-clamav
+        - emptyDir: {}
+          name: nextcloud-aio-clamav-tmpfs0
+        - emptyDir: {}
+          name: nextcloud-aio-clamav-tmpfs1
+        - emptyDir: {}
+          name: nextcloud-aio-clamav-tmpfs2
 {{- end }}

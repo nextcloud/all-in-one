@@ -116,11 +116,10 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230613_120442-latest
+          image: nextcloud/aio-nextcloud:20230626_101439-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
-            - containerPort: 7867
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
