@@ -22,6 +22,8 @@ RUN set -ex; \
     \
     mkdir -p /mnt/data; \
     chown -R www-data:www-data /mnt/data; \
+    mkdir /caddy; \
+    chown 777 /caddy; \
     \
     apk add --no-cache \
         bash \
@@ -59,9 +61,13 @@ RUN set -ex; \
     mkdir /var/run/supervisord; \
     chown www-data:www-data /var/run/supervisord; \
     chown www-data:www-data /var/log/supervisord; \
+    chmod 777 /var/run/supervisord; \
+    chmod 777 /var/log/supervisord; \
     \
     chown -R www-data:www-data /usr/local/apache2; \
     chmod +r -R /usr/local/apache2; \
+    mkdir -p /usr/local/apache2/logs; \
+    chmod 777 -R /usr/local/apache2/logs; \
     \
     echo "root:$(openssl rand -base64 12)" | chpasswd
 
