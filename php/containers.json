@@ -16,6 +16,11 @@
           "ip_binding": "%APACHE_IP_BINDING%",
           "port_number": "%APACHE_PORT%",
           "protocol": "tcp"
+        },
+        {
+          "ip_binding": "%APACHE_IP_BINDING%",
+          "port_number": "%APACHE_PORT%",
+          "protocol": "udp"
         }
       ],
       "internal_port": "%APACHE_PORT%",

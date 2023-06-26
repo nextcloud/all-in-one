@@ -136,6 +136,7 @@ You can check this on Linux by running: `uname -m`
 ### Which ports are mandatory to be open in your firewall/router?
 Only those (if you access the Mastercontainer Interface internally via port 8080):
 - `443/TCP` for the Apache container
+- `443/UDP` if you want to enable http3 for the Apache container
 - `3478/TCP` and `3478/UDP` for the Talk container
 
 ### Explanation of used ports:
@@ -143,6 +144,7 @@ Only those (if you access the Mastercontainer Interface internally via port 8080
 - `80/TCP`: redirects to Nextcloud (is used for getting the certificate via ACME http-challenge for the Mastercontainer)
 - `8443/TCP`: Mastercontainer Interface with valid certificate (only works if port 80 and 8443 are open/forwarded in your firewall/router and you point a domain to your server. It generates a valid certificate then automatically and access via e.g. `https://public.domain.com:8443/` is possible.)
 - `443/TCP`: will be used by the Apache container later on and needs to be open/forwarded in your firewall/router
+- `443/UDP`: will be used by the Apache container later on and needs to be open/forwarded in your firewall/router if you want to enable http3
 - `3478/TCP` and `3478/UDP`: will be used by the Turnserver inside the Talk container and needs to be open/forwarded in your firewall/router
 
 ### How to run AIO on macOS?
