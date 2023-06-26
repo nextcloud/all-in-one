@@ -48,7 +48,7 @@ class ContainerDefinitionFetcher
         if (!$validator->isValid()) {
             error_log("JSON does not validate. Violations:");
             foreach ($validator->getErrors() as $error) {
-                error_log(printf("[%s] %s\n", $error['property'], $error['message']));
+                error_log((string)printf("[%s] %s\n", $error['property'], $error['message']));
             }
         }
     }
