@@ -9,6 +9,7 @@ services:
     image: nextcloud/aio-apache:latest
     ports:
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
+      - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/udp
     environment:
       - NC_DOMAIN=${NC_DOMAIN}
       - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
