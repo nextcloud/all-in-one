@@ -18,4 +18,4 @@ USER 33
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD nc -z localhost 7867 || exit 1
-LABEL com.centurylinklabs.watchtower.monitor-only="true"
+LABEL com.centurylinklabs.watchtower.enable="false"

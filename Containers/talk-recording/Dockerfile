@@ -43,4 +43,4 @@ ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/etc/recording.conf"]
 
 HEALTHCHECK CMD nc -z localhost 1234 || exit 1
-LABEL com.centurylinklabs.watchtower.monitor-only="true"
+LABEL com.centurylinklabs.watchtower.enable="false"

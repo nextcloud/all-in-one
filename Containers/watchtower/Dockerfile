@@ -11,4 +11,4 @@ COPY --chmod=775 start.sh /start.sh
 USER root
 
 ENTRYPOINT ["/start.sh"]
-LABEL com.centurylinklabs.watchtower.monitor-only="true"
+LABEL com.centurylinklabs.watchtower.enable="false"

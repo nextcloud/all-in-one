@@ -16,4 +16,4 @@ RUN set -ex; \
 USER 1000:0
 
 HEALTHCHECK CMD nc -z localhost 9200 || exit 1
-LABEL com.centurylinklabs.watchtower.monitor-only="true"
+LABEL com.centurylinklabs.watchtower.enable="false"
