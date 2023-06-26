@@ -12,7 +12,7 @@ elif [ -z "$INTERNAL_SECRET" ]; then
     exit 1
 fi
 
-cat << RECORDING_CONF > "/etc/recording.conf"
+cat << RECORDING_CONF > "/conf/recording.conf"
 [logs]
 # 30 means Warning
 level = 30

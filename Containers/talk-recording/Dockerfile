@@ -31,6 +31,9 @@ RUN set -ex; \
     touch /etc/recording.conf; \
     chown recording:recording -R \
         /tmp /etc/recording.conf; \
+    mkdir -p /conf; \
+    chmod 777 /conf; \
+    chmod 777 /tmp; \
     apk del --no-cache \
         git \
         wget \
@@ -40,7 +43,7 @@ RUN set -ex; \
 WORKDIR /tmp
 USER recording
 ENTRYPOINT ["/start.sh"]
-CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/etc/recording.conf"]
+CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.conf"]
 
 HEALTHCHECK CMD nc -z localhost 1234 || exit 1
 LABEL com.centurylinklabs.watchtower.enable="false"
