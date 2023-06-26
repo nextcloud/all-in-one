@@ -648,7 +648,7 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
         php /var/www/html/occ config:app:set files_antivirus av_port --value="3310"
         php /var/www/html/occ config:app:set files_antivirus av_host --value="$CLAMAV_HOST"
         php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="104857600"
-        php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="-1"
+        php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="104857600"
         php /var/www/html/occ config:app:set files_antivirus av_infected_action --value="only_log"
     fi
 else
