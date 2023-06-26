@@ -42,7 +42,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: discovery.type
               value: single-node
-          image: nextcloud/aio-fulltextsearch:20230613_120442-latest
+          image: nextcloud/aio-fulltextsearch:20230626_101439-latest
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200

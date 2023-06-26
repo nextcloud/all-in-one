@@ -48,13 +48,15 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
               value: nextcloud-aio-nextcloud
+            - name: NOTIFY_PUSH_HOST
+              value: nextcloud-aio-notify-push
             - name: ONLYOFFICE_HOST
               value: nextcloud-aio-onlyoffice
             - name: TALK_HOST
               value: nextcloud-aio-talk
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-apache:20230613_120442-latest
+          image: nextcloud/aio-apache:20230626_101439-latest
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}

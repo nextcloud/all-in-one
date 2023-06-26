@@ -26,7 +26,7 @@ spec:
         - env:
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-imaginary:20230613_120442-latest
+          image: nextcloud/aio-imaginary:20230626_101439-latest
           name: nextcloud-aio-imaginary
           ports:
             - containerPort: 9000
