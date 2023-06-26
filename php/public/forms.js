@@ -43,7 +43,7 @@
     let passwordField = document.getElementById(id);
     if (passwordField.type === "password" && passwordField.value !== "") {
       passwordField.type = "text";
-    } else if (passwordField.value === "" && passwordField.type !== "password") {
+    } else if (passwordField.type === "text" && passwordField.value === "") {
       passwordField.type = "password";
     }
   }
