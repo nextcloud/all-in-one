@@ -20,7 +20,7 @@ IPv4_ADDRESS_TALK="$(dig nextcloud-aio-talk A +short)"
 set +x
 
 # Turn
-cat << TURN_CONF > "/etc/turnserver.conf"
+cat << TURN_CONF > "/conf/turnserver.conf"
 listening-port=$TALK_PORT
 fingerprint
 use-auth-secret
@@ -54,7 +54,7 @@ denied-peer-ip=240.0.0.0-255.255.255.255
 TURN_CONF
 
 # Signling
-cat << SIGNALING_CONF > "/etc/signaling.conf"
+cat << SIGNALING_CONF > "/conf/signaling.conf"
 [http]
 listen = 0.0.0.0:8081
 
