@@ -4,6 +4,7 @@ COPY --chmod=775 start.sh /start.sh
 
 ENV RECORDING_VERSION v17.0.2
 ENV ALLOW_ALL false
+ENV HPB_PROTOCOL https
 ENV SKIP_VERIFY false
 
 RUN set -ex; \
