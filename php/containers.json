@@ -113,7 +113,8 @@
         "REDIS_PASSWORD",
         "NEXTCLOUD_PASSWORD",
         "TURN_SECRET",
-        "SIGNALING_SECRET"
+        "SIGNALING_SECRET",
+        "ELASTIC_PASSWORD"
       ],
       "volumes": [
         {
@@ -180,7 +181,8 @@
         "INSTALL_LATEST_MAJOR=%INSTALL_LATEST_MAJOR%",
         "TALK_RECORDING_ENABLED=%TALK_RECORDING_ENABLED%",
         "RECORDING_SECRET=%RECORDING_SECRET%",
-        "TALK_RECORDING_HOST=nextcloud-aio-talk-recording"
+        "TALK_RECORDING_HOST=nextcloud-aio-talk-recording",
+        "ELASTIC_PASSWORD=%ELASTIC_PASSWORD%"
       ],
       "restart": "unless-stopped",
       "devices": [
@@ -501,16 +503,14 @@
       "environment": [
         "POSTGRES_HOST=nextcloud-aio-database",
         "TZ=%TIMEZONE%",
-        "ES_JAVA_OPTS=-Xms1024M -Xmx1024M -Des.enforce.bootstrap.checks=true",
-        "xpack.license.self_generated.type=basic",
-        "xpack.security.enabled=false",
-        "xpack.watcher.enabled=false",
-        "xpack.graph.enabled=false",
-        "xpack.ml.enabled=false",
+        "ELASTIC_PASSWORD=%ELASTIC_PASSWORD%",
+        "ES_JAVA_OPTS=-Xms512M -Xmx512M -Des.enforce.bootstrap.checks=true",
         "bootstrap.memory_lock=true",
         "cluster.name=nextcloud-aio",
         "discovery.type=single-node",
-        "thread_pool.write.queue_size=1000"
+        "http.port=9200",
+        "xpack.license.self_generated.type=basic",
+        "xpack.security.enabled=false"
       ],
       "volumes": [
         {
@@ -525,6 +525,9 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "secrets": [
+        "ELASTIC_PASSWORD"
       ]
     }
   ]
