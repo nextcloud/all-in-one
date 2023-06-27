@@ -21,11 +21,11 @@ level = 30
 listen = 0.0.0.0:1234
 
 [backend]
-allowall = false
+allowall = ${ALLOW_ALL}
 # TODO: remove secret below when https://github.com/nextcloud/spreed/issues/9580 is fixed
 secret = ${RECORDING_SECRET}
 backends = backend-1
-skipverify = false
+skipverify = ${SKIP_VERIFY}
 maxmessagesize = 1024
 videowidth = 1920
 videoheight = 1080
@@ -34,7 +34,7 @@ directory = /tmp
 [backend-1]
 url = https://${NC_DOMAIN}
 secret = ${RECORDING_SECRET}
-skipverify = false
+skipverify = ${SKIP_VERIFY}
 
 [signaling]
 signalings = signaling-1
