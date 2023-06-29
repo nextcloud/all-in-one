@@ -1,41 +1,42 @@
 FROM nats:2.9.19-scratch as nats
 FROM strukturag/nextcloud-spreed-signaling:1.1.3 as signaling
+FROM alpine:3.18.2 as janus
+
+ARG JANUS_VERSION=v0.13.4
+WORKDIR /src
+RUN apk add --no-cache \
+        ca-certificates \
+        git autoconf automake build-base pkgconfig libtool util-linux \
+        glib-dev zlib-dev openssl-dev jansson-dev libnice-dev libconfig-dev libsrtp-dev gengetopt-dev \
+        libwebsockets-dev; \
+        git clone --recursive https://github.com/meetecho/janus-gateway -b $JANUS_VERSION /src; \
+        /src/autogen.sh; \
+        /src/configure; \
+        make; \
+        make install; \
+        make configs; \
+        rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
+
 FROM coturn/coturn:4.6.2-alpine3.18
 USER root
-
-COPY --from=nats /nats-server /usr/local/bin/nats-server
-COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
-
-COPY --chmod=775 start.sh /start.sh
-COPY --chmod=664 supervisord.conf /supervisord.conf
 
 RUN set -ex; \
     apk add --no-cache \
         ca-certificates \
         tzdata \
         bash \
-        janus-gateway \
         openssl \
         supervisor \
         bind-tools \
         netcat-openbsd \
-        shadow \
-        util-linux \
-        build-base \
-        wget \
-        lua5.3-dev \
-        luarocks5.3; \
+        \
+        glib zlib libssl3 libcrypto3 jansson libnice libconfig libsrtp \
+        libwebsockets \
+        \
+        shadow; \
     useradd --system talk; \
-    luarocks-5.3 install luajson; \
-    luarocks-5.3 install ansicolors; \
-    rename -v ".jcfg.sample" ".jcfg" /etc/janus/*.sample; \
     apk del --no-cache \
-        shadow \
-        util-linux \
-        build-base \
-        wget \
-        lua5.3-dev \
-        luarocks5.3; \
+        shadow; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
@@ -48,11 +49,10 @@ RUN set -ex; \
         /conf \
         /var/lib/turn \
         /var/log/supervisord \
-        /var/lib/turn \
-        /var/run/supervisord; \
+        /var/run/supervisord \
+        /usr/local/lib/janus/loggers; \
     chown talk:talk -R \
         /usr \
-        /etc/janus \
         /etc/nats.conf \
         /var/lib/turn \
         /var/log/supervisord \
@@ -63,6 +63,13 @@ RUN set -ex; \
         /var/run/supervisord \
         /var/lib/turn \
         /var/log/supervisord;
+
+COPY --from=janus /usr/local /usr/local
+COPY --from=nats /nats-server /usr/local/bin/nats-server
+COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
+
+COPY --chmod=775 start.sh /start.sh
+COPY --chmod=664 supervisord.conf /supervisord.conf
 
 # Set default talk port https://github.com/nextcloud/all-in-one/issues/1011
 ENV TALK_PORT=3478
