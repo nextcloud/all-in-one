@@ -699,16 +699,16 @@
         },
         {
             "name": "php-di/slim-bridge",
-            "version": "3.3.0",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-DI/Slim-Bridge.git",
-                "reference": "9374b67ebf2f135b32c34907b7891b02b935d845"
+                "reference": "d14c95b34b3c5ba2e8c40020dd93fdcc8f3ba875"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-DI/Slim-Bridge/zipball/9374b67ebf2f135b32c34907b7891b02b935d845",
-                "reference": "9374b67ebf2f135b32c34907b7891b02b935d845",
+                "url": "https://api.github.com/repos/PHP-DI/Slim-Bridge/zipball/d14c95b34b3c5ba2e8c40020dd93fdcc8f3ba875",
+                "reference": "d14c95b34b3c5ba2e8c40020dd93fdcc8f3ba875",
                 "shasum": ""
             },
             "require": {
@@ -734,9 +734,9 @@
             "description": "PHP-DI integration in Slim",
             "support": {
                 "issues": "https://github.com/PHP-DI/Slim-Bridge/issues",
-                "source": "https://github.com/PHP-DI/Slim-Bridge/tree/3.3.0"
+                "source": "https://github.com/PHP-DI/Slim-Bridge/tree/3.4.0"
             },
-            "time": "2023-01-13T15:49:44+00:00"
+            "time": "2023-06-29T14:08:47+00:00"
         },
         {
             "name": "psr/container",
