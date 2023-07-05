@@ -89,7 +89,7 @@ allowall = false
 # Common shared secret for requests from and to the backend servers if
 # "allowall" is enabled. This must be the same value as configured in the
 # Nextcloud admin ui.
-#secret = the-shared-secret
+#secret = the-shared-secret-for-allowall
 
 # Timeout in seconds for requests to the backend.
 timeout = 10
