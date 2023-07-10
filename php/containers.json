@@ -542,7 +542,10 @@
       "networks": [
         "nextcloud-aio"
       ],
-      "read_only": true
+      "read_only": true,
+      "tmpfs": [
+        "/tmp"
+      ]
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
