@@ -1,9 +1,7 @@
 FROM nats:2.9.19-scratch as nats
 FROM strukturag/nextcloud-spreed-signaling:1.1.3 as signaling
-FROM coturn/coturn:4.6.2-alpine
+FROM coturn/coturn:4.6.2-alpine3.18
 USER root
-# Pin alpine version manually as long as https://github.com/coturn/coturn/issues/1226 is not done
-ENV ALPINE_VERSION=3.18
 
 COPY --from=nats /nats-server /usr/local/bin/nats-server
 COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
@@ -12,7 +10,6 @@ COPY --chmod=775 start.sh /start.sh
 COPY --chmod=664 supervisord.conf /supervisord.conf
 
 RUN set -ex; \
-    grep VERSION_ID /etc/os-release | grep -q "$ALPINE_VERSION.[0-9]\+$"; \
     apk add --no-cache \
         ca-certificates \
         tzdata \
