@@ -64,7 +64,6 @@ fi
 # Check if api version is supported
 if ! sudo -u www-data docker info &>/dev/null; then
     print_red "Cannot connect to the docker socket. Cannot proceed."
-    echo "If you are on Docker Desktop v4.19 or higher, see https://github.com/nextcloud/all-in-one/issues/2450"
     echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
     echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
     exit 1
