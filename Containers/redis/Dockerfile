@@ -1,5 +1,5 @@
 # From https://github.com/docker-library/redis/blob/master/7.0/alpine/Dockerfile
-FROM redis:7.0.11-alpine
+FROM redis:7.0.12-alpine
 
 COPY --chmod=775 start.sh /start.sh
 
