@@ -11,10 +11,7 @@ RUN set -ex; \
         tzdata \
         netcat-openbsd \
     ; \
-    rm -rf /var/lib/apt/lists/*; \
-    mkdir -p /opt/cool/child-roots; \
-    chmod 777 -R /opt/cool/child-roots; \
-    chmod -R 777 /etc/coolwsd/
+    rm -rf /var/lib/apt/lists/*;
 
 USER 100
 
