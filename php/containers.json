@@ -340,6 +340,12 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/var/log/supervisord",
+        "/var/run/supervisord",
+        "/conf"
       ]
     },
     {

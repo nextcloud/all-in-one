@@ -41,12 +41,11 @@ RUN set -ex; \
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     \
     touch \
-        /etc/nats.conf \
-        /etc/signaling.conf \
-        /etc/turnserver.conf; \
+        /etc/nats.conf; \
     echo "listen: 127.0.0.1:4222" | tee /etc/nats.conf; \
     mkdir -p \
         /var/tmp \
+        /conf \
         /var/lib/turn \
         /var/log/supervisord \
         /var/run/supervisord; \
@@ -54,11 +53,13 @@ RUN set -ex; \
         /usr \
         /etc/janus \
         /etc/nats.conf \
-        /etc/signaling.conf \
-        /etc/turnserver.conf \
         /var/lib/turn \
         /var/log/supervisord \
-        /var/run/supervisord;
+        /var/run/supervisord; \
+    chmod 777 -R \
+        /conf \
+        /var/run/supervisord \
+        /var/log/supervisord;
 
 # Set default talk port https://github.com/nextcloud/all-in-one/issues/1011
 ENV TALK_PORT=3478
