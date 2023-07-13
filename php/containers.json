@@ -373,6 +373,11 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/tmp",
+        "/conf"
       ]
     },
     {
