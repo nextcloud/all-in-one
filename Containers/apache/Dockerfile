@@ -23,7 +23,8 @@ RUN set -ex; \
     mkdir -p /mnt/data; \
     chown -R www-data:www-data /mnt/data; \
     mkdir /caddy; \
-    chown 777 /caddy; \
+    chown -R 777 /caddy; \
+    chown -R 777 /tmp; \
     \
     apk add --no-cache \
         bash \

@@ -57,6 +57,7 @@ RUN set -ex; \
         /var/log/supervisord \
         /var/run/supervisord; \
     chmod 777 -R \
+        /tmp \
         /conf \
         /var/run/supervisord \
         /var/log/supervisord;

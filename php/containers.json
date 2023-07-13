@@ -61,7 +61,8 @@
         "/var/log/supervisord",
         "/var/run/supervisord",
         "/usr/local/apache2/logs",
-        "/caddy"
+        "/caddy",
+        "/tmp"
       ]
     },
     {
@@ -304,7 +305,8 @@
       ],
       "read_only": true,
       "tmpfs": [
-        "/opt/cool/child-roots"
+        "/opt/cool/child-roots",
+        "/etc/coolwsd"
       ]
     },
     {
@@ -352,7 +354,8 @@
       "tmpfs": [
         "/var/log/supervisord",
         "/var/run/supervisord",
-        "/conf"
+        "/conf",
+        "/tmp"
       ]
     },
     {

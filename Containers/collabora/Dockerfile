@@ -13,7 +13,8 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     mkdir -p /opt/cool/child-roots; \
-    chmod 777 -R /opt/cool/child-roots
+    chmod 777 -R /opt/cool/child-roots; \
+    chmod -R 777 /etc/coolwsd/
 
 USER 100
 
