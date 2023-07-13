@@ -35,18 +35,18 @@ if [ "$APACHE_PORT" != '443' ]; then
 else
     CADDYFILE="$(sed 's|auto_https.*|auto_https disable_redirects|' /Caddyfile)"
 fi
-echo "$CADDYFILE" > /caddy/Caddyfile
+echo "$CADDYFILE" > /tmp/Caddyfile
 
 # Change the trusted_proxies in case of reverse proxies
 if [ "$APACHE_PORT" != '443' ]; then
-    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies static private_ranges|' /caddy/Caddyfile)"
+    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies static private_ranges|' /tmp/Caddyfile)"
 else
-    CADDYFILE="$(sed 's|trusted_proxies.*private_ranges|# trusted_proxies placeholder|' /caddy/Caddyfile)"
+    CADDYFILE="$(sed 's|trusted_proxies.*private_ranges|# trusted_proxies placeholder|' /tmp/Caddyfile)"
 fi
-echo "$CADDYFILE" > /caddy/Caddyfile
+echo "$CADDYFILE" > /tmp/Caddyfile
 
 # Fix the Caddyfile format
-caddy fmt --overwrite /caddy/Caddyfile
+caddy fmt --overwrite /tmp/Caddyfile
 
 # Add caddy path
 mkdir -p /mnt/data/caddy/

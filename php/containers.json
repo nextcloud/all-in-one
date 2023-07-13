@@ -61,7 +61,6 @@
         "/var/log/supervisord",
         "/var/run/supervisord",
         "/usr/local/apache2/logs",
-        "/caddy",
         "/tmp"
       ]
     },
