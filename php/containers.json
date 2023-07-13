@@ -55,6 +55,13 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/var/log/supervisord",
+        "/var/run/supervisord",
+        "/usr/local/apache2/logs",
+        "/caddy"
       ]
     },
     {
