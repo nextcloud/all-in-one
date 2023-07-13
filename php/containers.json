@@ -355,6 +355,7 @@
         "/var/log/supervisord",
         "/var/run/supervisord",
         "/conf",
+        "/var/lib/turn",
         "/tmp"
       ]
     },

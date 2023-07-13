@@ -48,6 +48,7 @@ RUN set -ex; \
         /conf \
         /var/lib/turn \
         /var/log/supervisord \
+        /var/lib/turn \
         /var/run/supervisord; \
     chown talk:talk -R \
         /usr \
@@ -60,6 +61,7 @@ RUN set -ex; \
         /tmp \
         /conf \
         /var/run/supervisord \
+        /var/lib/turn \
         /var/log/supervisord;
 
 # Set default talk port https://github.com/nextcloud/all-in-one/issues/1011
