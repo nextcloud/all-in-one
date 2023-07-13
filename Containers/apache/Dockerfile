@@ -66,6 +66,7 @@ RUN set -ex; \
     chown -R www-data:www-data /usr/local/apache2; \
     chmod +r -R /usr/local/apache2; \
     mkdir -p /usr/local/apache2/logs; \
+    chmod 777 -R /home/www-data; \
     chmod 777 -R /usr/local/apache2/logs; \
     \
     echo "root:$(openssl rand -base64 12)" | chpasswd
