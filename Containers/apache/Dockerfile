@@ -48,6 +48,7 @@ RUN set -ex; \
             -e 's/^#\(LoadModule .*mod_brotli.so\)/\1/' \
             -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
             -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
+            -e 's/\(ScriptAlias \)/#\1/' \
         /usr/local/apache2/conf/httpd.conf; \
     echo "Include conf/nextcloud.conf" | tee -a /usr/local/apache2/conf/httpd.conf; \
     echo "ServerName localhost" | tee -a /usr/local/apache2/conf/httpd.conf; \
@@ -68,6 +69,7 @@ RUN set -ex; \
     mkdir -p /usr/local/apache2/logs; \
     chmod 777 -R /home/www-data; \
     chmod 777 -R /usr/local/apache2/logs; \
+    rm -rf /usr/local/apache2/cgi-bin/; \
     \
     echo "root:$(openssl rand -base64 12)" | chpasswd
 
