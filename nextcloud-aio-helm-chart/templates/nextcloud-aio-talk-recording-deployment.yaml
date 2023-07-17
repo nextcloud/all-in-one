@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.28.0 (c4137012e)
+    kompose.version: 1.29.0 (997957870)
   labels:
     io.kompose.service: nextcloud-aio-talk-recording
   name: nextcloud-aio-talk-recording
@@ -17,11 +17,24 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.28.0 (c4137012e)
+        kompose.version: 1.29.0 (997957870)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-talk-recording
     spec:
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - "777"
+            - /nextcloud-aio-talk-recording-tmpfs0
+            - /nextcloud-aio-talk-recording-tmpfs1
+          volumeMounts:
+            - name: nextcloud-aio-talk-recording-tmpfs1
+              mountPath: /nextcloud-aio-talk-recording-tmpfs1
+            - name: nextcloud-aio-talk-recording-tmpfs0
+              mountPath: /nextcloud-aio-talk-recording-tmpfs0
       containers:
         - env:
             - name: INTERNAL_SECRET
@@ -36,4 +49,14 @@ spec:
           name: nextcloud-aio-talk-recording
           ports:
             - containerPort: 1234
+          volumeMounts:
+            - mountPath: /tmp
+              name: nextcloud-aio-talk-recording-tmpfs0
+            - mountPath: /conf
+              name: nextcloud-aio-talk-recording-tmpfs1
+      volumes:
+        - emptyDir: {}
+          name: nextcloud-aio-talk-recording-tmpfs0
+        - emptyDir: {}
+          name: nextcloud-aio-talk-recording-tmpfs1
 {{- end }}

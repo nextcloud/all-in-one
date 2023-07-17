@@ -3,15 +3,18 @@ kind: Service
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.28.0 (c4137012e)
+    kompose.version: 1.29.0 (997957870)
   labels:
     io.kompose.service: nextcloud-aio-apache
   name: nextcloud-aio-apache
 spec:
-  type: LoadBalancer
   ports:
     - name: "{{ .Values.APACHE_PORT }}"
       port: {{ .Values.APACHE_PORT }}
+      targetPort: {{ .Values.APACHE_PORT }}
+    - name: {{ .Values.APACHE_PORT }}-udp
+      port: {{ .Values.APACHE_PORT }}
+      protocol: UDP
       targetPort: {{ .Values.APACHE_PORT }}
   selector:
     io.kompose.service: nextcloud-aio-apache

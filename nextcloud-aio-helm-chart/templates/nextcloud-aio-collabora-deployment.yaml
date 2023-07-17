@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.28.0 (c4137012e)
+    kompose.version: 1.29.0 (997957870)
   labels:
     io.kompose.service: nextcloud-aio-collabora
   name: nextcloud-aio-collabora
@@ -17,7 +17,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.28.0 (c4137012e)
+        kompose.version: 1.29.0 (997957870)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-collabora
