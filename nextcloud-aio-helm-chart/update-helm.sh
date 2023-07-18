@@ -15,6 +15,9 @@ curl -L https://github.com/kubernetes/kompose/releases/download/"$LATEST_KOMPOSE
 chmod +x kompose
 sudo mv ./kompose /usr/local/bin/kompose
 
+# Install yq
+snap install yq
+
 set -ex
 
 # Conversion of docker-compose
@@ -39,11 +42,14 @@ sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name:
 sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cacerts:|g#" latest.yml
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
+yq -i 'del(.services.[].profiles)' latest.yml
 cat latest.yml
-kompose convert -c -f latest.yml
+kompose convert -c -f latest.yml --namespace nextcloud-aio-namespace
 cd latest
 
-mv ./templates/manual-install-nextcloud-aio-networkpolicy.yaml ./templates/nextcloud-aio-networkpolicy.yaml
+if [ -f ./templates/manual-install-nextcloud-aio-networkpolicy.yaml ]; then
+    mv ./templates/manual-install-nextcloud-aio-networkpolicy.yaml ./templates/nextcloud-aio-networkpolicy.yaml
+fi
 # shellcheck disable=SC1083
 find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
 cat << EOL > /tmp/initcontainers
@@ -108,6 +114,8 @@ for variable in "${DEPLOYMENTS[@]}"; do
         fi
     fi
 done
+# shellcheck disable=SC1083
+find ./ -name '*.yaml' -exec sed -i "s|nextcloud-aio-namespace|\{\{ values.NAMESPACE \}\}|" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*service.yaml' -exec sed -i "/^status:/,$ d" \{} \; 
 # shellcheck disable=SC1083
@@ -197,6 +205,9 @@ sed -i '/_ENABLED.*/s/ yes / "yes" /' /tmp/sample.conf
 sed -i '/_ENABLED.*/s/ no / "no" /' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
 sed -i 's|10737418240|"10737418240"|' /tmp/sample.conf
+# shellcheck disable=SC2129
+echo "NAMESPACE: nextcloud-aio" >> /tmp/sample.conf
+# shellcheck disable=SC2129
 echo "" >> /tmp/sample.conf
 # shellcheck disable=SC2129
 echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes' >> /tmp/sample.conf
