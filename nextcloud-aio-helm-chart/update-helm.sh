@@ -42,9 +42,7 @@ sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name:
 sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cacerts:|g#" latest.yml
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
-cat latest.yaml | yq -i 'del(.services.[].profiles)' > /tmp/latest.yaml
-rm latest.yaml
-mv /tmp/latest.yaml latest.yaml
+yq -i 'del(.services.[].profiles)' latest.yml
 cat latest.yml
 kompose convert -c -f latest.yml --namespace nextcloud-aio-namespace
 cd latest
