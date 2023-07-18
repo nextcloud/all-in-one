@@ -40,7 +40,7 @@ skipverify = ${SKIP_VERIFY}
 signalings = signaling-1
 
 [signaling-1]
-url = ${HPB_PROTOCOL}://${NC_DOMAIN}/standalone-signaling/
+url = ${HPB_PROTOCOL}://${NC_DOMAIN}${HPB_PATH}
 internalsecret = ${INTERNAL_SECRET}
 
 [ffmpeg]
