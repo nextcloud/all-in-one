@@ -3,11 +3,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.28.0 (c4137012e)
+    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+    kompose.version: 1.30.0 (9d8dcb518)
   labels:
     io.kompose.service: nextcloud-aio-talk
   name: nextcloud-aio-talk
+  namespace: {{ values.NAMESPACE }}
 spec:
   replicas: 1
   selector:
@@ -16,8 +17,8 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.28.0 (c4137012e)
+        kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+        kompose.version: 1.30.0 (9d8dcb518)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-talk
@@ -40,7 +41,12 @@ spec:
           name: nextcloud-aio-talk
           ports:
             - containerPort: {{ .Values.TALK_PORT }}
+              hostPort: {{ .Values.TALK_PORT }}
+              protocol: TCP
             - containerPort: {{ .Values.TALK_PORT }}
+              hostPort: {{ .Values.TALK_PORT }}
               protocol: UDP
             - containerPort: 8081
+              hostPort: 8081
+              protocol: TCP
 {{- end }}

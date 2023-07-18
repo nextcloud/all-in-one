@@ -3,11 +3,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.28.0 (c4137012e)
+    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+    kompose.version: 1.30.0 (9d8dcb518)
   labels:
     io.kompose.service: nextcloud-aio-talk-recording
   name: nextcloud-aio-talk-recording
+  namespace: {{ values.NAMESPACE }}
 spec:
   replicas: 1
   selector:
@@ -16,8 +17,8 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.28.0 (c4137012e)
+        kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+        kompose.version: 1.30.0 (9d8dcb518)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-talk-recording
@@ -36,4 +37,6 @@ spec:
           name: nextcloud-aio-talk-recording
           ports:
             - containerPort: 1234
+              hostPort: 1234
+              protocol: TCP
 {{- end }}
