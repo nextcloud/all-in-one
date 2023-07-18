@@ -15,6 +15,9 @@ curl -L https://github.com/kubernetes/kompose/releases/download/"$LATEST_KOMPOSE
 chmod +x kompose
 sudo mv ./kompose /usr/local/bin/kompose
 
+# Install yq
+snap install yq
+
 set -ex
 
 # Conversion of docker-compose
@@ -39,8 +42,7 @@ sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name:
 sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cacerts:|g#" latest.yml
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
-snap install yq
-yq -i 'del(.services.[].profiles)' ./latest.yaml
+yq -i 'del(.services.[].profiles)' latest.yaml
 cat latest.yml
 kompose convert -c -f latest.yml --namespace nextcloud-aio-namespace
 cd latest
