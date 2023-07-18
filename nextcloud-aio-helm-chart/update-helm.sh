@@ -40,7 +40,7 @@ sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cac
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
 cat latest.yml
-kompose convert -c -f latest.yml --namespace nextcloud-aio-namespace
+kompose convert -c -f latest.yml
 cd latest
 
 if [ -f ./templates/manual-install-nextcloud-aio-networkpolicy.yaml ]; then
