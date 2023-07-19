@@ -23,13 +23,13 @@ RUN set -ex; \
         libsrtp-dev \
         gengetopt-dev \
         libwebsockets-dev; \
-        git clone --recursive https://github.com/meetecho/janus-gateway -b $JANUS_VERSION /src; \
-        /src/autogen.sh; \
-        /src/configure; \
-        make; \
-        make install; \
-        make configs; \
-        rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
+    git clone --recursive https://github.com/meetecho/janus-gateway --depth=1 --single-branch --branch "$JANUS_VERSION" /src; \
+    /src/autogen.sh; \
+    /src/configure; \
+    make; \
+    make install; \
+    make configs; \
+    rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
 
 FROM coturn/coturn:4.6.2-alpine3.18
 USER root
