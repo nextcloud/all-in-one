@@ -499,7 +499,6 @@
       ],
       "internal_port": "9200",
       "environment": [
-        "POSTGRES_HOST=nextcloud-aio-database",
         "TZ=%TIMEZONE%",
         "ES_JAVA_OPTS=-Xms512M -Xmx512M",
         "bootstrap.memory_lock=true",
