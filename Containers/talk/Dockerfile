@@ -6,8 +6,21 @@ ARG JANUS_VERSION=v0.13.4
 WORKDIR /src
 RUN apk add --no-cache \
         ca-certificates \
-        git autoconf automake build-base pkgconfig libtool util-linux \
-        glib-dev zlib-dev openssl-dev jansson-dev libnice-dev libconfig-dev libsrtp-dev gengetopt-dev \
+        git \
+        autoconf \
+        automake \
+        build-base \
+        pkgconfig \
+        libtool \
+        util-linux \
+        glib-dev \
+        zlib-dev \
+        openssl-dev \
+        jansson-dev \
+        libnice-dev \
+        libconfig-dev \
+        libsrtp-dev \
+        gengetopt-dev \
         libwebsockets-dev; \
         git clone --recursive https://github.com/meetecho/janus-gateway -b $JANUS_VERSION /src; \
         /src/autogen.sh; \
@@ -30,7 +43,14 @@ RUN set -ex; \
         bind-tools \
         netcat-openbsd \
         \
-        glib zlib libssl3 libcrypto3 jansson libnice libconfig libsrtp \
+        glib \
+        zlib \
+        libssl3 \
+        libcrypto3 \
+        jansson \
+        libnice \
+        libconfig \
+        libsrtp \
         libwebsockets \
         \
         shadow; \
