@@ -24,6 +24,7 @@
         {% set isAnyRunning = false %}
         {% set isAnyRestarting = false %}
         {% set isWatchtowerRunning = false %}
+        {% set isDomaincheckRunning = false %}
         {% set isBackupOrRestoreRunning = false %}
         {% set isApacheStarting = false %}
         {# Setting newMajorVersion to '' will hide corresponding options/elements, can be set to an integer like 26 in order to show corresponding elements. If set, also increase installLatestMajor in https://github.com/nextcloud/all-in-one/blob/main/php/src/Controller/DockerController.php #}
@@ -44,6 +45,9 @@
             {% endif %}
             {% if container.GetIdentifier() == 'nextcloud-aio-watchtower' and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
                 {% set isWatchtowerRunning = true %}
+            {% endif %}
+            {% if container.GetIdentifier() == 'nextcloud-aio-domaincheck' and class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
+                {% set isDomaincheckRunning = true %}
             {% endif %}
             {% if container.GetIdentifier() == 'nextcloud-aio-apache' and class(container.GetStartingState()) == 'AIO\\Container\\State\\StartingState' %}
                 {% set isApacheStarting = true %}
@@ -69,7 +73,10 @@
             <a href="" class="button reload">Reload ↻</a><br/>
         {% else %}
             {% if is_backup_container_running == false and domain == "" %}
-                {% if is_mastercontainer_update_available == true %}
+                {% if isDomaincheckRunning == false %}
+                    <h2>Domaincheck container is not running</h2>
+                    This is not expected. Most likely this happened because port {{ apache_port }} is already in use on your server. You can check the mastercontainer logs and domaincheck container logs for further clues. You should be able to resolve this by adjusting the APACHE_PORT by following the <b><a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></b>. Advice: have a detailed look at the changed docker run command for AIO.
+                {% elseif is_mastercontainer_update_available == true %}
                     <h2>Mastercontainer update</h2>
                     ⚠️ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.<br><br>
                     <form method="POST" action="/api/docker/watchtower" class="xhr">

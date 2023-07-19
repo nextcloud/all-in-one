@@ -255,7 +255,11 @@ class DockerController
         }
 
         $this->StopDomaincheckContainer();
-        $this->PerformRecursiveContainerStart($id);
+        try {
+            $this->PerformRecursiveContainerStart($id);
+        } catch (\Exception $e) {
+            error_log('Could not start domaincheck container: ' . $e->getMessage());
+        }
 
         // Cache the start for 10 minutes
         apcu_add($cacheKey, '1', 600);
