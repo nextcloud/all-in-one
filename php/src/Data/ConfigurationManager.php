@@ -888,4 +888,19 @@ class ConfigurationManager
             return false;
         }
     }
+
+    private function GetKeepDisabledApps() : string {
+        $envVariableName = 'NEXTCLOUD_KEEP_DISABLED_APPS';
+        $configName = 'nextcloud_keep_disabled_apps';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function shouldDisabledAppsGetRemoved() : bool {
+        if ($this->GetKeepDisabledApps() === 'true') {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
