@@ -4,7 +4,8 @@ FROM alpine:3.18.2 as janus
 
 ARG JANUS_VERSION=v0.13.4
 WORKDIR /src
-RUN apk add --no-cache \
+RUN set -ex; \
+    apk add --no-cache \
         ca-certificates \
         git \
         autoconf \
