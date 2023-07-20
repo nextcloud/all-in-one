@@ -93,6 +93,7 @@ RUN set -ex; \
             -e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
             -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
             -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
+            -e 's/\(ScriptAlias \)/#\1/' \
         /etc/apache2/httpd.conf; \
         mkdir -p /etc/apache2/logs; \
         rm /etc/apache2/conf.d/ssl.conf; \
@@ -108,6 +109,7 @@ RUN set -ex; \
           /etc/apache2/conf.d/userdir.conf \
           /etc/apache2/conf.d/info.conf; \
     \
+    rm -rf /var/www/localhost/cgi-bin/; \
     mkdir /var/log/supervisord; \
     mkdir /var/run/supervisord;
 
