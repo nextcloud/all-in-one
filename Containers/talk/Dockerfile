@@ -53,6 +53,7 @@ RUN set -ex; \
         libnice \
         libconfig \
         libsrtp \
+        libusrsctp \
         libwebsockets \
         \
         shadow; \
