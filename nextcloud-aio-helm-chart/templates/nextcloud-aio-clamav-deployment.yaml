@@ -3,11 +3,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.28.0 (c4137012e)
+    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+    kompose.version: 1.30.0 (9d8dcb518)
   labels:
     io.kompose.service: nextcloud-aio-clamav
   name: nextcloud-aio-clamav
+  namespace: {{ values.NAMESPACE }}
 spec:
   replicas: 1
   selector:
@@ -16,8 +17,8 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.28.0 (c4137012e)
+        kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+        kompose.version: 1.30.0 (9d8dcb518)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-clamav
@@ -47,10 +48,14 @@ spec:
               value: "90"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-clamav:20230626_101439-latest
+          image: nextcloud/aio-clamav:20230720_134150-latest
           name: nextcloud-aio-clamav
           ports:
             - containerPort: 3310
+              hostPort: 3310
+              protocol: TCP
+          securityContext:
+            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /var/lib/clamav
               name: nextcloud-aio-clamav

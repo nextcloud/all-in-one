@@ -31,6 +31,7 @@ NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to auto
 NEXTCLOUD_UPLOAD_LIMIT: 10G          # This allows to change the upload limit of the Nextcloud container
 TALK_PORT: 3478          # This allows to adjust the port that the talk container is using.
 UPDATE_NEXTCLOUD_APPS: no          # When setting to yes (with quotes), it will automatically update all installed Nextcloud apps upon container startup on saturdays.
+NAMESPACE: default        # By changing this, you can adjust the namespace of the installation which allows to install multiple instances on one kubernetes cluster
 
 STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes
 APACHE_STORAGE_SIZE: 1Gi       # You can change the size of the apache volume that default to 1Gi with this value
