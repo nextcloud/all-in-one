@@ -21,11 +21,12 @@ RUN set -ex; \
         libnice-dev \
         libconfig-dev \
         libsrtp-dev \
+        libusrsctp-dev \
         gengetopt-dev \
         libwebsockets-dev; \
     git clone --recursive https://github.com/meetecho/janus-gateway --depth=1 --single-branch --branch "$JANUS_VERSION" /src; \
     /src/autogen.sh; \
-    /src/configure; \
+    /src/configure --disable-rabbitmq --disable-mqtt --disable-boringssl; \
     make; \
     make install; \
     make configs; \
