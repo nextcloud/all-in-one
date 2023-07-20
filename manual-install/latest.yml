@@ -27,6 +27,13 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
+    read_only: true
+    tmpfs:
+      - /var/log/supervisord
+      - /var/run/supervisord
+      - /usr/local/apache2/logs
+      - /tmp
+      - /home/www-data
 
   nextcloud-aio-database:
     image: nextcloud/aio-postgresql:latest
@@ -46,6 +53,9 @@ services:
     shm_size: 268435456
     networks:
       - nextcloud-aio
+    read_only: true
+    tmpfs:
+      - /var/run/postgresql
 
   nextcloud-aio-nextcloud:
     depends_on:
@@ -180,6 +190,13 @@ services:
       - talk-recording
     networks:
       - nextcloud-aio
+    read_only: true
+    tmpfs:
+      - /var/log/supervisord
+      - /var/run/supervisord
+      - /conf
+      - /var/lib/turn
+      - /tmp
 
   nextcloud-aio-talk-recording:
     image: nextcloud/aio-talk-recording:latest
@@ -196,6 +213,10 @@ services:
       - talk-recording
     networks:
       - nextcloud-aio
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /conf
 
   nextcloud-aio-clamav:
     image: nextcloud/aio-clamav:latest
@@ -248,6 +269,8 @@ services:
     networks:
       - nextcloud-aio
     read_only: true
+    tmpfs:
+      - /tmp
 
   nextcloud-aio-fulltextsearch:
     image: nextcloud/aio-fulltextsearch:latest
