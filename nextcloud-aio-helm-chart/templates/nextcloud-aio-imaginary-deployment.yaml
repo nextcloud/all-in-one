@@ -3,11 +3,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml
-    kompose.version: 1.28.0 (c4137012e)
+    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+    kompose.version: 1.30.0 (9d8dcb518)
   labels:
     io.kompose.service: nextcloud-aio-imaginary
   name: nextcloud-aio-imaginary
+  namespace: {{ values.NAMESPACE }}
 spec:
   replicas: 1
   selector:
@@ -16,22 +17,41 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml
-        kompose.version: 1.28.0 (c4137012e)
+        kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+        kompose.version: 1.30.0 (9d8dcb518)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-imaginary
     spec:
+      initContainers:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - "777"
+            - /nextcloud-aio-imaginary-tmpfs0
+          volumeMounts:
+            - name: nextcloud-aio-imaginary-tmpfs0
+              mountPath: /nextcloud-aio-imaginary-tmpfs0
       containers:
         - env:
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-imaginary:20230626_101439-latest
+          image: nextcloud/aio-imaginary:20230720_134150-latest
           name: nextcloud-aio-imaginary
           ports:
             - containerPort: 9000
+              hostPort: 9000
+              protocol: TCP
           securityContext:
             capabilities:
               add:
                 - SYS_NICE
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /tmp
+              name: nextcloud-aio-imaginary-tmpfs0
+      volumes:
+        - emptyDir: {}
+          name: nextcloud-aio-imaginary-tmpfs0
 {{- end }}
