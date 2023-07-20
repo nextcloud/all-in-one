@@ -209,6 +209,9 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "tmpfs": [
+        "/tmp"
       ]
     },
     {

@@ -209,6 +209,7 @@ RUN set -ex; \
     chown www-data:root -R /usr/src && \
     chown www-data:root -R /usr/local/etc/php/conf.d && \
     chown www-data:root -R /usr/local/etc/php-fpm.d && \
+    chmod -R 777 /tmp; \
     rm -r /usr/src/nextcloud/apps/updatenotification; \
     \
     mkdir -p /nc-updater; \
