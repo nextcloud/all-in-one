@@ -1,4 +1,4 @@
-FROM nats:2.9.19-scratch as nats
+FROM nats:2.9.20-scratch as nats
 FROM strukturag/nextcloud-spreed-signaling:1.1.3 as signaling
 FROM alpine:3.18.2 as janus
 
