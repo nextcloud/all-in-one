@@ -475,6 +475,7 @@
           "protocol": "tcp"
         }
       ],
+      "internal_port": "%APACHE_PORT%",
       "environment": [
         "INSTANCE_ID=%INSTANCE_ID%",
         "APACHE_PORT=%APACHE_PORT%"
