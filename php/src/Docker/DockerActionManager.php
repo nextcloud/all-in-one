@@ -483,7 +483,7 @@ class DockerActionManager
                 if ($volume->name !== $this->configurationManager->GetNextcloudMount()) {
                     continue;
                 }
-                $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "Propagation" => "rshared"];
+                $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
             }
         }
 
