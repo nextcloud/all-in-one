@@ -452,6 +452,8 @@ if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
         fi
     fi
 
+    # Add cache_dir to improve performance
+    php /var/www/html/occ config:system:set cache_dir --value="/nc-cache_dir"
 fi
 
 # Perform fingerprint update if instance was restored

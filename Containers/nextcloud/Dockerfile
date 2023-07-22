@@ -215,6 +215,9 @@ RUN set -ex; \
     mkdir -p /nc-updater; \
     chown -R www-data:www-data /nc-updater; \
     chmod -R 770 /nc-updater; \
+    mkdir -p /nc-cache_dir; \
+    chown -R www-data:www-data /nc-cache_dir; \
+    chmod -R 770 /nc-cache_dir; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd
