@@ -46,10 +46,10 @@ jobs:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
       with:
-        commit-message: dependency updates
+        commit-message: php dependency updates
         signoff: true
-        title: Dependency updates
-        body: Automated dependency updates since dependabot does not support grouped updates
+        title: PHP dependency updates
+        body: Automated php dependency updates since dependabot does not support grouped updates
         labels: dependencies, 3. to review
         milestone: next
         branch: aio-dependency-update
