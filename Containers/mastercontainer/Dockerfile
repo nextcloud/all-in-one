@@ -121,6 +121,5 @@ COPY mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
 USER root
 
 ENTRYPOINT ["/start.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
