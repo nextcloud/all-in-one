@@ -150,7 +150,10 @@ fi
 if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
     echo "Setting max connections..."
     MEMORY=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
-    MAX_CONNECTIONS=$((MEMORY/50+3))
+    # Double amount of connections compared to max php-fpm children - so divided by 25 and not 50
+    MAX_CONNECTIONS=$((MEMORY/25))
+    # Subtract 3 connections, reserved for master
+    MAX_CONNECTIONS=$((MAX_CONNECTIONS-3))
     if [ -n "$MAX_CONNECTIONS" ]; then
         sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
     fi
