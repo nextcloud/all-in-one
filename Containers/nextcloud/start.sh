@@ -6,23 +6,13 @@ while ! sudo -u www-data nc -z "$POSTGRES_HOST" 5432; do
     sleep 5
 done
 
-# Use the correct Postgres username
-POSTGRES_USER="oc_$POSTGRES_USER"
-export POSTGRES_USER
-
-# Fix false database connection on old instances
+# Wait for database to actually start
 if [ -f "/var/www/html/config/config.php" ]; then
     sleep 2
     while ! sudo -u www-data psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:5432/$POSTGRES_DB" -c "select now()"; do
         echo "Waiting for the database to start..."
         sleep 5
     done
-    if [ "$POSTGRES_USER" = "oc_nextcloud" ] && [ "$POSTGRES_DB" = "nextcloud_database" ] && echo "$POSTGRES_PASSWORD" | grep -q '^[a-z0-9]\+$'; then
-        # This was introduced with https://github.com/nextcloud/all-in-one/pull/218
-        sed -i "s|'dbuser'.*=>.*$|'dbuser' => '$POSTGRES_USER',|" /var/www/html/config/config.php
-        sed -i "s|'dbpassword'.*=>.*$|'dbpassword' => '$POSTGRES_PASSWORD',|" /var/www/html/config/config.php
-        sed -i "s|'db_name'.*=>.*$|'db_name' => '$POSTGRES_DB',|" /var/www/html/config/config.php
-    fi
 fi
 
 # Trust additional Cacerts, if the user provided $TRUSTED_CACERTS_DIR
