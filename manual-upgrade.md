@@ -12,7 +12,7 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
 1. Run the following commands in order to reverse engineer the Nextcloud container:
     ```bash
         sudo docker pull assaflavie/runlike
-        echo '#/bin/bash' > /tmp/nextcloud-aio-nextcloud
+        echo '#!/bin/bash' > /tmp/nextcloud-aio-nextcloud
         sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p nextcloud-aio-nextcloud >> /tmp/nextcloud-aio-nextcloud
         sudo chown root:root /tmp/nextcloud-aio-nextcloud
     ```
