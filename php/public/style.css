@@ -85,7 +85,7 @@ div.toast {
     padding: 12px;
     margin-top: 45px;
     position: fixed;
-    z-index: 1;
+    z-index: 1000;
     border-radius: 3px;
     background: none;
     background-color: white;
