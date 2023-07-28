@@ -36,14 +36,24 @@ spec:
       containers:
         - env:
             - name: ES_JAVA_OPTS
-              value: -Xms1024M -Xmx1024M
-            - name: POSTGRES_HOST
-              value: nextcloud-aio-database
+              value: -Xms512M -Xmx512M
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
+            - name: bootstrap.memory_lock
+              value: "true"
+            - name: cluster.name
+              value: nextcloud-aio
             - name: discovery.type
               value: single-node
-          image: nextcloud/aio-fulltextsearch:20230720_134150-latest
+            - name: http.port
+              value: "9200"
+            - name: logger.org.elasticsearch.discovery
+              value: WARN
+            - name: xpack.license.self_generated.type
+              value: basic
+            - name: xpack.security.enabled
+              value: "false"
+          image: nextcloud/aio-fulltextsearch:20230728_085937-latest
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200
