@@ -12,6 +12,10 @@ elif [ -z "$INTERNAL_SECRET" ]; then
     exit 1
 fi
 
+if [ -z "$HPB_DOMAIN" ]; then
+    export HPB_DOMAIN="$NC_DOMAIN"
+fi
+
 cat << RECORDING_CONF > "/conf/recording.conf"
 [logs]
 # 30 means Warning
@@ -40,7 +44,7 @@ skipverify = ${SKIP_VERIFY}
 signalings = signaling-1
 
 [signaling-1]
-url = ${HPB_PROTOCOL}://${NC_DOMAIN}${HPB_PATH}
+url = ${HPB_PROTOCOL}://${HPB_DOMAIN}${HPB_PATH}
 internalsecret = ${INTERNAL_SECRET}
 
 [ffmpeg]
