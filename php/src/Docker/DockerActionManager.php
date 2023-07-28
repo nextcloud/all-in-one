@@ -439,7 +439,11 @@ class DockerActionManager
 
         $tmpfs = [];
         foreach($container->GetTmpfs() as $tmp) {
-            $tmpfs[$tmp] = "";
+            $mode = "";
+            if (str_contains($tmp, ':')) {
+                $mode = explode(':', $tmp)[1];
+            }
+            $tmpfs[$tmp] = $mode;
         }
         if (count($tmpfs) > 0) {
             $requestBody['HostConfig']['Tmpfs'] =  $tmpfs;
