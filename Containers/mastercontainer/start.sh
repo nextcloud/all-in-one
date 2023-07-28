@@ -318,5 +318,3 @@ chmod 777 /root
 
 # Start supervisord
 /usr/bin/supervisord -c /supervisord.conf
-
-exec "$@"
