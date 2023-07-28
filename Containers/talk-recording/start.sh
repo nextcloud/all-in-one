@@ -16,8 +16,6 @@ if [ -z "$HPB_DOMAIN" ]; then
     export HPB_DOMAIN
 fi
 
-
-
 cat << RECORDING_CONF > "/conf/recording.conf"
 [logs]
 # 30 means Warning
