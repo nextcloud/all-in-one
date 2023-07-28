@@ -118,6 +118,8 @@ services:
     restart: unless-stopped
     networks:
       - nextcloud-aio
+    tmpfs:
+      - /tmp
 
   nextcloud-aio-notify-push:
     image: nextcloud/aio-notify-push:latest
@@ -278,9 +280,14 @@ services:
       - "9200"
     environment:
       - TZ=${TIMEZONE}
+      - ES_JAVA_OPTS=-Xms512M -Xmx512M
+      - bootstrap.memory_lock=true
+      - cluster.name=nextcloud-aio
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1024M -Xmx1024M
-      - POSTGRES_HOST=nextcloud-aio-database
+      - logger.org.elasticsearch.discovery=WARN
+      - http.port=9200
+      - xpack.license.self_generated.type=basic
+      - xpack.security.enabled=false
     volumes:
       - nextcloud_aio_elasticsearch:/usr/share/elasticsearch/data:rw
     restart: unless-stopped
