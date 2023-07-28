@@ -12,6 +12,12 @@ elif [ -z "$INTERNAL_SECRET" ]; then
     exit 1
 fi
 
+if [ -z "$HPB_DOMAIN" ]; then
+    export HPB_DOMAIN
+fi
+
+
+
 cat << RECORDING_CONF > "/conf/recording.conf"
 [logs]
 # 30 means Warning
