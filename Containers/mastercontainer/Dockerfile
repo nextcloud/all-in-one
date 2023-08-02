@@ -14,27 +14,26 @@ EXPOSE 8443
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
 
-WORKDIR /var/www/docker-aio
-
 RUN set -ex; \
     apk add --no-cache shadow; \
     groupmod -g 333 xfs; \
     usermod -u 333 -g 333 xfs; \
     groupmod -g 33 www-data; \
-    usermod -u 33 -g 33 www-data; \
+    useradd -u 33 -g 33 www-data; \
+    apk del --no-cache shadow; \
     \
     apk add --no-cache \
         util-linux-misc \
         ca-certificates \
+        nss \
         wget \
         bash \
         apache2 \
         apache2-proxy \
-        apache2-ssl \
         supervisor \
-        openssl \
         sudo \
         netcat-openbsd \
+        bind-tools \
         curl \
         grep; \
     \
@@ -57,11 +56,14 @@ RUN set -ex; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 80/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
-    apk add --no-cache git; \
     wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer; \
     chmod +x /usr/local/bin/composer; \
+    rm -rf /var/www/*; \
+    mkdir -p /var/www/docker-aio; \
     cd /var/www/docker-aio; \
+    apk add --no-cache git; \
     git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
+    apk del --no-cache git; \
     find ./ -maxdepth 1 -mindepth 1 -not -path ./php -exec rm -r {} \; ; \
     chown www-data:www-data -R /var/www/docker-aio; \
     cd php; \
@@ -74,49 +76,16 @@ RUN set -ex; \
     rm -r php/data; \
     rm -r php/session; \
     \
-    mkdir -p /etc/apache2/certs; \
-    cd /etc/apache2/certs; \
-    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=DE/ST=BE/L=Local/O=Dev/CN=nextcloud.local" -keyout /etc/apache2/certs/ssl.key -out /etc/apache2/certs/ssl.crt; \
-    \
-    sed -i \
-            -e '/^Listen /d' \
-            -e 's/^LogLevel .*/LogLevel error/' \
-            -e 's|^ErrorLog .*|ErrorLog /proc/self/fd/2|' \
-            -e 's/User apache/User www-data/g' \
-            -e 's/Group apache/Group www-data/g' \
-            -e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_headers.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_env.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_mime.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_dir.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
-            -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
-            -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
-            -e 's/\(ScriptAlias \)/#\1/' \
-        /etc/apache2/httpd.conf; \
-        mkdir -p /etc/apache2/logs; \
-        rm /etc/apache2/conf.d/ssl.conf; \
-        echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf; \
-        grep -q '^LoadModule lbmethod_heartbeat_module' /etc/apache2/conf.d/proxy.conf; \
-        sed -i 's|^LoadModule lbmethod_heartbeat_module.*|#LoadModule lbmethod_heartbeat_module|' /etc/apache2/conf.d/proxy.conf; \
-        echo "SSLSessionCache nonenotnull" | tee -a /etc/apache2/httpd.conf; \
-        echo "LoadModule ssl_module modules/mod_ssl.so" | tee -a /etc/apache2/httpd.conf; \
-        echo "LoadModule socache_shmcb_module modules/mod_socache_shmcb.so" | tee -a /etc/apache2/httpd.conf; \
-        echo "Include /etc/apache2/sites-available/mastercontainer.conf" | tee -a /etc/apache2/httpd.conf; \
-    \
-    rm -f /etc/apache2/conf.d/default.conf \
-          /etc/apache2/conf.d/userdir.conf \
-          /etc/apache2/conf.d/info.conf; \
-    \
-    rm -rf /var/www/localhost/cgi-bin/; \
+    mkdir /etc/apache2/logs; \
     mkdir /var/log/supervisord; \
     mkdir /var/run/supervisord;
 
 COPY --chmod=775 *.sh /
 COPY --chmod=664 Caddyfile /Caddyfile
 COPY --chmod=664 supervisord.conf /supervisord.conf
-COPY mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
+COPY --chmod=664 apache.conf /etc/apache2/httpd.conf
+
+WORKDIR /var/www/docker-aio
 
 USER root
 

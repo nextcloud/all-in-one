@@ -261,6 +261,9 @@ chown www-data:www-data -R /mnt/docker-aio-config/session/
 chown www-data:www-data -R /mnt/docker-aio-config/caddy/
 chown root:root -R /mnt/docker-aio-config/certs/
 
+IPv4_ADDRESS_NC="$(dig nextcloud-aio-nextcloud A +short | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv6_ADDRESS_NC="$(dig nextcloud-aio-nextcloud AAAA +short | grep '^[0-9a-fA-F:]\+$' | sort | head -n1)"
+
 # Don't allow access to the AIO interface from the Nextcloud container
 # Probably more cosmetic than anything but at least an attempt
 if ! grep -q '# nextcloud-aio-block' /etc/apache2/httpd.conf; then
@@ -268,27 +271,12 @@ if ! grep -q '# nextcloud-aio-block' /etc/apache2/httpd.conf; then
 # nextcloud-aio-block-start
 <Location />
 order allow,deny
-deny from nextcloud-aio-nextcloud.nextcloud-aio
+deny from $IPv4_ADDRESS_NC
+deny from $IPv6_ADDRESS_NC
 allow from all
 </Location>
 # nextcloud-aio-block-end
 APACHE_CONF
-fi
-
-# Adjust certs
-GENERATED_CERTS="/mnt/docker-aio-config/certs"
-TMP_CERTS="/etc/apache2/certs"
-mkdir -p "$GENERATED_CERTS"
-cd "$GENERATED_CERTS" || exit 1
-if ! [ -f ./ssl.crt ] && ! [ -f ./ssl.key ]; then
-    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=DE/ST=BE/L=Local/O=Dev/CN=nextcloud.local" -keyout ./ssl.key -out ./ssl.crt
-fi
-if [ -f ./ssl.crt ] && [ -f ./ssl.key ]; then
-    cd "$TMP_CERTS" || exit 1
-    rm ./ssl.crt
-    rm ./ssl.key
-    cp "$GENERATED_CERTS/ssl.crt" ./
-    cp "$GENERATED_CERTS/ssl.key" ./
 fi
 
 print_green "Initial startup of Nextcloud All-in-One complete!
