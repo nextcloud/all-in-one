@@ -20,6 +20,7 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].nextcloud_exec_commands)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-watchtower"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-domaincheck"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-borgbackup"))')"
+OUTPUT="$(echo "$OUTPUT" | jq '.services[].depends_on |= map({ (.): { "condition": "service_started", "required": false } })')"
 
 snap install yq
 mkdir -p ./manual-install
