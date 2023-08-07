@@ -19,14 +19,11 @@ elif [ -z "$INTERNAL_SECRET" ]; then
 fi
 
 set -x
-IPv4_ADDRESS_TALK="$(dig nextcloud-aio-talk A +short | grep -E "^[0-9.]+$" | sort | head -n1)"
-IPv6_ADDRESS_TALK="$(dig nextcloud-aio-talk AAAA +short | grep -E "^[0-9a-f:]+$" | sort | head -n1)"
+IPv4_ADDRESS_TALK="$(dig nextcloud-aio-talk IN A +short | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv6_ADDRESS_TALK="$(dig nextcloud-aio-talk AAAA +short | grep '^[0-9a-f:]\+$' | sort | head -n1)"
 
-IPv4_ADDRESS_NC="$(dig "$NC_DOMAIN" A +short +https +tls-ca=/etc/ssl/certs/ca-certificates.crt @1.1.1.1 | grep "^[0-9.]\+$" | sort | head -n1)"
-IPv6_ADDRESS_NC="$(dig "$NC_DOMAIN" AAAA +short +https +tls-ca=/etc/ssl/certs/ca-certificates.crt @1.1.1.1 | grep "^[0-9a-f:]\+$" | sort | head -n1)"
-#if [ -z "$IPv4_ADDRESS_NC" ] && [ -z "$IPv6_ADDRESS_NC" ]; then
-#    export STUN_SERVICE="stun.nextcloud.com 443"
-#fi
+IPv4_ADDRESS_NC="$(dig "$NC_DOMAIN" IN A +short +https +tls-ca=/etc/ssl/certs/ca-certificates.crt @1.1.1.1 | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv6_ADDRESS_NC="$(dig "$NC_DOMAIN" IN AAAA +short +https +tls-ca=/etc/ssl/certs/ca-certificates.crt @1.1.1.1 | grep '^[0-9a-f:]\+$' | sort | head -n1)"
 set +x
 
 # Turn

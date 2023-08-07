@@ -34,9 +34,11 @@ RUN set -ex; \
     rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
 
 FROM alpine:3.18.2
-
+ENV STUN_SERVICE="stun.nextcloud.com 443"
 COPY --from=janus     /usr/local                          /usr/local
 COPY --from=eturnal   /opt/eturnal                        /opt/eturnal
+COPY --from=eturnal   /usr/local/bin/stun                 /usr/local/bin/stun
+COPY --from=eturnal   /usr/local/bin/eturnalctl           /usr/local/bin/eturnalctl
 COPY --from=nats      /nats-server                        /usr/local/bin/nats-server
 COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
 
