@@ -1,11 +1,21 @@
 services:
   nextcloud-aio-apache:
     depends_on:
-      - nextcloud-aio-onlyoffice
-      - nextcloud-aio-collabora
-      - nextcloud-aio-talk
-      - nextcloud-aio-nextcloud
-      - nextcloud-aio-notify-push
+      - nextcloud-aio-onlyoffice:
+          condition: service_started
+          required: false
+      - nextcloud-aio-collabora:
+          condition: service_started
+          required: false
+      - nextcloud-aio-talk:
+          condition: service_started
+          required: false
+      - nextcloud-aio-nextcloud:
+          condition: service_started
+          required: false
+      - nextcloud-aio-notify-push:
+          condition: service_started
+          required: false
     image: nextcloud/aio-apache:latest
     ports:
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
@@ -59,12 +69,24 @@ services:
 
   nextcloud-aio-nextcloud:
     depends_on:
-      - nextcloud-aio-database
-      - nextcloud-aio-redis
-      - nextcloud-aio-clamav
-      - nextcloud-aio-fulltextsearch
-      - nextcloud-aio-talk-recording
-      - nextcloud-aio-imaginary
+      - nextcloud-aio-database:
+          condition: service_started
+          required: false
+      - nextcloud-aio-redis:
+          condition: service_started
+          required: false
+      - nextcloud-aio-clamav:
+          condition: service_started
+          required: false
+      - nextcloud-aio-fulltextsearch:
+          condition: service_started
+          required: false
+      - nextcloud-aio-talk-recording:
+          condition: service_started
+          required: false
+      - nextcloud-aio-imaginary:
+          condition: service_started
+          required: false
     image: nextcloud/aio-nextcloud:latest
     expose:
       - "9000"
