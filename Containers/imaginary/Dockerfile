@@ -12,7 +12,7 @@ RUN set -ex; \
         build-base; \
     go install github.com/h2non/imaginary@"$IMAGINARY_HASH";
 
-FROM alpine:3.18.2
+FROM alpine:3.18.3
 RUN set -ex; \
     apk add --no-cache \
         tzdata \
