@@ -442,6 +442,7 @@ class DockerActionManager
             $mode = "";
             if (str_contains($tmp, ':')) {
                 $mode = explode(':', $tmp)[1];
+                $tmp = explode(':', $tmp)[0];
             }
             $tmpfs[$tmp] = $mode;
         }
