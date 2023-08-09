@@ -896,7 +896,7 @@ class DockerActionManager
                 return null;
             }
 
-            return str_replace('T', ' ', $imageOutput['Created']);
+            return str_replace('T', ' ', (string)$imageOutput['Created']);
         } catch (\Exception $e) {
             return null;
         }
