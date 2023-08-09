@@ -211,7 +211,7 @@
         "nextcloud-aio"
       ],
       "tmpfs": [
-        "/tmp"
+        "/tmp:exec"
       ]
     },
     {
