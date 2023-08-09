@@ -27,7 +27,7 @@ IPv6_ADDRESS_NC="$(dig "$NC_DOMAIN" IN AAAA +short +https +tls-ca=/etc/ssl/certs
 set +x
 
 # Turn
-cat << TURN_CONF > "/opt/eturnal/etc/eturnal.yml"
+cat << TURN_CONF > "/conf/eturnal.yml"
 eturnal:
   listen:
     - ip: "::"

@@ -35,6 +35,7 @@ RUN set -ex; \
 
 FROM alpine:3.18.2
 ENV STUN_SERVICE="stun.nextcloud.com 443"
+ENV ETURNAL_ETC_DIR="/conf"
 COPY --from=janus     /usr/local                          /usr/local
 COPY --from=eturnal   /opt/eturnal                        /opt/eturnal
 COPY --from=eturnal   /usr/local/bin/stun                 /usr/local/bin/stun
@@ -76,6 +77,7 @@ RUN set -ex; \
     \
     touch \
         /etc/nats.conf; \
+        /etc/eturnal.yml; \
     echo "listen: 127.0.0.1:4222" | tee /etc/nats.conf; \
     mkdir -p \
         /var/tmp \
