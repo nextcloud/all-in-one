@@ -613,8 +613,7 @@
       ],
       "networks": [
         "nextcloud-aio"
-      ],
-      "read_only": true
+      ]
     }
   ]
 }
