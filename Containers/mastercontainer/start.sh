@@ -26,6 +26,12 @@ if [ "$EUID" != "0" ]; then
     exit 1
 fi
 
+# Check that the CMD is not overwritten nor set
+if [ "$*" != "" ]; then
+    print_red "Docker run command for AIO is incorrect as a CMD option was given which is not expected."
+    exit 1
+fi
+
 # Check if socket is available and readable
 if ! [ -a "/var/run/docker.sock" ]; then
     print_red "Docker socket is not available. Cannot continue."
@@ -310,4 +316,5 @@ caddy fmt --overwrite /Caddyfile
 # Fix caddy log 
 chmod 777 /root
 
-exec "$@"
+# Start supervisord
+/usr/bin/supervisord -c /supervisord.conf
