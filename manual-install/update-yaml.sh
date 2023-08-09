@@ -20,7 +20,7 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].nextcloud_exec_commands)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-watchtower"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-domaincheck"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-borgbackup"))')"
-OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= map({ (.): { "condition": "service_started", "required": false } }) else . end')"
+OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= map({ (.): { "condition": "service_started", "required": false } }) else . end' | jq '.services[] |= if has("depends_on") then .depends_on |= reduce .[] as $item ({}; . + $item) else . end')"
 
 snap install yq
 mkdir -p ./manual-install
@@ -112,7 +112,7 @@ for name in "${NAMES[@]}"
 do
     OUTPUT="$(echo "$OUTPUT" | sed "/container_name.*$name$/i\ \ $name:")"
     if [ "$name" != "nextcloud-aio-apache" ]; then
-        OUTPUT="$(echo "$OUTPUT" | sed "/  $name:/i\ ")"
+        OUTPUT="$(echo "$OUTPUT" | sed "/^  $name:/i\ ")"
     fi
 done
 
