@@ -3,12 +3,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
     kompose.version: 1.30.0 (9d8dcb518)
   labels:
     io.kompose.service: nextcloud-aio-imaginary
   name: nextcloud-aio-imaginary
-  namespace: {{ values.NAMESPACE }}
+  namespace: {{ .Values.NAMESPACE }}
 spec:
   replicas: 1
   selector:
@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+        kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
         kompose.version: 1.30.0 (9d8dcb518)
       labels:
         io.kompose.network/nextcloud-aio: "true"
