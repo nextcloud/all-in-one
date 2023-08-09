@@ -39,8 +39,6 @@ jobs:
           author: nextcloud-command <nextcloud-command@users.noreply.github.com>
           signoff: true
           branch: automated/noid/psalm-baseline-update
-          # Make sure we can open multiple PRs
-          branch-suffix: timestamp
           title: '[Automated] Update psalm-baseline.xml'
           milestone: next
           body: |
