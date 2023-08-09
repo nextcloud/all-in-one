@@ -317,7 +317,7 @@ class DockerActionManager
                     }
                 } elseif ($out[1] === 'TIMEZONE') {
                     if ($this->configurationManager->GetTimezone() === '') {
-                        $replacements[1] = 'UTC';
+                        $replacements[1] = 'Etc/UTC';
                     } else {
                         $replacements[1] = $this->configurationManager->GetTimezone();
                     }

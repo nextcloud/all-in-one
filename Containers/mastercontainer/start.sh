@@ -304,8 +304,8 @@ E.g. https://internal.ip.of.this.server:8080
 If your server has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatically by opening the Nextcloud AIO Interface via:
 https://your-domain-that-points-to-this-server.tld:8443"
 
-# Set the timezone to UTC
-export TZ=UTC
+# Set the timezone to Etc/UTC
+export TZ=Etc/UTC
 
 # Fix apache startup
 rm -f /var/run/apache2/httpd.pid
