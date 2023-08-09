@@ -141,7 +141,7 @@ services:
     networks:
       - nextcloud-aio
     tmpfs:
-      - /tmp
+      - /tmp:exec
 
   nextcloud-aio-notify-push:
     image: nextcloud/aio-notify-push:latest
