@@ -63,9 +63,12 @@ Add this as a new Apache site config:
     # Solves slow upload speeds caused by http2
     H2WindowSize 5242880
 
-    # SSL
-    SSLEngine on
-    Include /etc/letsencrypt/options-ssl-apache.conf
+    # TLS
+    SSLEngine               on
+    SSLProtocol             -all +TLSv1.2 +TLSv1.3
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
     SSLCertificateFile /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem
     SSLCertificateKeyFile /etc/letsencrypt/live/<your-nc-domain>/privkey.pem
 
@@ -173,6 +176,13 @@ global
     chroot                      /var/haproxy
     log                         /var/run/log audit debug
     lua-prepend-path            /tmp/haproxy/lua/?.lua
+    ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+
+    ssl-default-server-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305
+    ssl-default-server-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-server-options ssl-min-ver TLSv1.2 no-tls-tickets
 
 defaults
     log     global
@@ -182,7 +192,7 @@ defaults
 
 # Frontend: LetsEncrypt_443 ()
 frontend LetsEncrypt_443
-    bind 0.0.0.0:443 name 0.0.0.0:443 ssl prefer-client-ciphers ssl-min-ver TLSv1.2 ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256 ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256 crt-list /tmp/haproxy/ssl/605f6609f106d1.17683543.certlist 
+    bind 0.0.0.0:443 name 0.0.0.0:443 ssl crt-list /tmp/haproxy/ssl/605f6609f106d1.17683543.certlist 
     mode http
     option http-keep-alive
     default_backend acme_challenge_backend
