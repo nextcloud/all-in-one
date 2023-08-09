@@ -112,7 +112,7 @@ for name in "${NAMES[@]}"
 do
     OUTPUT="$(echo "$OUTPUT" | sed "/container_name.*$name$/i\ \ $name:")"
     if [ "$name" != "nextcloud-aio-apache" ]; then
-        OUTPUT="$(echo "$OUTPUT" | sed "/  $name:/i\ ")"
+        OUTPUT="$(echo "$OUTPUT" | sed "/^  $name:/i\ ")"
     fi
 done
 
