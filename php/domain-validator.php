@@ -13,5 +13,6 @@ if (strpos($domain, '.') === false) {
 } elseif (filter_var($domain, FILTER_VALIDATE_IP)) { 
     http_response_code(400); 
 } else {
+    error_log($domain . ' was accepted as valid domain.');
     http_response_code(200);
 }
