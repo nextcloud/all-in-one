@@ -780,6 +780,19 @@ class DockerActionManager
             if ($e->getCode() !== 409) {
                 throw $e;
             }
+
+            // Network may have been created and connected preemptively
+            $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($id)));
+            try {
+                $response = $this->guzzleClient->get($url);
+                $responseBody = json_decode((string)$response->getBody(), true);
+                $connectedNetworks = $responseBody['NetworkSettings']['Networks'];
+                if (array_key_exists($network, $connectedNetworks)) {
+                    return;
+                }
+            } catch (RequestException $e) {
+                // do nothing
+            }
         }
 
         $url = $this->BuildApiUrl(
