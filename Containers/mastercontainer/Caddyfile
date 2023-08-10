@@ -14,18 +14,17 @@
     servers {
         protocols h1 h2 h2c
     }
+
+    on_demand_tls {
+        ask http://localhost:9876/
+    }
 }
 
 http://:80 {
   redir https://{host}{uri}
 }
 
-# Match only host names and not ip-addresses:
-https://*.*:8443,
-https://*.*.*:8443,
-https://*.*.*.*:8443,
-https://*.*.*.*.*:8443,
-https://*.*.*.*.*.*:8443 {
+https://:8443 {
 
     reverse_proxy localhost:8000
 
