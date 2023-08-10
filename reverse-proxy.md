@@ -604,6 +604,7 @@ After adjusting your reverse proxy config, use the following command to start AI
 ```
 # For Linux:
 sudo docker run \
+--init \
 --sig-proxy=false \
 --name nextcloud-aio-mastercontainer \
 --restart always \
@@ -629,6 +630,7 @@ On Windows, install [Docker Desktop](https://www.docker.com/products/docker-desk
 
 ```
 docker run ^
+--init ^
 --sig-proxy=false ^
 --name nextcloud-aio-mastercontainer ^
 --restart always ^

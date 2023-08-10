@@ -87,6 +87,7 @@ The following instructions are meant for installations without a web server or r
     ```
     # For Linux and without a web server or reverse proxy (like Apache, Nginx, Cloudflare Tunnel and else) already in place:
     sudo docker run \
+    --init \
     --sig-proxy=false \
     --name nextcloud-aio-mastercontainer \
     --restart always \
@@ -157,6 +158,7 @@ On Windows, install [Docker Desktop](https://www.docker.com/products/docker-desk
 
 ```
 docker run ^
+--init ^
 --sig-proxy=false ^
 --name nextcloud-aio-mastercontainer ^
 --restart always ^

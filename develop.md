@@ -2,6 +2,7 @@
 If you want to switch to the develop channel, you simply stop and delete the mastercontainer and create a new one with a changed tag to develop:
 ```shell
 sudo docker run \
+--init \
 --sig-proxy=false \
 --name nextcloud-aio-mastercontainer \
 --restart always \

@@ -32,6 +32,7 @@ class Container {
     private array $nextcloudExecCommands;
     private bool $readOnlyRootFs;
     private array $tmpfs;
+    private bool $init;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -54,6 +55,7 @@ class Container {
         array $nextcloudExecCommands,
         bool $readOnlyRootFs,
         array $tmpfs,
+        bool $init,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -75,6 +77,7 @@ class Container {
         $this->nextcloudExecCommands = $nextcloudExecCommands;
         $this->readOnlyRootFs = $readOnlyRootFs;
         $this->tmpfs = $tmpfs;
+        $this->init = $init;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -96,6 +99,10 @@ class Container {
 
     public function GetReadOnlySetting() : bool {
         return $this->readOnlyRootFs;
+    }
+
+    public function GetInit() : bool {
+        return $this->init;
     }
 
     public function GetShmSize() : int {
