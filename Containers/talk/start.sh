@@ -51,7 +51,7 @@ eturnal:
 TURN_CONF
 
 # Remove empty lines so that the config is not invalid
-sed -i '/""/d' /opt/eturnal/etc/eturnal.yml
+sed -i '/""/d' /conf/eturnal.yml
 
 # Signling
 cat << SIGNALING_CONF > "/conf/signaling.conf"
