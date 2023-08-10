@@ -13,7 +13,7 @@
 	<category>monitoring</category>
 	<bugs>https://github.com/nextcloud/all-in-one/issues</bugs>
 	<dependencies>
-		<nextcloud min-version="25" max-version="26"/>
+		<nextcloud min-version="26" max-version="27"/>
 	</dependencies>
 
 	<settings>
