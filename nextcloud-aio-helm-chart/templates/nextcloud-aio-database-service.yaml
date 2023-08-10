@@ -2,12 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ values.NAMESPACE }}
+    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
     kompose.version: 1.30.0 (9d8dcb518)
   labels:
     io.kompose.service: nextcloud-aio-database
   name: nextcloud-aio-database
-  namespace: {{ values.NAMESPACE }}
+  namespace: {{ .Values.NAMESPACE }}
 spec:
   ports:
     - name: "5432"
