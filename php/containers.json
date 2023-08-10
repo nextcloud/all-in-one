@@ -599,7 +599,7 @@
       "container_name": "nextcloud-aio-fulltextsearch",
       "display_name": "Fulltextsearch",
       "image": "nextcloud/aio-fulltextsearch",
-      "init": true,
+      "init": false,
       "expose": [
         "9200"
       ],
