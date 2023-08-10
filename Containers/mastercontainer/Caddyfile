@@ -24,7 +24,7 @@ http://:80 {
   redir https://{host}{uri}
 }
 
-https::8443 {
+https://:8443 {
 
     reverse_proxy localhost:8000
 
