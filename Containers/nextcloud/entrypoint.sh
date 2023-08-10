@@ -476,6 +476,7 @@ php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
 
 # Apply network settings
 echo "Applying network settings..."
+php /var/www/html/occ config:system:set davstorage.request_timeout --value="$PHP_MAX_TIME" --type=int
 php /var/www/html/occ config:system:set trusted_domains 1 --value="$NC_DOMAIN"
 php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_DOMAIN/"
 php /var/www/html/occ config:system:set htaccess.RewriteBase --value="/"
