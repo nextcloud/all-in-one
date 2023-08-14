@@ -268,7 +268,7 @@ elif mountpoint -q /etc/timezone; then
     exit 1
 fi
 
-# Check if unsupported env are set (but dont exit as it would break many instances)
+# Check if unsupported env are set (but don't exit as it would break many instances)
 if [ -n "$APACHE_DISABLE_REWRITE_IP" ]; then
     print_red "The environmental variable APACHE_DISABLE_REWRITE_IP has been set which is not supported by AIO. Please remove it!"
 fi
