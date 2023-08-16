@@ -92,14 +92,14 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
 
     # Check if the line we grep for later on is there
     GREP_STRING='Name: oc_appconfig; Type: TABLE; Schema: public; Owner:'
-    if ! grep -q "$GREP_STRING" "$DUMP_FILE"; then
+    if ! grep -qa "$GREP_STRING" "$DUMP_FILE"; then
         echo "The needed oc_appconfig line is not there which is unexpected."
         echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
         exit 1
     fi
 
     # Get the Owner
-    DB_OWNER="$(grep "$GREP_STRING" "$DUMP_FILE" | grep -oP 'Owner:.*$' | sed 's|Owner:||;s| ||g')"
+    DB_OWNER="$(grep -a "$GREP_STRING" "$DUMP_FILE" | grep -oP 'Owner:.*$' | sed 's|Owner:||;s| ||g')"
     if [ "$DB_OWNER" = "$POSTGRES_USER" ]; then
         echo "Unfortunately was the found database owner of the dump file the same as the POSTGRES_USER $POSTGRES_USER"
         echo "It is not possible to import a database dump from this database owner."
