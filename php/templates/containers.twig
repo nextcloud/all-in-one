@@ -552,7 +552,7 @@
                         {% if is_fulltextsearch_enabled == true %}
                             <input type="checkbox" id="fulltextsearch" name="fulltextsearch" checked="checked"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM)</label><br>
                         {% else %}
-                            <input type="checkbox" id="fulltextsearch" name="fulltextsearch"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM. <b>Please note:</b> the initial indexing can take a long time during which Nextcloud will be unavailable)</label><br>
+                            <input type="checkbox" id="fulltextsearch" name="fulltextsearch"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM. <b>Please note:</b> the initial indexing can take a long time during which Nextcloud will be unavailable)</label><br><br>
                         {% endif %}
                         {% if is_imaginary_enabled == true %}
                             <input type="checkbox" id="imaginary" name="imaginary" checked="checked"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label><br><br>
