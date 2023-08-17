@@ -134,7 +134,8 @@
         "REDIS_PASSWORD",
         "NEXTCLOUD_PASSWORD",
         "TURN_SECRET",
-        "SIGNALING_SECRET"
+        "SIGNALING_SECRET",
+        "FULLTEXTSEARCH_PASSWORD"
       ],
       "volumes": [
         {
@@ -201,7 +202,8 @@
         "INSTALL_LATEST_MAJOR=%INSTALL_LATEST_MAJOR%",
         "TALK_RECORDING_ENABLED=%TALK_RECORDING_ENABLED%",
         "RECORDING_SECRET=%RECORDING_SECRET%",
-        "TALK_RECORDING_HOST=nextcloud-aio-talk-recording"
+        "TALK_RECORDING_HOST=nextcloud-aio-talk-recording",
+        "FULLTEXTSEARCH_PASSWORD=%FULLTEXTSEARCH_PASSWORD%"
       ],
       "restart": "unless-stopped",
       "devices": [
@@ -613,7 +615,8 @@
         "logger.org.elasticsearch.discovery=WARN",
         "http.port=9200",
         "xpack.license.self_generated.type=basic",
-        "xpack.security.enabled=false"
+        "xpack.security.enabled=false",
+        "FULLTEXTSEARCH_PASSWORD=%FULLTEXTSEARCH_PASSWORD%"
       ],
       "volumes": [
         {
@@ -628,6 +631,9 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "secrets": [
+        "FULLTEXTSEARCH_PASSWORD"
       ]
     }
   ]
