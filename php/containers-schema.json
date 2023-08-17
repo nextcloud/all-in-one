@@ -96,6 +96,10 @@
 							"pattern": "^[A-Z_]+$"
 						}
 					},
+					"image_tag": {
+						"type": "string",
+						"pattern": "^[a-z0-9.-]+$"
+					},
 					"devices": {
 						"type": "array",
 						"items": {

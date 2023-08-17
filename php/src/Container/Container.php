@@ -33,6 +33,7 @@ class Container {
     private bool $readOnlyRootFs;
     private array $tmpfs;
     private bool $init;
+    private string $imageTag;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -56,6 +57,7 @@ class Container {
         bool $readOnlyRootFs,
         array $tmpfs,
         bool $init,
+        string $imageTag,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -78,6 +80,7 @@ class Container {
         $this->readOnlyRootFs = $readOnlyRootFs;
         $this->tmpfs = $tmpfs;
         $this->init = $init;
+        $this->imageTag = $imageTag;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -95,6 +98,10 @@ class Container {
 
     public function GetRestartPolicy() : string {
         return $this->restartPolicy;
+    }
+
+    public function GetImageTag() : string {
+        return $this->imageTag;
     }
 
     public function GetReadOnlySetting() : bool {

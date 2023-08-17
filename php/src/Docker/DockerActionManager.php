@@ -48,7 +48,11 @@ class DockerActionManager
     }
 
     private function BuildImageName(Container $container) : string {
-        return $container->GetContainerName() . ':' . $this->GetCurrentChannel();
+        $tag = $container->GetImageTag();
+        if ($tag === '') {
+            $tag = $this->GetCurrentChannel();
+        }
+        return $container->GetContainerName() . ':' . $tag;
     }
 
     public function GetContainerRunningState(Container $container) : IContainerState
@@ -95,7 +99,10 @@ class DockerActionManager
 
     public function GetContainerUpdateState(Container $container) : IContainerState
     {
-        $tag = $this->GetCurrentChannel();
+        $tag = $container->GetImageTag();
+        if ($tag === '') {
+            $tag = $this->GetCurrentChannel();
+        }
 
         $runningDigests = $this->GetRepoDigestsOfContainer($container->GetIdentifier());
         if ($runningDigests === null) {
