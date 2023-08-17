@@ -361,8 +361,8 @@
       "tmpfs": [
         "/var/log/supervisord",
         "/var/run/supervisord",
+        "/opt/eturnal/run",
         "/conf",
-        "/var/lib/turn",
         "/tmp"
       ]
     },

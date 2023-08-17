@@ -1,4 +1,5 @@
 FROM nats:2.9.21-scratch as nats
+FROM eturnal/eturnal:1.11.1 AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:1.1.3 as signaling
 FROM alpine:3.18.3 as janus
 
@@ -32,8 +33,18 @@ RUN set -ex; \
     make configs; \
     rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
 
-FROM coturn/coturn:4.6.2-alpine3.18
-USER root
+FROM alpine:3.18.2
+ENV STUN_SERVICE="stun.nextcloud.com 443"
+ENV ETURNAL_ETC_DIR="/conf"
+COPY --from=janus     /usr/local                          /usr/local
+COPY --from=eturnal   /opt/eturnal                        /opt/eturnal
+COPY --from=eturnal   /usr/local/bin/stun                 /usr/local/bin/stun
+COPY --from=eturnal   /usr/local/bin/eturnalctl           /usr/local/bin/eturnalctl
+COPY --from=nats      /nats-server                        /usr/local/bin/nats-server
+COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
+
+COPY --chmod=775 start.sh /start.sh
+COPY --chmod=664 supervisord.conf /supervisord.conf
 
 RUN set -ex; \
     apk add --no-cache \
@@ -57,7 +68,7 @@ RUN set -ex; \
         libwebsockets \
         \
         shadow; \
-    useradd --system talk; \
+    useradd --system eturnal; \
     apk del --no-cache \
         shadow; \
     \
@@ -66,6 +77,7 @@ RUN set -ex; \
     \
     touch \
         /etc/nats.conf; \
+        /etc/eturnal.yml; \
     echo "listen: 127.0.0.1:4222" | tee /etc/nats.conf; \
     mkdir -p \
         /var/tmp \
@@ -74,32 +86,22 @@ RUN set -ex; \
         /var/log/supervisord \
         /var/run/supervisord \
         /usr/local/lib/janus/loggers; \
-    chown talk:talk -R \
+    chown eturnal:eturnal -R \
         /usr \
+        /opt/eturnal \
         /etc/nats.conf \
-        /var/lib/turn \
         /var/log/supervisord \
         /var/run/supervisord; \
     chmod 777 -R \
         /tmp \
         /conf \
+        /opt/eturnal \
         /var/run/supervisord \
-        /var/lib/turn \
         /var/log/supervisord;
 
-COPY --from=janus /usr/local /usr/local
-COPY --from=nats /nats-server /usr/local/bin/nats-server
-COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
-
-COPY --chmod=775 start.sh /start.sh
-COPY --chmod=664 supervisord.conf /supervisord.conf
-
-# Set default talk port https://github.com/nextcloud/all-in-one/issues/1011
-ENV TALK_PORT=3478
-
-USER talk
+USER eturnal
 ENTRYPOINT ["/start.sh"]
 CMD ["supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD (nc -z localhost 8081 && nc -z localhost 8188 && nc -z localhost 4222 && nc -z localhost "$TALK_PORT" && nc -z "$NC_DOMAIN" "$TALK_PORT") || exit 1
+HEALTHCHECK CMD (nc -z localhost 8081 && nc -z localhost 8188 && nc -z localhost 4222 && nc -z localhost "$TALK_PORT" && nc -z "$NC_DOMAIN" "$TALK_PORT" && eturnalctl status) || exit 1
 LABEL com.centurylinklabs.watchtower.enable="false"

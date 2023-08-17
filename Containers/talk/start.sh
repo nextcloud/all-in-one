@@ -4,6 +4,9 @@
 if [ -z "$NC_DOMAIN" ]; then
     echo "You need to provide the NC_DOMAIN."
     exit 1
+elif [ -z "$TALK_PORT" ]; then
+    echo "You need to provide the TALK_PORT."
+    exit 1
 elif [ -z "$TURN_SECRET" ]; then
     echo "You need to provide the TURN_SECRET."
     exit 1
@@ -16,42 +19,39 @@ elif [ -z "$INTERNAL_SECRET" ]; then
 fi
 
 set -x
-IPv4_ADDRESS_TALK="$(dig nextcloud-aio-talk A +short)"
+IPv4_ADDRESS_TALK="$(dig nextcloud-aio-talk IN A +short | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv6_ADDRESS_TALK="$(dig nextcloud-aio-talk AAAA +short | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+
+IPv4_ADDRESS_NC="$(dig "$NC_DOMAIN" IN A +short +https +tls-ca=/etc/ssl/certs/ca-certificates.crt @1.1.1.1 | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv6_ADDRESS_NC="$(dig "$NC_DOMAIN" IN AAAA +short +https +tls-ca=/etc/ssl/certs/ca-certificates.crt @1.1.1.1 | grep '^[0-9a-f:]\+$' | sort | head -n1)"
 set +x
 
 # Turn
-cat << TURN_CONF > "/conf/turnserver.conf"
-listening-port=$TALK_PORT
-fingerprint
-use-auth-secret
-static-auth-secret=$TURN_SECRET
-realm=$NC_DOMAIN
-total-quota=0
-bps-capacity=0
-stale-nonce
-no-multicast-peers
-simple-log
-pidfile=/var/tmp/turnserver.pid
-no-tls
-no-dtls
-userdb=/var/lib/turn/turndb
-# Based on https://nextcloud-talk.readthedocs.io/en/latest/TURN/#turn-server-and-internal-networks
-allowed-peer-ip=$IPv4_ADDRESS_TALK
-denied-peer-ip=0.0.0.0-0.255.255.255
-denied-peer-ip=10.0.0.0-10.255.255.255
-denied-peer-ip=100.64.0.0-100.127.255.255
-denied-peer-ip=127.0.0.0-127.255.255.255
-denied-peer-ip=169.254.0.0-169.254.255.255
-denied-peer-ip=172.16.0.0-172.31.255.255
-denied-peer-ip=192.0.0.0-192.0.0.255
-denied-peer-ip=192.0.2.0-192.0.2.255
-denied-peer-ip=192.88.99.0-192.88.99.255
-denied-peer-ip=192.168.0.0-192.168.255.255
-denied-peer-ip=198.18.0.0-198.19.255.255
-denied-peer-ip=198.51.100.0-198.51.100.255
-denied-peer-ip=203.0.113.0-203.0.113.255
-denied-peer-ip=240.0.0.0-255.255.255.255
+cat << TURN_CONF > "/conf/eturnal.yml"
+eturnal:
+  listen:
+    - ip: "::"
+      port: $TALK_PORT
+      transport: udp
+    - ip: "::"
+      port: $TALK_PORT
+      transport: tcp
+  log_dir: stdout
+  log_level: warning
+  secret: "$TURN_SECRET"
+  relay_ipv4_addr: "$IPv4_ADDRESS_NC"
+  relay_ipv6_addr: "$IPv6_ADDRESS_NC"
+  blacklist:
+  - recommended
+  whitelist:
+  - 127.0.0.1
+  - ::1
+  - "$IPv4_ADDRESS_TALK"
+  - "$IPv6_ADDRESS_TALK"
 TURN_CONF
+
+# Remove empty lines so that the config is not invalid
+sed -i '/""/d' /conf/eturnal.yml
 
 # Signling
 cat << SIGNALING_CONF > "/conf/signaling.conf"
