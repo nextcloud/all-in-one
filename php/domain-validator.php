@@ -13,6 +13,7 @@ if (strpos($domain, '.') === false) {
 } elseif (filter_var($domain, FILTER_VALIDATE_IP)) { 
     http_response_code(400); 
 } else {
-    error_log($domain . ' was accepted as valid domain.');
+    // Commented because logging is disabled as otherwise all attempts will be logged which spams the logs
+    // error_log($domain . ' was accepted as valid domain.');
     http_response_code(200);
 }
