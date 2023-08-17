@@ -76,7 +76,7 @@ RUN set -ex; \
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     \
     touch \
-        /etc/nats.conf; \
+        /etc/nats.conf \
         /etc/eturnal.yml; \
     echo "listen: 127.0.0.1:4222" | tee /etc/nats.conf; \
     mkdir -p \
