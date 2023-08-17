@@ -44,6 +44,7 @@ COPY --from=nats      /nats-server                        /usr/local/bin/nats-se
 COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
 
 COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=664 supervisord.conf /supervisord.conf
 
 RUN set -ex; \
@@ -103,5 +104,5 @@ USER eturnal
 ENTRYPOINT ["/start.sh"]
 CMD ["supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD (nc -z localhost 8081 && nc -z localhost 8188 && nc -z localhost 4222 && nc -z localhost "$TALK_PORT" && nc -z "$NC_DOMAIN" "$TALK_PORT" && eturnalctl status) || exit 1
+HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"
