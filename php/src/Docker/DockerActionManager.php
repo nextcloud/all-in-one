@@ -450,6 +450,8 @@ class DockerActionManager
             $requestBody['HostConfig']['Tmpfs'] =  $tmpfs;
         }
 
+        $requestBody['HostConfig']['Init'] = $container->GetInit();
+
         $capAdds = $container->GetCapAdds();
         if (count($capAdds) > 0) {
             $requestBody['HostConfig']['CapAdd'] = $capAdds;

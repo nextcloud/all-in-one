@@ -272,6 +272,11 @@ class ContainerDefinitionFetcher
                 $tmpfs = $entry['tmpfs'];
             }
 
+            $init = true;
+            if (isset($entry['init'])) {
+                $init = $entry['init'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -292,6 +297,7 @@ class ContainerDefinitionFetcher
                 $nextcloudExecCommands,
                 $readOnlyRootFs,
                 $tmpfs,
+                $init,
                 $this->container->get(DockerActionManager::class)
             );
         }

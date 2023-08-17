@@ -137,6 +137,9 @@
 					"read_only": {
 						"type": "boolean"
 					},
+					"init": {
+						"type": "boolean"
+					},
 					"tmpfs": {
 						"type": "array",
 						"items": {
