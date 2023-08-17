@@ -155,7 +155,7 @@ for port in "${INTERNAL_TALK_PORTS[@]}"; do
 done
 echo '---' >>  /tmp/talk-service.copy
 # shellcheck disable=SC1083
-find ./ -name '*talk-service.yaml' -exec grep -v '{{ .Values.TALK*}}\|protocol: UDP\|type: LoadBalancer' \{} \; >> /tmp/talk-service.copy
+find ./ -name '*talk-service.yaml' -exec grep -v '{{ .Values.TALK.*}}\|protocol: UDP\|type: LoadBalancer' \{} \; >> /tmp/talk-service.copy
 # shellcheck disable=SC1083
 find ./ -name '*talk-service.yaml' -exec mv /tmp/talk-service.copy \{} \;
 # shellcheck disable=SC1083
