@@ -170,6 +170,27 @@
 							"pattern": "^/[a-z/_0-9-:]+$"
 						}
 					},
+					"caddy_routes": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"additionalProperties": false,
+							"minProperties": 3,
+							"properties": {
+								"route": {
+									"type": "string",
+									"pattern": "^[a-z/-]+$"
+								},
+								"target": {
+									"type": "string",
+									"pattern": "^nextcloud-aio-[a-z-]+:[0-9]+$"
+								},
+								"uri_strip_prefix": {
+									"type": "boolean"
+								}
+							}
+						}
+					},
 					"volumes": {
 						"type": "array",
 						"items": {
