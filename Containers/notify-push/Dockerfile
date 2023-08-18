@@ -1,6 +1,7 @@
 FROM alpine:3.18.2
 
 COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 RUN set -ex; \
     apk add --no-cache \
@@ -17,5 +18,5 @@ RUN set -ex; \
 USER 33
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD nc -z localhost 7867 || exit 1
+HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"
