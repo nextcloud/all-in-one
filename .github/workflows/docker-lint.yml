@@ -32,10 +32,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install nodejs npm -y --no-install-recommends
           npm install -g dockerfilelint
-          wget https://github.com/replicatedhq/dockerfilelint/pull/184.patch -O /usr/local/lib/node_modules/dockerfilelint/184.patch
+          wget https://github.com/replicatedhq/dockerfilelint/pull/201.patch -O /usr/local/lib/node_modules/dockerfilelint/201.patch
           CURRENT_DIR=$PWD
           cd /usr/local/lib/node_modules/dockerfilelint/
-          git apply 184.patch
+          git apply 201.patch
           cd $CURRENT_DIR
           cat << RULES > ./.dockerfilelintrc
           rules:
