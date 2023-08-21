@@ -277,6 +277,11 @@ class ContainerDefinitionFetcher
                 $init = $entry['init'];
             }
 
+            $imageTag = '';
+            if (isset($entry['image_tag'])) {
+                $imageTag = $entry['image_tag'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -298,6 +303,7 @@ class ContainerDefinitionFetcher
                 $readOnlyRootFs,
                 $tmpfs,
                 $init,
+                $imageTag,
                 $this->container->get(DockerActionManager::class)
             );
         }
