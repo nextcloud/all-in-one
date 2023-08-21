@@ -37,7 +37,7 @@ eturnal:
   log_level: warning
   secret: "$TURN_SECRET"
   relay_ipv4_addr: "$IPv4_ADDRESS_TALK"
-  relay_ipv6_addr: "$IPv4_ADDRESS_TALK"
+  relay_ipv6_addr: "$IPv6_ADDRESS_TALK"
   blacklist:
   - recommended
   whitelist:
