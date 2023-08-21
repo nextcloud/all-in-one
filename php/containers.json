@@ -205,6 +205,7 @@
         "TALK_RECORDING_HOST=nextcloud-aio-talk-recording",
         "FULLTEXTSEARCH_PASSWORD=%FULLTEXTSEARCH_PASSWORD%"
       ],
+      "stop_grace_period": 600,
       "restart": "unless-stopped",
       "devices": [
         "/dev/dri"
