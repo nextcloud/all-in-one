@@ -25,11 +25,11 @@ jobs:
 
       - name: Run chart-testing (lint)
         id: lint
-        run: ct lint --target-branch ${{ github.event.repository.default_branch }} --chart-dirs nextcloud-aio-helm-chart
+        run: ct lint --debug --chart-dirs nextcloud-aio-helm-chart
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.8.0
 
       - name: Run chart-testing (install)
         id: install
-        run: ct install --target-branch ${{ github.event.repository.default_branch }} --chart-dirs nextcloud-aio-helm-chart
+        run: ct install --debug --chart-dirs nextcloud-aio-helm-chart
