@@ -32,4 +32,4 @@ jobs:
 
       - name: Run chart-testing (install)
         id: install
-        run: ct install --debug --chart-dirs nextcloud-aio-helm-chart
+        run: ct install --target-branch ${{ github.event.repository.default_branch }} --debug --chart-dirs nextcloud-aio-helm-chart
