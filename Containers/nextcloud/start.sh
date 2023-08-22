@@ -34,7 +34,7 @@ fi
 # Check if /dev/dri device is present and apply correct permissions
 set -x
 if ! [ -f "/dev-dri-group-was-added" ] && [ -n "$(find /dev -maxdepth 1 -mindepth 1 -name dri)" ] && [ -n "$(find /dev/dri -maxdepth 1 -mindepth 1 -name renderD128)" ]; then
-    # From https://github.com/pulsejet/memories/wiki/QSV-Transcoding#docker-installations
+    # From https://memories.gallery/hw-transcoding/#docker-installations
     GID="$(stat -c "%g" /dev/dri/renderD128)"
     groupadd -g "$GID" render2 || true # sometimes this is needed
     GROUP="$(getent group "$GID" | cut -d: -f1)"
