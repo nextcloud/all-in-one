@@ -3,6 +3,7 @@ FROM elasticsearch:8.10.1
 
 USER root
 
+# hadolint ignore=DL3008
 RUN set -ex; \
     \
     export DEBIAN_FRONTEND=noninteractive; \
