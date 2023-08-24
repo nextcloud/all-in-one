@@ -1,5 +1,5 @@
 # Inspiration: https://github.com/Tecnativa/docker-socket-proxy/blob/master/Dockerfile
-FROM haproxy:2.4.24-alpine3.18
+FROM haproxy:2.8.2-alpine3.18
 
 USER root
 
