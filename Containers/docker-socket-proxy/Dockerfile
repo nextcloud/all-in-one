@@ -4,7 +4,7 @@ FROM haproxy:2.4.24-alpine3.18
 USER root
 
 RUN set -ex; \
-    apk add --no-cache date; \
+    apk add --no-cache tzdata; \
     chmod 777 -R /run/; \
     chmod 777 -R /var/lib/haproxy
 
