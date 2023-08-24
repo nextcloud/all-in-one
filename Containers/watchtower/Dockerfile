@@ -8,7 +8,7 @@ COPY --from=watchtower /watchtower /watchtower
 
 COPY --chmod=775 start.sh /start.sh
 
-USER root
+USER nobody:root
 
 ENTRYPOINT ["/start.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false"
