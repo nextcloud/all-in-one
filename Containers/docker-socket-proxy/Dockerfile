@@ -1,6 +1,8 @@
 # Inspiration: https://github.com/Tecnativa/docker-socket-proxy/blob/master/Dockerfile
 FROM haproxy:2.4.24-alpine3.18
 
+USER root
+
 RUN set -ex; \
     apk add --no-cache date; \
     chmod 777 -R /run/; \
