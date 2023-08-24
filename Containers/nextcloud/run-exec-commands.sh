@@ -15,8 +15,13 @@ if [ -n "$NEXTCLOUD_EXEC_COMMANDS" ]; then
 else
     # Collabora must work also if using manual-install 
     if [ "$COLLABORA_ENABLED" = yes ]; then
-        echo "Activating collabora config..."
+        echo "Activating Collabora config..."
         php /var/www/html/occ richdocuments:activate-config
+    fi
+    # OnlyOffice must work also if using manual-install
+    if [ "$ONLYOFFICE_ENABLED" = yes ]; then
+        echo "Activating OnlyOffice config..."
+        php /var/www/html/occ onlyoffice:documentserver --check
     fi
 fi
 
