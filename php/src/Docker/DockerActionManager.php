@@ -509,6 +509,9 @@ class DockerActionManager
                 }
                 $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
             }
+        // Special things for the watchtower and docker-socket-proxy container which should not be exposed in the containers.json
+        } elseif ($container->GetIdentifier() === 'nextcloud-aio-watchtower' || $container->GetIdentifier() === 'nextcloud-aio-docker-socket-proxy') {
+            $requestBody['HostConfig']['SecurityOpt'] = ["label=disabled"];
         }
 
         if (count($mounts) > 0) {
