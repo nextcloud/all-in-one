@@ -266,7 +266,7 @@ Of course you need to modify `<your-nc-domain>` to the domain on which you want 
 
 **Disclaimer:** This config was tested and should normally work on all modern nginx version if you configure it correctly. Improvements to the config are very welcome!
 
-Add the below template to you nginx config.
+Add the below template to your nginx config.
 
 **Note:** please check your nginx version by running: `nginx -v` and adjust it the lines marked with version notes, so that they fit your nginx version.
 
