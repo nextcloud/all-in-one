@@ -26,7 +26,7 @@ ENV ALLOW_RESTARTS=1 \
     NODES=0 \
     PING=1 \
     PLUGINS=0 \
-    POST=0 \
+    POST=1 \
     SECRETS=0 \
     SERVICES=0 \
     SESSION=0 \
@@ -39,3 +39,5 @@ ENV ALLOW_RESTARTS=1 \
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 
 USER haproxy:root
+
+HEALTHCHECK CMD nc -z 127.0.0.1 2375 || exit 1
