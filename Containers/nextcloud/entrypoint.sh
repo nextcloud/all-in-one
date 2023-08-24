@@ -735,7 +735,7 @@ else
 fi
 
 # Docker socket proxy
-if version_greater "$installed_version" "28.0.0.0"; then
+if version_greater "$installed_version" "27.1.0.0"; then
     if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
         if ! [ -d "/var/www/html/custom_apps/app_ecosystem_v2" ]; then
             php /var/www/html/occ app:install app_ecosystem_v2
