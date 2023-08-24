@@ -661,7 +661,8 @@
       "restart": "unless-stopped",
       "read_only": true,
       "tmpfs": [
-        "/run/",
+        "/run",
+        "/conf",
         "/var/lib/haproxy"
       ]
     }
