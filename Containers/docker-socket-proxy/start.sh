@@ -1,8 +1,5 @@
 #!/bin/sh
 
-openssl req -nodes -new -x509 -subj '/CN=*' -sha256 -keyout /etc/privkey.pem -out /etc/fullchain.pem -days 365000
-cat /etc/fullchain.pem /etc/privkey.pem | tee /etc/cert.pem
-
 # Only start container if nextcloud is accessible
 while ! nc -z "$NEXTCLOUD_HOST" 9000; do
     echo "Waiting for Nextcloud to start..."
