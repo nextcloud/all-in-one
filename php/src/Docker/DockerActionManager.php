@@ -346,6 +346,12 @@ class DockerActionManager
                     } else {
                         $replacements[1] = '';
                     }
+                } elseif ($out[1] === 'DOCKER_SOCKET_PROXY_ENABLED') {
+                    if ($this->configurationManager->isDockerSocketProxyEnabled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
                 } elseif ($out[1] === 'NEXTCLOUD_UPLOAD_LIMIT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
                 } elseif ($out[1] === 'NEXTCLOUD_MEMORY_LIMIT') {
@@ -406,7 +412,11 @@ class DockerActionManager
                 $portWithProtocol = $value->port . '/' . $value->protocol;
                 $exposedPorts[$portWithProtocol] = null;
             }
-            $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio';
+            if ($container->GetIdentifier() !== 'nextcloud-aio-docker-socket-proxy') {
+                $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio';
+            } else {
+                $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio-docker-socket-proxy-network';
+            }
         } else {
             $requestBody['HostConfig']['NetworkMode'] = 'host';
         }
@@ -763,13 +773,12 @@ class DockerActionManager
         }
     }
 
-    private function ConnectContainerIdToNetwork(string $id, string $internalPort) : void
+    private function ConnectContainerIdToNetwork(string $id, string $internalPort, string $network = 'nextcloud-aio') : void
     {
         if ($internalPort === 'host') {
             return;
         }
 
-        $network = 'nextcloud-aio';
         $url = $this->BuildApiUrl('networks/create');
         try {
             $this->guzzleClient->request(
@@ -777,7 +786,7 @@ class DockerActionManager
                 $url,
                 [
                     'json' => [
-                        'Name' => 'nextcloud-aio',
+                        'Name' => $network,
                         'CheckDuplicate' => true,
                         'Driver' => 'bridge',
                         'Internal' => false,
@@ -815,13 +824,17 @@ class DockerActionManager
     public function ConnectMasterContainerToNetwork() : void
     {
         $this->ConnectContainerIdToNetwork('nextcloud-aio-mastercontainer', '');
+        $this->ConnectContainerIdToNetwork('nextcloud-aio-mastercontainer', '', 'nextcloud-aio-docker-socket-proxy-network');
         // Don't disconnect here since it slows down the initial login by a lot. Is getting done during cron.sh instead.
         // $this->DisconnectContainerFromBridgeNetwork('nextcloud-aio-mastercontainer');
     }
 
     public function ConnectContainerToNetwork(Container $container) : void
     {
-      $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort());
+        $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort());
+        if ($container->GetIdentifier() === 'nextcloud-aio-nextcloud' || $container->GetIdentifier() === 'nextcloud-aio-docker-socket-proxy') {
+            $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort(), 'nextcloud-aio-docker-socket-proxy-network');
+        }
     }
 
     public function StopContainer(Container $container) : void {

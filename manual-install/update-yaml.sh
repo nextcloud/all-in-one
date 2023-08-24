@@ -20,6 +20,7 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].nextcloud_exec_commands)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-watchtower"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-domaincheck"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-borgbackup"))')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-docker-socket-proxy"))')"
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= map({ (.): { "condition": "service_started", "required": false } }) else . end' | jq '.services[] |= if has("depends_on") then .depends_on |= reduce .[] as $item ({}; . + $item) else . end')"
 
 snap install yq
@@ -66,6 +67,7 @@ do
     sed -i "s|$variable|\${$sole_variable}|g" containers.yml
 done
 
+sed -i '/DOCKER_SOCKET_PROXY_ENABLED/d' sample.conf
 sed -i 's|_ENABLED=|_ENABLED="no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.|' sample.conf
 sed -i 's|CLAMAV_ENABLED=no.*|CLAMAV_ENABLED="no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically. Note: arm64 has no clamav support|' sample.conf
 sed -i 's|TALK_ENABLED=no|TALK_ENABLED="yes"|' sample.conf
