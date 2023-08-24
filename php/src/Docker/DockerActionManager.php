@@ -831,7 +831,9 @@ class DockerActionManager
 
     public function ConnectContainerToNetwork(Container $container) : void
     {
-        $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort());
+        if ($container->GetIdentifier() !== 'nextcloud-aio-docker-socket-proxy') {
+            $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort());
+        }
         if ($container->GetIdentifier() === 'nextcloud-aio-nextcloud' || $container->GetIdentifier() === 'nextcloud-aio-docker-socket-proxy') {
             $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort(), 'nextcloud-aio-docker-socket-proxy-network');
         }
