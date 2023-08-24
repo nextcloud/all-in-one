@@ -38,6 +38,6 @@ ENV ALLOW_RESTARTS=1 \
     VOLUMES=1
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 
-USER haproxy:root
+USER root
 
 HEALTHCHECK CMD nc -z 127.0.0.1 2375 || exit 1
