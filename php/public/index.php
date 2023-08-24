@@ -121,6 +121,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_memory_limit' => $configurationManager->GetNextcloudMemoryLimit(),
         'is_dri_device_enabled' => $configurationManager->isDriDeviceEnabled(),
         'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled(),
+        'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled(),
     ]);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {

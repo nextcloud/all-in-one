@@ -93,6 +93,10 @@ class ContainerDefinitionFetcher
                 if (!$this->configurationManager->isFulltextsearchEnabled()) {
                     continue;
                 }
+            } elseif ($entry['container_name'] === 'nextcloud-aio-docker-socket-proxy') {
+                if (!$this->configurationManager->isDockerSocketProxyEnabled()) {
+                    continue;
+                }
             }
 
             $ports = new ContainerPorts();
@@ -193,6 +197,10 @@ class ContainerDefinitionFetcher
                         }
                     } elseif ($value === 'nextcloud-aio-fulltextsearch') {
                         if (!$this->configurationManager->isFulltextsearchEnabled()) {
+                            continue;
+                        }
+                    } elseif ($value === 'nextcloud-aio-docker-socket-proxy') {
+                        if (!$this->configurationManager->isDockerSocketProxyEnabled()) {
                             continue;
                         }
                     }

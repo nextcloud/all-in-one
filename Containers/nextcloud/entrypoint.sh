@@ -282,6 +282,8 @@ DATADIR_PERMISSION_CONF
                         touch "$NEXTCLOUD_DATA_DIR/install.failed"
                         exit 1
                     fi
+                    # shellcheck disable=SC2016
+                    installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
                 fi
                 php /var/www/html/occ app:disable updatenotification
                 rm -rf /var/www/html/apps/updatenotification
@@ -729,6 +731,23 @@ else
     fi
     if [ -d "/var/www/html/custom_apps/files_fulltextsearch" ]; then
         php /var/www/html/occ app:remove files_fulltextsearch
+    fi
+fi
+
+# Docker socket proxy
+if version_greater "$installed_version" "27.1.0.0"; then
+    if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
+        if ! [ -d "/var/www/html/custom_apps/app_ecosystem_v2" ]; then
+            php /var/www/html/occ app:install app_ecosystem_v2
+        elif [ "$(php /var/www/html/occ config:app:get app_ecosystem_v2 enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable app_ecosystem_v2
+        elif [ "$SKIP_UPDATE" != 1 ]; then
+            php /var/www/html/occ app:update app_ecosystem_v2
+        fi
+    else
+        if [ -d "/var/www/html/custom_apps/app_ecosystem_v2" ]; then
+            php /var/www/html/occ app:remove app_ecosystem_v2
+        fi
     fi
 fi
 

@@ -574,6 +574,11 @@
                         {% else %}
                             {#<input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice</label><br>#}
                         {% endif %}
+                        {% if is_docker_socket_proxy_enabled == true %}
+                            <input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy" checked="checked"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_ecosystem_v2#nextcloud-application-ecosystem-v2">Nextcloud Application Ecosystem V2</a>)</label><br><br>
+                        {% else %}
+                            <input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_ecosystem_v2#nextcloud-application-ecosystem-v2">Nextcloud Application Ecosystem V2</a>)</label><br><br>
+                        {% endif %}
                         <input id="options-form-submit" class="button" type="submit" value="Save changes" />
                         <script type="text/javascript" src="options-form-submit.js"></script>
                     </form>

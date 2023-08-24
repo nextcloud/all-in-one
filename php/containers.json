@@ -120,7 +120,8 @@
         "nextcloud-aio-clamav",
         "nextcloud-aio-fulltextsearch",
         "nextcloud-aio-talk-recording",
-        "nextcloud-aio-imaginary"
+        "nextcloud-aio-imaginary",
+        "nextcloud-aio-docker-socket-proxy"
       ],
       "display_name": "Nextcloud",
       "image": "nextcloud/aio-nextcloud",
@@ -203,7 +204,8 @@
         "TALK_RECORDING_ENABLED=%TALK_RECORDING_ENABLED%",
         "RECORDING_SECRET=%RECORDING_SECRET%",
         "TALK_RECORDING_HOST=nextcloud-aio-talk-recording",
-        "FULLTEXTSEARCH_PASSWORD=%FULLTEXTSEARCH_PASSWORD%"
+        "FULLTEXTSEARCH_PASSWORD=%FULLTEXTSEARCH_PASSWORD%",
+        "DOCKER_SOCKET_PROXY_ENABLED=%DOCKER_SOCKET_PROXY_ENABLED%"
       ],
       "restart": "unless-stopped",
       "devices": [
@@ -638,6 +640,29 @@
       ],
       "secrets": [
         "FULLTEXTSEARCH_PASSWORD"
+      ]
+    },
+    {
+      "container_name": "nextcloud-aio-docker-socket-proxy",
+      "display_name": "Docker Socket Proxy",
+      "image": "nextcloud/aio-docker-socket-proxy",
+      "init": true,
+      "internal_port": "2375",
+      "environment": [
+        "TZ=%TIMEZONE%"
+      ],
+      "volumes": [
+        {
+          "source": "%WATCHTOWER_DOCKER_SOCKET_PATH%",
+          "destination": "/var/run/docker.sock",
+          "writeable": false
+        }
+      ],
+      "restart": "unless-stopped",
+      "read_only": true,
+      "tmpfs": [
+        "/run/",
+        "/var/lib/haproxy"
       ]
     }
   ]

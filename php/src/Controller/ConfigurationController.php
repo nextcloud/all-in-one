@@ -110,6 +110,11 @@ class ConfigurationController
                 } else {
                     $this->configurationManager->SetFulltextsearchEnabledState(0);
                 }
+                if (isset($request->getParsedBody()['docker-socket-proxy'])) {
+                    $this->configurationManager->SetDockerSocketProxyEnabledState(1);
+                } else {
+                    $this->configurationManager->SetDockerSocketProxyEnabledState(0);
+                }
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {

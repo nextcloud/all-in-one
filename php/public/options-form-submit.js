@@ -14,6 +14,13 @@ function handleTalkVisibility() {
     }
 }
 
+function handleDockerSocketProxyWarning() {
+    let dockerSocketProxy = document.getElementById("docker-socket-proxy");
+    if (dockerSocketProxy.checked) {
+        alert('⚠️ Warning! Enabling this container comes with possible Security problems since you are exposing the docker socket and all its privileges to the Nextcloud container. Enable this only if you are sure what you are doing!')
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function(event) {
     // handle submit button for options form
     let optionsFormSubmit = document.getElementById("options-form-submit");
@@ -52,4 +59,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     // Fulltextsearch
     let fulltextsearch = document.getElementById("fulltextsearch");
     fulltextsearch.addEventListener('change', makeOptionsFormSubmitVisible);
+
+    // Docker socket proxy
+    let dockerSocketProxy = document.getElementById("docker-socket-proxy");
+    dockerSocketProxy.addEventListener('change', makeOptionsFormSubmitVisible);
+    dockerSocketProxy.addEventListener('change', handleDockerSocketProxyWarning);
 });
