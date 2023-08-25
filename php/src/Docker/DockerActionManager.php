@@ -511,7 +511,7 @@ class DockerActionManager
             }
         // Special things for the watchtower and docker-socket-proxy container which should not be exposed in the containers.json
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-watchtower' || $container->GetIdentifier() === 'nextcloud-aio-docker-socket-proxy') {
-            $requestBody['HostConfig']['SecurityOpt'] = ["label=disabled"];
+            $requestBody['HostConfig']['SecurityOpt'] = ["label:disable"];
         }
 
         if (count($mounts) > 0) {
