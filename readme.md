@@ -532,6 +532,8 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/backup
 1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
 
 ### How to stop/start/update containers or trigger the daily backup from a script externally?
+⚠️⚠️⚠️ **Waring**: The below script will only work **after** the initial setup of AIO. So you will always need to **first visit the AIO interface**, type in your domain and start the containers the first time or restore an older AIO instance from its borg backup.
+
 You can do so by running the `/daily-backup.sh` script that is stored in the mastercontainer. It accepts the following environmental varilables:
 - `AUTOMATIC_UPDATES` if set to `1`, it will automatically stop the containers, update them and start them including the mastercontainer. If the mastercontainer gets updated, this script's execution will stop as soon as the mastercontainer gets stopped. You can then wait until it is started again and run the script with this flag again in order to update all containers correctly afterwards.
 - `DAILY_BACKUP` if set to `1`, it will automatically stop the containers and create a backup. If you want to start them again afterwards, you may have a look at the `START_CONTAINERS` option.
