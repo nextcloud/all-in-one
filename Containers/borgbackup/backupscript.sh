@@ -47,7 +47,7 @@ fi
 
 # Do not continue if this file exists (needed for simple external blocking)
 if [ -f "$BORG_BACKUP_DIRECTORY/aio-lockfile" ]; then
-    echo "Not continuing because aio-lockfile exists -- it seems like a script is externally running which is locking the backup archive."
+    echo "Not continuing because aio-lockfile exists – it seems like a script is externally running which is locking the backup archive."
     echo "If this should not be the case, you can fix this by deleting the 'aio-lockfile' file from the backup archive directory."
     exit 1
 fi
