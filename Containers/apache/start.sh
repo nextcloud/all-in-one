@@ -63,7 +63,7 @@ mkdir -p /mnt/data/caddy-imports
 # Remove falsely added Nextcloud conf
 rm -f /mnt/data/caddy-imports/nextcloud
 
-# Makre sure that the caddy-imports dir is not empty
+# Make sure that the caddy-imports dir is not empty
 echo "# empty file so that caddy does not print a warning" > /mnt/data/caddy-imports/empty
 
 # Fix apache startup
