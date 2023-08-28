@@ -35,19 +35,19 @@ done
 
 # Check if target is mountpoint
 if ! mountpoint -q /mnt/borgbackup; then
-    echo "/mnt/borgbackup is not a mountpoint which is not allowed"
+    echo "/mnt/borgbackup is not a mountpoint which is not allowed."
     exit 1
 fi
 
 # Check if target is empty
 if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != test ] && ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
-    echo "The repository is empty. cannot perform check or restore."
+    echo "The repository is empty. Cannot perform check or restore."
     exit 1
 fi
 
 # Do not continue if this file exists (needed for simple external blocking)
 if [ -f "$BORG_BACKUP_DIRECTORY/aio-lockfile" ]; then
-    echo "Not continuing because aio-lockfile exists - it seems like a script is externally running which is locking the backup archive."
+    echo "Not continuing because aio-lockfile exists – it seems like a script is externally running which is locking the backup archive."
     echo "If this should not be the case, you can fix this by deleting the 'aio-lockfile' file from the backup archive directory."
     exit 1
 fi
@@ -65,10 +65,10 @@ if [ "$BORG_MODE" = backup ]; then
         echo "configuration.json not present. Cannot perform the backup!"
         exit 1
     elif ! [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/config/config.php" ]; then
-        echo "config.php is missing cannot perform backup"
+        echo "config.php is missing. Cannot perform backup!"
         exit 1
     elif ! [ -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/database-dump.sql" ]; then
-        echo "database-dump is missing. cannot perform backup"
+        echo "database-dump is missing. Cannot perform backup!"
         exit 1
     fi
 
@@ -101,7 +101,7 @@ if [ "$BORG_MODE" = backup ]; then
             exit 1
         fi
 
-        echo "initializing repository..."
+        echo "Initializing repository..."
         NEW_REPOSITORY=1
         if ! borg init --debug --encryption=repokey-blake2 "$BORG_BACKUP_DIRECTORY"; then
             echo "Could not initialize borg repository."
@@ -212,7 +212,7 @@ if [ "$BORG_MODE" = backup ]; then
             fi
             echo "Compacting additional volumes..."
             if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
-                echo "Failed to compact archives!"
+                echo "Failed to compact additional docker-volume archives!"
                 exit 1
             fi
         fi
@@ -242,7 +242,7 @@ if [ "$BORG_MODE" = backup ]; then
             fi
             echo "Compacting additional host mounts..."
             if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
-                echo "Failed to compact archives!"
+                echo "Failed to compact additional host-mount archives!"
                 exit 1
             fi
         fi
@@ -250,7 +250,7 @@ if [ "$BORG_MODE" = backup ]; then
 
     # Inform user
     get_expiration_time
-    echo "Backup finished successfully on $END_DATE_READABLE ($DURATION_READABLE)"
+    echo "Backup finished successfully on $END_DATE_READABLE ($DURATION_READABLE)."
     if [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/update.failed" ]; then
         echo "However a Nextcloud update failed. So reporting that the backup failed which will skip any update attempt the next time."
         echo "Please restore a backup from before the failed Nextcloud update attempt."
@@ -361,7 +361,7 @@ if [ "$BORG_MODE" = restore ]; then
 
     # Inform user
     get_expiration_time
-    echo "Restore finished successfully on $END_DATE_READABLE ($DURATION_READABLE)"
+    echo "Restore finished successfully on $END_DATE_READABLE ($DURATION_READABLE)."
 
     # Add file to Nextcloud container so that it skips any update the next time
     touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/skip.update"
@@ -389,7 +389,7 @@ if [ "$BORG_MODE" = check ]; then
 
     # Inform user
     get_expiration_time
-    echo "Check finished successfully on $END_DATE_READABLE ($DURATION_READABLE)"
+    echo "Check finished successfully on $END_DATE_READABLE ($DURATION_READABLE)."
     exit 0
 fi
 
@@ -406,7 +406,7 @@ if [ "$BORG_MODE" = "check-repair" ]; then
 
     # Inform user
     get_expiration_time
-    echo "Check finished successfully on $END_DATE_READABLE ($DURATION_READABLE)"
+    echo "Check finished successfully on $END_DATE_READABLE ($DURATION_READABLE)."
     exit 0
 fi
 
