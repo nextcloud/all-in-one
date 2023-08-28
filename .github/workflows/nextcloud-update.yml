@@ -63,7 +63,9 @@ jobs:
         # Nextcloud
         NC_MAJOR="$(grep "ENV NEXTCLOUD_VERSION" ./Containers/nextcloud/Dockerfile | grep -oP '[23][0-9]')"
         NCVERSION=$(curl -s -m 900 https://download.nextcloud.com/server/releases/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | grep "$NC_MAJOR" | sort --version-sort | tail -1)
-        sed -i "s|^ENV NEXTCLOUD_VERSION.*|ENV NEXTCLOUD_VERSION $NCVERSION|" ./Containers/nextcloud/Dockerfile
+        if [ -n "$NCVERSION" ]; then
+          sed -i "s|^ENV NEXTCLOUD_VERSION.*|ENV NEXTCLOUD_VERSION $NCVERSION|" ./Containers/nextcloud/Dockerfile
+        fi
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
