@@ -81,9 +81,17 @@ if [ "$BORG_MODE" = backup ]; then
     done
 
     if [ -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/export.failed" ]; then
-        echo "Database export failed the last time. Most likely was the export time not high enough."
         echo "Cannot create a backup now."
-        echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
+        echo "Reason is that the database export failed the last time."
+        echo "Most likely was the database container not correctly shut down via the AIO interface."
+        echo ""
+        echo "You might want to try the database export again manually by running the three commands:"
+        echo "sudo docker start nextcloud-aio-database"
+        echo "sleep 10"
+        echo "sudo docker stop nextcloud-aio-database -t 1800"
+        echo ""
+        echo "Afterwards try to create a backup again and it should hopefully work."
+        echo "If it should still fail, feel free to report this to https://github.com/nextcloud/all-in-one/issues and post the database container logs and the borgbackup container logs into the thread. Thanks!"
         exit 1
     fi
 
