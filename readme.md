@@ -51,7 +51,7 @@ Included are:
 - Nextcloud can be [accessed locally via the domain](https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally)
 - Can [be installed locally](https://github.com/nextcloud/all-in-one/blob/main/local-instance.md) (if you don't want or cannot make the instance publicly reachable)
 - [IPv6-ready](https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md)
-- Can be used with [Docker rootles](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md) (good for additional security)
+- Can be used with [Docker rootless](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md) (good for additional security)
 - Runs on all platforms Docker supports (e.g. also on Windows and Macos)
 - Included containers easy to debug by having the possibility to check their logs directly from the AIO interface
 - [Docker-compose ready](./compose.yaml)
