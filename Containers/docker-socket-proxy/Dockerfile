@@ -14,3 +14,4 @@ COPY --chmod=664 haproxy.cfg /haproxy.cfg
 
 ENTRYPOINT ["/start.sh"]
 HEALTHCHECK CMD /healthcheck.sh
+LABEL com.centurylinklabs.watchtower.enable="false"
