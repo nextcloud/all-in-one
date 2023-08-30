@@ -13,6 +13,7 @@ echo "$HAPROXYFILE" > /tmp/haproxy.cfg
 
 IPv6_ADDRESS_NC="$(dig nextcloud-aio-nextcloud AAAA +short | grep '^[0-9a-f:]\+$' | sort | head -n1)"
 HAPROXYFILE="$(sed "s# || { src NC_IPV6_PLACEHOLDER }##g" /tmp/haproxy.cfg)"
+# shellcheck disable=SC2001
 HAPROXYFILE="$(echo "$HAPROXYFILE" | sed "s|NC_IPV6_PLACEHOLDER|$IPv6_ADDRESS_NC|")" 
 echo "$HAPROXYFILE" > /tmp/haproxy.cfg
 set +x
