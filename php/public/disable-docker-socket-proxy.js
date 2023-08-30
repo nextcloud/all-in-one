@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     // Docker socket proxy
-    document.getElementById("docker-socket-proxy").disabled = true;
+    let dockerSocketProxy = document.getElementById("docker-socket-proxy");
+    if (dockerSocketProxy) {
+        dockerSocketProxy.disabled = true;
+    }
 });

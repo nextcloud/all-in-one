@@ -412,11 +412,7 @@ class DockerActionManager
                 $portWithProtocol = $value->port . '/' . $value->protocol;
                 $exposedPorts[$portWithProtocol] = null;
             }
-            if ($container->GetIdentifier() !== 'nextcloud-aio-docker-socket-proxy') {
-                $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio';
-            } else {
-                $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio-docker-socket-proxy-network';
-            }
+            $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio';
         } else {
             $requestBody['HostConfig']['NetworkMode'] = 'host';
         }
@@ -827,19 +823,13 @@ class DockerActionManager
     public function ConnectMasterContainerToNetwork() : void
     {
         $this->ConnectContainerIdToNetwork('nextcloud-aio-mastercontainer', '');
-        $this->ConnectContainerIdToNetwork('nextcloud-aio-mastercontainer', '', 'nextcloud-aio-docker-socket-proxy-network');
         // Don't disconnect here since it slows down the initial login by a lot. Is getting done during cron.sh instead.
         // $this->DisconnectContainerFromBridgeNetwork('nextcloud-aio-mastercontainer');
     }
 
     public function ConnectContainerToNetwork(Container $container) : void
     {
-        if ($container->GetIdentifier() !== 'nextcloud-aio-docker-socket-proxy') {
-            $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort());
-        }
-        if ($container->GetIdentifier() === 'nextcloud-aio-nextcloud' || $container->GetIdentifier() === 'nextcloud-aio-docker-socket-proxy') {
-            $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort(), 'nextcloud-aio-docker-socket-proxy-network');
-        }
+        $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort());
     }
 
     public function StopContainer(Container $container) : void {
