@@ -62,6 +62,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     // Docker socket proxy
     let dockerSocketProxy = document.getElementById("docker-socket-proxy");
-    dockerSocketProxy.addEventListener('change', makeOptionsFormSubmitVisible);
-    dockerSocketProxy.addEventListener('change', handleDockerSocketProxyWarning);
+    if (dockerSocketProxy) {
+        dockerSocketProxy.addEventListener('change', makeOptionsFormSubmitVisible);
+        dockerSocketProxy.addEventListener('change', handleDockerSocketProxyWarning);
+    }
 });
