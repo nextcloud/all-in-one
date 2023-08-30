@@ -1,10 +1,16 @@
 FROM haproxy:2.8.2-alpine3.18
 
 USER root
-RUN apk add --no-cache ca-certificates tzdata bind-tools
+ENV NEXTCLOUD_HOST nextcloud-aio-nextcloud
+RUN set -ex; \
+    apk add --no-cache \
+        ca-certificates \
+        tzdata \
+        bind-tools; \
+    chmod -R 777 /tmp
 
-COPY --chmod=775 start.sh /start.sh
-COPY --chmod=664 haproxy.cfg /conf/haproxy.cfg
+COPY --chmod=775 *.sh /
+COPY --chmod=664 haproxy.cfg /haproxy.cfg
 
 ENTRYPOINT ["/start.sh"]
-HEALTHCHECK CMD [ "$(wget http://127.0.0.1:2375/v1.41/_ping -qO -)" = "OK" ] || exit 1
+HEALTHCHECK CMD /healthcheck.sh
