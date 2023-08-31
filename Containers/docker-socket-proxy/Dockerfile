@@ -6,6 +6,7 @@ RUN set -ex; \
     apk add --no-cache \
         ca-certificates \
         tzdata \
+        bash \
         bind-tools; \
     chmod -R 777 /tmp
 
