@@ -541,7 +541,7 @@ The examples below define the dynamic configuration in YAML files. If you rather
     http:
         routers:
             nextcloud:
-                rule: "Host(<your-nextcloud-domain>)"
+                rule: "Host(`<your-nextcloud-domain>`)"
                 entrypoints:
                     - "https"
                 service: nextcloud
