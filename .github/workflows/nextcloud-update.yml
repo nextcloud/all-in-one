@@ -11,7 +11,7 @@ jobs:
     name: Run nextcloud-update script
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Run nextcloud-update script
       run: |
         # Inspired by https://github.com/nextcloud/docker/blob/master/update.sh
