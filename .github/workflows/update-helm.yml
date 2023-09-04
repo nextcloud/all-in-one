@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: update helm chart
         run: |
           DOCKER_TAG="$(curl -L -s 'https://registry.hub.docker.com/v2/repositories/nextcloud/all-in-one/tags?page_size=1024' | jq '."results"[]["name"]' | sed 's|"||g' | grep '^20' | sort -r | head -1)"
