@@ -739,16 +739,16 @@ fi
 # Docker socket proxy
 if version_greater "$installed_version" "27.1.0.0"; then
     if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
-        if ! [ -d "/var/www/html/custom_apps/app_ecosystem_v2" ]; then
-            php /var/www/html/occ app:install app_ecosystem_v2
-        elif [ "$(php /var/www/html/occ config:app:get app_ecosystem_v2 enabled)" != "yes" ]; then
-            php /var/www/html/occ app:enable app_ecosystem_v2
+        if ! [ -d "/var/www/html/custom_apps/app_api" ]; then
+            php /var/www/html/occ app:install app_api
+        elif [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable app_api
         elif [ "$SKIP_UPDATE" != 1 ]; then
-            php /var/www/html/occ app:update app_ecosystem_v2
+            php /var/www/html/occ app:update app_api
         fi
     else
-        if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_ecosystem_v2" ]; then
-            php /var/www/html/occ app:remove app_ecosystem_v2
+        if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
+            php /var/www/html/occ app:remove app_api
         fi
     fi
 fi
