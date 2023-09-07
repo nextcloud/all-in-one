@@ -269,7 +269,7 @@ class ContainerDefinitionFetcher
                 $init = $entry['init'];
             }
 
-            $imageTag = '';
+            $imageTag = '%AIO_CHANNEL%';
             if (isset($entry['image_tag'])) {
                 $imageTag = $entry['image_tag'];
             }

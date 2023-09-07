@@ -10,7 +10,7 @@
 				"type": "object",
 				"additionalProperties": false,
 				"minProperties": 2,
-				"required": ["image", "container_name"],
+				"required": ["image", "container_name", "image_tag"],
 				"properties": {
 					"image": {
 						"type": "string",
@@ -98,7 +98,7 @@
 					},
 					"image_tag": {
 						"type": "string",
-						"pattern": "^[a-z0-9.-]+$"
+						"pattern": "^([a-z0-9.-]+|%AIO_CHANNEL%)$"
 					},
 					"devices": {
 						"type": "array",

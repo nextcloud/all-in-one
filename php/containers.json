@@ -2,6 +2,7 @@
   "aio_services_v1": [
     {
       "container_name": "nextcloud-aio-apache",
+      "image_tag": "%AIO_CHANNEL%",
       "depends_on": [
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
@@ -68,6 +69,7 @@
     },
     {
       "container_name": "nextcloud-aio-database",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Database",
       "image": "nextcloud/aio-postgresql",
       "init": true,
@@ -114,6 +116,7 @@
     },
     {
       "container_name": "nextcloud-aio-nextcloud",
+      "image_tag": "%AIO_CHANNEL%",
       "depends_on": [
         "nextcloud-aio-database",
         "nextcloud-aio-redis",
@@ -221,6 +224,7 @@
     },
     {
       "container_name": "nextcloud-aio-notify-push",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Notify Push",
       "image": "nextcloud/aio-notify-push",
       "init": true,
@@ -257,6 +261,7 @@
     },
     {
       "container_name": "nextcloud-aio-redis",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Redis",
       "image": "nextcloud/aio-redis",
       "init": true,
@@ -288,6 +293,7 @@
     },
     {
       "container_name": "nextcloud-aio-collabora",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Collabora",
       "image": "nextcloud/aio-collabora",
       "init": true,
@@ -317,6 +323,7 @@
     },
     {
       "container_name": "nextcloud-aio-talk",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Talk",
       "image": "nextcloud/aio-talk",
       "init": true,
@@ -368,6 +375,7 @@
     },
     {
       "container_name": "nextcloud-aio-talk-recording",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Talk Recording",
       "image": "nextcloud/aio-talk-recording",
       "init": true,
@@ -401,6 +409,7 @@
     },
     {
       "container_name": "nextcloud-aio-borgbackup",
+      "image_tag": "%AIO_CHANNEL%",
       "image": "nextcloud/aio-borgbackup",
       "init": true,
       "environment": [
@@ -463,6 +472,7 @@
     },
     {
       "container_name": "nextcloud-aio-watchtower",
+      "image_tag": "%AIO_CHANNEL%",
       "image": "nextcloud/aio-watchtower",
       "init": true,
       "environment": [
@@ -479,6 +489,7 @@
     },
     {
       "container_name": "nextcloud-aio-domaincheck",
+      "image_tag": "%AIO_CHANNEL%",
       "image": "nextcloud/aio-domaincheck",
       "init": true,
       "ports": [
@@ -505,6 +516,7 @@
     },
     {
       "container_name": "nextcloud-aio-clamav",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "ClamAV",
       "image": "nextcloud/aio-clamav",
       "init": false,
@@ -539,6 +551,7 @@
     },
     {
       "container_name": "nextcloud-aio-onlyoffice",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "OnlyOffice",
       "image": "nextcloud/aio-onlyoffice",
       "init": true,
@@ -576,6 +589,7 @@
     },
     {
       "container_name": "nextcloud-aio-imaginary",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Imaginary",
       "image": "nextcloud/aio-imaginary",
       "init": true,
@@ -603,6 +617,7 @@
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Fulltextsearch",
       "image": "nextcloud/aio-fulltextsearch",
       "init": false,
@@ -642,6 +657,7 @@
     },
     {
       "container_name": "nextcloud-aio-docker-socket-proxy",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Docker Socket Proxy",
       "image": "nextcloud/aio-docker-socket-proxy",
       "init": true,
