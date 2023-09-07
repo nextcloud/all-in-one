@@ -189,6 +189,7 @@ RUN set -ex; \
         sudo \
         grep \
         nodejs \
+        bind-tools \
         coreutils; \
     \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
