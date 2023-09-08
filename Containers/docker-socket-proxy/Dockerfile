@@ -1,4 +1,4 @@
-FROM haproxy:2.8.2-alpine3.18
+FROM haproxy:2.8.3-alpine3.18
 
 USER root
 ENV NEXTCLOUD_HOST nextcloud-aio-nextcloud
