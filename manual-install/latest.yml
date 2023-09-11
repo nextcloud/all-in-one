@@ -17,6 +17,7 @@ services:
         condition: service_started
         required: false
     image: nextcloud/aio-apache:latest
+    init: true
     ports:
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/udp
@@ -47,6 +48,7 @@ services:
 
   nextcloud-aio-database:
     image: nextcloud/aio-postgresql:latest
+    init: true
     expose:
       - "5432"
     volumes:
@@ -88,6 +90,7 @@ services:
         condition: service_started
         required: false
     image: nextcloud/aio-nextcloud:latest
+    init: true
     expose:
       - "9000"
     volumes:
@@ -137,6 +140,7 @@ services:
       - TALK_RECORDING_ENABLED=${TALK_RECORDING_ENABLED}
       - RECORDING_SECRET=${RECORDING_SECRET}
       - TALK_RECORDING_HOST=nextcloud-aio-talk-recording
+      - FULLTEXTSEARCH_PASSWORD=${FULLTEXTSEARCH_PASSWORD}
     restart: unless-stopped
     networks:
       - nextcloud-aio
@@ -145,6 +149,7 @@ services:
 
   nextcloud-aio-notify-push:
     image: nextcloud/aio-notify-push:latest
+    init: true
     expose:
       - "7867"
     volumes:
@@ -165,6 +170,7 @@ services:
 
   nextcloud-aio-redis:
     image: nextcloud/aio-redis:latest
+    init: true
     expose:
       - "6379"
     environment:
@@ -179,6 +185,7 @@ services:
 
   nextcloud-aio-collabora:
     image: nextcloud/aio-collabora:latest
+    init: true
     expose:
       - "9980"
     environment:
@@ -196,6 +203,7 @@ services:
 
   nextcloud-aio-talk:
     image: nextcloud/aio-talk:latest
+    init: true
     ports:
       - ${TALK_PORT}:${TALK_PORT}/tcp
       - ${TALK_PORT}:${TALK_PORT}/udp
@@ -218,12 +226,13 @@ services:
     tmpfs:
       - /var/log/supervisord
       - /var/run/supervisord
+      - /opt/eturnal/run
       - /conf
-      - /var/lib/turn
       - /tmp
 
   nextcloud-aio-talk-recording:
     image: nextcloud/aio-talk-recording:latest
+    init: true
     expose:
       - "1234"
     environment:
@@ -244,6 +253,7 @@ services:
 
   nextcloud-aio-clamav:
     image: nextcloud/aio-clamav:latest
+    init: true
     expose:
       - "3310"
     environment:
@@ -264,6 +274,7 @@ services:
 
   nextcloud-aio-onlyoffice:
     image: nextcloud/aio-onlyoffice:latest
+    init: true
     expose:
       - "80"
     environment:
@@ -281,6 +292,7 @@ services:
 
   nextcloud-aio-imaginary:
     image: nextcloud/aio-imaginary:latest
+    init: true
     expose:
       - "9000"
     environment:
@@ -298,6 +310,7 @@ services:
 
   nextcloud-aio-fulltextsearch:
     image: nextcloud/aio-fulltextsearch:latest
+    init: false
     expose:
       - "9200"
     environment:
@@ -310,6 +323,7 @@ services:
       - http.port=9200
       - xpack.license.self_generated.type=basic
       - xpack.security.enabled=false
+      - FULLTEXTSEARCH_PASSWORD=${FULLTEXTSEARCH_PASSWORD}
     volumes:
       - nextcloud_aio_elasticsearch:/usr/share/elasticsearch/data:rw
     restart: unless-stopped
