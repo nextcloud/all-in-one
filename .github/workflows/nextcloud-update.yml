@@ -72,7 +72,7 @@ jobs:
       with:
         commit-message: nextcloud-update automated change
         signoff: true
-        title: Nextcloud update
+        title: Nextcloud dependency update
         body: Automated Nextcloud container update
         labels: dependencies, 3. to review
         milestone: next
