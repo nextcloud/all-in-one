@@ -37,6 +37,8 @@ spec:
         - env:
             - name: ES_JAVA_OPTS
               value: -Xms512M -Xmx512M
+            - name: FULLTEXTSEARCH_PASSWORD
+              value: "{{ .Values.FULLTEXTSEARCH_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
             - name: bootstrap.memory_lock
@@ -53,7 +55,7 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: nextcloud/aio-fulltextsearch:20230817_065941-latest
+          image: nextcloud/aio-fulltextsearch:20230912_084059-latest
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200
