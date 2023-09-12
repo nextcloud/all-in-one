@@ -60,6 +60,8 @@ spec:
               value: "{{ .Values.FULLTEXTSEARCH_ENABLED }}"
             - name: FULLTEXTSEARCH_HOST
               value: nextcloud-aio-fulltextsearch
+            - name: FULLTEXTSEARCH_PASSWORD
+              value: "{{ .Values.FULLTEXTSEARCH_PASSWORD }}"
             - name: IMAGINARY_ENABLED
               value: "{{ .Values.IMAGINARY_ENABLED }}"
             - name: IMAGINARY_HOST
@@ -120,7 +122,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230817_065941-latest
+          image: nextcloud/aio-nextcloud:20230912_084059-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000

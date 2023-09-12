@@ -59,7 +59,7 @@ spec:
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-talk:20230817_065941-latest
+          image: nextcloud/aio-talk:20230912_084059-latest
           name: nextcloud-aio-talk
           ports:
             - containerPort: {{ .Values.TALK_PORT }}
@@ -78,9 +78,9 @@ spec:
               name: nextcloud-aio-talk-tmpfs0
             - mountPath: /var/run/supervisord
               name: nextcloud-aio-talk-tmpfs1
-            - mountPath: /conf
+            - mountPath: /opt/eturnal/run
               name: nextcloud-aio-talk-tmpfs2
-            - mountPath: /var/lib/turn
+            - mountPath: /conf
               name: nextcloud-aio-talk-tmpfs3
             - mountPath: /tmp
               name: nextcloud-aio-talk-tmpfs4
