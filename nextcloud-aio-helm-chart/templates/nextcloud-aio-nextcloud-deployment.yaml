@@ -30,10 +30,7 @@ spec:
             - "777"
             - /nextcloud-aio-nextcloud
             - /nextcloud-aio-nextcloud-trusted-cacerts
-            - /nextcloud-aio-nextcloud-tmpfs0
           volumeMounts:
-            - name: nextcloud-aio-nextcloud-tmpfs0
-              mountPath: /nextcloud-aio-nextcloud-tmpfs0
             - name: nextcloud-aio-nextcloud-trusted-cacerts
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
             - name: nextcloud-aio-nextcloud
@@ -102,6 +99,8 @@ spec:
               value: nextcloud-aio-redis
             - name: REDIS_HOST_PASSWORD
               value: "{{ .Values.REDIS_PASSWORD }}"
+            - name: REMOVE_DISABLED_APPS
+              value: "{{ .Values.REMOVE_DISABLED_APPS }}"
             - name: SIGNALING_SECRET
               value: "{{ .Values.SIGNALING_SECRET }}"
             - name: STARTUP_APPS
@@ -122,7 +121,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230912_084059-latest
+          image: nextcloud/aio-nextcloud:20230916_091439-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
@@ -136,8 +135,6 @@ spec:
             - mountPath: /usr/local/share/ca-certificates
               name: nextcloud-aio-nextcloud-trusted-cacerts
               readOnly: true
-            - mountPath: /tmp
-              name: nextcloud-aio-nextcloud-tmpfs0
       volumes:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:
@@ -148,5 +145,3 @@ spec:
         - name: nextcloud-aio-nextcloud-trusted-cacerts
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud-trusted-cacerts
-        - emptyDir: {}
-          name: nextcloud-aio-nextcloud-tmpfs0
