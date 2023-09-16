@@ -612,7 +612,7 @@
       "internal_port": "9200",
       "environment": [
         "TZ=%TIMEZONE%",
-        "ES_JAVA_OPTS=-Xms512M -Xmx512M",
+        "ES_JAVA_OPTS=-Xms512M -Xmx1024M",
         "bootstrap.memory_lock=true",
         "cluster.name=nextcloud-aio",
         "discovery.type=single-node",
