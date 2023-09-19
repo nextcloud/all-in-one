@@ -476,6 +476,9 @@ class DockerActionManager
             $requestBody['HostConfig']['CapAdd'] = $capAdds;
         }
 
+        // Disable arp spoofing
+        $requestBody['HostConfig']['CapDrop'] = ['NET_RAW'];
+
         if ($container->isApparmorUnconfined()) {
             $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined"];
         }
