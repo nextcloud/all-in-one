@@ -507,7 +507,7 @@
       "container_name": "nextcloud-aio-clamav",
       "display_name": "ClamAV",
       "image": "nextcloud/aio-clamav",
-      "init": true,
+      "init": false,
       "expose": [
         "3310"
       ],
