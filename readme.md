@@ -152,6 +152,8 @@ Only those (if you access the Mastercontainer Interface internally via port 8080
 ### How to run AIO on macOS?
 On macOS, there is only one thing different in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /var/run/docker.sock.raw:/var/run/docker.sock:ro` to run it after you installed [Docker Desktop](https://www.docker.com/products/docker-desktop/) (and don't forget to [enable ipv6](https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md) if you should need that). Apart from that it should work and behave the same like on Linux.
 
+Update: On MacOS Ventura 13.5.1 (22G90) with Docker Desktop 4.22.1 (118664), the path is /var/run/docker.sock (same as linux).
+
 Also, you may be interested in adjusting Nextcloud's Datadir to store the files on the host system. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
 
 ### How to run AIO on Windows?
