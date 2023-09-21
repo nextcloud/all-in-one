@@ -56,10 +56,8 @@ RUN set -ex; \
     sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 80/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
-    grep -q 'listen =' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's|listen =.*|;listen = /var/run/php.sock # handled in zz-docker.conf|' /usr/local/etc/php-fpm.d/www.conf; \
-    grep -q 'listen =' /usr/local/etc/php-fpm.d/zz-docker.conf; \
-    sed -i 's|listen =.*|listen = /var/run/php.sock|' /usr/local/etc/php-fpm.d/zz-docker.conf; \
+    grep -q ';listen.allowed_clients' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's|;listen.allowed_clients.*|listen.allowed_clients = 127.0.0.1,::1|' /usr/local/etc/php-fpm.d/www.conf; \
     \
     apk add --no-cache git; \
     wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer; \
