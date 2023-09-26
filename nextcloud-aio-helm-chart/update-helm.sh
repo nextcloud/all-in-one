@@ -10,8 +10,7 @@ rm -f ./helm-chart/values.yaml
 rm -rf ./helm-chart/templates
 
 # Install kompose
-LATEST_KOMPOSE="$(git ls-remote --tags https://github.com/kubernetes/kompose.git | cut -d/ -f3 | grep -viE -- 'rc|b' | sort -V | tail -1)"
-curl -L https://github.com/kubernetes/kompose/releases/download/"$LATEST_KOMPOSE"/kompose-linux-amd64 -o kompose
+curl -L https://github.com/kubernetes/kompose/releases/latest/download/kompose-linux-amd64 -o kompose
 chmod +x kompose
 sudo mv ./kompose /usr/local/bin/kompose
 
