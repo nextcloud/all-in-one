@@ -21,7 +21,14 @@
 }
 
 http://:80 {
-  redir https://{host}{uri}
+    redir https://{host}{uri}
+}
+
+https://:8080 {
+    reverse_proxy localhost:8000
+    tls internal {
+        on_demand
+    }
 }
 
 https://:8443 {
