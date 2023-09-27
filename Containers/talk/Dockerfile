@@ -1,5 +1,5 @@
 FROM nats:2.10.1-scratch as nats
-FROM eturnal/eturnal:1.11.1 AS eturnal
+FROM eturnal/eturnal:1.12.0 AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:1.1.3 as signaling
 FROM alpine:3.18.3 as janus
 
