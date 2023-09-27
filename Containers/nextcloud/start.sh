@@ -38,7 +38,7 @@ set +x
 
 sed -i "s|^;listen.allowed_clients|listen.allowed_clients|" /usr/local/etc/php-fpm.d/www.conf
 sed -i "s|listen.allowed_clients.*|listen.allowed_clients = 127.0.0.1,::1,$IPv4_ADDRESS_APACHE,$IPv6_ADDRESS_APACHE,$IPv4_ADDRESS_MASTERCONTAINER,$IPv6_ADDRESS_MASTERCONTAINER,$IPv4_ADDRESS_NOTIFY_PUSH,$IPv6_ADDRESS_NOTIFY_PUSH,$IPv4_ADDRESS_DSP,$IPv6_ADDRESS_DSP|" /usr/local/etc/php-fpm.d/www.conf
-sed -i "listen.allowed_clients/s/,,//" /usr/local/etc/php-fpm.d/www.conf
+sed -i "listen.allowed_clients/s/,,/,/" /usr/local/etc/php-fpm.d/www.conf
 sed -i "listen.allowed_clients/s/,$//" /usr/local/etc/php-fpm.d/www.conf
 grep listen.allowed_clients /usr/local/etc/php-fpm.d/www.conf
 
