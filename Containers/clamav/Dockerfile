@@ -5,7 +5,7 @@ COPY clamav.conf /tmp/clamav.conf
 
 RUN set -ex; \
     apk add --no-cache tzdata; \
-    cat /tmp/clamav.conf > /etc/clamav/clamd.conf; \
+    cat /tmp/clamav.conf >> /etc/clamav/clamd.conf; \
     rm /tmp/clamav.conf; \
     mkdir -p /var/run/clamav /run/lock; \
     chown -R clamav:clamav /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock; \
