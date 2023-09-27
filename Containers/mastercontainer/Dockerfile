@@ -65,7 +65,7 @@ RUN set -ex; \
     chmod +x /usr/local/bin/composer; \
     cd /var/www/docker-aio; \
     git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
-    find ./ -maxdepth 1 -mindepth 1 -not -path ./php -exec rm -r {} \; ; \
+    find ./ -maxdepth 1 -mindepth 1 -not -path ./php -not -path ./community-containers -exec rm -r {} \; ; \
     chown www-data:www-data -R /var/www/docker-aio; \
     cd php; \
     sudo -u www-data composer install --no-dev; \

@@ -241,6 +241,20 @@ It is set to '$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS'."
         exit 1
     fi
 fi
+if [ -n "$AIO_COMMUNITY_CONTAINERS" ]; then
+    read -ra AIO_CCONTAINERS <<< "$AIO_COMMUNITY_CONTAINERS"
+    for container in "${AIO_CCONTAINERS[@]}"; do
+        if ! [ -d "/var/www/docker-aio/community-containers/$container" ]; then
+            echo "The community container $container was not found!"
+            FAIL_CCONTAINERS=1
+        fi
+    done
+    if [ -n "$FAIL_CCONTAINERS" ]; then
+        print_red "You've set AIO_COMMUNITY_CONTAINERS but at least one container was not found.
+It is set to '$AIO_COMMUNITY_CONTAINERS'."
+        exit 1
+    fi
+fi
 
 # Check DNS resolution
 # Prevents issues like https://github.com/nextcloud/all-in-one/discussions/565

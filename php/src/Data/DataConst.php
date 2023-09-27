@@ -50,4 +50,8 @@ class DataConst {
     public static function GetSessionDateFile() : string {
         return self::GetDataDirectory() . '/session_date_file';
     }
+
+    public static function GetCommunityContainersDirectory() : string {
+        return realpath(__DIR__ . '/../../../community-containers/');
+    }
 }
