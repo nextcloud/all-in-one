@@ -25,7 +25,9 @@ http://:80 {
 }
 
 https://:8080 {
-    reverse_proxy localhost:8000
+    reverse_proxy localhost:8000 {
+        trusted_proxies private_ranges
+    }
     tls internal {
         on_demand
     }
