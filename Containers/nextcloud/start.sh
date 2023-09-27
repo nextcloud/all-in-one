@@ -38,8 +38,8 @@ set +x
 
 sed -i "s|^;listen.allowed_clients|listen.allowed_clients|" /usr/local/etc/php-fpm.d/www.conf
 sed -i "s|listen.allowed_clients.*|listen.allowed_clients = 127.0.0.1,::1,$IPv4_ADDRESS_APACHE,$IPv6_ADDRESS_APACHE,$IPv4_ADDRESS_MASTERCONTAINER,$IPv6_ADDRESS_MASTERCONTAINER,$IPv4_ADDRESS_NOTIFY_PUSH,$IPv6_ADDRESS_NOTIFY_PUSH,$IPv4_ADDRESS_DSP,$IPv6_ADDRESS_DSP|" /usr/local/etc/php-fpm.d/www.conf
-sed -i "listen.allowed_clients/s/,,/,/" /usr/local/etc/php-fpm.d/www.conf
-sed -i "listen.allowed_clients/s/,$//" /usr/local/etc/php-fpm.d/www.conf
+sed -i "/^listen.allowed_clients/s/,,/,/g" /usr/local/etc/php-fpm.d/www.conf
+sed -i "/^listen.allowed_clients/s/,$//" /usr/local/etc/php-fpm.d/www.conf
 grep listen.allowed_clients /usr/local/etc/php-fpm.d/www.conf
 
 # Trust additional Cacerts, if the user provided $TRUSTED_CACERTS_DIR
@@ -136,7 +136,7 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
                     | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
             )";
             # shellcheck disable=SC2086
-            apk add --virtual .nextcloud-phpext-rundeps $runDeps >/dev/null
+            apk add --no-cache --virtual .nextcloud-phpext-rundeps $runDeps >/dev/null
             apk del .build-deps >/dev/null
         fi
     fi
