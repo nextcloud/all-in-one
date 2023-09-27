@@ -49,7 +49,7 @@ class DockerActionManager
 
     private function BuildImageName(Container $container) : string {
         $tag = $container->GetImageTag();
-        if ($tag === '') {
+        if ($tag === '%AIO_CHANNEL%') {
             $tag = $this->GetCurrentChannel();
         }
         return $container->GetContainerName() . ':' . $tag;
@@ -100,7 +100,7 @@ class DockerActionManager
     public function GetContainerUpdateState(Container $container) : IContainerState
     {
         $tag = $container->GetImageTag();
-        if ($tag === '') {
+        if ($tag === '%AIO_CHANNEL%') {
             $tag = $this->GetCurrentChannel();
         }
 
