@@ -53,7 +53,7 @@ class ContainerDefinitionFetcher
                 $path = DataConst::GetCommunityContainersDirectory() . $communityContainer . '/' . $communityContainer . '.json';
                 $additionalData = json_decode(file_get_contents($path), true);
                 $data = array_merge_recursive($data, $additionalData);
-                $additionalContainerNames[] = $additionalData['aio_services_v1'][]['container_name'];
+                $additionalContainerNames[] = $additionalData['aio_services_v1'][0]['container_name'];
             }
         }
 
