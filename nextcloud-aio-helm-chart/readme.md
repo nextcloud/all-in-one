@@ -10,6 +10,7 @@ You can run the containers that are build for AIO with Kubernetes using this Hel
 - You lose the AIO interface
 - You lose update notifications and automatic updates
 - You lose all AIO backup and restore features
+- You lose all community containers: https://github.com/nextcloud/all-in-one/tree/main/community-containers
 - **You need to know what you are doing**
 - For updating, you need to strictly follow the at the bottom described update routine
 - You need to monitor yourself if the volumes have enough free space and increase them if they don't by adjusting their size in values.yaml
