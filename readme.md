@@ -706,7 +706,7 @@ You can configure one yourself by using either of these three recommended projec
 Please see the following documentation on this: [migration.md](https://github.com/nextcloud/all-in-one/blob/main/migration.md)
 
 ### Requirements for integrating new containers
-For integrating new containers, they must pass specific requirements for being considered to get integrated in AIO itself. Even if not considered, we may add some documentation on it.
+For integrating new containers, they must pass specific requirements for being considered to get integrated in AIO itself. Even if not considered, we may add some documentation on it. Also there is this now: https://github.com/nextcloud/all-in-one/tree/main/community-containers
 
 What are the requirements?
 1. New containers must be related to Nextcloud. Related means that there must be a feature in Nextcloud that gets added by adding this container.
