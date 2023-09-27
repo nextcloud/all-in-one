@@ -874,6 +874,17 @@ class ConfigurationManager
         }
     }
 
+    private function GetCommunityContainers() : string {
+        $envVariableName = 'AIO_COMMUNITY_CONTAINERS';
+        $configName = 'aio_community_containers';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function GetEnabledCommunityContainers() : array {
+        return explode(' ', $this->GetCommunityContainers());
+    }
+
     private function GetEnabledDriDevice() : string {
         $envVariableName = 'NEXTCLOUD_ENABLE_DRI_DEVICE';
         $configName = 'nextcloud_enable_dri_device';
