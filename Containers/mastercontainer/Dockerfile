@@ -16,6 +16,7 @@ COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
 
 WORKDIR /var/www/docker-aio
 
+# hadolint ignore=SC2086,DL3047,DL3003,DL3004
 RUN set -ex; \
     apk add --no-cache shadow; \
     groupmod -g 333 xfs; \
@@ -50,7 +51,7 @@ RUN set -ex; \
             | sort -u \
             | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
     )"; \
-    apk add --virtual .nextcloud-aio-rundeps $runDeps; \
+    apk add --no-cache --virtual .nextcloud-aio-rundeps $runDeps; \
     apk del .build-deps; \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
@@ -120,6 +121,7 @@ COPY --chmod=664 Caddyfile /Caddyfile
 COPY --chmod=664 supervisord.conf /supervisord.conf
 COPY mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
 
+# hadolint ignore=DL3002
 USER root
 
 ENTRYPOINT ["/start.sh"]

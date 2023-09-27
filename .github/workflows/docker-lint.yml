@@ -27,28 +27,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install npm and dockerfilelint
+      - name: Install hadolint
         run: |
-          sudo apt-get update
-          sudo apt-get install nodejs npm -y --no-install-recommends
-          npm install -g dockerfilelint
-          wget https://github.com/replicatedhq/dockerfilelint/pull/201.patch -O /usr/local/lib/node_modules/dockerfilelint/201.patch
-          CURRENT_DIR=$PWD
-          cd /usr/local/lib/node_modules/dockerfilelint/
-          git apply 201.patch
-          cd $CURRENT_DIR
-          cat << RULES > ./.dockerfilelintrc
-          rules:
-            sudo_usage: off
-          RULES
+          sudo wget https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64 -O /usr/bin/hadolint
+          sudo chmod +x /usr/bin/hadolint
 
       - name: run lint
         run: |
           DOCKERFILES="$(find ./Containers -name Dockerfile)"
           mapfile -t DOCKERFILES <<< "$DOCKERFILES"
           for file in "${DOCKERFILES[@]}"; do
-            dockerfilelint "$file" --config ./ | tee -a ./dockerfilelint.log
+            # DL3018 warning: Pin versions in apk add. Instead of `apk add <package>` use `apk add <package>=<version>`
+            # DL4006 warning: Set the SHELL option -o pipefail before RUN with a pipe in it. If you are using /bin/sh in an alpine image or if your shell is symlinked to busybox then consider explicitly setting your SHELL to /bin/ash, or disable this check
+            hadolint "$file" --ignore DL3018 --ignore DL4006 | tee -a ./hadolint.log
           done
-          if grep "^Issues: [0-9]" ./dockerfilelint.log; then
+          if grep -q "DL[0-9]\+\|SC[0-9]\+" ./hadolint.log; then
             exit 1
           fi

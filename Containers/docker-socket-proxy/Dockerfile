@@ -1,5 +1,6 @@
 FROM haproxy:2.8.3-alpine3.18
 
+# hadolint ignore=DL3002
 USER root
 ENV NEXTCLOUD_HOST nextcloud-aio-nextcloud
 RUN set -ex; \

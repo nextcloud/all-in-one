@@ -3,6 +3,7 @@ FROM collabora/code:23.05.4.2.1
 
 USER root
 
+# hadolint ignore=DL3008
 RUN set -ex; \
     \
     apt-get update; \
