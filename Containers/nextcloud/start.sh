@@ -25,6 +25,23 @@ if [ -f "/var/www/html/config/config.php" ]; then
     fi
 fi
 
+set -x
+IPv4_ADDRESS_APACHE="$(dig nextcloud-aio-apache A +short | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv6_ADDRESS_APACHE="$(dig nextcloud-aio-apache AAAA +short | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+IPv4_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer A +short | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv6_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer AAAA +short | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+IPv4_ADDRESS_NOTIFY_PUSH="$(dig nextcloud-aio-notify-push A +short | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv6_ADDRESS_NOTIFY_PUSH="$(dig nextcloud-aio-notify-push AAAA +short | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+IPv4_ADDRESS_DSP="$(dig nextcloud-aio-docker-socket-proxy A +short | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv6_ADDRESS_DSP="$(dig nextcloud-aio-docker-socket-proxy AAAA +short | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+set +x
+
+sed -i "s|^;listen.allowed_clients|listen.allowed_clients|" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s|listen.allowed_clients.*|listen.allowed_clients = 127.0.0.1,::1,$IPv4_ADDRESS_APACHE,$IPv6_ADDRESS_APACHE,$IPv4_ADDRESS_MASTERCONTAINER,$IPv6_ADDRESS_MASTERCONTAINER,$IPv4_ADDRESS_NOTIFY_PUSH,$IPv6_ADDRESS_NOTIFY_PUSH,$IPv4_ADDRESS_DSP,$IPv6_ADDRESS_DSP|" /usr/local/etc/php-fpm.d/www.conf
+sed -i "listen.allowed_clients/s/,,/,/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "listen.allowed_clients/s/,$//" /usr/local/etc/php-fpm.d/www.conf
+grep listen.allowed_clients /usr/local/etc/php-fpm.d/www.conf
+
 # Trust additional Cacerts, if the user provided $TRUSTED_CACERTS_DIR
 if [ -n "$TRUSTED_CACERTS_DIR" ]; then
     echo "User required to trust additional CA certificates, running 'update-ca-certificates.'"
