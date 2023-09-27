@@ -1,0 +1,1 @@
+This is not working on Docker Desktop since it needs network_mode: host in order to work correctly.

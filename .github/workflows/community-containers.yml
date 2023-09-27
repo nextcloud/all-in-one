@@ -1,0 +1,37 @@
+name: Validate community containers
+
+on:
+  pull_request:
+    paths:
+      - 'community-containers/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'community-containers/**'
+
+jobs:
+  validator-community-containers:
+    name: Validate community containers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Validate structure
+        run: |
+          CONTAINERS="$(find ./community-containers -mindepth 1 -maxdepth 1 -type d)"
+          mapfile -t CONTAINERS <<< "$CONTAINERS"
+          for container in "${CONTAINERS[@]}"; do
+            container="$(echo "$container" | sed 's|./community-containers/||')"
+            if ! [ -f ./community-containers/"$container"/"$container.json" ]; then
+                echo ".json file must be named like its parent folder $container"
+                FAIL=1
+            fi
+            if ! [ -f ./community-containers/"$container"/readme.md ]; then
+                echo "There must be a readme.md file in the folder!"
+                FAIL=1
+            fi
+            if [ -n "$FAIL" ]; then
+                exit 1
+            fi
+          done
