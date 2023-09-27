@@ -40,7 +40,7 @@ eturnal:
   relay_ipv6_addr: "$IPv6_ADDRESS_TALK"
   blacklist_peers:
   - recommended
-  whitelist:
+  whitelist_peers:
   - 127.0.0.1
   - ::1
   - "$IPv4_ADDRESS_TALK"
