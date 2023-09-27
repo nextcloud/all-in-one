@@ -4,7 +4,7 @@
             "container_name": "nextcloud-aio-fail2ban",
             "display_name": "Fail2ban",
             "image": "szaimen/aio-fail2ban",
-            "image_tag": "%AIO_CHANNEL%",
+            "image_tag": "1.0.0",
             "internal_port": "host",
             "restart": "unless-stopped",
             "cap_add": [
