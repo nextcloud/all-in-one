@@ -1,0 +1,37 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-plex",
+            "display_name": "Plex",
+            "image": "plexinc/pms-docker",
+            "image_tag": "latest",
+            "internal_port": "host",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "PLEX_UID=33",
+                "PLEX_GID=33"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_plex",
+                    "destination": "/config",
+                    "writeable": true
+                },
+                {
+                    "source": "%NEXTCLOUD_DATADIR%",
+                    "destination": "/data",
+                    "writeable": false
+                },
+                {
+                    "source": "%NEXTCLOUD_MOUNT%",
+                    "destination": "%NEXTCLOUD_MOUNT%",
+                    "writeable": false
+                }
+            ],
+            "devices": [
+                "/dev/dri"
+            ]
+        }
+    ]
+}
