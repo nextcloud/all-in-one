@@ -38,9 +38,9 @@ eturnal:
   secret: "$TURN_SECRET"
   relay_ipv4_addr: "$IPv4_ADDRESS_TALK"
   relay_ipv6_addr: "$IPv6_ADDRESS_TALK"
-  blacklist:
+  blacklist_peers:
   - recommended
-  whitelist:
+  whitelist_peers:
   - 127.0.0.1
   - ::1
   - "$IPv4_ADDRESS_TALK"
