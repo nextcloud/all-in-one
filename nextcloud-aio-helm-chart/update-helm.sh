@@ -42,6 +42,9 @@ sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cac
 sed -i 's|\${|{{ .Values.|g' latest.yml
 sed -i 's|}| }}|g' latest.yml
 yq -i 'del(.services.[].profiles)' latest.yml
+# Delete read_only and tmpfs setting while https://github.com/kubernetes/kubernetes/issues/48912 is not fixed
+yq -i 'del(.services.[].read_only)' latest.yml
+yq -i 'del(.services.[].tmpfs)' latest.yml
 cat latest.yml
 kompose convert -c -f latest.yml --namespace nextcloud-aio-namespace
 cd latest
