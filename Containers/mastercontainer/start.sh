@@ -245,7 +245,7 @@ if [ -n "$AIO_COMMUNITY_CONTAINERS" ]; then
     read -ra AIO_CCONTAINERS <<< "$AIO_COMMUNITY_CONTAINERS"
     for container in "${AIO_CCONTAINERS[@]}"; do
         if ! [ -d "/var/www/docker-aio/community-containers/$container" ]; then
-            echo "The community container $container was not found!"
+            print_red "The community container $container was not found!"
             FAIL_CCONTAINERS=1
         fi
     done
