@@ -44,8 +44,6 @@ spec:
             - containerPort: 6379
               hostPort: 6379
               protocol: TCP
-          securityContext:
-            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /data
               name: nextcloud-aio-redis
