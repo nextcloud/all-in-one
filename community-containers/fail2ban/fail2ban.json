@@ -19,6 +19,11 @@
                     "source": "nextcloud_aio_nextcloud",
                     "destination": "/nextcloud",
                     "writeable": false
+                },
+                {
+                    "source": "nextcloud_aio_vaultwarden_logs",
+                    "destination": "/vaultwarden",
+                    "writeable": false
                 }
             ]
         }

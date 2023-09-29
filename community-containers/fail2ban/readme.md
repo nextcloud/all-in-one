@@ -1,5 +1,5 @@
 ## Fail2ban
-This container bundles fail2ban and auto-configures it for you in order to block ip-addresses automatically.
+This container bundles fail2ban and auto-configures it for you in order to block ip-addresses automatically. It also covers https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden, if installed.
 
 ### Notes
 - This is not working on Docker Desktop since it needs `network_mode: host` in order to work correctly.
