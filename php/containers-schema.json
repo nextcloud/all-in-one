@@ -83,6 +83,13 @@
 							}
 						}
 					},
+					"aio_variables": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"pattern": "^[A-Z_-a-z]+=.*$"
+						}
+					},
 					"restart": {
 						"type": "string",
 						"pattern": "^unless-stopped$"

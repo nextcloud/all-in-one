@@ -248,6 +248,15 @@ class DockerActionManager
             $this->configurationManager->GetAndGenerateSecret($secret);
         }
 
+        $aioVariables = $container->GetAioVariables()->GetVariables();
+        foreach($aioVariables as $variable) {
+            $config = $this->configurationManager->GetConfig();
+            $variableArray = explode('=', $variable);
+            $config[$variableArray[0]] = $variableArray[1];
+            $this->configurationManager->WriteConfig($config);
+            sleep(1);
+        }
+
         $envs = $container->GetEnvironmentVariables()->GetVariables();
         // Special thing for the nextcloud container
         if ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
