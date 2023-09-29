@@ -1,0 +1,47 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-vaultwarden",
+            "display_name": "Vaultwarden",
+            "image": "vaultwarden/server",
+            "image_tag": "alpine",
+            "internal_port": "8812",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                  "ip_binding": "%APACHE_IP_BINDING%",
+                  "port_number": "8812",
+                  "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "ROCKET_PORT=8812",
+                "ADMIN_TOKEN=%VAULTWARDEN_ADMIN_TOKEN%",
+                "DOMAIN=https://bw.%NC_DOMAIN%",
+                "LOG_FILE=/logs/vaultwarden.log",
+                "LOG_LEVEL=warn",
+                "SIGNUPS_VERIFY=true",
+                "SIGNUPS_ALLOWED=false"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_vaultwarden",
+                    "destination": "/data",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_vaultwarden_logs",
+                    "destination": "/logs",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_vaultwarden"
+            ],
+            "secrets": [
+                "VAULTWARDEN_ADMIN_TOKEN"
+            ]
+        }
+    ]
+}
