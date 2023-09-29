@@ -1,6 +1,6 @@
 changelog:
   categories:
-    - title: 🏕 New features or other improvements
+    - title: 🏕 New features and other improvements
       labels:
         - enhancement
     - title: 🐞 Fixed bugs
