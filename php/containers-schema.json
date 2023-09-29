@@ -87,7 +87,7 @@
 						"type": "array",
 						"items": {
 							"type": "string",
-							"pattern": "^[A-Z_-a-z]+=.*$"
+							"pattern": "^[A-Z_a-z-]+=.*$"
 						}
 					},
 					"restart": {
@@ -129,7 +129,7 @@
 						"type": "array",
 						"items": {
 							"type": "string",
-							"pattern": "^(php /var/www/html/occ .*|echo .*)$"
+							"pattern": "^(php /var/www/html/occ .*|echo .*|touch .*|mkdir .*)$"
 						}
 					},
 					"profiles": {
