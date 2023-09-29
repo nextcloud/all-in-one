@@ -179,7 +179,7 @@ It is set to '$APACHE_PORT'."
     fi
 fi
 if [ -n "$APACHE_IP_BINDING" ]; then
-    if ! echo "$APACHE_IP_BINDING" | grep -q '^[0-9.]\+$'; then
+    if ! echo "$APACHE_IP_BINDING" | grep -q '^[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$\|^[0-9a-f:]\+$'; then
         print_red "You provided an ip-address for the apache container's ip-binding but it was not a valid ip-address.
 It is set to '$APACHE_IP_BINDING'."
         exit 1
