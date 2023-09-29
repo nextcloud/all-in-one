@@ -23,19 +23,6 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-talk-recording
     spec:
-      initContainers:
-        - name: init-volumes
-          image: alpine
-          command:
-            - chmod
-            - "777"
-            - /nextcloud-aio-talk-recording-tmpfs0
-            - /nextcloud-aio-talk-recording-tmpfs1
-          volumeMounts:
-            - name: nextcloud-aio-talk-recording-tmpfs1
-              mountPath: /nextcloud-aio-talk-recording-tmpfs1
-            - name: nextcloud-aio-talk-recording-tmpfs0
-              mountPath: /nextcloud-aio-talk-recording-tmpfs0
       containers:
         - env:
             - name: INTERNAL_SECRET
@@ -50,18 +37,5 @@ spec:
           name: nextcloud-aio-talk-recording
           ports:
             - containerPort: 1234
-              hostPort: 1234
               protocol: TCP
-          securityContext:
-            readOnlyRootFilesystem: true
-          volumeMounts:
-            - mountPath: /tmp
-              name: nextcloud-aio-talk-recording-tmpfs0
-            - mountPath: /conf
-              name: nextcloud-aio-talk-recording-tmpfs1
-      volumes:
-        - emptyDir: {}
-          name: nextcloud-aio-talk-recording-tmpfs0
-        - emptyDir: {}
-          name: nextcloud-aio-talk-recording-tmpfs1
 {{- end }}

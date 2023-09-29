@@ -23,16 +23,6 @@ spec:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-imaginary
     spec:
-      initContainers:
-        - name: init-volumes
-          image: alpine
-          command:
-            - chmod
-            - "777"
-            - /nextcloud-aio-imaginary-tmpfs0
-          volumeMounts:
-            - name: nextcloud-aio-imaginary-tmpfs0
-              mountPath: /nextcloud-aio-imaginary-tmpfs0
       containers:
         - env:
             - name: TZ
@@ -41,17 +31,9 @@ spec:
           name: nextcloud-aio-imaginary
           ports:
             - containerPort: 9000
-              hostPort: 9000
               protocol: TCP
           securityContext:
             capabilities:
               add:
                 - SYS_NICE
-            readOnlyRootFilesystem: true
-          volumeMounts:
-            - mountPath: /tmp
-              name: nextcloud-aio-imaginary-tmpfs0
-      volumes:
-        - emptyDir: {}
-          name: nextcloud-aio-imaginary-tmpfs0
 {{- end }}

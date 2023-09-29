@@ -41,6 +41,5 @@ spec:
           name: nextcloud-aio-collabora
           ports:
             - containerPort: 9980
-              hostPort: 9980
               protocol: TCP
 {{- end }}
