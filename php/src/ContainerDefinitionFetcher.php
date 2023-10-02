@@ -2,6 +2,7 @@
 
 namespace AIO;
 
+use AIO\Container\AioVariables;
 use AIO\Container\Container;
 use AIO\Container\ContainerEnvironmentVariables;
 use AIO\Container\ContainerPort;
@@ -54,6 +55,7 @@ class ContainerDefinitionFetcher
                 $additionalData = json_decode(file_get_contents($path), true);
                 $data = array_merge_recursive($data, $additionalData);
                 if (isset($additionalData['aio_services_v1'][0]['display_name']) && $additionalData['aio_services_v1'][0]['display_name'] !== '') {
+                    // Store container_name of community containers in variable for later
                     $additionalContainerNames[] = $additionalData['aio_services_v1'][0]['container_name'];
                 }
             }
@@ -168,9 +170,12 @@ class ContainerDefinitionFetcher
             if (isset($entry['depends_on'])) {
                 $valueDependsOn = $entry['depends_on'];
                 if ($entry['container_name'] === 'nextcloud-aio-apache') {
+                    // Add community containers first and default ones last so that aio_variables works correctly
+                    $valueDependsOnTemp = [];
                     foreach ($additionalContainerNames as $containerName) {
-                        $valueDependsOn[] = $containerName;
+                        $valueDependsOnTemp[] = $containerName;
                     }
+                    $valueDependsOn = array_merge_recursive($valueDependsOnTemp, $valueDependsOn);
                 }
                 foreach ($valueDependsOn as $value) {
                     if ($value === 'nextcloud-aio-clamav') {
@@ -214,6 +219,13 @@ class ContainerDefinitionFetcher
             if (isset($entry['environment'])) {
                 foreach ($entry['environment'] as $value) {
                     $variables->AddVariable($value);
+                }
+            }
+
+            $aioVariables = new AioVariables();
+            if (isset($entry['aio_variables'])) {
+                foreach ($entry['aio_variables'] as $value) {
+                    $aioVariables->AddVariable($value);
                 }
             }
 
@@ -314,6 +326,7 @@ class ContainerDefinitionFetcher
                 $tmpfs,
                 $init,
                 $imageTag,
+                $aioVariables,
                 $this->container->get(DockerActionManager::class)
             );
         }
