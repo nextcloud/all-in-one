@@ -130,7 +130,8 @@
       "image": "nextcloud/aio-nextcloud",
       "init": true,
       "expose": [
-        "9000"
+        "9000",
+        "9001"
       ],
       "internal_port": "9000",
       "secrets": [

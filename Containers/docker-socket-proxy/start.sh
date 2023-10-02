@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Only start container if nextcloud is accessible
-while ! nc -z "$NEXTCLOUD_HOST" 9000; do
+while ! nc -z "$NEXTCLOUD_HOST" 9001; do
     echo "Waiting for Nextcloud to start..."
     sleep 5
 done

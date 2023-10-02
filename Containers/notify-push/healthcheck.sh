@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! nc -z "$NEXTCLOUD_HOST" 9000; then
+if ! nc -z "$NEXTCLOUD_HOST" 9001; then
     exit 0
 fi
 
