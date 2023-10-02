@@ -1,7 +1,12 @@
 #!/bin/bash
 
+# Set a default value for POSTGRES_PORT
+if [ -z "$POSTGRES_PORT" ]; then
+    POSTGRES_PORT=5432
+fi
+
 # Only start container if database is accessible
-while ! sudo -u www-data nc -z "$POSTGRES_HOST" 5432; do
+while ! sudo -u www-data nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
     echo "Waiting for database to start..."
     sleep 5
 done
@@ -13,7 +18,7 @@ export POSTGRES_USER
 # Fix false database connection on old instances
 if [ -f "/var/www/html/config/config.php" ]; then
     sleep 2
-    while ! sudo -u www-data psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:5432/$POSTGRES_DB" -c "select now()"; do
+    while ! sudo -u www-data psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB" -c "select now()"; do
         echo "Waiting for the database to start..."
         sleep 5
     done

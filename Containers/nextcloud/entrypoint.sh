@@ -227,7 +227,11 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 DATADIR_PERMISSION_CONF
 
             echo "Installing with PostgreSQL database"
-            INSTALL_OPTIONS+=(--database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST")
+            # Set a default value for POSTGRES_PORT
+            if [ -z "$POSTGRES_PORT" ]; then
+              POSTGRES_PORT=5432
+            fi
+            INSTALL_OPTIONS+=(--database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST" --database-port "$POSTGRES_PORT")
 
             echo "Starting Nextcloud installation..."
             if ! php /var/www/html/occ maintenance:install "${INSTALL_OPTIONS[@]}"; then
