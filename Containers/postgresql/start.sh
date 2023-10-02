@@ -6,6 +6,14 @@ export DUMP_DIR="/mnt/data"
 DUMP_FILE="$DUMP_DIR/database-dump.sql"
 export PGPASSWORD="$POSTGRES_PASSWORD"
 
+# Set a default value for POSTGRES_PORT
+if [ -z "$POSTGRES_PORT" ]; then
+    POSTGRES_PORT=5432
+fi
+
+# Set PGPORT (the variable used by the postgres entrypoint) to the configured value
+export PGPORT=$POSTGRES_PORT
+
 # Don't start database as long as backup is running
 while [ -f "$DUMP_DIR/backup-is-running" ]; do
     echo "Waiting for backup container to finish..."
@@ -131,7 +139,7 @@ EOSQL
     pg_ctl stop -m fast
 
     # Change database port back to default
-    export PGPORT=5432
+    export PGPORT=$POSTGRES_PORT
 
     # Don't exit if command fails anymore
     set +ex
