@@ -1,0 +1,51 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-caddy",
+            "display_name": "Caddy with geoblocking",
+            "image": "szaimen/aio-caddy",
+            "image_tag": "v1",
+            "internal_port": "443",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                  "ip_binding": "",
+                  "port_number": "443",
+                  "protocol": "tcp"
+                },
+                {
+                    "ip_binding": "",
+                    "port_number": "443",
+                    "protocol": "udp"
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "NC_DOMAIN=%NC_DOMAIN%",
+                "APACHE_PORT=%APACHE_PORT%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_caddy",
+                    "destination": "/data",
+                    "writeable": true
+                },
+                {
+                    "source": "%NEXTCLOUD_DATADIR%",
+                    "destination": "/nextcloud",
+                    "writeable": false
+                }
+            ],
+            "aio_variables": [
+                "apache_ip_binding=127.0.0.1",
+                "apache_port=11000"
+            ],
+            "nextcloud_exec_commands": [
+                "mkdir '/mnt/ncdata/admin/files/nextcloud-aio-caddy'",
+                "touch '/mnt/ncdata/admin/files/nextcloud-aio-caddy/allowed-countries.txt'",
+                "echo 'Scanning nextcloud-aio-caddy folder for admin user...'",
+                "php /var/www/html/occ files:scan --path='/admin/files/nextcloud-aio-caddy'"
+            ]
+        }
+    ]
+}
