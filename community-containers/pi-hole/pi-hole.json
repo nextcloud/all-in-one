@@ -3,6 +3,7 @@
         {
             "container_name": "nextcloud-aio-pihole",
             "display_name": "Pi-hole",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/pi-hole",
             "image": "pihole/pihole",
             "image_tag": "latest",
             "internal_port": "8573",

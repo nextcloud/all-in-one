@@ -3,6 +3,7 @@
         {
             "container_name": "nextcloud-aio-vaultwarden",
             "display_name": "Vaultwarden",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden",
             "image": "vaultwarden/server",
             "image_tag": "alpine",
             "internal_port": "8812",

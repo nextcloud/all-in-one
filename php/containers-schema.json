@@ -108,6 +108,10 @@
 						"type": "string",
 						"pattern": "^([a-z0-9.-]+|%AIO_CHANNEL%)$"
 					},
+					"documentation": {
+						"type": "string",
+						"pattern": "^https://.*$"
+					},
 					"devices": {
 						"type": "array",
 						"items": {

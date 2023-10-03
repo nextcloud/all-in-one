@@ -35,6 +35,7 @@ class Container {
     private bool $init;
     private string $imageTag;
     private AioVariables $aioVariables;
+    private string $documentation;
     private DockerActionManager $dockerActionManager;
 
     public function __construct(
@@ -60,6 +61,7 @@ class Container {
         bool $init,
         string $imageTag,
         AioVariables $aioVariables,
+        string $documentation,
         DockerActionManager $dockerActionManager
     ) {
         $this->identifier = $identifier;
@@ -84,6 +86,7 @@ class Container {
         $this->init = $init;
         $this->imageTag = $imageTag;
         $this->aioVariables = $aioVariables;
+        $this->documentation = $documentation;
         $this->dockerActionManager = $dockerActionManager;
     }
 
@@ -192,5 +195,9 @@ class Container {
 
     public function GetAioVariables() : AioVariables {
         return $this->aioVariables;
+    }
+
+    public function GetDocumentation() : string {
+        return $this->documentation;
     }
 }
