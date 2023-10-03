@@ -484,8 +484,8 @@ php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_D
 php /var/www/html/occ config:system:set htaccess.RewriteBase --value="/"
 php /var/www/html/occ maintenance:update:htaccess
 
-# Apply dbpersistent setting in order to fix too many db connections
-php /var/www/html/occ config:system:set dbpersistent --value=true --type=bool
+# Revert dbpersistent setting to check if it fixes too many db connections
+php /var/www/html/occ config:system:set dbpersistent --value=false --type=bool
 
 # Disallow creating local external storages when nothing was mounted
 if [ -z "$NEXTCLOUD_MOUNT" ]; then
