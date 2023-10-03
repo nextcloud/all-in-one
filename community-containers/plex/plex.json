@@ -3,6 +3,7 @@
         {
             "container_name": "nextcloud-aio-plex",
             "display_name": "Plex",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/plex",
             "image": "plexinc/pms-docker",
             "image_tag": "latest",
             "internal_port": "host",

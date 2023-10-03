@@ -255,15 +255,19 @@
                         {% for container in containers %}
                             {% if container.GetDisplayName() != '' %}
                                 <li>
+                                    {% set displayName = container.GetDisplayName() %}
+                                    {% if container.GetDocumentation() != '' %}
+                                        {% set displayName = '<a href="' ~ container.GetDocumentation() ~ '">' ~ displayName ~ '</a>' %}
+                                    {% endif %}
                                     {% if class(container.GetStartingState()) == 'AIO\\Container\\State\\StartingState' %}
                                         <span class="status running"></span>
-                                        <span>{{container.GetDisplayName()}} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Starting</a>)</span>
+                                        <span>{{ displayName }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Starting</a>)</span>
                                     {% elseif class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
                                         <span class="status success"></span>
-                                        <span>{{container.GetDisplayName()}} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Running</a>)</span>
+                                        <span>{{ displayName }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Running</a>)</span>
                                     {% else %}
                                         <span class="status error"></span>
-                                        <span>{{container.GetDisplayName()}} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Stopped</a>)</span>
+                                        <span>{{ displayName }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Stopped</a>)</span>
                                     {% endif %}
                                 </li>
                             {% endif %}

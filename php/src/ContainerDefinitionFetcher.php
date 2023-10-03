@@ -304,6 +304,11 @@ class ContainerDefinitionFetcher
                 $imageTag = $entry['image_tag'];
             }
 
+            $documentation = '';
+            if (isset($entry['documentation'])) {
+                $documentation = $entry['documentation'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -327,6 +332,7 @@ class ContainerDefinitionFetcher
                 $init,
                 $imageTag,
                 $aioVariables,
+                $documentation,
                 $this->container->get(DockerActionManager::class)
             );
         }
