@@ -31,9 +31,10 @@ RUN set -ex; \
         bash \
         apache2 \
         apache2-proxy \
+        apache2-ssl \
         supervisor \
+        openssl \
         sudo \
-        nss \
         netcat-openbsd \
         curl \
         grep; \
@@ -64,7 +65,6 @@ RUN set -ex; \
     chmod +x /usr/local/bin/composer; \
     cd /var/www/docker-aio; \
     git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
-    apk del --no-cache git; \
     find ./ -maxdepth 1 -mindepth 1 -not -path ./php -not -path ./community-containers -exec rm -r {} \; ; \
     chown www-data:www-data -R /var/www/docker-aio; \
     cd php; \
@@ -76,6 +76,10 @@ RUN set -ex; \
     chown -R www-data:www-data /var/www; \
     rm -r php/data; \
     rm -r php/session; \
+    \
+    mkdir -p /etc/apache2/certs; \
+    cd /etc/apache2/certs; \
+    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=DE/ST=BE/L=Local/O=Dev/CN=nextcloud.local" -keyout /etc/apache2/certs/ssl.key -out /etc/apache2/certs/ssl.crt; \
     \
     sed -i \
             -e '/^Listen /d' \
@@ -95,7 +99,13 @@ RUN set -ex; \
             -e 's/\(ScriptAlias \)/#\1/' \
         /etc/apache2/httpd.conf; \
         mkdir -p /etc/apache2/logs; \
+        rm /etc/apache2/conf.d/ssl.conf; \
         echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf; \
+        grep -q '^LoadModule lbmethod_heartbeat_module' /etc/apache2/conf.d/proxy.conf; \
+        sed -i 's|^LoadModule lbmethod_heartbeat_module.*|#LoadModule lbmethod_heartbeat_module|' /etc/apache2/conf.d/proxy.conf; \
+        echo "SSLSessionCache nonenotnull" | tee -a /etc/apache2/httpd.conf; \
+        echo "LoadModule ssl_module modules/mod_ssl.so" | tee -a /etc/apache2/httpd.conf; \
+        echo "LoadModule socache_shmcb_module modules/mod_socache_shmcb.so" | tee -a /etc/apache2/httpd.conf; \
         echo "Include /etc/apache2/sites-available/mastercontainer.conf" | tee -a /etc/apache2/httpd.conf; \
     \
     rm -f /etc/apache2/conf.d/default.conf \
