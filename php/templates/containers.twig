@@ -589,7 +589,7 @@
                         {% if is_docker_socket_proxy_enabled == true %}
                             <input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy" checked="checked"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label><br><br>
                         {% else %}
-                            {# <input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label><br><br> #}
+                            <input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label><br><br>
                         {% endif %}
                         <input id="options-form-submit" class="button" type="submit" value="Save changes" />
                         <script type="text/javascript" src="options-form-submit.js"></script>
