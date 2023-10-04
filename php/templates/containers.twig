@@ -255,19 +255,27 @@
                         {% for container in containers %}
                             {% if container.GetDisplayName() != '' %}
                                 <li>
-                                    {% set displayName = container.GetDisplayName() %}
-                                    {% if container.GetDocumentation() != '' %}
-                                        {% set displayName = '<a href="' ~ container.GetDocumentation() ~ '">' ~ displayName ~ '</a>' %}
-                                    {% endif %}
                                     {% if class(container.GetStartingState()) == 'AIO\\Container\\State\\StartingState' %}
                                         <span class="status running"></span>
-                                        <span>{{ displayName }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Starting</a>)</span>
+                                        <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Starting</a>)
+                                        {% if container.GetDocumentation() != '' %}
+                                            (<a href="{{ container.GetDocumentation() }}">docs</a>)
+                                        {% endif %}
+                                        </span>
                                     {% elseif class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
                                         <span class="status success"></span>
-                                        <span>{{ displayName }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Running</a>)</span>
+                                        <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Running</a>)
+                                        {% if container.GetDocumentation() != '' %}
+                                            (<a href="{{ container.GetDocumentation() }}">docs</a>)
+                                        {% endif %}
+                                        </span>
                                     {% else %}
                                         <span class="status error"></span>
-                                        <span>{{ displayName }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Stopped</a>)</span>
+                                        <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Stopped</a>)
+                                        {% if container.GetDocumentation() != '' %}
+                                            (<a href="{{ container.GetDocumentation() }}">docs</a>)
+                                        {% endif %}
+                                        </span>
                                     {% endif %}
                                 </li>
                             {% endif %}
