@@ -424,7 +424,13 @@ class DockerActionManager
         $exposedPorts = [];
         if ($container->GetInternalPort() !== 'host') {
             foreach($container->GetPorts()->GetPorts() as $value) {
-                $portWithProtocol = $value->port . '/' . $value->protocol;
+                $port = $value->port;
+                if ($port === '%APACHE_PORT%') {
+                    $port = $this->configurationManager->GetApachePort();
+                } else if ($port === '%TALK_PORT%') {
+                    $port = $this->configurationManager->GetTalkPort();
+                }
+                $portWithProtocol = $port . '/' . $value->protocol;
                 $exposedPorts[$portWithProtocol] = null;
             }
             $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio';
@@ -436,7 +442,15 @@ class DockerActionManager
             $requestBody['ExposedPorts'] = $exposedPorts;
             foreach ($container->GetPorts()->GetPorts() as $value) {
                 $port = $value->port;
+                if ($port === '%APACHE_PORT%') {
+                    $port = $this->configurationManager->GetApachePort();
+                } else if ($port === '%TALK_PORT%') {
+                    $port = $this->configurationManager->GetTalkPort();
+                }
                 $ipBinding = $value->ipBinding;
+                if ($ipBinding === '%APACHE_IP_BINDING%') {
+                    $ipBinding = $this->configurationManager->GetApacheIPBinding();
+                }
                 $protocol = $value->protocol;
                 $portWithProtocol = $port . '/' . $protocol;
                 $requestBody['HostConfig']['PortBindings'][$portWithProtocol] = [
