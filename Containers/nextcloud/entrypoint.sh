@@ -365,6 +365,9 @@ DATADIR_PERMISSION_CONF
                 exit 1
             fi
 
+            # shellcheck disable=SC2016
+            installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+
             rm "$NEXTCLOUD_DATA_DIR/update.failed"
             bash /notify.sh "Nextcloud update to $image_version successful!" "Feel free to inspect the Nextcloud container logs for more info."
 
