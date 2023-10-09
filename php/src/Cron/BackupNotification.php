@@ -21,7 +21,11 @@ $nextcloudContainer = $containerDefinitionFetcher->GetContainerById($id);
 $backupExitCode = $dockerActionManger->GetBackupcontainerExitCode();
 
 if ($backupExitCode === 0) {
-    $dockerActionManger->sendNotification($nextcloudContainer, 'Daily backup successful!', 'You can get further info by looking at the backup logs in the AIO interface.');
+    if (getenv('SEND_SUCCESS_NOTIFICATIONS') === "0") {
+        error_log("Daily backup successful! Only logging successful backup and not sending backup notification since that has been disabled! You can get further info by looking at the backup logs in the AIO interface.");
+    } else {
+        $dockerActionManger->sendNotification($nextcloudContainer, 'Daily backup successful!', 'You can get further info by looking at the backup logs in the AIO interface.');
+    }
 }
 
 if ($backupExitCode > 0) {
