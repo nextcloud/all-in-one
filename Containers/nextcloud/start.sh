@@ -142,6 +142,8 @@ IPv6_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer AAAA +short | 
 
 sed -i "s|^;listen.allowed_clients|listen.allowed_clients|" /usr/local/etc/php-fpm.d/www.conf
 sed -i "s|listen.allowed_clients.*|listen.allowed_clients = 127.0.0.1,::1,$IPv4_ADDRESS_APACHE,$IPv6_ADDRESS_APACHE,$IPv4_ADDRESS_MASTERCONTAINER,$IPv6_ADDRESS_MASTERCONTAINER|" /usr/local/etc/php-fpm.d/www.conf
+sed -i "/^listen.allowed_clients/s/,,/,/g" /usr/local/etc/php-fpm.d/www.conf
+sed -i "/^listen.allowed_clients/s/,$//" /usr/local/etc/php-fpm.d/www.conf
 grep listen.allowed_clients /usr/local/etc/php-fpm.d/www.conf
 
 exec "$@"
