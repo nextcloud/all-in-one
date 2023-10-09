@@ -1,4 +1,4 @@
-FROM alpine:3.18.2
+FROM alpine:3.18.4
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
