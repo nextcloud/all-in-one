@@ -425,12 +425,17 @@ class DockerActionManager
         if ($container->GetInternalPort() !== 'host') {
             foreach($container->GetPorts()->GetPorts() as $value) {
                 $port = $value->port;
+                $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
                     $port = $this->configurationManager->GetApachePort();
+                    // Do not expose udp if AIO is in reverse proxy mode
+                    if ($port !== '443' && $protocol === 'udp') {
+                        continue;
+                    }
                 } else if ($port === '%TALK_PORT%') {
                     $port = $this->configurationManager->GetTalkPort();
                 }
-                $portWithProtocol = $port . '/' . $value->protocol;
+                $portWithProtocol = $port . '/' . $protocol;
                 $exposedPorts[$portWithProtocol] = null;
             }
             $requestBody['HostConfig']['NetworkMode'] = 'nextcloud-aio';
@@ -442,8 +447,13 @@ class DockerActionManager
             $requestBody['ExposedPorts'] = $exposedPorts;
             foreach ($container->GetPorts()->GetPorts() as $value) {
                 $port = $value->port;
+                $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
                     $port = $this->configurationManager->GetApachePort();
+                    // Do not expose udp if AIO is in reverse proxy mode
+                    if ($port !== '443' && $protocol === 'udp') {
+                        continue;
+                    }
                 } else if ($port === '%TALK_PORT%') {
                     $port = $this->configurationManager->GetTalkPort();
                 }
@@ -451,7 +461,6 @@ class DockerActionManager
                 if ($ipBinding === '%APACHE_IP_BINDING%') {
                     $ipBinding = $this->configurationManager->GetApacheIPBinding();
                 }
-                $protocol = $value->protocol;
                 $portWithProtocol = $port . '/' . $protocol;
                 $requestBody['HostConfig']['PortBindings'][$portWithProtocol] = [
                     [
