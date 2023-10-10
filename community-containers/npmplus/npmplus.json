@@ -21,6 +21,9 @@
                     "writeable": true
                 }
             ],
+            "backup_volumes": [
+                "nextcloud_aio_npmplus"
+            ],
             "aio_variables": [
                 "apache_ip_binding=127.0.0.1",
                 "apache_port=11000"
