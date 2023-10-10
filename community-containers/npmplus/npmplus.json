@@ -11,7 +11,8 @@
             "environment": [
                 "TZ=%TIMEZONE%",
                 "NC_AIO=true",
-                "NC_DOMAIN=%NC_DOMAIN%"
+                "NC_DOMAIN=%NC_DOMAIN%",
+                "DISABLE_HTTP=true"
             ],
             "volumes": [
                 {
