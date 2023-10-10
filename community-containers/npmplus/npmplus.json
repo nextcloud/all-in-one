@@ -11,8 +11,7 @@
             "environment": [
                 "TZ=%TIMEZONE%",
                 "NC_AIO=true",
-                "NC_DOMAIN=%NC_DOMAIN%",
-                "NPM_LISTEN_LOCALHOST=true"
+                "NC_DOMAIN=%NC_DOMAIN%"
             ],
             "volumes": [
                 {
