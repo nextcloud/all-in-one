@@ -93,6 +93,7 @@ services:
     init: true
     expose:
       - "9000"
+      - "9001"
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:rw
       - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
@@ -252,7 +253,7 @@ services:
 
   nextcloud-aio-clamav:
     image: nextcloud/aio-clamav:latest
-    init: true
+    init: false
     expose:
       - "3310"
     environment:
