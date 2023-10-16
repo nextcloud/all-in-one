@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-talk-recording
   name: nextcloud-aio-talk-recording
@@ -18,24 +18,11 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-        kompose.version: 1.30.0 (9d8dcb518)
+        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-talk-recording
     spec:
-      initContainers:
-        - name: init-volumes
-          image: alpine
-          command:
-            - chmod
-            - "777"
-            - /nextcloud-aio-talk-recording-tmpfs0
-            - /nextcloud-aio-talk-recording-tmpfs1
-          volumeMounts:
-            - name: nextcloud-aio-talk-recording-tmpfs1
-              mountPath: /nextcloud-aio-talk-recording-tmpfs1
-            - name: nextcloud-aio-talk-recording-tmpfs0
-              mountPath: /nextcloud-aio-talk-recording-tmpfs0
       containers:
         - env:
             - name: INTERNAL_SECRET
@@ -46,22 +33,9 @@ spec:
               value: "{{ .Values.RECORDING_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-talk-recording:20230916_091439-latest
+          image: nextcloud/aio-talk-recording:20231016_081107-latest
           name: nextcloud-aio-talk-recording
           ports:
             - containerPort: 1234
-              hostPort: 1234
               protocol: TCP
-          securityContext:
-            readOnlyRootFilesystem: true
-          volumeMounts:
-            - mountPath: /tmp
-              name: nextcloud-aio-talk-recording-tmpfs0
-            - mountPath: /conf
-              name: nextcloud-aio-talk-recording-tmpfs1
-      volumes:
-        - emptyDir: {}
-          name: nextcloud-aio-talk-recording-tmpfs0
-        - emptyDir: {}
-          name: nextcloud-aio-talk-recording-tmpfs1
 {{- end }}

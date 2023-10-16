@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-clamav
   name: nextcloud-aio-clamav
@@ -18,7 +18,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-        kompose.version: 1.30.0 (9d8dcb518)
+        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-clamav
@@ -30,16 +30,7 @@ spec:
             - chmod
             - "777"
             - /nextcloud-aio-clamav
-            - /nextcloud-aio-clamav-tmpfs0
-            - /nextcloud-aio-clamav-tmpfs1
-            - /nextcloud-aio-clamav-tmpfs2
           volumeMounts:
-            - name: nextcloud-aio-clamav-tmpfs2
-              mountPath: /nextcloud-aio-clamav-tmpfs2
-            - name: nextcloud-aio-clamav-tmpfs1
-              mountPath: /nextcloud-aio-clamav-tmpfs1
-            - name: nextcloud-aio-clamav-tmpfs0
-              mountPath: /nextcloud-aio-clamav-tmpfs0
             - name: nextcloud-aio-clamav
               mountPath: /nextcloud-aio-clamav
       containers:
@@ -48,31 +39,16 @@ spec:
               value: "90"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-clamav:20230916_091439-latest
+          image: nextcloud/aio-clamav:20231016_081107-latest
           name: nextcloud-aio-clamav
           ports:
             - containerPort: 3310
-              hostPort: 3310
               protocol: TCP
-          securityContext:
-            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /var/lib/clamav
               name: nextcloud-aio-clamav
-            - mountPath: /var/lock
-              name: nextcloud-aio-clamav-tmpfs0
-            - mountPath: /var/log/clamav
-              name: nextcloud-aio-clamav-tmpfs1
-            - mountPath: /tmp
-              name: nextcloud-aio-clamav-tmpfs2
       volumes:
         - name: nextcloud-aio-clamav
           persistentVolumeClaim:
             claimName: nextcloud-aio-clamav
-        - emptyDir: {}
-          name: nextcloud-aio-clamav-tmpfs0
-        - emptyDir: {}
-          name: nextcloud-aio-clamav-tmpfs1
-        - emptyDir: {}
-          name: nextcloud-aio-clamav-tmpfs2
 {{- end }}
