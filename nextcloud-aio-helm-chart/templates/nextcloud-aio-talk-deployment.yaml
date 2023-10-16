@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-talk
   name: nextcloud-aio-talk
@@ -18,33 +18,11 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-        kompose.version: 1.30.0 (9d8dcb518)
+        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-talk
     spec:
-      initContainers:
-        - name: init-volumes
-          image: alpine
-          command:
-            - chmod
-            - "777"
-            - /nextcloud-aio-talk-tmpfs0
-            - /nextcloud-aio-talk-tmpfs1
-            - /nextcloud-aio-talk-tmpfs2
-            - /nextcloud-aio-talk-tmpfs3
-            - /nextcloud-aio-talk-tmpfs4
-          volumeMounts:
-            - name: nextcloud-aio-talk-tmpfs4
-              mountPath: /nextcloud-aio-talk-tmpfs4
-            - name: nextcloud-aio-talk-tmpfs3
-              mountPath: /nextcloud-aio-talk-tmpfs3
-            - name: nextcloud-aio-talk-tmpfs2
-              mountPath: /nextcloud-aio-talk-tmpfs2
-            - name: nextcloud-aio-talk-tmpfs1
-              mountPath: /nextcloud-aio-talk-tmpfs1
-            - name: nextcloud-aio-talk-tmpfs0
-              mountPath: /nextcloud-aio-talk-tmpfs0
       containers:
         - env:
             - name: INTERNAL_SECRET
@@ -59,40 +37,13 @@ spec:
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-talk:20230916_091439-latest
+          image: nextcloud/aio-talk:20231016_081107-latest
           name: nextcloud-aio-talk
           ports:
             - containerPort: {{ .Values.TALK_PORT }}
-              hostPort: {{ .Values.TALK_PORT }}
               protocol: TCP
             - containerPort: {{ .Values.TALK_PORT }}
-              hostPort: {{ .Values.TALK_PORT }}
               protocol: UDP
             - containerPort: 8081
-              hostPort: 8081
               protocol: TCP
-          securityContext:
-            readOnlyRootFilesystem: true
-          volumeMounts:
-            - mountPath: /var/log/supervisord
-              name: nextcloud-aio-talk-tmpfs0
-            - mountPath: /var/run/supervisord
-              name: nextcloud-aio-talk-tmpfs1
-            - mountPath: /opt/eturnal/run
-              name: nextcloud-aio-talk-tmpfs2
-            - mountPath: /conf
-              name: nextcloud-aio-talk-tmpfs3
-            - mountPath: /tmp
-              name: nextcloud-aio-talk-tmpfs4
-      volumes:
-        - emptyDir: {}
-          name: nextcloud-aio-talk-tmpfs0
-        - emptyDir: {}
-          name: nextcloud-aio-talk-tmpfs1
-        - emptyDir: {}
-          name: nextcloud-aio-talk-tmpfs2
-        - emptyDir: {}
-          name: nextcloud-aio-talk-tmpfs3
-        - emptyDir: {}
-          name: nextcloud-aio-talk-tmpfs4
 {{- end }}

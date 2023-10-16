@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-fulltextsearch
   name: nextcloud-aio-fulltextsearch
@@ -18,7 +18,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-        kompose.version: 1.30.0 (9d8dcb518)
+        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-fulltextsearch
@@ -55,11 +55,10 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: nextcloud/aio-fulltextsearch:20230916_091439-latest
+          image: nextcloud/aio-fulltextsearch:20231016_081107-latest
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200
-              hostPort: 9200
               protocol: TCP
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data

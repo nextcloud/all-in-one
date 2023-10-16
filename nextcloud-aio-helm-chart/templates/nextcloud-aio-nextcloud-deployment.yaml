@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
@@ -17,7 +17,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-        kompose.version: 1.30.0 (9d8dcb518)
+        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-nextcloud
@@ -121,11 +121,12 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20230916_091439-latest
+          image: nextcloud/aio-nextcloud:20231016_081107-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
-              hostPort: 9000
+              protocol: TCP
+            - containerPort: 9001
               protocol: TCP
           volumeMounts:
             - mountPath: /var/www/html

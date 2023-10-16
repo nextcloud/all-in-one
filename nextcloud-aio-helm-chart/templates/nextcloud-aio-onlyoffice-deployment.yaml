@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-onlyoffice
   name: nextcloud-aio-onlyoffice
@@ -18,7 +18,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-        kompose.version: 1.30.0 (9d8dcb518)
+        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-onlyoffice
@@ -43,11 +43,10 @@ spec:
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-onlyoffice:20230916_091439-latest
+          image: nextcloud/aio-onlyoffice:20231016_081107-latest
           name: nextcloud-aio-onlyoffice
           ports:
             - containerPort: 80
-              hostPort: 80
               protocol: TCP
           volumeMounts:
             - mountPath: /var/lib/onlyoffice

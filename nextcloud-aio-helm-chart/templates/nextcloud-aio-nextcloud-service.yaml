@@ -3,7 +3,7 @@ kind: Service
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
@@ -13,5 +13,8 @@ spec:
     - name: "9000"
       port: 9000
       targetPort: 9000
+    - name: "9001"
+      port: 9001
+      targetPort: 9001
   selector:
     io.kompose.service: nextcloud-aio-nextcloud

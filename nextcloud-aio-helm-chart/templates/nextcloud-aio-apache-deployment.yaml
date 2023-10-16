@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-apache
   name: nextcloud-aio-apache
@@ -17,7 +17,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-        kompose.version: 1.30.0 (9d8dcb518)
+        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-apache
@@ -30,22 +30,7 @@ spec:
             - "777"
             - /nextcloud-aio-nextcloud
             - /nextcloud-aio-apache
-            - /nextcloud-aio-apache-tmpfs0
-            - /nextcloud-aio-apache-tmpfs1
-            - /nextcloud-aio-apache-tmpfs2
-            - /nextcloud-aio-apache-tmpfs3
-            - /nextcloud-aio-apache-tmpfs4
           volumeMounts:
-            - name: nextcloud-aio-apache-tmpfs4
-              mountPath: /nextcloud-aio-apache-tmpfs4
-            - name: nextcloud-aio-apache-tmpfs3
-              mountPath: /nextcloud-aio-apache-tmpfs3
-            - name: nextcloud-aio-apache-tmpfs2
-              mountPath: /nextcloud-aio-apache-tmpfs2
-            - name: nextcloud-aio-apache-tmpfs1
-              mountPath: /nextcloud-aio-apache-tmpfs1
-            - name: nextcloud-aio-apache-tmpfs0
-              mountPath: /nextcloud-aio-apache-tmpfs0
             - name: nextcloud-aio-apache
               mountPath: /nextcloud-aio-apache
             - name: nextcloud-aio-nextcloud
@@ -72,33 +57,19 @@ spec:
               value: nextcloud-aio-talk
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-apache:20230916_091439-latest
+          image: nextcloud/aio-apache:20231016_081107-latest
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
-              hostPort: {{ .Values.APACHE_PORT }}
               protocol: TCP
             - containerPort: {{ .Values.APACHE_PORT }}
-              hostPort: {{ .Values.APACHE_PORT }}
               protocol: UDP
-          securityContext:
-            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
               readOnly: true
             - mountPath: /mnt/data
               name: nextcloud-aio-apache
-            - mountPath: /var/log/supervisord
-              name: nextcloud-aio-apache-tmpfs0
-            - mountPath: /var/run/supervisord
-              name: nextcloud-aio-apache-tmpfs1
-            - mountPath: /usr/local/apache2/logs
-              name: nextcloud-aio-apache-tmpfs2
-            - mountPath: /tmp
-              name: nextcloud-aio-apache-tmpfs3
-            - mountPath: /home/www-data
-              name: nextcloud-aio-apache-tmpfs4
       volumes:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:
@@ -106,13 +77,3 @@ spec:
         - name: nextcloud-aio-apache
           persistentVolumeClaim:
             claimName: nextcloud-aio-apache
-        - emptyDir: {}
-          name: nextcloud-aio-apache-tmpfs0
-        - emptyDir: {}
-          name: nextcloud-aio-apache-tmpfs1
-        - emptyDir: {}
-          name: nextcloud-aio-apache-tmpfs2
-        - emptyDir: {}
-          name: nextcloud-aio-apache-tmpfs3
-        - emptyDir: {}
-          name: nextcloud-aio-apache-tmpfs4

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-notify-push
   name: nextcloud-aio-notify-push
@@ -17,7 +17,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-        kompose.version: 1.30.0 (9d8dcb518)
+        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-notify-push
@@ -50,14 +50,11 @@ spec:
               value: nextcloud-aio-redis
             - name: REDIS_HOST_PASSWORD
               value: "{{ .Values.REDIS_PASSWORD }}"
-          image: nextcloud/aio-notify-push:20230916_091439-latest
+          image: nextcloud/aio-notify-push:20231016_081107-latest
           name: nextcloud-aio-notify-push
           ports:
             - containerPort: 7867
-              hostPort: 7867
               protocol: TCP
-          securityContext:
-            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /nextcloud
               name: nextcloud-aio-nextcloud

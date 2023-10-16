@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-    kompose.version: 1.30.0 (9d8dcb518)
+    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-database
   name: nextcloud-aio-database
@@ -17,7 +17,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
-        kompose.version: 1.30.0 (9d8dcb518)
+        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-database
@@ -31,10 +31,7 @@ spec:
             - /nextcloud-aio-database/data
             - /nextcloud-aio-database
             - /nextcloud-aio-database-dump
-            - /nextcloud-aio-database-tmpfs0
           volumeMounts:
-            - name: nextcloud-aio-database-tmpfs0
-              mountPath: /nextcloud-aio-database-tmpfs0
             - name: nextcloud-aio-database-dump
               mountPath: /nextcloud-aio-database-dump
             - name: nextcloud-aio-database
@@ -47,10 +44,7 @@ spec:
             - "-R"
             - /nextcloud-aio-database
             - /nextcloud-aio-database-dump
-            - /nextcloud-aio-database-tmpfs0
           volumeMounts:
-            - name: nextcloud-aio-database-tmpfs0
-              mountPath: /nextcloud-aio-database-tmpfs0
             - name: nextcloud-aio-database-dump
               mountPath: /nextcloud-aio-database-dump
             - name: nextcloud-aio-database
@@ -67,22 +61,17 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-postgresql:20230916_091439-latest
+          image: nextcloud/aio-postgresql:20231016_081107-latest
           name: nextcloud-aio-database
           ports:
             - containerPort: 5432
-              hostPort: 5432
               protocol: TCP
-          securityContext:
-            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               subPath: data
               name: nextcloud-aio-database
             - mountPath: /mnt/data
               name: nextcloud-aio-database-dump
-            - mountPath: /var/run/postgresql
-              name: nextcloud-aio-database-tmpfs0
       terminationGracePeriodSeconds: 1800
       volumes:
         - name: nextcloud-aio-database
@@ -91,5 +80,3 @@ spec:
         - name: nextcloud-aio-database-dump
           persistentVolumeClaim:
             claimName: nextcloud-aio-database-dump
-        - emptyDir: {}
-          name: nextcloud-aio-database-tmpfs0
