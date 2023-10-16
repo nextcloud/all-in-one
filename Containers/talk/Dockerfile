@@ -35,10 +35,10 @@ RUN set -ex; \
 
 FROM alpine:3.18.4
 ENV ETURNAL_ETC_DIR="/conf"
-COPY --from=janus     /usr/local                          /usr/local
-COPY --from=eturnal   /opt/eturnal                        /opt/eturnal
-COPY --from=nats      /nats-server                        /usr/local/bin/nats-server
-COPY --from=signaling /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
+COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/local                          /usr/local
+COPY --from=eturnal   --chmod=777 --chown=1000:1000 /opt/eturnal                        /opt/eturnal
+COPY --from=nats      --chmod=777 --chown=1000:1000 /nats-server                        /usr/local/bin/nats-server
+COPY --from=signaling --chmod=777 --chown=1000:1000 /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
@@ -66,7 +66,7 @@ RUN set -ex; \
         libwebsockets \
         \
         shadow; \
-    useradd --system eturnal; \
+    useradd --system -u 1000 eturnal; \
     apk del --no-cache \
         shadow; \
     \
@@ -85,15 +85,12 @@ RUN set -ex; \
         /var/run/supervisord \
         /usr/local/lib/janus/loggers; \
     chown eturnal:eturnal -R \
-        /usr \
-        /opt/eturnal \
         /etc/nats.conf \
         /var/log/supervisord \
         /var/run/supervisord; \
     chmod 777 -R \
         /tmp \
         /conf \
-        /opt/eturnal \
         /var/run/supervisord \
         /var/log/supervisord; \
     ln -s /opt/eturnal/bin/stun /usr/local/bin/stun; \
