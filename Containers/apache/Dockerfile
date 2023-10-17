@@ -1,4 +1,4 @@
-FROM caddy:2.7.4-alpine as caddy
+FROM caddy:2.7.5-alpine as caddy
 
 FROM httpd:2.4.57-alpine3.18
 
