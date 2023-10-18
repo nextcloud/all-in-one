@@ -9,7 +9,8 @@
             "internal_port": "8080",
             "restart": "unless-stopped",
             "environment": [
-                "TZ=%TIMEZONE%"
+                "TZ=%TIMEZONE%",
+                "MODELS_PATH=/models"
             ],
             "volumes": [
                 {
