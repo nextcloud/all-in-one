@@ -37,9 +37,6 @@
                 "php /var/www/html/occ app:install integration_openai",
                 "php /var/www/html/occ config:app:set integration_openai url --value http://nextcloud-aio-local-ai:8080",
                 "php /var/www/html/occ app:install assistant"
-            ],
-            "backup_volumes": [
-                "nextcloud_aio_localai_models"
             ]
         }
     ]
