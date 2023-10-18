@@ -18,7 +18,6 @@ This container bundles Local AI and auto-configures it for you.
   name: gpt4all-j
 ```
 -  Additionally after doing so, you might want to enable or disable specific features for your models in the integration_openai settings: `https://your-nc-domain.com/settings/admin/connected-accounts`
-- The models folder where models get downloaded to is covered by AIOs backup solution
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers how to add it to the AIO stack
 
 ### Repository
