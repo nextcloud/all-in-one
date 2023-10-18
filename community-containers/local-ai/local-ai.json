@@ -31,11 +31,14 @@
             ],
             "nextcloud_exec_commands": [
                 "mkdir '/mnt/ncdata/admin/files/nextcloud-aio-local-ai'",
-                "mkdir '/mnt/ncdata/admin/files/nextcloud-aio-local-ai/models'",
+                "touch '/mnt/ncdata/admin/files/nextcloud-aio-local-ai/models.txt'",
                 "echo 'Scanning nextcloud-aio-local-ai folder for admin user...'",
                 "php /var/www/html/occ files:scan --path='/admin/files/nextcloud-aio-local-ai'",
                 "php /var/www/html/occ app:install integration_openai",
                 "php /var/www/html/occ config:app:set integration_openai url --value http://nextcloud-aio-local-ai:8080"
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_localai_models"
             ]
         }
     ]
