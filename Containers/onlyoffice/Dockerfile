@@ -1,5 +1,5 @@
 # From https://github.com/ONLYOFFICE/Docker-DocumentServer/blob/master/Dockerfile
-FROM onlyoffice/documentserver:7.4.1.1
+FROM onlyoffice/documentserver:7.5.0.1
 
 # USER root is probably used
 
