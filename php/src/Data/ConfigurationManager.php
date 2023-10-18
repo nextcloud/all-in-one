@@ -687,9 +687,13 @@ class ConfigurationManager
         
         if ($enableAutomaticUpdates === false) {
             $time .= PHP_EOL . 'automaticUpdatesAreNotEnabled';
+        } else {
+            $time .= PHP_EOL;
         }
         if ($successNotification === false) {
             $time .= PHP_EOL . 'successNotificationsAreNotEnabled';
+        } else {
+            $time .= PHP_EOL;
         }
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
     }
