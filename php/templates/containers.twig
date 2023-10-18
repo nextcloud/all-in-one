@@ -481,6 +481,7 @@
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <input class="button" type="submit" value="Submit backup time" /><br>
                                                 <input type="checkbox" id="automatic_updates" name="automatic_updates" checked="checked"><label for="automatic_updates">Automatically update all containers, the mastercontainer and on saturdays your Nextcloud apps</label><br>
+                                                <input type="checkbox" id="success_notification" name="success_notification" checked="checked"><label for="success_notification">Send notifications about successful backups (notifications about unsuccessful backups will always be sent)</label><br>
                                             </form>
                                         {% else %}
                                             Daily backups will be created at <b>{{ daily_backup_time }} UTC</b> which includes a notification about the result of the backup.

@@ -12,6 +12,11 @@ while true; do
             export AUTOMATIC_UPDATES=0
             export START_CONTAINERS=1
         fi
+        if [ "$(sed -n '3p' "/mnt/docker-aio-config/data/daily_backup_time")" != 'successNotificationsAreNotEnabled' ]; then
+            export SEND_SUCCESS_NOTIFICATIONS=1
+        else
+            export SEND_SUCCESS_NOTIFICATIONS=0
+        fi
         set +x
         if [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
             export LOCK_FILE_PRESENT=1

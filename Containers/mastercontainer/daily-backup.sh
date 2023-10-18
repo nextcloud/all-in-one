@@ -105,7 +105,7 @@ if [ "$DAILY_BACKUP" = 1 ] && ([ "$AUTOMATIC_UPDATES" = 1 ] || [ "$START_CONTAIN
         done
     fi
     echo "Sending backup notification..."
-    sudo -u www-data php /var/www/docker-aio/php/src/Cron/BackupNotification.php
+    sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/BackupNotification.php
 fi
 
 echo "Daily backup script has finished"
