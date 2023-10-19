@@ -9,7 +9,7 @@ This container bundles pi-hole and auto-configures it for you.
 - After adding and starting the container, you can visit `http://ip.address.of.this.server:8573` in order to log in with the admin key that you can retrieve when running `sudo docker inspect nextcloud-aio-pihole | grep WEBPASSWORD`. There you can configure the pi-hole setup. Also you can add local dns records.
 - You can configure your home network now to use pi-hole as its dns server by configuring your router.
 - Additionally, you can configure the docker daemon to use that by editing `/etc/docker/daemon.json` and adding ` { "dns" : [ "ip.address.of.this.server" , "8.8.8.8" ] } `.
-- See https://github.com/nextcloud/all-in-one/tree/main/community-containers how to add it to the AIO stack
+- See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
 ### Repository
 https://github.com/pi-hole/docker-pi-hole

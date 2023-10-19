@@ -7,7 +7,7 @@ This container bundles Plex and auto-configures it for you.
 - If you have a firewall like ufw configured, you might need to open all Plex ports in there first in order to make it work. Especially port 32400 is important!
 - After adding and starting the container, you need to visit http://ip.address.of.server:32400 in order to claim your server with a plex account
 - The data of Plex will be automatically included in AIOs backup solution!
-- See https://github.com/nextcloud/all-in-one/tree/main/community-containers how to add it to the AIO stack
+- See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
 ### Repository
 https://github.com/plexinc/pms-docker

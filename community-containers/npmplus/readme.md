@@ -13,7 +13,7 @@ This container contains a fork of the Nginx Proxy Manager, which is a WebUI for 
 - If you want to set env options from this [compose.yaml](https://github.com/ZoeyVid/NPMplus/blob/develop/compose.yaml), please set them inside the `.env` file which you can find in the `nextcloud_aio_npmplus` volume
 - The data (certs, configs, etc.) of NPMplus will be automatically included in AIOs backup solution!
 - **Important:** you always need to enable https for your hosts, since `DISABLE_HTTP` is set to true
-- See https://github.com/nextcloud/all-in-one/tree/main/community-containers how to add it to the AIO stack
+- See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
 ### Repository and Documentation
 https://github.com/ZoeyVid/NPMplus
