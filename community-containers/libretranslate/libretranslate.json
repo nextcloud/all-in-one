@@ -1,0 +1,33 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-libretranslate",
+            "display_name": "LibreTranslate",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/libretranslate",
+            "image": "szaimen/aio-libretranslate",
+            "image_tag": "v1",
+            "internal_port": "5000",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_libretranslate_db",
+                    "destination": "/app/db",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_libretranslate_models",
+                    "destination": "/home/libretranslate/.local",
+                    "writeable": true
+                }
+            ],
+            "nextcloud_exec_commands": [
+                "php /var/www/html/occ app:install integration_libretranslate",
+                "php /var/www/html/occ config:app:set integration_libretranslate host --value='http://nextcloud-aio-libretranslate'",
+                "php /var/www/html/occ config:app:set integration_libretranslate port --value='5000'"
+            ]
+        }
+    ]
+}
