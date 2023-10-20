@@ -424,6 +424,7 @@
                                 Please save it at a safe place since you won't be able to restore from backup if you lose this password! <br /><br/>
                                 Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
                                 The backup itself uses a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup"><b>BorgBackup</b></a> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
+                                By using this tool, backups are incremental, differential, compressed and encrypted – so only the first backup will take a while. Further backups should be fast as only changes are taken into account.<br /><br/>
                                 Backups get created in the following directory on the host: <b>{{ borg_backup_host_location }}/borg</b> <br /><br/>
                                 Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app - but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.<br><br>
                                 Regarding backup retention, see <b><a href="https://github.com/nextcloud/all-in-one#how-to-adjust-borgs-retention-policy">this</a></b>.<br><br>
@@ -474,7 +475,7 @@
 
                                         <h3>Daily backup and automatic updates</h3>
                                         {% if daily_backup_time == "" %}
-                                            By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <b>04:00</b> will create backups at 4 am UTC and <b>16:00</b> at 4 pm UTC.<br><br/>
+                                            By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <b>04:00</b> will create backups at 4 am UTC and <b>16:00</b> at 4 pm UTC. For creating the backup, it will stop the containers and start them back up after the backup is done.<br><br/>
                                             <form method="POST" action="/api/configuration" class="xhr">
                                                 <input type="text" name="daily_backup_time" value="04:00" placeholder="04:00"/>
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
