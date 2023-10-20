@@ -289,6 +289,8 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetSelectedRestoreTime();
                 } elseif ($out[1] === 'APACHE_PORT') {
                     $replacements[1] = $this->configurationManager->GetApachePort();
+                } elseif ($out[1] === 'APACHE_IP_BINDING') {
+                    $replacements[1] = $this->configurationManager->GetApacheIPBinding();
                 } elseif ($out[1] === 'TALK_PORT') {
                     $replacements[1] = $this->configurationManager->GetTalkPort();
                 } elseif ($out[1] === 'NEXTCLOUD_MOUNT') {
