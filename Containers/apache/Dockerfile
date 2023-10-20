@@ -1,6 +1,6 @@
 FROM caddy:2.7.5-alpine as caddy
 
-FROM httpd:2.4.57-alpine3.18
+FROM httpd:2.4.58-alpine3.18
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
