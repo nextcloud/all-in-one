@@ -366,7 +366,7 @@
                     {% else %}
                         {% if is_backup_container_running == false and borg_backup_host_location == "" and isApacheStarting != true %}
                             <h2>Backup and restore</h2>
-                            Please type in the directory where backups will get created on the host system:<br><br>
+                            Please type in the directory where backups will get created on the host system below. In best case make sure that you choose a location on a separate drive and not on your root drive.<br><br>
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -461,7 +461,7 @@
                                         </form>
 
                                         <h3>Backup restore</h3>
-                                        Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the state of the backup so you should consider creating a backup first. It also makes sense to run an integrity check before restoring your files but is not mandatory since it shouldn't be needed in most situations. Please note that this will not restore additionally chosen backup directories!<br><br>
+                                        Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the state of the backup so you should consider creating a backup first. It also makes sense to run an integrity check before restoring your files but is not mandatory since it shouldn't be needed in most situations. Please note that this will not restore additionally chosen backup directories! The restore process should be pretty fast as rsync is used to restore the chosen backup which only transfers changed files and deletes additional ones.<br><br>
                                         <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
