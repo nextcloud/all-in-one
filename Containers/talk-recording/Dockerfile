@@ -30,7 +30,7 @@ RUN set -ex; \
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     git clone --recursive https://github.com/nextcloud/spreed --depth=1 --single-branch --branch "$RECORDING_VERSION" /src; \
     mv -v /src/recording/pyproject.toml /src/recording/src/pyproject.toml; \
-    python3 -m pip install --no-cache-dir /src/recording/src; \
+    python3 -m pip install --no-cache-dir --no-index --find-links=file:///local/dir /src/recording/src; \
     rm -rf /src; \
     touch /etc/recording.conf; \
     chown recording:recording -R \
