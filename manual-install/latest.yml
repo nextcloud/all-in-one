@@ -143,6 +143,8 @@ services:
       - TALK_RECORDING_HOST=nextcloud-aio-talk-recording
       - FULLTEXTSEARCH_PASSWORD=${FULLTEXTSEARCH_PASSWORD}
       - REMOVE_DISABLED_APPS=${REMOVE_DISABLED_APPS}
+      - APACHE_PORT=${APACHE_PORT}
+      - APACHE_IP_BINDING=${APACHE_IP_BINDING}
     restart: unless-stopped
     networks:
       - nextcloud-aio
