@@ -91,7 +91,7 @@ A new way since the Nextcloud update to 24 is to use the new [user_migration app
 #### From https://docs.nextcloud.com/server/latest/admin_manual/maintenance/restore.html#synchronising-with-clients-after-data-recovery
 By default the Nextcloud server is considered the authorative source for the data. If the data on the server and the client differs clients will default to fetching the data from the server.
 
-If the recovered backup is outdated the state of the clients may be more up to date than the state of the server. In this case also make sure to run the maintenance:data-fingerprint command afterwards. It changes the logic of the synchronisation algorithm to try an recover as much data as possible. Files missing on the server are therefore recovered from the clients and in case of different content the users will be asked.
+If the recovered backup is outdated the state of the clients may be more up to date than the state of the server. In this case also make sure to run `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ maintenance:data-fingerprint` command afterwards. It changes the logic of the synchronisation algorithm to try an recover as much data as possible. Files missing on the server are therefore recovered from the clients and in case of different content the users will be asked.
 
 >[!Note]
 >The usage of maintenance:data-fingerprint can cause conflict dialogues and difficulties deleting files on the client. Therefore it’s only recommended to prevent dataloss if the backup was outdated.
