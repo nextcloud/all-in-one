@@ -50,7 +50,7 @@ spec:
               value: nextcloud-aio-redis
             - name: REDIS_HOST_PASSWORD
               value: "{{ .Values.REDIS_PASSWORD }}"
-          image: nextcloud/aio-notify-push:20231016_081107-latest
+          image: nextcloud/aio-notify-push:20231027_071516-latest
           name: nextcloud-aio-notify-push
           ports:
             - containerPort: 7867
