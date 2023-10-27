@@ -45,6 +45,8 @@ spec:
               value: "{{ .Values.NEXTCLOUD_PASSWORD }}"
             - name: ADMIN_USER
               value: admin
+            - name: APACHE_PORT
+              value: "{{ .Values.APACHE_PORT }}"
             - name: CLAMAV_ENABLED
               value: "{{ .Values.CLAMAV_ENABLED }}"
             - name: CLAMAV_HOST
@@ -121,7 +123,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20231016_081107-latest
+          image: nextcloud/aio-nextcloud:20231027_071516-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
