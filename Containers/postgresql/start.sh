@@ -31,7 +31,7 @@ fi
 if [ -f "$DUMP_DIR/initialization.failed" ]; then
     echo "The database initialization failed. Most likely was a wrong timezone selected."
     echo "The selected timezone is '$TZ'." 
-    echo "Please check if it is in 'TZ database name' column of the timezone list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"
+    echo "Please check if it is in the 'TZ identifier' column of the timezone list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"
     echo "For further clues on what went wrong, look at the logs above."
     echo "You might start again from scratch by following https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance and selecting a proper timezone."
     exit 1
