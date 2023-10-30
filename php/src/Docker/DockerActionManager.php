@@ -403,6 +403,9 @@ class DockerActionManager
                     } else {
                         $replacements[1] = '';
                     }
+                // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
+                } elseif ($out[1] === 'AIO_DATABASE_HOST') {
+                    $replacements[1] = gethostbyname('nextcloud-aio-database');
                 } else {
                     $secret = $this->configurationManager->GetSecret($out[1]);
                     if ($secret === "") {
