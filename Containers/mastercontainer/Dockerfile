@@ -5,7 +5,7 @@ FROM docker:24.0.6-cli as docker
 FROM caddy:2.7.5-alpine as caddy
 
 # From https://github.com/docker-library/php/blob/master/8.2/alpine3.18/fpm/Dockerfile
-FROM php:8.2.11-fpm-alpine3.18
+FROM php:8.2.12-fpm-alpine3.18
 
 EXPOSE 80
 EXPOSE 8080
