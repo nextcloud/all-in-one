@@ -403,6 +403,9 @@ class DockerActionManager
                     } else {
                         $replacements[1] = '';
                     }
+                // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
+                } elseif ($out[1] === 'AIO_DATABASE_HOST') {
+                    $replacements[1] = gethostbyname('nextcloud-aio-database');
                 } else {
                     $secret = $this->configurationManager->GetSecret($out[1]);
                     if ($secret === "") {
@@ -577,14 +580,8 @@ class DockerActionManager
     public function PullContainer(Container $container) : void
     {
         $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', urlencode($this->BuildImageName($container))));
-        try {
-            $this->guzzleClient->post($url);
-        } catch (RequestException $e) {
-            error_log('Could not get image ' . $this->BuildImageName($container) . ' from docker hub. Probably due to rate limits. ' . $e->getMessage());
-            // Don't exit here because it is possible that the image is already present 
-            // and we ran into docker hub limits.
-            // We will exit later if not image should be available.
-        }
+        // do not catch any exception so that it always throws and logs the error
+        $this->guzzleClient->post($url);
     }
 
     private function isContainerUpdateAvailable(string $id) : string

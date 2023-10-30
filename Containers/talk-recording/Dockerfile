@@ -2,7 +2,7 @@ FROM python:3.12.0-alpine3.18
 
 COPY --chmod=775 start.sh /start.sh
 
-ENV RECORDING_VERSION v17.1.1
+ENV RECORDING_VERSION v17.1.2
 ENV ALLOW_ALL false
 ENV HPB_PROTOCOL https
 ENV SKIP_VERIFY false

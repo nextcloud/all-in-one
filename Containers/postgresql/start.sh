@@ -31,7 +31,7 @@ fi
 if [ -f "$DUMP_DIR/initialization.failed" ]; then
     echo "The database initialization failed. Most likely was a wrong timezone selected."
     echo "The selected timezone is '$TZ'." 
-    echo "Please check if it is in 'TZ database name' column of the timezone list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"
+    echo "Please check if it is in the 'TZ identifier' column of the timezone list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"
     echo "For further clues on what went wrong, look at the logs above."
     echo "You might start again from scratch by following https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance and selecting a proper timezone."
     exit 1
@@ -152,12 +152,20 @@ if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
     MEMORY=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
     MAX_CONNECTIONS=$((MEMORY/50+3))
     if [ -n "$MAX_CONNECTIONS" ]; then
+        # 100 is the default, we do not want to go lower than this
+        if [ "$MAX_CONNECTIONS" -lt 100 ]; then
+            MAX_CONNECTIONS=100
+        fi
         sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
     fi
 
-    # Modify conf
+    # Do not log checkpoints
     if grep -q "#log_checkpoints" /var/lib/postgresql/data/postgresql.conf; then
         sed -i 's|#log_checkpoints.*|log_checkpoints = off|' /var/lib/postgresql/data/postgresql.conf
+    fi
+    # Close idling connections automatically after 3s which does not seem to happen automatically so that we run into max_connections limits
+    if grep -q "#idle_session_timeout" /var/lib/postgresql/data/postgresql.conf; then
+        sed -i 's|#idle_session_timeout.*|idle_session_timeout = 3000|' /var/lib/postgresql/data/postgresql.conf
     fi
 fi
 

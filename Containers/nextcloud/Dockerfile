@@ -1,9 +1,9 @@
-FROM php:8.1.24-fpm-alpine3.18
+FROM php:8.1.25-fpm-alpine3.18
 
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 10G
 ENV PHP_MAX_TIME 3600
-ENV NEXTCLOUD_VERSION 27.1.2
+ENV NEXTCLOUD_VERSION 27.1.3
 ENV AIO_TOKEN 123456
 ENV AIO_URL localhost
 
@@ -70,7 +70,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.22; \
     pecl install memcached-3.2.0; \
-    pecl install redis-6.0.1; \
+    pecl install redis-6.0.2; \
     pecl install imagick-3.7.0; \
     \
     docker-php-ext-enable \

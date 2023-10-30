@@ -20,7 +20,7 @@
                 },
                 {
                     "source": "nextcloud_aio_localai_images",
-                    "destination": "/images",
+                    "destination": "/tmp/generated/images/",
                     "writeable": true
                 },
                 {
@@ -35,8 +35,10 @@
                 "echo 'Scanning nextcloud-aio-local-ai folder for admin user...'",
                 "php /var/www/html/occ files:scan --path='/admin/files/nextcloud-aio-local-ai'",
                 "php /var/www/html/occ app:install integration_openai",
+                "php /var/www/html/occ app:enable integration_openai",
                 "php /var/www/html/occ config:app:set integration_openai url --value http://nextcloud-aio-local-ai:8080",
-                "php /var/www/html/occ app:install assistant"
+                "php /var/www/html/occ app:install assistant",
+                "php /var/www/html/occ app:enable assistant"
             ]
         }
     ]
