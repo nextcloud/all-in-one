@@ -86,9 +86,10 @@ internalsecret = the-shared-secret-for-internal-clients
 # only be used while running the benchmark client against the server.
 allowall = false
 
-# Common shared secret for requests from and to the backend servers if
-# "allowall" is enabled. This must be the same value as configured in the
-# Nextcloud admin ui.
+# Common shared secret for requests from and to the backend servers. Used if
+# "allowall" is enabled or as fallback for individual backends that don't have
+# their own secret set.
+# This must be the same value as configured in the Nextcloud admin ui.
 #secret = the-shared-secret-for-allowall
 
 # Timeout in seconds for requests to the backend.
@@ -109,8 +110,9 @@ connectionsperhost = 8
 # URL of the Nextcloud instance
 #url = https://cloud.domain.invalid
 
-# Shared secret for requests from and to the backend servers. This must be the
-# same value as configured in the Nextcloud admin ui.
+# Shared secret for requests from and to the backend servers. Leave empty to use
+# the common shared secret from above.
+# This must be the same value as configured in the Nextcloud admin ui.
 #secret = the-shared-secret
 
 # Limit the number of sessions that are allowed to connect to this backend.
@@ -129,8 +131,9 @@ connectionsperhost = 8
 # URL of the Nextcloud instance
 #url = https://cloud.otherdomain.invalid
 
-# Shared secret for requests from and to the backend servers. This must be the
-# same value as configured in the Nextcloud admin ui.
+# Shared secret for requests from and to the backend servers. Leave empty to use
+# the common shared secret from above.
+# This must be the same value as configured in the Nextcloud admin ui.
 #secret = the-shared-secret
 
 [nats]
