@@ -20,7 +20,7 @@
                 },
                 {
                     "source": "nextcloud_aio_localai_images",
-                    "destination": "/images",
+                    "destination": "/tmp/generated/images/",
                     "writeable": true
                 },
                 {
