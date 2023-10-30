@@ -152,12 +152,20 @@ if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
     MEMORY=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
     MAX_CONNECTIONS=$((MEMORY/50+3))
     if [ -n "$MAX_CONNECTIONS" ]; then
+        # 100 is the default, we do not want to go lower than this
+        if [ "$MAX_CONNECTIONS" -lt 100 ]; then
+            MAX_CONNECTIONS=100
+        fi
         sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
     fi
 
-    # Modify conf
+    # Do not log checkpoints
     if grep -q "#log_checkpoints" /var/lib/postgresql/data/postgresql.conf; then
         sed -i 's|#log_checkpoints.*|log_checkpoints = off|' /var/lib/postgresql/data/postgresql.conf
+    fi
+    # Close idling connections automatically after 3s which does not seem to happen automatically so that we run into max_connections limits
+    if grep -q "#idle_session_timeout" /var/lib/postgresql/data/postgresql.conf; then
+        sed -i 's|#idle_session_timeout.*|idle_session_timeout = 3000|' /var/lib/postgresql/data/postgresql.conf
     fi
 fi
 
