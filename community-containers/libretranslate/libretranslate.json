@@ -25,6 +25,7 @@
             ],
             "nextcloud_exec_commands": [
                 "php /var/www/html/occ app:install integration_libretranslate",
+                "php /var/www/html/occ app:enable integration_libretranslate",
                 "php /var/www/html/occ config:app:set integration_libretranslate host --value='http://nextcloud-aio-libretranslate'",
                 "php /var/www/html/occ config:app:set integration_libretranslate port --value='5000'"
             ]
