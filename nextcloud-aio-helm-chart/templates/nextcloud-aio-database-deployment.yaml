@@ -61,7 +61,7 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-postgresql:20231027_071516-latest
+          image: nextcloud/aio-postgresql:20231030_072910-latest
           name: nextcloud-aio-database
           ports:
             - containerPort: 5432
