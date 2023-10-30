@@ -1,4 +1,4 @@
-## Local AI
+## LibreTranslate
 This container bundles LibreTranslate and auto-configures it for you.
 
 ### Notes
