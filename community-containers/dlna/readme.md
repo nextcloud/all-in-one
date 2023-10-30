@@ -5,7 +5,7 @@ This container bundles DLNA server for your Nextcloud files to be accessible by 
 - This container needs the `nextcloud-aio-nextcloud` container to be up and running to work
 - This is not working on Docker Desktop since it needs `network_mode: host` in order to work correctly
 - This is not working on Mac OS since the `host` networking mode doesn't really share the host's network interfaces in this system
-- It is needed to allow TCP network traffic on port 9999 to the AIO instance and the UDP (port 1900) from it to the local network
+If you have a firewall like ufw configured, you might need to open at least port 9999 TCP Port 1900 UDP first in order to make it work.
 
 ### Repository
 https://github.com/thanek/nextcloud-dlna
