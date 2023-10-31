@@ -1,0 +1,39 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-dlna",
+            "display_name": "DLNA",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/dlna",
+            "image": "thanek/nextcloud-dlna",
+            "image_tag": "latest",
+            "internal_port": "host",
+            "restart": "unless-stopped",
+            "depends_on": [
+                "nextcloud-aio-database"
+            ],
+            "environment": [
+                "NC_DOMAIN=%NC_DOMAIN%",
+                "NC_PORT=443",
+                "NEXTCLOUD_DLNA_SERVER_PORT=9999",
+                "NEXTCLOUD_DLNA_FRIENDLY_NAME=nextcloud-aio",
+                "NEXTCLOUD_DATA_DIR=/data",
+                "NEXTCLOUD_DB_TYPE=postgres",
+                "NEXTCLOUD_DB_HOST=%AIO_DATABASE_HOST%",
+                "NEXTCLOUD_DB_PORT=5432",
+                "NEXTCLOUD_DB_NAME=nextcloud_database",
+                "NEXTCLOUD_DB_USER=oc_nextcloud",
+                "NEXTCLOUD_DB_PASS=%DATABASE_PASSWORD%"
+            ],
+            "secrets": [
+                "DATABASE_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "%NEXTCLOUD_DATADIR%",
+                    "destination": "/data",
+                    "writeable": false
+                }
+            ]
+        }
+    ]
+}
