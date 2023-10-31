@@ -12,6 +12,8 @@
                 "nextcloud-aio-database"
             ],
             "environment": [
+                "NC_DOMAIN=%NC_DOMAIN%",
+                "NC_PORT=443",
                 "NEXTCLOUD_DLNA_SERVER_PORT=9999",
                 "NEXTCLOUD_DLNA_FRIENDLY_NAME=nextcloud-aio",
                 "NEXTCLOUD_DATA_DIR=/data",
