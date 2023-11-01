@@ -8,7 +8,7 @@ In order to run Nextcloud behind a web server or reverse proxy (like Apache, Ngi
 
 **Attention:** The process to run Nextcloud behind a reverse proxy consists of at least steps 1, 2 and 4:
 1. **Configure the reverse proxy! See [point 1](#1-add-this-to-your-reverse-proxy-config)**
-1. **Use the in this document provided startup command! See [point 2](#2-use-this-startup-command)**
+1. **Use this document provided startup command! See [point 2](#2-use-this-startup-command)**
 1. Optional: If the reverse proxy is installed on the same host and in the host network, you should limit the apache container to only listen on localhost. See [point 3](#3-limit-the-access-to-the-apache-container)
 1. **Open the AIO interface. See [point 4](#4-open-the-aio-interface)**
 1. Optional: Get a valid certificate for the AIO interface! See [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface)
