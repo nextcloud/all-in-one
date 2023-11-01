@@ -383,7 +383,7 @@ Second, see these screenshots for a working config:
 
 ![grafik](https://user-images.githubusercontent.com/75573284/213889724-1ab32264-3e0c-4d83-b067-9fe9d1672fb2.png)
 
-![grafik](https://user-images.githubusercontent.com/75573284/213889797-42642302-b079-4378-a4a6-079f4f67058c.png)
+![grafik](https://github.com/nextcloud/all-in-one/assets/24786786/fecbb5ef-d2f4-4e0f-bc4b-82207e2c2809)
 
 ![grafik](https://user-images.githubusercontent.com/75573284/213889746-87dbe8c5-4d1f-492f-b251-bbf82f1510d0.png)
 
