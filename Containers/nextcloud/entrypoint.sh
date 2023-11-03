@@ -30,18 +30,6 @@ redis.session.lock_retries = -1
 redis.session.lock_wait_time = 10000
 REDIS_CONF
 
-echo "Setting php max children..."
-MEMORY=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
-PHP_MAX_CHILDREN=$((MEMORY/50))
-# 100 is the default, we do not want to go lower than this
-if [ "$PHP_MAX_CHILDREN" -lt 100 ]; then
-    PHP_MAX_CHILDREN=100
-fi
-if [ -n "$PHP_MAX_CHILDREN" ]; then
-    sed -i "s/^pm.max_children =.*/pm.max_children = $PHP_MAX_CHILDREN/" /usr/local/etc/php-fpm.d/www.conf
-    sed -i "s/^;pm.process_idle_timeout =.*/pm.process_idle_timeout = 3s/" /usr/local/etc/php-fpm.d/www.conf
-fi
-
 # Check permissions in ncdata
 touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then

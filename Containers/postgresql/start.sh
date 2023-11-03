@@ -148,24 +148,22 @@ fi
 
 # Modify postgresql.conf
 if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
-    echo "Setting max connections..."
-    MEMORY=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
-    MAX_CONNECTIONS=$((MEMORY/50+3))
-    if [ -n "$MAX_CONNECTIONS" ]; then
-        # 100 is the default, we do not want to go lower than this
-        if [ "$MAX_CONNECTIONS" -lt 100 ]; then
-            MAX_CONNECTIONS=100
-        fi
-        sed -i "s|^max_connections =.*|max_connections = $MAX_CONNECTIONS|" "/var/lib/postgresql/data/postgresql.conf"
-    fi
+    echo "Setting postgres values..."
+
+    # 5000 connections is apparently the highest possible value with postgres so set it to that so that we don't run into a limit here.
+    # We don't actually expect so many connections but don't want to limit it artificially because people will report issues otherwise
+    # Also connections should usually be closed again after the process is done
+    # If we should actually exceed this limit, it is definitely a bug in Nextcloud server or some of its apps that does not close connections correctly and not a bug in AIO
+    sed -i "s|^max_connections =.*|max_connections = 5000|" "/var/lib/postgresql/data/postgresql.conf"
 
     # Do not log checkpoints
     if grep -q "#log_checkpoints" /var/lib/postgresql/data/postgresql.conf; then
         sed -i 's|#log_checkpoints.*|log_checkpoints = off|' /var/lib/postgresql/data/postgresql.conf
     fi
-    # Close idling connections automatically after 3s which does not seem to happen automatically so that we run into max_connections limits
-    if grep -q "#idle_session_timeout" /var/lib/postgresql/data/postgresql.conf; then
-        sed -i 's|#idle_session_timeout.*|idle_session_timeout = 3000|' /var/lib/postgresql/data/postgresql.conf
+
+    # Closing idling connections automatically seems to break any logic so was reverted again to default where it is disabled
+    if grep -q "^idle_session_timeout" /var/lib/postgresql/data/postgresql.conf; then
+        sed -i 's|^idle_session_timeout.*|#idle_session_timeout|' /var/lib/postgresql/data/postgresql.conf
     fi
 fi
 
