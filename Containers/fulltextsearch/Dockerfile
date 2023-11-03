@@ -1,5 +1,5 @@
 # Probably from here https://github.com/elastic/elasticsearch/blob/main/distribution/docker/src/docker/Dockerfile
-FROM elasticsearch:8.10.2
+FROM elasticsearch:8.10.4
 
 USER root
 
