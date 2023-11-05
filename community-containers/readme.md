@@ -17,7 +17,9 @@ Simply submit a PR by creating a new folder in this directory: https://github.co
 ### Is there a list of ideas for new community containers?
 Yes, see [this list](https://github.com/nextcloud/all-in-one/discussions/categories/ideas?discussions_q=is%3Aopen+category%3AIdeas+label%3A%22help+wanted%22) for already existing ideas for new community containers. Feel free to pick one up and add it to this folder by following the instructions above.
 
-## How to remove containers?
+## How to remove containers from AIOs stack?
+In some cases, you might want to remove some community containers from the AIO stack again. Here is how to do this.
+
 First, do a backup from the AIO interface in order to save the current state. Do not start the containers again afterwards! Now simply recreate the mastercontainer and remove any container from the `--env AIO_COMMUNITY_CONTAINERS="container1 container2"` that you do not actually need. If you want to remove all, simply use `--env AIO_COMMUNITY_CONTAINERS=" "`. 
 
 After removing the containers, there might be some data left on your server that you might want to remove. You can get rid of the data by first running `sudo docker rm nextcloud-aio-container1`, (adjust `container1` accordingly) per community-container that you removed. Then run `sudo docker image prune -a` in order to remove all images that are not used anymore. As last step you can get rid of persistent data of these containers that is stored in volumes. You can check if there is some by running `sudo docker volume ls` and look for any volume that matches the ones that you removed. If so, you can remove them with `sudo docker volume rm nextcloud_aio_volume-id` (of course you need to adjust the `volume-id`).
