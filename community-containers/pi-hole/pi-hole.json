@@ -8,6 +8,7 @@
             "image_tag": "latest",
             "internal_port": "8573",
             "restart": "unless-stopped",
+            "init": false,
             "ports": [
                 {
                   "ip_binding": "",
