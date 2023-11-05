@@ -33,12 +33,21 @@ class DockerController
             $this->PerformRecursiveContainerStart($dependency, $pullContainer);
         }
 
+        // Don't start if container is already running
+        // This is expected to happen if a container is defined in depends_on of multiple containers
+        if ($container->GetRunningState() instanceof RunningState) {
+            error_log('Not starting ' . $id . ' because it was already started.');
+            return;
+        }
+
+        // Skip database image pull if the last shutdown was not clean
         if ($id === 'nextcloud-aio-database') {
             if ($this->dockerActionManager->GetDatabasecontainerExitCode() > 0) {
                 $pullContainer = false;
                 error_log('Not pulling the latest database image because the container was not correctly shut down.');
             }
         }
+
         $this->dockerActionManager->DeleteContainer($container);
         $this->dockerActionManager->CreateVolumes($container);
         if ($pullContainer) {
