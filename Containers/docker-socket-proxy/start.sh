@@ -7,11 +7,11 @@ while ! nc -z "$NEXTCLOUD_HOST" 9001; do
 done
 
 set -x
-IPv4_ADDRESS_NC="$(dig nextcloud-aio-nextcloud IN A +short | grep '^[0-9.]\+$' | sort | head -n1)"
+IPv4_ADDRESS_NC="$(dig nextcloud-aio-nextcloud IN A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
 HAPROXYFILE="$(sed "s|NC_IPV4_PLACEHOLDER|$IPv4_ADDRESS_NC|" /haproxy.cfg)" 
 echo "$HAPROXYFILE" > /tmp/haproxy.cfg
 
-IPv6_ADDRESS_NC="$(dig nextcloud-aio-nextcloud AAAA +short | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+IPv6_ADDRESS_NC="$(dig nextcloud-aio-nextcloud AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
 if [ -n "$IPv6_ADDRESS_NC" ]; then
     HAPROXYFILE="$(sed "s|NC_IPV6_PLACEHOLDER|$IPv6_ADDRESS_NC|" /tmp/haproxy.cfg)"
 else
