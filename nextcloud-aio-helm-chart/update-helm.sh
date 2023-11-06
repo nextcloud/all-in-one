@@ -131,6 +131,7 @@ find ./ -name '*deployment.yaml' -exec sed -i "s|emptyDir:|emptyDir: \{\}|" \{} 
 find ./ -name '*deployment.yaml' -exec sed -i "/hostPort:/d" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "s|ReadOnlyMany|ReadWriteOnce|" \{} \;   
+sed -i "s|ReadWriteOnce|ReadWriteMany|" nextcloud-aio-nextcloud-persistentvolumeclaim.yaml
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ {{- if .Values.STORAGE_CLASS }}" \{} \;  
 # shellcheck disable=SC1083
