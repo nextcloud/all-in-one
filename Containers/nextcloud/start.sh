@@ -136,19 +136,19 @@ while [ -z "$(dig nextcloud-aio-apache A +short +search)" ]; do
     sleep 5
 done
 
-set -x
-if [ "$APACHE_PORT" = 443 ] || [ "$APACHE_IP_BINDING" = "127.0.0.1" ] || [ "$APACHE_IP_BINDING" = "::1" ]; then
-    IPv4_ADDRESS_APACHE="$(dig nextcloud-aio-apache A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
-    IPv6_ADDRESS_APACHE="$(dig nextcloud-aio-apache AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
-    IPv4_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
-    IPv6_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+# set -x
+# if [ "$APACHE_PORT" = 443 ] || [ "$APACHE_IP_BINDING" = "127.0.0.1" ] || [ "$APACHE_IP_BINDING" = "::1" ]; then
+#     IPv4_ADDRESS_APACHE="$(dig nextcloud-aio-apache A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
+#     IPv6_ADDRESS_APACHE="$(dig nextcloud-aio-apache AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+#     IPv4_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
+#     IPv6_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
 
-    sed -i "s|^;listen.allowed_clients|listen.allowed_clients|" /usr/local/etc/php-fpm.d/www.conf
-    sed -i "s|listen.allowed_clients.*|listen.allowed_clients = 127.0.0.1,::1,$IPv4_ADDRESS_APACHE,$IPv6_ADDRESS_APACHE,$IPv4_ADDRESS_MASTERCONTAINER,$IPv6_ADDRESS_MASTERCONTAINER|" /usr/local/etc/php-fpm.d/www.conf
-    sed -i "/^listen.allowed_clients/s/,,/,/g" /usr/local/etc/php-fpm.d/www.conf
-    sed -i "/^listen.allowed_clients/s/,$//" /usr/local/etc/php-fpm.d/www.conf
-    grep listen.allowed_clients /usr/local/etc/php-fpm.d/www.conf
-fi
-set +x
+#     sed -i "s|^;listen.allowed_clients|listen.allowed_clients|" /usr/local/etc/php-fpm.d/www.conf
+#     sed -i "s|listen.allowed_clients.*|listen.allowed_clients = 127.0.0.1,::1,$IPv4_ADDRESS_APACHE,$IPv6_ADDRESS_APACHE,$IPv4_ADDRESS_MASTERCONTAINER,$IPv6_ADDRESS_MASTERCONTAINER|" /usr/local/etc/php-fpm.d/www.conf
+#     sed -i "/^listen.allowed_clients/s/,,/,/g" /usr/local/etc/php-fpm.d/www.conf
+#     sed -i "/^listen.allowed_clients/s/,$//" /usr/local/etc/php-fpm.d/www.conf
+#     grep listen.allowed_clients /usr/local/etc/php-fpm.d/www.conf
+# fi
+# set +x
 
 exec "$@"
