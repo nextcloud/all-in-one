@@ -12,6 +12,7 @@ metadata:
   namespace: {{ .Values.NAMESPACE }}
 spec:
   type: LoadBalancer
+  externalTrafficPolicy: Local
   ports:
     - name: "{{ .Values.TALK_PORT }}"
       port: {{ .Values.TALK_PORT }}
