@@ -65,7 +65,8 @@ RUN set -ex; \
         libusrsctp \
         libwebsockets \
         \
-        shadow; \
+        shadow \
+        grep; \
     useradd --system -u 1000 eturnal; \
     apk del --no-cache \
         shadow; \
