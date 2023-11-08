@@ -149,6 +149,8 @@ find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} 
 find ./ -name '*apache-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*talk-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*service.yaml' -exec sed -i "/type: LoadBalancer/a\ \ externalTrafficPolicy: Local" \{} \;
 echo '---' > /tmp/talk-service.copy
 # shellcheck disable=SC1083
 find ./ -name '*talk-service.yaml' -exec cat \{} \; >> /tmp/talk-service.copy

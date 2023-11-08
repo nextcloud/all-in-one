@@ -10,6 +10,7 @@ metadata:
   namespace: {{ .Values.NAMESPACE }}
 spec:
   type: LoadBalancer
+  externalTrafficPolicy: Local
   ports:
     - name: "{{ .Values.APACHE_PORT }}"
       port: {{ .Values.APACHE_PORT }}
