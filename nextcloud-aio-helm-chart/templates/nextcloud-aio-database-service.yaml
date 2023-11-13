@@ -9,6 +9,7 @@ metadata:
   name: nextcloud-aio-database
   namespace: {{ .Values.NAMESPACE }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
     - name: "5432"
       port: 5432

@@ -10,6 +10,7 @@ metadata:
   name: nextcloud-aio-collabora
   namespace: {{ .Values.NAMESPACE }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
     - name: "9980"
       port: 9980
