@@ -9,6 +9,7 @@ metadata:
   name: nextcloud-aio-nextcloud
   namespace: {{ .Values.NAMESPACE }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
     - name: "9000"
       port: 9000

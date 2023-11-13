@@ -9,6 +9,7 @@ metadata:
   name: nextcloud-aio-apache
   namespace: {{ .Values.NAMESPACE }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   type: LoadBalancer
   externalTrafficPolicy: Local
   ports:

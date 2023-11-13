@@ -9,6 +9,7 @@ metadata:
   name: nextcloud-aio-redis
   namespace: {{ .Values.NAMESPACE }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
     - name: "6379"
       port: 6379
