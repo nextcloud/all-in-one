@@ -1,0 +1,33 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-memories",
+            "display_name": "Memories Transcoder",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/memories",
+            "image": "radialapps/go-vod",
+            "image_tag": "latest",
+            "internal_port": "47788",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "NEXTCLOUD_HOST=https://%NC_DOMAIN%"
+            ],
+            "volumes": [
+                {
+                    "source": "%NEXTCLOUD_DATADIR%",
+                    "destination": "/mnt/ncdata",
+                    "writeable": false
+                }
+            ],
+            "devices": [
+                "/dev/dri"
+            ],
+            "nextcloud_exec_commands": [
+                "php /var/www/html/occ app:install memories",
+                "php /var/www/html/occ app:enable memories",
+                "php /var/www/html/occ config:system:set memories.vod.external --value true --type bool",
+                "php /var/www/html/occ config:system:set memories.vod.connect --value nextcloud-aio-memories:47788"
+            ]
+        }
+    ]
+}
