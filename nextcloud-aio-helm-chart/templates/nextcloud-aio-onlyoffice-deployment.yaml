@@ -43,7 +43,7 @@ spec:
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-onlyoffice:develop
+          image: nextcloud/aio-onlyoffice:20231113_125854-latest
           name: nextcloud-aio-onlyoffice
           ports:
             - containerPort: 80
