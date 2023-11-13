@@ -1,5 +1,5 @@
 # From a file located probably somewhere here: https://github.com/CollaboraOnline/online/tree/master/docker
-FROM collabora/code:23.05.5.3.1
+FROM collabora/code:23.05.5.4.1
 
 USER root
 
