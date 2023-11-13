@@ -491,8 +491,14 @@ else
 fi
 
 # AIO app
-if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" != "yes" ]; then
-    php /var/www/html/occ app:enable nextcloud-aio
+if [ "$THIS_IS_AIO" = "true" ]; then
+    if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" != "yes" ]; then
+        php /var/www/html/occ app:enable nextcloud-aio
+    fi
+else
+    if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" != "no" ]; then
+        php /var/www/html/occ app:disable nextcloud-aio
+    fi
 fi
 
 # Notify push

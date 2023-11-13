@@ -212,7 +212,8 @@
         "DOCKER_SOCKET_PROXY_ENABLED=%DOCKER_SOCKET_PROXY_ENABLED%",
         "REMOVE_DISABLED_APPS=%REMOVE_DISABLED_APPS%",
         "APACHE_PORT=%APACHE_PORT%",
-        "APACHE_IP_BINDING=%APACHE_IP_BINDING%"
+        "APACHE_IP_BINDING=%APACHE_IP_BINDING%",
+        "THIS_IS_AIO=true"
       ],
       "restart": "unless-stopped",
       "devices": [
