@@ -9,6 +9,7 @@ metadata:
   name: nextcloud-aio-notify-push
   namespace: {{ .Values.NAMESPACE }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
     - name: "7867"
       port: 7867

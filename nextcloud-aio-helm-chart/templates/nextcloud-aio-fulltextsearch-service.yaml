@@ -10,6 +10,7 @@ metadata:
   name: nextcloud-aio-fulltextsearch
   namespace: {{ .Values.NAMESPACE }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
     - name: "9200"
       port: 9200
