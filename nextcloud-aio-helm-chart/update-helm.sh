@@ -149,12 +149,12 @@ find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} 
 find ./ -name '*apache-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*talk-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
-# shellcheck disable=SC1083
-find ./ -name '*service.yaml' -exec sed -i "/type: LoadBalancer/a\ \ externalTrafficPolicy: Local" \{} \;
 echo '---' > /tmp/talk-service.copy
 # shellcheck disable=SC1083
 find ./ -name '*talk-service.yaml' -exec cat \{} \; >> /tmp/talk-service.copy
 sed -i 's|name: nextcloud-aio-talk|name: nextcloud-aio-talk-public|' /tmp/talk-service.copy
+# shellcheck disable=SC1083
+find ./ -name '*service.yaml' -exec sed -i "/type: LoadBalancer/a\ \ externalTrafficPolicy: Local" \{} \;
 # shellcheck disable=SC1083
 INTERNAL_TALK_PORTS="$(find ./ -name '*talk-deployment.yaml' -exec grep -oP 'containerPort: [0-9]+' \{} \;)"
 mapfile -t INTERNAL_TALK_PORTS <<< "$INTERNAL_TALK_PORTS"
