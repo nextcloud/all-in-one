@@ -7,6 +7,9 @@ ini_set('memory_limit', '2048M');
 // set max execution time to 2h just in case of a very slow internet connection
 ini_set('max_execution_time', '7200');
 
+// Log whole log messages
+ini_set('log_errors_max_len', '0');
+
 use DI\Container;
 use Slim\Csrf\Guard;
 use Slim\Factory\AppFactory;
