@@ -11,18 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Run talk-update
+    - name: Run talk-container-update
       run: |
-        # Spreed
-        spreed_version="$(
-          git ls-remote https://github.com/nextcloud/spreed v*.*.* \
+        # Recording
+        recording_version="$(
+          git ls-remote https://github.com/nextcloud/nextcloud-talk-recording v* \
             | cut -d/ -f3 \
             | sort -V \
-            | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+$" \
+            | grep -E "^v[0-9\.]+$" \
             | tail -1
         )"
-        sed -i "s|^ENV RECORDING_VERSION.*$|ENV RECORDING_VERSION $spreed_version|" ./Containers/talk-recording/Dockerfile
-        curl -L "https://raw.githubusercontent.com/nextcloud/spreed/$spreed_version/recording/server.conf.in" -o Containers/talk-recording/recording.conf
+        sed -i "s|^ENV RECORDING_VERSION.*$|ENV RECORDING_VERSION $recording_version|" ./Containers/talk-recording/Dockerfile
+        curl -L "https://raw.githubusercontent.com/nextcloud/nextcloud-talk-recording/$recording_version/server.conf.in" -o Containers/talk-recording/recording.conf
         
         # Signaling
         signaling_version="$(
@@ -49,7 +49,7 @@ jobs:
       with:
         commit-message: talk-update automated change
         signoff: true
-        title: talk update
+        title: talk container update
         body: Automated talk container update
         labels: dependencies, 3. to review
         milestone: next

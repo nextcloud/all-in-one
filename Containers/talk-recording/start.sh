@@ -26,8 +26,6 @@ listen = 0.0.0.0:1234
 
 [backend]
 allowall = ${ALLOW_ALL}
-# TODO: remove secret below when https://github.com/nextcloud/spreed/issues/9580 is fixed
-secret = ${RECORDING_SECRET}
 backends = backend-1
 skipverify = ${SKIP_VERIFY}
 maxmessagesize = 1024
@@ -48,10 +46,14 @@ url = ${HPB_PROTOCOL}://${HPB_DOMAIN}${HPB_PATH}
 internalsecret = ${INTERNAL_SECRET}
 
 [ffmpeg]
+# common = ffmpeg -loglevel level+warning -n
 # outputaudio = -c:a libopus
 # outputvideo = -c:v libvpx -deadline:v realtime -crf 10 -b:v 1M
 extensionaudio = .ogg
 extensionvideo = .webm
+
+[recording]
+browser = firefox
 RECORDING_CONF
 
 exec "$@"
