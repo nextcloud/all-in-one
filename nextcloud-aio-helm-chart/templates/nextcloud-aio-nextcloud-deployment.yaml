@@ -37,6 +37,28 @@ spec:
               mountPath: /nextcloud-aio-nextcloud
       containers:
         - env:
+            - name: SMTP_HOST
+              value: "{{ .Values.SMTP_HOST }}"
+            - name: SMTP_HOST
+              value: "{{ .Values.SMTP_HOST }}"
+            - name: SMTP_SECURE
+              value: "{{ .Values.SMTP_SECURE }}"
+            - name: SMTP_PORT
+              value: "{{ .Values.SMTP_PORT }}"
+            - name: SMTP_AUTHTYPE
+              value: "{{ .Values.SMTP_AUTHTYPE }}"
+            - name: SMTP_NAME
+              value: "{{ .Values.SMTP_NAME }}"
+            - name: SMTP_PASSWORD
+              value: "{{ .Values.SMTP_PASSWORD }}"
+            - name: MAIL_FROM_ADDRESS
+              value: "{{ .Values.MAIL_FROM_ADDRESS }}"
+            - name: MAIL_DOMAIN
+              value: "{{ .Values.MAIL_DOMAIN }}"
+            - name: SUBSCRIPTION_KEY
+              value: "{{ .Values.SUBSCRIPTION_KEY }}"
+            - name: APPS_ALLOWLIST
+              value: "{{ .Values.APPS_ALLOWLIST }}"
             - name: ADDITIONAL_APKS
               value: "{{ .Values.NEXTCLOUD_ADDITIONAL_APKS }}"
             - name: ADDITIONAL_PHP_EXTENSIONS
