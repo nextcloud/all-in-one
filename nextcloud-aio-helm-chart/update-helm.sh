@@ -190,6 +190,34 @@ for variable in "${VOLUMES[@]}"; do
     find ./ -name "*nextcloud-aio-$variable-persistentvolumeclaim.yaml" -exec sed -i "s|storage: 100Mi|storage: {{ .Values.$name }}|" \{} \; 
 done
 
+# Additional config
+cat << EOL > /tmp/additional.config
+            - name: SMTP_HOST
+              value: "{{ .Values.SMTP_HOST }}"
+            - name: SMTP_HOST
+              value: "{{ .Values.SMTP_HOST }}"
+            - name: SMTP_SECURE
+              value: "{{ .Values.SMTP_SECURE }}"
+            - name: SMTP_PORT
+              value: "{{ .Values.SMTP_PORT }}"
+            - name: SMTP_AUTHTYPE
+              value: "{{ .Values.SMTP_AUTHTYPE }}"
+            - name: SMTP_NAME
+              value: "{{ .Values.SMTP_NAME }}"
+            - name: SMTP_PASSWORD
+              value: "{{ .Values.SMTP_PASSWORD }}"
+            - name: MAIL_FROM_ADDRESS
+              value: "{{ .Values.MAIL_FROM_ADDRESS }}"
+            - name: MAIL_DOMAIN
+              value: "{{ .Values.MAIL_DOMAIN }}"
+            - name: SUBSCRIPTION_KEY
+              value: "{{ .Values.SUBSCRIPTION_KEY }}"
+            - name: APPS_ALLOWLIST
+              value: "{{ .Values.APPS_ALLOWLIST }}"
+EOL
+# shellcheck disable=SC1083
+find ./ -name '*nextcloud-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional.config"  \{} \;
+
 cd ../
 mkdir -p ../helm-chart/
 rm latest/Chart.yaml
@@ -227,6 +255,22 @@ for variable in "${VOLUME_VARIABLE[@]}"; do
 done
 sed -i "s|NEXTCLOUD_STORAGE_SIZE: 1Gi|NEXTCLOUD_STORAGE_SIZE: 5Gi|" /tmp/sample.conf
 sed -i "s|NEXTCLOUD_DATA_STORAGE_SIZE: 1Gi|NEXTCLOUD_DATA_STORAGE_SIZE: 5Gi|" /tmp/sample.conf
+
+# Additional config
+cat << ADDITIONAL_CONFIG >> /tmp/sample.conf
+
+SUBSCRIPTION_KEY:        # This allows to set the Nextcloud Enterprise key via ENV
+APPS_ALLOWLIST:        # This allows to configure allowed apps that will be shown in Nextcloud's Appstore. You need to enter the app-IDs of the apps here and separate them with spaces. E.g. 'files richdocuments'
+SMTP_HOST:        # (empty by default): The hostname of the SMTP server.
+SMTP_SECURE:         # (empty by default): Set to 'ssl' to use SSL, or 'tls' to use STARTTLS.
+SMTP_PORT:         # (default: '465' for SSL and '25' for non-secure connections): Optional port for the SMTP connection. Use '587' for an alternative port for STARTTLS.
+SMTP_AUTHTYPE:         # (default: 'LOGIN'): The method used for authentication. Use 'PLAIN' if no authentication or STARTLS is required.
+SMTP_NAME:         # (empty by default): The username for the authentication.
+SMTP_PASSWORD:         # (empty by default): The password for the authentication.
+MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'from' field in the emails sent by Nextcloud.
+MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
+ADDITIONAL_CONFIG
+
 mv /tmp/sample.conf ../helm-chart/values.yaml
 
 ENABLED_VARIABLES="$(grep -oP '^[A-Z_]+_ENABLED' ../helm-chart/values.yaml)"
