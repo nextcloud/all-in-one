@@ -22,7 +22,8 @@ RUN set -ex; \
         wget \
         shadow \
         pulseaudio \
-        openssl; \
+        openssl \
+        gcc; \
     # chromium chromium-chromedriver?
     apk add --no-cache geckodriver --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; \
     useradd -d /tmp --system recording; \
@@ -41,7 +42,8 @@ RUN set -ex; \
         git \
         wget \
         shadow \
-        openssl;
+        openssl \
+        gcc;
 
 WORKDIR /tmp
 USER recording
