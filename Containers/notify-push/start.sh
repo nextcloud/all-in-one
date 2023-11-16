@@ -46,10 +46,6 @@ fi
 export DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
 export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST"
 
-# Make the binary executable if possible
-ls -l /nextcloud/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push
-chmod +x /nextcloud/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push
-
 # Run it
 /nextcloud/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
     --database-prefix="oc_" \
