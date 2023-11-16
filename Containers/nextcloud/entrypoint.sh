@@ -464,6 +464,9 @@ php /var/www/html/occ config:system:set one-click-instance --value=true --type=b
 php /var/www/html/occ config:system:set one-click-instance.user-limit --value=100 --type=int
 php /var/www/html/occ config:system:set one-click-instance.link --value="https://nextcloud.com/all-in-one/"
 php /var/www/html/occ app:enable support
+if [ -n "$SUBSCRIPTION_KEY" ]; then
+    php /var/www/html/occ config:app:set support subscription_key --value="$SUBSCRIPTION_KEY"
+fi
 
 # Adjusting log files to be stored on a volume
 echo "Adjusting log files..."
