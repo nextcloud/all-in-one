@@ -2,7 +2,7 @@ FROM python:3.12.0-alpine3.18
 
 COPY --chmod=775 start.sh /start.sh
 
-ENV RECORDING_VERSION v17.1.2
+ENV RECORDING_VERSION v0.1
 ENV ALLOW_ALL false
 ENV HPB_PROTOCOL https
 ENV SKIP_VERIFY false
@@ -28,9 +28,8 @@ RUN set -ex; \
     useradd -d /tmp --system recording; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    git clone --recursive https://github.com/nextcloud/spreed --depth=1 --single-branch --branch "$RECORDING_VERSION" /src; \
-    mv -v /src/recording/pyproject.toml /src/recording/src/pyproject.toml; \
-    python3 -m pip install --no-cache-dir /src/recording/src; \
+    git clone --recursive https://github.com/nextcloud/nextcloud-talk-recording --depth=1 --single-branch --branch "$RECORDING_VERSION" /src; \
+    python3 -m pip install --no-cache-dir /src; \
     rm -rf /src; \
     touch /etc/recording.conf; \
     chown recording:recording -R \
