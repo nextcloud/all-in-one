@@ -32,7 +32,7 @@ echo "$OUTPUT" | yq -P > ./manual-install/containers.yml
 cd manual-install || exit
 sed -i "s|'||g" containers.yml
 sed -i '/display_name:/d' containers.yml
-sed -i '/THIS_IS_AIO:/d' containers.yml
+sed -i '/THIS_IS_AIO/d' containers.yml
 sed -i '/stop_grace_period:/s/$/s/' containers.yml
 sed -i '/: \[\]/d' containers.yml
 sed -i 's|- source: |- |' containers.yml
