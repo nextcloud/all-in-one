@@ -198,6 +198,8 @@ services:
       - server_name=${NC_DOMAIN}
       - DONT_GEN_SSL_CERT=1
     restart: unless-stopped
+    cap_add:
+      - MKNOD
     profiles:
       - collabora
     networks:
