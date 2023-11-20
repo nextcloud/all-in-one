@@ -579,9 +579,15 @@ class DockerActionManager
 
     public function PullContainer(Container $container) : void
     {
-        $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', urlencode($this->BuildImageName($container))));
-        // do not catch any exception so that it always throws and logs the error
-        $this->guzzleClient->post($url);
+        $imageName = urlencode($this->BuildImageName($container));
+        $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', $imageName));
+        try {
+            $this->guzzleClient->post($url);
+            $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
+            $this->guzzleClient->get($imageUrl)->getBody()->getContents();
+        } catch (\Throwable $e) {
+            throw new \Exception("Could not pull image " . $imageName . ". Please run 'sudo docker exec -it nextcloud-aio-mastercontainer docker pull " . $imageName . "' in order to find out why it failed.");
+        }
     }
 
     private function isContainerUpdateAvailable(string $id) : string
