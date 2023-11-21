@@ -6,7 +6,7 @@ metadata:
     kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: nextcloud-aio-apache
-  name: nextcloud-aio-apache
+  name: {{ .Values.NC_DOMAIN }}
   namespace: {{ .Values.NAMESPACE }}
 spec:
   ipFamilyPolicy: PreferDualStack
