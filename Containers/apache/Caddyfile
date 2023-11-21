@@ -6,7 +6,7 @@
     }
 
     servers {
-        # trusted_proxies placeholder
+        trusted_proxies static private_ranges
     }
 
     log {

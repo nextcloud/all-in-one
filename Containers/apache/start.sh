@@ -17,12 +17,6 @@ while ! nc -z "$NEXTCLOUD_HOST" 9000; do
     sleep 5
 done
 
-# Get ipv4-address of Apache
-IPv4_ADDRESS="$(dig nextcloud-aio-apache A +short +search | head -1)"
-# Bring it in CIDR notation
-# shellcheck disable=SC2001
-IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|1/32|')"
-
 if [ -z "$APACHE_PORT" ]; then
     export APACHE_PORT="443"
 fi
@@ -40,14 +34,6 @@ if [ "$APACHE_PORT" != '443' ]; then
     CADDYFILE="$(sed 's|auto_https.*|auto_https off|' /Caddyfile)"
 else
     CADDYFILE="$(sed 's|auto_https.*|auto_https disable_redirects|' /Caddyfile)"
-fi
-echo "$CADDYFILE" > /tmp/Caddyfile
-
-# Change the trusted_proxies in case of reverse proxies
-if [ "$APACHE_PORT" != '443' ]; then
-    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies static private_ranges|' /tmp/Caddyfile)"
-else
-    CADDYFILE="$(sed "s|# trusted_proxies placeholder|trusted_proxies static $IPv4_ADDRESS|" /tmp/Caddyfile)"
 fi
 echo "$CADDYFILE" > /tmp/Caddyfile
 

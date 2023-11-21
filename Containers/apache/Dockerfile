@@ -30,7 +30,6 @@ RUN set -ex; \
         tzdata \
         ca-certificates \
         openssl \
-        bind-tools \
         netcat-openbsd; \
     \
     sed -i \
