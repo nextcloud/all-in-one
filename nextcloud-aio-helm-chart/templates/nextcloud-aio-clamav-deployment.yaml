@@ -24,11 +24,22 @@ spec:
         io.kompose.service: nextcloud-aio-clamav
     spec:
       initContainers:
+        - name: init-subpath
+          image: alpine
+          command:
+            - mkdir
+            - "-p"
+            - /nextcloud-aio-clamav/data
+            - /nextcloud-aio-clamav
+          volumeMounts:
+            - name: nextcloud-aio-clamav
+              mountPath: /nextcloud-aio-clamav
         - name: init-volumes
           image: alpine
           command:
-            - chmod
-            - "777"
+            - chown
+            - 100:100
+            - "-R"
             - /nextcloud-aio-clamav
           volumeMounts:
             - name: nextcloud-aio-clamav
@@ -46,6 +57,7 @@ spec:
               protocol: TCP
           volumeMounts:
             - mountPath: /var/lib/clamav
+              subPath: data
               name: nextcloud-aio-clamav
       volumes:
         - name: nextcloud-aio-clamav

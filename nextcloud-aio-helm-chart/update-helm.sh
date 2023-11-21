@@ -81,15 +81,34 @@ cat << EOL > /tmp/initcontainers.database
             - "-R"
           volumeMountsInitContainer:
 EOL
+cat << EOL > /tmp/initcontainers.clamav
+      initContainers:
+        - name: init-subpath
+          image: alpine
+          command:
+            - mkdir
+            - "-p"
+            - /nextcloud-aio-clamav/data
+          volumeMountsInitContainer:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chown
+            - 100:100
+            - "-R"
+          volumeMountsInitContainer:
+EOL
 # shellcheck disable=SC1083
 DEPLOYMENTS="$(find ./ -name '*deployment.yaml')"
 mapfile -t DEPLOYMENTS <<< "$DEPLOYMENTS"
 for variable in "${DEPLOYMENTS[@]}"; do
     if grep -q volumeMounts "$variable"; then
-        if ! echo "$variable" | grep -q database; then
-            sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
-        else
+        if echo "$variable" | grep -q database; then
             sed -i "/^    spec:/r /tmp/initcontainers.database" "$variable"
+        elif echo "$variable" | grep -q clamav; then
+            sed -i "/^    spec:/r /tmp/initcontainers.clamav" "$variable"
+        else
+            sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
         fi
         volumeNames="$(grep -A1 mountPath "$variable" | grep -v mountPath | sed 's|.*name: ||' | sed '/^--$/d')"
         mapfile -t volumeNames <<< "$volumeNames"
@@ -101,6 +120,8 @@ for variable in "${DEPLOYMENTS[@]}"; do
                 # Workaround for the database volume
                 if [ "$volumeName" = nextcloud-aio-database ]; then
                     sed -i "/mountPath: \/var\/lib\/postgresql\/data/a\ \ \ \ \ \ \ \ \ \ \ \ \ \ subPath: data" "$variable"
+                elif [ "$volumeName" = nextcloud-aio-clamav ]; then
+                    sed -i "/mountPath: \/var\/lib\/clamav/a\ \ \ \ \ \ \ \ \ \ \ \ \ \ subPath: data" "$variable"
                 fi
                 
             fi
