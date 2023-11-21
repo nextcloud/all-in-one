@@ -194,8 +194,6 @@ done
 cat << EOL > /tmp/additional.config
             - name: SMTP_HOST
               value: "{{ .Values.SMTP_HOST }}"
-            - name: SMTP_HOST
-              value: "{{ .Values.SMTP_HOST }}"
             - name: SMTP_SECURE
               value: "{{ .Values.SMTP_SECURE }}"
             - name: SMTP_PORT
