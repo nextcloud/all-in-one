@@ -323,6 +323,9 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "cap_add": [
+        "MKNOD"
       ]
     },
     {
