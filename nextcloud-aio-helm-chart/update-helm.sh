@@ -98,6 +98,22 @@ cat << EOL > /tmp/initcontainers.clamav
             - "-R"
           volumeMountsInitContainer:
 EOL
+cat << EOL > /tmp/initcontainers.nextcloud
+      initContainers:
+        - name: delete lost+found
+          image: alpine
+          command:
+            - rm
+            - "-rf"
+            - /nextcloud-aio-nextcloud/lost+found
+          volumeMountsInitContainer:
+        - name: init-volumes
+          image: alpine
+          command:
+            - chmod
+            - "777"
+          volumeMountsInitContainer:
+EOL
 # shellcheck disable=SC1083
 DEPLOYMENTS="$(find ./ -name '*deployment.yaml')"
 mapfile -t DEPLOYMENTS <<< "$DEPLOYMENTS"
@@ -107,6 +123,8 @@ for variable in "${DEPLOYMENTS[@]}"; do
             sed -i "/^    spec:/r /tmp/initcontainers.database" "$variable"
         elif echo "$variable" | grep -q clamav; then
             sed -i "/^    spec:/r /tmp/initcontainers.clamav" "$variable"
+        elif echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
+            sed -i "/^    spec:/r /tmp/initcontainers.nextcloud" "$variable"
         else
             sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
         fi
