@@ -23,6 +23,19 @@ spec:
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
       initContainers:
+        - name: delete lost+found
+          image: alpine
+          command:
+            - rm
+            - "-rf"
+            - /nextcloud-aio-nextcloud/lost+found
+            - /nextcloud-aio-nextcloud
+            - /nextcloud-aio-nextcloud-trusted-cacerts
+          volumeMounts:
+            - name: nextcloud-aio-nextcloud-trusted-cacerts
+              mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
+            - name: nextcloud-aio-nextcloud
+              mountPath: /nextcloud-aio-nextcloud
         - name: init-volumes
           image: alpine
           command:
@@ -143,7 +156,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:beta
+          image: nextcloud/aio-nextcloud:20231113_125854-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000

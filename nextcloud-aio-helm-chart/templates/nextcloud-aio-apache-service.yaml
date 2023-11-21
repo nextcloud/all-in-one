@@ -16,7 +16,7 @@ spec:
     - name: "{{ .Values.APACHE_PORT }}"
       port: {{ .Values.APACHE_PORT }}
       targetPort: {{ .Values.APACHE_PORT }}
-    - name: "{{ .Values.APACHE_PORT }}-udp"
+    - name: {{ .Values.APACHE_PORT }}-udp
       port: {{ .Values.APACHE_PORT }}
       protocol: UDP
       targetPort: {{ .Values.APACHE_PORT }}
