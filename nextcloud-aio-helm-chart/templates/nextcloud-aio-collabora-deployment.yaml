@@ -42,4 +42,8 @@ spec:
           ports:
             - containerPort: 9980
               protocol: TCP
+          securityContext:
+            capabilities:
+              add:
+                - MKNOD
 {{- end }}
