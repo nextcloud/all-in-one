@@ -13,10 +13,10 @@ spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
   ports:
-    - name: "1-tcp"
+    - name: "{{ .Values.APACHE_PORT }}"
       port: {{ .Values.APACHE_PORT }}
       targetPort: {{ .Values.APACHE_PORT }}
-    - name: "1-udp"
+    - name: "{{ .Values.APACHE_PORT }}-udp"
       port: {{ .Values.APACHE_PORT }}
       protocol: UDP
       targetPort: {{ .Values.APACHE_PORT }}
