@@ -26,11 +26,11 @@ class DockerController
         $this->configurationManager = $configurationManager;
     }
 
-    private function PerformRecursiveContainerStart(string $id, bool $pullContainer = true) : void {
+    private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         foreach($container->GetDependsOn() as $dependency) {
-            $this->PerformRecursiveContainerStart($dependency, $pullContainer);
+            $this->PerformRecursiveContainerStart($dependency, $pullImage);
         }
 
         // Don't start if container is already running
@@ -43,15 +43,15 @@ class DockerController
         // Skip database image pull if the last shutdown was not clean
         if ($id === 'nextcloud-aio-database') {
             if ($this->dockerActionManager->GetDatabasecontainerExitCode() > 0) {
-                $pullContainer = false;
+                $pullImage = false;
                 error_log('Not pulling the latest database image because the container was not correctly shut down.');
             }
         }
 
         $this->dockerActionManager->DeleteContainer($container);
         $this->dockerActionManager->CreateVolumes($container);
-        if ($pullContainer) {
-            $this->dockerActionManager->PullContainer($container);
+        if ($pullImage) {
+            $this->dockerActionManager->PullImage($container);
         }
         $this->dockerActionManager->CreateContainer($container);
         $this->dockerActionManager->StartContainer($container);
@@ -188,7 +188,7 @@ class DockerController
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
-    public function startTopContainer(bool $pullContainer) : void {
+    public function startTopContainer(bool $pullImage) : void {
         $config = $this->configurationManager->GetConfig();
         // set AIO_TOKEN
         $config['AIO_TOKEN'] = bin2hex(random_bytes(24));
@@ -199,7 +199,7 @@ class DockerController
 
         $id = self::TOP_CONTAINER;
 
-        $this->PerformRecursiveContainerStart($id, $pullContainer);
+        $this->PerformRecursiveContainerStart($id, $pullImage);
     }
 
     public function StartWatchtowerContainer(Request $request, Response $response, array $args) : Response {

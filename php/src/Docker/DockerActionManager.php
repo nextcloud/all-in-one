@@ -577,7 +577,7 @@ class DockerActionManager
 
     }
 
-    public function PullContainer(Container $container) : void
+    public function PullImage(Container $container) : void
     {
         $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', urlencode($this->BuildImageName($container))));
         // do not catch any exception so that it always throws and logs the error
