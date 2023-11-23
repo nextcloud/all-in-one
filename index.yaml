@@ -2,9 +2,26 @@ apiVersion: v1
 entries:
   nextcloud-aio-helm-chart:
   - apiVersion: v2
-    created: "2023-11-21T15:41:32.847146879Z"
+    created: "2023-11-23T08:48:19.546547308Z"
     description: A generated Helm Chart for Nextcloud AIO from Skippbox Kompose
-    digest: 814cacd652adccf32d881872710829ebc1911ac479e1021dd2a69f0d70f8fcab
+    digest: 3ca052334fb94347a90140d877232cbad5ff4dc883c941471e96deb09f72ef29
+    home: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
+    keywords:
+    - latest
+    - nextcloud
+    - helm-chart
+    - open-source
+    - cloud
+    name: nextcloud-aio-helm-chart
+    sources:
+    - https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
+    urls:
+    - https://github.com/nextcloud/all-in-one/releases/download/helm-chart-7.7.0/nextcloud-aio-helm-chart-7.7.0.tgz
+    version: 7.7.0
+  - apiVersion: v2
+    created: "2023-11-21T18:10:37.603104685Z"
+    description: A generated Helm Chart for Nextcloud AIO from Skippbox Kompose
+    digest: 870931fc4b82a7ccaf33920c2ec78563391609a7014ff0a2dd06407f22513024
     home: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
     keywords:
     - latest
@@ -19,9 +36,9 @@ entries:
     - https://github.com/nextcloud/all-in-one/releases/download/helm-chart-7.7.0-beta4/nextcloud-aio-helm-chart-7.7.0-beta4.tgz
     version: 7.7.0-beta4
   - apiVersion: v2
-    created: "2023-11-21T18:10:37.603104685Z"
+    created: "2023-11-21T15:41:32.847146879Z"
     description: A generated Helm Chart for Nextcloud AIO from Skippbox Kompose
-    digest: 870931fc4b82a7ccaf33920c2ec78563391609a7014ff0a2dd06407f22513024
+    digest: 814cacd652adccf32d881872710829ebc1911ac479e1021dd2a69f0d70f8fcab
     home: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
     keywords:
     - latest
@@ -104,9 +121,9 @@ entries:
     - https://github.com/nextcloud/all-in-one/releases/download/helm-chart-7.6.2/nextcloud-aio-helm-chart-7.6.2.tgz
     version: 7.6.2
   - apiVersion: v2
-    created: "2023-11-13T13:11:06.458882538Z"
+    created: "2023-11-13T13:05:29.41372776Z"
     description: A generated Helm Chart for Nextcloud AIO from Skippbox Kompose
-    digest: 34b9816f93743281add1a9005232170c5b603f9693efe095c2edbec9945ae384
+    digest: 095e202e324ca2589f782b6725173b816750f483fe4ebfe95b9e7d2a66f8e560
     home: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
     keywords:
     - latest
@@ -138,9 +155,9 @@ entries:
     - https://github.com/nextcloud/all-in-one/releases/download/helm-chart-7.5.2-dev4/nextcloud-aio-helm-chart-7.5.2-dev4.tgz
     version: 7.5.2-dev4
   - apiVersion: v2
-    created: "2023-11-13T13:05:29.41372776Z"
+    created: "2023-11-13T13:11:06.458882538Z"
     description: A generated Helm Chart for Nextcloud AIO from Skippbox Kompose
-    digest: 095e202e324ca2589f782b6725173b816750f483fe4ebfe95b9e7d2a66f8e560
+    digest: 34b9816f93743281add1a9005232170c5b603f9693efe095c2edbec9945ae384
     home: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart
     keywords:
     - latest
@@ -561,4 +578,4 @@ entries:
     urls:
     - https://github.com/nextcloud/all-in-one/releases/download/helm-chart-4.7.0/nextcloud-aio-helm-chart-4.7.0.tgz
     version: 4.7.0
-generated: "2023-11-21T18:10:37.603343798Z"
+generated: "2023-11-23T08:48:19.546814031Z"
