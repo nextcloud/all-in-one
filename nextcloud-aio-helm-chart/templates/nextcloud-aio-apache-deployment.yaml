@@ -64,6 +64,13 @@ spec:
               protocol: TCP
             - containerPort: {{ .Values.APACHE_PORT }}
               protocol: UDP
+          livenessProbe:
+            exec:
+              command:
+              - bash
+              - /healthcheck.sh
+            failureThreshold: 1
+            periodSeconds: 10
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
