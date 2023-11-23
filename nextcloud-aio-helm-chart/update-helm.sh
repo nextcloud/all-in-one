@@ -308,6 +308,10 @@ for variable in "${ENABLED_VARIABLES[@]}"; do
     find ./ -name "*nextcloud-aio-$name-service.yaml" -exec sed -i "1i\\{{- if eq .Values.$variable \"yes\" }}" \{} \; 
     # shellcheck disable=SC1083
     find ./ -name "*nextcloud-aio-$name-service.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
+    # shellcheck disable=SC1083
+    find ./ -name "*nextcloud-aio-$name-persistentvolumeclaim.yaml" -exec sed -i "1i\\{{- if eq .Values.$variable \"yes\" }}" \{} \; 
+    # shellcheck disable=SC1083
+    find ./ -name "*nextcloud-aio-$name-persistentvolumeclaim.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 done
 
 chmod 777 -R ./
