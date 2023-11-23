@@ -57,6 +57,8 @@ spec:
               value: "{{ .Values.SUBSCRIPTION_KEY }}"
             - name: APPS_ALLOWLIST
               value: "{{ .Values.APPS_ALLOWLIST }}"
+            - name: ADDITIONAL_TRUSTED_PROXY
+              value: "{{ .Values.ADDITIONAL_TRUSTED_PROXY }}"
             - name: ADDITIONAL_APKS
               value: "{{ .Values.NEXTCLOUD_ADDITIONAL_APKS }}"
             - name: ADDITIONAL_PHP_EXTENSIONS
@@ -143,8 +145,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:develop
-          imagePullPolicy: Always
+          image: nextcloud/aio-nextcloud:20231123_084113-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
