@@ -57,6 +57,8 @@ spec:
               value: "{{ .Values.SUBSCRIPTION_KEY }}"
             - name: APPS_ALLOWLIST
               value: "{{ .Values.APPS_ALLOWLIST }}"
+            - name: ADDITIONAL_TRUSTED_PROXY
+              value: "{{ .Values.ADDITIONAL_TRUSTED_PROXY }}"
             - name: ADDITIONAL_APKS
               value: "{{ .Values.NEXTCLOUD_ADDITIONAL_APKS }}"
             - name: ADDITIONAL_PHP_EXTENSIONS
