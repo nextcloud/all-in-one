@@ -16,7 +16,7 @@ Included are:
 - Simple web interface included that enables easy installation and maintenance
 - [Easy updates included](https://github.com/nextcloud/all-in-one#how-to-update-the-containers)
 - Update and backup notifications included
-- Daily backups can get enabled from the AIO interface which also allows to update all containers, Nextcloud and its apps afterwards automatically
+- Daily backups can be enabled from the AIO interface which also allows updating all containers, Nextcloud and its apps afterwards automatically
 - Instance restore from backup archive via the AIO interface included (you only need the archive and the password in order to restore the whole instance on a new AIO instance)
 - APCu as local cache
 - Redis as distributed cache and for file locking
@@ -258,9 +258,9 @@ No and they will not be. Please use a dedicated domain for Nextcloud and set it 
 No and it will not be added. Please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md).
 
 ### How can I access Nextcloud locally?
-Please note that local access is not possible if you should be running AIO behind Cloudflare Tunnel since TLS proxying is in that case offloaded to Cloudflares infrastructure. You can fix this by setting up your own reverse proxy that handles TLS proxying locally and will make the steps below work.
+Please note that local access is not possible if you are running AIO behind Cloudflare Tunnel since TLS proxying is in that case offloaded to Cloudflares infrastructure. You can fix this by setting up your own reverse proxy that handles TLS proxying locally and will make the steps below work.
 
-Please make sure that if you should be running AIO behind a reverse proxy, that the reverse proxy is configured to use port 443 on the server that runs it. Otherwise the steps below will not work.
+Please make sure that if you are running AIO behind a reverse proxy, that the reverse proxy is configured to use port 443 on the server that runs it. Otherwise the steps below will not work.
 
 Now that this is out of the way, the recommended way how to access Nextcloud locally, is to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-adddress of your server that runs Nextcloud AIO. Below are some guides:
 - https://www.howtogeek.com/devops/how-to-run-your-own-dns-server-on-your-local-network/
