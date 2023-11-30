@@ -42,6 +42,11 @@ if ! [ -f /nextcloud/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; then
     exit 1
 fi
 
+# Add a timeout of 15s to hopefully get rid of the first error that is logged if apache is not there yet
+sleep 15
+
+echo "notify-push was started"
+
 # Set sensitive values as env
 export DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
 export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST"
