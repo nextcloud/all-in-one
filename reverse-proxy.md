@@ -7,30 +7,49 @@ A [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) is basically a we
 In order to run Nextcloud behind a web server or reverse proxy (like Apache, Nginx, Cloudflare Tunnel and else), you need to specify the port that AIO's Apache container shall use, add a specific config to your web server or reverse proxy and modify the startup command a bit. All examples below will use port `11000` as example `APACHE_PORT` which will be exposed on the host to receive unencrypted HTTP traffic from the reverse proxy. **Advice:** If you need https between Nextcloud and the reverse proxy because it is running on a different server in the same network, simply add another reverse proxy to the chain that runs on the same server like AIO and takes care of https proxying (most likely via self-signed cert). Another option is to create a VPN between the server that runs AIO and the server that runs the reverse proxy which takes care of encrypting the connection.
 
 **Attention:** The process to run Nextcloud behind a reverse proxy consists of at least steps 1, 2 and 4:
-1. **Configure the reverse proxy! See [point 1](#1-add-this-to-your-reverse-proxy-config)**
+1. **Configure the reverse proxy! See [point 1](#1-configure-the-reverse-proxy)**
 1. **Use this startup command! See [point 2](#2-use-this-startup-command)**
 1. Optional: If the reverse proxy is installed on the same host and in the host network, you should limit the apache container to only listen on localhost. See [point 3](#3-limit-the-access-to-the-apache-container)
 1. **Open the AIO interface. See [point 4](#4-open-the-aio-interface)**
 1. Optional: Get a valid certificate for the AIO interface! See [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface)
 1. Optional: How to debug things? See [point 6](#6-how-to-debug-things)
 
-## 1. Add this to your reverse proxy config
-
 **Please note:** Since the Apache container gets created by the mastercontainer, there is **NO** way to provide custom docker labels or custom environmental variables for the Apache container. So please do not attempt to do this because you will fail! Only the documented way will work!
 
-### Adaptation of the respective sample configuration
-Of course you need to modify `<your-nc-domain>` to the domain on which you want to run Nextcloud. Also make sure to adjust the port `11000` to match the chosen `APACHE_PORT`. Additionally, you might need to adjust `localhost` or `127.0.0.1` based on your setup. See below.
- 
-**Running the Reverse Proxy on the same server, not in a container**<br>
-For this setup, the default sample configurations with `localhost:$APACHE_PORT` should work.
+## 1. Configure the reverse proxy
 
-**Running the Reverse Proxy in a Docker container on the same server**<br>
-For this setup, you can use as target `host.docker.internal:$APACHE_PORT` instead of `localhost:$APACHE_PORT`. **⚠️ Important:** In order to make this work on Docker for Linux, you need to add `--add-host=host.docker.internal:host-gateway` to the docker run command of your reverse proxy container or `extra_hosts: ["host.docker.internal:host-gateway"]` in docker compose (it works on Docker Desktop by default).<br>
-Another option and actually the recommended way in this case is to use `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. By doing so, the default sample configurations that point at `localhost:$APACHE_PORT` should work without having to modify them.
+### Adapting the sample web server configurations below
+1. Replace `<your-nc-domain>` with the domain on which you want to run Nextcloud.
+1. Adjust the port `11000` to match your chosen `APACHE_PORT`.
+1. Adjust `localhost` or `127.0.0.1` to point to the Nextcloud server IP or domain depending on where the reverse proxy is running. See the following options.
 
-**Running the Reverse Proxy on a different server (no matter if in container or not)**<br>
-For this setup, you need to use as target the private ip-address of the host that shall be running AIO. So e.g. `private.ip.address.of.aio.server:$APACHE_PORT` instead of `localhost:$APACHE_PORT`.<br>
-If you are not sure how to retrieve that, you can run: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` on the server that shall be running AIO (the commands only work on Linux).
+    <details>
+
+    <summary>On the same server without a container</summary>
+
+    For this setup, the default sample configurations with `localhost:$APACHE_PORT` should work.
+
+    </details>
+
+    <details>
+
+    <summary>On the same server in a Docker container</summary>
+
+    For this setup, you can use as target `host.docker.internal:$APACHE_PORT` instead of `localhost:$APACHE_PORT`. **⚠️ Important:** In order to make this work on Docker for Linux, you need to add `--add-host=host.docker.internal:host-gateway` to the docker run command of your reverse proxy container or `extra_hosts: ["host.docker.internal:host-gateway"]` in docker compose (it works on Docker Desktop by default).
+
+    Another option and actually the recommended way in this case is to use `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. By doing so, the default sample configurations that point at `localhost:$APACHE_PORT` should work without having to modify them.
+
+    </details>
+
+    <details>
+
+    <summary>On a different server (in container or not)</summary>
+
+    Use the private ip-address of the host that shall be running AIO. So e.g. `private.ip.address.of.aio.server:$APACHE_PORT` instead of `localhost:$APACHE_PORT`.
+    
+    If you are not sure how to retrieve that, you can run: `ip a | grep "scope global" | head -1 | awk '{print $2}' | sed 's|/.*||'` on the server that shall be running AIO (the commands only work on Linux).
+
+    </details>
 
 ### Apache
 
@@ -97,7 +116,7 @@ Add this as a new Apache site config:
 </VirtualHost>
 ```
 
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 To make the config work you can run the following command:
 `sudo a2enmod rewrite proxy proxy_http proxy_wstunnel ssl headers http2`
@@ -119,7 +138,7 @@ https://<your-nc-domain>:443 {
 ```
 The Caddyfile is a text file called `Caddyfile` (no extension) which – if you should be running Caddy inside a container – should usually be created in the same location as your `compose.yaml` file prior to starting the container.
 
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 **Advice:** You may have a look at [this](https://github.com/nextcloud/all-in-one/discussions/575#discussion-4055615) for a more complete example.
 
@@ -143,7 +162,7 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
         }
     }
     ```
-    ⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+    ⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
     You also need to adjust `<provider>` and `<key>` to match your case.
 
@@ -172,7 +191,7 @@ For a reverse proxy example guide for Citrix ADC VPX / Citrix Netscaler, see thi
 Although it does not seem like it is the case but from AIO perspective a Cloudflare Tunnel works like a reverse proxy. Please see the [caveats](https://github.com/nextcloud/all-in-one#notes-on-cloudflare-proxytunnel) before proceeding. Here is then how to make it work:
 
 1. Install the Cloudflare Tunnel on the same machine where AIO will be running on and point the Tunnel with the domain that you want to use for AIO to `http://localhost:11000`.<br>
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 1. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command which will disable the domain validation (because it is known that the domain validation will not work behind a Cloudflare Tunnel). So you need to ensure yourself that you've configured everything correctly.
 
 **Advice:** Make sure to [disable Cloudflares Rocket Loader feature](https://help.nextcloud.com/t/login-page-not-working-solved/149417/8) as otherwise Nextcloud's login prompt will not be shown.
@@ -272,7 +291,7 @@ backend Nextcloud
     server Nextcloud localhost:11000 
 ```
 
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
 
@@ -362,7 +381,7 @@ server {
 
 ```
 
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 **Advice:** You may have a look at [this](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-2811152) for a more complete example.
 
@@ -393,7 +412,7 @@ proxy_read_timeout 86400s;
 client_max_body_size 0;
 ```
 
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 Also change `<you>@<your-mail-provider-domain>` to a mail address of yours.
 
@@ -497,7 +516,7 @@ httpServer.on('upgrade', (req, socket, head) => {
 });
 ```
 
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
 
@@ -515,7 +534,7 @@ See these screenshots for a working config:
 
 ![image](https://user-images.githubusercontent.com/70434961/213193789-fa936edc-e307-4e6a-9a53-ae26d1bf2f42.jpg)
 
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
 
@@ -596,7 +615,7 @@ The examples below define the dynamic configuration in YAML files. If you rather
 
 ---
 
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 **Hint**: see https://www.youtube.com/watch?v=VLPSRrLMDmA for a video on configuring Traefik.
 
@@ -689,7 +708,7 @@ https://<your-nc-domain>:8443 {
     }
 }
 ```
-⚠️ **Please note:** Look into [this](#adaptation-of-the-respective-sample-configuration) to adapt the above example configuration.
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 Afterwards should the AIO interface be accessible via `https://ip.address.of.the.host:8443`. You can alternatively change the domain to a different subdomain by using `https://<your-alternative-domain>:443` instead of `https://<your-nc-domain>:8443` in the Caddyfile and use that to access the AIO interface.
 
@@ -699,7 +718,7 @@ If something does not work, follow the steps below:
 1. Make sure that you used the docker run command that is described in this reverse proxy documentation. **Hint:** make sure that you have set the `APACHE_PORT` via e.g. `--env APACHE_PORT=11000` during the docker run command!
 1. Make sure to set the `APACHE_IP_BINDING` variable correctly. If in doubt, set it to `--env APACHE_IP_BINDING=0.0.0.0`
 1. Make sure that all ports to which your reverse proxy is pointing match the chosen `APACHE_PORT`.
-1. Make sure to follow [this](#adaptation-of-the-respective-sample-configuration) to adapt the example configurations to your specific setup
+1. Make sure to follow [this](#adapting-the-sample-web-server-configurations-below) to adapt the example configurations to your specific setup
 1. Make sure that the mastercontainer is able to spawn other containers. You can do so by checking that the mastercontainer indeed has access to the Docker socket which might not be positioned in one of the suggested directories like `/var/run/docker.sock` but in a different directory, based on your OS and the way how you installed Docker. The mastercontainer logs should help figuring this out. You can have a look at them by running `sudo docker logs nextcloud-aio-mastercontainer` after the container is started the first time.
 1. Check if after the mastercontainer was started, the reverse proxy if running inside a container, can reach the provided apache port. You can test this by running `nc -z localhost 11000; echo $?` from inside the reverse proxy container. If the output is `0`, everything works. Alternatively you can of course use instead of `localhost` the ip-address of the host here for the test.
 1. Make sure that you are not behind CGNAT. If that is the case, you will not be able to open ports properly. In that case you might use a Cloudflare Tunnel.
