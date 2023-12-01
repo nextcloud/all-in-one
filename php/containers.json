@@ -215,6 +215,7 @@
         "APACHE_IP_BINDING=%APACHE_IP_BINDING%",
         "THIS_IS_AIO=true"
       ],
+      "stop_grace_period": 600,
       "restart": "unless-stopped",
       "devices": [
         "/dev/dri"
