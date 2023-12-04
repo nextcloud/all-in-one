@@ -1,0 +1,64 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-stalwart",
+            "display_name": "Stalwart",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart",
+            "image": "marcoambrosini/aio-stalwart",
+            "image_tag": "v1",
+            "internal_port": "587",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                  "ip_binding": "",
+                  "port_number": "25",
+                  "protocol": "tcp"
+                },
+                {
+                  "ip_binding": "",
+                  "port_number": "143",
+                  "protocol": "tcp"
+                },
+                {
+                  "ip_binding": "",
+                  "port_number": "465",
+                  "protocol": "tcp"
+                },
+                {
+                  "ip_binding": "",
+                  "port_number": "587",
+                  "protocol": "tcp"
+                },
+                {
+                  "ip_binding": "",
+                  "port_number": "993",
+                  "protocol": "tcp"
+                },
+                {
+                  "ip_binding": "",
+                  "port_number": "4190",
+                  "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "NC_DOMAIN=%NC_DOMAIN"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_stalwart",
+                    "destination": "/opt/stalwart-mail",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_caddy",
+                    "destination": "/caddy",
+                    "writeable": false
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_stalwart"
+            ]
+        }
+    ]
+}
