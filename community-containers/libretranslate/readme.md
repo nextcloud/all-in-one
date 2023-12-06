@@ -2,8 +2,6 @@
 This container bundles LibreTranslate and auto-configures it for you.
 
 ### Notes
-
-- Please note that this community container is currently not working since its integration app is not yet compatible with Nextcloud 27 (Hub 6). You can follow the progress here: https://github.com/v1r0x/integration_libretranslate/issues/1
 - After the initial startup is done, you might want to change the default language to translate from and to via:
 ```bash
 # Adjust the values `en` and `de` in commands below accordingly
