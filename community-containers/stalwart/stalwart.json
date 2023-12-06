@@ -42,7 +42,7 @@
             ],
             "environment": [
                 "TZ=%TIMEZONE%",
-                "NC_DOMAIN=%NC_DOMAIN"
+                "NC_DOMAIN=%NC_DOMAIN%"
             ],
             "volumes": [
                 {
