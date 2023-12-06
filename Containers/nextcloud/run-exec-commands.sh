@@ -1,9 +1,7 @@
 #!/bin/bash
 
-while ! nc -z "$NC_DOMAIN" 443; do
-    sleep 5
-done
-sleep 10
+# Wait 15s for domain to be reachable
+sleep 15
 
 if [ -n "$NEXTCLOUD_EXEC_COMMANDS" ]; then
     echo "#!/bin/bash" > /tmp/nextcloud-exec-commands
