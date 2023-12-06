@@ -1,4 +1,4 @@
-FROM haproxy:2.8.4-alpine3.18
+FROM haproxy:2.9.0-alpine3.18
 
 # hadolint ignore=DL3002
 USER root
