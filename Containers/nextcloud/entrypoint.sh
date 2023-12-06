@@ -478,6 +478,7 @@ php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
 
 # Apply network settings
 echo "Applying network settings..."
+php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
 php /var/www/html/occ config:system:set davstorage.request_timeout --value="$PHP_MAX_TIME" --type=int
 php /var/www/html/occ config:system:set trusted_domains 1 --value="$NC_DOMAIN"
 php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_DOMAIN/"
@@ -531,8 +532,6 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:update richdocuments
     fi
     php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
-    # Fix https://github.com/nextcloud/all-in-one/issues/188:
-    php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
     # Make collabora more save
     COLLABORA_IPv4_ADDRESS="$(dig "$NC_DOMAIN" A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
     COLLABORA_IPv6_ADDRESS="$(dig "$NC_DOMAIN" AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
@@ -596,7 +595,6 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
     php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
     php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$NC_DOMAIN/onlyoffice"
-    php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/onlyoffice" ] && [ -n "$ONLYOFFICE_SECRET" ] && [ "$(php /var/www/html/occ config:system:get onlyoffice jwt_secret)" = "$ONLYOFFICE_SECRET" ]; then
         php /var/www/html/occ app:remove onlyoffice
