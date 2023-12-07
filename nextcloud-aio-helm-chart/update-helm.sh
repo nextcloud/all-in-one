@@ -100,12 +100,12 @@ cat << EOL > /tmp/initcontainers.clamav
 EOL
 cat << EOL > /tmp/initcontainers.nextcloud
       initContainers:
-        - name: delete lost+found
+        - name: "delete-lost-found"
           image: alpine
           command:
             - rm
             - "-rf"
-            - /nextcloud-aio-nextcloud/lost+found
+            - "/nextcloud-aio-nextcloud/lost+found"
           volumeMountsInitRmLostFound:
         - name: init-volumes
           image: alpine

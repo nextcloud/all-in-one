@@ -23,12 +23,12 @@ spec:
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
       initContainers:
-        - name: delete lost+found
+        - name: "delete-lost-found"
           image: alpine
           command:
             - rm
             - "-rf"
-            - /nextcloud-aio-nextcloud/lost+found
+            - "/nextcloud-aio-nextcloud/lost+found"
           volumeMounts:
             - name: nextcloud-aio-nextcloud-trusted-cacerts
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
