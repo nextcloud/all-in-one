@@ -258,7 +258,14 @@ DATADIR_PERMISSION_CONF
             if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
                 php /var/www/html/occ config:system:set updater.release.channel --value=beta
                 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
-                php /var/www/html/updater/updater.phar --no-interaction
+                INSTALL_DAT="$(php /var/www/html/occ config:app:get core installedat)"
+                if [ -n "$INSTALL_DAT" ]; then
+                    # Set the installdat to 00 which will allow to skip staging and install the next major directly
+                    # shellcheck disable=SC2001
+                    INSTALL_DAT="$(echo "$INSTALL_DAT" | sed "s|[0-9][0-9]$|00|")"
+                    php /var/www/html/occ config:app:set core installedat --value="$INSTALL_DAT" 
+                fi
+                php /var/www/html/updater/updater.phar --no-interaction --no-backup
                 if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
                     echo "Installation of Nextcloud failed!"
                     touch "$NEXTCLOUD_DATA_DIR/install.failed"
@@ -266,18 +273,6 @@ DATADIR_PERMISSION_CONF
                 fi
                 # shellcheck disable=SC2016
                 installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
-                INSTALLED_MAJOR="${installed_version%%.*}"
-                IMAGE_MAJOR="${image_version%%.*}"
-                if ! [ "$INSTALLED_MAJOR" -gt "$IMAGE_MAJOR" ]; then
-                    php /var/www/html/updater/updater.phar --no-interaction
-                    if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
-                        echo "Installation of Nextcloud failed!"
-                        touch "$NEXTCLOUD_DATA_DIR/install.failed"
-                        exit 1
-                    fi
-                    # shellcheck disable=SC2016
-                    installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
-                fi
                 php /var/www/html/occ app:disable updatenotification
                 rm -rf /var/www/html/apps/updatenotification
                 php /var/www/html/occ config:system:set updater.release.channel --value=stable
