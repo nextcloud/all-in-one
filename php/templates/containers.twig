@@ -55,11 +55,11 @@
         {% endfor %}
 
         {% if is_daily_backup_running == true %}
-            <span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br /><br />
+            <span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank" rel="noopener">Logs</a>)<br /><br />
             {% if automatic_updates == true %}
                 It will update your containers, the mastercontainer and on saturdays your Nextcloud apps if the backup is successful.<br /><br />
                 {% if is_mastercontainer_update_available == true %}
-                    Since the mastercontainer gets updated, it will restart the container which will make it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower">Logs</a>)<br /><br />
+                    Since the mastercontainer gets updated, it will restart the container which will make it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)<br /><br />
                 {% endif %}
             {% endif %}
             {% if has_update_available == false %}
@@ -69,7 +69,7 @@
             {% endif %}
             <a href="" class="button reload">Reload ↻</a><br/>
         {% elseif isWatchtowerRunning == true %}
-            <span class="status running"></span> Mastercontainer update currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until that's done. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower">Logs</a>)<br /><br />
+            <span class="status running"></span> Mastercontainer update currently running. It will restart the mastercontainer soon which will make it unavailable for a moment. Please wait until that's done. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)<br /><br />
             <a href="" class="button reload">Reload ↻</a><br/>
         {% else %}
             {% if is_backup_container_running == false and domain == "" %}
@@ -128,7 +128,7 @@
                         {% if borg_backup_host_location != '' and borg_restore_password != '' %}
                             {% if borg_backup_mode in ['test', 'check'] %}
                                 {% if backup_exit_code > 0 %}
-                                    <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                    <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
                                     {% if borg_backup_mode == 'test' %}
                                         Please adjust the path and/or the password in order to make it work!<br><br>
                                     {% elseif borg_backup_mode == 'check' %}
@@ -144,7 +144,7 @@
                                         </details><br />
                                     {% endif %}
                                 {% elseif backup_exit_code == 0 %}
-                                    <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                    <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
                                     {% if borg_backup_mode == 'test' %}
                                         Feel free to check the integrity of the backup archive below before starting the restore process in order to make double-sure that the restore will work. This can take a long time though depending on the size of the backup archive and is thus not required.<br><br>
                                         <form method="POST" action="/api/docker/backup-check" class="xhr">
@@ -167,7 +167,7 @@
                                 {% endif %}
                             {% elseif borg_backup_mode == 'restore' %}
                                 {% if backup_exit_code > 0 %}
-                                    <span class="status error"></span> Last restore failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                    <span class="status error"></span> Last restore failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
                                     Somehow the restore failed which is unexpected! Please adjust the path and password, test it and try to restore again!
                                 {% endif %}
                             {% endif %}
@@ -198,14 +198,14 @@
 
             {% if was_start_button_clicked == true %}
                 {% if current_channel starts with 'latest' or current_channel starts with 'beta' or current_channel starts with 'develop' %}
-                    You are running the <a href="https://github.com/nextcloud/all-in-one#how-to-switch-the-channel"><b>{{ current_channel }}</b></a> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer">Logs</a>)<br><br>
+                    You are running the <a href="https://github.com/nextcloud/all-in-one#how-to-switch-the-channel"><b>{{ current_channel }}</b></a> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank" rel="noopener">Logs</a>)<br><br>
                 {% else %}
                     No channel was found. This means that AIO is not able to update itself and its component and will also not be able to report about updates. Updates need to be done externally.
                 {% endif %}
             {% endif %}
 
             {% if is_backup_container_running == true %}
-                <span class="status running"></span> Backup container is currently running. (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                <span class="status running"></span> Backup container is currently running. (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
                 <a href="" class="button reload">Reload ↻</a><br/><br>
             {% endif %}
 
@@ -257,21 +257,21 @@
                                 <li>
                                     {% if class(container.GetStartingState()) == 'AIO\\Container\\State\\StartingState' %}
                                         <span class="status running"></span>
-                                        <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Starting</a>)
+                                        <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank" rel="noopener">Starting</a>)
                                         {% if container.GetDocumentation() != '' %}
                                             (<a href="{{ container.GetDocumentation() }}">docs</a>)
                                         {% endif %}
                                         </span>
                                     {% elseif class(container.GetRunningState()) == 'AIO\\Container\\State\\RunningState' %}
                                         <span class="status success"></span>
-                                        <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Running</a>)
+                                        <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank" rel="noopener">Running</a>)
                                         {% if container.GetDocumentation() != '' %}
                                             (<a href="{{ container.GetDocumentation() }}">docs</a>)
                                         {% endif %}
                                         </span>
                                     {% else %}
                                         <span class="status error"></span>
-                                        <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}">Stopped</a>)
+                                        <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank" rel="noopener">Stopped</a>)
                                         {% if container.GetDocumentation() != '' %}
                                             (<a href="{{ container.GetDocumentation() }}">docs</a>)
                                         {% endif %}
@@ -383,7 +383,7 @@
                             {% if is_backup_container_running == false %}
                                 <h2>Backup and restore</h2>
                                 {% if backup_exit_code > 0 %}
-                                    <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                    <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
                                     {% if borg_backup_mode == "check" %}
                                         The backup check was not successful which might points towards a corrupt archive (look at the logs). If that should be the case, you can try to fix it by following <a href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><b>this documentation</b></a><br /><br />
                                         <details>
@@ -407,9 +407,9 @@
                                     {% endif %}
                                 {% elseif backup_exit_code == 0 %}
                                     {% if borg_backup_mode == "backup" %}
-                                        <span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }} UTC! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                        <span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }} UTC! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
                                     {% else %}
-                                        <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup">Logs</a>)<br /><br />
+                                        <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
