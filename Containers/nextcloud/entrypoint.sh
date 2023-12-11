@@ -256,7 +256,6 @@ DATADIR_PERMISSION_CONF
             unset ADMIN_PASSWORD
 
             if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
-                php /var/www/html/occ config:system:set updater.release.channel --value=beta
                 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
                 INSTALL_DAT="$(php /var/www/html/occ config:app:get core installedat)"
                 if [ -n "$INSTALL_DAT" ]; then
@@ -275,7 +274,6 @@ DATADIR_PERMISSION_CONF
                 installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
                 php /var/www/html/occ app:disable updatenotification
                 rm -rf /var/www/html/apps/updatenotification
-                php /var/www/html/occ config:system:set updater.release.channel --value=stable
                 php /var/www/html/occ app:enable nextcloud-aio --force
                 php /var/www/html/occ db:add-missing-indices
                 php /var/www/html/occ db:add-missing-columns
