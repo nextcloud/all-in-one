@@ -572,7 +572,7 @@ class DockerActionManager
                 ]
             );
         } catch (RequestException $e) {
-            throw $e;
+            throw new \Exception("Could not start container " . $container->GetIdentifier() . ": " . $e->getMessage());
         }
 
     }
