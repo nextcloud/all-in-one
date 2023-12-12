@@ -272,6 +272,18 @@ DATADIR_PERMISSION_CONF
                 fi
                 # shellcheck disable=SC2016
                 installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+                INSTALLED_MAJOR="${installed_version%%.*}"
+                IMAGE_MAJOR="${image_version%%.*}"
+                if ! [ "$INSTALLED_MAJOR" -gt "$IMAGE_MAJOR" ]; then
+                    php /var/www/html/updater/updater.phar --no-interaction --no-backup
+                    if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
+                        echo "Installation of Nextcloud failed!"
+                        touch "$NEXTCLOUD_DATA_DIR/install.failed"
+                        exit 1
+                    fi
+                    # shellcheck disable=SC2016
+                    installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+                fi
                 php /var/www/html/occ app:disable updatenotification
                 rm -rf /var/www/html/apps/updatenotification
                 php /var/www/html/occ app:enable nextcloud-aio --force
