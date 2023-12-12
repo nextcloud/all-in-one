@@ -256,9 +256,15 @@ DATADIR_PERMISSION_CONF
             unset ADMIN_PASSWORD
 
             if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
-                php /var/www/html/occ config:system:set updater.release.channel --value=beta
                 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
-                php /var/www/html/updater/updater.phar --no-interaction
+                INSTALLED_AT="$(php /var/www/html/occ config:app:get core installedat)"
+                if [ -n "${INSTALLED_AT}" ]; then
+                    # Set the installdat to 00 which will allow to skip staging and install the next major directly
+                    # shellcheck disable=SC2001
+                    INSTALLED_AT="$(echo "${INSTALLED_AT}" | sed "s|[0-9][0-9]$|00|")"
+                    php /var/www/html/occ config:app:set core installedat --value="${INSTALLED_AT}" 
+                fi
+                php /var/www/html/updater/updater.phar --no-interaction --no-backup
                 if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
                     echo "Installation of Nextcloud failed!"
                     touch "$NEXTCLOUD_DATA_DIR/install.failed"
@@ -269,7 +275,7 @@ DATADIR_PERMISSION_CONF
                 INSTALLED_MAJOR="${installed_version%%.*}"
                 IMAGE_MAJOR="${image_version%%.*}"
                 if ! [ "$INSTALLED_MAJOR" -gt "$IMAGE_MAJOR" ]; then
-                    php /var/www/html/updater/updater.phar --no-interaction
+                    php /var/www/html/updater/updater.phar --no-interaction --no-backup
                     if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
                         echo "Installation of Nextcloud failed!"
                         touch "$NEXTCLOUD_DATA_DIR/install.failed"
@@ -280,7 +286,6 @@ DATADIR_PERMISSION_CONF
                 fi
                 php /var/www/html/occ app:disable updatenotification
                 rm -rf /var/www/html/apps/updatenotification
-                php /var/www/html/occ config:system:set updater.release.channel --value=stable
                 php /var/www/html/occ app:enable nextcloud-aio --force
                 php /var/www/html/occ db:add-missing-indices
                 php /var/www/html/occ db:add-missing-columns
