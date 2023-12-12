@@ -257,12 +257,12 @@ DATADIR_PERMISSION_CONF
 
             if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
                 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
-                INSTALL_DAT="$(php /var/www/html/occ config:app:get core installedat)"
-                if [ -n "$INSTALL_DAT" ]; then
+                INSTALLED_AT="$(php /var/www/html/occ config:app:get core installedat)"
+                if [ -n "${INSTALLED_AT}" ]; then
                     # Set the installdat to 00 which will allow to skip staging and install the next major directly
                     # shellcheck disable=SC2001
-                    INSTALL_DAT="$(echo "$INSTALL_DAT" | sed "s|[0-9][0-9]$|00|")"
-                    php /var/www/html/occ config:app:set core installedat --value="$INSTALL_DAT" 
+                    INSTALLED_AT="$(echo "${INSTALLED_AT}" | sed "s|[0-9][0-9]$|00|")"
+                    php /var/www/html/occ config:app:set core installedat --value="${INSTALLED_AT}" 
                 fi
                 php /var/www/html/updater/updater.phar --no-interaction --no-backup
                 if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
