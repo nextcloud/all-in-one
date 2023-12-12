@@ -38,7 +38,7 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-redis:20231130_081302-latest
+          image: nextcloud/aio-redis:20231212_115941-latest
           name: nextcloud-aio-redis
           ports:
             - containerPort: 6379

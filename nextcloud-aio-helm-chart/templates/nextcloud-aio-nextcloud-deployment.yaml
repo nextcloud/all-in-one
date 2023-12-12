@@ -158,8 +158,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:beta
-          imagePullPolicy: Always
+          image: nextcloud/aio-nextcloud:20231212_115941-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
@@ -174,6 +173,7 @@ spec:
             - mountPath: /usr/local/share/ca-certificates
               name: nextcloud-aio-nextcloud-trusted-cacerts
               readOnly: true
+      terminationGracePeriodSeconds: 600
       volumes:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:
