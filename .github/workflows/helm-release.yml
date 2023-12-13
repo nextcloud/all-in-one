@@ -37,8 +37,7 @@ jobs:
           version: v3.6.3
 
       - name: Run chart-releaser
-        # TODO: switch back @main to a specific version like @v1.5.1 or higher
-        uses: helm/chart-releaser-action@main
+        uses: helm/chart-releaser-action@v1.6.0
         with:
           mark_as_latest: false
           charts_dir: .
