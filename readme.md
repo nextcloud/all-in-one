@@ -591,20 +591,9 @@ You can configure the Nextcloud container to use a specific directory on your ho
 
 ### Can I use a CIFS/SMB share as Nextcloud's datadir?
 
-Sure. Add this to the `/etc/fstab` file: <br>
-`<your-storage-host-and-subpath> <your-mount-dir> cifs rw,mfsymlinks,seal,credentials=<your-credentials-file>,uid=33,gid=0,file_mode=0770,dir_mode=0770 0 0`<br>
-(Of course you need to modify `<your-storage-host-and-subpath>`, `<your-mount-dir>` and `<your-credentials-file>` for your specific case.)
+This is not recommended. 
 
-One example could look like this:<br>
-`//your-storage-host/subpath /mnt/storagebox cifs rw,mfsymlinks,seal,credentials=/etc/storage-credentials,uid=33,gid=0,file_mode=0770,dir_mode=0770 0 0`<br>
-and add into `/etc/storage-credentials`:
-```
-username=<smb/cifs username>
-password=<password>
-```
-(Of course you need to modify `<smb/cifs username>` and `<password>` for your specific case.)
-
-Now you can use `/mnt/storagebox` as Nextcloud's datadir like described in the section above above this one.
+There is a bug in one of the upstream dependencies that likely will not be fixed anytime soon. This bug prevents uploading large files and deleting directories containing a large number of files (>62 files). See https://github.com/nextcloud/all-in-one/discussions/2850#discussioncomment-6269418, https://github.com/nextcloud/server/issues/17980 and https://gitlab.alpinelinux.org/alpine/aports/-/issues/10960 for details.
 
 ### How to allow the Nextcloud container to access directories on the host?
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). Allowed values for that variable are strings that start with `/` and are not equal to `/`.
