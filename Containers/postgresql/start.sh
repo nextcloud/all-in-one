@@ -167,25 +167,29 @@ if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
     fi
 fi
 
+do_database_dump() {
+    set -x
+    rm -f "$DUMP_FILE.temp"
+    touch "$DUMP_DIR/export.failed"
+    if pg_dump --username "$POSTGRES_USER" "$POSTGRES_DB" > "$DUMP_FILE.temp"; then
+        rm -f "$DUMP_FILE"
+        mv "$DUMP_FILE.temp" "$DUMP_FILE"
+        pg_ctl stop -m fast
+        rm "$DUMP_DIR/export.failed"
+        echo 'Database dump successful!'
+        set +x
+        exit 0
+    else
+        pg_ctl stop -m fast
+        echo "Database dump unsuccessful!"
+        set +x
+        exit 1
+    fi
+}
+
 # Catch docker stop attempts
-trap 'true' SIGINT SIGTERM
+trap do_database_dump SIGINT SIGTERM
 
 # Start the database
 exec docker-entrypoint.sh postgres &
 wait $!
-
-# Continue with shutdown procedure: do database dump, etc.
-rm -f "$DUMP_FILE.temp"
-touch "$DUMP_DIR/export.failed"
-if pg_dump --username "$POSTGRES_USER" "$POSTGRES_DB" > "$DUMP_FILE.temp"; then
-    rm -f "$DUMP_FILE"
-    mv "$DUMP_FILE.temp" "$DUMP_FILE"
-    pg_ctl stop -m fast
-    rm "$DUMP_DIR/export.failed"
-    echo 'Database dump successful!'
-    exit 0
-else
-    pg_ctl stop -m fast
-    echo "Database dump unsuccessful!"
-    exit 1
-fi
