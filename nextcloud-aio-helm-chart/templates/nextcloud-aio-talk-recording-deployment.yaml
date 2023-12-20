@@ -33,7 +33,7 @@ spec:
               value: "{{ .Values.RECORDING_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-talk-recording:20231212_115941-latest
+          image: nextcloud/aio-talk-recording:20231220_153200-latest
           name: nextcloud-aio-talk-recording
           ports:
             - containerPort: 1234
