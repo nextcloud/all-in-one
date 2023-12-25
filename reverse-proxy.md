@@ -556,27 +556,34 @@ The examples below define the dynamic configuration in YAML files. If you rather
     # STATIC CONFIGURATION
    
     entryPoints:
-        https:
-            address: ":443" # Create an entrypoint called "https" that uses port 443
+      https:
+        address: ":443" # Create an entrypoint called "https" that uses port 443
+        # If you want to enable HTTP/3 support, see below
+        http3: {}
     
     certificatesResolvers:
-        # Define "letsencrypt" certificate resolver
-        letsencrypt:
-            acme:
-                storage: /letsencrypt/acme.json # Defines the path where certificates should be stored
-                email: <your-email-address> # Where LE sends notification about certificates expiring
-                tlschallenge: true
+      # Define "letsencrypt" certificate resolver
+      letsencrypt:
+        acme:
+          storage: /letsencrypt/acme.json # Defines the path where certificates should be stored
+          email: <your-email-address> # Where LE sends notification about certificates expiring
+          tlschallenge: true
    
     providers:
-        file:
-            directory: "/path/to/dynamic/conf" # Adjust the path according your needs.
-            watch: true
+      file:
+        directory: "/path/to/dynamic/conf" # Adjust the path according your needs.
+        watch: true
+
+    # Enable HTTP/3 feature, don`t forget to route 443 UDP to Traefik (Firewall\NAT\Traefik Container)`
+    experimental:
+      http3: true
     ```
 
 1. Declare the router, service and middlewares for Nextcloud in `/path/to/dynamic/conf/nextcloud.yml`:
 
     ```yml
     http:
+<<<<<<< HEAD
         routers:
             nextcloud:
                 rule: "Host(`<your-nc-domain>`)"
@@ -611,6 +618,39 @@ The examples below define the dynamic configuration in YAML files. If you rather
                         # - ... (e.g. rate limiting middleware)
                         - https-redirect
                         - nextcloud-secure-headers
+=======
+      routers:
+        nextcloud:
+          rule: "Host(`<your-nextcloud-domain>`)"
+          entrypoints:
+            - "https"
+          service: nextcloud
+          middlewares:
+            - nextcloud-chain
+          tls:
+            certresolver: "letsencrypt"
+      services:
+        nextcloud:
+          loadBalancer:
+            servers:
+              - url: "http://localhost:11000" # Use the host's IP address if Traefik runs outside the hostnetwork
+      middlewares:
+        nextcloud-secure-headers:
+          headers:
+            hostsProxyHeaders:
+              - "X-Forwarded-Host"
+            referrerPolicy: "same-origin"
+        https-redirect:
+          redirectscheme:
+            scheme: https 
+  
+        nextcloud-chain:
+          chain:
+            middlewares:
+              # - ... (e.g. rate limiting middleware)
+              - https-redirect
+              - nextcloud-secure-headers
+>>>>>>> 1e289d29 (Add Treafik HTTP/3 Support)
     ```
 
 ---
