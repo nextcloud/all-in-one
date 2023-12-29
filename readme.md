@@ -3,14 +3,14 @@ The official Nextcloud installation method. Nextcloud AIO provides easy deployme
 
 Included are:
 - Nextcloud
-- Nextcloud Office
 - High performance backend for Nextcloud Files
-- High performance backend for Nextcloud Talk and TURN-server
-- Nextcloud Talk Recording-server
-- Backup solution (based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
-- Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
-- ClamAV (Antivirus backend for Nextcloud)
-- Fulltextsearch
+- Nextcloud Office (optional)
+- High performance backend for Nextcloud Talk and TURN-server (optional)
+- Nextcloud Talk Recording-server (optional)
+- Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
+- Imaginary (optional, for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
+- ClamAV (optional, Antivirus backend for Nextcloud)
+- Fulltextsearch (optional)
 <details><summary>And much more:</summary>
 
 - Simple web interface included that enables easy installation and maintenance
