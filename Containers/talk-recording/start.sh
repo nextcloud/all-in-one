@@ -26,6 +26,8 @@ listen = 0.0.0.0:1234
 
 [backend]
 allowall = ${ALLOW_ALL}
+# The secret below is still needed if allowall is set to true, also it doesn't hurt to be here
+secret = ${RECORDING_SECRET}
 backends = backend-1
 skipverify = ${SKIP_VERIFY}
 maxmessagesize = 1024
