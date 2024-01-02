@@ -505,7 +505,7 @@ myNextcloudApp.use((req, res) => {
 	proxy.web(req, res, {}, onProxyError);
 });
 
-vhost.use(vhostFunc('<your-nextcloud-domain>', myNextcloudApp));
+vhost.use(vhostFunc('<your-nc-domain>', myNextcloudApp));
 
 const httpServer = http.createServer(app);
 httpServer.listen('80');
@@ -579,7 +579,7 @@ The examples below define the dynamic configuration in YAML files. If you rather
     http:
         routers:
             nextcloud:
-                rule: "Host(`<your-nextcloud-domain>`)"
+                rule: "Host(`<your-nc-domain>`)"
                 entrypoints:
                     - "https"
                 service: nextcloud
