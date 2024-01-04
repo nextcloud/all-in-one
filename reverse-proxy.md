@@ -601,15 +601,21 @@ The examples below define the dynamic configuration in YAML files. If you rather
                         - "X-Forwarded-Host"
                     referrerPolicy: "same-origin"
 
+            nextcloud-dav:
+                replacepathregex:
+                    regex: "^/.well-known/ca(l|rd)dav"
+                    replacement: "/remote.php/dav/"
+
             https-redirect:
                 redirectscheme:
                     scheme: https 
-   
+
             nextcloud-chain:
                 chain:
                     middlewares:
                         # - ... (e.g. rate limiting middleware)
                         - https-redirect
+                        - nextcloud-dav
                         - nextcloud-secure-headers
     ```
 
