@@ -23,6 +23,11 @@
                 "php /var/www/html/occ face:setup -m 5",
                 "php /var/www/html/occ face:setup -M 4G",
                 "php /var/www/html/occ config:app:set facerecognition analysis_image_area --value 4320000",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 0 --value image/jpeg",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 1 --value image/png",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 2 --value image/heic",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 3 --value image/tiff",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 4 --value image/webp",
                 "php /var/www/html/occ face:background_job --defer-clustering &"
             ]
         }
