@@ -22,7 +22,8 @@
                 "php /var/www/html/occ config:system:set facerecognition.external_model_api_key --value some-super-secret-api-key",
                 "php /var/www/html/occ face:setup -m 5",
                 "php /var/www/html/occ face:setup -M 4G",
-                "php /var/www/html/occ face:background_job &"
+                "php /var/www/html/occ config:app:set facerecognition analysis_image_area --value 4320000",
+                "php /var/www/html/occ face:background_job --defer-clustering &"
             ]
         }
     ]
