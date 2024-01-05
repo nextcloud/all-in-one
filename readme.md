@@ -388,7 +388,7 @@ Not directly but you have multiple options to achieve this:
 ---
 
 #### Failure of the backup container in LXC containers
-If you are running AIO in a LXC container, you need to make sure that FUSE is enabled in the LXC container settings. Otherwise the backup container will not be able to start as FUSE is required for it to work.
+If you are running AIO in a LXC container, you need to make sure that FUSE is enabled in the LXC container settings. Also, if using Alpine Linux as host OS, make sure to add fuse via `apk add fuse`. Otherwise the backup container will not be able to start as FUSE is required for it to work.
 
 ---
 
