@@ -1,0 +1,35 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-facerecognition",
+            "display_name": "Computing container for facerecognition",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/facerecognition",
+            "image": "matiasdelellis/facerecognition-external-model",
+            "image_tag": "initial",
+            "internal_port": "5000",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "API_KEY=some-super-secret-api-key"
+            ],
+            "aio_variables": [
+                "nextcloud_memory_limit=4096M"
+            ],
+            "nextcloud_exec_commands": [
+                "php /var/www/html/occ app:install facerecognition",
+                "php /var/www/html/occ app:enable facerecognition", 
+                "php /var/www/html/occ config:system:set facerecognition.external_model_url --value nextcloud-aio-facerecognition:5000",
+                "php /var/www/html/occ config:system:set facerecognition.external_model_api_key --value some-super-secret-api-key",
+                "php /var/www/html/occ face:setup -m 5",
+                "php /var/www/html/occ face:setup -M 4G",
+                "php /var/www/html/occ config:app:set facerecognition analysis_image_area --value 4320000",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 0 --value image/jpeg",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 1 --value image/png",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 2 --value image/heic",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 3 --value image/tiff",
+                "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 4 --value image/webp",
+                "php /var/www/html/occ face:background_job --defer-clustering &"
+            ]
+        }
+    ]
+}
