@@ -3,7 +3,7 @@ This container bundles stalwart mail server and auto-configures it for you.
 
 ### Notes
 - This is only intended to run on a VPS with static ip-address.
-- Check with `sudo netstat -tulpn` that no other service is using port 25, 143, 465, 578, 993 nor 4190 yet as otherwise the container will fail to start.
+- Check with `sudo netstat -tulpn` that no other service is using port 25, 143, 465, 587, 993 nor 4190 yet as otherwise the container will fail to start.
 - You need to configure a reverse proxy in order to run this container since stalwart needs a dedicated (sub)domain! For that, you might have a look at https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy.
 - Currently, only `mail.$NC_DOMAIN` is supported as subdomain! So if Nextcloud is using `your-domain.com`, Stalwart will use `mail.your-domain.com`.
 - The data of Stalwart will be automatically included in AIOs backup solution!
