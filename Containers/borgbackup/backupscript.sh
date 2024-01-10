@@ -69,6 +69,11 @@ if [ "$BORG_MODE" = backup ]; then
         exit 1
     elif ! [ -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/database-dump.sql" ]; then
         echo "database-dump is missing. Cannot perform backup!"
+        echo "Please check the database container logs!"
+        exit 1
+    elif ! [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.ocdata" ]; then
+        echo "The .ocdata file is missing in Nextcloud datadir which means it is invalid!"
+        echo "Is the drive where the datadir is located on still mounted?"
         exit 1
     fi
 
