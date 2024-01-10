@@ -45,7 +45,7 @@ fi
 echo "notify-push was started"
 
 # Set sensitive values as env
-export DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
+export DATABASE_URL="postgres://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
 export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST"
 
 # Run it
