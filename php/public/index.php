@@ -180,6 +180,6 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
     }
 });
 
-$errorMiddleware = $app->addErrorMiddleware(false, true, true);
+$errorMiddleware = $app->addErrorMiddleware(false, true, false);
 
 $app->run();
