@@ -331,7 +331,7 @@ class ConfigurationManager
             if ($connection) {
                 fclose($connection);
             } else {
-                throw new InvalidSettingConfigurationException("The server is not reachable on Port 443. You can verify this e.g. with 'https://portchecker.co/' by entering your domain there as ip-address and port 443 as port.");
+                throw new InvalidSettingConfigurationException("The domain is not reachable on Port 443 from within this container. Have you opened port 443/tcp in your router/firewall? If yes is the problem most likely that the router or firewall forbids local access to your domain. You can work around that by setting up a local DNS-server.");
             }
 
             // Get Instance ID
