@@ -583,43 +583,9 @@ The examples below define the dynamic configuration in YAML files. If you rather
 
     ```yml
     http:
-        routers:
-            nextcloud:
-                rule: "Host(`<your-nc-domain>`)"
-                entrypoints:
-                    - "https"
-                service: nextcloud
-                middlewares:
-                    - nextcloud-chain
-                tls:
-                    certresolver: "letsencrypt"
-
-        services:
-            nextcloud:
-                loadBalancer:
-                    servers:
-                        - url: "http://localhost:11000" # Use the host's IP address if Traefik runs outside the host network
-
-        middlewares:
-            nextcloud-secure-headers:
-                headers:
-                    hostsProxyHeaders:
-                        - "X-Forwarded-Host"
-                    referrerPolicy: "same-origin"
-
-            https-redirect:
-                redirectscheme:
-                    scheme: https 
-   
-            nextcloud-chain:
-                chain:
-                    middlewares:
-                        # - ... (e.g. rate limiting middleware)
-                        - https-redirect
-                        - nextcloud-secure-headers
       routers:
         nextcloud:
-          rule: "Host(`<your-nextcloud-domain>`)"
+          rule: "Host(`<your-nc-domain>`)"
           entrypoints:
             - "https"
           service: nextcloud
@@ -627,27 +593,31 @@ The examples below define the dynamic configuration in YAML files. If you rather
             - nextcloud-chain
           tls:
             certresolver: "letsencrypt"
+
       services:
         nextcloud:
           loadBalancer:
             servers:
-              - url: "http://localhost:11000" # Use the host's IP address if Traefik runs outside the hostnetwork
+              - url: "http://localhost:11000" # Use the host's IP address if Traefik runs outside the host network
+
       middlewares:
         nextcloud-secure-headers:
           headers:
             hostsProxyHeaders:
               - "X-Forwarded-Host"
             referrerPolicy: "same-origin"
+
         https-redirect:
           redirectscheme:
             scheme: https 
-  
+
         nextcloud-chain:
           chain:
             middlewares:
               # - ... (e.g. rate limiting middleware)
               - https-redirect
               - nextcloud-secure-headers
+
     ```
 
 ---
