@@ -583,7 +583,6 @@ The examples below define the dynamic configuration in YAML files. If you rather
 
     ```yml
     http:
-<<<<<<< HEAD
         routers:
             nextcloud:
                 rule: "Host(`<your-nc-domain>`)"
@@ -618,7 +617,6 @@ The examples below define the dynamic configuration in YAML files. If you rather
                         # - ... (e.g. rate limiting middleware)
                         - https-redirect
                         - nextcloud-secure-headers
-=======
       routers:
         nextcloud:
           rule: "Host(`<your-nextcloud-domain>`)"
@@ -650,7 +648,6 @@ The examples below define the dynamic configuration in YAML files. If you rather
               # - ... (e.g. rate limiting middleware)
               - https-redirect
               - nextcloud-secure-headers
->>>>>>> 1e289d29 (Add Treafik HTTP/3 Support)
     ```
 
 ---
