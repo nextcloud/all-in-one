@@ -617,7 +617,6 @@ The examples below define the dynamic configuration in YAML files. If you rather
               # - ... (e.g. rate limiting middleware)
               - https-redirect
               - nextcloud-secure-headers
-
     ```
 
 ---
