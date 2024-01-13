@@ -558,8 +558,8 @@ The examples below define the dynamic configuration in YAML files. If you rather
     entryPoints:
       https:
         address: ":443" # Create an entrypoint called "https" that uses port 443
-        # If you want to enable HTTP/3 support, see below
-        http3: {}
+        # If you want to enable HTTP/3 support, uncomment the line below
+        # http3: {}
     
     certificatesResolvers:
       # Define "letsencrypt" certificate resolver
