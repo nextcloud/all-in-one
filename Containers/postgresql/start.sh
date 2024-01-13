@@ -150,6 +150,7 @@ fi
 if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
     echo "Setting postgres values..."
 
+    # Sync this with max pm.max_children and MaxRequestWorkers
     # 5000 connections is apparently the highest possible value with postgres so set it to that so that we don't run into a limit here.
     # We don't actually expect so many connections but don't want to limit it artificially because people will report issues otherwise
     # Also connections should usually be closed again after the process is done
