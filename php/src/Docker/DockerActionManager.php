@@ -582,12 +582,19 @@ class DockerActionManager
         $imageName = $this->BuildImageName($container);
         $encodedImageName = urlencode($imageName);
         $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', $encodedImageName));
+        $imageIsThere = true;
         try {
-            $this->guzzleClient->post($url);
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $encodedImageName));
             $this->guzzleClient->get($imageUrl)->getBody()->getContents();
         } catch (\Throwable $e) {
-            throw new \Exception("Could not pull image " . $imageName . ". Please run 'sudo docker exec -it nextcloud-aio-mastercontainer docker pull " . $imageName . "' in order to find out why it failed.");
+            $imageIsThere = false;
+        }
+        try {
+            $this->guzzleClient->post($url);
+        } catch (RequestException $e) {
+            if ($imageIsThere === false) {
+                throw new \Exception("Could not pull image " . $imageName . ". Please run 'sudo docker exec -it nextcloud-aio-mastercontainer docker pull " . $imageName . "' in order to find out why it failed.");
+            }
         }
     }
 
