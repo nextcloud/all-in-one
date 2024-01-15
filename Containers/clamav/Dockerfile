@@ -1,5 +1,5 @@
 # Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.1/alpine/Dockerfile
-FROM clamav/clamav:1.2.1-25
+FROM clamav/clamav:1.2.1-26
 
 COPY clamav.conf /tmp/clamav.conf
 
