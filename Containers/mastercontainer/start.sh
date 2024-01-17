@@ -70,6 +70,7 @@ fi
 # Check if api version is supported
 if ! sudo -u www-data docker info &>/dev/null; then
     print_red "Cannot connect to the docker socket. Cannot proceed."
+    echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
     echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
     echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
     exit 1
