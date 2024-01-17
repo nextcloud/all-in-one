@@ -5,7 +5,7 @@
             "display_name": "Computing container for facerecognition",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/facerecognition",
             "image": "matiasdelellis/facerecognition-external-model",
-            "image_tag": "initial",
+            "image_tag": "v1",
             "internal_port": "5000",
             "restart": "unless-stopped",
             "environment": [
