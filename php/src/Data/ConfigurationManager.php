@@ -359,10 +359,13 @@ class ConfigurationManager
                 error_log('The response of the connection attempt to "' . $testUrl . '" was: ' . $response);
                 error_log('Expected was: ' . $instanceID);
                 error_log('The error message was: ' . curl_error($ch));
-                if ($port !== '443') {
+                $notice = "Domain does not point to this server or the reverse proxy is not configured correctly. See the mastercontainer logs for more details. ('sudo docker logs -f nextcloud-aio-mastercontainer')";
+                if ($port === '443') {
+                    $notice .= " If you should be using Cloudflare, make sure to disable the Cloudflare Proxy feature as it might block the domain validation. Same for any other firewall or service that blocks unencrypted access on port 443.";
+                } else {
                     error_log('Please follow https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things in order to debug things!');
                 }
-                throw new InvalidSettingConfigurationException("Domain does not point to this server or the reverse proxy is not configured correctly. See the mastercontainer logs for more details. ('sudo docker logs -f nextcloud-aio-mastercontainer')");
+                throw new InvalidSettingConfigurationException($notice);
             }
         }
 
