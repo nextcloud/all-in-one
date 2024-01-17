@@ -60,9 +60,11 @@ if [ -n "$ADDITIONAL_APKS" ]; then
         fi
         read -ra ADDITIONAL_APKS_ARRAY <<< "$ADDITIONAL_APKS"
         for app in "${ADDITIONAL_APKS_ARRAY[@]}"; do
-            echo "Installing $app via apk..."
-            if ! apk add --no-cache "$app" >/dev/null; then
-                echo "The packet $app was not installed!"
+            if [ "$app" != imagemagick ]; then
+                echo "Installing $app via apk..."
+                if ! apk add --no-cache "$app" >/dev/null; then
+                    echo "The packet $app was not installed!"
+                fi
             fi
         done
     fi
