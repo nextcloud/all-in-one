@@ -222,7 +222,10 @@ Another but untested way is to install Portainer on your TrueNAS SCALE from here
 Although it does not seems like it is the case but from AIO perspective a Cloudflare Tunnel works like a reverse proxy. So please follow the [reverse proxy documentation](./reverse-proxy.md) where is documented how to make it run behind a Cloudflare Tunnel. However please see the [caveats](https://github.com/nextcloud/all-in-one#notes-on-cloudflare-proxytunnel) before proceeding.
 
 ### Disrecommended VPS providers
-- Stratos VPS crash/freeze/make errors when they reach an extremely low PID limit, which is very quickly reached by AIO, see [here](https://github.com/nextcloud/all-in-one/discussions/1747#discussioncomment-4716164), Strato does normally not increase this limit.
+- *Older* Strato VPS using Virtuozzo caused problems though ones from Q3 2023 and later should work.
+  If your VPS has a `/proc/user_beancounters` file and a low `numproc` limit set in it
+  your server will likely misbehave once it reaches this limit
+  which is very quickly reached by AIO, see [here](https://github.com/nextcloud/all-in-one/discussions/1747#discussioncomment-4716164).
 - Hostingers VPS seem to miss a specific Kernel feature which is required for AIO to run correctly. See [here](https://help.nextcloud.com/t/help-installing-nc-via-aio-on-vps/153956).
 
 ### Recommended VPS
