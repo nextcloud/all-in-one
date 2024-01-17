@@ -191,6 +191,7 @@ RUN set -ex; \
         grep \
         nodejs \
         bind-tools \
+        imagemagick \
         coreutils; \
     \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
