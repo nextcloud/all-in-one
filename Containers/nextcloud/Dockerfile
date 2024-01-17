@@ -196,7 +196,7 @@ RUN set -ex; \
     \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
-# Sync this with max db connections
+# Sync this with max db connections and MaxRequestWorkers
 # We don't actually expect so many children but don't want to limit it artificially because people will report issues otherwise.
 # Also children will usually be terminated again after the process is done due to the ondemand setting
     sed -i 's/^pm.max_children =.*/pm.max_children = 5000/' /usr/local/etc/php-fpm.d/www.conf; \
