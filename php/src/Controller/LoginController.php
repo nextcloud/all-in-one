@@ -30,7 +30,7 @@ class LoginController
             return $response->withHeader('Location', '/')->withStatus(201);
         }
 
-        $response->getBody()->write("The password is false.");
+        $response->getBody()->write("The password is incorrect.");
         return $response->withHeader('Location', '/')->withStatus(422);
     }
 
