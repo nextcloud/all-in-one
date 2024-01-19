@@ -19,7 +19,7 @@
         "ext-apcu": "*"
     },
     "scripts": {
-		"psalm": "psalm --threads=1 --show-info=true",
+		"psalm": "psalm --threads=1",
 		"psalm:update-baseline": "psalm --threads=1 --update-baseline",
 		"lint": "find . -name \\*.php -not -path './vendor/*' -exec php -l {} \\;",
 		"php-deprecation-detector": "find . -name \\*.php -not -path './vendor/*' -exec phpdd scan {} -n -t 8.2 \\;"
