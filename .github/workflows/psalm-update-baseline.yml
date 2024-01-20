@@ -25,7 +25,7 @@ jobs:
           cd php
           composer global require vimeo/psalm --prefer-dist --no-progress --dev
           composer install
-          composer run psalm --threads=1 --set-baseline=psalm-baseline.xml
+          composer run psalm -- --monochrome --no-progress --output-format=text --set-baseline=psalm-baseline.xml
           git clean -f lib/composer
           git checkout composer.json composer.lock lib/composer
         continue-on-error: true
