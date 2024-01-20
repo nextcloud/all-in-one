@@ -20,7 +20,7 @@
     },
     "scripts": {
 		"psalm": "psalm --threads=1",
-		"psalm:update-baseline": "psalm --threads=1 --update-baseline vendor/bin/psalm --set-baseline=psalm-baseline.xml",
+		"psalm:update-baseline": "psalm --threads=1 --set-baseline=psalm-baseline.xml",
 		"lint": "find . -name \\*.php -not -path './vendor/*' -exec php -l {} \\;",
 		"php-deprecation-detector": "find . -name \\*.php -not -path './vendor/*' -exec phpdd scan {} -n -t 8.2 \\;"
 	}
