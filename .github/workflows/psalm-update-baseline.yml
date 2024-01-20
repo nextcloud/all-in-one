@@ -38,7 +38,7 @@ jobs:
           committer: GitHub <noreply@github.com>
           author: nextcloud-command <nextcloud-command@users.noreply.github.com>
           signoff: true
-          branch: automated/noid/psalm-baseline-update
+          branch: automated/noid/psalm-baseline-update-1
           title: '[Automated] Update psalm-baseline.xml'
           milestone: next
           body: |
