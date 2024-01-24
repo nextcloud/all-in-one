@@ -3,4 +3,3 @@ kind: Namespace
 metadata:
   name: {{ .Values.NAMESPACE }}
   namespace: {{ .Values.NAMESPACE }}
-spec: {}
