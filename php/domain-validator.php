@@ -8,7 +8,7 @@ if (strpos($domain, '.') === false) {
     http_response_code(400);  
 } elseif (strpos($domain, ':') !== false) { 
     http_response_code(400);  
-} elseif (!filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) { 
+} elseif (!filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false) { 
     http_response_code(400); 
 } elseif (filter_var($domain, FILTER_VALIDATE_IP)) { 
     http_response_code(400); 
