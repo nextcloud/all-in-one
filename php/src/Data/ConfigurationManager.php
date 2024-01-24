@@ -286,7 +286,7 @@ class ConfigurationManager
         }
 
         // Validate domain
-        if (!filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+        if (filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false) {
             throw new InvalidSettingConfigurationException("Domain is not a valid domain!");
         }
 
@@ -305,7 +305,7 @@ class ConfigurationManager
 
             if (empty($dnsRecordIP)) {
                 $record = dns_get_record($domain, DNS_AAAA);
-                if (!empty($record)) {
+                if (!empty($record[0]['ipv6'])) {
                     $dnsRecordIP = $record[0]['ipv6'];
                 }
             }
