@@ -406,6 +406,13 @@ class DockerActionManager
                 // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
                 } elseif ($out[1] === 'AIO_DATABASE_HOST') {
                     $replacements[1] = gethostbyname('nextcloud-aio-database');
+                // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
+                } elseif ($out[1] === 'CADDY_IP_ADDRESS') {
+                    $replacements[1] = '';
+                    $communityContainers = $this->configurationManager->GetEnabledCommunityContainers();
+                    if (in_array('caddy', $communityContainers, true)) {
+                        $replacements[1] = gethostbyname('nextcloud-aio-caddy');
+                    }
                 } else {
                     $secret = $this->configurationManager->GetSecret($out[1]);
                     if ($secret === "") {
