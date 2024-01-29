@@ -525,12 +525,11 @@ class DockerActionManager
             $requestBody['HostConfig']['CapDrop'] = ['NET_RAW'];
         }
 
-        if ($container->isApparmorUnconfined()) {
-            $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined"];
-        }
-
         // Disable SELinux for AIO containers so that it does not break them
         $requestBody['HostConfig']['SecurityOpt'] = ["label:disable"];
+        if ($container->isApparmorUnconfined()) {
+            $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined", "label:disable"];
+        }
 
         $mounts = [];
 
