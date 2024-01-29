@@ -1,4 +1,4 @@
-FROM python:3.12.1-alpine3.18
+FROM python:3.12.1-alpine3.19
 
 COPY --chmod=775 start.sh /start.sh
 
