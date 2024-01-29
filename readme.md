@@ -1,5 +1,7 @@
 # Nextcloud All-in-One
-The official Nextcloud installation method. Nextcloud AIO provides easy deployment and maintenance with most features included in this one Nextcloud instance. 
+The official Nextcloud installation method. Nextcloud AIO provides easy deployment and maintenance with most features included in this one Nextcloud instance.
+
+-https://github.com/lich-bot/all-in-one/blob/ma0in/reverse-proxy.md
 
 Included are:
 - Nextcloud
@@ -23,7 +25,7 @@ Included are:
 - Postgresql as database
 - PHP-FPM with performance-optimized config (e.g. Opcache and JIT enabled by default)
 - A+ security in Nextcloud security scan
-- Ready to be used behind existing [Reverse proxies](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
+- Ready to be used behind existing [Reverse proxies](https://github.com/nextcloud/all-in-one/blob/ma0in/reverse-proxy.md)
 - Can be used behind [Cloudflare Tunnel](https://github.com/nextcloud/all-in-one#how-to-run-nextcloud-behind-a-cloudflare-tunnel)
 - Ready for big file uploads up to 10 GB on public links, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud) (logged in users can upload much bigger files using the webinterface or the mobile/desktop clients since chunking is used in that case)
 - PHP and web server timeouts set to 3600s, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud) (important for big file uploads)
