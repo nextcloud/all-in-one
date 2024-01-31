@@ -70,6 +70,8 @@ spec:
               value: "{{ .Values.APPS_ALLOWLIST }}"
             - name: ADDITIONAL_TRUSTED_PROXY
               value: "{{ .Values.ADDITIONAL_TRUSTED_PROXY }}"
+            - name: ADDITIONAL_TRUSTED_DOMAIN
+              value: "{{ .Values.ADDITIONAL_TRUSTED_DOMAIN }}"
             - name: SERVERINFO_TOKEN
               value: "{{ .Values.SERVERINFO_TOKEN }}"
             - name: ADDITIONAL_APKS
@@ -112,8 +114,6 @@ spec:
               value: nextcloud-aio-onlyoffice
             - name: ONLYOFFICE_SECRET
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
-            - name: OVERWRITEHOST
-              value: "{{ .Values.NC_DOMAIN }}"
             - name: OVERWRITEPROTOCOL
               value: https
             - name: PHP_MAX_TIME
@@ -158,7 +158,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20240124_105749-latest
+          image: nextcloud/aio-nextcloud:20240124_10574-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000

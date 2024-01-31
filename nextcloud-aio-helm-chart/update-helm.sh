@@ -27,6 +27,7 @@ sed -i 's|^|export |' /tmp/sample.conf
 # shellcheck disable=SC1091
 source /tmp/sample.conf
 rm /tmp/sample.conf
+sed -i '/OVERWRITEHOST/d' latest.yml
 sed -i "s|:latest$|:$DOCKER_TAG-latest|" latest.yml
 sed -i "s|\${APACHE_IP_BINDING}:||" latest.yml
 sed -i '/APACHE_IP_BINDING/d' latest.yml
@@ -255,11 +256,22 @@ cat << EOL > /tmp/additional.config
               value: "{{ .Values.APPS_ALLOWLIST }}"
             - name: ADDITIONAL_TRUSTED_PROXY
               value: "{{ .Values.ADDITIONAL_TRUSTED_PROXY }}"
+            - name: ADDITIONAL_TRUSTED_DOMAIN
+              value: "{{ .Values.ADDITIONAL_TRUSTED_DOMAIN }}"
             - name: SERVERINFO_TOKEN
               value: "{{ .Values.SERVERINFO_TOKEN }}"
 EOL
 # shellcheck disable=SC1083
 find ./ -name '*nextcloud-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional.config"  \{} \;
+
+# Additional config
+cat << EOL > /tmp/additional-apache.config
+            - name: ADDITIONAL_TRUSTED_DOMAIN
+              value: "{{ .Values.ADDITIONAL_TRUSTED_DOMAIN }}"
+EOL
+# shellcheck disable=SC1083
+find ./ -name '*apache-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-apache.config"  \{} \;
+
 
 cd ../
 mkdir -p ../helm-chart/
@@ -305,6 +317,7 @@ SUBSCRIPTION_KEY:        # This allows to set the Nextcloud Enterprise key via E
 SERVERINFO_TOKEN:        # This allows to set the serverinfo app token for monitoring your Nextcloud via the serverinfo app
 APPS_ALLOWLIST:        # This allows to configure allowed apps that will be shown in Nextcloud's Appstore. You need to enter the app-IDs of the apps here and separate them with spaces. E.g. 'files richdocuments'
 ADDITIONAL_TRUSTED_PROXY:        # Allows to add one additional ip-address to Nextcloud's trusted proxies and to the Office WOPI-allowlist automatically. Set it e.g. like this: 'your.public.ip-address'. You can also use an ip-range here.
+ADDITIONAL_TRUSTED_DOMAIN:        # Allows to add one domain to Nextcloud's trusted domains and also generates a certificate automatically for it
 SMTP_HOST:        # (empty by default): The hostname of the SMTP server.
 SMTP_SECURE:         # (empty by default): Set to 'ssl' to use SSL, or 'tls' to use STARTTLS.
 SMTP_PORT:         # (default: '465' for SSL and '25' for non-secure connections): Optional port for the SMTP connection. Use '587' for an alternative port for STARTTLS.
