@@ -16,7 +16,7 @@ jobs:
         run: |
           sudo bash manual-install/update-yaml.sh
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
           commit-message: Yaml updates
           signoff: true

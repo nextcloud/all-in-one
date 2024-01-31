@@ -21,7 +21,7 @@ jobs:
             sudo bash nextcloud-aio-helm-chart/update-helm.sh "$DOCKER_TAG"
           fi
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
           commit-message: Helm Chart updates
           signoff: true
