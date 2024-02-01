@@ -59,7 +59,8 @@ spec:
               value: nextcloud-aio-talk
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-apache:20240201_120631-latest
+          image: nextcloud/aio-apache:beta
+          imagePullPolicy: Always
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
