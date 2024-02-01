@@ -51,6 +51,12 @@ else
 fi
 echo "$CADDYFILE" > /tmp/Caddyfile
 
+# Remove additional domain if not given
+if [ -z "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
+    CADDYFILE="$(sed '/ADDITIONAL_TRUSTED_DOMAIN/d' /tmp/Caddyfile)"
+fi
+echo "$CADDYFILE" > /tmp/Caddyfile
+
 # Fix the Caddyfile format
 caddy fmt --overwrite /tmp/Caddyfile
 

@@ -528,6 +528,9 @@ php /var/www/html/occ config:system:set trusted_proxies 1 --value="::1"
 if [ -n "$ADDITIONAL_TRUSTED_PROXY" ]; then
     php /var/www/html/occ config:system:set trusted_proxies 2 --value="$ADDITIONAL_TRUSTED_PROXY"
 fi
+if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
+    php /var/www/html/occ config:system:set trusted_domains 2 --value="$ADDITIONAL_TRUSTED_DOMAIN"
+fi
 php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://$NC_DOMAIN/push"
 
 # Collabora
