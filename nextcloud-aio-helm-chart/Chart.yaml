@@ -1,6 +1,6 @@
 name: nextcloud-aio-helm-chart
 description: A generated Helm Chart for Nextcloud AIO from Skippbox Kompose
-version: 7.11.2
+version: 7.12.0-beta
 apiVersion: v2
 keywords:
   - latest
