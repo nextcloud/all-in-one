@@ -37,6 +37,8 @@ spec:
               mountPath: /nextcloud-aio-nextcloud
       containers:
         - env:
+            - name: ADDITIONAL_TRUSTED_DOMAIN
+              value: "{{ .Values.ADDITIONAL_TRUSTED_DOMAIN }}"
             - name: APACHE_MAX_SIZE
               value: "{{ .Values.APACHE_MAX_SIZE }}"
             - name: APACHE_MAX_TIME
