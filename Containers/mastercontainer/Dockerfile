@@ -1,5 +1,5 @@
 # Docker CLI is a requirement
-FROM docker:25.0.1-cli as docker
+FROM docker:25.0.2-cli as docker
 
 # Caddy is a requirement
 FROM caddy:2.7.6-alpine as caddy
