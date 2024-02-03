@@ -396,7 +396,27 @@ server {
 First, please make sure that the environmental variables `PUID` and `PGID` in the compose.yaml file for NPM are either unset or set to `0`.
 If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. Note: this will cause that non root users can bind privileged ports.
 
-Second, see these screenshots for a working config:
+Second, if your nginx-proxy-manager container is running on the same Server as nexcloud-aio container please add the `--network host` option (or `network_mode: host` for docker compose).
+
+Following example shows how to implement the `network_mode: host` option into the nginx-proxy-manager compose yaml file:
+
+```yaml
+version: '3.8'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    network_mode: host
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+```
+
+Third, see these screenshots for a working config:
 
 ![grafik](https://user-images.githubusercontent.com/75573284/213889707-b7841ca0-3ea7-4321-acf6-50e1c1649442.png)
 
