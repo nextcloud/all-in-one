@@ -5,15 +5,7 @@
 
 name: Static analysis
 
-on:
-  pull_request:
-    paths:
-      - 'php/**'
-  push:
-    branches:
-      - main
-    paths:
-      - 'php/**'
+on: pull_request
 
 concurrency:
   group: psalm-${{ github.head_ref || github.run_id }}
@@ -23,25 +15,23 @@ jobs:
   static-analysis:
     runs-on: ubuntu-latest
 
-    name: Nextcloud
+    name: static-psalm-analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v4 # v3.5.2
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-      - name: Set up php
-        uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # v2
+      - name: Set up php8.2
+        uses: shivammathur/setup-php@6d7209f44a25a59e904b1ee9f3b0c33ab2cd888d # v2
         with:
           php-version: 8.2
-          extensions: apcu
+          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, sqlite, pdo_sqlite
           coverage: none
           ini-file: development
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies and run psalm
-        run: |
-          set -x
-          cd php
-          composer global require vimeo/psalm --prefer-dist --no-progress --dev
-          composer install
-          composer run psalm
+      - name: Install dependencies
+        run: composer i
+
+      - name: Run coding standards check
+        run: composer run psalm
