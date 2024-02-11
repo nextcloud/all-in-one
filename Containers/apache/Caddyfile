@@ -16,6 +16,8 @@
 
 https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
+    header -Server
+    header -X-Powered-By
 
     # Collabora
     route /browser/* {
