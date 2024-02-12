@@ -412,6 +412,7 @@ services:
       - "/opt/npm-letsencrypt:/etc/letsencrypt"
     environment:
       - "TZ=Europe/Berlin"
+```
 
 Third, see these screenshots for a working config:
 
