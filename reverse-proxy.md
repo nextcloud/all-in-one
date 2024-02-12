@@ -398,23 +398,20 @@ If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port
 
 Second, if your nginx-proxy-manager container is running on the same Server as nexcloud-aio container please add the `--network host` option (or `network_mode: host` for docker compose).
 
-Following example shows how to implement the `network_mode: host` option into the nginx-proxy-manager compose yaml file:
+Following example shows how to implement the `network_mode: host` option into the nginx-proxy-manager compose.yaml file:
 
 ```yaml
-version: '3.8'
 services:
-  app:
-    image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
+  nginx-proxy-manager:
+    container_name: nginx-proxy-manager
+    image: jc21/nginx-proxy-manager:latest
+    restart: always
     network_mode: host
-    ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
-```
+      - "/opt/npm:/data"
+      - "/opt/npm-letsencrypt:/etc/letsencrypt"
+    environment:
+      - "TZ=Europe/Berlin"
 
 Third, see these screenshots for a working config:
 
