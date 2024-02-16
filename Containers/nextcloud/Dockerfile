@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:latest
 FROM php:8.1.27-fpm-alpine3.19
 
 ENV PHP_MEMORY_LIMIT 512M

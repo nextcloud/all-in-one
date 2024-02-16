@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:latest
 # From https://github.com/ONLYOFFICE/Docker-DocumentServer/blob/master/Dockerfile
 FROM onlyoffice/documentserver:7.5.1.1
 

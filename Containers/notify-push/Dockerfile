@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:latest
 FROM alpine:3.19.1
 
 COPY --chmod=775 start.sh /start.sh
