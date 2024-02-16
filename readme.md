@@ -688,6 +688,15 @@ After you are done modifying/adding/deleting files/folders, don't forget to appl
 You can move the whole docker library and all its files including all Nextcloud AIO files and folders to a separate drive by first mounting the drive in the host OS (NTFS is not supported and ext4 is recommended as FS) and then following this tutorial: https://www.guguweb.com/2019/02/07/how-to-move-docker-data-directory-to-another-location-on-ubuntu/<br>
 (Of course docker needs to be installed first for this to work.)
 
+⚠️ If you encounter errors from richdocuments in your Nextcloud logs, check in your Collabora container if the message "Capabilities are not set for the coolforkit program." appears. If so, follow these steps:
+
+1. Stop all the containers from the AIO Interface.
+2. Go to your terminal and delete the Collabora container (`docker rm nextcloud-aio-collabora`) AND the Collabora image (`docker image rm nextcloud/aio-collabora`).
+3. You might also want to prune your Docker (`docker system prune`) (no data will be lost).
+4. Restart your containers from the AIO Interface.
+
+This should solve the problem.
+
 ### How to edit Nextclouds config.php file with a texteditor?
 You can edit Nextclouds config.php file directly from the host with your favorite text editor. E.g. like this: `sudo docker run -it --rm --volume nextcloud_aio_nextcloud:/var/www/html:rw alpine sh -c "apk add --no-cache nano && nano /var/www/html/config/config.php"`. Make sure to not break the file though which might corrupt your Nextcloud instance otherwise. In best case, create a backup using the built-in backup solution before editing the file.
 
