@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:latest
 # From https://github.com/docker-library/postgres/blob/master/15/alpine/Dockerfile
 FROM postgres:15.6-alpine
 

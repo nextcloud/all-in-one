@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:latest
 FROM golang:1.22.0-alpine3.19 as go
 
 ENV IMAGINARY_HASH 6cd9edd1d3fb151eb773c14552886e4fc8e50138

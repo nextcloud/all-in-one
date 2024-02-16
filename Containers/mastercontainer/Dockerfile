@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
 FROM docker:25.0.3-cli as docker
 
