@@ -48,6 +48,15 @@ class DockerController
             }
         }
 
+        // Check if docker hub is reachable in order to make sure that we do not try to pull an image if it is down 
+        // and try to mitigate issues that are arising due to that
+        if ($pullImage) {
+            if (!$this->dockerActionManager->isDockerHubReachable($container)) {
+                $pullImage = false;
+                error_log('Not pulling the image for the ' . $container->GetContainerName() . ' container because docker hub does not seem to be reachable.');
+            }
+        }
+
         $this->dockerActionManager->DeleteContainer($container);
         $this->dockerActionManager->CreateVolumes($container);
         if ($pullImage) {
