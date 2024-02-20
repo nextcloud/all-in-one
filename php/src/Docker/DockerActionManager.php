@@ -587,6 +587,21 @@ class DockerActionManager
 
     }
 
+    public function isDockerHubReachable(Container $container) : bool {
+        $tag = $container->GetImageTag();
+        if ($tag === '%AIO_CHANNEL%') {
+            $tag = $this->GetCurrentChannel();
+        }
+
+        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
+
+        if ($remoteDigest === null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public function PullImage(Container $container) : void
     {
         $imageName = $this->BuildImageName($container);
