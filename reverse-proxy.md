@@ -694,6 +694,8 @@ On Synology DSM see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-sy
 
 Simply translate the docker run command into a docker-compose file. You can have a look at [this file](https://github.com/nextcloud/all-in-one/blob/main/compose.yaml) for some inspiration but you will need to modify it either way. You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
 
+You can also use this third party service called [composerize.com](https://www.composerize.com) to easily convert a docker run command to a docker-compose file. Just copy & paste the docker run command listed above and extract your new docker-compose configuration based on that.
+
 ## 3. Limit the access to the apache container
 
 Use this environment variable during the initial startup of the mastercontainer to make the apache container only listen on localhost: `--env APACHE_IP_BINDING=127.0.0.1`. **Attention:** This is only recommended to be set if you use `localhost` in your reverse proxy config to connect to your AIO instance. If you use an ip-address instead of localhost, you should set it to `0.0.0.0`.
