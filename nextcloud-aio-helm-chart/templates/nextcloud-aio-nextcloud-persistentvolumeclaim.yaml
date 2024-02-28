@@ -4,7 +4,7 @@ metadata:
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
-  namespace: {{ .Values.NAMESPACE }}
+  namespace: "{{ .Values.NAMESPACE }}"
 spec:
   {{- if .Values.STORAGE_CLASS }}
   storageClassName: {{ .Values.STORAGE_CLASS }}
