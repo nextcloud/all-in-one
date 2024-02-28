@@ -140,9 +140,9 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
     mkdir -p /usr/src/nextcloud/config; \
-    mv /*.php /usr/src/nextcloud/config/; \
     apk del .fetch-deps; \
 # Download Nextcloud archive end # Do not remove or change this line!
+    mv /*.php /usr/src/nextcloud/config/; \
     \
 # Template from https://github.com/nextcloud/docker/blob/master/.examples/dockerfiles/full/fpm-alpine/Dockerfile
     apk add --no-cache \
