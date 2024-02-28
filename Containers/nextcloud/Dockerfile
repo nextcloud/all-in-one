@@ -4,6 +4,7 @@ FROM php:8.1.27-fpm-alpine3.19
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 10G
 ENV PHP_MAX_TIME 3600
+ENV SOURCE_LOCATION /usr/src/nextcloud
 
 # AIO settings start # Do not remove or change this line!
 ENV NEXTCLOUD_VERSION 27.1.5

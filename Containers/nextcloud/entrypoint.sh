@@ -55,9 +55,9 @@ if [ -f /var/www/html/version.php ]; then
 else
     installed_version="0.0.0.0"
 fi
-if [ -f "/usr/src/nextcloud/version.php" ]; then
+if [ -f "$SOURCE_LOCATION/version.php" ]; then
     # shellcheck disable=SC2016
-    image_version="$(php -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);')"
+    image_version="$(php -r "require '$SOURCE_LOCATION/version.php'; echo implode('.', \$OC_Version);")"
 else
     image_version="$installed_version"
 fi
@@ -124,15 +124,15 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             mkdir -p /usr/src/tmp/nextcloud/data
             mkdir -p /usr/src/tmp/nextcloud/custom_apps
             chmod +x /usr/src/tmp/nextcloud/occ
-            cp -r /usr/src/nextcloud/config/* /usr/src/tmp/nextcloud/config/
+            cp -r "$SOURCE_LOCATION"/config/* /usr/src/tmp/nextcloud/config/
             mkdir -p /usr/src/tmp/nextcloud/apps/nextcloud-aio
-            cp -r /usr/src/nextcloud/apps/nextcloud-aio/* /usr/src/tmp/nextcloud/apps/nextcloud-aio/
-            mv /usr/src/nextcloud /usr/src/temp-nextcloud
-            mv /usr/src/tmp/nextcloud /usr/src/nextcloud
+            cp -r "$SOURCE_LOCATION"/apps/nextcloud-aio/* /usr/src/tmp/nextcloud/apps/nextcloud-aio/
+            mv "$SOURCE_LOCATION" /usr/src/temp-nextcloud
+            mv /usr/src/tmp/nextcloud "$SOURCE_LOCATION"
             rm -r /usr/src/tmp
             rm -r /usr/src/temp-nextcloud
             # shellcheck disable=SC2016
-            image_version="$(php -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);')"
+            image_version="$(php -r "require $SOURCE_LOCATION/version.php; echo implode('.', \$OC_Version);")"
             IMAGE_MAJOR="${image_version%%.*}"
             set +ex
 # Do not skip major versions end # Do not remove or change this line!
@@ -189,15 +189,15 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
         fi
 
         echo "Initializing nextcloud $image_version ..."
-        rsync -rlD --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
+        rsync -rlD --delete --exclude-from=/upgrade.exclude "$SOURCE_LOCATION/" /var/www/html/
 
         for dir in config data custom_apps themes; do
             if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
-                rsync -rlD --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
+                rsync -rlD --include "/$dir/" --exclude '/*' "$SOURCE_LOCATION/" /var/www/html/
             fi
         done
-        rsync -rlD --delete --include '/config/' --exclude '/*' --exclude '/config/CAN_INSTALL' --exclude '/config/config.sample.php' --exclude '/config/config.php' /usr/src/nextcloud/ /var/www/html/
-        rsync -rlD --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
+        rsync -rlD --delete --include '/config/' --exclude '/*' --exclude '/config/CAN_INSTALL' --exclude '/config/config.sample.php' --exclude '/config/config.php' "$SOURCE_LOCATION/" /var/www/html/
+        rsync -rlD --include '/version.php' --exclude '/*' "$SOURCE_LOCATION/" /var/www/html/
         echo "Initializing finished"
 
         #install
