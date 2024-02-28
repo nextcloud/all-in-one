@@ -2,12 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
+    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
     kompose.version: 1.32.0 (765fde254)
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
-  namespace: {{ .Values.NAMESPACE }}
+  namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
   selector:
@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
+        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
         kompose.version: 1.32.0 (765fde254)
       labels:
         io.kompose.network/nextcloud-aio: "true"
@@ -158,8 +158,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:beta
-          imagePullPolicy: Always
+          image: nextcloud/aio-nextcloud:20240228_172209-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000

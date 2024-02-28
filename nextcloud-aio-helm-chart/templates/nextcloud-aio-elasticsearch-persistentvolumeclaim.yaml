@@ -1,10 +1,11 @@
+{{- if eq .Values.FULLTEXTSEARCH_ENABLED "yes" }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
     io.kompose.service: nextcloud-aio-elasticsearch
   name: nextcloud-aio-elasticsearch
-  namespace: {{ .Values.NAMESPACE }}
+  namespace: "{{ .Values.NAMESPACE }}"
 spec:
   {{- if .Values.STORAGE_CLASS }}
   storageClassName: {{ .Values.STORAGE_CLASS }}
@@ -14,3 +15,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.ELASTICSEARCH_STORAGE_SIZE }}
+{{- end }}
