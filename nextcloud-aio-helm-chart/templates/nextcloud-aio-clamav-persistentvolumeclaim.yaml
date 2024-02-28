@@ -5,7 +5,7 @@ metadata:
   labels:
     io.kompose.service: nextcloud-aio-clamav
   name: nextcloud-aio-clamav
-  namespace: {{ .Values.NAMESPACE }}
+  namespace: "{{ .Values.NAMESPACE }}"
 spec:
   {{- if .Values.STORAGE_CLASS }}
   storageClassName: {{ .Values.STORAGE_CLASS }}
