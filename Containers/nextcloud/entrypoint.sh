@@ -106,6 +106,8 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
         fi
 
         if [ "$installed_version" != "0.0.0.0" ] && [ "$((IMAGE_MAJOR - INSTALLED_MAJOR))" -gt 1 ]; then
+# Do not skip major versions placeholder # Do not remove or change this line!
+# Do not skip major versions start # Do not remove or change this line!
             set -ex
             NEXT_MAJOR="$((INSTALLED_MAJOR + 1))"
             curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-${NEXT_MAJOR}.tar.bz2"
@@ -133,6 +135,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             image_version="$(php -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);')"
             IMAGE_MAJOR="${image_version%%.*}"
             set +ex
+# Do not skip major versions end # Do not remove or change this line!
         fi
 
         if [ "$installed_version" != "0.0.0.0" ]; then
@@ -255,6 +258,7 @@ DATADIR_PERMISSION_CONF
             # unset admin password
             unset ADMIN_PASSWORD
 
+# AIO update to latest start # Do not remove or change this line!
             if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
                 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
                 INSTALLED_AT="$(php /var/www/html/occ config:app:get core installedat)"
@@ -292,6 +296,7 @@ DATADIR_PERMISSION_CONF
                 php /var/www/html/occ db:add-missing-primary-keys
                 yes | php /var/www/html/occ db:convert-filecache-bigint
             fi
+# AIO update to latest end # Do not remove or change this line!
 
             # Apply log settings
             echo "Applying default settings..."
@@ -463,11 +468,13 @@ if [ -f "$NEXTCLOUD_DATA_DIR/fingerprint.update" ]; then
     rm "$NEXTCLOUD_DATA_DIR/fingerprint.update"
 fi
 
+# AIO one-click settings start # Do not remove or change this line!
 # Apply one-click-instance settings
 echo "Applying one-click-instance settings..."
 php /var/www/html/occ config:system:set one-click-instance --value=true --type=bool
 php /var/www/html/occ config:system:set one-click-instance.user-limit --value=100 --type=int
 php /var/www/html/occ config:system:set one-click-instance.link --value="https://nextcloud.com/all-in-one/"
+# AIO one-click settings end # Do not remove or change this line!
 php /var/www/html/occ app:enable support
 if [ -n "$SUBSCRIPTION_KEY" ] && [ -z "$(php /var/www/html/occ config:app:get support potential_subscription_key)" ]; then
     php /var/www/html/occ config:app:set support potential_subscription_key --value="$SUBSCRIPTION_KEY"
@@ -503,6 +510,7 @@ else
     php /var/www/html/occ config:system:set files_external_allow_create_new_local --type=bool --value=true
 fi
 
+# AIO app start # Do not remove or change this line!
 # AIO app
 if [ "$THIS_IS_AIO" = "true" ]; then
     if [ "$(php /var/www/html/occ config:app:get nextcloud-aio enabled)" != "yes" ]; then
@@ -513,6 +521,7 @@ else
         php /var/www/html/occ app:disable nextcloud-aio
     fi
 fi
+# AIO app end # Do not remove or change this line!
 
 # Notify push
 if ! [ -d "/var/www/html/custom_apps/notify_push" ]; then
