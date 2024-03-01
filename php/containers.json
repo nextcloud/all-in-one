@@ -65,6 +65,9 @@
         "/usr/local/apache2/logs",
         "/tmp",
         "/home/www-data"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -112,6 +115,9 @@
       "read_only": true,
       "tmpfs": [
         "/var/run/postgresql"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -226,6 +232,9 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -263,7 +272,10 @@
       "networks": [
         "nextcloud-aio"
       ],
-      "read_only": true
+      "read_only": true,
+      "cap_drop": [
+        "NET_RAW"
+      ]
     },
     {
       "container_name": "nextcloud-aio-redis",
@@ -295,7 +307,10 @@
       "networks": [
         "nextcloud-aio"
       ],
-      "read_only": true
+      "read_only": true,
+      "cap_drop": [
+        "NET_RAW"
+      ]
     },
     {
       "container_name": "nextcloud-aio-collabora",
@@ -328,6 +343,9 @@
       ],
       "cap_add": [
         "MKNOD"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -380,6 +398,9 @@
         "/opt/eturnal/run",
         "/conf",
         "/tmp"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -414,6 +435,9 @@
       "tmpfs": [
         "/tmp",
         "/conf"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -472,6 +496,9 @@
       "cap_add": [
         "SYS_ADMIN"
       ],
+      "cap_drop": [
+        "NET_RAW"
+      ],
       "apparmor_unconfined": true,
       "read_only": true,
       "tmpfs": [
@@ -494,7 +521,10 @@
           "writeable": false
         }
       ],
-      "read_only": true
+      "read_only": true,
+      "cap_drop": [
+        "NET_RAW"
+      ]
     },
     {
       "container_name": "nextcloud-aio-domaincheck",
@@ -521,6 +551,9 @@
       "tmpfs": [
         "/etc/lighttpd",
         "/var/www/domaincheck"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -556,6 +589,9 @@
         "/var/lock",
         "/var/log/clamav",
         "/tmp"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -594,6 +630,9 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -612,6 +651,9 @@
       "restart": "unless-stopped",
       "cap_add": [
         "SYS_NICE"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ],
       "profiles": [
         "imaginary"
@@ -662,6 +704,9 @@
       ],
       "secrets": [
         "FULLTEXTSEARCH_PASSWORD"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -685,6 +730,9 @@
       "read_only": true,
       "tmpfs": [
         "/tmp"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     }
   ]
