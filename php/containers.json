@@ -146,7 +146,8 @@
         "NEXTCLOUD_PASSWORD",
         "TURN_SECRET",
         "SIGNALING_SECRET",
-        "FULLTEXTSEARCH_PASSWORD"
+        "FULLTEXTSEARCH_PASSWORD",
+        "IMAGINARY_SECRET"
       ],
       "volumes": [
         {
@@ -220,7 +221,8 @@
         "APACHE_PORT=%APACHE_PORT%",
         "APACHE_IP_BINDING=%APACHE_IP_BINDING%",
         "ADDITIONAL_TRUSTED_PROXY=%CADDY_IP_ADDRESS%",
-        "THIS_IS_AIO=true"
+        "THIS_IS_AIO=true",
+        "IMAGINARY_SECRET=%IMAGINARY_SECRET%"
       ],
       "stop_grace_period": 600,
       "restart": "unless-stopped",
@@ -646,7 +648,8 @@
       ],
       "internal_port": "9000",
       "environment": [
-        "TZ=%TIMEZONE%"
+        "TZ=%TIMEZONE%",
+        "IMAGINARY_SECRET=%IMAGINARY_SECRET%"
       ],
       "restart": "unless-stopped",
       "cap_add": [
@@ -664,6 +667,9 @@
       "read_only": true,
       "tmpfs": [
         "/tmp"
+      ],
+      "secrets": [
+        "IMAGINARY_SECRET"
       ]
     },
     {
