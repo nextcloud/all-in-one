@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.1/alpine/Dockerfile
-FROM clamav/clamav:1.3.0-40
+FROM clamav/clamav:1.3.0-41
 
 COPY clamav.conf /tmp/clamav.conf
 
