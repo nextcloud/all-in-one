@@ -23,9 +23,11 @@ RUN set -ex; \
         vips-magick \
         vips-heif \
         vips-jxl \
-        vips-poppler
+        vips-poppler \
+        bash
 
 COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
+COPY --chmod=775 start.sh /start.sh
 
 ENV PORT 9000
 
@@ -33,7 +35,7 @@ USER nobody
 
 # https://github.com/h2non/imaginary#memory-issues
 ENV MALLOC_ARENA_MAX=2
-ENTRYPOINT ["imaginary", "-return-size", "-max-allowed-resolution", "222.2"]
+ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD nc -z localhost "$PORT" || exit 1
 LABEL com.centurylinklabs.watchtower.enable="false"

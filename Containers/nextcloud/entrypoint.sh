@@ -703,6 +703,7 @@ fi
 if [ "$IMAGINARY_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
     php /var/www/html/occ config:system:set preview_imaginary_url --value="http://$IMAGINARY_HOST:9000"
+    php /var/www/html/occ config:system:set preview_imaginary_key --value="$IMAGINARY_SECRET"
 else
     if [ -n "$(php /var/www/html/occ config:system:get preview_imaginary_url)" ]; then
         php /var/www/html/occ config:system:delete enabledPreviewProviders 0
