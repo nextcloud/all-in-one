@@ -1,0 +1,39 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-jellyfin",
+            "display_name": "Jellyfin",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin",
+            "image": "jellyfin/jellyfin",
+            "image_tag": "latest",
+            "internal_port": "host",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_jellyfin",
+                    "destination": "/config",
+                    "writeable": true
+                },
+                {
+                    "source": "%NEXTCLOUD_DATADIR%",
+                    "destination": "/media",
+                    "writeable": false
+                },
+                {
+                    "source": "%NEXTCLOUD_MOUNT%",
+                    "destination": "%NEXTCLOUD_MOUNT%",
+                    "writeable": false
+                }
+            ],
+            "devices": [
+                "/dev/dri"
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_jellyfin"
+            ]
+        }
+    ]
+}
