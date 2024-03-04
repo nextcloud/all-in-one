@@ -13,6 +13,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-notify-push
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -55,6 +57,10 @@ spec:
           ports:
             - containerPort: 7867
               protocol: TCP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
           volumeMounts:
             - mountPath: /nextcloud
               name: nextcloud-aio-nextcloud

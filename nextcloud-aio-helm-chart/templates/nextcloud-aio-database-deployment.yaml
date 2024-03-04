@@ -13,6 +13,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-database
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -66,6 +68,10 @@ spec:
           ports:
             - containerPort: 5432
               protocol: TCP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               subPath: data
