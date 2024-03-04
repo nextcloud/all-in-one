@@ -218,6 +218,10 @@ find ./ \( -not -name '*service.yaml' -name '*.yaml' \) -exec sed -i "/^status:/
 # shellcheck disable=SC1083
 find ./ \( -not -name '*persistentvolumeclaim.yaml' -name '*.yaml' \) -exec sed -i "/resources:/d" \{} \; 
 # shellcheck disable=SC1083
+find ./ -name "*namespace.yaml" -exec sed -i "1i\\{{- if ne .Values.NAMESPACE default }}" \{} \; 
+# shellcheck disable=SC1083
+find ./ -name "*namespace.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
+# shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "/creationTimestamp: null/d" \{} \; 
 VOLUMES="$(find ./ -name '*persistentvolumeclaim.yaml' | sed 's|-persistentvolumeclaim.yaml||g;s|.*nextcloud-aio-||g' | sort)"
 mapfile -t VOLUMES <<< "$VOLUMES"
