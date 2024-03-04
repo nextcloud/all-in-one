@@ -36,4 +36,6 @@ spec:
             capabilities:
               add:
                 - SYS_NICE
+              drop:
+                - NET_RAW
 {{- end }}

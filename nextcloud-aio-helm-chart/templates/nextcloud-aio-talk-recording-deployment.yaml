@@ -38,4 +38,8 @@ spec:
           ports:
             - containerPort: 1234
               protocol: TCP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
 {{- end }}
