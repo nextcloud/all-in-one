@@ -566,6 +566,9 @@ class DockerActionManager
                 }
                 $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
             }
+        // Special things for the caddy community container
+        } elseif ($container->GetIdentifier() === 'nextcloud-aio-caddy') {
+            $requestBody['HostConfig']['ExtraHosts'] = ['host.docker.internal:host-gateway'];
         }
 
         if (count($mounts) > 0) {
