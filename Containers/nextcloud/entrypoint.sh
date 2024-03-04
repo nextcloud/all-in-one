@@ -490,6 +490,10 @@ php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
 if [ -n "$SERVERINFO_TOKEN" ] && [ -z "$(php /var/www/html/occ config:app:get serverinfo token)" ]; then
     php /var/www/html/occ config:app:set serverinfo token --value="$SERVERINFO_TOKEN"
 fi
+# Set maintenance window so that no warning is shown in the admin overview
+if [ -z "$(php /var/www/html/occ config:system:get maintenance_window_start)" ]; then
+    php /var/www/html/occ config:system:set maintenance_window_start --type=int --value=100
+fi
 
 # Apply network settings
 echo "Applying network settings..."
