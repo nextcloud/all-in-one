@@ -33,7 +33,7 @@ The procedure for migrating the files and the database works like this:
         ```
     1. Create a new database by running:
         ```
-        export PG_USER="ncadmin"
+        export PG_USER="ncadmin" # This is a temporary user that gets created for the dump but is then overwritten by the correct one later on
         export PG_PASSWORD="my-temporary-password"
         export PG_DATABASE="nextcloud_db"
         sudo -u postgres psql <<END
