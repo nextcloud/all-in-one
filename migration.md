@@ -6,7 +6,7 @@ There are basically three ways how to migrate from an already existing Nextcloud
 1. Migrate the files and the database which is much more complicated (and doesn't work on former snap installations)
 1. Use the user_migration app that allows to migrate some of the user's data from a former instance to a new instance but needs to be done manually for each user
 
-## Migrate only the files 
+## Migrate only the files
 **Please note**: If you used groupfolders or encrypted your files before, you will need to restore the database, as well!
 
 The procedure for migrating only the files works like this:
@@ -82,6 +82,9 @@ The same applies for the second statement, check with `grep " OWNER TO nextcloud
 1. Edit the Nextcloud AIO config.php file using `sudo docker run -it --rm --volume nextcloud_aio_nextcloud:/var/www/html:rw alpine sh -c "apk add --no-cache nano && nano /var/www/html/config/config.php"` and modify only `passwordsalt`, `secret`, `instanceid` and set it to the old values that you used on your old installation. If you are brave, feel free to modify further values e.g. add your old LDAP config or S3 storage config. (Some things like Mail server config can be added back using Nextcloud's webinterface later on).
 1. When you are done and saved your changes to the file, finally start the containers again and wait until all containers are running.
 1. As last step, install all apps again that were installed before on your old instance by using the webinterface.
+
+>[!Note]
+>`ncadmin` is a temporary PostgreSQL user, managed by the Nextcloud All-in-One setup for streamlined database management and temporary permissions in a secure environment.
 
 Now the whole Nextcloud instance should work again.<br>
 If not, feel free to restore the AIO instance from backup and start at step 8 again.
