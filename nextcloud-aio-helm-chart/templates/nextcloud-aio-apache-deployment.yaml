@@ -13,6 +13,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-apache
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -59,13 +61,17 @@ spec:
               value: nextcloud-aio-talk
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-apache:20240228_172209-latest
+          image: nextcloud/aio-apache:20240308_092935-latest
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
               protocol: TCP
             - containerPort: {{ .Values.APACHE_PORT }}
               protocol: UDP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud

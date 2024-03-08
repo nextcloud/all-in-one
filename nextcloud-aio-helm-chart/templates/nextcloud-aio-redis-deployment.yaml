@@ -13,6 +13,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-redis
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -38,11 +40,15 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-redis:20240228_172209-latest
+          image: nextcloud/aio-redis:20240308_092935-latest
           name: nextcloud-aio-redis
           ports:
             - containerPort: 6379
               protocol: TCP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
           volumeMounts:
             - mountPath: /data
               name: nextcloud-aio-redis

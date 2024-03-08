@@ -13,6 +13,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-nextcloud
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -158,13 +160,17 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20240228_172209-latest
+          image: nextcloud/aio-nextcloud:20240308_092935-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
               protocol: TCP
             - containerPort: 9001
               protocol: TCP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
