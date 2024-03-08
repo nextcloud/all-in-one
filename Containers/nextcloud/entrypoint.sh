@@ -327,6 +327,8 @@ DATADIR_PERMISSION_CONF
 
             # Apply other settings
             echo "Applying other settings..."
+            # Add missing indices after new installation because they seem to be missing on new installation
+            php /var/www/html/occ db:add-missing-indices
             php /var/www/html/occ config:system:set upgrade.disable-web --type=bool --value=true
             php /var/www/html/occ config:system:set mail_smtpmode --value="smtp"
             php /var/www/html/occ config:system:set trashbin_retention_obligation --value="auto, 30"
