@@ -14,6 +14,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-fulltextsearch
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -55,11 +57,15 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: nextcloud/aio-fulltextsearch:20240228_172209-latest
+          image: nextcloud/aio-fulltextsearch:20240308_092935-latest
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200
               protocol: TCP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
               name: nextcloud-aio-elasticsearch

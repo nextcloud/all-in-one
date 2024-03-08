@@ -13,6 +13,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-database
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -61,11 +63,15 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-postgresql:20240228_172209-latest
+          image: nextcloud/aio-postgresql:20240308_092935-latest
           name: nextcloud-aio-database
           ports:
             - containerPort: 5432
               protocol: TCP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               subPath: data

@@ -1,5 +1,7 @@
+{{- if ne .Values.NAMESPACE "default" }}
 apiVersion: v1
 kind: Namespace
 metadata:
   name: "{{ .Values.NAMESPACE }}"
   namespace: "{{ .Values.NAMESPACE }}"
+{{- end }}
