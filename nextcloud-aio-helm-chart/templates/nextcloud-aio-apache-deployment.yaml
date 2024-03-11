@@ -26,7 +26,7 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
-          image: alpine
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
           command:
             - chmod
             - "777"
@@ -50,7 +50,7 @@ spec:
             - name: COLLABORA_HOST
               value: nextcloud-aio-collabora
             - name: NC_DOMAIN
-              value: "{{ .Values.NC_DOMAIN }}"
+              value: "{{ .Values.NC_DOMAIN }}"FF
             - name: NEXTCLOUD_HOST
               value: nextcloud-aio-nextcloud
             - name: NOTIFY_PUSH_HOST
@@ -61,7 +61,7 @@ spec:
               value: nextcloud-aio-talk
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-apache:20240308_092935-latest
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG}}/aio-apache:20240308_092935-latest"
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
