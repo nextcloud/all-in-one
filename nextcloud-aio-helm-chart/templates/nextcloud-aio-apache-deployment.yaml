@@ -26,7 +26,11 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
           image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
+          image: alpine
+          {{- end }}
           command:
             - chmod
             - "777"
@@ -50,7 +54,7 @@ spec:
             - name: COLLABORA_HOST
               value: nextcloud-aio-collabora
             - name: NC_DOMAIN
-              value: "{{ .Values.NC_DOMAIN }}"FF
+              value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
               value: nextcloud-aio-nextcloud
             - name: NOTIFY_PUSH_HOST
