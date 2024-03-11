@@ -10,6 +10,10 @@ TALK_INTERNAL_SECRET:           # TODO! This needs to be a unique and good passw
 TIMEZONE: Europe/Berlin          # TODO! This is the timezone that your containers will use.
 TURN_SECRET:           # TODO! This needs to be a unique and good password!
 
+IMAGE_MIRROR_PREFIX:          # Setting this allows you to pull Nextcloud images through a mirror registry.
+NEXTCLOUD_IMAGE_ORG: "nextcloud"          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
+ALPINE_IMAGE_ORG:          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
+
 CLAMAV_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 COLLABORA_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 FULLTEXTSEARCH_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
