@@ -300,6 +300,8 @@ EOL
 # shellcheck disable=SC1083
 find ./ -name '*apache-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-apache.config"  \{} \;
 
+# shellcheck disable=SC1083
+find ./ -name '*deployment.yaml' -exec sed -i 's|image: nextcloud/|image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}"/|' \{} \; 
 
 cd ../
 mkdir -p ../helm-chart/
@@ -354,6 +356,10 @@ SMTP_NAME:         # (empty by default): The username for the authentication.
 SMTP_PASSWORD:         # (empty by default): The password for the authentication.
 MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'from' field in the emails sent by Nextcloud.
 MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
+
+IMAGE_MIRROR_PREFIX:          # Setting this allows you to pull Nextcloud images through a mirror registry.
+NEXTCLOUD_IMAGE_ORG: nextcloud          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
+ALPINE_IMAGE_ORG:          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
 ADDITIONAL_CONFIG
 
 mv /tmp/sample.conf ../helm-chart/values.yaml
