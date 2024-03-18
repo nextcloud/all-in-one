@@ -1,0 +1,56 @@
+{
+  "aio_services_v1": [
+    {
+      "container_name": "nextcloud-aio-openldap",
+      "display_name": "OpenLDAP implementation",
+      "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/openldap",
+      "image": "osixia/openldap",
+      "image_tag": "1.5.0",
+      "restart": "unless-stopped",
+      "apparmor_unconfined": true,
+      "environment": [
+        "TZ=%TIMEZONE%",
+        "LDAP_ADMIN_PASSWORD=%OPENLDAP_ADMIN_PASS%",
+        "LDAP_DOMAIN=%NC_DOMAIN%"
+      ],
+      "secrets": [
+        "OPENLDAP_LDAP_USER_PASS"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_ldap",
+          "destination": "/var/lib/ldap",
+          "writeable": true
+        },
+        {
+          "source": "nextcloud_aio_openldap",
+          "destination": "/var/lib/ldap",
+          "writeable": true
+        }
+      ],
+      "backup_volumes": [
+        "nextcloud_aio_ldap",
+        "nextcloud_aio_openldap"
+      ],
+      "nextcloud_exec_commands": [
+        "php /var/www/html/occ app:install user_ldap",
+        "php /var/www/html/occ app:enable user_ldap",
+        "php /var/www/html/occ ldap:set-config 0 ldapAgentName cn=admin,dc=localhost",
+        "php /var/www/html/occ ldap:set-config 0 ldapAgentPassword %OPENLDAP_LDAP_USER_PASS%",
+        "php /var/www/html/occ ldap:set-config 0 ldapBase dc=localhost",
+        "php /var/www/html/occ ldap:set-config 0 ldapBaseGroups ou=groups,dc=localhost",
+        "php /var/www/html/occ ldap:set-config 0 ldapBaseUsers ou=users,dc=localhost",
+        "php /var/www/html/occ ldap:set-config 0 ldapEmailAttribute mail",
+        "php /var/www/html/occ ldap:set-config 0 ldapGidNumber gidNumber",
+        "php /var/www/html/occ ldap:set-config 0 ldapGroupDisplayName cn",
+        "php /var/www/html/occ ldap:set-config 0 ldapGroupFilter '(&(objectClass=posixGroup)(gidNumber=%gid))'",
+        "php /var/www/html/occ ldap:set-config 0 ldapHost nextcloud-aio-openldap",
+        "php /var/www/html/occ ldap:set-config 0 ldapLoginFilterAttributes uid",
+        "php /var/www/html/occ ldap:set-config 0 ldapLoginFilterEmail 1",
+        "php /var/www/html/occ ldap:set-config 0 ldapLoginFilterMode 1",
+        "php /var/www/html/occ ldap:set-config 0 ldapLoginFilterUsername 1",
+        "php /var/www/html/occ ldap:set-config 0 ldapUserFilter '(&(objectClass=inetOrgPerson)(uid=%uid))'"
+      ]
+    }
+  ]
+}
