@@ -26,7 +26,7 @@ spec:
     spec:
       initContainers:
         - name: init-subpath
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          image: alpine
           command:
             - mkdir
             - "-p"
@@ -39,7 +39,7 @@ spec:
             - name: nextcloud-aio-database
               mountPath: /nextcloud-aio-database
         - name: init-volumes
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          image: alpine
           command:
             - chown
             - 999:999
@@ -63,7 +63,7 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG}}/aio-postgresql:20240308_092935-latest"
+          image: nextcloud/aio-postgresql:20240308_092935-latest
           name: nextcloud-aio-database
           ports:
             - containerPort: 5432
