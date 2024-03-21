@@ -879,7 +879,7 @@ class DockerActionManager
         } catch (RequestException $e) {
             // 409 is undocumented and gets thrown if the network already exists.
             if ($e->getCode() !== 409) {
-                throw $e;
+                throw new \Exception("Could not create the nextcloud-aio network: " . $e->getMessage());
             }
         }
 
