@@ -27,7 +27,11 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - chmod
             - "777"
@@ -57,7 +61,7 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: nextcloud/aio-fulltextsearch:20240308_092935-latest
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}"/aio-fulltextsearch:20240321_080708-latest
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200

@@ -26,7 +26,11 @@ spec:
     spec:
       initContainers:
         - name: "delete-lost-found"
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - rm
             - "-rf"
@@ -37,7 +41,11 @@ spec:
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
         - name: init-volumes
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - chmod
             - "777"
@@ -104,6 +112,8 @@ spec:
               value: "{{ .Values.IMAGINARY_ENABLED }}"
             - name: IMAGINARY_HOST
               value: nextcloud-aio-imaginary
+            - name: IMAGINARY_SECRET
+              value: "{{ .Values.IMAGINARY_SECRET }}"
             - name: INSTALL_LATEST_MAJOR
               value: "{{ .Values.INSTALL_LATEST_MAJOR }}"
             - name: NC_DOMAIN
@@ -160,7 +170,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: nextcloud/aio-nextcloud:20240308_092935-latest
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}"/aio-nextcloud:20240321_080708-latest
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
