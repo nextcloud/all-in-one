@@ -149,6 +149,7 @@ services:
       - REMOVE_DISABLED_APPS=${REMOVE_DISABLED_APPS}
       - APACHE_PORT=${APACHE_PORT}
       - APACHE_IP_BINDING=${APACHE_IP_BINDING}
+      - IMAGINARY_SECRET=${IMAGINARY_SECRET}
     stop_grace_period: 600s
     restart: unless-stopped
     networks:
@@ -322,6 +323,7 @@ services:
       - "9000"
     environment:
       - TZ=${TIMEZONE}
+      - IMAGINARY_SECRET=${IMAGINARY_SECRET}
     restart: unless-stopped
     cap_add:
       - SYS_NICE
