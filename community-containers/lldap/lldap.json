@@ -1,0 +1,81 @@
+{
+  "aio_services_v1": [
+    {
+      "container_name": "nextcloud-aio-lldap",
+      "display_name": "Light LDAP implementation",
+      "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap",
+      "image": "lldap/lldap",
+      "image_tag": "2024-03-18-alpine",
+      "internal_port": "17170",
+      "restart": "unless-stopped",
+      "ports": [
+        {
+          "ip_binding": "%APACHE_IP_BINDING%",
+          "port_number": "17170",
+          "protocol": "tcp"
+        }
+      ],
+      "apparmor_unconfined": true,
+      "environment": [
+        "TZ=%TIMEZONE%",
+        "UID=65534",
+        "GID=65534",
+        "LLDAP_JWT_SECRET=%LLDAP_JWT_SECRET%",
+        "LLDAP_LDAP_USER_PASS=%LLDAP_LDAP_USER_PASS%",
+        "LLDAP_LDAP_BASE_DN=%NC_DOMAIN_BASE_DN%"
+      ],
+      "secrets": [
+        "LLDAP_JWT_SECRET",
+        "LLDAP_LDAP_USER_PASS"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_lldap",
+          "destination": "/data",
+          "writeable": true
+        }
+      ],
+      "backup_volumes": [
+        "nextcloud_aio_lldap"
+      ],
+      "nextcloud_exec_commands": [
+        "php /var/www/html/occ app:install user_ldap",
+        "php /var/www/html/occ app:enable user_ldap",
+        "php /var/www/html/occ ldap:create-empty-config",
+        "php /var/www/html/occ ldap:set-config s01 ldapAgentName 'uid=ro_admin,ou=people,%NC_DOMAIN_BASE_DN%'",
+        "php /var/www/html/occ ldap:set-config s01 ldapAgentPassword '%OPENLDAP_LDAP_USER_PASS%'",
+        "php /var/www/html/occ ldap:set-config s01 ldapBase '%NC_DOMAIN_BASE_DN%'",
+        "php /var/www/html/occ ldap:set-config s01 ldapBaseGroups '%NC_DOMAIN_BASE_DN%'",
+        "php /var/www/html/occ ldap:set-config s01 ldapBaseUsers '%NC_DOMAIN_BASE_DN%'",
+        "php /var/www/html/occ ldap:set-config s01 ldapCacheTTL 600",
+        "php /var/www/html/occ ldap:set-config s01 ldapConfigurationActive 1",
+        "php /var/www/html/occ ldap:set-config s01 ldapEmailAttribute 'mail'",
+        "php /var/www/html/occ ldap:set-config s01 ldapExperiencedAdmin 0",
+        "php /var/www/html/occ ldap:set-config s01 ldapGidNumber 'gidNumber'",
+        "php /var/www/html/occ ldap:set-config s01 ldapGroupDisplayName 'cn'",
+        "php /var/www/html/occ ldap:set-config s01 ldapGroupFilter '(&(objectclass=groupOfUniqueNames))'",
+        "php /var/www/html/occ ldap:set-config s01 ldapGroupFilterGroups ''",
+        "php /var/www/html/occ ldap:set-config s01 ldapGroupFilterMode 0",
+        "php /var/www/html/occ ldap:set-config s01 ldapGroupFilterObjectclass 'groupOfUniqueNames'",
+        "php /var/www/html/occ ldap:set-config s01 ldapGroupMemberAssocAttr 'uniqueMember'",
+        "php /var/www/html/occ ldap:set-config s01 ldapHost 'nextcloud-aio-openldap'",
+        "php /var/www/html/occ ldap:set-config s01 ldapLoginFilterAttributes 'uid'",
+        "php /var/www/html/occ ldap:set-config s01 ldapLoginFilterEmail 0",
+        "php /var/www/html/occ ldap:set-config s01 ldapLoginFilterUsername 1",
+        "php /var/www/html/occ ldap:set-config s01 ldapMatchingRuleInChainState 'unknown'",
+        "php /var/www/html/occ ldap:set-config s01 ldapNestedGroups 0",
+        "php /var/www/html/occ ldap:set-config s01 ldapPagingSize 500",
+        "php /var/www/html/occ ldap:set-config s01 ldapPort 3890",
+        "php /var/www/html/occ ldap:set-config s01 ldapTLS 0",
+        "php /var/www/html/occ ldap:set-config s01 ldapUserAvatarRule 'default'",
+        "php /var/www/html/occ ldap:set-config s01 ldapUserDisplayName 'displayname'",
+        "php /var/www/html/occ ldap:set-config s01 ldapUserFilter'(&(objectClass=person)(uid=%uid))'",
+        "php /var/www/html/occ ldap:set-config s01 ldapUserFilterMode 1",
+        "php /var/www/html/occ ldap:set-config s01 ldapUserFilterObjectclass 'person'",
+        "php /var/www/html/occ ldap:set-config s01 ldapUuidGroupAttribute 'auto'",
+        "php /var/www/html/occ ldap:set-config s01 ldapUuidUserAttribute 'auto'",
+        "php /var/www/html/occ ldap:set-config s01 turnOnPasswordChange 0"
+      ]
+    }
+  ]
+}
