@@ -6,6 +6,7 @@ if (getenv('REDIS_HOST')) {
     'redis' => array(
       'host' => getenv('REDIS_HOST'),
       'password' => (string) getenv('REDIS_HOST_PASSWORD'),
+      // 'dbindex' => (int) getenv('REDIS_DB_INDEX'),
     ),
   );
 
