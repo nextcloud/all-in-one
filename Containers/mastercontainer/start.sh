@@ -47,7 +47,7 @@ elif ! sudo -u www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
     DOCKER_GROUP=$(stat -c '%G' /var/run/docker.sock)
     DOCKER_GROUP_ID=$(stat -c '%g' /var/run/docker.sock)
-    # Check if a group with the same group id of /var/run/docker.socket already exists in the container
+    # Check if a group with the same group name of /var/run/docker.socket already exists in the container
     if grep -q "^$DOCKER_GROUP:" /etc/group; then
         # If yes, add www-data to that group
         echo "Adding internal www-data to group $DOCKER_GROUP"
