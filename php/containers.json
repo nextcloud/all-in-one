@@ -65,6 +65,9 @@
         "/usr/local/apache2/logs",
         "/tmp",
         "/home/www-data"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -112,6 +115,9 @@
       "read_only": true,
       "tmpfs": [
         "/var/run/postgresql"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -140,7 +146,8 @@
         "NEXTCLOUD_PASSWORD",
         "TURN_SECRET",
         "SIGNALING_SECRET",
-        "FULLTEXTSEARCH_PASSWORD"
+        "FULLTEXTSEARCH_PASSWORD",
+        "IMAGINARY_SECRET"
       ],
       "volumes": [
         {
@@ -214,7 +221,8 @@
         "APACHE_PORT=%APACHE_PORT%",
         "APACHE_IP_BINDING=%APACHE_IP_BINDING%",
         "ADDITIONAL_TRUSTED_PROXY=%CADDY_IP_ADDRESS%",
-        "THIS_IS_AIO=true"
+        "THIS_IS_AIO=true",
+        "IMAGINARY_SECRET=%IMAGINARY_SECRET%"
       ],
       "stop_grace_period": 600,
       "restart": "unless-stopped",
@@ -226,6 +234,9 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -263,7 +274,10 @@
       "networks": [
         "nextcloud-aio"
       ],
-      "read_only": true
+      "read_only": true,
+      "cap_drop": [
+        "NET_RAW"
+      ]
     },
     {
       "container_name": "nextcloud-aio-redis",
@@ -295,7 +309,10 @@
       "networks": [
         "nextcloud-aio"
       ],
-      "read_only": true
+      "read_only": true,
+      "cap_drop": [
+        "NET_RAW"
+      ]
     },
     {
       "container_name": "nextcloud-aio-collabora",
@@ -328,6 +345,9 @@
       ],
       "cap_add": [
         "MKNOD"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -380,6 +400,9 @@
         "/opt/eturnal/run",
         "/conf",
         "/tmp"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -414,6 +437,9 @@
       "tmpfs": [
         "/tmp",
         "/conf"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -472,6 +498,9 @@
       "cap_add": [
         "SYS_ADMIN"
       ],
+      "cap_drop": [
+        "NET_RAW"
+      ],
       "apparmor_unconfined": true,
       "read_only": true,
       "tmpfs": [
@@ -494,7 +523,10 @@
           "writeable": false
         }
       ],
-      "read_only": true
+      "read_only": true,
+      "cap_drop": [
+        "NET_RAW"
+      ]
     },
     {
       "container_name": "nextcloud-aio-domaincheck",
@@ -521,6 +553,9 @@
       "tmpfs": [
         "/etc/lighttpd",
         "/var/www/domaincheck"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -556,6 +591,9 @@
         "/var/lock",
         "/var/log/clamav",
         "/tmp"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -594,6 +632,9 @@
       ],
       "networks": [
         "nextcloud-aio"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -607,11 +648,15 @@
       ],
       "internal_port": "9000",
       "environment": [
-        "TZ=%TIMEZONE%"
+        "TZ=%TIMEZONE%",
+        "IMAGINARY_SECRET=%IMAGINARY_SECRET%"
       ],
       "restart": "unless-stopped",
       "cap_add": [
         "SYS_NICE"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ],
       "profiles": [
         "imaginary"
@@ -622,6 +667,9 @@
       "read_only": true,
       "tmpfs": [
         "/tmp"
+      ],
+      "secrets": [
+        "IMAGINARY_SECRET"
       ]
     },
     {
@@ -662,6 +710,9 @@
       ],
       "secrets": [
         "FULLTEXTSEARCH_PASSWORD"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     },
     {
@@ -685,6 +736,9 @@
       "read_only": true,
       "tmpfs": [
         "/tmp"
+      ],
+      "cap_drop": [
+        "NET_RAW"
       ]
     }
   ]

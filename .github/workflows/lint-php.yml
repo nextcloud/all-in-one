@@ -27,16 +27,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: [ "8.2" ]
+        php-versions: [ "8.3" ]
 
     name: php-lint
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4 # v3.5.2
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Set up php ${{ matrix.php-versions }}
-        uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # v2
+        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # v2
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: none
@@ -47,10 +47,10 @@ jobs:
       - name: Lint
         run: cd php && composer run lint
 
-  php-lint-summary:
+  summary:
     permissions:
       contents: none
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-low
     needs: php-lint
 
     if: always()

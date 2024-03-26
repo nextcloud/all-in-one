@@ -47,7 +47,7 @@ elif ! sudo -u www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
     DOCKER_GROUP=$(stat -c '%G' /var/run/docker.sock)
     DOCKER_GROUP_ID=$(stat -c '%g' /var/run/docker.sock)
-    # Check if a group with the same group id of /var/run/docker.socket already exists in the container
+    # Check if a group with the same group name of /var/run/docker.socket already exists in the container
     if grep -q "^$DOCKER_GROUP:" /etc/group; then
         # If yes, add www-data to that group
         echo "Adding internal www-data to group $DOCKER_GROUP"
@@ -344,6 +344,7 @@ fi
 print_green "Initial startup of Nextcloud All-in-One complete!
 You should be able to open the Nextcloud AIO Interface now on port 8080 of this server!
 E.g. https://internal.ip.of.this.server:8080
+⚠️ Important: do always use an ip-address if you access this port and not a domain as HSTS might block access to it later!
 
 If your server has port 80 and 8443 open and you point a domain to your server, you can get a valid certificate automatically by opening the Nextcloud AIO Interface via:
 https://your-domain-that-points-to-this-server.tld:8443"

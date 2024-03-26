@@ -3,21 +3,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
+    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
     kompose.version: 1.32.0 (765fde254)
   labels:
     io.kompose.service: nextcloud-aio-fulltextsearch
   name: nextcloud-aio-fulltextsearch
-  namespace: {{ .Values.NAMESPACE }}
+  namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-fulltextsearch
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
+        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
         kompose.version: 1.32.0 (765fde254)
       labels:
         io.kompose.network/nextcloud-aio: "true"
@@ -25,7 +27,11 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - chmod
             - "777"
@@ -55,11 +61,15 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: nextcloud/aio-fulltextsearch:20240201_120631-latest
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-fulltextsearch:20240321_080708-latest"
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200
               protocol: TCP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
               name: nextcloud-aio-elasticsearch

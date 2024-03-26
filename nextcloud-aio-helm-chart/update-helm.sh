@@ -59,7 +59,11 @@ find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio
 cat << EOL > /tmp/initcontainers
       initContainers:
         - name: init-volumes
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - chmod
             - "777"
@@ -68,14 +72,22 @@ EOL
 cat << EOL > /tmp/initcontainers.database
       initContainers:
         - name: init-subpath
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - mkdir
             - "-p"
             - /nextcloud-aio-database/data
           volumeMountsInitContainer:
         - name: init-volumes
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - chown
             - 999:999
@@ -85,14 +97,22 @@ EOL
 cat << EOL > /tmp/initcontainers.clamav
       initContainers:
         - name: init-subpath
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - mkdir
             - "-p"
             - /nextcloud-aio-clamav/data
           volumeMountsInitContainer:
         - name: init-volumes
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - chown
             - 100:100
@@ -102,14 +122,22 @@ EOL
 cat << EOL > /tmp/initcontainers.nextcloud
       initContainers:
         - name: "delete-lost-found"
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - rm
             - "-rf"
             - "/nextcloud-aio-nextcloud/lost+found"
           volumeMountsInitRmLostFound:
         - name: init-volumes
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - chmod
             - "777"
@@ -160,7 +188,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
     fi
 done
 # shellcheck disable=SC1083
-find ./ -name '*.yaml' -exec sed -i "s|nextcloud-aio-namespace|\{\{ .Values.NAMESPACE \}\}|" \{} \; 
+find ./ -name '*.yaml' -exec sed -i 's|nextcloud-aio-namespace|"\{\{ .Values.NAMESPACE \}\}"|' \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*service.yaml' -exec sed -i "/^status:/,$ d" \{} \; 
 # shellcheck disable=SC1083
@@ -214,13 +242,13 @@ find ./ -name '*service.yaml' -exec sed -i "/^spec:/a\ \ ipFamilyPolicy: PreferD
 # shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "s|'{{|\"{{|g;s|}}'|}}\"|g" \{} \; 
 # shellcheck disable=SC1083
-find ./ -name '*.yaml' -exec sed -i "/type: Recreate/d" \{} \; 
-# shellcheck disable=SC1083
-find ./ -name '*.yaml' -exec sed -i "/strategy:/d" \{} \; 
-# shellcheck disable=SC1083
 find ./ \( -not -name '*service.yaml' -name '*.yaml' \) -exec sed -i "/^status:/d" \{} \; 
 # shellcheck disable=SC1083
 find ./ \( -not -name '*persistentvolumeclaim.yaml' -name '*.yaml' \) -exec sed -i "/resources:/d" \{} \; 
+# shellcheck disable=SC1083
+find ./ -name "*namespace.yaml" -exec sed -i "1i\\{{- if ne .Values.NAMESPACE \"default\" }}" \{} \; 
+# shellcheck disable=SC1083
+find ./ -name "*namespace.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*.yaml' -exec sed -i "/creationTimestamp: null/d" \{} \; 
 VOLUMES="$(find ./ -name '*persistentvolumeclaim.yaml' | sed 's|-persistentvolumeclaim.yaml||g;s|.*nextcloud-aio-||g' | sort)"
@@ -272,6 +300,8 @@ EOL
 # shellcheck disable=SC1083
 find ./ -name '*apache-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-apache.config"  \{} \;
 
+# shellcheck disable=SC1083
+find ./ -name '*deployment.yaml' -exec sed -i '/image: nextcloud/s/$/"/;s|image: nextcloud/|image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/|;' \{} \;
 
 cd ../
 mkdir -p ../helm-chart/
@@ -326,6 +356,10 @@ SMTP_NAME:         # (empty by default): The username for the authentication.
 SMTP_PASSWORD:         # (empty by default): The password for the authentication.
 MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'from' field in the emails sent by Nextcloud.
 MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
+
+IMAGE_MIRROR_PREFIX:          # Setting this allows you to pull Nextcloud images through a mirror registry.
+NEXTCLOUD_IMAGE_ORG: nextcloud          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
+ALPINE_IMAGE_ORG:          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
 ADDITIONAL_CONFIG
 
 mv /tmp/sample.conf ../helm-chart/values.yaml

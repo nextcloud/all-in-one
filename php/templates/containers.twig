@@ -16,7 +16,7 @@
     </header>
 
     <div class="content">
-        <h1>Nextcloud AIO v7.13.0</h1>
+        <h1>Nextcloud AIO v8.0.0</h1>
 
         {# Add 2nd tab warning #}
         <script type="text/javascript" src="second-tab-warning.js"></script>
@@ -28,7 +28,7 @@
         {% set isBackupOrRestoreRunning = false %}
         {% set isApacheStarting = false %}
         {# Setting newMajorVersion to '' will hide corresponding options/elements, can be set to an integer like 26 in order to show corresponding elements. If set, also increase installLatestMajor in https://github.com/nextcloud/all-in-one/blob/main/php/src/Controller/DockerController.php #}
-        {% set newMajorVersion = 28 %}
+        {% set newMajorVersion = '' %}
 
         {% if is_backup_container_running == true %}
             {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
@@ -153,7 +153,7 @@
                                             <input class="button" type="submit" value="Check backup integrity"/><br/>
                                         </form>
                                     {% endif %}
-                                    Choose the backup that you want to restore and click on the button below to restore the selected backup. This will restore the whole AIO instance from backup. Please not that the current AIO password will be kept and the AIO password not restored from backup!<br><br>
+                                    Choose the backup that you want to restore and click on the button below to restore the selected backup. This will restore the whole AIO instance from backup. Please note that the current AIO password will be kept and the previous AIO password will not be restored from backup!<br><br>
                                     <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -494,7 +494,7 @@
                                                 <input type="hidden" name="delete_daily_backup_time" value="yes"/>
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input class="button" type="submit" value="Disable daily backups" />
+                                                <input class="button" type="submit" value="Disable or change daily backups" />
                                             </form>
                                         {% endif %}
 

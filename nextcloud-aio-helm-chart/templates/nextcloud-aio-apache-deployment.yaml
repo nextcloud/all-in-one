@@ -2,21 +2,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
+    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
     kompose.version: 1.32.0 (765fde254)
   labels:
     io.kompose.service: nextcloud-aio-apache
   name: nextcloud-aio-apache
-  namespace: {{ .Values.NAMESPACE }}
+  namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-apache
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace {{ .Values.NAMESPACE }}
+        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
         kompose.version: 1.32.0 (765fde254)
       labels:
         io.kompose.network/nextcloud-aio: "true"
@@ -24,7 +26,11 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
+          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          {{- else }}
           image: alpine
+          {{- end }}
           command:
             - chmod
             - "777"
@@ -59,14 +65,17 @@ spec:
               value: nextcloud-aio-talk
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-apache:beta
-          imagePullPolicy: Always
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-apache:20240321_080708-latest"
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
               protocol: TCP
             - containerPort: {{ .Values.APACHE_PORT }}
               protocol: UDP
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud

@@ -45,6 +45,8 @@ services:
       - /usr/local/apache2/logs
       - /tmp
       - /home/www-data
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-database:
     image: nextcloud/aio-postgresql:latest
@@ -68,6 +70,8 @@ services:
     read_only: true
     tmpfs:
       - /var/run/postgresql
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-nextcloud:
     depends_on:
@@ -145,10 +149,13 @@ services:
       - REMOVE_DISABLED_APPS=${REMOVE_DISABLED_APPS}
       - APACHE_PORT=${APACHE_PORT}
       - APACHE_IP_BINDING=${APACHE_IP_BINDING}
+      - IMAGINARY_SECRET=${IMAGINARY_SECRET}
     stop_grace_period: 600s
     restart: unless-stopped
     networks:
       - nextcloud-aio
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-notify-push:
     image: nextcloud/aio-notify-push:latest
@@ -170,6 +177,8 @@ services:
     networks:
       - nextcloud-aio
     read_only: true
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-redis:
     image: nextcloud/aio-redis:latest
@@ -185,6 +194,8 @@ services:
     networks:
       - nextcloud-aio
     read_only: true
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-collabora:
     image: nextcloud/aio-collabora:latest
@@ -205,6 +216,8 @@ services:
       - nextcloud-aio
     cap_add:
       - MKNOD
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-talk:
     image: nextcloud/aio-talk:latest
@@ -234,6 +247,8 @@ services:
       - /opt/eturnal/run
       - /conf
       - /tmp
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-talk-recording:
     image: nextcloud/aio-talk-recording:latest
@@ -255,6 +270,8 @@ services:
     tmpfs:
       - /tmp
       - /conf
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-clamav:
     image: nextcloud/aio-clamav:latest
@@ -276,6 +293,8 @@ services:
       - /var/lock
       - /var/log/clamav
       - /tmp
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-onlyoffice:
     image: nextcloud/aio-onlyoffice:latest
@@ -294,6 +313,8 @@ services:
       - onlyoffice
     networks:
       - nextcloud-aio
+    cap_drop:
+      - NET_RAW
 
   nextcloud-aio-imaginary:
     image: nextcloud/aio-imaginary:latest
@@ -302,9 +323,12 @@ services:
       - "9000"
     environment:
       - TZ=${TIMEZONE}
+      - IMAGINARY_SECRET=${IMAGINARY_SECRET}
     restart: unless-stopped
     cap_add:
       - SYS_NICE
+    cap_drop:
+      - NET_RAW
     profiles:
       - imaginary
     networks:
@@ -336,6 +360,8 @@ services:
       - fulltextsearch
     networks:
       - nextcloud-aio
+    cap_drop:
+      - NET_RAW
 
 volumes:
   nextcloud_aio_apache:

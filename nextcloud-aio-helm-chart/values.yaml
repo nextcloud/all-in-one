@@ -1,5 +1,6 @@
 DATABASE_PASSWORD:           # TODO! This needs to be a unique and good password!
 FULLTEXTSEARCH_PASSWORD:           # TODO! This needs to be a unique and good password!
+IMAGINARY_SECRET:           # TODO! This needs to be a unique and good password!
 NC_DOMAIN: yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.
 NEXTCLOUD_PASSWORD:           # TODO! This is the password of the initially created Nextcloud admin with username admin.
 ONLYOFFICE_SECRET:           # TODO! This needs to be a unique and good password!
@@ -60,3 +61,7 @@ SMTP_NAME:         # (empty by default): The username for the authentication.
 SMTP_PASSWORD:         # (empty by default): The password for the authentication.
 MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'from' field in the emails sent by Nextcloud.
 MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
+
+IMAGE_MIRROR_PREFIX:          # Setting this allows you to pull Nextcloud images through a mirror registry.
+NEXTCLOUD_IMAGE_ORG: nextcloud          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
+ALPINE_IMAGE_ORG:          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
