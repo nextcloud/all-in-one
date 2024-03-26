@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'nextcloud-aio-helm-chart/**'
+      - 'nextcloud-aio-helm-chart/**/*.yml'
+      - 'nextcloud-aio-helm-chart/**/*.yaml'
 
 jobs:
   lint-helm:
