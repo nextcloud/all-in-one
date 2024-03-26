@@ -372,9 +372,6 @@ class ConfigurationManager
         // Write domain
         $config = $this->GetConfig();
         $config['domain'] = $domain;
-        // Write base-dn
-        $base_dn = 'dc=' . implode(',dc=', array_reverse(explode('.', $domain)));
-        $config['base-dn'] = $base_dn;
         // Reset the borg restore password when setting the domain
         $config['borg_restore_password'] = '';
         $this->WriteConfig($config);
@@ -390,12 +387,11 @@ class ConfigurationManager
     }
 
     public function GetBaseDN() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['base-dn'])) {
-            $config['base-dn'] = '';
+        $domain = $this->GetDomain();
+        if ($domain === "") {
+            return "";
         }
-
-        return $config['base-dn'];
+        return 'dc=' . implode(',dc=', array_reverse(explode('.', $domain)));
     }
 
     public function GetBackupMode() : string {

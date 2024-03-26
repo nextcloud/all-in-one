@@ -5,7 +5,7 @@
       "display_name": "Light LDAP implementation",
       "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap",
       "image": "lldap/lldap",
-      "image_tag": "2024-03-18-alpine",
+      "image_tag": "v0-alpine",
       "internal_port": "17170",
       "restart": "unless-stopped",
       "ports": [
@@ -15,7 +15,6 @@
           "protocol": "tcp"
         }
       ],
-      "apparmor_unconfined": true,
       "environment": [
         "TZ=%TIMEZONE%",
         "UID=65534",
