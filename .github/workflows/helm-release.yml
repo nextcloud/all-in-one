@@ -36,6 +36,10 @@ jobs:
         with:
           version: v3.6.3
 
+      - name: Run Helm Lint
+        run: |
+          helm lint ./nextcloud-aio-helm-chart
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
