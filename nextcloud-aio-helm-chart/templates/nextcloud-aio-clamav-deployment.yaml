@@ -1,6 +1,6 @@
 {{- if eq .Values.CLAMAV_ENABLED "yes" }}
 apiVersion: apps/v1
-kind: Deployment
+kind: Deploymentfoobar
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
