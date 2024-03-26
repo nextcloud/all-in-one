@@ -22,7 +22,7 @@
         "GID=65534",
         "LLDAP_JWT_SECRET=%LLDAP_JWT_SECRET%",
         "LLDAP_LDAP_USER_PASS=%LLDAP_LDAP_USER_PASS%",
-        "LLDAP_LDAP_BASE_DN=%NC_DOMAIN_BASE_DN%"
+        "LLDAP_LDAP_BASE_DN=%NC_BASE_DN%"
       ],
       "secrets": [
         "LLDAP_JWT_SECRET",
@@ -42,11 +42,11 @@
         "php /var/www/html/occ app:install user_ldap",
         "php /var/www/html/occ app:enable user_ldap",
         "php /var/www/html/occ ldap:create-empty-config",
-        "php /var/www/html/occ ldap:set-config s01 ldapAgentName 'uid=ro_admin,ou=people,%NC_DOMAIN_BASE_DN%'",
+        "php /var/www/html/occ ldap:set-config s01 ldapAgentName 'uid=ro_admin,ou=people,%NC_BASE_DN%'",
         "php /var/www/html/occ ldap:set-config s01 ldapAgentPassword '%OPENLDAP_LDAP_USER_PASS%'",
-        "php /var/www/html/occ ldap:set-config s01 ldapBase '%NC_DOMAIN_BASE_DN%'",
-        "php /var/www/html/occ ldap:set-config s01 ldapBaseGroups '%NC_DOMAIN_BASE_DN%'",
-        "php /var/www/html/occ ldap:set-config s01 ldapBaseUsers '%NC_DOMAIN_BASE_DN%'",
+        "php /var/www/html/occ ldap:set-config s01 ldapBase '%NC_BASE_DN%'",
+        "php /var/www/html/occ ldap:set-config s01 ldapBaseGroups '%NC_BASE_DN%'",
+        "php /var/www/html/occ ldap:set-config s01 ldapBaseUsers '%NC_BASE_DN%'",
         "php /var/www/html/occ ldap:set-config s01 ldapCacheTTL 600",
         "php /var/www/html/occ ldap:set-config s01 ldapConfigurationActive 1",
         "php /var/www/html/occ ldap:set-config s01 ldapEmailAttribute 'mail'",
