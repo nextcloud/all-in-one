@@ -301,7 +301,7 @@ EOL
 find ./ -name '*apache-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-apache.config"  \{} \;
 
 # shellcheck disable=SC1083
-find ./ -name '*deployment.yaml' -exec sed -i 's|image: nextcloud/|image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/|;s/$/"/;' \{} \;
+find ./ -name '*deployment.yaml' -exec sed -i '/image: nextcloud/s/$/"/;s|image: nextcloud/|image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/|;' \{} \;
 
 cd ../
 mkdir -p ../helm-chart/
