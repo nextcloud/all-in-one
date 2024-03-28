@@ -539,6 +539,11 @@ php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://
 
 # Collabora
 if [ "$COLLABORA_ENABLED" = 'yes' ]; then
+    set -x
+    if [ "$COLLABORA_HOST" = "nextcloud-.*-collabora" ]; then
+        COLLABORA_HOST="$NC_DOMAIN"
+    fi
+    set +x
     if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ app:install richdocuments
     elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" != "yes" ]; then
@@ -546,10 +551,10 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update richdocuments
     fi
-    php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
+    php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$COLLABORA_HOST/"
     # Make collabora more save
-    COLLABORA_IPv4_ADDRESS="$(dig "$NC_DOMAIN" A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
-    COLLABORA_IPv6_ADDRESS="$(dig "$NC_DOMAIN" AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+    COLLABORA_IPv4_ADDRESS="$(dig "$COLLABORA_HOST" A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
+    COLLABORA_IPv6_ADDRESS="$(dig "$COLLABORA_HOST" AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
     COLLABORA_ALLOW_LIST="$(php /var/www/html/occ config:app:get richdocuments wopi_allowlist)"
     if [ -n "$COLLABORA_IPv4_ADDRESS" ]; then
         if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$COLLABORA_IPv4_ADDRESS"; then
@@ -560,7 +565,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
             fi
         fi
     else
-        echo "Warning: No ipv4-address found for $NC_DOMAIN."
+        echo "Warning: No ipv4-address found for $COLLABORA_HOST."
     fi
     if [ -n "$COLLABORA_IPv6_ADDRESS" ]; then
         if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$COLLABORA_IPv6_ADDRESS"; then
@@ -571,7 +576,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
             fi
         fi
     else
-        echo "No ipv6-address found for $NC_DOMAIN."
+        echo "No ipv6-address found for $COLLABORA_HOST."
     fi
     if [ -n "$COLLABORA_ALLOW_LIST" ]; then
         PRIVATE_IP_RANGES='127.0.0.1/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,fd00::/8,::1'
