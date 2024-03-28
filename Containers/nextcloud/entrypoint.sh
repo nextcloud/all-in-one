@@ -540,7 +540,7 @@ php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://
 # Collabora
 if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     set -x
-    if [ "$COLLABORA_HOST" = "nextcloud-.*-collabora" ]; then
+    if echo "$COLLABORA_HOST" | grep -q "nextcloud-.*-collabora"; then
         COLLABORA_HOST="$NC_DOMAIN"
     fi
     set +x
