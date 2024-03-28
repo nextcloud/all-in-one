@@ -357,6 +357,7 @@ server {
         proxy_set_header Connection $connection_upgrade;
     }
 
+    #if running nginx on a subdomain (eg. nextcloud.example.com) of a domain that already has an wildcard ssl certificate from certbot on this machine, the <your-nc-domain> in the below lines should be replaced with just the domain (eg. example.com), not the subdomain. In this case the subdomain should already be secured without additional actions
     ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
     ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
 
