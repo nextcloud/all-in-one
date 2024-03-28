@@ -117,6 +117,14 @@ RUN set -ex; \
         echo 'max_input_time=${PHP_MAX_TIME}'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
+    { \
+        echo 'session.save_handler = redis'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}"'; \
+        echo 'redis.session.locking_enabled = 1'; \
+        echo 'redis.session.lock_retries = -1'; \
+        echo 'redis.session.lock_wait_time = 10000'; \
+    } > /usr/local/etc/php/conf.d/redis-session.ini; \
+    \
     mkdir -p /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www; \
