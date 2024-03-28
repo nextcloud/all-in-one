@@ -19,17 +19,6 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
-echo "Configuring Redis as session handler..."
-cat << REDIS_CONF > /usr/local/etc/php/conf.d/redis-session.ini
-session.save_handler = redis
-session.save_path = "tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}"
-redis.session.locking_enabled = 1
-redis.session.lock_retries = -1
-# redis.session.lock_wait_time is specified in microseconds.
-# Wait 10ms before retrying the lock rather than the default 2ms.
-redis.session.lock_wait_time = 10000
-REDIS_CONF
-
 # Check permissions in ncdata
 touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
