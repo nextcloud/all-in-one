@@ -3,8 +3,8 @@
 occ() {
   sudo docker exec -u www-data nextcloud-aio-nextcloud php /var/www/html/occ "$@"
 }
-DOMAIN=cloud.example.com
-#DOMAIN=$(occ config:system:get overwritehost)
+
+DOMAIN=$(occ config:system:get overwritehost)
 BASE_DN="dc=${DOMAIN//./,dc=}"
 
 echo "Nextcloud instance found"
