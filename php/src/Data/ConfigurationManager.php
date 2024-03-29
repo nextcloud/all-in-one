@@ -391,7 +391,7 @@ class ConfigurationManager
         if ($domain === "") {
             return "";
         }
-        return 'dc=' . implode(',dc=', array_reverse(explode('.', $domain)));
+        return 'dc=' . implode(',dc=', explode('.', $domain));
     }
 
     public function GetBackupMode() : string {
