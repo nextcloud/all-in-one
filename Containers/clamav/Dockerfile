@@ -12,11 +12,15 @@ RUN set -ex; \
 FROM clamav/clamav-debian:1.3.0-24 as build-arm64
 
 RUN set -ex; \
-    apt-get update && apt-get install -y tzdata && rm -rf /var/lib/apt/lists/*;
+    apt-get update; \
+    apt-get install --no-install-recommends -y \
+        tzdata \
+    ; \
+    rm -vrf /var/lib/apt/lists/*;
 
 # Step 2: Configure clamav
 
-FROM build-${TARGETARCH} as build
+FROM build-${TARGETARCH}
 
 RUN cat /tmp/clamav.conf >> /etc/clamav/clamd.conf; \
     rm /tmp/clamav.conf; \
