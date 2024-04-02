@@ -3,13 +3,13 @@
 # Step 1: Setup base image based on arch
 
 # Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.3/alpine/Dockerfile
-FROM clamav/clamav:1.3.0-44 as build-amd64
+FROM --platform=linux/amd64 clamav/clamav:1.3.0-44 as build-amd64
 
 RUN set -ex; \
     apk add --no-cache tzdata;
 
 # Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.3/debian/Dockerfile
-FROM clamav/clamav-debian:1.3.0-24 as build-arm64
+FROM --platform=linux/arm64 clamav/clamav-debian:1.3.0-24 as build-arm64
 
 RUN set -ex; \
     apt-get update; \
