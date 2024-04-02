@@ -11,6 +11,7 @@ RUN set -ex; \
 # Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.3/debian/Dockerfile
 FROM --platform=linux/arm64 clamav/clamav-debian:1.3.0-24 as build-arm64
 
+# hadolint ignore=DL3008
 RUN set -ex; \
     apt-get update; \
     apt-get install --no-install-recommends -y \
