@@ -16,7 +16,7 @@ This container bundles LLDAP server and auto-configures your nextcloud instance 
     BASE_DN="dc=${NC_DOMAIN//./,dc=}"
     
     # Create a new empty ldap config
-    CONF_NAME=$(php /var/www/html/occ ldap:create-empty-config)
+    CONF_NAME=$(php /var/www/html/occ ldap:create-empty-config -p)
   
     # Set the ldap password
     php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentPassword "<your-password>"
