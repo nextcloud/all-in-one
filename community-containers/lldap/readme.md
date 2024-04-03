@@ -12,56 +12,52 @@ This container bundles LLDAP server and auto-configures your nextcloud instance 
     ```
     Now inside the container:
     ```bash
-    occ() {
-        sudo docker exec -u www-data nextcloud-aio-nextcloud php /var/www/html/occ "$@"
-    }
-
+    # Get Base
     BASE_DN="dc=${NC_DOMAIN//./,dc=}"
+    
+    # Create a new empty ldap config
+    CONF_NAME=$(php /var/www/html/occ ldap:create-empty-config)
+  
+    # Set the ldap password
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentPassword "<your-password>"
 
-    echo "Nextcloud instance found"
-    echo "Domain: $NC_DOMAIN"
-    echo "Base DN: $BASE_DN"
+    # Set the ldap config
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentName                "uid=ro_admin,ou=people,$BASE_DN"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBase                     "$BASE_DN"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBaseGroups               "$BASE_DN"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBaseUsers                "$BASE_DN"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapCacheTTL                 600
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapConfigurationActive      1
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapEmailAttribute           "mail"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapExperiencedAdmin         0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGidNumber                "gidNumber"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupDisplayName         "cn"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilter              "(&(objectclass=groupOfUniqueNames))"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterGroups        ""
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterMode          0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterObjectclass   "groupOfUniqueNames"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupMemberAssocAttr     "uniqueMember"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapHost                     "nextcloud-aio-lldap"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterAttributes    "uid"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterEmail         0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterUsername      1
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapMatchingRuleInChainState "unknown"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapNestedGroups             0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapPagingSize               500
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapPort                     3890
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapTLS                      0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserAvatarRule           "default"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserDisplayName          "displayname"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilter               "(&(objectClass=person)(uid=%uid))"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilterMode           1
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilterObjectclass    "person"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUuidGroupAttribute       "auto"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUuidUserAttribute        "auto"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" turnOnPasswordChange         0
 
-    read -sp "Type the password for the LDAP admin user: " PASSWORD
-
-    echo "Setting up LDAP"
-
-    occ ldap:create-empty-config
-
-    occ ldap:set-config s01 ldapAgentName                "uid=ro_admin,ou=people,$BASE_DN"
-    occ ldap:set-config s01 ldapAgentPassword            "$PASSWORD"
-    occ ldap:set-config s01 ldapBase                     "$BASE_DN"
-    occ ldap:set-config s01 ldapBaseGroups               "$BASE_DN"
-    occ ldap:set-config s01 ldapBaseUsers                "$BASE_DN"
-    occ ldap:set-config s01 ldapCacheTTL                 600
-    occ ldap:set-config s01 ldapConfigurationActive      1
-    occ ldap:set-config s01 ldapEmailAttribute           "mail"
-    occ ldap:set-config s01 ldapExperiencedAdmin         0
-    occ ldap:set-config s01 ldapGidNumber                "gidNumber"
-    occ ldap:set-config s01 ldapGroupDisplayName         "cn"
-    occ ldap:set-config s01 ldapGroupFilter              "(&(objectclass=groupOfUniqueNames))"
-    occ ldap:set-config s01 ldapGroupFilterGroups        ""
-    occ ldap:set-config s01 ldapGroupFilterMode          0
-    occ ldap:set-config s01 ldapGroupFilterObjectclass   "groupOfUniqueNames"
-    occ ldap:set-config s01 ldapGroupMemberAssocAttr     "uniqueMember"
-    occ ldap:set-config s01 ldapHost                     "nextcloud-aio-lldap"
-    occ ldap:set-config s01 ldapLoginFilterAttributes    "uid"
-    occ ldap:set-config s01 ldapLoginFilterEmail         0
-    occ ldap:set-config s01 ldapLoginFilterUsername      1
-    occ ldap:set-config s01 ldapMatchingRuleInChainState "unknown"
-    occ ldap:set-config s01 ldapNestedGroups             0
-    occ ldap:set-config s01 ldapPagingSize               500
-    occ ldap:set-config s01 ldapPort                     3890
-    occ ldap:set-config s01 ldapTLS                      0
-    occ ldap:set-config s01 ldapUserAvatarRule           "default"
-    occ ldap:set-config s01 ldapUserDisplayName          "displayname"
-    occ ldap:set-config s01 ldapUserFilter               "(&(objectClass=person)(uid=%uid))"
-    occ ldap:set-config s01 ldapUserFilterMode           1
-    occ ldap:set-config s01 ldapUserFilterObjectclass    "person"
-    occ ldap:set-config s01 ldapUuidGroupAttribute       "auto"
-    occ ldap:set-config s01 ldapUuidUserAttribute        "auto"
-    occ ldap:set-config s01 turnOnPasswordChange         0
-
+    # Test the ldap config
+    occ ldap:test-config "$NAME"
+  
     # Exit the container shell
     exit
     ```
