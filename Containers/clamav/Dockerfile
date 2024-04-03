@@ -32,14 +32,14 @@ RUN set -ex; \
 # hadolint ignore=DL3006
 FROM build-${TARGETARCH}
 
+COPY clamav.conf /tmp/clamav.conf
+
 RUN cat /tmp/clamav.conf >> /etc/clamav/clamd.conf; \
     rm /tmp/clamav.conf; \
     mkdir -p /var/run/clamav /run/lock; \
     chown -R clamav:clamav /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock; \
     chmod 777 -R /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock /tmp
 
-
-COPY clamav.conf /tmp/clamav.conf
 
 VOLUME /var/lib/clamav
 
