@@ -386,6 +386,14 @@ class ConfigurationManager
         return $config['domain'];
     }
 
+    public function GetBaseDN() : string {
+        $domain = $this->GetDomain();
+        if ($domain === "") {
+            return "";
+        }
+        return 'dc=' . implode(',dc=', explode('.', $domain));
+    }
+
     public function GetBackupMode() : string {
         $config = $this->GetConfig();
         if(!isset($config['backup-mode'])) {
