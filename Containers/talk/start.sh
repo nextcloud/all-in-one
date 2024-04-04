@@ -56,6 +56,10 @@ TURN_CONF
 # Remove empty lines so that the config is not invalid
 sed -i '/""/d' /conf/eturnal.yml
 
+if [ -z "$TALK_MAX_STREAM_BITRATE" ]; then
+    TALK_MAX_STREAM_BITRATE=1048576
+fi
+
 # Signling
 cat << SIGNALING_CONF > "/conf/signaling.conf"
 [http]
@@ -80,6 +84,7 @@ connectionsperhost = 8
 [backend-1]
 url = https://${NC_DOMAIN}
 secret = ${SIGNALING_SECRET}
+maxstreambitrate = ${TALK_MAX_STREAM_BITRATE}
 
 [nats]
 url = nats://127.0.0.1:4222
@@ -87,6 +92,7 @@ url = nats://127.0.0.1:4222
 [mcu]
 type = janus
 url = ws://127.0.0.1:8188
+maxstreambitrate = ${TALK_MAX_STREAM_BITRATE}
 SIGNALING_CONF
 
 exec "$@"

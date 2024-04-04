@@ -25,6 +25,8 @@ spec:
     spec:
       containers:
         - env:
+            - name: TALK_MAX_STREAM_BITRATE
+              value: "{{ .Values.TALK_MAX_STREAM_BITRATE }}"
             - name: INTERNAL_SECRET
               value: "{{ .Values.TALK_INTERNAL_SECRET }}"
             - name: NC_DOMAIN
