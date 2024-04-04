@@ -638,6 +638,7 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     fi
     # Based on https://github.com/nextcloud/spreed/issues/960#issuecomment-416993435
     if [ -z "$(php /var/www/html/occ talk:turn:list --output="plain")" ]; then
+        # shellcheck disable=SC2153
         php /var/www/html/occ talk:turn:add turn "$TALK_HOST:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
     fi
     STUN_SERVER="$(php /var/www/html/occ talk:stun:list --output="plain")"
