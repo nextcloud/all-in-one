@@ -33,7 +33,7 @@ spec:
               value: "{{ .Values.RECORDING_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-talk-recording:20240321_080708-latest"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-talk-recording:20240404_082330-latest"
           name: nextcloud-aio-talk-recording
           ports:
             - containerPort: 1234
