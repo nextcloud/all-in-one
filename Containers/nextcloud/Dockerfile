@@ -44,6 +44,8 @@ RUN set -ex; \
         icu-dev \
         imagemagick-dev \
         imagemagick-svg \
+        imagemagick-heic \
+        imagemagick-tiff \
         libevent-dev \
         libjpeg-turbo-dev \
         libmcrypt-dev \
@@ -211,6 +213,8 @@ RUN set -ex; \
         bind-tools \
         imagemagick \
         imagemagick-svg \
+        imagemagick-heic \
+        imagemagick-tiff \
         coreutils; \
     \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \

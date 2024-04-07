@@ -56,7 +56,7 @@ if [ -n "$ADDITIONAL_APKS" ]; then
     if ! [ -f "/additional-apks-are-installed" ]; then
         # Allow to disable imagemagick without having to download it each time
         if ! echo "$ADDITIONAL_APKS" | grep -q imagemagick; then
-            apk del imagemagick imagemagick-svg;
+            apk del imagemagick imagemagick-svg imagemagick-heic imagemagick-tiff;
         fi
         read -ra ADDITIONAL_APKS_ARRAY <<< "$ADDITIONAL_APKS"
         for app in "${ADDITIONAL_APKS_ARRAY[@]}"; do
