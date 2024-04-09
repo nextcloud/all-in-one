@@ -7,7 +7,7 @@
 
 # Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.3/alpine/Dockerfile
 
-FROM --platform=linux/amd64 clamav/clamav:1.3.0-45 as build-amd64
+FROM --platform=linux/amd64 clamav/clamav:1.3.0-46 as build-amd64
 
 # DL3018 warning: Pin versions in apk add. Instead of `apk add <package>` use `apk add <package>=<version>`
 # hadolint ignore=DL3018
