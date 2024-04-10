@@ -10,12 +10,12 @@ ENV SOURCE_LOCATION /usr/src/nextcloud
 ENV NEXTCLOUD_VERSION 28.0.4
 ENV AIO_TOKEN 123456
 ENV AIO_URL localhost
-COPY supervisord.conf /supervisord.conf
 # AIO settings end # Do not remove or change this line!
 
 COPY --chmod=775 *.sh /
 COPY --chmod=774 upgrade.exclude /upgrade.exclude
 COPY config/*.php /
+COPY supervisord.conf /supervisord.conf
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
