@@ -8,7 +8,7 @@ wait_for_cron() {
         sleep 5
     done
     echo "Cronjob successfully exited."
-    set +x
+    exit
 }
 
 trap wait_for_cron SIGINT SIGTERM
