@@ -1,6 +1,4 @@
 #!/bin/bash
-set -eu
-
 wait_for_cron() {
     set -x
     while [ -n "$(pgrep -f /var/www/html/cron.php)" ]; do
