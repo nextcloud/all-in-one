@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.12.2-alpine3.19
+FROM python:3.12.3-alpine3.19
 
 COPY --chmod=775 start.sh /start.sh
 
