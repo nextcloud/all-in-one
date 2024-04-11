@@ -498,6 +498,14 @@ php /var/www/html/occ maintenance:update:htaccess
 # Revert dbpersistent setting to check if it fixes too many db connections
 php /var/www/html/occ config:system:set dbpersistent --value=false --type=bool
 
+if [ "$DISABLE_BRUTEFORCE_PROTECTION" = yes ]; then
+    php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=false
+    php /var/www/html/occ config:system:set ratelimit.protection.enabled --type=bool --value=false
+else
+    php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=true
+    php /var/www/html/occ config:system:set ratelimit.protection.enabled --type=bool --value=true
+fi
+
 # Disallow creating local external storages when nothing was mounted
 if [ -z "$NEXTCLOUD_MOUNT" ]; then
     php /var/www/html/occ config:system:set files_external_allow_create_new_local --type=bool --value=false
