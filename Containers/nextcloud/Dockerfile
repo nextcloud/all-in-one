@@ -198,6 +198,8 @@ RUN set -ex; \
     /var/log/supervisord \
     /var/run/supervisord \
     ; \
+    chown www-data:root -R /var/log/supervisord; \
+    chown www-data:root -R /var/run/supervisord; \
     \
     apk add --no-cache \
         bash \
