@@ -2,7 +2,8 @@
 
 # Variables
 export MOUNT_DIR="/mnt/borgbackup"
-export BORG_BACKUP_DIRECTORY="$MOUNT_DIR/borg"
+export BORG_BACKUP_DIRECTORY="$MOUNT_DIR/borg"  # necessary even when remote to store the aio-lockfile
+export IS_REMOTE_BORG_REPO=false
 
 # Validate BORG_PASSWORD
 if [ -z "$BORG_PASSWORD" ] && [ -z "$BACKUP_RESTORE_PASSWORD" ]; then
@@ -18,6 +19,7 @@ else
 fi
 export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+export BORG_REPO="$BORG_BACKUP_DIRECTORY"
 
 # Validate BORG_MODE
 if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != restore ] && [ "$BORG_MODE" != check ] && [ "$BORG_MODE" != "check-repair" ] && [ "$BORG_MODE" != test ]; then
@@ -36,8 +38,8 @@ fi
 rm -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/backup-is-running"
 
 # Get a list of all available borg archives
-if borg list "$BORG_BACKUP_DIRECTORY" &>/dev/null; then
-    borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | awk -F " " '{print $1","$3,$4}' > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
+if borg list &>/dev/null; then
+    borg list | grep "nextcloud-aio" | awk -F " " '{print $1","$3,$4}' > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
 else
     echo "" > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
 fi

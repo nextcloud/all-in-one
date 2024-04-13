@@ -39,9 +39,13 @@ if ! mountpoint -q "$MOUNT_DIR"; then
     exit 1
 fi
 
-# Check if target is empty
-if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != test ] && ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
-    echo "The repository is empty. Cannot perform check or restore."
+# Check if repo is uninitialized
+if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != test ] && ! borg info; then
+    if "$IS_REMOTE_BORG_REPO"; then
+        echo "The repository is uninitialized or cannot connect to remote. Cannot perform check or restore."
+    else
+        echo "The repository is uninitialized. Cannot perform check or restore."
+    fi
     exit 1
 fi
 
@@ -103,12 +107,17 @@ if [ "$BORG_MODE" = backup ]; then
     # Create backup folder
     mkdir -p "$BORG_BACKUP_DIRECTORY"
 
-    # Initialize the repository if the target is empty
-    if ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
+    # Initialize the repository if can't get info from target
+    if ! borg info; then
         # Don't initialize if already initialized
         if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
-            echo "No borg config file was found in the targeted directory."
-            echo "This might happen if the targeted directory is located on an external drive and the drive not connected anymore. You should check this."
+            if "$IS_REMOTE_BORG_REPO"; then
+                echo "Borg could not get info from the remote repo."
+                echo "This might be a failure to connect to the remote server. See the above borg info output for details."
+            else
+                echo "Borg could not get info from the targeted directory."
+                echo "This might happen if the targeted directory is located on an external drive and the drive not connected anymore. You should check this."
+            fi
             echo "If you instead want to initialize a new backup repository, you may delete the 'borg.config' file that is stored in the mastercontainer volume manually, which will allow you to initialize a new borg repository in the chosen directory:"
             echo "sudo docker exec nextcloud-aio-mastercontainer rm /mnt/docker-aio-config/data/borg.config"
             exit 1
@@ -116,28 +125,43 @@ if [ "$BORG_MODE" = backup ]; then
 
         echo "Initializing repository..."
         NEW_REPOSITORY=1
-        if ! borg init --debug --encryption=repokey-blake2 "$BORG_BACKUP_DIRECTORY"; then
+        if ! borg init --debug --encryption=repokey-blake2; then
             echo "Could not initialize borg repository."
-            rm -f "$BORG_BACKUP_DIRECTORY/config"
+            if ! "$IS_REMOTE_BORG_REPO"; then
+                # Originally we checked for presence of the config file instead of calling `borg info`. Likely `borg info`
+                # will error on a partially initialized repo, so this line is probably no longer necessary
+                rm -f "$BORG_BACKUP_DIRECTORY/config"
+            fi
             exit 1
         fi
-        borg config "$BORG_BACKUP_DIRECTORY" additional_free_space 2G
+        borg config :: additional_free_space 2G
 
-        # Fix too large Borg cache
-        # https://borgbackup.readthedocs.io/en/stable/faq.html#the-borg-cache-eats-way-too-much-disk-space-what-can-i-do
-        BORG_ID="$(borg config "$BORG_BACKUP_DIRECTORY" id)"
-        rm -r "/root/.cache/borg/$BORG_ID/chunks.archive.d"
-        touch "/root/.cache/borg/$BORG_ID/chunks.archive.d"
+        if ! "$IS_REMOTE_BORG_REPO"; then
+            # Fix too large Borg cache
+            # https://borgbackup.readthedocs.io/en/stable/faq.html#the-borg-cache-eats-way-too-much-disk-space-what-can-i-do
+            BORG_ID="$(borg config :: id)"
+            rm -r "/root/.cache/borg/$BORG_ID/chunks.archive.d"
+            touch "/root/.cache/borg/$BORG_ID/chunks.archive.d"
+        fi
+
+        if ! borg info; then
+            echo "Borg can't get info from the repo it created. Something is wrong."
+            exit 1
+        fi
 
         # Make a backup from the borg config file
-        if ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
-            echo "The borg config file wasn't created. Something is wrong."
-            exit 1
-        fi
         rm -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"
-        if ! cp "$BORG_BACKUP_DIRECTORY/config" "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"; then
-            echo "Could not copy config file to second place. Cannot perform backup."
-            exit 1
+        if "$IS_REMOTE_BORG_REPO"; then
+            # `borg config` does not include the encryption key, but nextcloud already stores that somewhere.
+            if ! borg config --list > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"; then
+                echo "Could not download remote config file. Cannot perform backup."
+                exit 1
+            fi
+        else
+            if ! cp "$BORG_BACKUP_DIRECTORY/config" "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"; then
+                echo "Could not copy config file to second place. Cannot perform backup."
+                exit 1
+            fi
         fi
 
         echo "Repository successfully initialized."
@@ -167,9 +191,9 @@ if [ "$BORG_MODE" = backup ]; then
     # Create the backup
     echo "Starting the backup..."
     get_start_time
-    if ! borg create "${BORG_OPTS[@]}" "${BORG_EXCLUDE[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/"; then
+    if ! borg create "${BORG_OPTS[@]}" "${BORG_EXCLUDE[@]}" "::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/"; then
         echo "Deleting the failed backup archive..."
-        borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-nextcloud-aio"
+        borg delete --stats "::$CURRENT_DATE-nextcloud-aio"
         echo "Backup failed!"
         echo "You might want to check the backup integrity via the AIO interface."
         if [ "$NEW_REPOSITORY" = 1 ]; then
@@ -188,14 +212,14 @@ if [ "$BORG_MODE" = backup ]; then
 
     # Prune archives
     echo "Pruning the archives..."
-    if ! borg prune --stats --glob-archives '*_*-nextcloud-aio' "${BORG_PRUNE_OPTS[@]}" "$BORG_BACKUP_DIRECTORY"; then
+    if ! borg prune --stats --glob-archives '*_*-nextcloud-aio' "${BORG_PRUNE_OPTS[@]}"; then
         echo "Failed to prune archives!"
         exit 1
     fi
 
     # Compact archives
     echo "Compacting the archives..."
-    if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
+    if ! borg compact; then
         echo "Failed to compact archives!"
         exit 1
     fi
@@ -212,19 +236,19 @@ if [ "$BORG_MODE" = backup ]; then
                 fi
             done
             echo "Starting the backup for additional volumes..."
-            if ! borg create "${BORG_OPTS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-docker-volumes" "/docker_volumes/"; then
+            if ! borg create "${BORG_OPTS[@]}" "::$CURRENT_DATE-additional-docker-volumes" "/docker_volumes/"; then
                 echo "Deleting the failed backup archive..."
-                borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-docker-volumes"
+                borg delete --stats "::$CURRENT_DATE-additional-docker-volumes"
                 echo "Backup of additional docker-volumes failed!"
                 exit 1
             fi
             echo "Pruning additional volumes..."
-            if ! borg prune --stats --glob-archives '*_*-additional-docker-volumes' "${BORG_PRUNE_OPTS[@]}" "$BORG_BACKUP_DIRECTORY"; then
+            if ! borg prune --stats --glob-archives '*_*-additional-docker-volumes' "${BORG_PRUNE_OPTS[@]}"; then
                 echo "Failed to prune additional docker-volumes archives!"
                 exit 1
             fi
             echo "Compacting additional volumes..."
-            if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
+            if ! borg compact; then
                 echo "Failed to compact additional docker-volume archives!"
                 exit 1
             fi
@@ -242,19 +266,19 @@ if [ "$BORG_MODE" = backup ]; then
                 EXCLUDE_DIRS+=(--exclude "/host_mounts/$directory/")
             done
             echo "Starting the backup for additional host mounts..."
-            if ! borg create "${BORG_OPTS[@]}" "${EXCLUDE_DIRS[@]}" "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts" "/host_mounts/"; then
+            if ! borg create "${BORG_OPTS[@]}" "${EXCLUDE_DIRS[@]}" "::$CURRENT_DATE-additional-host-mounts" "/host_mounts/"; then
                 echo "Deleting the failed backup archive..."
-                borg delete --stats "$BORG_BACKUP_DIRECTORY::$CURRENT_DATE-additional-host-mounts"
+                borg delete --stats "::$CURRENT_DATE-additional-host-mounts"
                 echo "Backup of additional host-mounts failed!"
                 exit 1
             fi
             echo "Pruning additional host mounts..."
-            if ! borg prune --stats --glob-archives '*_*-additional-host-mounts' "${BORG_PRUNE_OPTS[@]}" "$BORG_BACKUP_DIRECTORY"; then
+            if ! borg prune --stats --glob-archives '*_*-additional-host-mounts' "${BORG_PRUNE_OPTS[@]}"; then
                 echo "Failed to prune additional host-mount archives!"
                 exit 1
             fi
             echo "Compacting additional host mounts..."
-            if ! borg compact "$BORG_BACKUP_DIRECTORY"; then
+            if ! borg compact; then
                 echo "Failed to compact additional host-mount archives!"
                 exit 1
             fi
@@ -278,13 +302,13 @@ if [ "$BORG_MODE" = restore ]; then
 
     # Perform the restore
     if [ -n "$SELECTED_RESTORE_TIME" ]; then
-        SELECTED_ARCHIVE="$(borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | grep "$SELECTED_RESTORE_TIME" | awk -F " " '{print $1}' | head -1)"
+        SELECTED_ARCHIVE="$(borg list | grep "nextcloud-aio" | grep "$SELECTED_RESTORE_TIME" | awk -F " " '{print $1}' | head -1)"
     else
-        SELECTED_ARCHIVE="$(borg list "$BORG_BACKUP_DIRECTORY" | grep "nextcloud-aio" | awk -F " " '{print $1}' | sort -r | head -1)"
+        SELECTED_ARCHIVE="$(borg list | grep "nextcloud-aio" | awk -F " " '{print $1}' | sort -r | head -1)"
     fi
     echo "Restoring '$SELECTED_ARCHIVE'..."
     mkdir -p /tmp/borg
-    if ! borg mount "$BORG_BACKUP_DIRECTORY::$SELECTED_ARCHIVE" /tmp/borg; then
+    if ! borg mount "::$SELECTED_ARCHIVE" /tmp/borg; then
         echo "Could not mount the backup!"
         exit 1
     fi
@@ -394,7 +418,7 @@ if [ "$BORG_MODE" = check ]; then
     echo "Checking the backup integrity..."
 
     # Perform the check
-    if ! borg check -v --verify-data "$BORG_BACKUP_DIRECTORY"; then
+    if ! borg check -v --verify-data; then
         echo "Some errors were found while checking the backup integrity!"
         echo "Check the AIO interface for advices on how to proceed now!"
         exit 1
@@ -412,7 +436,7 @@ if [ "$BORG_MODE" = "check-repair" ]; then
     echo "Checking the backup integrity and repairing it..."
 
     # Perform the check-repair
-    if ! echo YES | borg check -v --repair "$BORG_BACKUP_DIRECTORY"; then
+    if ! echo YES | borg check -v --repair; then
         echo "Some errors were found while checking and repairing the backup integrity!"
         exit 1
     fi
@@ -425,19 +449,29 @@ fi
 
 # Do the backup test
 if [ "$BORG_MODE" = test ]; then
-    if ! [ -d "$BORG_BACKUP_DIRECTORY" ]; then
-        echo "No 'borg' directory in the given backup directory found!"
-        echo "Only the files/folders below have been found in the given directory."
-        ls -a "$MOUNT_DIR"
-        echo "Please adjust the directory so that the borg archive is positioned in a folder named 'borg' inside the given directory!"
-        exit 1
-    elif ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
-        echo "A 'borg' directory was found but could not find the borg archive."
-        echo "Only the files/folders below have been found in the borg directory."
-        ls -a "$BORG_BACKUP_DIRECTORY"
-        echo "The archive and most importantly the config file must be positioned directly in the 'borg' subfolder."
-        exit 1
-    elif ! borg list "$BORG_BACKUP_DIRECTORY"; then
+    if "$IS_REMOTE_BORG_REPO"; then
+        if ! borg info; then
+            echo "Borg could not get info from the remote repo."
+            echo "See the above borg info output for details."
+            exit 1
+        fi
+    else
+        if ! [ -d "$BORG_BACKUP_DIRECTORY" ]; then
+            echo "No 'borg' directory in the given backup directory found!"
+            echo "Only the files/folders below have been found in the given directory."
+            ls -a "$MOUNT_DIR"
+            echo "Please adjust the directory so that the borg archive is positioned in a folder named 'borg' inside the given directory!"
+            exit 1
+        elif ! [ -f "$BORG_BACKUP_DIRECTORY/config" ]; then
+            echo "A 'borg' directory was found but could not find the borg archive."
+            echo "Only the files/folders below have been found in the borg directory."
+            ls -a "$BORG_BACKUP_DIRECTORY"
+            echo "The archive and most importantly the config file must be positioned directly in the 'borg' subfolder."
+            exit 1
+        fi
+    fi
+
+    if ! borg list; then
         echo "The entered path seems to be valid but could not open the backup archive."
         echo "Most likely the entered password was wrong so please adjust it accordingly!"
         exit 1
