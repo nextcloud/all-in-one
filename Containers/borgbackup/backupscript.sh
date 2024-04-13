@@ -34,8 +34,8 @@ for volume in "${DEFAULT_VOLUMES[@]}"; do
 done
 
 # Check if target is mountpoint
-if ! mountpoint -q /mnt/borgbackup; then
-    echo "/mnt/borgbackup is not a mountpoint which is not allowed."
+if ! mountpoint -q "$MOUNT_DIR"; then
+    echo "$MOUNT_DIR is not a mountpoint which is not allowed."
     exit 1
 fi
 
