@@ -174,10 +174,14 @@
                         {% endif %}
 
                         {% if borg_backup_host_location == '' or borg_restore_password == '' or borg_backup_mode not in ['test', 'check', ''] or backup_exit_code > 0 %}
-                            Please enter the location of the backup archive on your host and the password of the backup archive below:<br><br>
+                            Please enter the location of the backup archive on your host or a
+                            <a href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>
+                            if stored remotely; and the password of the backup archive below:
+                            <br><br>
                             <form method="POST" action="/api/configuration" class="xhr">
-                                <input type="text" name="borg_restore_host_location" value="{{borg_backup_host_location}}" placeholder="/mnt/backup"/>
-                                <input type="text" name="borg_restore_password" value="{{borg_restore_password}}" placeholder="enter the borg password"/>
+                                <label>Local backup location</label> <input type="text" name="borg_restore_host_location" value="{{borg_backup_host_location}}" placeholder="/mnt/backup"/><br>
+                                <label>Remote borg repo</label> <input type="text" name="borg_restore_remote_repo" value="{{borg_remote_repo}}" placeholder="user@host:/path/to/repo"/><br>
+                                <label>Borg passphrase</label> <input type="text" name="borg_restore_password" value="{{borg_restore_password}}" placeholder="enter the borg password"/><br>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input class="button" type="submit" value="Submit location and password" />
@@ -366,9 +370,14 @@
                     {% else %}
                         {% if is_backup_container_running == false and borg_backup_host_location == "" and isApacheStarting != true %}
                             <h2>Backup and restore</h2>
-                            Please type in the directory where backups will get created on the host system below. In best case make sure that you choose a location on a separate drive and not on your root drive.<br><br>
+                            Please fill in the directory where backups will get created on the host system below. In best case make sure that you choose a location on a separate drive and not on your root drive.
+                            To store backups remotely instead, fill in the
+                            <a href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>
+                            (You still need a local backup location for storing some local housekeeping).
+                            <br><br>
                             <form method="POST" action="/api/configuration" class="xhr">
-                                <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/>
+                                <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
+                                <label>Remote borg repo</label> <input type="text" name="borg_remote_repo" placeholder="user@host:/path/to/repo"/><br>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input class="button" type="submit" value="Submit backup location" />
@@ -399,7 +408,8 @@
                                     {% if has_backup_run_once == false %}
                                         You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on <b>Create Backup</b> for testing the new value.<br /><br />
                                         <form method="POST" action="/api/configuration" class="xhr">
-                                            <input type="text" value="{{borg_backup_host_location}}" name="borg_backup_host_location" placeholder="/mnt/backup" />
+                                            <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
+                                            <label>Remote borg repo</label> <input type="text" name="borg_remote_repo" placeholder="user@host:/path/to/repo"/><br>
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                             <input class="button" type="submit" value="Set backup location again" />
@@ -425,7 +435,11 @@
                                 Backed up will get all important data of your Nextcloud AIO instance like the database, your files and configuration files of the mastercontainer and else. <br /><br/>
                                 The backup itself uses a tool that is called <a href="https://github.com/borgbackup/borg#what-is-borgbackup"><b>BorgBackup</b></a> which is a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
                                 By using this tool, backups are incremental, differential, compressed and encrypted – so only the first backup will take a while. Further backups should be fast as only changes are taken into account.<br /><br/>
-                                Backups get created in the following directory on the host: <b>{{ borg_backup_host_location }}/borg</b> <br /><br/>
+                                {% if borg_remote_repo != '' %}
+                                    Backups get created remotely at <b>{{ borg_remote_repo }}</b><br/><br/>
+                                {% else %}
+                                    Backups get created in the following directory on the host: <b>{{ borg_backup_host_location }}/borg</b> <br /><br/>
+                                {% endif %}
                                 Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app - but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.<br><br>
                                 Regarding backup retention, see <b><a href="https://github.com/nextcloud/all-in-one#how-to-adjust-borgs-retention-policy">this</a></b>.<br><br>
                                 Daily backups can get enabled after the initial backup is done. Enabling this also allows to enable an option that allows to update all containers, Nextcloud and its apps automatically.<br><br>
@@ -441,10 +455,12 @@
                                     </form>
 
                                     {% if has_backup_run_once == false %}
-                                        <h3>Reset backup host location</h3>
-                                        If the configured backup host location <b>{{ borg_backup_host_location }}</b> is wrong, you can reset it by clicking on the button below.<br><br/>
+                                        <h3>Reset backup location</h3>
+                                        If the configured backup host location <b>{{ borg_backup_host_location }}</b>
+                                        {% if borg_remote_repo %}or the remote repo <b>{{ borg_remote_repo }}</b> is wrong {% endif %},
+                                        you can reset it by clicking on the button below.<br><br/>
                                         <form method="POST" action="/api/configuration" class="xhr">
-                                            <input type="hidden" name="delete_borg_backup_host_location" value="yes"/>
+                                            <input type="hidden" name="delete_borg_backup_location_vars" value="yes"/>
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                             <input class="button" type="submit" value="Reset backup location" />

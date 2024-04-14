@@ -434,29 +434,58 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
-    public function DeleteBorgBackupHostLocation() : void {
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public function SetBorgRemoteRepo(string $repo) : void {
+        $this->ValidateBorgRemoteRepo($repo);
+
         $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = '';
+        $config['borg_remote_repo'] = $repo;
         $this->WriteConfig($config);
     }
 
-        /**
+    private function ValidateBorgRemoteRepo(string $repo) : void {
+        $commonMsg = "For valid urls, see the remote examples at https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls";
+        if ($repo === "") {
+            // Ok, remote repo is optional
+        } elseif (!str_contains($repo, "@")) {
+            throw new InvalidSettingConfigurationException("The remote repo must contain '@'. $commonMsg");
+        } elseif (!str_contains($repo, ":")) {
+            throw new InvalidSettingConfigurationException("The remote repo must contain ':'. $commonMsg");
+        }
+    }
+
+    public function DeleteBorgBackupLocationVars() : void {
+        $config = $this->GetConfig();
+        $config['borg_backup_host_location'] = '';
+        $config['borg_remote_repo'] = '';
+        $this->WriteConfig($config);
+    }
+
+    /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetBorgRestoreHostLocationAndPassword(string $location, string $password) : void {
-        if ($location === '') {
-            throw new InvalidSettingConfigurationException("Please enter a path!");
+    public function SetBorgRestoreLocationVarsAndPassword(string $location, string $repo, string $password) : void {
+        if ($location === '' && $repo === '') {
+            throw new InvalidSettingConfigurationException("Please enter a path or a remote repo url!");
+        } elseif ($location !== '' && $repo !== '') {
+            throw new InvalidSettingConfigurationException("Location and remote repo url are mutually exclusive when restoring!");
         }
         
-        $isValidPath = false;
-        if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
-            $isValidPath = true;
-        } elseif ($location === 'nextcloud_aio_backupdir') {
-            $isValidPath = true;
-        }
+        if ($location !== '') {
+            $isValidPath = false;
+            if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
+                $isValidPath = true;
+            } elseif ($location === 'nextcloud_aio_backupdir') {
+                $isValidPath = true;
+            }
 
-        if (!$isValidPath) {
-            throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'!");
+            if (!$isValidPath) {
+                throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'!");
+            }
+        } else {
+            $this->ValidateBorgRemoteRepo($repo);
         }
 
         if ($password === '') {
@@ -465,6 +494,7 @@ class ConfigurationManager
 
         $config = $this->GetConfig();
         $config['borg_backup_host_location'] = $location;
+        $config['borg_remote_repo'] = $repo;
         $config['borg_restore_password'] = $password;
         $config['instance_restore_attempt'] = 1;
         $this->WriteConfig($config);
@@ -557,6 +587,15 @@ class ConfigurationManager
         }
 
         return $config['borg_backup_host_location'];
+    }
+
+    public function GetBorgRemoteRepo() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['borg_remote_repo'])) {
+            $config['borg_remote_repo'] = '';
+        }
+
+        return $config['borg_remote_repo'];
     }
 
     public function GetBorgRestorePassword() : string {

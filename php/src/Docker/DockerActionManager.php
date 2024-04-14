@@ -285,6 +285,8 @@ class DockerActionManager
                     $replacements[1] = $this->configurationManager->GetDomain();
                 } elseif ($out[1] === 'AIO_TOKEN') {
                     $replacements[1] = $this->configurationManager->GetToken();
+                } elseif ($out[1] === 'BORGBACKUP_REMOTE_REPO') {
+                    $replacements[1] = $this->configurationManager->GetBorgRemoteRepo();
                 } elseif ($out[1] === 'BORGBACKUP_MODE') {
                     $replacements[1] = $this->configurationManager->GetBackupMode();
                 } elseif ($out[1] === 'AIO_URL') {
