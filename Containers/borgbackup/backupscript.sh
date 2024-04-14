@@ -41,7 +41,7 @@ fi
 
 # Check if repo is uninitialized
 if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != test ] && ! borg info; then
-    if "$IS_REMOTE_BORG_REPO"; then
+    if [ -n "$BORG_REMOTE_REPO" ]; then
         echo "The repository is uninitialized or cannot connect to remote. Cannot perform check or restore."
     else
         echo "The repository is uninitialized. Cannot perform check or restore."
@@ -111,7 +111,7 @@ if [ "$BORG_MODE" = backup ]; then
     if ! borg info; then
         # Don't initialize if already initialized
         if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
-            if "$IS_REMOTE_BORG_REPO"; then
+            if [ -n "$BORG_REMOTE_REPO" ]; then
                 echo "Borg could not get info from the remote repo."
                 echo "This might be a failure to connect to the remote server. See the above borg info output for details."
             else
@@ -127,7 +127,7 @@ if [ "$BORG_MODE" = backup ]; then
         NEW_REPOSITORY=1
         if ! borg init --debug --encryption=repokey-blake2; then
             echo "Could not initialize borg repository."
-            if ! "$IS_REMOTE_BORG_REPO"; then
+            if [ -z "$BORG_REMOTE_REPO" ]; then
                 # Originally we checked for presence of the config file instead of calling `borg info`. Likely `borg info`
                 # will error on a partially initialized repo, so this line is probably no longer necessary
                 rm -f "$BORG_BACKUP_DIRECTORY/config"
@@ -136,7 +136,7 @@ if [ "$BORG_MODE" = backup ]; then
         fi
         borg config :: additional_free_space 2G
 
-        if ! "$IS_REMOTE_BORG_REPO"; then
+        if [ -z "$BORG_REMOTE_REPO" ]; then
             # Fix too large Borg cache
             # https://borgbackup.readthedocs.io/en/stable/faq.html#the-borg-cache-eats-way-too-much-disk-space-what-can-i-do
             BORG_ID="$(borg config :: id)"
@@ -151,7 +151,7 @@ if [ "$BORG_MODE" = backup ]; then
 
         # Make a backup from the borg config file
         rm -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"
-        if "$IS_REMOTE_BORG_REPO"; then
+        if [ -n "$BORG_REMOTE_REPO" ]; then
             # `borg config` does not include the encryption key, but nextcloud already stores that somewhere.
             if ! borg config --list > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"; then
                 echo "Could not download remote config file. Cannot perform backup."
@@ -342,8 +342,9 @@ if [ "$BORG_MODE" = restore ]; then
     # Save current aio password
     AIO_PASSWORD="$(jq '.password' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
 
-    # Save current path
+    # Save current backup location vars
     BORG_LOCATION="$(jq '.borg_backup_host_location' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+    REMOTE_REPO="$(jq '.borg_remote_repo' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
 
     # Save current nextcloud datadir
     if grep -q '"nextcloud_datadir":' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json; then
@@ -364,8 +365,10 @@ if [ "$BORG_MODE" = restore ]; then
     CONTENTS="$(jq '."backup-mode" = "restore"' /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
     echo -E "${CONTENTS}" > /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
 
-    # Reset the backup path to the currently used one
+    # Reset the backup location vars to the currently used one
     CONTENTS="$(jq ".borg_backup_host_location = $BORG_LOCATION" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
+    echo -E "${CONTENTS}" > /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
+    CONTENTS="$(jq ".borg_remote_repo = $REMOTE_REPO" /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json)"
     echo -E "${CONTENTS}" > /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json
 
     # Reset the AIO password to the currently used one
@@ -449,7 +452,7 @@ fi
 
 # Do the backup test
 if [ "$BORG_MODE" = test ]; then
-    if "$IS_REMOTE_BORG_REPO"; then
+    if [ -n "$BORG_REMOTE_REPO" ]; then
         if ! borg info; then
             echo "Borg could not get info from the remote repo."
             echo "See the above borg info output for details."
