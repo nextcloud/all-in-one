@@ -20,6 +20,13 @@ export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 if [ -n "$BORG_REMOTE_REPO" ]; then
     export BORG_REPO="$BORG_REMOTE_REPO"
+
+    # Location to create the borg ssh pub/priv key
+    export BORGBACKUP_KEY="/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/id_borg"
+
+    # Accept any host key the first time connecting to the remote. Strictly speaking should be provided by user but you'd
+    # have to be very unlucky to get MitM'ed on your first connection.
+    export BORG_RSH="ssh -o StrictHostKeyChecking=accept-new -i $BORGBACKUP_KEY"
 else
     export BORG_REPO="$BORG_BACKUP_DIRECTORY"
 fi

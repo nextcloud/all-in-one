@@ -61,6 +61,12 @@ if [ "$BORG_MODE" = backup ] || [ "$BORG_MODE" = restore ]; then
     touch "/nextcloud_aio_volumes/nextcloud_aio_database_dump/backup-is-running"
 fi
 
+if [ -n "$BORG_REMOTE_REPO" ] && ! [ -f "$BORGBACKUP_KEY" ]; then
+    echo "First run, creating borg ssh key"
+    ssh-keygen  -f "$BORGBACKUP_KEY" -N ""
+    echo "You should configure the remote to accept this public key: $(cat $BORGBACKUP_KEY.pub)"
+fi
+
 # Do the backup
 if [ "$BORG_MODE" = backup ]; then
 

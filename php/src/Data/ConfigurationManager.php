@@ -598,6 +598,14 @@ class ConfigurationManager
         return $config['borg_remote_repo'];
     }
 
+    public function GetBorgPublicKey() : string {
+        if (!file_exists(DataConst::GetBackupPublicKey())) {
+            return "";
+        }
+        
+        return trim(file_get_contents(DataConst::GetBackupPublicKey()));
+    }
+
     public function GetBorgRestorePassword() : string {
         $config = $this->GetConfig();
         if(!isset($config['borg_restore_password'])) {
