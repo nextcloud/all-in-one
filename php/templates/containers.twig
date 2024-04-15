@@ -414,7 +414,16 @@
                                         </details>
                                     {% endif %}
                                     {% if has_backup_run_once == false %}
-                                        <p>You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on <strong>Create Backup</strong> to test the new value.</p>
+                                        <p>The initial backup was not successful.</p>
+                                        
+                                        {% if borg_remote_repo %}
+                                        <p>
+                                            You may still need to authorize this pubkey on your borg remote:<br><b>{{ borg_public_key }}</b><br>
+                                            To try again, click <b>Create backup</b>.
+                                        </p>
+                                        {% endif %}
+                                        
+                                        <p>You may change the backup location again. After submitting the new value, you need to click on <b>Create Backup</b> for testing the new value.</p>
                                         <form method="POST" action="/api/configuration" class="xhr">
                                             <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
                                             <label>Remote borg repo</label> <input type="text" name="borg_remote_repo" placeholder="user@host:/path/to/repo"/><br>

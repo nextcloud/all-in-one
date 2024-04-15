@@ -11,7 +11,8 @@ RUN set -ex; \
         rsync \
         fuse \
         py3-llfuse \
-        jq
+        jq \
+        openssh-client
 
 VOLUME /root
 
