@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
 FROM caddy:2.7.6-alpine as caddy
 
-FROM httpd:2.4.58-alpine3.19
+FROM httpd:2.4.59-alpine3.19
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 

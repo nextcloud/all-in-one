@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.2.17-fpm-alpine3.19
+FROM php:8.2.18-fpm-alpine3.19
 
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 10G
@@ -10,12 +10,12 @@ ENV SOURCE_LOCATION /usr/src/nextcloud
 ENV NEXTCLOUD_VERSION 28.0.4
 ENV AIO_TOKEN 123456
 ENV AIO_URL localhost
-COPY supervisord.conf /supervisord.conf
 # AIO settings end # Do not remove or change this line!
 
 COPY --chmod=775 *.sh /
 COPY --chmod=774 upgrade.exclude /upgrade.exclude
 COPY config/*.php /
+COPY supervisord.conf /supervisord.conf
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
@@ -44,6 +44,8 @@ RUN set -ex; \
         icu-dev \
         imagemagick-dev \
         imagemagick-svg \
+        imagemagick-heic \
+        imagemagick-tiff \
         libevent-dev \
         libjpeg-turbo-dev \
         libmcrypt-dev \
@@ -196,6 +198,8 @@ RUN set -ex; \
     /var/log/supervisord \
     /var/run/supervisord \
     ; \
+    chown www-data:root -R /var/log/supervisord; \
+    chown www-data:root -R /var/run/supervisord; \
     \
     apk add --no-cache \
         bash \
@@ -211,6 +215,8 @@ RUN set -ex; \
         bind-tools \
         imagemagick \
         imagemagick-svg \
+        imagemagick-heic \
+        imagemagick-tiff \
         coreutils; \
     \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \

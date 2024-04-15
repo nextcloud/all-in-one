@@ -221,6 +221,8 @@ connectionsperhost = 8
 # register an account at "https://www.maxmind.com/en/geolite2/signup" for
 # free. See "https://dev.maxmind.com/geoip/geoip2/geolite2/" for further
 # information.
+# You can also get a free GeoIP database from https://db-ip.com/ without
+# registration. Provide the URL below in this case.
 # Leave empty to disable GeoIP lookups.
 #license =
 

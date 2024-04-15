@@ -498,6 +498,14 @@ php /var/www/html/occ maintenance:update:htaccess
 # Revert dbpersistent setting to check if it fixes too many db connections
 php /var/www/html/occ config:system:set dbpersistent --value=false --type=bool
 
+if [ "$DISABLE_BRUTEFORCE_PROTECTION" = yes ]; then
+    php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=false
+    php /var/www/html/occ config:system:set ratelimit.protection.enabled --type=bool --value=false
+else
+    php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=true
+    php /var/www/html/occ config:system:set ratelimit.protection.enabled --type=bool --value=true
+fi
+
 # Disallow creating local external storages when nothing was mounted
 if [ -z "$NEXTCLOUD_MOUNT" ]; then
     php /var/www/html/occ config:system:set files_external_allow_create_new_local --type=bool --value=false
@@ -623,6 +631,15 @@ fi
 
 # Talk
 if [ "$TALK_ENABLED" = 'yes' ]; then
+    set -x
+    if [ -z "$TALK_HOST" ] || echo "$TALK_HOST" | grep -q "nextcloud-.*-talk"; then
+        TALK_HOST="$NC_DOMAIN"
+        HPB_PATH="/standalone-signaling/"
+    fi
+    if [ -z "$TURN_DOMAIN" ]; then
+        TURN_DOMAIN="$TALK_HOST"
+    fi
+    set +x
     if ! [ -d "/var/www/html/custom_apps/spreed" ]; then
         php /var/www/html/occ app:install spreed
     elif [ "$(php /var/www/html/occ config:app:get spreed enabled)" != "yes" ]; then
@@ -632,15 +649,16 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     fi
     # Based on https://github.com/nextcloud/spreed/issues/960#issuecomment-416993435
     if [ -z "$(php /var/www/html/occ talk:turn:list --output="plain")" ]; then
-        php /var/www/html/occ talk:turn:add turn "$NC_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
+        # shellcheck disable=SC2153
+        php /var/www/html/occ talk:turn:add turn "$TURN_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
     fi
     STUN_SERVER="$(php /var/www/html/occ talk:stun:list --output="plain")"
     if [ -z "$STUN_SERVER" ] || echo "$STUN_SERVER" | grep -oP '[a-zA-Z.:0-9]+' | grep -q "^stun.nextcloud.com:443$"; then
-        php /var/www/html/occ talk:stun:add "$NC_DOMAIN:$TALK_PORT"
+        php /var/www/html/occ talk:stun:add "$TURN_DOMAIN:$TALK_PORT"
         php /var/www/html/occ talk:stun:delete "stun.nextcloud.com:443"
     fi
-    if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://$NC_DOMAIN/standalone-signaling/"; then
-        php /var/www/html/occ talk:signaling:add "https://$NC_DOMAIN/standalone-signaling/" "$SIGNALING_SECRET" --verify
+    if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://$TALK_HOST$HPB_PATH"; then
+        php /var/www/html/occ talk:signaling:add "https://$TALK_HOST$HPB_PATH" "$SIGNALING_SECRET" --verify
     fi
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/spreed" ]; then
