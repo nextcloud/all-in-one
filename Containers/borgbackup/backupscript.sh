@@ -155,15 +155,14 @@ if [ "$BORG_MODE" = backup ]; then
             exit 1
         fi
 
-        # Make a backup from the borg config file
         rm -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"
         if [ -n "$BORG_REMOTE_REPO" ]; then
-            # `borg config` does not include the encryption key, but nextcloud already stores that somewhere.
-            if ! borg config --list > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"; then
-                echo "Could not download remote config file. Cannot perform backup."
-                exit 1
-            fi
+            # `borg config` does not support remote repos so instead create a dummy file and rely on the remote to avoid
+            # corruption of the config file (which contains the encryption key). We don't actually use the contents of
+            # this file anywhere, so a touch is all we need so we remember we already initialized the repo.
+            touch "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"
         else
+            # Make a backup from the borg config file
             if ! cp "$BORG_BACKUP_DIRECTORY/config" "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config"; then
                 echo "Could not copy config file to second place. Cannot perform backup."
                 exit 1
