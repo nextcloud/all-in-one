@@ -38,6 +38,11 @@
                   "ip_binding": "",
                   "port_number": "4190",
                   "protocol": "tcp"
+                },
+                {
+                  "ip_binding": "",
+                  "port_number": "8080",
+                  "protocol": "tcp"
                 }
             ],
             "environment": [
