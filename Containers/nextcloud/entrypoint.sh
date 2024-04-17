@@ -537,8 +537,10 @@ fi
 chmod 775 -R /var/www/html/custom_apps/notify_push/bin/
 php /var/www/html/occ config:system:set trusted_proxies 0 --value="127.0.0.1"
 php /var/www/html/occ config:system:set trusted_proxies 1 --value="::1"
+# IP of docker network gateway
+php /var/www/html/occ config:system:set trusted_proxies 2 --value="$(ip r | grep default | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+\.1")"
 if [ -n "$ADDITIONAL_TRUSTED_PROXY" ]; then
-    php /var/www/html/occ config:system:set trusted_proxies 2 --value="$ADDITIONAL_TRUSTED_PROXY"
+    php /var/www/html/occ config:system:set trusted_proxies 3 --value="$ADDITIONAL_TRUSTED_PROXY"
 fi
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
     php /var/www/html/occ config:system:set trusted_domains 2 --value="$ADDITIONAL_TRUSTED_DOMAIN"
