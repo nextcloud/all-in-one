@@ -498,6 +498,14 @@ php /var/www/html/occ maintenance:update:htaccess
 # Revert dbpersistent setting to check if it fixes too many db connections
 php /var/www/html/occ config:system:set dbpersistent --value=false --type=bool
 
+if [ "$DISABLE_BRUTEFORCE_PROTECTION" = yes ]; then
+    php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=false
+    php /var/www/html/occ config:system:set ratelimit.protection.enabled --type=bool --value=false
+else
+    php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=true
+    php /var/www/html/occ config:system:set ratelimit.protection.enabled --type=bool --value=true
+fi
+
 # Disallow creating local external storages when nothing was mounted
 if [ -z "$NEXTCLOUD_MOUNT" ]; then
     php /var/www/html/occ config:system:set files_external_allow_create_new_local --type=bool --value=false
@@ -628,6 +636,9 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
         TALK_HOST="$NC_DOMAIN"
         HPB_PATH="/standalone-signaling/"
     fi
+    if [ -z "$TURN_DOMAIN" ]; then
+        TURN_DOMAIN="$TALK_HOST"
+    fi
     set +x
     if ! [ -d "/var/www/html/custom_apps/spreed" ]; then
         php /var/www/html/occ app:install spreed
@@ -639,11 +650,11 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     # Based on https://github.com/nextcloud/spreed/issues/960#issuecomment-416993435
     if [ -z "$(php /var/www/html/occ talk:turn:list --output="plain")" ]; then
         # shellcheck disable=SC2153
-        php /var/www/html/occ talk:turn:add turn "$TALK_HOST:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
+        php /var/www/html/occ talk:turn:add turn "$TURN_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
     fi
     STUN_SERVER="$(php /var/www/html/occ talk:stun:list --output="plain")"
     if [ -z "$STUN_SERVER" ] || echo "$STUN_SERVER" | grep -oP '[a-zA-Z.:0-9]+' | grep -q "^stun.nextcloud.com:443$"; then
-        php /var/www/html/occ talk:stun:add "$TALK_HOST:$TALK_PORT"
+        php /var/www/html/occ talk:stun:add "$TURN_DOMAIN:$TALK_PORT"
         php /var/www/html/occ talk:stun:delete "stun.nextcloud.com:443"
     fi
     if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://$TALK_HOST$HPB_PATH"; then

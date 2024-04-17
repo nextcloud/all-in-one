@@ -27,7 +27,9 @@ spec:
         - env:
             - name: TALK_MAX_STREAM_BITRATE
               value: "{{ .Values.TALK_MAX_STREAM_BITRATE }}"
-            - name: INTERNAL_SECRET
+            - name: TALK_MAX_STREAM_BITRATE
+              value: "{{ .Values.TALK_MAX_SCREEN_BITRATE }}"
+            - name: TALK_MAX_SCREEN_BITRATE
               value: "{{ .Values.TALK_INTERNAL_SECRET }}"
             - name: NC_DOMAIN
               value: "{{ .Values.NC_DOMAIN }}"

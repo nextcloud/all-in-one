@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:25.0.5-cli as docker
+FROM docker:26.0.1-cli as docker
 
 # Caddy is a requirement
 FROM caddy:2.7.6-alpine as caddy
 
 # From https://github.com/docker-library/php/blob/master/8.3/alpine3.19/fpm/Dockerfile
-FROM php:8.3.4-fpm-alpine3.19
+FROM php:8.3.6-fpm-alpine3.19
 
 EXPOSE 80
 EXPOSE 8080
