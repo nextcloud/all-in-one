@@ -4,11 +4,13 @@ FROM elasticsearch:8.13.0
 
 USER root
 
+ARG DEBIAN_FRONTEND noninteractive
+
 # hadolint ignore=DL3008
 RUN set -ex; \
     \
-    export DEBIAN_FRONTEND=noninteractive; \
     apt-get update; \
+    apt-get upgrade -y; \
     apt-get install -y --no-install-recommends \
         tzdata \
     ; \

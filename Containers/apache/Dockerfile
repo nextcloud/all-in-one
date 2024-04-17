@@ -14,6 +14,7 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 VOLUME /mnt/data
 
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
     groupmod -g 333 xfs; \
     usermod -u 333 -g 333 xfs; \

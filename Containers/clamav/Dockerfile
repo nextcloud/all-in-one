@@ -5,6 +5,7 @@ FROM clamav/clamav:1.3.0-47
 COPY clamav.conf /tmp/clamav.conf
 
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache tzdata; \
     cat /tmp/clamav.conf >> /etc/clamav/clamd.conf; \
     rm /tmp/clamav.conf; \
