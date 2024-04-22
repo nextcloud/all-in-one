@@ -56,7 +56,7 @@ This container bundles LLDAP server and auto-configures your nextcloud instance 
     php /var/www/html/occ ldap:set-config "$CONF_NAME" turnOnPasswordChange         0
 
     # Test the ldap config
-    php /var/www/html/occ ldap:test-config "$NAME"
+    php /var/www/html/occ ldap:test-config "$CONF_NAME"
   
     # Exit the container shell
     exit
