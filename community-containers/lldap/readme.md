@@ -22,38 +22,39 @@ This container bundles LLDAP server and auto-configures your nextcloud instance 
     php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentPassword "<your-password>"
 
     # Set the ldap config
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentName                "uid=ro_admin,ou=people,$BASE_DN"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBase                     "$BASE_DN"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBaseGroups               "$BASE_DN"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBaseUsers                "$BASE_DN"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapCacheTTL                 600
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapConfigurationActive      1
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapEmailAttribute           "mail"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapExperiencedAdmin         0
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGidNumber                "gidNumber"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupDisplayName         "cn"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilter              "(&(objectclass=groupOfUniqueNames))"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterGroups        ""
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterMode          0
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterObjectclass   "groupOfUniqueNames"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupMemberAssocAttr     "uniqueMember"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapHost                     "nextcloud-aio-lldap"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterAttributes    "uid"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterEmail         0
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterUsername      1
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapMatchingRuleInChainState "unknown"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapNestedGroups             0
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapPagingSize               500
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapPort                     3890
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapTLS                      0
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserAvatarRule           "default"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserDisplayName          "displayname"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilter               "(&(objectClass=person)(uid=%uid))"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilterMode           1
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilterObjectclass    "person"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUuidGroupAttribute       "auto"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUuidUserAttribute        "auto"
-    php /var/www/html/occ ldap:set-config "$CONF_NAME" turnOnPasswordChange         0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentName                 "cn=admin,ou=people,$BASE_DN"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBase                      "$BASE_DN"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBaseGroups                "$BASE_DN"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBaseUsers                 "$BASE_DN"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapCacheTTL                  600
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapConfigurationActive       1
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapEmailAttribute            "mail"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapExperiencedAdmin          0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGidNumber                 "gidNumber"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupDisplayName          "cn"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilter               "(&(objectclass=groupOfUniqueNames))"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterGroups         "(&(|(objectclass=groupOfUniqueNames)))"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterMode           0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterObjectclass    "groupOfUniqueNames"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupMemberAssocAttr      "uniqueMember"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapHost                      "ldap://nextcloud-aio-lldap"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterAttributes     "(&(|(objectclass=person))(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterEmail          1
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterUsername       1
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapMatchingRuleInChainState  "unknown"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapNestedGroups              0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapPagingSize                500
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapPort                      3890
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapTLS                       0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserAvatarRule            "default"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserDisplayName           "cb"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilter                "(|(objectclass=person))"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilterMode            0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilterObjectclass     "person"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUuidGroupAttribute        "auto"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUuidUserAttribute         "auto"
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" turnOnPasswordChange          0
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" useMemberOfToDetectMembership 1
 
     # Test the ldap config
     php /var/www/html/occ ldap:test-config "$CONF_NAME"
