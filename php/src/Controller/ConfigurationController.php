@@ -44,7 +44,7 @@ class ConfigurationController
 
             if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_remote_repo']) || isset($request->getParsedBody()['borg_restore_password'])) {
                 $restoreLocation = $request->getParsedBody()['borg_restore_host_location'] ?? '';
-                $borgRemoteRepo = $request->getParsedBody()['borg_remote_repo'] ?? '';
+                $borgRemoteRepo = $request->getParsedBody()['borg_restore_remote_repo'] ?? '';
                 $borgPassword = $request->getParsedBody()['borg_restore_password'] ?? '';
                 $this->configurationManager->SetBorgRestoreLocationVarsAndPassword($restoreLocation, $borgRemoteRepo, $borgPassword);
             }
