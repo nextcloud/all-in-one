@@ -22,6 +22,7 @@ This container bundles LLDAP server and auto-configures your nextcloud instance 
     php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentPassword "<your-password>"
 
     # Set the ldap config
+    php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAdminGroup                "lldap_admin"
     php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentName                 "cn=admin,ou=people,$BASE_DN"
     php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBase                      "$BASE_DN"
     php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBaseGroups                "$BASE_DN"
