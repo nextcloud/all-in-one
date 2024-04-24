@@ -15,6 +15,7 @@ RUN set -ex; \
 
 FROM alpine:3.18.6
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         tzdata \
         ca-certificates \

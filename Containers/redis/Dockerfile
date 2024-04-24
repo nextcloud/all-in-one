@@ -5,6 +5,7 @@ FROM redis:7.2.4-alpine
 COPY --chmod=775 start.sh /start.sh
 
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache openssl bash; \
     \
 # Give root a random password

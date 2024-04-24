@@ -3,12 +3,13 @@
 FROM collabora/code:24.04.1.3.1
 
 USER root
+ARG DEBIAN_FRONTEND noninteractive
 
 # hadolint ignore=DL3008
 RUN set -ex; \
     \
     apt-get update; \
-    export DEBIAN_FRONTEND=noninteractive; \
+    apt-get upgrade -y; \
     apt-get install -y --no-install-recommends \
         tzdata \
         netcat-openbsd \

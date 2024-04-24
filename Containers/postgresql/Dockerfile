@@ -7,6 +7,7 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=775 init-user-db.sh /docker-entrypoint-initdb.d/init-user-db.sh
 
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         bash \
         openssl \

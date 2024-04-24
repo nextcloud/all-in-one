@@ -23,6 +23,7 @@ VOLUME /var/www/html
 # Custom: change id of www-data user as it needs to be the same like on old installations
 # hadolint ignore=SC2086,DL3003
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
     deluser www-data; \
     groupmod -g 333 xfs; \

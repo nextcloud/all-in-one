@@ -10,6 +10,7 @@ ENV SKIP_VERIFY false
 ENV HPB_PATH /standalone-signaling/
 
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         ca-certificates \
         tzdata \
