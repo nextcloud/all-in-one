@@ -424,33 +424,36 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetBorgBackupHostLocation(string $location) : void {
-        $isValidPath = false;
-        if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
-            $isValidPath = true;
-        } elseif ($location === 'nextcloud_aio_backupdir') {
-            $isValidPath = true;
-        }
-
-        if (!$isValidPath) {
-            throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'!");
-        }
-
+    public function SetBorgLocationVars(string $location, string $repo) : void {
+        $this->ValidateBorgLocationVars($location, $repo);
 
         $config = $this->GetConfig();
         $config['borg_backup_host_location'] = $location;
+        $config['borg_remote_repo'] = $repo;
         $this->WriteConfig($config);
     }
 
-    /**
-     * @throws InvalidSettingConfigurationException
-     */
-    public function SetBorgRemoteRepo(string $repo) : void {
-        $this->ValidateBorgRemoteRepo($repo);
+    private function ValidateBorgLocationVars(string $location, string $repo) : void {
+        if ($location === '' && $repo === '') {
+            throw new InvalidSettingConfigurationException("Please enter a path or a remote repo url!");
+        } elseif ($location !== '' && $repo !== '') {
+            throw new InvalidSettingConfigurationException("Location and remote repo url are mutually exclusive!");
+        }
+        
+        if ($location !== '') {
+            $isValidPath = false;
+            if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
+                $isValidPath = true;
+            } elseif ($location === 'nextcloud_aio_backupdir') {
+                $isValidPath = true;
+            }
 
-        $config = $this->GetConfig();
-        $config['borg_remote_repo'] = $repo;
-        $this->WriteConfig($config);
+            if (!$isValidPath) {
+                throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'!");
+            }
+        } else {
+            $this->ValidateBorgRemoteRepo($repo);
+        }
     }
 
     private function ValidateBorgRemoteRepo(string $repo) : void {
@@ -475,26 +478,7 @@ class ConfigurationManager
      * @throws InvalidSettingConfigurationException
      */
     public function SetBorgRestoreLocationVarsAndPassword(string $location, string $repo, string $password) : void {
-        if ($location === '' && $repo === '') {
-            throw new InvalidSettingConfigurationException("Please enter a path or a remote repo url!");
-        } elseif ($location !== '' && $repo !== '') {
-            throw new InvalidSettingConfigurationException("Location and remote repo url are mutually exclusive when restoring!");
-        }
-        
-        if ($location !== '') {
-            $isValidPath = false;
-            if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
-                $isValidPath = true;
-            } elseif ($location === 'nextcloud_aio_backupdir') {
-                $isValidPath = true;
-            }
-
-            if (!$isValidPath) {
-                throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'!");
-            }
-        } else {
-            $this->ValidateBorgRemoteRepo($repo);
-        }
+        $this->ValidateBorgLocationVars($location, $repo);
 
         if ($password === '') {
             throw new InvalidSettingConfigurationException("Please enter the password!");

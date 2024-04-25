@@ -34,7 +34,7 @@ for volume in "${DEFAULT_VOLUMES[@]}"; do
 done
 
 # Check if target is mountpoint
-if ! mountpoint -q "$MOUNT_DIR"; then
+if [ -z "$BORG_REMOTE_REPO" ] && ! mountpoint -q "$MOUNT_DIR"; then
     echo "$MOUNT_DIR is not a mountpoint which is not allowed."
     exit 1
 fi
@@ -50,7 +50,7 @@ if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != test ] && ! borg info; then
 fi
 
 # Do not continue if this file exists (needed for simple external blocking)
-if [ -f "$BORG_BACKUP_DIRECTORY/aio-lockfile" ]; then
+if [ -z "$BORG_REMOTE_REPO" ] && [ -f "$BORG_BACKUP_DIRECTORY/aio-lockfile" ]; then
     echo "Not continuing because aio-lockfile exists – it seems like a script is externally running which is locking the backup archive."
     echo "If this should not be the case, you can fix this by deleting the 'aio-lockfile' file from the backup archive directory."
     exit 1
@@ -110,8 +110,10 @@ if [ "$BORG_MODE" = backup ]; then
         exit 1
     fi
 
-    # Create backup folder
-    mkdir -p "$BORG_BACKUP_DIRECTORY"
+    if [ -z "$BORG_REMOTE_REPO" ]; then
+        # Create backup folder
+        mkdir -p "$BORG_BACKUP_DIRECTORY"
+    fi
 
     # Initialize the repository if can't get info from target
     if ! borg info; then
