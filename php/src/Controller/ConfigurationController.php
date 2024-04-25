@@ -32,14 +32,10 @@ class ConfigurationController
                 $this->configurationManager->ChangeMasterPassword($currentMasterPassword, $newMasterPassword);
             }
 
-            if (isset($request->getParsedBody()['borg_backup_host_location'])) {
+            if (isset($request->getParsedBody()['borg_backup_host_location']) || isset($request->getParsedBody()['borg_remote_repo'])) {
                 $location = $request->getParsedBody()['borg_backup_host_location'] ?? '';
-                $this->configurationManager->SetBorgBackupHostLocation($location);
-            }
-
-            if (isset($request->getParsedBody()['borg_remote_repo'])) {
                 $borgRemoteRepo = $request->getParsedBody()['borg_remote_repo'] ?? '';
-                $this->configurationManager->SetBorgRemoteRepo($borgRemoteRepo);
+                $this->configurationManager->SetBorgLocationVars($location, $borgRemoteRepo);
             }
 
             if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_remote_repo']) || isset($request->getParsedBody()['borg_restore_password'])) {

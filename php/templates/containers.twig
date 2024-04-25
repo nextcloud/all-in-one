@@ -20,6 +20,8 @@
 
         {# Add 2nd tab warning #}
         <script type="text/javascript" src="second-tab-warning.js"></script>
+        
+        {% set hasBackupLocation = borg_backup_host_location or borg_remote_repo %}
 
         {% set isAnyRunning = false %}
         {% set isAnyRestarting = false %}
@@ -85,7 +87,7 @@
                         <input class="button" type="submit" value="Update mastercontainer" />
                     </form>
                 {% else %}
-                    {% if borg_backup_host_location == '' and borg_restore_password == '' %}
+                    {% if not hasBackupLocation %}
                         The official Nextcloud installation method. Nextcloud All-in-One provides easy deployment and maintenance with most features included in this one Nextcloud instance.<br><br>
                         You can either create a new AIO instance or restore a former AIO instance from backup. See the two sections below.<br><br>
                         {{ include('includes/aio-config.twig') }}
@@ -125,7 +127,7 @@
                     {% endif %}
 
                     {% if is_instance_restore_attempt == false %}
-                        {% if borg_backup_host_location != '' and borg_restore_password != '' %}
+                        {% if hasBackupLocation %}
                             {% if borg_backup_mode in ['test', 'check'] %}
                                 {% if backup_exit_code > 0 %}
                                     <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
@@ -173,7 +175,13 @@
                             {% endif %}
                         {% endif %}
 
-                        {% if borg_backup_host_location == '' or borg_restore_password == '' or borg_backup_mode not in ['test', 'check', ''] or backup_exit_code > 0 %}
+                        {% if not hasBackupLocation or borg_backup_mode not in ['test', 'check', ''] or backup_exit_code > 0 %}
+                            {% if borg_remote_repo and backup_exit_code > 0 %}
+                            You may still need to authorize this pubkey on your borg remote:<br><b>{{ borg_public_key }}</b><br>
+                            To try again, resubmit your location and rerun the test.
+                            <br><br>
+                            {% endif %}
+
                             Please enter the location of the backup archive on your host or a
                             <a href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>
                             if stored remotely; and the password of the backup archive below:
@@ -216,20 +224,20 @@
             {% if domain != "" %}
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
-                        {% if borg_backup_host_location != '' %}
+                        {% if hasBackupLocation %}
                             <details>
                             <summary>Click here to reveal the initial Nextcloud credentials</summary><br />
                         {% endif %}
                                 Initial Nextcloud username: <b>admin</b><br />
                                 Initial Nextcloud password: 
-                        {% if borg_backup_host_location != '' %}
+                        {% if hasBackupLocation %}
                             {# nextcloud_password needs to be duplicated due to a bug in Firefox. See https://github.com/nextcloud/all-in-one/issues/638. #}
                             <b>{{ nextcloud_password }}</b><br /></details><br />
                         {% else %}
                             <b>{{ nextcloud_password }}</b><br><br>
                         {% endif %}
                         <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/><br>
-                        {% if borg_backup_host_location == '' %}
+                        {% if not hasBackupLocation %}
                             If your Nextcloud does not open when clicking the button above, see <b><a href="https://github.com/nextcloud/all-in-one/discussions/2105">this documentation</a></b><br><br>
                         {% endif %}
                     {% else %}
@@ -368,12 +376,11 @@
                         <h2>Backup and restore</h2>
                         The backup section is disabled via environmental variable.<br><br>
                     {% else %}
-                        {% if is_backup_container_running == false and borg_backup_host_location == "" and isApacheStarting != true %}
+                        {% if is_backup_container_running == false and not hasBackupLocation and isApacheStarting != true %}
                             <h2>Backup and restore</h2>
                             Please fill in the directory where backups will get created on the host system below. In best case make sure that you choose a location on a separate drive and not on your root drive.
                             To store backups remotely instead, fill in the
-                            <a href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>
-                            (You still need a local backup location for storing some local housekeeping).
+                            <a href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>.
                             <br><br>
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
@@ -388,7 +395,7 @@
 
                     {% if is_backup_section_enabled == true %}
 
-                        {% if borg_backup_host_location != "" %}
+                        {% if hasBackupLocation %}
                             {% if is_backup_container_running == false %}
                                 <h2>Backup and restore</h2>
                                 {% if backup_exit_code > 0 %}
@@ -407,7 +414,7 @@
                                     {% endif %}
                                     {% if has_backup_run_once == false %}
                                         The initial backup was not successful.
-                                        
+
                                         {% if borg_remote_repo %}
                                         <br>
                                         You may still need to authorize this pubkey on your borg remote:<br><b>{{ borg_public_key }}</b><br>
