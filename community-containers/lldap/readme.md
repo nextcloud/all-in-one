@@ -41,7 +41,7 @@ echo "Base DN: '$BASE_DN', Config name: '$CONF_NAME'"
 # Set the ldap password
 php /var/www/html/occ ldap:set-config $CONF_NAME ldapAgentPassword "<your-password>"
 
-# Set the ldap config: Host and connexion
+# Set the ldap config: Host and connection
 php /var/www/html/occ ldap:set-config $CONF_NAME ldapAdminGroup       lldap_admin
 php /var/www/html/occ ldap:set-config $CONF_NAME ldapAgentName        "cn=admin,ou=people,$BASE_DN"
 php /var/www/html/occ ldap:set-config $CONF_NAME ldapBase             "$BASE_DN"
