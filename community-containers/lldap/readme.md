@@ -35,47 +35,51 @@ BASE_DN="dc=${NC_DOMAIN//./,dc=}"
 # Create a new empty ldap config
 CONF_NAME=$(php /var/www/html/occ ldap:create-empty-config -p)
 
-# Set the ldap password
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentPassword "<your-password>"
+# Check that the base DN matches your domain and retrieve your configuration name
+echo "Base DN: '$BASE_DN', Config name: '$CONF_NAME'"
 
-# Set the ldap config
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAdminGroup                "lldap_admin"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapAgentName                 "cn=admin,ou=people,$BASE_DN"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBase                      "$BASE_DN"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBaseGroups                "$BASE_DN"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapBaseUsers                 "$BASE_DN"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapCacheTTL                  600
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapConfigurationActive       1
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapEmailAttribute            "mail"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapExperiencedAdmin          0
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGidNumber                 "gidNumber"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupDisplayName          "cn"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilter               "(&(objectclass=groupOfUniqueNames))"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterGroups         "(&(|(objectclass=groupOfUniqueNames)))"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterMode           0
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupFilterObjectclass    "groupOfUniqueNames"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapGroupMemberAssocAttr      "uniqueMember"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapHost                      "ldap://nextcloud-aio-lldap"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterAttributes     "(&(|(objectclass=person))(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterEmail          1
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapLoginFilterUsername       1
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapMatchingRuleInChainState  "unknown"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapNestedGroups              0
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapPagingSize                500
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapPort                      3890
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapTLS                       0
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserAvatarRule            "default"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserDisplayName           "cb"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilter                "(|(objectclass=person))"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilterMode            0
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUserFilterObjectclass     "person"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUuidGroupAttribute        "auto"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" ldapUuidUserAttribute         "auto"
-php /var/www/html/occ ldap:set-config "$CONF_NAME" turnOnPasswordChange          0
-php /var/www/html/occ ldap:set-config "$CONF_NAME" useMemberOfToDetectMembership 1
+# Set the ldap password
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapAgentPassword "<your-password>"
+
+# Set the ldap config: Host and connexion
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapAdminGroup       lldap_admin
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapAgentName        "cn=admin,ou=people,$BASE_DN"
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapBase             "$BASE_DN"
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapHost             "ldap://nextcloud-aio-lldap"
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapPort             3890
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapTLS              0
+php /var/www/html/occ ldap:set-config $CONF_NAME turnOnPasswordChange 0
+
+# Set the ldap config: Users
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapBaseUsers             "ou=people,$BASE_DN"
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapEmailAttribute        mail
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapGidNumber             gidNumber
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapLoginFilter           "(&(|(objectclass=person))(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))"
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapLoginFilterEmail      1
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapLoginFilterUsername   1
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapUserAvatarRule        default
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapUserDisplayName       cn
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapUserFilter            "(|(objectclass=person))"
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapUserFilterMode        0
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapUserFilterObjectclass person
+
+# Set the ldap config: Groups
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapBaseGroups                "ou=groups,$BASE_DN"
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapGroupDisplayName          cn
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapGroupFilter               "(&(|(objectclass=groupOfUniqueNames)))"
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapGroupFilterMode           0
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapGroupFilterObjectclass    groupOfUniqueNames
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapGroupMemberAssocAttr      uniqueMember
+php /var/www/html/occ ldap:set-config $CONF_NAME useMemberOfToDetectMembership 1
+
+# Optional : Check the configuration
+#php /var/www/html/occ ldap:show-config $CONF_NAME
 
 # Test the ldap config
-php /var/www/html/occ ldap:test-config "$CONF_NAME"
+php /var/www/html/occ ldap:test-config $CONF_NAME
+
+# Enable ldap config
+php /var/www/html/occ ldap:set-config $CONF_NAME ldapConfigurationActive 1
 
 # Exit the container shell
 exit
