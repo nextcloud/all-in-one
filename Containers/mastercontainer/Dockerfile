@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:26.0.1-cli as docker
+FROM docker:26.1.0-cli as docker
 
 # Caddy is a requirement
 FROM caddy:2.7.6-alpine as caddy
@@ -19,6 +19,7 @@ WORKDIR /var/www/docker-aio
 
 # hadolint ignore=SC2086,DL3047,DL3003,DL3004
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
     groupmod -g 333 xfs; \
     usermod -u 333 -g 333 xfs; \

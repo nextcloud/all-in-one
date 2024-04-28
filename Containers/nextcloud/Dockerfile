@@ -7,7 +7,7 @@ ENV PHP_MAX_TIME 3600
 ENV SOURCE_LOCATION /usr/src/nextcloud
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION 28.0.4
+ENV NEXTCLOUD_VERSION 28.0.5
 ENV AIO_TOKEN 123456
 ENV AIO_URL localhost
 # AIO settings end # Do not remove or change this line!
@@ -23,6 +23,7 @@ VOLUME /var/www/html
 # Custom: change id of www-data user as it needs to be the same like on old installations
 # hadolint ignore=SC2086,DL3003
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
     deluser www-data; \
     groupmod -g 333 xfs; \
