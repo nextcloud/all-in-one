@@ -301,7 +301,7 @@ backend Nextcloud
 
 </details>
 
-### Nginx
+### Nginx, Freenginx, Openresty
 
 <details>
 
