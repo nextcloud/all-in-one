@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-    kompose.version: 1.32.0 (765fde254)
+    kompose.version: 1.33.0 (3ce457399)
   labels:
     io.kompose.service: nextcloud-aio-redis
   name: nextcloud-aio-redis
@@ -19,7 +19,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-        kompose.version: 1.32.0 (765fde254)
+        kompose.version: 1.33.0 (3ce457399)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-redis
@@ -44,7 +44,7 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-redis:20240424_101241-latest"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-redis:20240502_104630-latest"
           name: nextcloud-aio-redis
           ports:
             - containerPort: 6379

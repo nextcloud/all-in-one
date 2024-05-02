@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-    kompose.version: 1.32.0 (765fde254)
+    kompose.version: 1.33.0 (3ce457399)
   labels:
     io.kompose.service: nextcloud-aio-talk-recording
   name: nextcloud-aio-talk-recording
@@ -18,7 +18,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-        kompose.version: 1.32.0 (765fde254)
+        kompose.version: 1.33.0 (3ce457399)
       labels:
         io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-talk-recording
@@ -33,7 +33,7 @@ spec:
               value: "{{ .Values.RECORDING_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-talk-recording:20240424_101241-latest"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-talk-recording:20240502_104630-latest"
           name: nextcloud-aio-talk-recording
           ports:
             - containerPort: 1234
