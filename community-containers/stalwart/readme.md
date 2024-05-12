@@ -1,7 +1,6 @@
 > [!WARNING]
 > Nextcloud Community Containers are beta features.
-> 
-> The Stalwart server under development.
+> The Stalwart server is under development.
 > 
 > The stability of these two services is not guaranteed.
 > Do not use this feature as a main mail server without a redundancy system and without knowledge.
