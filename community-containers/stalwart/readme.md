@@ -1,3 +1,13 @@
+> [!WARNING]
+> Nextcloud Community Containers are beta features.
+> 
+> The Stalwart server under development.
+> 
+> The stability of these two services is not guaranteed.
+> Do not use this feature as a main mail server without a redundancy system and without knowledge.
+> 
+> To learn or use as a secondary server enjoy it and please report bugs at [marcoambrosini/aio-stalwart](https://github.com/marcoambrosini/aio-stalwart/issues).
+
 ## Stalwart mail server
 This container bundles stalwart mail server and auto-configures it for you.
 
