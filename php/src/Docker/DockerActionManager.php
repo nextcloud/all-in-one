@@ -19,7 +19,7 @@ use http\Env\Response;
 
 class DockerActionManager
 {
-    private const API_VERSION = 'v1.41';
+    private const string API_VERSION = 'v1.41';
     private \GuzzleHttp\Client $guzzleClient;
     private ConfigurationManager $configurationManager;
     private ContainerDefinitionFetcher $containerDefinitionFetcher;

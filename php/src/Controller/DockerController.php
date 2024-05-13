@@ -13,7 +13,7 @@ class DockerController
 {
     private DockerActionManager $dockerActionManager;
     private ContainerDefinitionFetcher $containerDefinitionFetcher;
-    private const TOP_CONTAINER = 'nextcloud-aio-apache';
+    private const string TOP_CONTAINER = 'nextcloud-aio-apache';
     private ConfigurationManager $configurationManager;
 
     public function __construct(

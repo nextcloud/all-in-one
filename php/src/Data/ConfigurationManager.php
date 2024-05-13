@@ -305,7 +305,7 @@ class ConfigurationManager
 
             if (empty($dnsRecordIP)) {
                 $record = dns_get_record($domain, DNS_AAAA);
-                if (!empty($record[0]['ipv6'])) {
+                if (isset($record[0]['ipv6']) && !empty($record[0]['ipv6'])) {
                     $dnsRecordIP = $record[0]['ipv6'];
                 }
             }

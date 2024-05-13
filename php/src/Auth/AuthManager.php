@@ -7,7 +7,7 @@ use AIO\Data\DataConst;
 use \DateTime;
 
 class AuthManager {
-    private const SESSION_KEY = 'aio_authenticated';
+    private const string SESSION_KEY = 'aio_authenticated';
     private ConfigurationManager $configurationManager;
 
     public function __construct(ConfigurationManager $configurationManager) {
