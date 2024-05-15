@@ -24,6 +24,9 @@
         {# Add domain-prefill #}
         <script type="text/javascript" src="domain-prefill.js"></script>
 
+        {# timezone-prefill #}
+        <script type="text/javascript" src="timezone.js"></script>
+
         {% set isAnyRunning = false %}
         {% set isAnyRestarting = false %}
         {% set isWatchtowerRunning = false %}
@@ -647,7 +650,7 @@
                             In order to get the correct time values for certain Nextcloud features, it makes sense to set the timezone for Nextcloud to the one that your users mainly use. Please note that this setting does not apply to the mastercontainer and any backup option.<br><br>
                             You can configure the timezone for Nextcloud below:<br><br>
                             <form method="POST" action="/api/configuration" class="xhr">
-                                <input type="text" name="timezone" placeholder="Europe/Berlin" />
+                                <input type="text" id="timezone" name="timezone" placeholder="Europe/Berlin" />
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input class="button" type="submit" value="Submit timezone" onclick="return confirm('Are you sure that this is a valid timezone? Please double check by following the wikipedia article and checking the correct column since if not, it will break the startup since the database will not get correctly initialized and you will end in a startup loop.')" />
