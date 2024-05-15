@@ -20,6 +20,9 @@
 
         {# Add 2nd tab warning #}
         <script type="text/javascript" src="second-tab-warning.js"></script>
+        
+        {# Add domain-prefill #}
+        <script type="text/javascript" src="domain-prefill.js"></script>
 
         {% set isAnyRunning = false %}
         {% set isAnyRestarting = false %}
@@ -100,7 +103,7 @@
                             <b>Please note:</b> The domain validation is disabled so any domain will be accepted here! So make sure that you do not make a typo here as you will not be able to change it afterwards!<br><br>
                         {% endif %}
                         <form method="POST" action="/api/configuration" class="xhr">
-                            <input type="text" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
+                            <input type="text" id="domain_input" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                             <input class="button" type="submit" value="Submit domain" />
