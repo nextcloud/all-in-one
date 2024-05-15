@@ -152,7 +152,7 @@
                                 {% elseif backup_exit_code == 0 %}
                                     <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
                                     {% if borg_backup_mode == 'test' %}
-                                        Feel free to check the integrity of the backup archive below before starting the restore process in order to make double-sure that the restore will work. This can take a long time though depending on the size of the backup archive and is thus not required.<br><br>
+                                        Feel free to check the integrity of the backup archive below before starting the restore process in order to make ensure that the restore will work. This can take a long time though depending on the size of the backup archive and is thus not required.<br><br>
                                         <form method="POST" action="/api/docker/backup-check" class="xhr">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
