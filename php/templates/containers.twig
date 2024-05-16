@@ -65,7 +65,7 @@
             {% if automatic_updates == true %}
                 This will update your containers, the mastercontainer and, on Saturdays, your Nextcloud apps if the backup is successful.<br /><br />
                 {% if is_mastercontainer_update_available == true %}
-                    When the mastercontainer is updated it will restart the container, making it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)<br /><br />
+                    When the mastercontainer is updated it will restart, making it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)<br /><br />
                 {% endif %}
             {% endif %}
             {% if has_update_available == false %}
