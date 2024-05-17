@@ -99,7 +99,6 @@
         "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
         "POSTGRES_DB=nextcloud_database",
         "POSTGRES_USER=nextcloud",
-        "POSTGRES_PORT=5432",
         "TZ=%TIMEZONE%",
         "PGTZ=%TIMEZONE%"
       ],
