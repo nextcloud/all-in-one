@@ -19,57 +19,158 @@ Now everything should be set up correctly and you should have created multiple w
 
 
 ## Run multiple AIO instances on the same server inside their own virtual machines
-This guide will walk you through creating and configuring two Debian VMs (with "reverse proxy mode" Nextcloud AIO installed in each VM), behind one Caddy reverse proxy, all running on one physical host machine (like a laptop or desktop PC). It's highly recommend to follow the steps in order. Steps 1 through 3 will need to be repeated. Steps 4 through 8 only need to be completed once.
+This guide will walk you through creating and configuring two (or more) Debian-based VMs (with "reverse proxy mode" Nextcloud AIO installed in each VM), behind one Caddy reverse proxy, all running on one host physical machine (like a laptop or desktop PC). It's highly recommend to follow the steps in order. Steps 1 through 4 will need to be repeated. Steps 5 through 8 only need to be completed once. All commands are expected to be run as root.
 
 <details><summary><strong>PLEASE READ: A few expectations about your network</strong></summary>
-This guide assumes that you have forwarded ports 443 and 8443 to your physical host machine via your router's configuration page, and either set up Dynamic DNS or obtained a static outbound IP address from your ISP. If this is not the case, or if you are brand-new to networking, you probably should not proceed with this guide, unless you are just using it for educational purposes. Proper network setup and security is critical when it comes to keeping your data safe. You may consider hosting using a VPS instead, or choosing one of <a href="https://nextcloud.com/providers/">Nextcloud's trusted providers.</a>
+This guide assumes that you have forwarded ports 443 and 8443 to your host physical machine via your router's configuration page, and either set up Dynamic DNS or obtained a static outbound IP address from your ISP. If this is not the case, or if you are brand-new to networking, you probably should not proceed with this guide, unless you are just using it for educational purposes. Proper network setup and security is critical when it comes to keeping your data safe. You may consider hosting using a VPS instead, or choosing one of <a href="https://nextcloud.com/providers/">Nextcloud's trusted providers.</a>
 </details>
 
 <details><summary><strong>A note for VPS users</strong></summary>
-If you want to do this on a VPS, and your VPS is KVM-based and provides a static IP address, you can likely benefit from this guide too! Simply replace the words "physical host machine" with "VPS" and follow along. Good luck!
+If you want to do this on a VPS, and your VPS is KVM-based and provides a static IP address, you can likely benefit from this guide too! Simply replace the words "host physical machine" with "VPS" and follow along.
 </details>
 
-**Before starting:** Make sure your physical host machine has enough resources. A host machine with 8GB RAM and 100GB storage is sufficient for running two fairly minimal VMs, with 2GB RAM and 32GB storage allocated to each VM. This guide assumes you have these resources at the minimum. This is fine for just testing the setup, but you will probably want to allocate more resources to your VMs if you plan to use this for day-to-day use.
+**Before starting:** Make sure your host physical machine has enough resources. A host machine with 8GB RAM and 100GB storage is sufficient for running two fairly minimal VMs, with 2GB RAM and 32GB storage allocated to each VM. This guide assumes you have these resources at the minimum. This is fine for just testing the setup, but you will probably want to allocate more resources to your VMs if you plan to use this for day-to-day use.
 If your host machine has more than 8GB memory available, and you plan to enable any of the optional containers (Nextcloud Office, Talk, Imaginary, etc.) in any of your instances, then you should definitely allocate more memory to the VM hosting that instance. In other words, before turning on any extra features inside a particular AIO interface, make sure you've first allocated enough resources to the VM that the instance is running inside. If in doubt, the AIO interface itself gives great recommendations for extra CPU and RAM allocation.
 
-**Additional prerequisites:** Your physical host machine needs to have virtualization enabled in it's UEFI/BIOS. It also needs a few tools installed in order to create VMs. Assuming your host machine is a bare-bones Linux server without a desktop environment installed, the easiest way to create VMs is to install *QEMU*, *virsh*, and *virt-install* ([more info](https://wiki.debian.org/KVM)). You only need to do this once. To do this on Debian, run this command (**on the physical host machine**):
+**Additional prerequisites:** Your host physical machine needs to have virtualization enabled in it's UEFI/BIOS. It also needs a few tools installed in order to create VMs. Assuming your host machine is a bare-bones Ubuntu or Debian Linux server without a desktop environment installed, the easiest way to create VMs is to install *QEMU*, *virsh*, *virt-install*, and a few extra packages to support UEFI booting and network config ([more info](https://wiki.debian.org/KVM)). You only need to do this once. To do this, run this command (**on the host physical machine**):
+<!--
 ```shell
-apt install --no-install-recommends qemu-system libvirt-clients libvirt-daemon-system virtinst
+# For host machines running Ubuntu Server:
+apt install --no-install-recommends qemu-system libvirt-clients libvirt-daemon-system virtinst ovmf bridge-utils
+```
+```shell
+# For host machines running Debian:
+apt install --no-install-recommends qemu-system qemu-utils libvirt-clients libvirt-daemon-system virtinst ovmf bridge-utils dnsmasq-base
+```
+-->
+```shell
+# For host machines running Ubuntu Server or Debian:
+apt install --no-install-recommends qemu-system qemu-utils libvirt-clients libvirt-daemon-system virtinst ovmf bridge-utils dnsmasq-base
 ```
 
 **Let's begin!** This guide assumes that you have two domains where you would like to host two individual AIO instances (one instance per domain). Let's call these domains `example1.com` and `example2.com`. Therefore, we'll create two VMs named `example1-com` and `example2-com` (These are the VM names we'll use below in step 1).
 
-**Once you're ready, follow steps 1-3 below to set up your VMs.**
+**Once you're ready, follow steps 1-4 below to set up your VMs. You will configure them one at a time.**
 
-1. Choose a name for your VM. A good choice is to name each VM the same as the domain name that will be used to access it. Once you've selected a name, run the following command (**on the physical host machine**). Don't forget to replace `[VM_NAME]`.
-    ```shell
-    virt-install --name [VM_NAME] --virt-type kvm --location http://deb.debian.org/debian/dists/bullseye/main/installer-amd64/ --os-variant debian11 --disk size=32 --memory 2048 --graphics none --console pty,target_type=serial --extra-args "console=ttyS0"
-    ```
+1. Choose a name for your VM. A good choice is to name each VM the same as the domain name that will be used to access it.
+2. Choose the distribution you'd like to install within the VM:
+   <details><summary><strong>Ubuntu Server 22.04.4 LTS</strong></summary>
+       <h4>Downloading the .ISO image</h4>
+       You must first download an .ISO image to your host machine, and then provide virt-install with the path to that image.
+       <!-- This step is required because Ubuntu no longer hosts their "Legacy Ubuntu Server Installer" images, meaning we can no longer pass a URL to virt-install to use as a location. -->
+       <pre><code># Skip this part if you've already downloaded this image
+   curl -o /tmp/ubuntu-22.04.4-live-server-amd64.iso https://releases.ubuntu.com/jammy/ubuntu-22.04.4-live-server-amd64.iso
+   </code></pre>
+       <em>Note: You may choose a different place to store the .ISO file, but it needs to be somewhere accessible by QEMU. "/tmp" and "/home" work well, but choosing a location like "/root" will cause the next command to fail.</em>
+       <h4>Creating the VM</h4>
+       Now create the Ubuntu Server VM (Don't forget to replace [VM_NAME]):
+       <pre><code>virt-install \
+   --name [VM_NAME] \
+   --virt-type kvm \
+   --location /tmp/ubuntu-22.04.4-live-server-amd64.iso,kernel=casper/vmlinuz,initrd=casper/initrd \
+   --os-variant ubuntujammy \
+   --disk size=32 \
+   --memory 2048 \
+   --graphics none \
+   --console pty,target_type=serial \
+   --extra-args "console=ttyS0" \
+   --autostart \
+   --boot uefi
+   </code></pre>
+       <h4>Using a different version of Ubuntu Server</h4>
+       To use a different Ubuntu Server release, visit <a href="https://releases.ubuntu.com">this page</a> and find the version you want. You will need to adjust the filename and URL for the curl command, and the location and os-variant for the virt-install command, accordingly.
+   </details>
+   <details><summary><strong>Debian 11</strong></summary>
+       <h4>Creating the VM</h4>
+       Create the Debian VM (Don't forget to replace [VM_NAME]):
+       <pre><code>virt-install \
+   --name [VM_NAME] \
+   --virt-type kvm \
+   --location http://deb.debian.org/debian/dists/bullseye/main/installer-amd64/ \
+   --os-variant debian11 \
+   --disk size=32 \
+   --memory 2048 \
+   --graphics none \
+   --console pty,target_type=serial \
+   --extra-args "console=ttyS0" \
+   --autostart \
+   --boot uefi
+   </code></pre>
+   </details>
+   <details><summary><strong>Debian 12</strong></summary>
+       <h4>Creating the VM</h4>
+       Create the Debian VM (Don't forget to replace [VM_NAME]):
+       <pre><code># If the os-variant "debian12" is unknown, try "debiantesting" instead
+   virt-install \
+   --name [VM_NAME] \
+   --virt-type kvm \
+   --location http://deb.debian.org/debian/dists/bookworm/main/installer-amd64/ \
+   --os-variant debian12 \
+   --disk size=32 \
+   --memory 2048 \
+   --graphics none \
+   --console pty,target_type=serial \
+   --extra-args "console=ttyS0" \
+   --autostart \
+   --boot uefi
+   </code></pre>
+   </details>
+   <!--To learn more about virt-install or automating this process, see <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/virtualization_deployment_and_administration_guide/sect-guest_virtual_machine_installation_overview-creating_guests_with_virt_install">this guide</a>.-->
+3. Navigate through the text-based installer. Most options can remain as default, but here are some tips:
+   <details><summary><strong>For the Ubuntu Server installer</strong></summary>
+   When asked about the "type of installation", you can leave the default "Ubuntu Server" without third-party drivers. You can leave the HTTP proxy information blank. In the "Profile Configuration" section, you can set "Your servers name" (hostname) to the same value as the name you gave to your VM (for example, "example1-com"). The installer will only let you create a non-root user. Note down the password you use here! You may skip enabling Ubuntu Pro. You can allow the partitioner to use the entire disk, this only uses the virtual disk that you defined above in step 2. You'll eventually be given the option to install additional software. Although "Nextcloud" is listed here, you almost certainly do <strong>not</strong> want to select this option, since you are setting up Nextcloud AIO. You'll be asked about installing "SSH server", this is entirely optional (This lets you easily SSH into the VM in the future in case you have to perform any maintenance, but even if you do not install an SSH server, you can still log in using the "virsh console" command). Finally, disregard the "[FAILED] Failed unmounting /cdrom." message, and press return.
+   </details>
+   <details><summary><strong>For the Debian installer</strong></summary>
+   When asked, you can set the hostname to the same value as the name you gave to your VM (for example, "example1-com"). You can leave the domain name and HTTP proxy information blank. Allow the installer to create both a root and a non-root user. Note down the password(s) you use here! You can allow the partitioner to use the entire disk, this only uses the virtual disk that you defined above in step 2. When tasksel (Software selection) runs and asks if you want to install additional software, use spacebar and your arrow keys to un-check the "Debian desktop environment" and "GNOME" options. The "SSH server" option is entirely optional (This lets you easily SSH into the VM in the future in case you have to perform any maintenance, but even if you do not install an SSH server, you can still log in using the "virsh console" command). Make sure "standard system utilities" is also checked. Hit tab to select "Continue". Finally, disregard the warning about GRUB, allow it to install to your "primary drive" (again, it's only virtual, and this only applies to the VM- this will not affect the boot configuration of your host physical machine) and select "/dev/vda" for the bootable device.
+   </details>
+4. Configure your new VM:
 
-1. Navigate through the text-based Debian installer. Most options can remain as their default. When asked, you can set the hostname to the same value as the name you gave to your VM (for example, `example1-com`). You can leave the domain name and HTTP proxy information blank. Allow the installer to create both a root and a non-root user. Note down the password(s) you use here! You can allow the partitioner to use the entire disk, this only uses the virtual disk that we defined above in step 1. When *tasksel* (Software selection) runs and asks if you want to install additional software, use spacebar and your arrow keys to uncheck the `Debian desktop environment` and `GNOME` options, and check the `SSH server` option (This lets you easily SSH into the VM in the future in case you have to perform any maintenance). Make sure `standard system utilities` is also checked. Hit tab to select "Continue". Finally, disregard the warning about GRUB, allow it to install to your "primary drive" (again, it's only virtual, and this only applies to the VM- this will not affect the boot configuration of your physical host machine) and select `/dev/vda` for the bootable device.
-1. Log in to your new VM. After it's finished installing, the VM will have rebooted and presented you with a login prompt. Use `root` as the username, and enter the password you chose during the installation process. Then, run this command (**on the VM**):
+   After it has finished installing, the VM will have rebooted and presented you with a login prompt. For Debian, just use `root` as the username, and enter the password you chose during the installation process. Ubuntu restricts root account access, so you'll need to first login with your non-root user, and then run `sudo su -` to elevate your privileges.
+
+   We will now run a few commands to install docker and AIO in reverse proxy mode! As with any other commands, carefully read and try your best to understand them before running them.
+
+   **Each time you reach this step and run the `docker run` command below, you'll need to increment the `TALK_PORT` value. For example: 3478, 3479, etc... You may use other values as long as they don't conflict, and make sure they are [greater than 1024](https://github.com/nextcloud/all-in-one/discussions/2517). Be sure to note down the Talk port number you've assigned to this VM/AIO instance. You will need it later if you decide to enable Nextcloud Talk.**
+
+   Run these commands (**on the VM**):
    ```shell
-   apt install -y curl && curl -fsSL https://get.docker.com | sh && docker run --init --sig-proxy=false --name nextcloud-aio-mastercontainer --restart always --publish 8080:8080 --env APACHE_PORT=11000 --env APACHE_IP_BINDING=0.0.0.0 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config --volume /var/run/docker.sock:/var/run/docker.sock:ro nextcloud/all-in-one:latest
+   apt install -y curl
+   
+   curl -fsSL https://get.docker.com | sh
+
+   # Make sure you increment the TALK_PORT value every time you run this!
+   docker run \
+   --init \
+   --sig-proxy=false \
+   --name nextcloud-aio-mastercontainer \
+   --restart always \
+   --publish 8080:8080 \
+   --env APACHE_PORT=11000 \
+   --env APACHE_IP_BINDING=0.0.0.0 \
+   --env TALK_PORT=3478 \
+   --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+   --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+   nextcloud/all-in-one:latest
    ```
-   This single command will install docker and AIO in reverse proxy mode! As with any other command, carefully read over it and try your best to understand it before running it. This may take a few minutes. When it's finished, you should see a success message, saying "Initial startup of Nextcloud All-in-One complete!". This concludes the setup needed on this particular VM.
+   The last command may take a few minutes. When it's finished, you should see a success message, saying "Initial startup of Nextcloud All-in-One complete!". Now exit the console session with `Ctrl + ]`. This concludes the setup for this particular VM.
    
    ---
-1. Go ahead and run through steps 1-3 again in order to set up your second VM. When you're finished, proceed down to step 5.
-1. Set your new VMs to start automatically each time the physical host machine finishes booting. Run (**on the physical host machine**):
+6. Go ahead and run through steps 1-4 again in order to set up your second VM. When you're finished, proceed down to step 6. *(Note: If you downloaded the Ubuntu .ISO image and no longer need it, you may delete it now.)*
+7. Almost done! All that's left is configuring your reverse proxy. To do this, you first need to [install it](https://caddyserver.com/docs/install#debian-ubuntu-raspbian). Run (**on the host physical machine**):
    ```shell
-   virsh autostart --domain [VM_NAME] # Do this for each of your VMs
+   apt update -y
+   apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+   curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+   curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+   apt update -y
+   apt install -y caddy
    ```
-1. Almost done! All that's left is configuring our reverse proxy. To do this, we first need to install it. Run (**on the physical host machine**):
-   ```shell
-   apt update -y && apt install -y debian-keyring debian-archive-keyring apt-transport-https curl && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list && apt update -y && apt install -y caddy
-   ```
-   This command will ensure that your system is up-to-date and install the latest stable version of Caddy via it's official binary source.
-1. To configure Caddy, we need to know the IP address assigned to each VM. Run (**on the physical host machine**):
+   These commands will ensure that your system is up-to-date and install the latest stable version of Caddy via it's official binary source.
+8. To configure Caddy, you need to know the IP address assigned to each VM. Run (**on the host physical machine**):
     ```shell
     virsh net-dhcp-leases default
     ```
     This will show you the VMs you set up, and the IP address corresponding to each of them. Note down each IP and corresponding hostname.
-    Finally, we will configure Caddy using this information. Open the default Caddyfile with a text editor:
+    Finally, you will configure Caddy using this information. Open the default Caddyfile with a text editor:
     ```shell
     nano /etc/caddy/Caddyfile
     ```
@@ -105,13 +206,20 @@ apt install --no-install-recommends qemu-system libvirt-clients libvirt-daemon-s
    ```shell
    systemctl restart caddy
    ```
-1. That's it! Now, all that's left is to set up your instances through the AIO interface as usual by visiting `https://example1.com:8443` and `https://example2.com:8443` in a browser. Once you're finished going through each setup, you can access your new instances simply through their domain names. You can host as many instances with as many domain names as you want this way, as long as you have enough system resources. Enjoy!
+9. That's it! Now, all that's left is to set up your instances through the AIO interface as usual by visiting `https://example1.com:8443` and `https://example2.com:8443` in a browser. Once you're finished going through each setup, you can access your new instances simply through their domain names. You can host as many instances with as many domain names as you want this way, as long as you have enough system resources. Enjoy!
     
-    <details><summary>A few extra tips for managing this setup!</summary>
+    <details><summary><strong>A few extra tips for managing this setup</strong></summary>
         <ul>
-            <li>You can SSH into a VM to perform maintenance using this command (<strong>on the physical host machine</strong>): <pre>ssh [NONROOT_USER]@[IP_ADDRESS] # By default openssh does not allow logins using the root account</pre></li>
-            <li>If you mess up the configuration of a VM, you may wish to completely delete it and start fresh with a new one. <strong>THIS WILL DELETE ALL DATA ASSOCIATED WITH THE VM INCLUDING ANYTHING IN YOUR AIO DATADIR!</strong> To do this, run (<strong>on the physical host machine</strong>): <pre>virsh undefine --domain [VM_NAME] && rm -rf /var/lib/libvirt/images/[VM_NAME].qcow2 # BE EXTREMELY CAREFUL!</pre></li>
-            <li>Using Nextcloud Talk will require some extra configuration. Back when we set up our VMs, they were (by default) configured with NAT, meaning they are in their own subnet. My understanding is that the VMs must each instead be bridged, so that your router may directly "see" them (as if they were real, physical devices on your network), and each AIO instance inside each VM must be configured with a different Talk port (like 3478, 3479, etc.). To change the Talk port for a given instance, you must either have created it that way initially (back when you first configured the VM in step 3 above), or you can change it at any time by removing the mastercontainer and re-running the initial docker run command (but modifying the run command <a href="https://github.com/nextcloud/all-in-one?tab=readme-ov-file#how-to-adjust-the-talk-port">like so</a>). Then, the Talk port for EACH instance needs to be forwarded in your router's settings DIRECTLY to the VM hosting the instance (completely bypassing our physical host machine/reverse proxy). And finally, inside an admin-priveleged account (such as the default "admin" account) in each instance, you must visit <pre>https://[DOMAIN_NAME_*]/settings/admin/talk</pre> then find the STUN/TURN Settings, and from there set the proper values. If this is too complicated, it may be easier to use public STUN/TURN servers, but I have not tested any of this, rather I'm just sharing what I have found so far (more info available <a href="https://github.com/nextcloud/all-in-one/discussions/2517">here</a>). If you have figured this out or if any of this information is incorrect, please edit this section!</li>
-            <li>If you want to shave off around 8-10 seconds of total boot time when you reboot your physical host machine, a simple trick is to lower the GRUB_TIMEOUT from the default five seconds to one second, on both the physical host machine and each of the VMs. You can also remove the delay, but it's generally safer to leave at least one second. (Always be extremely careful when editing GRUB config, especially on the physical host machine, as an incorrect configuration can prevent your device from booting!)</li>
+            <li>You can easily connect to a VM to perform maintenance using this command (<strong>on the host physical machine</strong>): <pre><code>virsh console --domain [VM_NAME]</code></pre></li>
+            <li>If you chose to install an SSH Server, you can SSH in using this command (<strong>on the host physical machine</strong>): <pre><code>ssh [NONROOT_USER]@[IP_ADDRESS] # By default, OpenSSH does not allow logging in as root</code></pre></li>
+            <li>If you mess up the configuration of a VM, you may wish to completely delete it and start fresh with a new one. <strong>THIS WILL DELETE ALL DATA ASSOCIATED WITH THE VM INCLUDING ANYTHING IN YOUR AIO DATADIR!</strong> If you are sure you would like to do this, run (<strong>on the host physical machine</strong>): <pre><code>virsh destroy --domain [VM_NAME] ; virsh undefine --nvram --domain [VM_NAME] && rm -rfi /var/lib/libvirt/images/[VM_NAME].qcow2</code></pre></li>
+            <li>Using Nextcloud Talk will require some extra configuration. Back when you set up your VMs, they were (by default) configured with NAT, meaning they are in their own subnet. The VMs must each instead be bridged, so that your router may directly "see" them (as if they were real, physical devices on your network), and each AIO instance inside each VM must be configured with a different Talk port (like 3478, 3479, etc.). You should have already set these port numbers (back when you first configured the VM in step 4 above), but if you still need to set (or want to change) these values, you can remove the mastercontainer and re-run the initial "docker run" command with a modified Talk port <a href="https://github.com/nextcloud/all-in-one?tab=readme-ov-file#how-to-adjust-the-talk-port">like so</a>. Then, the Talk port for EACH instance needs to be forwarded in your router's settings DIRECTLY to the VM hosting the instance (completely bypassing your host physical machine/reverse proxy). And finally, inside an admin-privileged account (such as the default "admin" account) in each instance, you must visit <strong>https://[DOMAIN_NAME]/settings/admin/talk</strong> then find the STUN/TURN Settings, and from there set the proper values. If this is too complicated, it may be easier to use public STUN/TURN servers, but I have not tested any of this, rather I'm just sharing what I have found so far (more info available <a href="https://github.com/nextcloud/all-in-one/discussions/2517">here</a>). If you have figured this out or if any of this information is incorrect, please edit this section!</li>
+            <li>Configuring daily automatic backups is a bit more involved with this setup. But for the occasional manual borg backup, you can connect a physical SSD/HDD via a cheap USB SATA adapter/dock to a free USB port on your host physical machine, and then use these commands to pass the disk through to a VM of your choosing (<strong>on the host physical machine and on the VM</strong>): <pre><code>virsh attach-device --live --domain [VM_NAME] --file [USB_DEVICE_DEFINITION.xml]
+   virsh console --domain [VM_NAME]
+   # (Login to the VM with root privileges)
+   mkdir -p /mnt/[MOUNT_NAME]
+   mount /dev/disk/by-label/[DISK_NAME] /mnt/[MOUNT_NAME]</code></pre></li>
+            To create the XML device definition file, see <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sect-managing_guest_virtual_machines_with_virsh-attaching_and_updating_a_device_with_virsh">this short guide</a>. An SSD/HDD is recommended, but nothing is stopping you from using something as simple as a flash drive for testing if you really want. Finally, to actually perform a manual backup, make sure your disk is properly mounted and then simply use the AIO interface to perform the backup.
+            <li>If you want to shave off around 8-10 seconds of total boot time when you reboot your host physical machine, a simple trick is to lower the GRUB_TIMEOUT from the default five seconds to one second, on both the host physical machine and each of the VMs. You can also remove the delay, but it's generally safer to leave at least one second. (Always be extremely careful when editing GRUB config, especially on the host physical machine, as an incorrect configuration can prevent your device from booting!)</li>
         </ul>
     </details>
