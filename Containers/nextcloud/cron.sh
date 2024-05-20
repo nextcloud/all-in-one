@@ -1,6 +1,4 @@
 #!/bin/bash
-set -eu
-
 wait_for_cron() {
     set -x
     while [ -n "$(pgrep -f /var/www/html/cron.php)" ]; do
@@ -8,7 +6,7 @@ wait_for_cron() {
         sleep 5
     done
     echo "Cronjob successfully exited."
-    set +x
+    exit
 }
 
 trap wait_for_cron SIGINT SIGTERM

@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:latest
 # From https://github.com/docker-library/postgres/blob/master/15/alpine/Dockerfile
-FROM postgres:15.6-alpine
+FROM postgres:15.7-alpine
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=775 init-user-db.sh /docker-entrypoint-initdb.d/init-user-db.sh
 
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         bash \
         openssl \

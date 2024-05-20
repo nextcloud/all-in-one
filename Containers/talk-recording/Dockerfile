@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.12.2-alpine3.19
+FROM python:3.12.3-alpine3.19
 
 COPY --chmod=775 start.sh /start.sh
 
@@ -10,6 +10,7 @@ ENV SKIP_VERIFY false
 ENV HPB_PATH /standalone-signaling/
 
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         ca-certificates \
         tzdata \

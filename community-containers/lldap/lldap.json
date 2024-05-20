@@ -1,0 +1,46 @@
+{
+  "aio_services_v1": [
+    {
+      "container_name": "nextcloud-aio-lldap",
+      "display_name": "Light LDAP implementation",
+      "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap",
+      "image": "lldap/lldap",
+      "image_tag": "v0-alpine",
+      "internal_port": "17170",
+      "restart": "unless-stopped",
+      "ports": [
+        {
+          "ip_binding": "%APACHE_IP_BINDING%",
+          "port_number": "17170",
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        "TZ=%TIMEZONE%",
+        "UID=65534",
+        "GID=65534",
+        "LLDAP_JWT_SECRET=%LLDAP_JWT_SECRET%",
+        "LLDAP_LDAP_USER_PASS=%LLDAP_LDAP_USER_PASS%",
+        "LLDAP_LDAP_BASE_DN=%NC_BASE_DN%"
+      ],
+      "secrets": [
+        "LLDAP_JWT_SECRET",
+        "LLDAP_LDAP_USER_PASS"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_lldap",
+          "destination": "/data",
+          "writeable": true
+        }
+      ],
+      "backup_volumes": [
+        "nextcloud_aio_lldap"
+      ],
+      "nextcloud_exec_commands": [
+        "php /var/www/html/occ app:install user_ldap",
+        "php /var/www/html/occ app:enable user_ldap"
+      ]
+    }
+  ]
+}

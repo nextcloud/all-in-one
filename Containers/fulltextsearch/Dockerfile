@@ -1,14 +1,16 @@
 # syntax=docker/dockerfile:latest
 # Probably from here https://github.com/elastic/elasticsearch/blob/main/distribution/docker/src/docker/Dockerfile
-FROM elasticsearch:8.12.2
+FROM elasticsearch:8.13.4
 
 USER root
+
+ARG DEBIAN_FRONTEND noninteractive
 
 # hadolint ignore=DL3008
 RUN set -ex; \
     \
-    export DEBIAN_FRONTEND=noninteractive; \
     apt-get update; \
+    apt-get upgrade -y; \
     apt-get install -y --no-install-recommends \
         tzdata \
     ; \

@@ -19,7 +19,7 @@ use http\Env\Response;
 
 class DockerActionManager
 {
-    private const API_VERSION = 'v1.41';
+    private const string API_VERSION = 'v1.41';
     private \GuzzleHttp\Client $guzzleClient;
     private ConfigurationManager $configurationManager;
     private ContainerDefinitionFetcher $containerDefinitionFetcher;
@@ -283,6 +283,8 @@ class DockerActionManager
 
                 if($out[1] === 'NC_DOMAIN') {
                     $replacements[1] = $this->configurationManager->GetDomain();
+                } elseif($out[1] === 'NC_BASE_DN') {
+                    $replacements[1] = $this->configurationManager->GetBaseDN();
                 } elseif ($out[1] === 'AIO_TOKEN') {
                     $replacements[1] = $this->configurationManager->GetToken();
                 } elseif ($out[1] === 'BORGBACKUP_MODE') {
