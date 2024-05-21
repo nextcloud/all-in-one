@@ -151,7 +151,8 @@ apt install --no-install-recommends qemu-system qemu-utils libvirt-clients libvi
    --volume /var/run/docker.sock:/var/run/docker.sock:ro \
    nextcloud/all-in-one:latest
    ```
-   The last command may take a few minutes. When it's finished, you should see a success message, saying "Initial startup of Nextcloud All-in-One complete!". Now exit the console session with `Ctrl + ]`. This concludes the setup for this particular VM.
+   The last command may take a few minutes. When it's finished, you should see a success message, saying "Initial startup of Nextcloud All-in-One complete!". Now exit the console session with `Ctrl + [c]`. This concludes the setup for this particular VM.
+
    
    ---
 6. Go ahead and run through steps 1-4 again in order to set up your second VM. When you're finished, proceed down to step 6. *(Note: If you downloaded the Ubuntu .ISO image and no longer need it, you may delete it now.)*
