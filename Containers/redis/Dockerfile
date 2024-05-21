@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # From https://github.com/docker-library/redis/blob/master/7.0/alpine/Dockerfile
-FROM redis:7.2.4-alpine
+FROM redis:7.2.5-alpine
 
 COPY --chmod=775 start.sh /start.sh
 
