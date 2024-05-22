@@ -151,7 +151,7 @@ done
 
 set -x
 # shellcheck disable=SC2235
-if [ "$THIS_IS_AIO" = "true" ] && ([ "$APACHE_PORT" = 443 ] || [ "$APACHE_IP_BINDING" = "127.0.0.1" ] || [ "$APACHE_IP_BINDING" = "::1" ]); then
+if [ "$THIS_IS_AIO" = "true" ] && [ "$APACHE_PORT" = 443 ]; then
     IPv4_ADDRESS_APACHE="$(dig nextcloud-aio-apache A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
     IPv6_ADDRESS_APACHE="$(dig nextcloud-aio-apache AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
     IPv4_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
