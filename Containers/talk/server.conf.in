@@ -7,7 +7,7 @@
 #readtimeout = 15
 
 # HTTP socket write timeout in seconds.
-#writetimeout = 15
+#writetimeout = 30
 
 [https]
 # IP and port to listen on for HTTPS requests.
@@ -18,7 +18,7 @@
 #readtimeout = 15
 
 # HTTPS socket write timeout in seconds.
-#writetimeout = 15
+#writetimeout = 30
 
 # Certificate / private key to use for the HTTPS server.
 certificate = /etc/nginx/ssl/server.crt
@@ -33,6 +33,11 @@ debug = false
 # only be enabled for testing. By default only streams of users in the same
 # room and call can be subscribed.
 #allowsubscribeany = false
+
+# Comma separated list of trusted proxies (IPs or CIDR networks) that may set
+# the "X-Real-Ip" or "X-Forwarded-For" headers.
+# Leave empty to allow loopback and local addresses.
+#trustedproxies =
 
 [sessions]
 # Secret value used to generate checksums of sessions. This should be a random
