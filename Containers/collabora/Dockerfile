@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # From a file located probably somewhere here: https://github.com/CollaboraOnline/online/tree/master/docker
-FROM collabora/code:24.04.1.4.1
+FROM collabora/code:24.04.2.1.1
 
 USER root
 ARG DEBIAN_FRONTEND noninteractive
@@ -9,7 +9,6 @@ ARG DEBIAN_FRONTEND noninteractive
 RUN set -ex; \
     \
     apt-get update; \
-    apt-get upgrade -y; \
     apt-get install -y --no-install-recommends \
         tzdata \
         netcat-openbsd \
