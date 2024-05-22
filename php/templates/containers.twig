@@ -208,7 +208,7 @@
             {% endif %}
 
             {% if is_backup_container_running == true %}
-                <span class="status running"></span> Backup container is currently running. (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
+                <span class="status running"></span> Backup container is currently running: {{ borg_backup_mode }} (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
                 <a href="" class="button reload">Reload ↻</a><br/><br>
             {% endif %}
 
