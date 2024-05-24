@@ -51,9 +51,6 @@ https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
         reverse_proxy {$TALK_HOST}:8081
     }
 
-    # Others
-    import /mnt/data/caddy-imports/*
-
     # Nextcloud
     route {
         rewrite /.well-known/carddav /remote.php/dav/
