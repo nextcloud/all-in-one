@@ -666,6 +666,10 @@
                     {% endif %}
                 {% endif %}
             {% endif %}
+            {% if is_backup_container_running == false %}
+                <h2>How to reset the AIO instance?</h2>
+                If something should be going wrong, for example during the initial installation, you can reset the instance by following <a href="https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance">this documentation</a>. Make sure to create a backup first and note down the path as well as the encryption password if this instance is already productively used so that you can restore your data on a fresh AIO instance.<br><br>
+            {% endif %}
         {% endif %}
 
     {% if isApacheStarting == true or is_backup_container_running == true or isWatchtowerRunning == true or is_daily_backup_running == true %}
