@@ -2,8 +2,6 @@
 This directory features containers that are built for AIO which allows to add additional functionality very easily.
 
 ## Disclaimers
-⚠️ This is currently beta and not stable yet!
-
 All containers that are in this directory are community maintained so the responsibility is on the community to keep them updated and secure. There is no guarantee that this will be the case in the future.
 
 ## How to use this?
