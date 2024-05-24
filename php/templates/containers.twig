@@ -157,6 +157,7 @@
                                         </form>
                                     {% endif %}
                                     Choose the backup that you want to restore and click on the button below to restore the selected backup. This will restore the whole AIO instance. Please note that the current AIO passphrase will be kept and the previous AIO passphrase will not be restored from backup!<br><br>
+                                    <strong>Please note:</strong> If the backup that you want to restore contained any <a href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">community container</a>, but you did not specify the same community containers via environmental variable while creating this new AIO instance, you need to restore the same backup a second time after this attempt so that the community container data is also correctly restored.<br><br>
                                     <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
