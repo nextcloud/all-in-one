@@ -1,5 +1,5 @@
 > [!NOTE]
-> Unless the starting script tells you, you have no acction to do to update.
+> Unless the starting script tells you, you have no action to do to update.
 
 # UPGRADING
 
