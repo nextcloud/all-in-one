@@ -35,7 +35,8 @@ debug = false
 #allowsubscribeany = false
 
 # Comma separated list of trusted proxies (IPs or CIDR networks) that may set
-# the "X-Real-Ip" or "X-Forwarded-For" headers.
+# the "X-Real-Ip" or "X-Forwarded-For" headers. If both are provided, the
+# "X-Real-Ip" header will take precedence (if valid).
 # Leave empty to allow loopback and local addresses.
 #trustedproxies =
 
