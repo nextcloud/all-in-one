@@ -1,9 +1,14 @@
+> [!NOTE]
+> Unless the starting script tells you, you have no acction to do to update.
+
 # UPGRADING
 
 During a major server update, this message will be displayed:
 
 > Your data is in an old format.
-> echo "Make a backup and see https://github.com/nextcloud/all-in-one/blob/main/community-containers/stalwart/upgrading.md
+> 
+> Make a backup and see https://github.com/nextcloud/all-in-one/blob/main/community-containers/stalwart/upgrading.md
+> 
 > To avoid any loss of data, Stalwart will not launch.
 
 If there is no update, delete the `/opt/stalwart-mail/aio.lock` file from the container. Beware of data loss.
