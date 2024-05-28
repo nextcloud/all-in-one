@@ -475,6 +475,13 @@ if [ -n "$SUBSCRIPTION_KEY" ] && [ -z "$(php /var/www/html/occ config:app:get su
     php /var/www/html/occ config:app:set support potential_subscription_key --value="$SUBSCRIPTION_KEY"
     php /var/www/html/occ config:app:delete support last_check
 fi
+if [ -n "$NEXTCLOUD_DEFAULT_QUOTA" ]; then
+    if [ "$NEXTCLOUD_DEFAULT_QUOTA" = "unlimited" ]; then
+        php /var/www/html/occ config:app:delete files default_quota
+    else
+        php /var/www/html/occ config:app:set files default_quota --value="$NEXTCLOUD_DEFAULT_QUOTA"
+    fi
+fi
 
 # Adjusting log files to be stored on a volume
 echo "Adjusting log files..."
