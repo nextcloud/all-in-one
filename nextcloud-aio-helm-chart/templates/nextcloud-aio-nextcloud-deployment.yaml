@@ -84,6 +84,8 @@ spec:
               value: "{{ .Values.ADDITIONAL_TRUSTED_DOMAIN }}"
             - name: SERVERINFO_TOKEN
               value: "{{ .Values.SERVERINFO_TOKEN }}"
+            - name: NEXTCLOUD_DEFAULT_QUOTA
+              value: "{{ .Values.NEXTCLOUD_DEFAULT_QUOTA }}"
             - name: ADDITIONAL_APKS
               value: "{{ .Values.NEXTCLOUD_ADDITIONAL_APKS }}"
             - name: ADDITIONAL_PHP_EXTENSIONS
