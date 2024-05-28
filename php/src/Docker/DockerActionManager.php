@@ -44,7 +44,7 @@ class DockerActionManager
     }
 
     private function BuildApiUrl(string $url) : string {
-        return sprintf('http://localhost/%s/%s', self::API_VERSION, $url);
+        return sprintf('http://127.0.0.1/%s/%s', self::API_VERSION, $url);
     }
 
     private function BuildImageName(Container $container) : string {

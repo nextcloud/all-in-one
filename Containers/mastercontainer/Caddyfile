@@ -16,7 +16,7 @@
     }
 
     on_demand_tls {
-        ask http://localhost:9876/
+        ask http://127.0.0.1:9876/
     }
 }
 
@@ -26,7 +26,7 @@ http://:80 {
 
 https://:8443 {
 
-    reverse_proxy localhost:8000
+    reverse_proxy 127.0.0.1:8000
 
     tls {
         on_demand
