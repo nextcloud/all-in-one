@@ -1,0 +1,4 @@
+https://domain.com:443 {
+    reverse_proxy localhost:11000
+    tls internal
+}
