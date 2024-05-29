@@ -19,6 +19,13 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
+# Only start container if redis is accessible
+# shellcheck disable=SC2153
+while ! nc -z "$REDIS_HOST" "6379"; do
+    echo "Waiting for redis to start..."
+    sleep 5
+done
+
 # Check permissions in ncdata
 touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
