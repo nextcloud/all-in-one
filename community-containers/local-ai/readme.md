@@ -9,6 +9,7 @@ This container bundles Local AI and auto-configures it for you.
 ```yaml
 # Stable Diffusion in NCNN with c++, supported txt2img and img2img 
 - url: github:go-skynet/model-gallery/stablediffusion.yaml
+  name: Stable_diffusion
 
 # Port of OpenAI's Whisper model in C/C++ 
 - url: github:go-skynet/model-gallery/whisper-base.yaml
@@ -18,6 +19,7 @@ This container bundles Local AI and auto-configures it for you.
 - url: github:go-skynet/model-gallery/gpt4all-j.yaml
   name: gpt4all-j
 ```
+-  You need to add gpt4all-j under Text Generation (Default completion model to use) in Connected Accounts in the Administration Settings in Nextcloud, the default does not work.
 -  Additionally after doing so, you might want to enable or disable specific features for your models in the integration_openai settings: `https://your-nc-domain.com/settings/admin/connected-accounts`
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
