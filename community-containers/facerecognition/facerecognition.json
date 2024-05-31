@@ -10,7 +10,8 @@
             "restart": "unless-stopped",
             "environment": [
                 "TZ=%TIMEZONE%",
-                "API_KEY=some-super-secret-api-key"
+                "API_KEY=some-super-secret-api-key",
+                "FACE_MODEL=3"
             ],
             "aio_variables": [
                 "nextcloud_memory_limit=4096M"
