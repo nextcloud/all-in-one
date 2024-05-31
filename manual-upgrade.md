@@ -57,7 +57,7 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
 ## Method 2
 #### *Approach using portainer if method 1 does not work for you*
 
-Prerequsite: have all containers from AIO interface running.
+Prerequisite: have all containers from AIO interface running.
 
 <details>
 <summary>Click to expand</summary>
