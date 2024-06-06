@@ -10,6 +10,6 @@ fi
 # shellcheck disable=SC2153
 nc -z "$POSTGRES_HOST" "$POSTGRES_PORT" || exit 0
 
-if ! nc -z localhost 9000; then
+if ! nc -z 127.0.0.1 9000; then
     exit 1
 fi
