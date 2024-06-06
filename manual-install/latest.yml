@@ -105,6 +105,7 @@ services:
       - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     environment:
       - POSTGRES_HOST=nextcloud-aio-database
+      - POSTGRES_PORT=5432
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=nextcloud_database
       - POSTGRES_USER=nextcloud
@@ -170,6 +171,7 @@ services:
       - REDIS_HOST=nextcloud-aio-redis
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
       - POSTGRES_HOST=nextcloud-aio-database
+      - POSTGRES_PORT=5432
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=nextcloud_database
       - POSTGRES_USER=nextcloud
