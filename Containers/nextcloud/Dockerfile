@@ -118,6 +118,7 @@ RUN set -ex; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
         echo 'max_execution_time=${PHP_MAX_TIME}'; \
         echo 'max_input_time=${PHP_MAX_TIME}'; \
+        echo 'default_socket_timeout=600'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
     { \
