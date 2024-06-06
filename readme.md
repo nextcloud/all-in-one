@@ -310,7 +310,7 @@ You can switch to a different channel like e.g. the beta channel or from the bet
 ### How to update the containers?
 If we push new containers to `latest`, you will see in the AIO interface below the `containers` section that new container updates were found. In this case, just press `Stop containers` and `Start and update containers` in order to update the containers. The mastercontainer has its own update procedure though. See below. And don't forget to back up the current state of your instance using the built-in backup solution before starting the containers again! Otherwise you won't be able to restore your instance easily if something should break during the update. 
 
-If a new `Mastercontainer` update was found, you'll see an additional section below the `containers` section which shows that a mastercontainer update is available. If so, you can simply press on the button to update the container.
+If a new `mastercontainer` update was found, you'll see a note below the `Stop containers` button that allows to show the changelog. If you click that button and the containers are stopped, you will see a new button that allows to update the mastercontainer. After doing so and after the update is gone through, you will have the  option again to `Start and update containers`. It is recommended to create a backup before clicking the `Start and update containers` button.
 
 Additionally, there is a cronjob that runs once a day that checks for container and mastercontainer updates and sends a notification to all Nextcloud admins if a new update was found.
 
