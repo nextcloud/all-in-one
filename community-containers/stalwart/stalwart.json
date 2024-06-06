@@ -47,7 +47,11 @@
             ],
             "environment": [
                 "TZ=%TIMEZONE%",
-                "NC_DOMAIN=%NC_DOMAIN%"
+                "NC_DOMAIN=%NC_DOMAIN%",
+                "STALWART_USER_PASS=%STALWART_USER_PASS%"
+            ],
+            "secrets": [
+                "STALWART_USER_PASS"
             ],
             "volumes": [
                 {
