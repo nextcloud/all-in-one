@@ -53,11 +53,11 @@ https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
 
     # Nextcloud
     route {
-        rewrite /.well-known/carddav /remote.php/dav/
-        rewrite /.well-known/caldav /remote.php/dav/
         header Strict-Transport-Security max-age=31536000;
         reverse_proxy 127.0.0.1:8000
     }
+    redir /.well-known/carddav /remote.php/dav/ 301
+    redir /.well-known/caldav /remote.php/dav/ 301
 
     # TLS options
     tls {
