@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-    kompose.version: 1.33.0 (3ce457399)
+    kompose.version: 1.34.0 (cbf2835db)
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
@@ -19,9 +19,8 @@ spec:
     metadata:
       annotations:
         kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-        kompose.version: 1.33.0 (3ce457399)
+        kompose.version: 1.34.0 (cbf2835db)
       labels:
-        io.kompose.network/nextcloud-aio: "true"
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
       initContainers:
@@ -142,6 +141,8 @@ spec:
               value: nextcloud-aio-database
             - name: POSTGRES_PASSWORD
               value: "{{ .Values.DATABASE_PASSWORD }}"
+            - name: POSTGRES_PORT
+              value: "5432"
             - name: POSTGRES_USER
               value: nextcloud
             - name: RECORDING_SECRET
@@ -172,7 +173,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240502_104630-latest"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240606_075829-latest"
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
