@@ -70,7 +70,8 @@
             {% elseif automatic_updates == true %}
                 The whole process can take a while as your containers will be updated.<br /><br />
             {% endif %}
-            <a href="" class="button reload">Reload ↻</a><br/>
+            <a href="" class="button reload">Reload ↻</a><br/><br/>
+            If the daily bacckup should be stuck somehow, you can make it unstuck by running <strong>sudo docker exec nextcloud-aio-mastercontainer rm /mnt/docker-aio-config/data/daily_backup_running</strong> and afterwards reloading this interface.<br /><br />
         {% elseif isWatchtowerRunning == true %}
             <span class="status running"></span> Mastercontainer update currently running. Once the update is complete the mastercontainer will restart, making it unavailable for a moment. Please wait until it's done. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)<br /><br />
             <a href="" class="button reload">Reload ↻</a><br/>
