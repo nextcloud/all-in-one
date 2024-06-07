@@ -3,7 +3,6 @@ This container bundles the external model of facerecognition and auto-configures
 
 ### Notes
 - This container needs imaginary in order to analyze modern file format images. Make sure to enable imaginary in the AIO interface before adding this container.
-- Currently, in order to run this correctly, your server should have at least 6 GB of RAM, better 8 GB of RAM.
 - Facerecognition is by default disabled for all users, if you want to enable facerecognition for all users, you can run the following before adding this container:
     ```bash
     # Go into the container
