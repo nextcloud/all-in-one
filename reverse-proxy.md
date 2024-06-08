@@ -140,6 +140,10 @@ Add this to your Caddyfile:
 
 ```
 https://<your-nc-domain>:443 {
+    redir /.well-known/webfinger /index.php/.well-known/webfinger 301
+    redir /.well-known/nodeinfo /index.php/.well-known/nodeinfo 301
+    redir /.well-known/carddav /remote.php/dav/ 301
+    redir /.well-known/caldav /remote.php/dav/ 301
     reverse_proxy localhost:11000
 }
 ```
