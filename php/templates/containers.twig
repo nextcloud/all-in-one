@@ -460,7 +460,13 @@
                                 <p>The backup uses a tool called <a href="https://github.com/borgbackup/borg#what-is-borgbackup"><strong>BorgBackup</strong></a>, a well-known server backup tool that efficiently backs up your files and encrypts them on the fly.</p>
                                 <p>By using this tool, backups are incremental, differential, compressed and encrypted – so only the first backup will take a while. Further backups should be fast as only changes are taken into account.</p>
                                 {% if borg_remote_repo != '' %}
-                                    <p>Backups get created remotely at <b>{{ borg_remote_repo }}</b></p>
+                                    <p>
+                                        Backups get created remotely at:<br>
+                                        <b>{{ borg_remote_repo }}</b><br/>
+                                        {% if has_backup_run_once == true %}
+                                        Your borg ssh public key is:<br><b>{{ borg_public_key }}</b><br>
+                                        {% endif %}
+                                    </p>
                                 {% else %}
                                     <p>Backups get created in the following directory on the host: <b>{{ borg_backup_host_location }}/borg</b></p>
                                 {% endif %}
