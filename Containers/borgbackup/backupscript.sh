@@ -66,7 +66,7 @@ if [ -n "$BORG_REMOTE_REPO" ] && ! [ -f "$BORGBACKUP_KEY" ]; then
     ssh-keygen  -f "$BORGBACKUP_KEY" -N ""
     echo "You should configure the remote to accept this public key"
 fi
-echo "Your public ssh key for borgbackup is: $(cat $BORGBACKUP_KEY.pub)"
+echo "Your public ssh key for borgbackup is: $(cat "$BORGBACKUP_KEY.pub")"
 
 # Do the backup
 if [ "$BORG_MODE" = backup ]; then
@@ -357,7 +357,7 @@ if [ "$BORG_MODE" = restore ]; then
         # Delete files/dirs present locally, but not in the backup archive, excluding conf files
         # https://unix.stackexchange.com/a/759341
         # This comm does not support -z, but I doubt any file names would have \n in them
-        echo Deleting local files which do not exist in the backup
+        echo "Deleting local files which do not exist in the backup"
         if ! find nextcloud_aio_volumes \
                 -not \( \
                     -path nextcloud_aio_volumes/nextcloud_aio_apache/caddy \
