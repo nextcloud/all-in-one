@@ -3,6 +3,7 @@ FROM alpine:3.19.1
 
 RUN set -ex; \
     \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         util-linux-misc \
         bash \

@@ -44,8 +44,12 @@ fi
 
 echo "notify-push was started"
 
+# Set a default value for POSTGRES_PORT
+if [ -z "$POSTGRES_PORT" ]; then
+    POSTGRES_PORT=5432
+fi
 # Set sensitive values as env
-export DATABASE_URL="postgres://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
+export DATABASE_URL="postgres://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
 export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST"
 
 # Run it

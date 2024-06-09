@@ -13,7 +13,7 @@ class DockerController
 {
     private DockerActionManager $dockerActionManager;
     private ContainerDefinitionFetcher $containerDefinitionFetcher;
-    private const TOP_CONTAINER = 'nextcloud-aio-apache';
+    private const string TOP_CONTAINER = 'nextcloud-aio-apache';
     private ConfigurationManager $configurationManager;
 
     public function __construct(
@@ -173,7 +173,7 @@ class DockerController
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = 28;
+            $installLatestMajor = 29;
         } else {
             $installLatestMajor = "";
         }

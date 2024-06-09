@@ -63,15 +63,6 @@ caddy fmt --overwrite /tmp/Caddyfile
 # Add caddy path
 mkdir -p /mnt/data/caddy/
 
-# Add caddy import path
-mkdir -p /mnt/data/caddy-imports
-
-# Remove falsely added Nextcloud conf
-rm -f /mnt/data/caddy-imports/nextcloud
-
-# Make sure that the caddy-imports dir is not empty
-echo "# empty file so that caddy does not print a warning" > /mnt/data/caddy-imports/empty
-
 # Fix apache startup
 rm -f /usr/local/apache2/logs/httpd.pid
 

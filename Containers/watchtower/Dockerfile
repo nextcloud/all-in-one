@@ -4,7 +4,9 @@ FROM containrrr/watchtower:1.7.1 as watchtower
 
 FROM alpine:3.19.1
 
-RUN apk add --no-cache bash
+RUN apk upgrade --no-cache -a; \
+    apk add --no-cache bash
+
 COPY --from=watchtower /watchtower /watchtower
 
 COPY --chmod=775 start.sh /start.sh

@@ -19,16 +19,12 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
-echo "Configuring Redis as session handler..."
-cat << REDIS_CONF > /usr/local/etc/php/conf.d/redis-session.ini
-session.save_handler = redis
-session.save_path = "tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}"
-redis.session.locking_enabled = 1
-redis.session.lock_retries = -1
-# redis.session.lock_wait_time is specified in microseconds.
-# Wait 10ms before retrying the lock rather than the default 2ms.
-redis.session.lock_wait_time = 10000
-REDIS_CONF
+# Only start container if redis is accessible
+# shellcheck disable=SC2153
+while ! nc -z "$REDIS_HOST" "6379"; do
+    echo "Waiting for redis to start..."
+    sleep 5
+done
 
 # Check permissions in ncdata
 touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
@@ -223,7 +219,11 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 DATADIR_PERMISSION_CONF
 
             echo "Installing with PostgreSQL database"
-            INSTALL_OPTIONS+=(--database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST")
+            # Set a default value for POSTGRES_PORT
+            if [ -z "$POSTGRES_PORT" ]; then
+              POSTGRES_PORT=5432
+            fi
+            INSTALL_OPTIONS+=(--database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST" --database-port "$POSTGRES_PORT")
 
             echo "Starting Nextcloud installation..."
             if ! php /var/www/html/occ maintenance:install "${INSTALL_OPTIONS[@]}"; then
@@ -301,19 +301,19 @@ DATADIR_PERMISSION_CONF
             # Apply log settings
             echo "Applying default settings..."
             mkdir -p /var/www/html/data
-            php /var/www/html/occ config:system:set loglevel --value=2
-            php /var/www/html/occ config:system:set log_type --value=file
+            php /var/www/html/occ config:system:set loglevel --value="2" --type=integer
+            php /var/www/html/occ config:system:set log_type --value="file"
             php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
-            php /var/www/html/occ config:system:set log_rotate_size --value="10485760"
+            php /var/www/html/occ config:system:set log_rotate_size --value="10485760" --type=integer
             php /var/www/html/occ app:enable admin_audit
             php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
             php /var/www/html/occ config:system:set log.condition apps 0 --value="admin_audit"
 
             # Apply preview settings
             echo "Applying preview settings..."
-            php /var/www/html/occ config:system:set preview_max_x --value="2048"
-            php /var/www/html/occ config:system:set preview_max_y --value="2048"
-            php /var/www/html/occ config:system:set jpeg_quality --value="60"
+            php /var/www/html/occ config:system:set preview_max_x --value="2048" --type=integer
+            php /var/www/html/occ config:system:set preview_max_y --value="2048" --type=integer
+            php /var/www/html/occ config:system:set jpeg_quality --value="60" --type=integer
             php /var/www/html/occ config:app:set preview jpeg_quality --value="60"
             php /var/www/html/occ config:system:delete enabledPreviewProviders
             php /var/www/html/occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\Image"
@@ -333,7 +333,7 @@ DATADIR_PERMISSION_CONF
             php /var/www/html/occ config:system:set mail_smtpmode --value="smtp"
             php /var/www/html/occ config:system:set trashbin_retention_obligation --value="auto, 30"
             php /var/www/html/occ config:system:set versions_retention_obligation --value="auto, 30"
-            php /var/www/html/occ config:system:set activity_expire_days --value="30"
+            php /var/www/html/occ config:system:set activity_expire_days --value="30" --type=integer
             php /var/www/html/occ config:system:set simpleSignUpLink.shown --type=bool --value=false
             php /var/www/html/occ config:system:set share_folder --value="/Shared"
             # Not needed anymore with the removal of the updatenotification app:
@@ -482,6 +482,13 @@ if [ -n "$SUBSCRIPTION_KEY" ] && [ -z "$(php /var/www/html/occ config:app:get su
     php /var/www/html/occ config:app:set support potential_subscription_key --value="$SUBSCRIPTION_KEY"
     php /var/www/html/occ config:app:delete support last_check
 fi
+if [ -n "$NEXTCLOUD_DEFAULT_QUOTA" ]; then
+    if [ "$NEXTCLOUD_DEFAULT_QUOTA" = "unlimited" ]; then
+        php /var/www/html/occ config:app:delete files default_quota
+    else
+        php /var/www/html/occ config:app:set files default_quota --value="$NEXTCLOUD_DEFAULT_QUOTA"
+    fi
+fi
 
 # Adjusting log files to be stored on a volume
 echo "Adjusting log files..."
@@ -508,6 +515,14 @@ php /var/www/html/occ maintenance:update:htaccess
 
 # Revert dbpersistent setting to check if it fixes too many db connections
 php /var/www/html/occ config:system:set dbpersistent --value=false --type=bool
+
+if [ "$DISABLE_BRUTEFORCE_PROTECTION" = yes ]; then
+    php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=false
+    php /var/www/html/occ config:system:set ratelimit.protection.enabled --type=bool --value=false
+else
+    php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=true
+    php /var/www/html/occ config:system:set ratelimit.protection.enabled --type=bool --value=true
+fi
 
 # Disallow creating local external storages when nothing was mounted
 if [ -z "$NEXTCLOUD_MOUNT" ]; then
@@ -543,6 +558,14 @@ php /var/www/html/occ config:system:set trusted_proxies 1 --value="::1"
 if [ -n "$ADDITIONAL_TRUSTED_PROXY" ]; then
     php /var/www/html/occ config:system:set trusted_proxies 2 --value="$ADDITIONAL_TRUSTED_PROXY"
 fi
+
+# Get ipv4-address of Nextcloud 
+IPv4_ADDRESS="$(dig nextcloud-aio-nextcloud A +short +search | head -1)" 
+# Bring it in CIDR notation 
+# shellcheck disable=SC2001
+IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|1/32|')" 
+php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
+
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
     php /var/www/html/occ config:system:set trusted_domains 2 --value="$ADDITIONAL_TRUSTED_DOMAIN"
 fi
@@ -550,6 +573,11 @@ php /var/www/html/occ config:app:set notify_push base_endpoint --value="https://
 
 # Collabora
 if [ "$COLLABORA_ENABLED" = 'yes' ]; then
+    set -x
+    if echo "$COLLABORA_HOST" | grep -q "nextcloud-.*-collabora"; then
+        COLLABORA_HOST="$NC_DOMAIN"
+    fi
+    set +x
     if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ app:install richdocuments
     elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" != "yes" ]; then
@@ -557,10 +585,10 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update richdocuments
     fi
-    php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$NC_DOMAIN/"
+    php /var/www/html/occ config:app:set richdocuments wopi_url --value="https://$COLLABORA_HOST/"
     # Make collabora more save
-    COLLABORA_IPv4_ADDRESS="$(dig "$NC_DOMAIN" A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
-    COLLABORA_IPv6_ADDRESS="$(dig "$NC_DOMAIN" AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
+    COLLABORA_IPv4_ADDRESS="$(dig "$COLLABORA_HOST" A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
+    COLLABORA_IPv6_ADDRESS="$(dig "$COLLABORA_HOST" AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
     COLLABORA_ALLOW_LIST="$(php /var/www/html/occ config:app:get richdocuments wopi_allowlist)"
     if [ -n "$COLLABORA_IPv4_ADDRESS" ]; then
         if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$COLLABORA_IPv4_ADDRESS"; then
@@ -571,7 +599,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
             fi
         fi
     else
-        echo "Warning: No ipv4-address found for $NC_DOMAIN."
+        echo "Warning: No ipv4-address found for $COLLABORA_HOST."
     fi
     if [ -n "$COLLABORA_IPv6_ADDRESS" ]; then
         if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$COLLABORA_IPv6_ADDRESS"; then
@@ -582,7 +610,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
             fi
         fi
     else
-        echo "No ipv6-address found for $NC_DOMAIN."
+        echo "No ipv6-address found for $COLLABORA_HOST."
     fi
     if [ -n "$COLLABORA_ALLOW_LIST" ]; then
         PRIVATE_IP_RANGES='127.0.0.1/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,fd00::/8,::1'
@@ -629,6 +657,15 @@ fi
 
 # Talk
 if [ "$TALK_ENABLED" = 'yes' ]; then
+    set -x
+    if [ -z "$TALK_HOST" ] || echo "$TALK_HOST" | grep -q "nextcloud-.*-talk"; then
+        TALK_HOST="$NC_DOMAIN"
+        HPB_PATH="/standalone-signaling/"
+    fi
+    if [ -z "$TURN_DOMAIN" ]; then
+        TURN_DOMAIN="$TALK_HOST"
+    fi
+    set +x
     if ! [ -d "/var/www/html/custom_apps/spreed" ]; then
         php /var/www/html/occ app:install spreed
     elif [ "$(php /var/www/html/occ config:app:get spreed enabled)" != "yes" ]; then
@@ -638,15 +675,16 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     fi
     # Based on https://github.com/nextcloud/spreed/issues/960#issuecomment-416993435
     if [ -z "$(php /var/www/html/occ talk:turn:list --output="plain")" ]; then
-        php /var/www/html/occ talk:turn:add turn "$NC_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
+        # shellcheck disable=SC2153
+        php /var/www/html/occ talk:turn:add turn "$TURN_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
     fi
     STUN_SERVER="$(php /var/www/html/occ talk:stun:list --output="plain")"
     if [ -z "$STUN_SERVER" ] || echo "$STUN_SERVER" | grep -oP '[a-zA-Z.:0-9]+' | grep -q "^stun.nextcloud.com:443$"; then
-        php /var/www/html/occ talk:stun:add "$NC_DOMAIN:$TALK_PORT"
+        php /var/www/html/occ talk:stun:add "$TURN_DOMAIN:$TALK_PORT"
         php /var/www/html/occ talk:stun:delete "stun.nextcloud.com:443"
     fi
-    if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://$NC_DOMAIN/standalone-signaling/"; then
-        php /var/www/html/occ talk:signaling:add "https://$NC_DOMAIN/standalone-signaling/" "$SIGNALING_SECRET" --verify
+    if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://$TALK_HOST$HPB_PATH"; then
+        php /var/www/html/occ talk:signaling:add "https://$TALK_HOST$HPB_PATH" "$SIGNALING_SECRET" --verify
     fi
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/spreed" ]; then

@@ -5,8 +5,8 @@
             "display_name": "Stalwart",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart",
             "image": "marcoambrosini/aio-stalwart",
-            "image_tag": "v1",
-            "internal_port": "587",
+            "image_tag": "v2",
+            "internal_port": "10003",
             "restart": "unless-stopped",
             "ports": [
                 {
@@ -38,11 +38,20 @@
                   "ip_binding": "",
                   "port_number": "4190",
                   "protocol": "tcp"
+                },
+                {
+                  "ip_binding": "%APACHE_IP_BINDING%",
+                  "port_number": "10003",
+                  "protocol": "tcp"
                 }
             ],
             "environment": [
                 "TZ=%TIMEZONE%",
-                "NC_DOMAIN=%NC_DOMAIN%"
+                "NC_DOMAIN=%NC_DOMAIN%",
+                "STALWART_USER_PASS=%STALWART_USER_PASS%"
+            ],
+            "secrets": [
+                "STALWART_USER_PASS"
             ],
             "volumes": [
                 {

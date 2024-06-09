@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.2.17-fpm-alpine3.19
+FROM php:8.2.19-fpm-alpine3.19
 
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 10G
@@ -7,15 +7,15 @@ ENV PHP_MAX_TIME 3600
 ENV SOURCE_LOCATION /usr/src/nextcloud
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION 28.0.3
+ENV NEXTCLOUD_VERSION 29.0.2
 ENV AIO_TOKEN 123456
 ENV AIO_URL localhost
-COPY supervisord.conf /supervisord.conf
 # AIO settings end # Do not remove or change this line!
 
 COPY --chmod=775 *.sh /
 COPY --chmod=774 upgrade.exclude /upgrade.exclude
 COPY config/*.php /
+COPY supervisord.conf /supervisord.conf
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
@@ -23,6 +23,7 @@ VOLUME /var/www/html
 # Custom: change id of www-data user as it needs to be the same like on old installations
 # hadolint ignore=SC2086,DL3003
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
     deluser www-data; \
     groupmod -g 333 xfs; \
@@ -44,6 +45,8 @@ RUN set -ex; \
         icu-dev \
         imagemagick-dev \
         imagemagick-svg \
+        imagemagick-heic \
+        imagemagick-tiff \
         libevent-dev \
         libjpeg-turbo-dev \
         libmcrypt-dev \
@@ -115,7 +118,16 @@ RUN set -ex; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
         echo 'max_execution_time=${PHP_MAX_TIME}'; \
         echo 'max_input_time=${PHP_MAX_TIME}'; \
+        echo 'default_socket_timeout=600'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
+    \
+    { \
+        echo 'session.save_handler = redis'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:6379?auth=${REDIS_HOST_PASSWORD}"'; \
+        echo 'redis.session.locking_enabled = 1'; \
+        echo 'redis.session.lock_retries = -1'; \
+        echo 'redis.session.lock_wait_time = 10000'; \
+    } > /usr/local/etc/php/conf.d/redis-session.ini; \
     \
     mkdir -p /var/www/data; \
     chown -R www-data:root /var/www; \
@@ -188,6 +200,8 @@ RUN set -ex; \
     /var/log/supervisord \
     /var/run/supervisord \
     ; \
+    chown www-data:root -R /var/log/supervisord; \
+    chown www-data:root -R /var/run/supervisord; \
     \
     apk add --no-cache \
         bash \
@@ -203,6 +217,8 @@ RUN set -ex; \
         bind-tools \
         imagemagick \
         imagemagick-svg \
+        imagemagick-heic \
+        imagemagick-tiff \
         coreutils; \
     \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \

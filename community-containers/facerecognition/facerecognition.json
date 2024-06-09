@@ -10,10 +10,11 @@
             "restart": "unless-stopped",
             "environment": [
                 "TZ=%TIMEZONE%",
-                "API_KEY=some-super-secret-api-key"
+                "API_KEY=some-super-secret-api-key",
+                "FACE_MODEL=3"
             ],
             "aio_variables": [
-                "nextcloud_memory_limit=4096M"
+                "nextcloud_memory_limit=2048M"
             ],
             "nextcloud_exec_commands": [
                 "php /var/www/html/occ app:install facerecognition",
@@ -21,7 +22,7 @@
                 "php /var/www/html/occ config:system:set facerecognition.external_model_url --value nextcloud-aio-facerecognition:5000",
                 "php /var/www/html/occ config:system:set facerecognition.external_model_api_key --value some-super-secret-api-key",
                 "php /var/www/html/occ face:setup -m 5",
-                "php /var/www/html/occ face:setup -M 4G",
+                "php /var/www/html/occ face:setup -M 1G",
                 "php /var/www/html/occ config:app:set facerecognition analysis_image_area --value 4320000",
                 "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 0 --value image/jpeg",
                 "php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 1 --value image/png",

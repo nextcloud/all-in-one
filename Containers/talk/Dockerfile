@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.10.12-scratch as nats
+FROM nats:2.10.16-scratch as nats
 FROM eturnal/eturnal:1.12.0 AS eturnal
-FROM strukturag/nextcloud-spreed-signaling:1.2.3 as signaling
+FROM strukturag/nextcloud-spreed-signaling:1.3.1 as signaling
 FROM alpine:3.19.1 as janus
 
-ARG JANUS_VERSION=v0.14.1
+ARG JANUS_VERSION=v0.14.2
 WORKDIR /src
 RUN set -ex; \
     apk add --no-cache \
@@ -46,6 +46,7 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=664 supervisord.conf /supervisord.conf
 
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         ca-certificates \
         tzdata \

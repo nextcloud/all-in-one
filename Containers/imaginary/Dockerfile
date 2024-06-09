@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.22.1-alpine3.18 as go
+FROM golang:1.22.3-alpine3.18 as go
 
 ENV IMAGINARY_HASH 6cd9edd1d3fb151eb773c14552886e4fc8e50138
 
@@ -15,6 +15,7 @@ RUN set -ex; \
 
 FROM alpine:3.18.6
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         tzdata \
         ca-certificates \
@@ -37,5 +38,5 @@ USER nobody
 ENV MALLOC_ARENA_MAX=2
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD nc -z localhost "$PORT" || exit 1
+HEALTHCHECK CMD nc -z 127.0.0.1 "$PORT" || exit 1
 LABEL com.centurylinklabs.watchtower.enable="false"
