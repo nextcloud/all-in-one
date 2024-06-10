@@ -18,7 +18,8 @@ while ! nc -z "$NEXTCLOUD_HOST" 9000; do
 done
 
 # Get ipv4-address of Apache
-IPv4_ADDRESS="$(dig nextcloud-aio-apache A +short +search | head -1)"
+# shellcheck disable=SC2153
+IPv4_ADDRESS="$(dig "$APACHE_HOST" A +short +search | head -1)"
 # Bring it in CIDR notation
 # shellcheck disable=SC2001
 IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|1/32|')"
