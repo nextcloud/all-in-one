@@ -162,8 +162,12 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 declare -Ag APPSTORAGE
                 echo "Disabling apps before the update in order to make the update procedure more safe. This can take a while..."
                 for app in "${NC_APPS_ARRAY[@]}"; do
-                    APPSTORAGE[$app]=$(php /var/www/html/occ config:app:get "$app" enabled)
-                    php /var/www/html/occ app:disable "$app"
+                    if APPSTORAGE[$app]="$(php /var/www/html/occ config:app:get "$app" enabled)"; then
+                        php /var/www/html/occ app:disable "$app"
+                    else
+                        APPSTORAGE[$app]=""
+                        echo "Not disabling $app because the occ command to get the enabled state was failing."
+                    fi
                 done
             fi
 
