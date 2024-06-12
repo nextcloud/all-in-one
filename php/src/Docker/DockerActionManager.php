@@ -166,7 +166,7 @@ class DockerActionManager
     {
         $url = $this->BuildApiUrl(
             sprintf(
-                'containers/%s/logs?stdout=true&stderr=true',
+                'containers/%s/logs?stdout=true&stderr=true&timestamps=true',
                 urlencode($id)
             ));
         $responseBody = (string)$this->guzzleClient->get($url)->getBody();
