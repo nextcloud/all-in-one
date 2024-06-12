@@ -4,7 +4,7 @@
 > The stability of Stalwart services is not guaranteed.
 > Do not use this feature as a main mail server without a redundancy system and without knowledge.
 > 
-> To learn or use as a secondary server enjoy it and please report bugs at [marcoambrosini/aio-stalwart](https://github.com/marcoambrosini/aio-stalwart/issues).
+> To learn or use as a secondary server enjoy it and please report bugs at [docjyj/aio-stalwart](https://github.com/docjyj/aio-stalwart/issues).
 
 ## Stalwart mail server
 This container bundles stalwart mail server and auto-configures it for you.
@@ -22,7 +22,7 @@ This container bundles stalwart mail server and auto-configures it for you.
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
 ### Repository
-https://github.com/marcoambrosini/aio-stalwart
+https://github.com/docjyj/aio-stalwart
 
 ### Maintainer
-https://github.com/marcoambrosini
+https://github.com/docjyj
