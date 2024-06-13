@@ -80,12 +80,10 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install igbinary-3.2.15; \ 
     pecl install APCu-5.1.23; \
-    pecl install --configureoptions \
-        'enable-memcached-igbinary="yes"' \
-        memcached-3.2.0; \
-    pecl install --configureoptions \
-        'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' \
-        redis-6.0.2; \
+    pecl install memcached-3.2.0 \
+        --configureoptions 'enable-memcached-igbinary="yes"'; \
+    pecl install redis-6.0.2 \
+        --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     pecl install imagick-3.7.0; \
     \
     docker-php-ext-enable \
