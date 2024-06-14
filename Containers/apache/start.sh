@@ -22,7 +22,7 @@ done
 IPv4_ADDRESS="$(dig "$APACHE_HOST" A +short +search | head -1)"
 # Bring it in CIDR notation
 # shellcheck disable=SC2001
-IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|1/32|')"
+IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')"
 
 if [ -z "$APACHE_PORT" ]; then
     export APACHE_PORT="443"
