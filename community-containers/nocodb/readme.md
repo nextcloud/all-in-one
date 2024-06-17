@@ -14,7 +14,7 @@ This container bundles NocoDb without synchronization with Nextcloud.
 This is an alternative of **Airtable**.
 
 ### Notes
-- You need to configure a reverse proxy in order to run this container since stalwart needs a dedicated (sub)domain! For that, you might have a look at https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy.
+- You need to configure a reverse proxy in order to run this container since nocodb needs a dedicated (sub)domain! For that, you might have a look at https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy.
 - Currently, only `tables.$NC_DOMAIN` is supported as subdomain! So if Nextcloud is using `your-domain.com`, Stalwart will use `tables.your-domain.com`.
 - The data of NocoDb will be automatically included in AIOs backup solution!
 - After adding and starting the container, you need to run `docker inspect nextcloud-aio-nocodb  | grep NC_ADMIN_PASS` to obtain the system administrator password (username: `admin@noco.db`). With this information, you can log in to the web interface at `https://tables.$NC_DOMAIN/#/signin`
