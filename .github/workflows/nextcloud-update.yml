@@ -36,7 +36,7 @@ jobs:
             | sort -V \
             | tail -1
         )"
-        sed -i "s|pecl install memcached.*\;|pecl install memcached-$memcached_version\;|" ./Containers/nextcloud/Dockerfile
+        sed -i "s|pecl install memcached.* |pecl install memcached-$memcached_version |" ./Containers/nextcloud/Dockerfile
         
         # Redis
         redis_version="$(
@@ -47,7 +47,7 @@ jobs:
             | sort -V \
             | tail -1
         )"
-        sed -i "s|pecl install redis.*\;|pecl install redis-$redis_version\;|" ./Containers/nextcloud/Dockerfile
+        sed -i "s|pecl install redis.* |pecl install redis-$redis_version |" ./Containers/nextcloud/Dockerfile
         
         # Imagick
         imagick_version="$(
@@ -59,6 +59,17 @@ jobs:
             | tail -1
         )"
         sed -i "s|pecl install imagick.*\;|pecl install imagick-$imagick_version\;|" ./Containers/nextcloud/Dockerfile
+
+        # Igbinary
+        igbinary_version="$(
+          git ls-remote --tags https://github.com/igbinary/igbinary.git \
+            | cut -d/ -f3 \
+            | grep -viE '[a-z]' \
+            | tr -d '^{}' \
+            | sort -V \
+            | tail -1
+        )"
+        sed -i "s|pecl install igbinary.*\;|pecl install igbinary-$igbinary_version\;|" ./Containers/nextcloud/Dockerfile
 
         # Nextcloud
         NC_MAJOR="$(grep "ENV NEXTCLOUD_VERSION" ./Containers/nextcloud/Dockerfile | grep -oP '[23][0-9]')"
