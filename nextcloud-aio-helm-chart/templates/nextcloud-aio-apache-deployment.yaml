@@ -44,6 +44,8 @@ spec:
         - env:
             - name: ADDITIONAL_TRUSTED_DOMAIN
               value: "{{ .Values.ADDITIONAL_TRUSTED_DOMAIN }}"
+            - name: APACHE_HOST
+              value: nextcloud-aio-apache
             - name: APACHE_MAX_SIZE
               value: "{{ .Values.APACHE_MAX_SIZE }}"
             - name: APACHE_MAX_TIME
@@ -64,7 +66,7 @@ spec:
               value: nextcloud-aio-talk
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-apache:20240606_075829-latest"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-apache:20240617_084300-latest"
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}

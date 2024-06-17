@@ -34,13 +34,15 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: SIGNALING_SECRET
               value: "{{ .Values.SIGNALING_SECRET }}"
+            - name: TALK_HOST
+              value: nextcloud-aio-talk
             - name: TALK_PORT
               value: "{{ .Values.TALK_PORT }}"
             - name: TURN_SECRET
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-talk:20240606_075829-latest"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-talk:20240617_084300-latest"
           name: nextcloud-aio-talk
           ports:
             - containerPort: {{ .Values.TALK_PORT }}
