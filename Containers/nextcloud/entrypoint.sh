@@ -567,7 +567,7 @@ fi
 IPv4_ADDRESS="$(dig nextcloud-aio-nextcloud A +short +search | head -1)" 
 # Bring it in CIDR notation 
 # shellcheck disable=SC2001
-IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|1/32|')" 
+IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')" 
 php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
 
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
