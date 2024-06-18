@@ -16,6 +16,7 @@ COPY --chmod=775 *.sh /
 COPY --chmod=774 upgrade.exclude /upgrade.exclude
 COPY config/*.php /
 COPY supervisord.conf /supervisord.conf
+COPY root.motd /root.motd
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
@@ -256,6 +257,7 @@ RUN set -ex; \
     mkdir -p /nc-updater; \
     chown -R www-data:www-data /nc-updater; \
     chmod -R 770 /nc-updater; \
+    echo "[ -n \"$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd
