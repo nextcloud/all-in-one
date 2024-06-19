@@ -246,6 +246,7 @@ RUN set -ex; \
     git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
     mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
     cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/; \
+    echo "[ -n \"\$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
 # AIO cloning end # Do not remove or change this line!
     \
     chown www-data:root -R /usr/src && \
@@ -257,7 +258,6 @@ RUN set -ex; \
     mkdir -p /nc-updater; \
     chown -R www-data:www-data /nc-updater; \
     chmod -R 770 /nc-updater; \
-    echo "[ -n \"$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd
