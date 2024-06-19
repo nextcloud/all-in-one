@@ -1,0 +1,4 @@
+Warning: You have logged in into the Nextcloud container as root user.
+See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands if you want to run occ commands.
+Apart from that, you can use 'sudo -u www-data -E php occ <your-command>' in order to run occ commands.
+Of course <your-command> needs to be substituted with the command that you want to use.
