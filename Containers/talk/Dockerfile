@@ -2,7 +2,7 @@
 FROM nats:2.10.16-scratch as nats
 FROM eturnal/eturnal:1.12.0 AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:1.3.1 as signaling
-FROM alpine:3.19.1 as janus
+FROM alpine:3.20.1 as janus
 
 ARG JANUS_VERSION=v0.14.2
 WORKDIR /src
@@ -34,7 +34,7 @@ RUN set -ex; \
     make configs; \
     rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
 
-FROM alpine:3.19.1
+FROM alpine:3.20.1
 ENV ETURNAL_ETC_DIR="/conf"
 COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/local                          /usr/local
 COPY --from=eturnal   --chmod=777 --chown=1000:1000 /opt/eturnal                        /opt/eturnal

@@ -2,7 +2,7 @@
 # From https://github.com/containrrr/watchtower/blob/main/dockerfiles/Dockerfile.self-contained
 FROM containrrr/watchtower:1.7.1 as watchtower
 
-FROM alpine:3.19.1
+FROM alpine:3.20.1
 
 RUN apk upgrade --no-cache -a; \
     apk add --no-cache bash
