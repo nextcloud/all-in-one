@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.12.4-alpine3.19
+FROM python:3.12.4-alpine3.20
 
 COPY --chmod=775 start.sh /start.sh
 
@@ -26,9 +26,8 @@ RUN set -ex; \
         pulseaudio \
         openssl \
         build-base \
-        linux-headers; \
-    # chromium chromium-chromedriver?
-    apk add --no-cache geckodriver --repository http://dl-cdn.alpinelinux.org/alpine/edge/community; \
+        linux-headers \
+        geckodriver; \
     useradd -d /tmp --system recording; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
