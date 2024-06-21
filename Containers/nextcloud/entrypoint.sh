@@ -19,6 +19,13 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
+# Only start container if redis is accessible
+# shellcheck disable=SC2153
+while ! nc -z "$REDIS_HOST" "6379"; do
+    echo "Waiting for redis to start..."
+    sleep 5
+done
+
 # Check permissions in ncdata
 touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
@@ -155,8 +162,12 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 declare -Ag APPSTORAGE
                 echo "Disabling apps before the update in order to make the update procedure more safe. This can take a while..."
                 for app in "${NC_APPS_ARRAY[@]}"; do
-                    APPSTORAGE[$app]=$(php /var/www/html/occ config:app:get "$app" enabled)
-                    php /var/www/html/occ app:disable "$app"
+                    if APPSTORAGE[$app]="$(php /var/www/html/occ config:app:get "$app" enabled)"; then
+                        php /var/www/html/occ app:disable "$app"
+                    else
+                        APPSTORAGE[$app]=""
+                        echo "Not disabling $app because the occ command to get the enabled state was failing."
+                    fi
                 done
             fi
 
@@ -475,6 +486,13 @@ if [ -n "$SUBSCRIPTION_KEY" ] && [ -z "$(php /var/www/html/occ config:app:get su
     php /var/www/html/occ config:app:set support potential_subscription_key --value="$SUBSCRIPTION_KEY"
     php /var/www/html/occ config:app:delete support last_check
 fi
+if [ -n "$NEXTCLOUD_DEFAULT_QUOTA" ]; then
+    if [ "$NEXTCLOUD_DEFAULT_QUOTA" = "unlimited" ]; then
+        php /var/www/html/occ config:app:delete files default_quota
+    else
+        php /var/www/html/occ config:app:set files default_quota --value="$NEXTCLOUD_DEFAULT_QUOTA"
+    fi
+fi
 
 # Adjusting log files to be stored on a volume
 echo "Adjusting log files..."
@@ -549,7 +567,7 @@ fi
 IPv4_ADDRESS="$(dig nextcloud-aio-nextcloud A +short +search | head -1)" 
 # Bring it in CIDR notation 
 # shellcheck disable=SC2001
-IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|1/32|')" 
+IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')" 
 php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
 
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then

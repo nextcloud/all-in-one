@@ -1,21 +1,22 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.2.19-fpm-alpine3.19
+FROM php:8.2.20-fpm-alpine3.20
 
-ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 10G
-ENV PHP_MAX_TIME 3600
-ENV SOURCE_LOCATION /usr/src/nextcloud
+ENV PHP_MEMORY_LIMIT=512M
+ENV PHP_UPLOAD_LIMIT=10G
+ENV PHP_MAX_TIME=3600
+ENV SOURCE_LOCATION=/usr/src/nextcloud
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION 28.0.6
-ENV AIO_TOKEN 123456
-ENV AIO_URL localhost
+ENV NEXTCLOUD_VERSION=29.0.2
+ENV AIO_TOKEN=123456
+ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
 
 COPY --chmod=775 *.sh /
 COPY --chmod=774 upgrade.exclude /upgrade.exclude
 COPY config/*.php /
 COPY supervisord.conf /supervisord.conf
+COPY root.motd /root.motd
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
@@ -26,8 +27,6 @@ RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
     deluser www-data; \
-    groupmod -g 333 xfs; \
-    usermod -u 333 -g 333 xfs; \
     addgroup -g 33 -S www-data; \
     adduser -u 33 -D -S -G www-data www-data; \
     \
@@ -78,12 +77,16 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
+    pecl install igbinary-3.2.15; \ 
     pecl install APCu-5.1.23; \
-    pecl install memcached-3.2.0; \
-    pecl install redis-6.0.2; \
+    pecl install memcached-3.2.0 \
+        --configureoptions 'enable-memcached-igbinary="yes"'; \
+    pecl install redis-6.0.2 \
+        --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     pecl install imagick-3.7.0; \
     \
     docker-php-ext-enable \
+        igbinary \
         apcu \
         memcached \
         redis \
@@ -98,6 +101,11 @@ RUN set -ex; \
     )"; \
     apk add --no-cache --virtual .nextcloud-phpext-rundeps $runDeps; \
     apk del .build-deps; \
+    \
+    { \
+        echo 'apc.serializer=igbinary'; \
+        echo 'session.serialize_handler=igbinary'; \
+    } >> /usr/local/etc/php/conf.d/docker-php-ext-igbinary.ini; \
     \
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
@@ -118,6 +126,7 @@ RUN set -ex; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
         echo 'max_execution_time=${PHP_MAX_TIME}'; \
         echo 'max_input_time=${PHP_MAX_TIME}'; \
+        echo 'default_socket_timeout=600'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
     { \
@@ -235,6 +244,7 @@ RUN set -ex; \
     git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
     mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
     cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/; \
+    echo "[ -n \"\$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
 # AIO cloning end # Do not remove or change this line!
     \
     chown www-data:root -R /usr/src && \

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
-FROM caddy:2.7.6-alpine as caddy
+FROM caddy:2.8.4-alpine AS caddy
 
-FROM httpd:2.4.59-alpine3.19
+FROM httpd:2.4.59-alpine3.20
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
@@ -16,8 +16,6 @@ VOLUME /mnt/data
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
-    groupmod -g 333 xfs; \
-    usermod -u 333 -g 333 xfs; \
     groupmod -g 33 www-data; \
     usermod -u 33 -g 33 www-data; \
     apk del --no-cache shadow; \

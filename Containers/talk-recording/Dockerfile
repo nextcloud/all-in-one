@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.12.3-alpine3.19
+FROM python:3.12.4-alpine3.20
 
 COPY --chmod=775 start.sh /start.sh
 
-ENV RECORDING_VERSION v0.1
-ENV ALLOW_ALL false
-ENV HPB_PROTOCOL https
-ENV SKIP_VERIFY false
-ENV HPB_PATH /standalone-signaling/
+ENV RECORDING_VERSION=v0.1
+ENV ALLOW_ALL=false
+ENV HPB_PROTOCOL=https
+ENV SKIP_VERIFY=false
+ENV HPB_PATH=/standalone-signaling/
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -26,9 +26,8 @@ RUN set -ex; \
         pulseaudio \
         openssl \
         build-base \
-        linux-headers; \
-    # chromium chromium-chromedriver?
-    apk add --no-cache geckodriver --repository http://dl-cdn.alpinelinux.org/alpine/edge/community; \
+        linux-headers \
+        geckodriver; \
     useradd -d /tmp --system recording; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
@@ -54,5 +53,5 @@ USER recording
 ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.conf"]
 
-HEALTHCHECK CMD nc -z localhost 1234 || exit 1
+HEALTHCHECK CMD nc -z 127.0.0.1 1234 || exit 1
 LABEL com.centurylinklabs.watchtower.enable="false"

@@ -16,7 +16,7 @@
     </header>
 
     <div class="content">
-        <h1>Nextcloud AIO v8.3.0</h1>
+        <h1>Nextcloud AIO v9.1.0</h1>
 
         {# Add 2nd tab warning #}
         <script type="text/javascript" src="second-tab-warning.js"></script>
@@ -31,7 +31,7 @@
         {% set isBackupOrRestoreRunning = false %}
         {% set isApacheStarting = false %}
         {# Setting newMajorVersion to '' will hide corresponding options/elements, can be set to an integer like 26 in order to show corresponding elements. If set, also increase installLatestMajor in https://github.com/nextcloud/all-in-one/blob/main/php/src/Controller/DockerController.php #}
-        {% set newMajorVersion = 29 %}
+        {% set newMajorVersion = '' %}
 
         {% if is_backup_container_running == true %}
             {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
@@ -70,7 +70,8 @@
             {% elseif automatic_updates == true %}
                 The whole process can take a while as your containers will be updated.<br /><br />
             {% endif %}
-            <a href="" class="button reload">Reload ↻</a><br/>
+            <a href="" class="button reload">Reload ↻</a><br/><br/>
+            If the daily bacckup should be stuck somehow, you can make it unstuck by running <strong>sudo docker exec nextcloud-aio-mastercontainer rm /mnt/docker-aio-config/data/daily_backup_running</strong> and afterwards reloading this interface.<br /><br />
         {% elseif isWatchtowerRunning == true %}
             <span class="status running"></span> Mastercontainer update currently running. Once the update is complete the mastercontainer will restart, making it unavailable for a moment. Please wait until it's done. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)<br /><br />
             <a href="" class="button reload">Reload ↻</a><br/>

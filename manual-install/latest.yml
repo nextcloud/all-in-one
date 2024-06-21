@@ -24,6 +24,7 @@ services:
     environment:
       - NC_DOMAIN=${NC_DOMAIN}
       - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
+      - APACHE_HOST=nextcloud-aio-apache
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_HOST=nextcloud-aio-talk
       - APACHE_PORT=${APACHE_PORT}
@@ -105,6 +106,7 @@ services:
       - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     environment:
       - POSTGRES_HOST=nextcloud-aio-database
+      - POSTGRES_PORT=5432
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=nextcloud_database
       - POSTGRES_USER=nextcloud
@@ -170,6 +172,7 @@ services:
       - REDIS_HOST=nextcloud-aio-redis
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
       - POSTGRES_HOST=nextcloud-aio-database
+      - POSTGRES_PORT=5432
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=nextcloud_database
       - POSTGRES_USER=nextcloud
@@ -229,6 +232,7 @@ services:
       - "8081"
     environment:
       - NC_DOMAIN=${NC_DOMAIN}
+      - TALK_HOST=nextcloud-aio-talk
       - TURN_SECRET=${TURN_SECRET}
       - SIGNALING_SECRET=${SIGNALING_SECRET}
       - TZ=${TIMEZONE}

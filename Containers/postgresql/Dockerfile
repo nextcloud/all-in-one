@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # From https://github.com/docker-library/postgres/blob/master/15/alpine/Dockerfile
-FROM postgres:15.7-alpine
+FROM postgres:16.3-alpine
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh

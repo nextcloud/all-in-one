@@ -44,7 +44,7 @@ class DockerActionManager
     }
 
     private function BuildApiUrl(string $url) : string {
-        return sprintf('http://localhost/%s/%s', self::API_VERSION, $url);
+        return sprintf('http://127.0.0.1/%s/%s', self::API_VERSION, $url);
     }
 
     private function BuildImageName(Container $container) : string {
@@ -166,7 +166,7 @@ class DockerActionManager
     {
         $url = $this->BuildApiUrl(
             sprintf(
-                'containers/%s/logs?stdout=true&stderr=true',
+                'containers/%s/logs?stdout=true&stderr=true&timestamps=true',
                 urlencode($id)
             ));
         $responseBody = (string)$this->guzzleClient->get($url)->getBody();
@@ -223,12 +223,12 @@ class DockerActionManager
     public function CreateContainer(Container $container) : void {
         $volumes = [];
         foreach ($container->GetVolumes()->GetVolumes() as $volume) {
-            // NEXTCLOUD_MOUNT gets added via bind-mount later on
-            if ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
-                if ($volume->name === $this->configurationManager->GetNextcloudMount()) {
-                    continue;
-                }
-            }
+            // // NEXTCLOUD_MOUNT gets added via bind-mount later on
+            // if ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
+            //     if ($volume->name === $this->configurationManager->GetNextcloudMount()) {
+            //         continue;
+            //     }
+            // }
 
             $volumeEntry = $volume->name . ':' . $volume->mountPoint;
             if ($volume->isWritable) {
@@ -560,14 +560,14 @@ class DockerActionManager
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-talk') {
             // This is needed due to a bug in libwebsockets which cannot handle unlimited ulimits
             $requestBody['HostConfig']['Ulimits'] = [["Name" => "nofile", "Hard" => 200000, "Soft" => 200000]];
-        // Special things for the nextcloud container which should not be exposed in the containers.json
-        } elseif ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
-            foreach ($container->GetVolumes()->GetVolumes() as $volume) {
-                if ($volume->name !== $this->configurationManager->GetNextcloudMount()) {
-                    continue;
-                }
-                $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
-            }
+        // // Special things for the nextcloud container which should not be exposed in the containers.json
+        // } elseif ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
+        //     foreach ($container->GetVolumes()->GetVolumes() as $volume) {
+        //         if ($volume->name !== $this->configurationManager->GetNextcloudMount()) {
+        //             continue;
+        //         }
+        //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
+        //     }
         // Special things for the caddy community container
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-caddy') {
             $requestBody['HostConfig']['ExtraHosts'] = ['host.docker.internal:host-gateway'];

@@ -85,7 +85,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     exec docker-entrypoint.sh postgres &
 
     # Wait for creation
-    while ! psql -d "postgresql://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:11000/$POSTGRES_DB" -c "select now()"; do
+    while ! psql -d "postgresql://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@127.0.0.1:11000/$POSTGRES_DB" -c "select now()"; do
         echo "Waiting for the database to start."
         sleep 5
     done
@@ -99,7 +99,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     fi
 
     # Get the Owner
-    DB_OWNER="$(grep -a "$GREP_STRING" "$DUMP_FILE" | grep -oP 'Owner:.*$' | sed 's|Owner:||;s| ||g')"
+    DB_OWNER="$(grep -a "$GREP_STRING" "$DUMP_FILE" | head -1 | grep -oP 'Owner:.*$' | sed 's|Owner:||;s| ||g')"
     if [ "$DB_OWNER" = "$POSTGRES_USER" ]; then
         echo "Unfortunately was the found database owner of the dump file the same as the POSTGRES_USER $POSTGRES_USER"
         echo "It is not possible to import a database dump from this database owner."

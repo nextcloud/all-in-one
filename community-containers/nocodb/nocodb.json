@@ -1,0 +1,43 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-nocodb",
+            "display_name": "NocoDB",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/nocodb",
+            "image": "docjyj/aio-nocodb",
+            "image_tag": "%AIO_CHANNEL%",
+            "internal_port": "10028",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "10028",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "NC_AUTH_JWT_SECRET=%NOCODB_JWT_SECRET%",
+                "NC_PUBLIC_URL=https://tables.%NC_DOMAIN%/",
+                "NC_DASHBOARD_URL=/",
+                "NC_ADMIN_EMAIL=admin@noco.db",
+                "NC_ADMIN_PASS=%NOCODB_USER_PASS%",
+                "PORT=10028",
+                "NC_DISABLE_TELE=true"
+            ],
+            "secrets": [
+                "NOCODB_JWT_SECRET",
+                "NOCODB_USER_PASS"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_nocodb",
+                    "destination": "/usr/app/data",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_nocodb"
+            ]
+        }
+    ]
+}

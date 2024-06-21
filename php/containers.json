@@ -29,6 +29,7 @@
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
+        "APACHE_HOST=nextcloud-aio-apache",
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_HOST=nextcloud-aio-talk",
         "APACHE_PORT=%APACHE_PORT%",
@@ -376,6 +377,7 @@
       "internal_port": "%TALK_PORT%",
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
+        "TALK_HOST=nextcloud-aio-talk",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
         "TZ=%TIMEZONE%",
