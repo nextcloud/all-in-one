@@ -21,7 +21,7 @@ jobs:
             | grep -E "^v[0-9\.]+$" \
             | tail -1
         )"
-        sed -i "s|^ENV RECORDING_VERSION.*$|ENV RECORDING_VERSION $recording_version|" ./Containers/talk-recording/Dockerfile
+        sed -i "s|^ENV RECORDING_VERSION.*$|ENV RECORDING_VERSION=$recording_version|" ./Containers/talk-recording/Dockerfile
         curl -L "https://raw.githubusercontent.com/nextcloud/nextcloud-talk-recording/$recording_version/server.conf.in" -o Containers/talk-recording/recording.conf
         
         # Signaling

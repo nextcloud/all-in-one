@@ -1,15 +1,15 @@
 # syntax=docker/dockerfile:latest
 FROM php:8.2.20-fpm-alpine3.20
 
-ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 10G
-ENV PHP_MAX_TIME 3600
-ENV SOURCE_LOCATION /usr/src/nextcloud
+ENV PHP_MEMORY_LIMIT=512M
+ENV PHP_UPLOAD_LIMIT=10G
+ENV PHP_MAX_TIME=3600
+ENV SOURCE_LOCATION=/usr/src/nextcloud
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION 29.0.2
-ENV AIO_TOKEN 123456
-ENV AIO_URL localhost
+ENV NEXTCLOUD_VERSION=29.0.2
+ENV AIO_TOKEN=123456
+ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
 
 COPY --chmod=775 *.sh /

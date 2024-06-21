@@ -3,11 +3,11 @@ FROM python:3.12.4-alpine3.20
 
 COPY --chmod=775 start.sh /start.sh
 
-ENV RECORDING_VERSION v0.1
-ENV ALLOW_ALL false
-ENV HPB_PROTOCOL https
-ENV SKIP_VERIFY false
-ENV HPB_PATH /standalone-signaling/
+ENV RECORDING_VERSION=v0.1
+ENV ALLOW_ALL=false
+ENV HPB_PROTOCOL=https
+ENV SKIP_VERIFY=false
+ENV HPB_PATH=/standalone-signaling/
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \

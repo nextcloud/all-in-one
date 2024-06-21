@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
 FROM golang:1.22.3-alpine3.20 AS go
 
-ENV IMAGINARY_HASH 6cd9edd1d3fb151eb773c14552886e4fc8e50138
+ENV IMAGINARY_HASH=6cd9edd1d3fb151eb773c14552886e4fc8e50138
 
 RUN set -ex; \
     apk add --no-cache \
@@ -30,7 +30,7 @@ RUN set -ex; \
 COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
 COPY --chmod=775 start.sh /start.sh
 
-ENV PORT 9000
+ENV PORT=9000
 
 USER nobody
 

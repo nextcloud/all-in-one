@@ -3,7 +3,7 @@
 FROM collabora/code:24.04.4.1.1
 
 USER root
-ARG DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 
 # hadolint ignore=DL3008
 RUN set -ex; \
