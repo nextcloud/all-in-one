@@ -21,8 +21,6 @@ WORKDIR /var/www/docker-aio
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
-    groupmod -g 333 xfs; \
-    usermod -u 333 -g 333 xfs; \
     groupmod -g 33 www-data; \
     usermod -u 33 -g 33 www-data; \
     \
