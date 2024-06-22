@@ -347,7 +347,8 @@
         "nextcloud-aio"
       ],
       "cap_add": [
-        "MKNOD"
+        "MKNOD",
+        "SYS_ADMIN"
       ],
       "cap_drop": [
         "NET_RAW"
