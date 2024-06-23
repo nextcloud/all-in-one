@@ -219,6 +219,7 @@ services:
       - nextcloud-aio
     cap_add:
       - MKNOD
+      - SYS_ADMIN
     cap_drop:
       - NET_RAW
 
