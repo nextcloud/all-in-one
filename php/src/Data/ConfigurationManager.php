@@ -271,17 +271,17 @@ class ConfigurationManager
      */
     public function SetDomain(string $domain) : void {
         // Validate that at least one dot is contained
-        if (strpos($domain, '.') === false) {
+        if (!str_contains($domain, '.')) {
             throw new InvalidSettingConfigurationException("Domain must contain at least one dot!");
         }
 
         // Validate that no slashes are contained
-        if (strpos($domain, '/') !== false) {
+        if (str_contains($domain, '/')) {
             throw new InvalidSettingConfigurationException("Domain must not contain slashes!");
         }
 
         // Validate that no colons are contained
-        if (strpos($domain, ':') !== false) {
+        if (str_contains($domain, ':')) {
             throw new InvalidSettingConfigurationException("Domain must not contain colons!");
         }
 
