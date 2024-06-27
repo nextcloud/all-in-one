@@ -213,7 +213,7 @@
 								},
 								"source": {
 									"type": "string",
-									"pattern": "^((nextcloud_aio_[a-z_]+)|(%[A-Z_]+%))$"
+									"pattern": "^((nextcloud_aio_[a-z_]+)|(%[A-Z_]+%)|(/dev))$"
 								},
 								"writeable": {
 									"type": "boolean"
