@@ -22,7 +22,8 @@ First, install docker and docker-compose (v2) if not already done. Then simply r
 git clone https://github.com/nextcloud/all-in-one.git
 cd all-in-one/manual-install
 ```
-Then copy the sample.conf to default environment file, e.g. `cp sample.conf .env`, open the new conf file, e.g. with `nano .env`, edit all values that are marked with `# TODO!`, close and save the file. (Note: there is no clamav image for arm64).
+Then copy the sample.conf to default environment file, e.g. `cp sample.conf .env`, open the new conf file, e.g. with `nano .env`, edit all values that are marked with `# TODO!`, close and save the file. (Note: there is no clamav image for arm64).<br>
+⚠️ **Warning**: Do not use the symbols `@` and `:` in your passwords. These symbols are used to build database connection strings. You will experience issues when using these symbols!
 
 Now copy the provided yaml file to a compose.yaml file by running `cp latest.yml compose.yaml`.
 
