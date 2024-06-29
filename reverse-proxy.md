@@ -8,6 +8,8 @@ A [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) is basically a we
 
 In order to run Nextcloud behind a web server or reverse proxy (like Apache, Nginx, Cloudflare Tunnel and else), you need to specify the port that AIO's Apache container shall use, add a specific config to your web server or reverse proxy and modify the startup command a bit. All examples below will use port `11000` as example `APACHE_PORT` which will be exposed on the host to receive unencrypted HTTP traffic from the reverse proxy. **Advice:** If you need https between Nextcloud and the reverse proxy because it is running on a different server in the same network, simply add another reverse proxy to the chain that runs on the same server like AIO and takes care of https proxying (most likely via self-signed cert). Another option is to create a VPN between the server that runs AIO and the server that runs the reverse proxy which takes care of encrypting the connection.
 
+If you are using a reverse proxy attached to the `nextcloud-aio` virtual network (like the [caddy community container](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy)), you can set the `APACHE_IP_BINDING` to `@INTERNAL` to disable the exposure of the Apache container to the host network.
+
 **Attention:** The process to run Nextcloud behind a reverse proxy consists of at least steps 1, 2 and 4:
 1. **Configure the reverse proxy! See [point 1](#1-configure-the-reverse-proxy)**
 1. **Use this startup command! See [point 2](#2-use-this-startup-command)**
