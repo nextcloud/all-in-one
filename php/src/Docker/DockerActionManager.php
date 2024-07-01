@@ -137,7 +137,7 @@ class DockerActionManager
         } elseif($internalPort === '%TALK_PORT%') {
             $internalPort = $this->configurationManager->GetTalkPort();
         }
-        
+
         if ($internalPort !== "" && $internalPort !== 'host') {
             $connection = @fsockopen($containerName, (int)$internalPort, $errno, $errstr, 0.2);
             if ($connection) {
@@ -438,7 +438,7 @@ class DockerActionManager
         $requestBody['HostConfig']['RestartPolicy']['Name'] = $container->GetRestartPolicy();
 
         $requestBody['HostConfig']['ReadonlyRootfs'] = $container->GetReadOnlySetting();
- 
+
         $exposedPorts = [];
         if ($container->GetInternalPort() !== 'host') {
             foreach($container->GetPorts()->GetPorts() as $value) {
@@ -478,6 +478,10 @@ class DockerActionManager
                 $ipBinding = $value->ipBinding;
                 if ($ipBinding === '%APACHE_IP_BINDING%') {
                     $ipBinding = $this->configurationManager->GetApacheIPBinding();
+                    // Do not expose if AIO is in internal network mode
+                    if ($ipBinding === '@INTERNAL') {
+                        continue;
+                    }
                 }
                 $portWithProtocol = $port . '/' . $protocol;
                 $requestBody['HostConfig']['PortBindings'][$portWithProtocol] = [
@@ -708,7 +712,7 @@ class DockerActionManager
             if (!isset($imageOutput['RepoDigests'])) {
                 error_log('RepoDigests is not set of container ' . $containerName);
                 return null;
-            } 
+            }
 
             if (!is_array($imageOutput['RepoDigests'])) {
                 error_log('RepoDigests of ' . $containerName . ' is not an array which is not allowed!');
