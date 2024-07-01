@@ -30,6 +30,6 @@ jobs:
           for file in "${JSON_FILES[@]}"; do
             json validate --schema-file=php/containers-schema.json --document-file="$file" 2>&1 | tee -a ./json-validator.log
           done
-          if grep -q "document does not validate with schema." ./json-validator.log; then
+          if grep -q "document does not validate with schema.\|invalid JSONFile" ./json-validator.log; then
             exit 1
           fi
