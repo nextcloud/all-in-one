@@ -1,4 +1,3 @@
-# Warning: Do not use symbols "@" and ":" in your passwords (see readme.md)
 DATABASE_PASSWORD:           # TODO! This needs to be a unique and good password!
 FULLTEXTSEARCH_PASSWORD:           # TODO! This needs to be a unique and good password!
 IMAGINARY_SECRET:           # TODO! This needs to be a unique and good password!
