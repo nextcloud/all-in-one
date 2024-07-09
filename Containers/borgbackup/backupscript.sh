@@ -340,57 +340,93 @@ if [ "$BORG_MODE" = restore ]; then
         NEXTCLOUD_DATADIR='""'
     fi
 
-    # Restore nearly everything
-    #
-    # borg mount is really slow for remote repos (did not check whether it's slow for local repos too),
-    # using extract to /tmp would require temporarily storing a second copy of the data.
-    # So instead extract directly on top of the destination with exclude patterns for the config, but
-    # then we do still need to delete local files which are not present in the archive.
-    #
-    # Older backups may still contain files we've since excluded, so we have to exclude on extract as well.
-    cd /  # borg extract has no destination arg and extracts to CWD
-    if ! borg extract "::$SELECTED_ARCHIVE" --progress --exclude-from /borg_excludes --pattern '+nextcloud_aio_volumes/**'
-    then
-        RESTORE_FAILED=1
-        echo "Failed to extract backup archive."
+    if [ -z "$BORG_REMOTE_REPO" ]; then
+        mkdir -p /tmp/borg
+        if ! borg mount "::$SELECTED_ARCHIVE" /tmp/borg; then
+            echo "Could not mount the backup!"
+            exit 1
+        fi
+
+        # Restore everything except the configuration file
+        if ! rsync --stats --archive --human-readable -vv --delete \
+        --exclude "nextcloud_aio_apache/caddy/**" \
+        --exclude "nextcloud_aio_mastercontainer/caddy/**" \
+        --exclude "nextcloud_aio_nextcloud/data/nextcloud.log*" \
+        --exclude "nextcloud_aio_nextcloud/data/audit.log" \
+        --exclude "nextcloud_aio_mastercontainer/certs/**" \
+        --exclude "nextcloud_aio_mastercontainer/data/configuration.json" \
+        --exclude "nextcloud_aio_mastercontainer/data/daily_backup_running" \
+        --exclude "nextcloud_aio_mastercontainer/data/session_date_file" \
+        --exclude "nextcloud_aio_mastercontainer/session/**" \
+        /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes/; then
+            RESTORE_FAILED=1
+            echo "Something failed while restoring from backup."
+        fi
+
+        # Restore the configuration file
+        if ! rsync --archive --human-readable -vv \
+                /tmp/borg/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json \
+                /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json; then
+            RESTORE_FAILED=1
+            echo "Something failed while restoring the configuration.json."
+        fi
+
+        if ! umount /tmp/borg; then
+            echo "Failed to unmount the borg archive but should still be able to restore successfully"
+        fi
     else
-        # Delete files/dirs present locally, but not in the backup archive, excluding conf files
-        # https://unix.stackexchange.com/a/759341
-        # This comm does not support -z, but I doubt any file names would have \n in them
-        echo "Deleting local files which do not exist in the backup"
-        if ! find nextcloud_aio_volumes \
-                -not \( \
-                    -path nextcloud_aio_volumes/nextcloud_aio_apache/caddy \
-                    -o -path "nextcloud_aio_volumes/nextcloud_aio_apache/caddy/*" \
-                    -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/caddy \
-                    -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/caddy/*" \
-                    -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/certs \
-                    -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/certs/*" \
-                    -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/session \
-                    -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/session/*" \
-                    -o -path "nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" \
-                    -o -path nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log \
-                    -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_running \
-                    -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/session_date_file \
-                    -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/id_borg*" \
-                \) \
-                | LC_ALL=C sort \
-                | LC_ALL=C comm -23 - \
-                    <(borg list "::$SELECTED_ARCHIVE" --short --exclude-from /borg_excludes  --pattern '+nextcloud_aio_volumes/**' | LC_ALL=C sort) \
-                > /tmp/local_files_not_in_backup
+        # Restore nearly everything
+        #
+        # borg mount is really slow for remote repos (did not check whether it's slow for local repos too),
+        # using extract to /tmp would require temporarily storing a second copy of the data.
+        # So instead extract directly on top of the destination with exclude patterns for the config, but
+        # then we do still need to delete local files which are not present in the archive.
+        #
+        # Older backups may still contain files we've since excluded, so we have to exclude on extract as well.
+        cd /  # borg extract has no destination arg and extracts to CWD
+        if ! borg extract "::$SELECTED_ARCHIVE" --progress --exclude-from /borg_excludes --pattern '+nextcloud_aio_volumes/**'
         then
             RESTORE_FAILED=1
-            echo "Failed to delete local files not in backup archive."
+            echo "Failed to extract backup archive."
         else
-            # More robust than e.g. xargs as I got a ~"args line too long" error while testing that, but it's slower
-            # https://stackoverflow.com/a/21848934
-            while IFS= read -r file
-            do rm -vrf -- "$file" || DELETE_FAILED=1
-            done < /tmp/local_files_not_in_backup
-
-            if [ "$DELETE_FAILED" = 1 ]; then
+            # Delete files/dirs present locally, but not in the backup archive, excluding conf files
+            # https://unix.stackexchange.com/a/759341
+            # This comm does not support -z, but I doubt any file names would have \n in them
+            echo "Deleting local files which do not exist in the backup"
+            if ! find nextcloud_aio_volumes \
+                    -not \( \
+                        -path nextcloud_aio_volumes/nextcloud_aio_apache/caddy \
+                        -o -path "nextcloud_aio_volumes/nextcloud_aio_apache/caddy/*" \
+                        -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/caddy \
+                        -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/caddy/*" \
+                        -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/certs \
+                        -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/certs/*" \
+                        -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/session \
+                        -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/session/*" \
+                        -o -path "nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" \
+                        -o -path nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log \
+                        -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_running \
+                        -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/session_date_file \
+                        -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/id_borg*" \
+                    \) \
+                    | LC_ALL=C sort \
+                    | LC_ALL=C comm -23 - \
+                        <(borg list "::$SELECTED_ARCHIVE" --short --exclude-from /borg_excludes  --pattern '+nextcloud_aio_volumes/**' | LC_ALL=C sort) \
+                    > /tmp/local_files_not_in_backup
+            then
                 RESTORE_FAILED=1
-                echo "Failed to delete (some) local files not in backup archive."
+                echo "Failed to delete local files not in backup archive."
+            else
+                # More robust than e.g. xargs as I got a ~"args line too long" error while testing that, but it's slower
+                # https://stackoverflow.com/a/21848934
+                while IFS= read -r file
+                do rm -vrf -- "$file" || DELETE_FAILED=1
+                done < /tmp/local_files_not_in_backup
+
+                if [ "$DELETE_FAILED" = 1 ]; then
+                    RESTORE_FAILED=1
+                    echo "Failed to delete (some) local files not in backup archive."
+                fi
             fi
         fi
     fi
