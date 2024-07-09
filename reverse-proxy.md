@@ -8,8 +8,6 @@ A [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) is basically a we
 
 In order to run Nextcloud behind a web server or reverse proxy (like Apache, Nginx, Cloudflare Tunnel and else), you need to specify the port that AIO's Apache container shall use, add a specific config to your web server or reverse proxy and modify the startup command a bit. All examples below will use port `11000` as example `APACHE_PORT` which will be exposed on the host to receive unencrypted HTTP traffic from the reverse proxy. **Advice:** If you need https between Nextcloud and the reverse proxy because it is running on a different server in the same network, simply add another reverse proxy to the chain that runs on the same server like AIO and takes care of https proxying (most likely via self-signed cert). Another option is to create a VPN between the server that runs AIO and the server that runs the reverse proxy which takes care of encrypting the connection.
 
-If you are using a reverse proxy attached to the `nextcloud-aio` virtual network (like the [caddy community container](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy)), you can set the `APACHE_IP_BINDING` to `@INTERNAL` to disable the exposure of the Apache container to the host network.
-
 **Attention:** The process to run Nextcloud behind a reverse proxy consists of at least steps 1, 2 and 4:
 1. **Configure the reverse proxy! See [point 1](#1-configure-the-reverse-proxy)**
 1. **Use this startup command! See [point 2](#2-use-this-startup-command)**
@@ -41,7 +39,9 @@ If you are using a reverse proxy attached to the `nextcloud-aio` virtual network
 
     For this setup, you can use as target `host.docker.internal:$APACHE_PORT` instead of `localhost:$APACHE_PORT`. **⚠️ Important:** In order to make this work on Docker for Linux, you need to add `--add-host=host.docker.internal:host-gateway` to the docker run command of your reverse proxy container or `extra_hosts: ["host.docker.internal:host-gateway"]` in docker compose (it works on Docker Desktop by default).
 
-    Another option and actually the recommended way in this case is to use `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. By doing so, the default sample configurations that point at `localhost:$APACHE_PORT` should work without having to modify them.
+    Another option and **actually the recommended way** in this case is to use `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. By doing so, the default sample configurations that point at `localhost:$APACHE_PORT` should work without having to modify them.
+
+    You can also not expose the container by setting the `APACHE_IP_BINDING` environment variable to `@INTERNAL` and use as target `nextcloud-aio-apache:$APACHE_PORT`. This option could break the domain verification, to keep the proxy must point to `nextcloud-aio-domaincheck:$APACHE_PORT` in case the Apache server is closed. A sample configuration is provide for caddy.
 
     </details>
 
@@ -150,6 +150,19 @@ The Caddyfile is a text file called `Caddyfile` (no extension) which – if you 
 ⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 **Advice:** You may have a look at [this](https://github.com/nextcloud/all-in-one/discussions/575#discussion-4055615) for a more complete example.
+
+If you want to use docker virtual networking you can use this instead:
+```
+https://<your-nc-domain>:443 {
+  reverse_proxy {
+    to http://nextcloud-aio-apache:80 http://nextcloud-aio-domaincheck:80
+    lb_policy first
+    health_uri /
+    health_port 80
+    health_interval 60s
+  }
+}
+```
 
 </details>
 
