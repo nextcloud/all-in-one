@@ -91,7 +91,7 @@ Add this as a new Apache site config:
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
     RewriteCond %{THE_REQUEST} "^[a-zA-Z]+ /(.*) HTTP/\d+(\.\d+)?$"
-    RewriteRule .? "ws://localhost:11000/%1" [P,L]
+    RewriteRule .? "ws://localhost:11000/%1" [P,L,UnsafeAllow3F]
 
     # Enable h2, h2c and http1.1
     Protocols h2 h2c http/1.1
