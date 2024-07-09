@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.2.20-fpm-alpine3.20
+FROM php:8.2.21-fpm-alpine3.20
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=10G
