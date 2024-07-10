@@ -25,6 +25,7 @@ RUN set -ex; \
         vips-heif \
         vips-jxl \
         vips-poppler \
+        ttf-dejavu \
         bash
 
 COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
