@@ -12,5 +12,7 @@ $CONFIG = array (
               'writable' => true,
       ),
   ),
-  'appsallowlist' => getenv('APPS_ALLOWLIST') ? explode(" ", getenv('APPS_ALLOWLIST')) : false,
 );
+if (getenv('APPS_ALLOWLIST') !== false) {
+    $CONFIG['appsallowlist'] = explode(" ", getenv('APPS_ALLOWLIST'));
+}
