@@ -244,9 +244,9 @@ RUN set -ex; \
     git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
     mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
     cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/; \
+    echo "[ -n \"\$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
 # AIO cloning end # Do not remove or change this line!
     \
-    echo "[ -n \"\$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
     chown www-data:root -R /usr/src && \
     chown www-data:root -R /usr/local/etc/php/conf.d && \
     chown www-data:root -R /usr/local/etc/php-fpm.d && \
