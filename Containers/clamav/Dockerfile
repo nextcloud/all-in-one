@@ -3,7 +3,7 @@
 FROM clamav/clamav:1.3.1-59
 
 COPY clamav.conf /clamav.conf
-COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 start.script /start.script
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -11,8 +11,8 @@ RUN set -ex; \
     mkdir -p /var/run/clamav /run/lock; \
     chown -R clamav:clamav /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock; \
     chmod 777 -R /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock /tmp; \
-    grep -q '#!/sbin/tini /bin/sh' /init; \
-    sed -i 's|#!/sbin/tini /bin/sh|#!/bin/sh|' /init
+    sed -i "/^set -eu/r /start.script" /init-unprivileged; \
+    rm /start.script
 
 VOLUME /var/lib/clamav
 
@@ -20,4 +20,4 @@ USER clamav
 
 LABEL com.centurylinklabs.watchtower.enable="false"
 
-ENTRYPOINT ["/start.sh"]
+ENTRYPOINT ["/init-unprivileged", "--config-file", "/tmp/clamd.conf"]
