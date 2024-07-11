@@ -39,9 +39,7 @@ In order to run Nextcloud behind a web server or reverse proxy (like Apache, Ngi
 
     For this setup, you can use as target `host.docker.internal:$APACHE_PORT` instead of `localhost:$APACHE_PORT`. **⚠️ Important:** In order to make this work on Docker for Linux, you need to add `--add-host=host.docker.internal:host-gateway` to the docker run command of your reverse proxy container or `extra_hosts: ["host.docker.internal:host-gateway"]` in docker compose (it works on Docker Desktop by default).
 
-    Another option and **actually the recommended way** in this case is to use `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. By doing so, the default sample configurations that point at `localhost:$APACHE_PORT` should work without having to modify them.
-
-    You can also not expose the container by setting the `APACHE_IP_BINDING` environment variable to `@INTERNAL` and use as target `nextcloud-aio-apache:$APACHE_PORT`. This option could break the domain verification, to keep the proxy must point to `nextcloud-aio-domaincheck:$APACHE_PORT` in case the Apache server is closed. A sample configuration is provide for caddy.
+    Another option and actually the recommended way in this case is to use `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. By doing so, the default sample configurations that point at `localhost:$APACHE_PORT` should work without having to modify them.
 
     </details>
 
@@ -150,19 +148,6 @@ The Caddyfile is a text file called `Caddyfile` (no extension) which – if you 
 ⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 **Advice:** You may have a look at [this](https://github.com/nextcloud/all-in-one/discussions/575#discussion-4055615) for a more complete example.
-
-If you want to use docker virtual networking you can use this instead:
-```
-https://<your-nc-domain>:443 {
-  reverse_proxy {
-    to http://nextcloud-aio-apache:80 http://nextcloud-aio-domaincheck:80
-    lb_policy first
-    health_uri /
-    health_port 80
-    health_interval 60s
-  }
-}
-```
 
 </details>
 
