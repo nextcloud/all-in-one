@@ -9,7 +9,10 @@ RUN set -ex; \
     apk add --no-cache openssl bash; \
     \
 # Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd
+    echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    \
+# Get rid of unused binaries
+    rm /usr/local/bin/gosu;
 
 USER redis
 ENTRYPOINT ["/start.sh"]
