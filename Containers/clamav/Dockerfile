@@ -12,7 +12,10 @@ RUN set -ex; \
     chown -R clamav:clamav /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock; \
     chmod 777 -R /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock /tmp; \
     sed -i "/^set -eu/r /start.script" /init-unprivileged; \
-    rm /start.script
+    rm /start.script; \
+    grep -q 'clamd --foreground &' /init-unprivileged; \
+    sed -i "s|clamd --foreground \&|clamd --foreground \& --config-file /tmp/clamd.conf|" /init-unprivileged; \
+    cat /init-unprivileged
 
 VOLUME /var/lib/clamav
 
@@ -20,4 +23,4 @@ USER clamav
 
 LABEL com.centurylinklabs.watchtower.enable="false"
 
-ENTRYPOINT ["/init-unprivileged", "--config-file", "/tmp/clamd.conf"]
+ENTRYPOINT ["/init-unprivileged"]
