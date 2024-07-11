@@ -14,7 +14,7 @@ RUN set -ex; \
     sed -i "/^set -eu/r /start.script" /init-unprivileged; \
     rm /start.script; \
     grep -q 'clamd --foreground &' /init-unprivileged; \
-    sed -i "s|clamd --foreground \&|clamd --foreground \& --config-file /tmp/clamd.conf|" /init-unprivileged; \
+    sed -i "s|clamd --foreground \&|clamd --foreground --config-file /tmp/clamd.conf \&|" /init-unprivileged; \
     cat /init-unprivileged
 
 VOLUME /var/lib/clamav
