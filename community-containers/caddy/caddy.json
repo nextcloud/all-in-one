@@ -38,7 +38,7 @@
                 }
             ],
             "aio_variables": [
-                "apache_ip_binding=127.0.0.1",
+                "apache_ip_binding=@INTERNAL",
                 "apache_port=11000"
             ],
             "nextcloud_exec_commands": [
