@@ -10,7 +10,9 @@ RUN set -ex; \
     apk add --no-cache tzdata bash; \
     mkdir -p /var/run/clamav /run/lock; \
     chown -R clamav:clamav /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock; \
-    chmod 777 -R /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock /tmp
+    chmod 777 -R /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock /tmp; \
+    grep -q '#!/sbin/tini /bin/sh' /init; \
+    sed -i 's|#!/sbin/tini /bin/sh|#!/bin/sh|' /init
 
 VOLUME /var/lib/clamav
 
