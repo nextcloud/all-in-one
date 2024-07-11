@@ -64,7 +64,7 @@ RUN set -ex; \
     wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer; \
     chmod +x /usr/local/bin/composer; \
     cd /var/www/docker-aio; \
-    git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
+    git clone https://github.com/nextcloud/all-in-one.git --depth 1 --branch enh/noid/remote-borg-backups .; \
     find ./ -maxdepth 1 -mindepth 1 -not -path ./php -not -path ./community-containers -exec rm -r {} \; ; \
     chown www-data:www-data -R /var/www/docker-aio; \
     cd php; \
