@@ -35,7 +35,7 @@ RUN set -ex; \
     apk --no-cache del openssl; \
     \
 # Get rid of unused binaries
-    rm /usr/local/bin/gosu /usr/local/bin/su-exec;
+    rm -f /usr/local/bin/gosu /usr/local/bin/su-exec;
 
 VOLUME /mnt/data
 

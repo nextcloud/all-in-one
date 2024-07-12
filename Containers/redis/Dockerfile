@@ -12,7 +12,7 @@ RUN set -ex; \
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     \
 # Get rid of unused binaries
-    rm /usr/local/bin/gosu;
+    rm -f /usr/local/bin/gosu;
 
 USER redis
 ENTRYPOINT ["/start.sh"]
