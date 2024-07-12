@@ -1,9 +1,5 @@
 # IPv6-Support for Docker
 
-Before enabling IPv6-Support for Docker, please note that there are still some unresolved problems in regards to IPv6-Support in Docker. See https://github.com/nextcloud/all-in-one/discussions/2557 for more details on this.
-
-Now that this was mentioned, see the instructions below on how to enable IPv6 for Docker.
-
 ## Docker on Linux and Docker-rootless
 First of all upgrade your docker installation to v27.0.1 or higher.
 1. Then edit `/etc/docker/daemon.json` (or `~/.config/docker/daemon.json` in case of docker-rootless), add the below json:
@@ -34,7 +30,7 @@ Then, on Windows and macOS which use Docker Desktop, you need to go into the set
     ```
 
 2. Add these values to the json and make sure to keep the other currently values and that you don't see `Unexpected token in JSON at position ...` before attempting to restart by clicking on `Apply & restart`.
-3. Make sure that ipv6 is enabled for the internal `nextcloud-aio` network by running `sudo docker network inspect nextcloud-aio | grep EnableIPv6`. On a new instance, this command should return that it did not find a network with this name. Then you can run `sudo docker network create nextcloud-aio` in order to create the network with ipv6-support. However if it finds the network and its value `EnableIPv6` is set to false, make sure to follow https://github.com/nextcloud/all-in-one/discussions/2045 in order to recreate the network and enable ipv6 for it.
+3. Make sure that ipv6 is enabled for the internal `nextcloud-aio` network by running `sudo docker network inspect nextcloud-aio | grep EnableIPv6`. On a new instance, this command should return that it did not find a network with this name. Then you can run `sudo docker network create nextcloud-aio` in order to create the network with ipv6-support. However if it finds the network and its value `EnableIPv6` is set to false, make sure to follow https://github.com/nextcloud/all-in-one/discussions/2557 in order to recreate the network and enable ipv6 for it.
 
 ---
 
