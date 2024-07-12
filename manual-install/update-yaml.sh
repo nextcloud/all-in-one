@@ -139,16 +139,8 @@ done
 
 cat << NETWORK >> containers.yml
 
-# Inspired by https://github.com/mailcow/mailcow-dockerized/blob/master/docker-compose.yml
 networks:
   nextcloud-aio:
-    name: nextcloud-aio
-    driver: bridge
-    enable_ipv6: true
-    ipam:
-      driver: default
-      config:
-        - subnet: \${IPV6_NETWORK}
 NETWORK
 
 cat containers.yml > latest.yml
