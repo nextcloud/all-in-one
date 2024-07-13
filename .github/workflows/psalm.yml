@@ -2,18 +2,13 @@
 #
 # https://github.com/nextcloud/.github
 # https://docs.github.com/en/actions/learn-github-actions/sharing-workflows-with-your-organization
+#
+# SPDX-FileCopyrightText: 2022-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
 
 name: Static analysis
 
-on:
-  pull_request:
-    paths:
-      - 'php/**'
-  push:
-    branches:
-      - main
-    paths:
-      - 'php/**'
+on: pull_request
 
 concurrency:
   group: psalm-${{ github.head_ref || github.run_id }}
@@ -26,22 +21,24 @@ jobs:
     name: static-psalm-analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - name: Set up php
-        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # v2
+      - name: Get php version
+        id: versions
+        uses: icewind1991/nextcloud-version-matrix@58becf3b4bb6dc6cef677b15e2fd8e7d48c0908f # v1.3.1
+
+      - name: Set up php${{ steps.versions.outputs.php-available }}
+        uses: shivammathur/setup-php@2e947f1f6932d141d076ca441d0e1e881775e95b # v2.31.0
         with:
-          php-version: 8.3
-          extensions: apcu
+          php-version: ${{ steps.versions.outputs.php-available }}
+          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, sqlite, pdo_sqlite
           coverage: none
           ini-file: development
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies and run psalm
-        run: |
-          set -x
-          cd php
-          composer global require vimeo/psalm --prefer-dist --no-progress --dev
-          composer install
-          composer run psalm
+      - name: Install dependencies
+        run: composer i
+
+      - name: Run coding standards check
+        run: composer run psalm
