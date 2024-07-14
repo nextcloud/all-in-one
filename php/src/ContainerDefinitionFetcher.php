@@ -4,6 +4,8 @@ namespace AIO;
 
 use AIO\Container\AioVariables;
 use AIO\Container\Container;
+use AIO\Container\ContainerCaddyRoute;
+use AIO\Container\ContainerCaddyRoutes;
 use AIO\Container\ContainerEnvironmentVariables;
 use AIO\Container\ContainerPort;
 use AIO\Container\ContainerPorts;
@@ -99,7 +101,7 @@ class ContainerDefinitionFetcher
 
             $ports = new ContainerPorts();
             if (isset($entry['ports'])) {
-                foreach ($entry['ports'] as $value) {                    
+                foreach ($entry['ports'] as $value) {
                     $ports->AddPort(
                         new ContainerPort(
                             $value['port_number'],
@@ -156,6 +158,20 @@ class ContainerDefinitionFetcher
                 }
             }
 
+            $caddyRoutes = new ContainerCaddyRoutes();
+            if (isset($entry['caddy_routes'])) {
+                foreach ($entry['caddy_routes'] as $value) {
+                    $caddyRoutes->AddCaddyRoute(
+                        new ContainerCaddyRoute(
+                            $value['route'],
+                            $value['sub_domain'],
+                            $value['target'],
+                            $value['uri_strip_prefix']
+                        )
+                    );
+                }
+            }
+
             $dependsOn = [];
             if (isset($entry['depends_on'])) {
                 $valueDependsOn = $entry['depends_on'];
@@ -204,7 +220,7 @@ class ContainerDefinitionFetcher
                     $dependsOn[] = $value;
                 }
             }
-            
+
             $variables = new ContainerEnvironmentVariables();
             if (isset($entry['environment'])) {
                 foreach ($entry['environment'] as $value) {
@@ -307,6 +323,7 @@ class ContainerDefinitionFetcher
                 $maxShutdownTime,
                 $ports,
                 $internalPort,
+                $caddyRoutes,
                 $volumes,
                 $variables,
                 $dependsOn,

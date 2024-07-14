@@ -15,6 +15,7 @@ class Container {
     private int $maxShutdownTime;
     private ContainerPorts $ports;
     private string $internalPorts;
+    private ContainerCaddyRoutes $caddyRoutes;
     private ContainerVolumes $volumes;
     private ContainerEnvironmentVariables $containerEnvironmentVariables;
     /** @var string[] */
@@ -46,6 +47,7 @@ class Container {
         int $maxShutdownTime,
         ContainerPorts $ports,
         string $internalPorts,
+        ContainerCaddyRoutes $caddyRoutes,
         ContainerVolumes $volumes,
         ContainerEnvironmentVariables $containerEnvironmentVariables,
         array $dependsOn,
@@ -71,6 +73,7 @@ class Container {
         $this->maxShutdownTime = $maxShutdownTime;
         $this->ports = $ports;
         $this->internalPorts = $internalPorts;
+        $this->caddyRoutes = $caddyRoutes;
         $this->volumes = $volumes;
         $this->containerEnvironmentVariables = $containerEnvironmentVariables;
         $this->dependsOn = $dependsOn;
@@ -156,6 +159,10 @@ class Container {
 
     public function GetInternalPort() : string {
         return $this->internalPorts;
+    }
+
+    public function GetCaddyRoutes() : ContainerCaddyRoutes {
+        return $this->caddyRoutes;
     }
 
     public function GetVolumes() : ContainerVolumes {
