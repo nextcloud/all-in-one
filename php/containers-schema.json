@@ -183,7 +183,7 @@
 								},
 								"sub_domain": {
 									"type": "string",
-									"pattern": "^[a-z-]*$"
+									"pattern": "^([a-z-]*\\.)*$"
 								},
 								"target": {
 									"type": "string",

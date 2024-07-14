@@ -28,7 +28,8 @@
       "internal_port": "%APACHE_PORT%",
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
-        "TALK_HOST=nextcloud-aio-talk",
+        "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
+        "APACHE_HOST=nextcloud-aio-apache",
         "APACHE_PORT=%APACHE_PORT%",
         "TZ=%TIMEZONE%",
         "APACHE_MAX_SIZE=%APACHE_MAX_SIZE%",
