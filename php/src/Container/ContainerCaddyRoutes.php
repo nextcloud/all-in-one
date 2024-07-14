@@ -18,4 +18,22 @@ class ContainerCaddyRoutes {
     public function GetCaddyRoutes() : array {
         return $this->caddyRoutes;
     }
+
+    public function GetFormatedEnv() : string {
+        $caddyRouteBySubDomain = [];
+        foreach ($this->caddyRoutes as $caddyRoute) {
+            $subDomain = $caddyRoute->subDomain;
+            if (!array_key_exists($subDomain, $caddyRouteBySubDomain)) {
+                $caddyRouteBySubDomain[$subDomain] = [];
+            }
+            $caddyRouteBySubDomain[$subDomain][] =  $caddyRoute->route.",".$caddyRoute->uriStripPrefix.",".$caddyRoute->target ;
+        }
+
+        $subDomainGroups = [];
+        foreach ($caddyRouteBySubDomain as $subDomain => $routes) {
+            $subDomainGroups[] = $subDomain . "|" . implode(";", $routes);
+        }
+
+        return implode("@", $subDomainGroups);
+    }
 }
