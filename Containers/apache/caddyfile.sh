@@ -58,7 +58,7 @@ function template_loop_subdomain {
 
   if [ -z "$TRUSTED_DOMAINS" ] && [ -n "$SUBDOMAIN" ]; then
     # Ignore subdomains if in proxy mode
-    exit 0
+    return 0
   fi
 
   cat << CADDY
