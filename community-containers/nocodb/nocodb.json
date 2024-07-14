@@ -8,18 +8,11 @@
             "image_tag": "%AIO_CHANNEL%",
             "internal_port": "10028",
             "restart": "unless-stopped",
-            "ports": [
-                {
-                    "ip_binding": "%APACHE_IP_BINDING%",
-                    "port_number": "10028",
-                    "protocol": "tcp"
-                }
-            ],
             "caddy_routes": [
                 {
                     "route": "",
                     "sub_domain": "tables.",
-                    "target": "nextcloud-aio-nocodb:10028",
+                    "target_port": "10028",
                     "uri_strip_prefix": false
                 }
             ],

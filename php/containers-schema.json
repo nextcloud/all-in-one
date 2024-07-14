@@ -185,9 +185,9 @@
 									"type": "string",
 									"pattern": "^([a-z-]*\\.)*$"
 								},
-								"target": {
+								"target_port": {
 									"type": "string",
-									"pattern": "^nextcloud-aio-[a-z-]+:[0-9]+$"
+									"pattern": "^[0-9]{1,5})$"
 								},
 								"uri_strip_prefix": {
 									"type": "boolean"

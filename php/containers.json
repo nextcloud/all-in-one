@@ -252,7 +252,7 @@
         {
           "route": "/push",
           "sub_domain": "",
-          "target": "nextcloud-aio-notify-push:7867",
+          "target_port": "7867",
           "uri_strip_prefix": true
         }
       ],
@@ -336,19 +336,19 @@
         {
           "route": "/browser",
           "sub_domain": "",
-          "target": "nextcloud-aio-collabora:9980",
+          "target_port": "9980",
           "uri_strip_prefix": false
         },
         {
           "route": "/hosting",
           "sub_domain": "",
-          "target": "nextcloud-aio-collabora:9980",
+          "target_port": "9980",
           "uri_strip_prefix": false
         },
         {
           "route": "/cool",
           "sub_domain": "",
-          "target": "nextcloud-aio-collabora:9980",
+          "target_port": "9980",
           "uri_strip_prefix": false
         }
       ],
@@ -405,7 +405,7 @@
         {
           "route": "/standalone-signaling",
           "sub_domain": "",
-          "target": "nextcloud-aio-talk:8081",
+          "target_port": "8081",
           "uri_strip_prefix": true
         }
       ],

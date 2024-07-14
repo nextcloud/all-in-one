@@ -37,13 +37,14 @@ function template_loop_route {
   IFS=',' read -ra array <<< "$1"
   ROUTE="${array[0]}"
   URI_STRIP_PREFIX="${array[1]}"
-  TARGET="${array[2]}"
+  TARGET_HOST="${array[2]}"
+  TARGET_PORT="${array[3]}"
 
   cat << CADDY
 
     route $(test -z "$ROUTE" || echo "$ROUTE/* "){
         $([ "$URI_STRIP_PREFIX" == "1" ] && echo "uri strip_prefix $ROUTE")
-        reverse_proxy $TARGET
+        reverse_proxy $TARGET_HOST:$TARGET_PORT
     }
 CADDY
 }
@@ -54,6 +55,11 @@ function template_loop_subdomain {
   IFS='|' read -ra array <<< "$1"
   SUBDOMAIN="${array[0]}"
   ROUTES="${array[1]}"
+
+  if [ -z "$TRUSTED_DOMAINS" ] && [ -n "$SUBDOMAIN" ]; then
+    # Ignore subdomains if in proxy mode
+    exit 0
+  fi
 
   cat << CADDY
 

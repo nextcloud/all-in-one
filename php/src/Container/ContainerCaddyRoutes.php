@@ -26,7 +26,7 @@ class ContainerCaddyRoutes {
             if (!array_key_exists($subDomain, $caddyRouteBySubDomain)) {
                 $caddyRouteBySubDomain[$subDomain] = [];
             }
-            $caddyRouteBySubDomain[$subDomain][] =  $caddyRoute->route.",".$caddyRoute->uriStripPrefix.",".$caddyRoute->target ;
+            $caddyRouteBySubDomain[$subDomain][] =  $caddyRoute->route.",".$caddyRoute->uriStripPrefix.",".$caddyRoute->target_host.",".$caddyRoute->target_port ;
         }
 
         $subDomainGroups = [];
