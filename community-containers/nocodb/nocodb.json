@@ -15,6 +15,14 @@
                     "protocol": "tcp"
                 }
             ],
+            "caddy_routes": [
+                {
+                    "route": "",
+                    "sub_domain": "tables.",
+                    "target": "nextcloud-aio-nocodb:10028",
+                    "uri_strip_prefix": false
+                }
+            ],
             "environment": [
                 "NC_AUTH_JWT_SECRET=%NOCODB_JWT_SECRET%",
                 "NC_PUBLIC_URL=https://tables.%NC_DOMAIN%/",

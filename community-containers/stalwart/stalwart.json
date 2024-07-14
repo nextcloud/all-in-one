@@ -45,6 +45,14 @@
                   "protocol": "tcp"
                 }
             ],
+          "caddy_routes": [
+            {
+              "route": "",
+              "sub_domain": "mail.",
+              "target": "nextcloud-aio-stalwart:10003",
+              "uri_strip_prefix": false
+            }
+          ],
             "environment": [
                 "TZ=%TIMEZONE%",
                 "NC_DOMAIN=%NC_DOMAIN%",

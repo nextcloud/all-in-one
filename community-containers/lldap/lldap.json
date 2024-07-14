@@ -15,6 +15,14 @@
           "protocol": "tcp"
         }
       ],
+      "caddy_routes": [
+        {
+          "route": "",
+          "sub_domain": "ldap.",
+          "target": "nextcloud-aio-lldap:17170",
+          "uri_strip_prefix": false
+        }
+      ],
       "environment": [
         "TZ=%TIMEZONE%",
         "UID=65534",
