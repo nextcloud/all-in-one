@@ -187,7 +187,7 @@
 								},
 								"target_port": {
 									"type": "string",
-									"pattern": "^[0-9]{1,5})$"
+									"pattern": "^[0-9]{1,5}$"
 								},
 								"uri_strip_prefix": {
 									"type": "boolean"

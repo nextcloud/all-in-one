@@ -1,10 +1,6 @@
 #!/bin/bash
 
 
-
-
-
-
 function loop {
   readarray -t sorted < <(echo "$3" | tr "$2" '\n' | sort -r)
   for i in "${sorted[@]}"; do
