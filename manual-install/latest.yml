@@ -390,3 +390,4 @@ volumes:
 
 networks:
   nextcloud-aio:
+    name: nextcloud-aio

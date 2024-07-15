@@ -141,6 +141,7 @@ cat << NETWORK >> containers.yml
 
 networks:
   nextcloud-aio:
+    name: nextcloud-aio
 NETWORK
 
 cat containers.yml > latest.yml
