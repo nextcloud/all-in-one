@@ -246,7 +246,7 @@ find ./ \( -not -name '*service.yaml' -name '*.yaml' \) -exec sed -i "/^status:/
 # shellcheck disable=SC1083
 find ./ \( -not -name '*persistentvolumeclaim.yaml' -name '*.yaml' \) -exec sed -i "/resources:/d" \{} \; 
 # shellcheck disable=SC1083
-find ./ -name "*namespace.yaml" -exec sed -i "1i\\{{- if ne .Values.NAMESPACE \"default\" }}" \{} \; 
+find ./ -name "*namespace.yaml" -exec sed -i "1i\\{{- if and \(ne .Values.NAMESPACE \"default\"\) \(ne .Values.NAMESPACE_DISABLED \"yes\"\) }}" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name "*namespace.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 # shellcheck disable=SC1083
@@ -355,6 +355,7 @@ sed -i "s|NEXTCLOUD_DATA_STORAGE_SIZE: 1Gi|NEXTCLOUD_DATA_STORAGE_SIZE: 5Gi|" /t
 cat << ADDITIONAL_CONFIG >> /tmp/sample.conf
 
 NAMESPACE: default        # By changing this, you can adjust the namespace of the installation which allows to install multiple instances on one kubernetes cluster
+NAMESPACE_DISABLED: "no"        # By setting this to "yes", you can disabled the creation of the namespace so that you can use a pre-created one
 SUBSCRIPTION_KEY:        # This allows to set the Nextcloud Enterprise key via ENV
 SERVERINFO_TOKEN:        # This allows to set the serverinfo app token for monitoring your Nextcloud via the serverinfo app
 APPS_ALLOWLIST:        # This allows to configure allowed apps that will be shown in Nextcloud's Appstore. You need to enter the app-IDs of the apps here and separate them with spaces. E.g. 'files richdocuments'
