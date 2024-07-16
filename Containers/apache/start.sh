@@ -17,6 +17,10 @@ while ! nc -z "$NEXTCLOUD_HOST" 9000; do
     sleep 5
 done
 
+if [ -z "$CADDY_ROUTES" ]; then
+    export CADDY_ROUTES="|/browser,0,nextcloud-aio-collabora,9980;/hosting,0,nextcloud-aio-collabora,9980;/cool,0,nextcloud-aio-collabora,9980;/push,1,nextcloud-aio-notify-push,7867;/standalone-signaling,1,nextcloud-aio-talk,8081"
+fi
+
 if [ -z "$APACHE_PORT" ]; then
     export APACHE_PORT="443"
 fi

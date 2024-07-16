@@ -29,7 +29,7 @@ services:
       - TZ=${TIMEZONE}
       - APACHE_MAX_SIZE=${APACHE_MAX_SIZE}
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
-      - CADDY_ROUTE="|/browser,0,nextcloud-aio-collabora,9980;/hosting,0,nextcloud-aio-collabora,9980;/cool,0,nextcloud-aio-collabora,9980;/push,1,nextcloud-aio-notify-push,7867;/standalone-signaling,1,nextcloud-aio-talk,8081
+      - CADDY_ROUTE=|/browser,0,nextcloud-aio-collabora,9980;/hosting,0,nextcloud-aio-collabora,9980;/cool,0,nextcloud-aio-collabora,9980;/push,1,nextcloud-aio-notify-push,7867;/standalone-signaling,1,nextcloud-aio-talk,8081
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
