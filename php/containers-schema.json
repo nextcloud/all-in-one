@@ -175,7 +175,7 @@
 						"items": {
 							"type": "object",
 							"additionalProperties": false,
-							"minProperties": 4,
+							"minProperties": 3,
 							"properties": {
 								"route": {
 									"type": "string",
