@@ -8,12 +8,11 @@
       "image_tag": "v0-alpine",
       "internal_port": "17170",
       "restart": "unless-stopped",
-      "caddy_routes": [
+      "ports": [
         {
-          "route": "",
-          "sub_domain": "ldap.",
-          "target_port": "17170",
-          "uri_strip_prefix": false
+          "ip_binding": "%APACHE_IP_BINDING%",
+          "port_number": "17170",
+          "protocol": "tcp"
         }
       ],
       "environment": [

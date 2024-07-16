@@ -181,10 +181,6 @@
 									"type": "string",
 									"pattern": "^(/[a-z-]+)*$"
 								},
-								"sub_domain": {
-									"type": "string",
-									"pattern": "^([a-z-]*\\.)*$"
-								},
 								"target_port": {
 									"type": "string",
 									"pattern": "^[0-9]{1,5}$"

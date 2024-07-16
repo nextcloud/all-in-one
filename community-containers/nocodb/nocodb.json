@@ -8,12 +8,11 @@
             "image_tag": "%AIO_CHANNEL%",
             "internal_port": "10028",
             "restart": "unless-stopped",
-            "caddy_routes": [
+            "ports": [
                 {
-                    "route": "",
-                    "sub_domain": "tables.",
-                    "target_port": "10028",
-                    "uri_strip_prefix": false
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "10028",
+                    "protocol": "tcp"
                 }
             ],
             "environment": [

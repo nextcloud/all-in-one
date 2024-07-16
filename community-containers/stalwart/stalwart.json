@@ -38,16 +38,13 @@
                   "ip_binding": "",
                   "port_number": "4190",
                   "protocol": "tcp"
+                },
+                {
+                  "ip_binding": "%APACHE_IP_BINDING%",
+                  "port_number": "10003",
+                  "protocol": "tcp"
                 }
             ],
-          "caddy_routes": [
-            {
-              "route": "",
-              "sub_domain": "mail.",
-              "target_port": "10003",
-              "uri_strip_prefix": false
-            }
-          ],
             "environment": [
                 "TZ=%TIMEZONE%",
                 "NC_DOMAIN=%NC_DOMAIN%",

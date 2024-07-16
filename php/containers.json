@@ -251,7 +251,6 @@
       "caddy_routes": [
         {
           "route": "/push",
-          "sub_domain": "",
           "target_port": "7867",
           "uri_strip_prefix": true
         }
@@ -335,19 +334,16 @@
       "caddy_routes": [
         {
           "route": "/browser",
-          "sub_domain": "",
           "target_port": "9980",
           "uri_strip_prefix": false
         },
         {
           "route": "/hosting",
-          "sub_domain": "",
           "target_port": "9980",
           "uri_strip_prefix": false
         },
         {
           "route": "/cool",
-          "sub_domain": "",
           "target_port": "9980",
           "uri_strip_prefix": false
         }
@@ -404,7 +400,6 @@
       "caddy_routes": [
         {
           "route": "/standalone-signaling",
-          "sub_domain": "",
           "target_port": "8081",
           "uri_strip_prefix": true
         }
