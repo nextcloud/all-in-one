@@ -34,4 +34,4 @@ Then, on Windows and macOS which use Docker Desktop, you need to go into the set
 
 ---
 
-**Note**: This is a copy of the original docker docs at https://docs.docker.com/config/daemon/ipv6/ which apparently are not correct. However experimental is set to true which the ip6tables feature needs. Thus it will not get included into the official docs. However it is needed to make it work in our testing.
+**Note**: This is a copy of the original docker docs at https://docs.docker.com/config/daemon/ipv6/ which apparently are not correct.
