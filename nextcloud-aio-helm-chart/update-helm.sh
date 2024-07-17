@@ -28,7 +28,7 @@ sed -i 's|^|export |' /tmp/sample.conf
 source /tmp/sample.conf
 rm /tmp/sample.conf
 sed -i '/OVERWRITEHOST/d' latest.yml
-sed -i "s|:latest$|:$DOCKER_TAG-latest|" latest.yml
+sed -i "s|:latest$|:$DOCKER_TAG|" latest.yml
 sed -i "s|\${APACHE_IP_BINDING}:||" latest.yml
 sed -i '/APACHE_IP_BINDING/d' latest.yml
 sed -i "s|\${APACHE_PORT}:\${APACHE_PORT}/|$APACHE_PORT:$APACHE_PORT/|" latest.yml
