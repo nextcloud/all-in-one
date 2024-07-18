@@ -1,4 +1,4 @@
-{{- if ne .Values.NAMESPACE "default" }}
+{{- if and (ne .Values.NAMESPACE "default") (ne .Values.NAMESPACE_DISABLED "yes") }}
 apiVersion: v1
 kind: Namespace
 metadata:
