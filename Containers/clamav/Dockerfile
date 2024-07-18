@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.3/alpine/Dockerfile
-FROM clamav/clamav:1.3.1-59
+FROM clamav/clamav:1.3.1-60
 
 COPY clamav.conf /clamav.conf
 COPY --chmod=775 start.script /start.script
