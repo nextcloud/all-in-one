@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM haproxy:3.0.2-alpine
+FROM haproxy:3.0.3-alpine
 
 # hadolint ignore=DL3002
 USER root
