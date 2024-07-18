@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-# From https://github.com/docker-library/postgres/blob/master/15/alpine/Dockerfile
+# From https://github.com/docker-library/postgres/blob/master/16/alpine3.20/Dockerfile
 FROM postgres:16.3-alpine
 
 COPY --chmod=775 start.sh /start.sh
@@ -32,7 +32,10 @@ RUN set -ex; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    apk --no-cache del openssl;
+    apk --no-cache del openssl; \
+    \
+# Get rid of unused binaries
+    rm -f /usr/local/bin/gosu /usr/local/bin/su-exec;
 
 VOLUME /mnt/data
 
