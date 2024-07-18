@@ -99,6 +99,8 @@ spec:
               value: "{{ .Values.CLAMAV_ENABLED }}"
             - name: CLAMAV_HOST
               value: nextcloud-aio-clamav
+            - name: CLAMAV_MAX_SIZE
+              value: "{{ .Values.APACHE_MAX_SIZE }}"
             - name: COLLABORA_ENABLED
               value: "{{ .Values.COLLABORA_ENABLED }}"
             - name: COLLABORA_HOST
@@ -173,7 +175,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240701_074701-latest"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240718_063028"
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
