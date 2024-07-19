@@ -11,24 +11,23 @@ a {
 
 a.button,
 input[type="submit"] {
-    padding: 6px 16px;
+    padding: 8px 16px;
     width: auto;
-    min-height: 34px;
+    height: 34px;
     cursor: pointer;
     background-color: #0082c9;
     font-weight: bold;
-    border-radius: 100px;
+    border-radius: 8px;
     margin: 3px 3px 3px 0;
-    font-size: 13px;
+    font-size: 14px;
     color: white;
-    border: 1px solid black;
+    border: .5px solid black;
     outline: none;
 }
 
 a.button:focus,
 input[type="submit"]:focus {
-    color: black;
-    border: 2px solid black;
+    border: 1px solid black;
 }
 
 summary {
@@ -97,7 +96,7 @@ div.toast {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border-radius: 16px;
+    border-radius: 12px;
 }
 
 .login > .monospace {
@@ -110,9 +109,37 @@ form {
 }
 
 input {
-    padding: 10px;
-    margin-top: 15px;
+    padding-left: 8px;
+    padding-right: 8px;
+    height: 34px;
     margin-bottom: 15px;
+    border-radius: 8px;
+    border: .5px solid black;
+}
+
+input:focus {
+    border: 1px solid black;
+}
+
+textarea {
+    border-radius: 8px;
+    border: .5px solid black;
+}
+
+textarea:focus {
+    border: 1px solid black;
+}
+
+select {
+    padding-left: 8px;
+    padding-right: 8px;
+    height: 34px;
+    border-radius: 8px;
+    border: .5px solid black;
+}
+
+select:focus {
+    border: 1px solid black;
 }
 
 .login > form > input[type="password"],
@@ -137,17 +164,16 @@ input {
 }
 
 .login-wrapper {
-    height: 100%;
-    width: 100%;
-    background-color: #0082c9;
-    background-image: linear-gradient(
-            40deg
-            , #0082c9 0%, #30b6ff 100%);
-    background-size: contain;
-    background-image: url('/img/background.png'), linear-gradient(
-            40deg
-            , #0082c9 0%, #30b6ff 100%);
-    position: relative;
+    min-height: 100dvh;
+    min-width: 100vw;
+    position: fixed;
+    width: 100vw;
+    height: auto;
+    background-image: url("img/Background_Light.jpg");
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 main {
