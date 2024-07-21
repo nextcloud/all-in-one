@@ -143,9 +143,11 @@ if [ "$BORG_MODE" = backup ]; then
             fi
             exit 1
         fi
-        borg config :: additional_free_space 2G
 
         if [ -z "$BORG_REMOTE_REPO" ]; then
+            # borg config only works for local repos; it's up to the remote to ensure the disk isn't full
+            borg config :: additional_free_space 2G
+
             # Fix too large Borg cache
             # https://borgbackup.readthedocs.io/en/stable/faq.html#the-borg-cache-eats-way-too-much-disk-space-what-can-i-do
             BORG_ID="$(borg config :: id)"
