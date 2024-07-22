@@ -315,6 +315,21 @@ find ./ -name '*talk-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additiona
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i '/image: nextcloud/s/$/"/;s|image: nextcloud/|image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/|;' \{} \;
 
+cat << EOL > templates/nextcloud-aio-networkpolicy.yaml
+# https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/04-deny-traffic-from-other-namespaces.md
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  namespace: "{{ .Values.NAMESPACE }}"
+  name: nextcloud-aio-deny-from-other-namespaces
+spec:
+  podSelector:
+    matchLabels:
+  ingress:
+  - from:
+    - podSelector: {}
+EOL
+
 cd ../
 mkdir -p ../helm-chart/
 rm latest/Chart.yaml
