@@ -25,7 +25,7 @@ Then run:
 
 ```
 helm repo add nextcloud-aio https://nextcloud.github.io/all-in-one/
-helm install my-release nextcloud-aio/nextcloud-aio-helm-chart -f values.yaml
+helm install nextcloud-aio nextcloud-aio/nextcloud-aio-helm-chart -f values.yaml
 ```
 
 And after a while, everything should be set up.
