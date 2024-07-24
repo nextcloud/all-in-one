@@ -1,6 +1,6 @@
 # Reverse Proxy Documentation
 
-**Note:** The maintainers of AIO noticed that this documentation is not easy. All contributions that improve this are very welcome!
+**Note:** The maintainers of AIO noticed that this documentation could be improved to make it easier to follow. All contributions that improve this are very welcome!
 
 A [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) is basically a web server that enables computers on the internet to access a service in a [private subnet](https://en.wikipedia.org/wiki/Private_network).
 
