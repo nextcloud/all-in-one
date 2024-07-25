@@ -326,8 +326,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
+  policyTypes:
+    - Ingress
+    - Egress
   ingress:
   - from:
+    - podSelector: {}
+  egress:
+  - to:
     - podSelector: {}
 {{- end }}
 EOL
