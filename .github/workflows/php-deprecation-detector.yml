@@ -28,7 +28,6 @@ jobs:
         run: |
           set -x
           cd php
-          composer global require wapmorgan/php-deprecation-detector dev-master
           composer install
           composer run php-deprecation-detector | tee -i ./phpdd.log
           if grep "Total issues:" ./phpdd.log; then
