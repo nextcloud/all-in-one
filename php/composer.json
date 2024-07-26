@@ -31,7 +31,7 @@
 		"psalm": "psalm --threads=1",
 		"psalm:update-baseline": "psalm --threads=1 --monochrome --no-progress --output-format=text --update-baseline",
 		"lint": "php -l src/*.php src/**/*.php public/index.php",
-        "lint:twig": "twig-linter lint ./templates",
+		"lint:twig": "twig-linter lint ./templates",
 		"php-deprecation-detector": "phpdd scan -n -t 8.3 src/*.php src/**/*.php public/index.php"
 	}
 }
