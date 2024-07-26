@@ -15,7 +15,7 @@ run_upgrade_if_needed_due_to_app_update() {
         # Disable integrity check temporarily until next update
         php /var/www/html/occ config:system:set integrity.check.disabled --type bool --value true
         php /var/www/html/occ upgrade
-        php /var/www/html/occ app:enable nextcloud-aio --force #
+        php /var/www/html/occ app:enable nextcloud-aio --force
     fi
 }
 
@@ -294,7 +294,7 @@ DATADIR_PERMISSION_CONF
                 fi
                 php /var/www/html/occ app:disable updatenotification
                 rm -rf /var/www/html/apps/updatenotification
-                php /var/www/html/occ app:enable nextcloud-aio --force #
+                php /var/www/html/occ app:enable nextcloud-aio --force
                 php /var/www/html/occ db:add-missing-columns
                 php /var/www/html/occ db:add-missing-primary-keys
                 yes | php /var/www/html/occ db:convert-filecache-bigint
@@ -369,7 +369,7 @@ DATADIR_PERMISSION_CONF
             php /var/www/html/occ config:system:delete integrity.check.disabled
             if ! php /var/www/html/occ upgrade || ! php /var/www/html/occ -V; then
                 echo "Upgrade failed. Please restore from backup."
-                bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup!" #
+                bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup!"
                 exit 1
             fi
 
@@ -377,7 +377,7 @@ DATADIR_PERMISSION_CONF
             installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
 
             rm "$NEXTCLOUD_DATA_DIR/update.failed"
-            bash /notify.sh "Nextcloud update to $image_version successful!" "Feel free to inspect the Nextcloud container logs for more info." #
+            bash /notify.sh "Nextcloud update to $image_version successful!" "Feel free to inspect the Nextcloud container logs for more info."
 
             php /var/www/html/occ app:update --all
 
@@ -403,7 +403,7 @@ DATADIR_PERMISSION_CONF
                                 else
                                     CUSTOM_HINT="Most likely because it is not compatible with the new Nextcloud version."
                                 fi
-                                bash /notify.sh "Could not enable the $app app after the Nextcloud update!" "$CUSTOM_HINT Feel free to look at the Nextcloud update logs and force-enable the app again from the app-store UI." #
+                                bash /notify.sh "Could not enable the $app app after the Nextcloud update!" "$CUSTOM_HINT Feel free to look at the Nextcloud update logs and force-enable the app again from the app-store UI."
                                 continue
                             fi
                             # Only restore the group settings, if the app was enabled (and is thus compatible with the new NC version)
@@ -434,7 +434,7 @@ DATADIR_PERMISSION_CONF
         UPDATED_APPS="$(php /var/www/html/occ app:update --all)"
         run_upgrade_if_needed_due_to_app_update
         if [ -n "$UPDATED_APPS" ]; then
-             bash /notify.sh "Your apps just got updated!" "$UPDATED_APPS" #
+             bash /notify.sh "Your apps just got updated!" "$UPDATED_APPS"
         fi
     fi
 else
@@ -502,7 +502,7 @@ if [ -n "$SERVERINFO_TOKEN" ] && [ -z "$(php /var/www/html/occ config:app:get se
 fi
 # Set maintenance window so that no warning is shown in the admin overview
 if [ -z "$(php /var/www/html/occ config:system:get maintenance_window_start)" ]; then
-    php /var/www/html/occ config:system:set maintenance_window_start --type=int --value=100 #
+    php /var/www/html/occ config:system:set maintenance_window_start --type=int --value=100
 fi
 
 # Apply network settings
@@ -791,7 +791,7 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
         echo "Waiting 10s before activating FTS..."
         sleep 10
         echo "Activating fulltextsearch..."
-        if php /var/www/html/occ fulltextsearch:test && php /var/www/html/occ fulltextsearch:index "{\"errors\": \"reset\"}" --no-readline; then #
+        if php /var/www/html/occ fulltextsearch:test && php /var/www/html/occ fulltextsearch:index "{\"errors\": \"reset\"}" --no-readline; then
             touch "$NEXTCLOUD_DATA_DIR/fts-index.done"
         else
             echo "Fulltextsearch failed. Could not index."
