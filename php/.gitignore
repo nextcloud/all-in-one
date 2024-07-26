@@ -1,6 +1,0 @@
-data/*
-session/*
-!data/.gitkeep
-!session/.gitkeep
-vendor/
-.idea/

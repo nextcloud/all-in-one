@@ -1,8 +1,13 @@
 .DS_Store
-/php/data/containers.json
-/php/data/configuration.json
-/php/data/backupsecret.json
+.idea/
+*.iml
+
+/php/data/*
+/php/session/*
+!/php/data/.gitkeep
+!/php/session/.gitkeep
 /php/vendor
+
 /manual-install/*.conf
 !/manual-install/sample.conf
 /manual-install/docker-compose.yml
