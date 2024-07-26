@@ -1,3 +1,6 @@
-/php/data/configuration.json
-/php/data/containers.json
-
+data/*
+session/*
+!data/.gitkeep
+!session/.gitkeep
+vendor/
+.idea/
