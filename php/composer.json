@@ -1,6 +1,6 @@
 {
     "autoload": {
-        "psr-4": { 
+        "psr-4": {
             "AIO\\": ["src/"]
         }
     },
@@ -18,10 +18,20 @@
         "slim/csrf": "^1.3",
         "ext-apcu": "*"
     },
+    "require-dev": {
+        "sserbin/twig-linter": "@dev",
+        "vimeo/psalm": "^5.25",
+        "wapmorgan/php-deprecation-detector": "dev-master"
+    },
     "scripts": {
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "php -S localhost:8080 -t public"
+        ],
 		"psalm": "psalm --threads=1",
-		"psalm:update-baseline": "psalm --threads=1 --update-baseline",
-		"lint": "find . -name \\*.php -not -path './vendor/*' -exec php -l {} \\;",
-		"php-deprecation-detector": "find . -name \\*.php -not -path './vendor/*' -exec phpdd scan {} -n -t 8.3 \\;"
+		"psalm:update-baseline": "psalm --threads=1 --monochrome --no-progress --output-format=text --update-baseline",
+		"lint": "php -l src/*.php src/**/*.php public/index.php",
+		"lint:twig": "twig-linter lint ./templates",
+		"php-deprecation-detector": "phpdd scan -n -t 8.3 src/*.php src/**/*.php public/index.php"
 	}
 }
