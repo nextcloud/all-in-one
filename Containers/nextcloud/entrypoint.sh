@@ -815,22 +815,5 @@ else
     fi
 fi
 
-# Docker socket proxy
-if version_greater "$installed_version" "27.1.2.0"; then
-    if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
-        if ! [ -d "/var/www/html/custom_apps/app_api" ]; then
-            php /var/www/html/occ app:install app_api
-        elif [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
-            php /var/www/html/occ app:enable app_api
-        elif [ "$SKIP_UPDATE" != 1 ]; then
-            php /var/www/html/occ app:update app_api
-        fi
-    else
-        if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
-            php /var/www/html/occ app:remove app_api
-        fi
-    fi
-fi
-
 # Remove the update skip file always
 rm -f "$NEXTCLOUD_DATA_DIR"/skip.update

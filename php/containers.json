@@ -745,6 +745,11 @@
       ],
       "cap_drop": [
         "NET_RAW"
+      ],
+      "nextcloud_exec_commands": [
+        "echo 'Activating App API...'",
+        "php /var/www/html/occ app:install app_api",
+        "php /var/www/html/occ app:enable app_api"
       ]
     }
   ]
