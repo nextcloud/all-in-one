@@ -164,9 +164,7 @@ class ContainerDefinitionFetcher
                     $caddyRoutes->AddCaddyRoute(
                         new ContainerCaddyRoute(
                             $value['route'],
-                            "",
-                            $entry['container_name'],
-                            $value['target_port'],
+                            $entry['container_name'].":".$value['target_port'],
                             $value['uri_strip_prefix']
                         )
                     );

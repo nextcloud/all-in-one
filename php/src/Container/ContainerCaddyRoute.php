@@ -5,22 +5,20 @@ namespace AIO\Container;
 
 class ContainerCaddyRoute {
     public string $route;
-    public string $subDomain;
-    public string $target_host;
-    public string $target_port;
-    public string $uriStripPrefix;
+    public string $target;
+    public bool $uriStripPrefix;
 
     public function __construct(
         string $route,
-        string $subDomain,
-        string $target_host,
-        string $target_port,
+        string $target,
         string $uriStripPrefix
     ) {
         $this->route = $route;
-        $this->subDomain = $subDomain;
-        $this->target_host = $target_host;
-        $this->target_port = $target_port;
-        $this->uriStripPrefix = $uriStripPrefix;
+        $this->target = $target;
+        $this->uriStripPrefix = $uriStripPrefix === "true";
+    }
+
+    public function GetFormatedEnv() : string {
+        return $this->target.",".$this->route.",".$this->uriStripPrefix?"1":"0";
     }
 }
