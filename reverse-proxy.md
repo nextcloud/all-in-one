@@ -120,6 +120,8 @@ Add this as a new Apache site config:
 
     # Support big file uploads
     LimitRequestBody 0
+    Timeout 86400
+    ProxyTimeout 86400
 </VirtualHost>
 ```
 
