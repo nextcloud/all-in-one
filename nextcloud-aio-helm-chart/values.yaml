@@ -20,7 +20,7 @@ TALK_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the op
 TALK_RECORDING_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 
 APACHE_MAX_SIZE: "10737418240"          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT
-APACHE_PORT: 443          # Changing this to a different value than 443 will allow you to run it behind a web server or reverse proxy (like Apache, Nginx, Cloudflare Tunnel and else).
+APACHE_PORT: 443          # Changing this to a different value than 443 will allow you to run it behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else).
 COLLABORA_DICTIONARIES: de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru        # You can change this in order to enable other dictionaries for collabora
 COLLABORA_SECCOMP_POLICY: --o:security.seccomp=true          # Changing the value to false allows to disable the seccomp feature of the Collabora container.
 INSTALL_LATEST_MAJOR: no        # Setting this to yes will install the latest Major Nextcloud version upon the first installation
