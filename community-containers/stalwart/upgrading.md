@@ -18,6 +18,10 @@ See https://github.com/stalwartlabs/mail-server/blob/main/UPGRADING.md
 > [!CAUTION]
 > Before each update don't forget to make a backup.
 
+## Upgrading from 0.8.x to 0.9.x
+
+TODO
+
 ## Upgrading from 0.7.x to 0.8.x
 
 Before upgrading, do a backup of your data !
