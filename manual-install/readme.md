@@ -27,23 +27,23 @@ Then copy the sample.conf to default environment file, e.g. `cp sample.conf .env
 
 Now copy the provided yaml file to a compose.yaml file by running `cp latest.yml compose.yaml`.
 
-Now you should be ready to go with `sudo docker-compose up`.
+Now you should be ready to go with `sudo docker compose up`.
 
 ## Docker profiles
 The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, talk-recording, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`. (Note: there is no clamav image for arm64).
 
-For a complete all-in-one with collabora use `sudo docker-compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch up`. (Note: there is no clamav image for arm64).
+For a complete all-in-one with collabora use `sudo docker compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch up`. (Note: there is no clamav image for arm64).
 
 ## How to update?
 Since the AIO containers may change in the future, it is highly recommended to strictly follow the following procedure whenever you want to upgrade your containers.
 1. If your previous copy of `sample.conf` is named `my.conf`, run `mv -vn my.conf .env` in order to rename the file to `.env`.
-1. Run `sudo docker-compose down` to stop all running containers
+1. Run `sudo docker compose down` to stop all running containers
 1. Back up all important files and folders
 1. If your compose file is still named `docker-compose.yml` rename it to `compose.yaml` by running `mv -vn docker-compose.yml compose.yaml`
 1. Run `git pull` in order to get the updated yaml files from the repository. Now bring your `compose.yaml` file up-to-date with the updated one from the repository. You can use `diff compose.yaml latest.yml` for comparing. ⚠️ **Please note**: Starting with AIO v5.1.0, ipv6 networking will be enabled by default, so make sure to either enable it first by following steps 1 and 2 of https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md and then proceed with the steps below or disable ipv6 networking by editing the compose.yaml file and removing ipv6 from the network.
 1. Also have a look at the `sample.conf` if any variable was added or renamed and add that to your conf file as well. Here may help the diff command as well.
-1. After the file update was successful, simply run `sudo docker-compose pull` to pull the new images.
-1. At the end run `sudo docker-compose up` in order to start and update the containers with the new configuration.
+1. After the file update was successful, simply run `sudo docker compose pull` to pull the new images.
+1. At the end run `sudo docker compose up` in order to start and update the containers with the new configuration.
 
 ## FAQ
 ### Backup and restore?
