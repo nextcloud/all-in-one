@@ -639,6 +639,63 @@ The examples below define the dynamic configuration in YAML files. If you rather
 
 </details>
 
+### IIS with ARR and URL Rewrite
+
+<details>
+
+<summary>click here to expand</summary>
+
+**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+
+#### Prerequisites
+1. **Windows Server** with IIS installed.
+2. [**Application Request Routing (ARR)**](https://www.iis.net/downloads/microsoft/application-request-routing) and [**URL Rewrite**](https://www.iis.net/downloads/microsoft/url-rewrite) modules installed.
+3. [**WebSocket Protocol**](https://learn.microsoft.com/en-us/iis/configuration/system.webserver/websocket) feature enabled.
+
+
+In the web.config example below, a Server farm named `nc-server-farm` has been created an is pointing to the Nextcloud server:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <system.web>
+    <!-- Allow all urls -->
+    <httpRuntime requestValidationMode="2.0" requestPathInvalidCharacters="" />
+  </system.web>
+  <system.webServer>
+    <rewrite>
+      <rules>
+        <!-- Force https -->
+        <rule name="Https" stopProcessing="true">
+          <match url="(.*)" />
+          <conditions>
+            <add input="{HTTPS}" pattern="^OFF$" />
+          </conditions>
+          <action type="Redirect" url="https://{HTTP_HOST}/{REQUEST_URI}" appendQueryString="false" />
+        </rule>
+        <!-- Redirect to internal nextcloud server -->
+        <rule name="To nextcloud" stopProcessing="true">
+          <match url="(.*)" />
+          <conditions>
+            <add input="{HTTPS}" pattern="^ON$" />
+          </conditions>
+          <action type="Rewrite" url="http://nc-server-farm:11000/{UNENCODED_URL}" appendQueryString="false" />
+        </rule>
+      </rules>
+    </rewrite>
+    <security>
+      <!-- Increase upload limit to 2GiB -->
+      <requestFiltering allowDoubleEscaping="true">
+        <requestLimits maxAllowedContentLength="2147483648" />
+      </requestFiltering>
+    </security>
+  </system.webServer>
+</configuration>
+
+```
+
+</details>
+
 ### Others
 
 <details>
