@@ -693,6 +693,7 @@ In the web.config example below, a Server farm named `nc-server-farm` has been c
 </configuration>
 
 ```
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
 
