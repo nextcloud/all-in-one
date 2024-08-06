@@ -647,14 +647,24 @@ The examples below define the dynamic configuration in YAML files. If you rather
 
 **Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
 
+**Please note:** Using IIS as a reverse proxy comes with some limitations:
+- A maximum upload size of 4GiB, in the example configuration below the limit is set to 2GiB.
+
+
 #### Prerequisites
 1. **Windows Server** with IIS installed.
 2. [**Application Request Routing (ARR)**](https://www.iis.net/downloads/microsoft/application-request-routing) and [**URL Rewrite**](https://www.iis.net/downloads/microsoft/url-rewrite) modules installed.
 3. [**WebSocket Protocol**](https://learn.microsoft.com/en-us/iis/configuration/system.webserver/websocket) feature enabled.
 
+For information on how to set up IIS as a reverse proxy please refer to [this](https://learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/reverse-proxy-with-url-rewrite-v2-and-application-request-routing).
+There are also information on how to use the IIS Manager [here](https://learn.microsoft.com/en-us/iis/).
 
-In the web.config example below, a Server farm named `nc-server-farm` has been created an is pointing to the Nextcloud server:
+The following configuration example assumes the following:
+* A site has been created that is configured with HTTPS support and the desired host name.
+* A server farm named `nc-server-farm` has been created and is pointing to the Nextcloud server.
+* No global Rewrite Rules has been created for the `nc-server-farm` server farm.
 
+Add the following `web.config` file to the root of the site you created as the reverse proxy.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
