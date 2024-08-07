@@ -11,9 +11,10 @@ directory_empty() {
 }
 
 run_upgrade_if_needed_due_to_app_update() {
+    if php /var/www/html/occ status | grep maintenance | grep -q true; then
+        php /var/www/html/occ maintenance:mode --off
+    fi
     if php /var/www/html/occ status | grep needsDbUpgrade | grep -q true; then
-        # Disable integrity check temporarily until next update
-        php /var/www/html/occ config:system:set integrity.check.disabled --type bool --value true
         php /var/www/html/occ upgrade
         php /var/www/html/occ app:enable nextcloud-aio --force
     fi
@@ -99,6 +100,18 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             # Write output to logfile.
             exec > >(tee -i "/var/www/html/data/update.log")
             exec 2>&1
+            # Run built-in upgrader if version is below 28.0.2 to upgrade to 28.0.x first
+            if ! version_greater "$installed_version" "28.0.1.20"; then
+                php /var/www/html/updater/updater.phar --no-interaction --no-backup
+                if ! php /var/www/html/occ upgrade || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
+                    echo "Upgrade failed. Please restore from backup."
+                    bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup!"
+                    exit 1
+                fi
+                # shellcheck disable=SC2016
+                installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+                INSTALLED_MAJOR="${installed_version%%.*}"
+            fi
         fi
 
         if [ "$installed_version" != "0.0.0.0" ] && [ "$((IMAGE_MAJOR - INSTALLED_MAJOR))" -gt 1 ]; then
@@ -816,19 +829,17 @@ else
 fi
 
 # Docker socket proxy
-if version_greater "$installed_version" "27.1.2.0"; then
-    if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
-        if ! [ -d "/var/www/html/custom_apps/app_api" ]; then
-            php /var/www/html/occ app:install app_api
-        elif [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
-            php /var/www/html/occ app:enable app_api
-        elif [ "$SKIP_UPDATE" != 1 ]; then
-            php /var/www/html/occ app:update app_api
-        fi
-    else
-        if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
-            php /var/www/html/occ app:remove app_api
-        fi
+if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/app_api" ]; then
+        php /var/www/html/occ app:install app_api
+    elif [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
+        php /var/www/html/occ app:enable app_api
+    elif [ "$SKIP_UPDATE" != 1 ]; then
+        php /var/www/html/occ app:update app_api
+    fi
+else
+    if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
+        php /var/www/html/occ app:remove app_api
     fi
 fi
 
