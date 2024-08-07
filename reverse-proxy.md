@@ -639,6 +639,74 @@ The examples below define the dynamic configuration in YAML files. If you rather
 
 </details>
 
+### IIS with ARR and URL Rewrite
+
+<details>
+
+<summary>click here to expand</summary>
+
+**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+
+**Please note:** Using IIS as a reverse proxy comes with some limitations:
+- A maximum upload size of 4GiB, in the example configuration below the limit is set to 2GiB.
+
+
+#### Prerequisites
+1. **Windows Server** with IIS installed.
+2. [**Application Request Routing (ARR)**](https://www.iis.net/downloads/microsoft/application-request-routing) and [**URL Rewrite**](https://www.iis.net/downloads/microsoft/url-rewrite) modules installed.
+3. [**WebSocket Protocol**](https://learn.microsoft.com/en-us/iis/configuration/system.webserver/websocket) feature enabled.
+
+For information on how to set up IIS as a reverse proxy please refer to [this](https://learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/reverse-proxy-with-url-rewrite-v2-and-application-request-routing).
+There are also information on how to use the IIS Manager [here](https://learn.microsoft.com/en-us/iis/).
+
+The following configuration example assumes the following:
+* A site has been created that is configured with HTTPS support and the desired host name.
+* A server farm named `nc-server-farm` has been created and is pointing to the Nextcloud server.
+* No global Rewrite Rules has been created for the `nc-server-farm` server farm.
+
+Add the following `web.config` file to the root of the site you created as the reverse proxy.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <system.web>
+    <!-- Allow all urls -->
+    <httpRuntime requestValidationMode="2.0" requestPathInvalidCharacters="" />
+  </system.web>
+  <system.webServer>
+    <rewrite>
+      <rules>
+        <!-- Force https -->
+        <rule name="Https" stopProcessing="true">
+          <match url="(.*)" />
+          <conditions>
+            <add input="{HTTPS}" pattern="^OFF$" />
+          </conditions>
+          <action type="Redirect" url="https://{HTTP_HOST}/{REQUEST_URI}" appendQueryString="false" />
+        </rule>
+        <!-- Redirect to internal nextcloud server -->
+        <rule name="To nextcloud" stopProcessing="true">
+          <match url="(.*)" />
+          <conditions>
+            <add input="{HTTPS}" pattern="^ON$" />
+          </conditions>
+          <action type="Rewrite" url="http://nc-server-farm:11000/{UNENCODED_URL}" appendQueryString="false" />
+        </rule>
+      </rules>
+    </rewrite>
+    <security>
+      <!-- Increase upload limit to 2GiB -->
+      <requestFiltering allowDoubleEscaping="true">
+        <requestLimits maxAllowedContentLength="2147483648" />
+      </requestFiltering>
+    </security>
+  </system.webServer>
+</configuration>
+
+```
+⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+
+</details>
+
 ### Others
 
 <details>
