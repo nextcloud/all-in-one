@@ -9,12 +9,13 @@ a {
     color: #0082c9;
 }
 
-.button {
+a.button,
+input[type="submit"] {
     padding: 6px 16px;
     width: auto;
     min-height: 34px;
     cursor: pointer;
-    background-color:#0082c9;
+    background-color: #0082c9;
     font-weight: bold;
     border-radius: 100px;
     margin: 3px 3px 3px 0;
@@ -24,13 +25,10 @@ a {
     outline: none;
 }
 
-.button:focus {
-    color:black;
+a.button:focus,
+input[type="submit"]:focus {
+    color: black;
     border: 2px solid black;
-}
-
-#logout {
-    margin-top: 7px;
 }
 
 summary {
@@ -88,8 +86,7 @@ div.toast {
     position: fixed;
     z-index: 1000;
     border-radius: 3px;
-    background: none;
-    background-color: white;
+    background: white none;
 }
 
 .login {
@@ -108,12 +105,18 @@ div.toast {
     font-size: 17px;
 }
 
+form {
+    margin: 0;
+}
+
 input {
     padding: 10px;
+    margin-top: 15px;
     margin-bottom: 15px;
 }
 
-.login > form > input {
+.login > form > input[type="password"],
+.login > form > input[type="text"] {
     width: 100%;
 }
 
@@ -123,7 +126,8 @@ input {
     display: block;
 }
 
-.login > .button {
+.login > a.button ,
+.login > input[type="submit"] {
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -146,7 +150,7 @@ input {
     position: relative;
 }
 
-.content {
+main {
     padding: 20px;
     max-width: 100%;
     word-break: break-word;
@@ -173,6 +177,7 @@ header {
     background-image: linear-gradient(40deg, #0082c9 0%, #30b6ff 100%);
     height: 50px;
     justify-content: space-between;
+    align-items: center;
     display: flex;
 }
 
@@ -181,18 +186,18 @@ header {
 }
 
 #overlay {
-  position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
-  width: 100%; /* Full width (cover the whole page) */
-  height: 100%; /* Full height (cover the whole page) */
-  top: 0;
-  left: 0;
-  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
-  z-index: 2;
+    position: fixed; /* Sit on top of the page content */
+    display: none; /* Hidden by default */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    z-index: 2;
 }
 
 #overlay.loading {
-  display: block;
+    display: block;
 }
 
 .loader {
@@ -206,15 +211,15 @@ header {
     position: absolute;
     top: calc(50% - 60px);
     left: calc(50% - 60px);
-  }
-  
-  /* Safari */
-  @-webkit-keyframes spin {
+}
+
+/* Safari */
+@-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
-  }
-  
-  @keyframes spin {
+}
+
+@keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-  }
+}

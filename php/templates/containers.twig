@@ -11,11 +11,11 @@
         <form method="POST" action="/api/auth/logout">
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input class="button" type="submit" id="logout" value="Log out" />
+            <input type="submit" value="Log out" />
         </form>
     </header>
 
-    <div class="content">
+    <main>
         <h1>Nextcloud AIO v9.4.1</h1>
 
         {# Add 2nd tab warning #}
@@ -58,107 +58,107 @@
         {% endfor %}
 
         {% if is_daily_backup_running == true %}
-            <span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank" rel="noopener">Logs</a>)<br /><br />
+            <p><span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank" rel="noopener">Logs</a>)</p>
             {% if automatic_updates == true %}
-                This will update your containers, the mastercontainer and, on Saturdays, your Nextcloud apps if the backup is successful.<br /><br />
+                <p>This will update your containers, the mastercontainer and, on Saturdays, your Nextcloud apps if the backup is successful.</p>
                 {% if is_mastercontainer_update_available == true %}
-                    When the mastercontainer is updated it will restart, making it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)<br /><br />
+                    <p>When the mastercontainer is updated it will restart, making it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)</p>
                 {% endif %}
             {% endif %}
             {% if has_update_available == false %}
-                The whole process should not take more than a few minutes.<br /><br />
+                <p>The whole process should not take more than a few minutes.</p>
             {% elseif automatic_updates == true %}
-                The whole process can take a while as your containers will be updated.<br /><br />
+                <p>The whole process can take a while as your containers will be updated.</p>
             {% endif %}
-            <a href="" class="button reload">Reload ↻</a><br/><br/>
-            If the daily backup is stuck somehow, you can unstick it by running <strong>sudo docker exec nextcloud-aio-mastercontainer rm /mnt/docker-aio-config/data/daily_backup_running</strong> and afterwards reloading this interface.<br /><br />
+            <p><a href="" class="button reload">Reload ↻</a></p>
+            <p>If the daily backup is stuck somehow, you can unstick it by running <strong>sudo docker exec nextcloud-aio-mastercontainer rm /mnt/docker-aio-config/data/daily_backup_running</strong> and afterwards reloading this interface.</p>
         {% elseif isWatchtowerRunning == true %}
-            <span class="status running"></span> Mastercontainer update currently running. Once the update is complete the mastercontainer will restart, making it unavailable for a moment. Please wait until it's done. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)<br /><br />
-            <a href="" class="button reload">Reload ↻</a><br/>
+            <p><span class="status running"></span> Mastercontainer update currently running. Once the update is complete the mastercontainer will restart, making it unavailable for a moment. Please wait until it's done. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)</p>
+            <p><a href="" class="button reload">Reload ↻</a></p>
         {% else %}
             {% if is_backup_container_running == false and domain == "" %}
                 {% if isDomaincheckRunning == false %}
                     <h2>Domaincheck container is not running</h2>
-                    This is not expected. Most likely this happened because port {{ apache_port }} is already in use on your server. You can check the mastercontainer logs and domaincheck container logs for further clues. You should be able to resolve this by adjusting the APACHE_PORT by following the <strong><a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></strong>. Advice: have a detailed look at the changed docker run command for AIO.
+                    <p>This is not expected. Most likely this happened because port {{ apache_port }} is already in use on your server. You can check the mastercontainer logs and domaincheck container logs for further clues. You should be able to resolve this by adjusting the APACHE_PORT by following the <strong><a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></strong>. Advice: have a detailed look at the changed docker run command for AIO.</p>
                 {% elseif is_mastercontainer_update_available == true %}
                     <h2>Mastercontainer update</h2>
-                    ⚠️ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.<br><br>
+                    <p>⚠️ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.</p>
                     <form method="POST" action="/api/docker/watchtower" class="xhr">
                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                        <input class="button" type="submit" value="Update mastercontainer" />
+                        <input type="submit" value="Update mastercontainer" />
                     </form>
                 {% else %}
                     {% if borg_backup_host_location == '' and borg_restore_password == '' %}
-                        The official Nextcloud installation method. Nextcloud All-in-One provides easy deployment and maintenance with most features included in this one Nextcloud instance.<br><br>
-                        You can either create a new AIO instance or restore a former AIO instance from backup. See the two sections below.<br><br>
+                        <p>The official Nextcloud installation method. Nextcloud All-in-One provides easy deployment and maintenance with most features included in this one Nextcloud instance.</p>
+                        <p>You can either create a new AIO instance or restore a former AIO instance from backup. See the two sections below.</p>
                         {{ include('includes/aio-config.twig') }}
                         <h2>New AIO instance</h2>
                         {% if apache_port == '443' %}
-                            AIO is currently in "normal mode" which means that it handles the TLS proxying itself. This also means that it cannot be installed behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), see the <strong><a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></strong>. Advice: have a detailed look at the changed docker run command for AIO.<br><br>
+                            <p>AIO is currently in "normal mode" which means that it handles the TLS proxying itself. This also means that it cannot be installed behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), see the <strong><a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></strong>. Advice: have a detailed look at the changed docker run command for AIO.</p>
                         {% else %}
-                            AIO is currently in "reverse proxy mode" which means that it can be installed behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) and does not do the TLS proxying itself.<br><br>
+                            <p>AIO is currently in "reverse proxy mode" which means that it can be installed behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) and does not do the TLS proxying itself.</p>
                         {% endif %}
-                        Please type the domain that will be used for Nextcloud below in order to create a new AIO instance.<br><br />
+                        <p>Please type the domain that will be used for Nextcloud below in order to create a new AIO instance.</p>
                         {% if skip_domain_validation == true %}
-                            <strong>Please note:</strong> The domain validation is disabled so any domain will be accepted here! Make sure you do not make a typo here as you will not be able to change it afterwards!<br><br>
+                            <p><strong>Please note:</strong> The domain validation is disabled so any domain will be accepted here! Make sure you do not make a typo here as you will not be able to change it afterwards!</p>
                         {% endif %}
                         <form method="POST" action="/api/configuration" class="xhr">
                             <input type="text" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                            <input class="button" type="submit" value="Submit domain" />
+                            <input type="submit" value="Submit domain" />
                         </form>
                         {% if skip_domain_validation == false %}
-                            Make sure that this server is reachable on port 443 (port 443/tcp is open/forwarded in your firewall/router and 443/udp as well if you want to enable http3) and that you've correctly set up the DNS config for the domain that you enter (set the A record to your public ipv4-address and if you need ipv6, set the AAAA record to your public ipv6-address. A CNAME record is, of course, also possible). You should see hints on what went wrong in the top right corner if your domain is not accepted.<br><br>
+                            <p>Make sure that this server is reachable on port 443 (port 443/tcp is open/forwarded in your firewall/router and 443/udp as well if you want to enable http3) and that you've correctly set up the DNS config for the domain that you enter (set the A record to your public ipv4-address and if you need ipv6, set the AAAA record to your public ipv6-address. A CNAME record is, of course, also possible). You should see hints on what went wrong in the top right corner if your domain is not accepted.</p>
                             <details>
-                                <summary>Click here for further hints</summary><br />
-                                If you do not have a domain yet, you can get one for free e.g. from duckdns.org and others.<br><br>
-                                If you have a dynamic public IP-address, you can use e.g. <a href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates.<br /><br/>
-                                If you only want to install AIO locally without exposing it to the public internet or if you cannot do so, feel free to follow <a href="https://github.com/nextcloud/all-in-one/blob/main/local-instance.md">this documentation</a>.<br><br>
-                                If you should be using Cloudflare Proxy for your domain, make sure to disable the Proxy feature temporarily as it might block the domain validation attempts.<br /><br/>
+                                <summary>Click here for further hints</summary>
+                                <p>If you do not have a domain yet, you can get one for free e.g. from duckdns.org and others.</p>
+                                <p>If you have a dynamic public IP-address, you can use e.g. <a href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates.</p>
+                                <p>If you only want to install AIO locally without exposing it to the public internet or if you cannot do so, feel free to follow <a href="https://github.com/nextcloud/all-in-one/blob/main/local-instance.md">this documentation</a>.</p>
+                                <p>If you should be using Cloudflare Proxy for your domain, make sure to disable the Proxy feature temporarily as it might block the domain validation attempts.</p>
                                 {% if apache_port != '443' %}
-                                    If you run into issues with your domain being accepted, see <a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things">these steps</a> for how to debug things. <br /><br/>
+                                    <p>If you run into issues with your domain being accepted, see <a href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things">these steps</a> for how to debug things.</p>
                                 {% endif %}
-                                <strong>Hint:</strong> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.<br />
+                                <p><strong>Hint:</strong> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.</p>
                             </details>
                         {% endif %}
 
                         <h2>Restore former AIO instance from backup</h2>
-                        You can alternatively restore a former AIO instance from backup.<br><br>
+                        <p>You can alternatively restore a former AIO instance from backup.</p>
                     {% endif %}
 
                     {% if is_instance_restore_attempt == false %}
                         {% if borg_backup_host_location != '' and borg_restore_password != '' %}
                             {% if borg_backup_mode in ['test', 'check'] %}
                                 {% if backup_exit_code > 0 %}
-                                    <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
+                                    <p><span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
                                     {% if borg_backup_mode == 'test' %}
-                                        Please adjust the path and/or the encryption password in order to make it work!<br><br>
+                                        <p>Please adjust the path and/or the encryption password in order to make it work!</p>
                                     {% elseif borg_backup_mode == 'check' %}
-                                        The backup archive seems to be corrupt. Please try to use a different intact backup archive or try to fix it by following <a href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><strong>this documentation</strong></a><br><br>
+                                        <p>The backup archive seems to be corrupt. Please try to use a different intact backup archive or try to fix it by following <a href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><strong>this documentation</strong></a></p>
                                         <details>
-                                            <summary>Reveal repair option</summary><br />
-                                            Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)<br><br>
+                                            <summary>Reveal repair option</summary>
+                                            <p>Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)</p>
                                             <form method="POST" action="/api/docker/backup-check-repair" class="xhr">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input class="button" type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/><br/>
-                                            </form><br />
-                                        </details><br />
+                                                <input type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/>
+                                            </form>
+                                        </details>
                                     {% endif %}
                                 {% elseif backup_exit_code == 0 %}
-                                    <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
+                                    <p><span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
                                     {% if borg_backup_mode == 'test' %}
-                                        Feel free to check the integrity of the backup archive below before starting the restore process in order to make ensure that the restore will work. This can take a long time though depending on the size of the backup archive and is thus not required.<br><br>
+                                        <p>Feel free to check the integrity of the backup archive below before starting the restore process in order to make ensure that the restore will work. This can take a long time though depending on the size of the backup archive and is thus not required.</p>
                                         <form method="POST" action="/api/docker/backup-check" class="xhr">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input class="button" type="submit" value="Check backup integrity"/><br/>
+                                            <input type="submit" value="Check backup integrity"/>
                                         </form>
                                     {% endif %}
-                                    Choose the backup that you want to restore and click on the button below to restore the selected backup. This will restore the whole AIO instance. Please note that the current AIO passphrase will be kept and the previous AIO passphrase will not be restored from backup!<br><br>
-                                    <strong>Please note:</strong> If the backup that you want to restore contained any <a href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">community container</a>, but you did not specify the same community containers via environmental variable while creating this new AIO instance, you need to restore the same backup a second time after this attempt so that the community container data is also correctly restored.<br><br>
+                                    <p>Choose the backup that you want to restore and click on the button below to restore the selected backup. This will restore the whole AIO instance. Please note that the current AIO passphrase will be kept and the previous AIO passphrase will not be restored from backup!</p>
+                                    <p><strong>Please note:</strong> If the backup that you want to restore contained any <a href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">community container</a>, but you did not specify the same community containers via environmental variable while creating this new AIO instance, you need to restore the same backup a second time after this attempt so that the community container data is also correctly restored.</p>
                                     <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -167,53 +167,53 @@
                                                 <option value="{{ restore_time }}">{{ restore_time }} UTC</option>
                                             {% endfor %}
                                         </select>
-                                        <input class="button" type="submit" value="Restore selected backup"/>
+                                        <input type="submit" value="Restore selected backup"/>
                                     </form>
                                 {% endif %}
                             {% elseif borg_backup_mode == 'restore' %}
                                 {% if backup_exit_code > 0 %}
-                                    <span class="status error"></span> Last restore failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
-                                    The restore process has unexpectedly failed! Please adjust the path and encryption password, test it and try to restore again!
+                                    <p><span class="status error"></span> Last restore failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
+                                    <p>The restore process has unexpectedly failed! Please adjust the path and encryption password, test it and try to restore again!</p>
                                 {% endif %}
                             {% endif %}
                         {% endif %}
 
                         {% if borg_backup_host_location == '' or borg_restore_password == '' or borg_backup_mode not in ['test', 'check', ''] or backup_exit_code > 0 %}
-                            Please enter the location of the backup archive on your host and the encryption password of the backup archive below:<br><br>
+                            <p>Please enter the location of the backup archive on your host and the encryption password of the backup archive below:</p>
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <input type="text" name="borg_restore_host_location" value="{{borg_backup_host_location}}" placeholder="/mnt/backup"/>
                                 <input type="text" name="borg_restore_password" value="{{borg_restore_password}}" placeholder="encryption password"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit location and encryption password" />
+                                <input type="submit" value="Submit location and encryption password" />
                             </form>
                             {{ include('includes/backup-dirs.twig') }}
-                            ⚠️ Please note that the backup archive must be located in a subfolder of the folder that you enter here and the subfolder which contains the archive must be named 'borg', or the backup container will not be able to find the backup archive!<br><br>
+                            <p>⚠️ Please note that the backup archive must be located in a subfolder of the folder that you enter here and the subfolder which contains the archive must be named 'borg', or the backup container will not be able to find the backup archive!</p>
                         {% endif %}
                     {% else %}
-                        <strong>Everything set!</strong> Click on the button below to test the path and encryption password:<br/><br/>
+                        <p><strong>Everything set!</strong> Click on the button below to test the path and encryption password:</p>
                         <form method="POST" action="/api/docker/backup-test" class="xhr">
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                            <input class="button" type="submit" value="Test path and encryption password"/><br/>
+                            <input type="submit" value="Test path and encryption password"/>
                         </form>
                     {% endif %}
                 {% endif %}
                 <h2>How to reset the AIO instance?</h2>
-                If something should be going wrong, for example during the initial installation, you can reset the instance by following <a href="https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance">this documentation</a>.<br><br>
+                <p>If something should be going wrong, for example during the initial installation, you can reset the instance by following <a href="https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance">this documentation</a>.</p>
             {% endif %}
 
             {% if was_start_button_clicked == true %}
                 {% if current_channel starts with 'latest' or current_channel starts with 'beta' or current_channel starts with 'develop' %}
-                    You are running the <a href="https://github.com/nextcloud/all-in-one#how-to-switch-the-channel"><strong>{{ current_channel }}</strong></a> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank" rel="noopener">Logs</a>)<br><br>
+                    <p>You are running the <a href="https://github.com/nextcloud/all-in-one#how-to-switch-the-channel"><strong>{{ current_channel }}</strong></a> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank" rel="noopener">Logs</a>)</p>
                 {% else %}
-                    No channel was found. This means that AIO is not able to update itself and its component and will also not be able to report about updates. Updates need to be done externally.
+                    <p>No channel was found. This means that AIO is not able to update itself and its component and will also not be able to report about updates. Updates need to be done externally.</p>
                 {% endif %}
             {% endif %}
 
             {% if is_backup_container_running == true %}
-                <span class="status running"></span> Backup container is currently running: {{ borg_backup_mode }} (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
-                <a href="" class="button reload">Reload ↻</a><br/><br>
+                <p><span class="status running"></span> Backup container is currently running: {{ borg_backup_mode }} (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
+                <p><a href="" class="button reload">Reload ↻</a></p>
             {% endif %}
 
             {% if domain != "" %}
@@ -221,31 +221,30 @@
                     {% if isApacheStarting != true %}
                         {% if borg_backup_host_location != '' %}
                             <details>
-                            <summary>Click here to reveal the initial Nextcloud credentials</summary><br />
+                            <summary>Click here to reveal the initial Nextcloud credentials</summary>
                         {% endif %}
-                                Initial Nextcloud username: <strong>admin</strong><br />
-                                Initial Nextcloud password: 
+                                <p>Initial Nextcloud username: <strong>admin</strong></p>
                         {% if borg_backup_host_location != '' %}
                             {# nextcloud_password needs to be duplicated due to a bug in Firefox. See https://github.com/nextcloud/all-in-one/issues/638. #}
-                            <strong>{{ nextcloud_password }}</strong><br /></details><br />
+                            <p>Initial Nextcloud password: <strong>{{ nextcloud_password }}</strong></p></details>
                         {% else %}
-                            <strong>{{ nextcloud_password }}</strong><br><br>
+                            <p>Initial Nextcloud password: <strong>{{ nextcloud_password }}</strong></p>
                         {% endif %}
-                        <a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a><br/><br>
+                        <p><a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a></p>
                         {% if borg_backup_host_location == '' %}
-                            If your Nextcloud does not open when clicking the button above, see <strong><a href="https://github.com/nextcloud/all-in-one/discussions/2105">this documentation</a></strong><br><br>
+                            <p>If your Nextcloud does not open when clicking the button above, see <strong><a href="https://github.com/nextcloud/all-in-one/discussions/2105">this documentation</a></strong></p>
                         {% endif %}
                     {% else %}
                         {% if isAnyRestarting == false %}
-                            <span class="status running"></span> Containers are currently starting. You might inspect the container logs by clicking on <strong>Starting</strong> next to each container for further details.<br /><br />
-                            <a href="" class="button reload">Reload ↻</a><br/><br>
+                            <p><span class="status running"></span> Containers are currently starting. You might inspect the container logs by clicking on <strong>Starting</strong> next to each container for further details.</p>
+                            <p><a href="" class="button reload">Reload ↻</a></p>
                         {% else %}
-                            It seems at least one container was not able to start correctly and is currently restarting.<br><br>
-                            To break this endless loop, you can stop the containers below and investigate the issue in the container logs before starting the containers again.<br><br>
+                            <p>It seems at least one container was not able to start correctly and is currently restarting.</p>
+                            <p>To break this endless loop, you can stop the containers below and investigate the issue in the container logs before starting the containers again.</p>
                             <form method="POST" action="/api/docker/stop" class="xhr">
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Stop containers" />
+                                <input type="submit" value="Stop containers" />
                             </form>
                         {% endif %}
                     {% endif %}
@@ -291,16 +290,16 @@
 
                     {% if has_update_available == true %}
                         {% if is_mastercontainer_update_available == false %}
-                            ⚠️ Container updates are available. Click on <strong>Stop containers</strong> and <strong>Start and update containers</strong> to update them. You should consider creating a backup first.<br><br>
+                            <p>⚠️ Container updates are available. Click on <strong>Stop containers</strong> and <strong>Start and update containers</strong> to update them. You should consider creating a backup first.</p>
                         {% endif %}
                     {% else %}
                         {% if is_mastercontainer_update_available == false %}
-                            Your containers are up-to-date.<br><br>
+                            <p>Your containers are up-to-date.</p>
                             {% if newMajorVersion != '' and isAnyRunning == true and isApacheStarting != true %}
                                 <details>
-                                <summary>Note about <strong>Nextcloud {{ newMajorVersion }}</strong></summary><br>
-                                    If you haven't upgraded to Nextcloud {{ newMajorVersion }} yet and want to do that now, feel free to follow <strong><a href="https://github.com/nextcloud/all-in-one/discussions/4542">this documentation</a></strong><br/>
-                                </details><br>
+                                <summary>Note about <strong>Nextcloud {{ newMajorVersion }}</strong></summary>
+                                    <p>If you haven't upgraded to Nextcloud {{ newMajorVersion }} yet and want to do that now, feel free to follow <strong><a href="https://github.com/nextcloud/all-in-one/discussions/4542">this documentation</a></strong></p>
+                                </details>
                             {% endif %}
                         {% endif %}
                     {% endif %}
@@ -309,34 +308,34 @@
                 {% if isAnyRunning == true %}
                     {% if isApacheStarting != true %}
                         {% if is_mastercontainer_update_available == true %}
-                            ⚠️ A mastercontainer update is available. Please click on the button below to stop your containers in order to update the mastercontainer.<br /><br />
+                            <p>⚠️ A mastercontainer update is available. Please click on the button below to stop your containers in order to update the mastercontainer.</p>
                             {% if current_channel starts with 'latest' %}
-                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest"><strong>here</strong></a><br><br>
+                                <p>You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases/latest"><strong>here</strong></a></p>
                             {% elseif current_channel starts with 'beta' %}
-                                You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases"><strong>here</strong></a><br><br>
+                                <p>You can find the changelog <a href="https://github.com/nextcloud/all-in-one/releases"><strong>here</strong></a></p>
                             {% elseif current_channel starts with 'develop' %}
-                                You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main"><strong>here</strong></a><br><br>
+                                <p>You can find all changes <a href="https://github.com/nextcloud-releases/all-in-one/commits/main"><strong>here</strong></a></p>
                             {% endif %}
                         {% endif %}
                         <form method="POST" action="/api/docker/stop" class="xhr">
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                            <input class="button" type="submit" value="Stop containers" />
+                            <input type="submit" value="Stop containers" />
                         </form>
                     {% endif %}
                 {% else %}
                     {% if isBackupOrRestoreRunning == true %}
-                        Restore or Backup currently running. Cannot start the containers until Restore or Backup is complete.<br /><br />
+                        <p>Restore or Backup currently running. Cannot start the containers until Restore or Backup is complete.</p>
                     {% else %}
                         {% if was_start_button_clicked == false %}
-                            <br>Clicking on the button below will download all docker containers and start them. This can take a long time depending on your internet connection. Since the overall size is a few GB, this can take around 5-10 min or more. Please be patient!<br><br>
+                            <p>Clicking on the button below will download all docker containers and start them. This can take a long time depending on your internet connection. Since the overall size is a few GB, this can take around 5-10 min or more. Please be patient!</p>
                         {% endif %}
                         {% if is_mastercontainer_update_available == true %}
-                            ⚠️ A mastercontainer update is available. Please click on the button below to update it.<br><br>
+                            <p>⚠️ A mastercontainer update is available. Please click on the button below to update it.</p>
                             <form method="POST" action="/api/docker/watchtower" class="xhr">
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Update mastercontainer" />
+                                <input type="submit" value="Update mastercontainer" />
                             </form>
                         {% else %}
                             {% if was_start_button_clicked == false %}
@@ -346,13 +345,13 @@
                                     {% if newMajorVersion != '' %}
                                         <input type="checkbox" id="install_latest_major" name="install_latest_major"><label for="install_latest_major">Install Nextcloud {{ newMajorVersion }} (if unchecked, Nextcloud {{ newMajorVersion - 1 }} will get installed)</label><br>
                                     {% endif %}
-                                    <input class="button" type="submit" value="Download and start containers" />
+                                    <input type="submit" value="Download and start containers" />
                                 </form>
                             {% elseif has_update_available == false %}
                                 <form method="POST" action="/api/docker/start" class="xhr">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                    <input class="button" type="submit" value="Start containers" />
+                                    <input type="submit" value="Start containers" />
                                 </form>
                             {% else %}
                                 <form method="POST" action="/api/docker/start" class="xhr">
@@ -369,16 +368,16 @@
 
                     {% if is_backup_section_enabled == false %}
                         <h2>Backup and restore</h2>
-                        The backup section is disabled via environmental variable.<br><br>
+                        <p>The backup section is disabled via environmental variable.</p>
                     {% else %}
                         {% if is_backup_container_running == false and borg_backup_host_location == "" and isApacheStarting != true %}
                             <h2>Backup and restore</h2>
-                            Please enter the directory path below where backups will be created on the host system. It's best to choose a location on a separate drive and not on your root drive.<br><br>
+                            <p>Please enter the directory path below where backups will be created on the host system. It's best to choose a location on a separate drive and not on your root drive.</p>
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit backup location" />
+                                <input type="submit" value="Submit backup location" />
                             </form>
                             {{ include('includes/backup-dirs.twig') }}
                         {% endif %}
@@ -390,33 +389,33 @@
                             {% if is_backup_container_running == false %}
                                 <h2>Backup and restore</h2>
                                 {% if backup_exit_code > 0 %}
-                                    <span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
+                                    <p><span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
                                     {% if borg_backup_mode == "check" %}
-                                        The backup check was not successful. This might indicate a corrupt archive (look at the logs). If that should be the case, you can try to fix it by following <a href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><strong>this documentation</strong></a><br /><br />
+                                        <p>The backup check was not successful. This might indicate a corrupt archive (look at the logs). If that should be the case, you can try to fix it by following <a href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><strong>this documentation</strong></a></p>
                                         <details>
-                                            <summary>Reveal repair option</summary><br />
-                                            Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)<br><br>
+                                            <summary>Reveal repair option</summary>
+                                            <p>Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)</p>
                                             <form method="POST" action="/api/docker/backup-check-repair" class="xhr">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input class="button" type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/><br/>
-                                            </form><br />
-                                        </details><br />
+                                                <input type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/>
+                                            </form>
+                                        </details>
                                     {% endif %}
                                     {% if has_backup_run_once == false %}
-                                        You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on <strong>Create Backup</strong> to test the new value.<br /><br />
+                                        <p>You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on <strong>Create Backup</strong> to test the new value.</p>
                                         <form method="POST" action="/api/configuration" class="xhr">
                                             <input type="text" value="{{borg_backup_host_location}}" name="borg_backup_host_location" placeholder="/mnt/backup" />
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input class="button" type="submit" value="Set backup location again" />
+                                            <input type="submit" value="Set backup location again" />
                                         </form>
                                     {% endif %}
                                 {% elseif backup_exit_code == 0 %}
                                     {% if borg_backup_mode == "backup" %}
-                                        <span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }} UTC! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
+                                        <p><span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }} UTC! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
                                     {% else %}
-                                        <span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)<br /><br />
+                                        <p><span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -424,51 +423,51 @@
                             {% if is_backup_container_running == false and isApacheStarting == false %}
                                 {% if has_backup_run_once == true %}
                                     <details>
-                                    <summary>Click here to reveal all backup options (including an option for automatic updates)</summary><br />
+                                    <summary>Click here to reveal all backup options (including an option for automatic updates)</summary>
                                 {% endif %}
                                 <h3>Backup information</h3>
-                                This is your encryption password for backups: <strong>{{ borgbackup_password }}</strong><br /><br/>
-                                Please save this password in a safe place. You won't be able to restore from backup if you lose this password! <br /><br/>
-                                All important data from your Nextcloud AIO instance such as the database, your files and the mastercontainer's configuration files, will be backed up.<br /><br/>
-                                The backup uses a tool called <a href="https://github.com/borgbackup/borg#what-is-borgbackup"><strong>BorgBackup</strong></a>, a well-known server backup tool that efficiently backs up your files and encrypts them on the fly. <br /><br/>
-                                By using this tool, backups are incremental, differential, compressed and encrypted – so only the first backup will take a while. Further backups should be fast as only changes are taken into account.<br /><br/>
-                                Backups will be created in the following directory on the host: <strong>{{ borg_backup_host_location }}/borg</strong> <br /><br/>
-                                Be aware that this solution does not backup files and folders that are mounted into Nextcloud using the external storage app, but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.<br><br>
-                                For information about backup retention, see <strong><a href="https://github.com/nextcloud/all-in-one#how-to-adjust-borgs-retention-policy">this</a></strong>.<br><br>
-                                Daily backups can be enabled after the initial backup is done. Enabling this also allows you to enable an option to update all containers, Nextcloud, and its apps automatically.<br><br>
-                                For further documentation and options on this backup solution refer to <strong><a href="https://github.com/nextcloud/all-in-one#backup-solution">this section</a></strong> and below.<br>
+                                <p>This is your encryption password for backups: <strong>{{ borgbackup_password }}</strong></p>
+                                <p>Please save this password in a safe place. You won't be able to restore from backup if you lose this password!</p>
+                                <p>All important data from your Nextcloud AIO instance such as the database, your files and the mastercontainer's configuration files, will be backed up.</p>
+                                <p>The backup uses a tool called <a href="https://github.com/borgbackup/borg#what-is-borgbackup"><strong>BorgBackup</strong></a>, a well-known server backup tool that efficiently backs up your files and encrypts them on the fly.</p>
+                                <p>By using this tool, backups are incremental, differential, compressed and encrypted – so only the first backup will take a while. Further backups should be fast as only changes are taken into account.</p>
+                                <p>Backups will be created in the following directory on the host: <strong>{{ borg_backup_host_location }}/borg</strong></p>
+                                <p>Be aware that this solution does not backup files and folders that are mounted into Nextcloud using the external storage app, but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.</p>
+                                <p>For information about backup retention, see <strong><a href="https://github.com/nextcloud/all-in-one#how-to-adjust-borgs-retention-policy">this</a></strong>.</p>
+                                <p>Daily backups can be enabled after the initial backup is done. Enabling this also allows you to enable an option to update all containers, Nextcloud, and its apps automatically.</p>
+                                <p>For further documentation and options on this backup solution refer to <strong><a href="https://github.com/nextcloud/all-in-one#backup-solution">this section</a></strong> and below.</p>
 
                                 {% if isApacheStarting != true %}
                                     <h3>Backup creation</h3>
-                                    Clicking on the button below will create a backup.<br><br/>
+                                    <p>Clicking on the button below will create a backup.</p>
                                     <form method="POST" action="/api/docker/backup" class="xhr">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                        <input class="button" type="submit" value="Create backup" onclick="return confirm('Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.')" />
+                                        <input type="submit" value="Create backup" onclick="return confirm('Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.')" />
                                     </form>
 
                                     {% if has_backup_run_once == false %}
                                         <h3>Reset backup host location</h3>
-                                        If the configured backup host location <strong>{{ borg_backup_host_location }}</strong> is wrong, you can reset it by clicking on the button below.<br><br/>
+                                        <p>If the configured backup host location <strong>{{ borg_backup_host_location }}</strong> is wrong, you can reset it by clicking on the button below.</p>
                                         <form method="POST" action="/api/configuration" class="xhr">
                                             <input type="hidden" name="delete_borg_backup_host_location" value="yes"/>
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input class="button" type="submit" value="Reset backup location" />
+                                            <input type="submit" value="Reset backup location" />
                                         </form>
                                     {% endif %}
 
                                     {% if has_backup_run_once == true %}
                                         <h3>Backup check</h3>
-                                        Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact. It shouldn't be needed in most situations.<br><br/>
+                                        <p>Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact. It shouldn't be needed in most situations.</p>
                                         <form method="POST" action="/api/docker/backup-check" class="xhr">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input class="button" type="submit" value="Check backup integrity" onclick="return confirm('Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.')" /><br/>
+                                            <input type="submit" value="Check backup integrity" onclick="return confirm('Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.')" />
                                         </form>
 
                                         <h3>Backup restore</h3>
-                                        Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the chosen backup so you should consider creating a backup first. You can run an integrity check before restoring your files but this shouldn't be needed in most situations. Please note that this will not restore additionally chosen backup directories! The restore process should be pretty fast as rsync, which only transfers changed files, is used to restore the chosen backup.<br><br>
+                                        <p>Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the chosen backup so you should consider creating a backup first. You can run an integrity check before restoring your files but this shouldn't be needed in most situations. Please note that this will not restore additionally chosen backup directories! The restore process should be pretty fast as rsync, which only transfers changed files, is used to restore the chosen backup.</p>
                                         <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -477,53 +476,51 @@
                                                     <option value="{{ restore_time }}">{{ restore_time }} UTC</option>
                                                 {% endfor %}
                                             </select>
-                                            <input class="button" type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
+                                            <input type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
                                         </form>
 
                                         <h3>Daily backup and automatic updates</h3>
                                         {% if daily_backup_time == "" %}
-                                            By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <strong>04:00</strong> will create backups at 4 am UTC and <strong>16:00</strong> at 4 pm UTC. When creating the backup, containers will be stopped and restarted after the backup is complete.<br><br/>
+                                            <p>By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <strong>04:00</strong> will create backups at 4 am UTC and <strong>16:00</strong> at 4 pm UTC. When creating the backup, containers will be stopped and restarted after the backup is complete.</p>
                                             <form method="POST" action="/api/configuration" class="xhr">
                                                 <input type="text" name="daily_backup_time" value="04:00" placeholder="04:00"/>
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input class="button" type="submit" value="Submit backup time" /><br>
+                                                <input type="submit" value="Submit backup time" /><br>
                                                 <input type="checkbox" id="automatic_updates" name="automatic_updates" checked="checked"><label for="automatic_updates">Automatically update all containers, the mastercontainer and on saturdays your Nextcloud apps</label><br>
-                                                <input type="checkbox" id="success_notification" name="success_notification" checked="checked"><label for="success_notification">Send notifications about successful backups (notifications about unsuccessful backups will always be sent)</label><br>
+                                                <input type="checkbox" id="success_notification" name="success_notification" checked="checked"><label for="success_notification">Send notifications about successful backups (notifications about unsuccessful backups will always be sent)</label>
                                             </form>
                                         {% else %}
-                                            Daily backups will be created at <strong>{{ daily_backup_time }} UTC</strong>. A notification about the result of the backup will be sent.
+                                            <p>Daily backups will be created at <strong>{{ daily_backup_time }} UTC</strong>. A notification about the result of the backup will be sent.</p>
                                             {% if automatic_updates == true %}
-                                                Also your containers, the mastercontainer and, on Saturdays, your Nextcloud apps will be automatically updated. 
+                                                Also your containers, the mastercontainer and, on Saturdays, your Nextcloud apps will be automatically updated.
                                             {% endif %}
-                                            To change your backup time first disable Daily Backups, then enter your new backup time, and then re-enable them.<br><br/>
+                                            <p>To change your backup time first disable Daily Backups, then enter your new backup time, and then re-enable them.</p>
                                             <form method="POST" action="/api/configuration" class="xhr">
                                                 <input type="hidden" name="delete_daily_backup_time" value="yes"/>
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input class="button" type="submit" value="Disable or change daily backups" />
+                                                <input type="submit" value="Disable or change daily backups" />
                                             </form>
                                         {% endif %}
 
                                         <h3>Back up additional directories and docker volumes of your host</h3>
-                                        Below you can enter directories and docker volumes of your host that will be backed up into the same borg backup archive.<br><br>
+                                        <p>Below you can enter directories and docker volumes of your host that will be backed up into the same borg backup archive.</p>
                                         <form method="POST" action="/api/configuration" class="xhr">
                                             <textarea id="additional_backup_directories" name="additional_backup_directories" rows="4" cols="50" placeholder="/directory/on/the/host&#10;my_custom_docker_volume">{{ additional_backup_directories }}</textarea>
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input class="button" type="submit" value="Submit additional backup locations" /><br>
+                                            <input type="submit" value="Submit additional backup locations" />
                                         </form>
-                                        Each line and entry needs to start with a slash or letter/digit. Only <strong>a-z</strong>, <strong>A-Z</strong>, <strong>.</strong>, <strong>0-9</strong>, <strong>_</strong>, <strong>-</strong>, and <strong>/</strong> are allowed. If the entry begins with a letter/digit slashes are not supported. Two valid entries are <strong>/directory/on/the/host</strong> and <strong>my_custom_docker_volume</strong>. You need to make sure that all given directories exist or the backup container will fail to start!<br><br/>
-                                        Be sure to individually specify all storage that you want to back up as storage will not be mounted recursively. E.g. providing <strong>/</strong> as additional backup directory will only back up files and folders that are stored on the root partition and not on the EFI partition or any other. Excluded by the backup will be caches and a few other directories. If you want to back up the root partition you should make sure to stop all services before the backup so it can run correctly. For automating this see <a href="https://github.com/nextcloud/all-in-one#how-to-stopstartupdate-containers-or-trigger-the-daily-backup-from-a-script-externally">this documentation</a><br><br/>
-                                        Please note that the chosen directories/volumes will not be restored when you restore your instance, so this would need to be done manually. <br><br>
+                                        <p>Each line and entry needs to start with a slash or letter/digit. Only <strong>a-z</strong>, <strong>A-Z</strong>, <strong>.</strong>, <strong>0-9</strong>, <strong>_</strong>, <strong>-</strong>, and <strong>/</strong> are allowed. If the entry begins with a letter/digit slashes are not supported. Two valid entries are <strong>/directory/on/the/host</strong> and <strong>my_custom_docker_volume</strong>. You need to make sure that all given directories exist or the backup container will fail to start!</p>
+                                        <p>Be sure to individually specify all storage that you want to back up as storage will not be mounted recursively. E.g. providing <strong>/</strong> as additional backup directory will only back up files and folders that are stored on the root partition and not on the EFI partition or any other. Excluded by the backup will be caches and a few other directories. If you want to back up the root partition you should make sure to stop all services before the backup so it can run correctly. For automating this see <a href="https://github.com/nextcloud/all-in-one#how-to-stopstartupdate-containers-or-trigger-the-daily-backup-from-a-script-externally">this documentation</a></p>
+                                        <p>Please note that the chosen directories/volumes will not be restored when you restore your instance, so this would need to be done manually.</p>
                                         {% if additional_backup_directories != "" %}
-                                            This option is currently set. You can disable it again by clearing the field and submitting your changes.<br><br>
+                                            <p>This option is currently set. You can disable it again by clearing the field and submitting your changes.</p>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
-                                {% if has_backup_run_once == false %}
-                                    <br />
-                                {% else %}
+                                {% if has_backup_run_once == true %}
                                     </details>
                                 {% endif %}
                             {% endif %}
@@ -531,79 +528,79 @@
                     {% endif %}
 
                     {% if is_backup_container_running == false %}
-                        {% if isApacheStarting == false %} 
+                        {% if isApacheStarting == false %}
                             <h2>AIO passphrase change</h2>
                             <details>
-                                <summary>Click here to change your AIO passphrase</summary><br />
-                                You can change your AIO passphrase below:<br><br />
+                                <summary>Click here to change your AIO passphrase</summary>
+                                <p>You can change your AIO passphrase below:</p>
                                 <form method="POST" action="/api/configuration" class="xhr">
                                     <input type="password" autocomplete="current-password" name="current-master-password" placeholder="Your current AIO passphrase" id="current-master-password" oninput="showPassword('current-master-password')">
                                     <input type="password" autocomplete="new-password" name="new-master-password" placeholder="Your new AIO passphrase" id="new-master-password" oninput="showPassword('new-master-password')">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                    <input class="button" type="submit" value="Submit passphrase change" />
+                                    <input type="submit" value="Submit passphrase change" />
                                 </form>
-                                The new passphrase needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><strong>latin characters</strong></a> <strong>a-z</strong>, <strong>A-Z</strong>, <strong>0-9</strong> and <strong>spaces</strong>.<br>
+                                <p>The new passphrase needs to be at least 24 characters long. Allowed characters are the <a href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><strong>latin characters</strong></a> <strong>a-z</strong>, <strong>A-Z</strong>, <strong>0-9</strong> and <strong>spaces</strong>.</p>
                             </details>
                         {% endif %}
                     {% endif %}
                 {% endif %}
                 {% if is_backup_container_running == false %}
                     <h2>Optional containers</h2>
-                    In this section you can enable or disable optional containers. There are further community containers available that are not listed below. See <strong><a href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">this documentation</a></strong> how to add them.<br><br>
+                    <p>In this section you can enable or disable optional containers. There are further community containers available that are not listed below. See <strong><a href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">this documentation</a></strong> how to add them.</p>
                     {% if isAnyRunning == true %}
-                        <strong>Please note:</strong> You can enable or disable the options below only when your containers are stopped.<br><br>
+                        <p><strong>Please note:</strong> You can enable or disable the options below only when your containers are stopped.</p>
                     {% else %}
-                        <strong>Please note:</strong> Make sure to save your changes by clicking <strong>Save changes</strong> below the list of optional containers. The changes will not be auto-saved.<br><br>
+                        <p><strong>Please note:</strong> Make sure to save your changes by clicking <strong>Save changes</strong> below the list of optional containers. The changes will not be auto-saved.</p>
                     {% endif %}
                     <form id="options-form" method="POST" action="/api/configuration" class="xhr">
                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                         <input type="hidden" name="options-form" value="options-form">
                         {% if is_clamav_enabled == true %}
-                            <input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label><br><br>
+                            <p><input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label></p>
                         {% else %}
-                            <input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label><br><br>
+                            <p><input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label></p>
                         {% endif %}
                         {% if is_collabora_enabled == true %}
-                            <input type="checkbox" id="collabora" name="collabora" checked="checked"><label for="collabora">Collabora (Nextcloud Office)</label><br>
+                            <p><input type="checkbox" id="collabora" name="collabora" checked="checked"><label for="collabora">Collabora (Nextcloud Office)</label></p>
                         {% else %}
-                            <input type="checkbox" id="collabora" name="collabora"><label for="collabora">Collabora (Nextcloud Office)</label><br>
+                            <p><input type="checkbox" id="collabora" name="collabora"><label for="collabora">Collabora (Nextcloud Office)</label></p>
                         {% endif %}
                         {% if is_fulltextsearch_enabled == true %}
-                            <input type="checkbox" id="fulltextsearch" name="fulltextsearch" checked="checked"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM)</label><br>
+                            <p><input type="checkbox" id="fulltextsearch" name="fulltextsearch" checked="checked"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM)</label></p>
                         {% else %}
-                            <input type="checkbox" id="fulltextsearch" name="fulltextsearch"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM. <strong>Please note:</strong> the initial indexing can take a long time during which Nextcloud will be unavailable)</label><br><br>
+                            <p><input type="checkbox" id="fulltextsearch" name="fulltextsearch"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM. <strong>Please note:</strong> the initial indexing can take a long time during which Nextcloud will be unavailable)</label></p>
                         {% endif %}
                         {% if is_imaginary_enabled == true %}
-                            <input type="checkbox" id="imaginary" name="imaginary" checked="checked"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label><br><br>
+                            <p><input type="checkbox" id="imaginary" name="imaginary" checked="checked"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label></p>
                         {% else %}
-                            <input type="checkbox" id="imaginary" name="imaginary"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label><br><br>
+                            <p><input type="checkbox" id="imaginary" name="imaginary"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label></p>
                         {% endif %}
                         {% if is_talk_enabled == true %}
-                            <input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label><br><br>
+                            <p><input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label></p>
                         {% else %}
-                            <input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label><br><br>
+                            <p><input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label></p>
                         {% endif %}
                         {% if is_talk_recording_enabled == true %}
-                            <input type="checkbox" id="talk-recording" name="talk-recording" checked="checked"><label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM and ~2 additional vCPUs)</label><br><br>
+                            <p><input type="checkbox" id="talk-recording" name="talk-recording" checked="checked"><label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM and ~2 additional vCPUs)</label></p>
                         {% else %}
-                            <input type="checkbox" id="talk-recording" name="talk-recording"><label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM ~2 additional vCPUs)</label><br><br>
+                            <p><input type="checkbox" id="talk-recording" name="talk-recording"><label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM ~2 additional vCPUs)</label></p>
                         {% endif %}
                         {% if is_onlyoffice_enabled == true %}
-                            <input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice</label><br>
+                            <p><input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice</label></p>
                         {% else %}
-                            {#<input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice</label><br>#}
+                            {#<p><input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice</label></p>#}
                         {% endif %}
                         {% if is_docker_socket_proxy_enabled == true %}
-                            <input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy" checked="checked"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label><br><br>
+                            <p><input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy" checked="checked"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label></p>
                         {% else %}
-                            <input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label><br><br>
+                            <p><input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label></p>
                         {% endif %}
-                        <input id="options-form-submit" class="button" type="submit" value="Save changes" />
+                        <input id="options-form-submit" type="submit" value="Save changes" />
                         <script type="text/javascript" src="options-form-submit.js"></script>
                     </form>
-                    <strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advices and recommendations see <strong><a href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong><br>
+                    <p><strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advices and recommendations see <strong><a href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong></p>
                     {% if isAnyRunning == true or is_x64_platform == false %}
                         <script type="text/javascript" src="disable-clamav.js"></script>
                     {% endif %}
@@ -621,21 +618,21 @@
                         <h3>Collabora dictionaries</h3>
 
                         {% if collabora_dictionaries == "" %}
-                            In order to get the correct dictionaries in Collabora, you may configure the dictionaries below:<br><br>
+                            <p>In order to get the correct dictionaries in Collabora, you may configure the dictionaries below:</p>
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <input type="text" name="collabora_dictionaries" placeholder="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru" />
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit collabora dictionaries" />
+                                <input type="submit" value="Submit collabora dictionaries" />
                             </form>
-                            You need to make sure that the dictionaries that you enter are valid. An example is <strong>de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru</strong>.<br><br>
+                            <p>You need to make sure that the dictionaries that you enter are valid. An example is <strong>de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru</strong>.</p>
                         {% else %}
-                            The dictionaries for Collabora are currently set to <strong>{{ collabora_dictionaries }}</strong>. You can reset them again by clicking on the button below.<br><br/>
+                            <p>The dictionaries for Collabora are currently set to <strong>{{ collabora_dictionaries }}</strong>. You can reset them again by clicking on the button below.</p>
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <input type="hidden" name="delete_collabora_dictionaries" value="yes"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Reset collabora dictionaries" />
+                                <input type="submit" value="Reset collabora dictionaries" />
                             </form>
                         {% endif %}
                     {% endif %}
@@ -643,27 +640,27 @@
                     <h2>Timezone change</h2>
                     {% if isAnyRunning == true %}
                         {% if timezone != "" %}
-                            The timezone for Nextcloud is currently set to <strong>{{ timezone }}</strong>.<br><br>
+                            <p>The timezone for Nextcloud is currently set to <strong>{{ timezone }}</strong>.</p>
                         {% endif %}
-                        <strong>Please note:</strong> You can change the timezone when your containers are stopped.<br><br>
+                        <p><strong>Please note:</strong> You can change the timezone when your containers are stopped.</p>
                     {% else %}
                         {% if timezone == "" %}
-                            To get the correct time values for certain Nextcloud features, set the timezone for Nextcloud to the one that your users mainly use. Please note that this setting does not apply to the mastercontainer and any backup option.<br><br>
-                            You can configure the timezone for Nextcloud below:<br><br>
+                            <p>To get the correct time values for certain Nextcloud features, set the timezone for Nextcloud to the one that your users mainly use. Please note that this setting does not apply to the mastercontainer and any backup option.</p>
+                            <p>You can configure the timezone for Nextcloud below:</p>
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <input type="text" id="timezone" name="timezone" placeholder="Europe/Berlin" />
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Submit timezone" onclick="return confirm('Are you sure that this is a valid timezone? Please double check by following the wikipedia article and checking the correct column. If the timezone is not valid, it will break the startup since the database will not be correctly initialized and you will end up in a startup loop.')" />
+                                <input type="submit" value="Submit timezone" onclick="return confirm('Are you sure that this is a valid timezone? Please double check by following the wikipedia article and checking the correct column. If the timezone is not valid, it will break the startup since the database will not be correctly initialized and you will end up in a startup loop.')" />
                             </form>
-                            You need to make sure that the timezone that you enter is valid. An example is <strong>Europe/Berlin</strong>. You can get valid values by looking at the 'TZ identifier' column of this list: <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"><strong>click here</strong></a>. The default is <strong>Etc/UTC</strong> if nothing is entered.<br><br>
+                            <p>You need to make sure that the timezone that you enter is valid. An example is <strong>Europe/Berlin</strong>. You can get valid values by looking at the 'TZ identifier' column of this list: <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"><strong>click here</strong></a>. The default is <strong>Etc/UTC</strong> if nothing is entered.</p>
                         {% else %}
-                            The timezone for Nextcloud is currently set to <strong>{{ timezone }}</strong>. You can change the timezone by clicking on the button below.<br><br/>
+                            <p>The timezone for Nextcloud is currently set to <strong>{{ timezone }}</strong>. You can change the timezone by clicking on the button below.</p>
                             <form method="POST" action="/api/configuration" class="xhr">
                                 <input type="hidden" name="delete_timezone" value="yes"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input class="button" type="submit" value="Reset the timezone" />
+                                <input type="submit" value="Reset the timezone" />
                             </form>
                         {% endif %}
                     {% endif %}
@@ -677,7 +674,7 @@
         <script type="text/javascript" src="before-unload.js"></script>
     {% endif %}
 
-    </div>
+    </main>
     <div id="overlay">
         <div class="loader"></div>
     </div>
