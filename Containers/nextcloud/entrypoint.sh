@@ -101,6 +101,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             exec > >(tee -i "/var/www/html/data/update.log")
             exec 2>&1
             # Run built-in upgrader if version is below 28.0.2 to upgrade to 28.0.x first
+            touch "$NEXTCLOUD_DATA_DIR/update.failed"
             if ! version_greater "$installed_version" "28.0.1.20"; then
                 php /var/www/html/updater/updater.phar --no-interaction --no-backup
                 if ! php /var/www/html/occ upgrade || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
@@ -108,6 +109,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                     bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup!"
                     exit 1
                 fi
+                rm "$NEXTCLOUD_DATA_DIR/update.failed"
                 # shellcheck disable=SC2016
                 installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
                 INSTALLED_MAJOR="${installed_version%%.*}"
