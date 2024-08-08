@@ -85,6 +85,8 @@ spec:
               value: "{{ .Values.SERVERINFO_TOKEN }}"
             - name: NEXTCLOUD_DEFAULT_QUOTA
               value: "{{ .Values.NEXTCLOUD_DEFAULT_QUOTA }}"
+            - name: NEXTCLOUD_MAINTENANCE_WINDOW
+              value: "{{ .Values.NEXTCLOUD_MAINTENANCE_WINDOW }}"
             - name: ADDITIONAL_APKS
               value: "{{ .Values.NEXTCLOUD_ADDITIONAL_APKS }}"
             - name: ADDITIONAL_PHP_EXTENSIONS
@@ -175,7 +177,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240725_074330"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240808_083748"
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
