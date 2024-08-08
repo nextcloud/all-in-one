@@ -6,10 +6,10 @@ FROM httpd:2.4.62-alpine3.20
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
-COPY --chown=33:33 Caddyfile /Caddyfile
 COPY --chmod=664 nextcloud.conf /usr/local/apache2/conf/nextcloud.conf
 COPY --chmod=664 supervisord.conf /supervisord.conf
 COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 caddyfile.sh /caddyfile.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 VOLUME /mnt/data
