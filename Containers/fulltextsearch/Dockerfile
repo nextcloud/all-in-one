@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Probably from here https://github.com/elastic/elasticsearch/blob/main/distribution/docker/src/docker/Dockerfile
-FROM elasticsearch:8.14.3
+FROM elasticsearch:8.15.0
 
 USER root
 
