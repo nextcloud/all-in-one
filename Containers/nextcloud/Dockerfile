@@ -77,7 +77,7 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install igbinary-3.2.15; \ 
+    pecl install igbinary-3.2.16; \ 
     pecl install APCu-5.1.23; \
     pecl install memcached-3.2.0 \
         --configureoptions 'enable-memcached-igbinary="yes"'; \
