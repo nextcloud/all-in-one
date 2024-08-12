@@ -13,6 +13,6 @@ $CONFIG = array (
       ),
   ),
 );
-if (getenv('APPS_ALLOWLIST') !== false) {
+if (getenv('APPS_ALLOWLIST')) {
     $CONFIG['appsallowlist'] = explode(" ", getenv('APPS_ALLOWLIST'));
 }
