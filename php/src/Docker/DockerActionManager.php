@@ -491,6 +491,18 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Devices'] = $devices;
         }
 
+        if ($this->configurationManager->isNvidiaRuntimeEnabled()) {
+            $requestBody['HostConfig']['Runtime'] = 'nvidia';
+        } elseif ($this->configurationManager->isNvidiaDeployEnabled()) {
+            $requestBody['HostConfig']['DeviceRequests'] = [
+                [
+                    "Driver" => "nvidia",
+                    "Count" => 1,
+                    "Capabilities" => [["gpu"]],
+                ]
+            ];
+        }
+
         $shmSize = $container->GetShmSize();
         if ($shmSize > 0) {
             $requestBody['HostConfig']['ShmSize'] = $shmSize;
