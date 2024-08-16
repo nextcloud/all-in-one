@@ -60,7 +60,7 @@ cat << EOL > /tmp/initcontainers
       initContainers:
         - name: init-volumes
           {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
           {{- else }}
           image: alpine
           {{- end }}
@@ -73,7 +73,7 @@ cat << EOL > /tmp/initcontainers.database
       initContainers:
         - name: init-subpath
           {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
           {{- else }}
           image: alpine
           {{- end }}
@@ -84,7 +84,7 @@ cat << EOL > /tmp/initcontainers.database
           volumeMountsInitContainer:
         - name: init-volumes
           {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
           {{- else }}
           image: alpine
           {{- end }}
@@ -98,7 +98,7 @@ cat << EOL > /tmp/initcontainers.clamav
       initContainers:
         - name: init-subpath
           {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
           {{- else }}
           image: alpine
           {{- end }}
@@ -109,7 +109,7 @@ cat << EOL > /tmp/initcontainers.clamav
           volumeMountsInitContainer:
         - name: init-volumes
           {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
           {{- else }}
           image: alpine
           {{- end }}
@@ -123,7 +123,7 @@ cat << EOL > /tmp/initcontainers.nextcloud
       initContainers:
         - name: "delete-lost-found"
           {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
           {{- else }}
           image: alpine
           {{- end }}
@@ -134,7 +134,7 @@ cat << EOL > /tmp/initcontainers.nextcloud
           volumeMountsInitRmLostFound:
         - name: init-volumes
           {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
           {{- else }}
           image: alpine
           {{- end }}
@@ -401,7 +401,7 @@ TALK_MAX_SCREEN_BITRATE: "2097152"         # This allows to adjust the max strea
 
 IMAGE_MIRROR_PREFIX:          # Setting this allows you to pull Nextcloud images through a mirror registry. It needs a trailing slash!
 NEXTCLOUD_IMAGE_ORG: nextcloud          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
-ALPINE_IMAGE_ORG:          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons.
+ALPINE_IMAGE_ORG:          # Setting this allows you to change the image's org name in case a different image needs to be used e.g. for compliance reasons. It needs a trailing slash!
 ADDITIONAL_CONFIG
 
 mv /tmp/sample.conf ../helm-chart/values.yaml
