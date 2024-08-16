@@ -59,11 +59,7 @@ find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio
 cat << EOL > /tmp/initcontainers
       initContainers:
         - name: init-volumes
-          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
           image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
-          {{- else }}
-          image: alpine
-          {{- end }}
           command:
             - chmod
             - "777"
@@ -72,22 +68,14 @@ EOL
 cat << EOL > /tmp/initcontainers.database
       initContainers:
         - name: init-subpath
-          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
           image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
-          {{- else }}
-          image: alpine
-          {{- end }}
           command:
             - mkdir
             - "-p"
             - /nextcloud-aio-database/data
           volumeMountsInitContainer:
         - name: init-volumes
-          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
           image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
-          {{- else }}
-          image: alpine
-          {{- end }}
           command:
             - chown
             - 999:999
@@ -97,22 +85,14 @@ EOL
 cat << EOL > /tmp/initcontainers.clamav
       initContainers:
         - name: init-subpath
-          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
           image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
-          {{- else }}
-          image: alpine
-          {{- end }}
           command:
             - mkdir
             - "-p"
             - /nextcloud-aio-clamav/data
           volumeMountsInitContainer:
         - name: init-volumes
-          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
           image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
-          {{- else }}
-          image: alpine
-          {{- end }}
           command:
             - chown
             - 100:100
@@ -122,10 +102,7 @@ EOL
 cat << EOL > /tmp/initcontainers.nextcloud
       initContainers:
         - name: "delete-lost-found"
-          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
           image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
-          {{- else }}
-          image: alpine
           {{- end }}
           command:
             - rm
@@ -133,11 +110,7 @@ cat << EOL > /tmp/initcontainers.nextcloud
             - "/nextcloud-aio-nextcloud/lost+found"
           volumeMountsInitRmLostFound:
         - name: init-volumes
-          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
           image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
-          {{- else }}
-          image: alpine
-          {{- end }}
           command:
             - chmod
             - "777"
