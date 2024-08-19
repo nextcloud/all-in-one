@@ -27,4 +27,6 @@ labels: bug, 0. Needs triage
 
 #### Current channel <!--- (see the channel name in the AIO interface) -->
 
+#### Docker run command or docker-compose file that you used
+
 #### Other valuable info <!--- (like logs, screenshots & Co.) -->
