@@ -9,28 +9,25 @@ a {
     color: #0082c9;
 }
 
-.button {
-    padding: 6px 16px;
+a.button,
+input[type="submit"] {
+    padding: 8px 16px;
     width: auto;
-    min-height: 34px;
+    height: 34px;
     cursor: pointer;
-    background-color:#0082c9;
+    background-color: #0082c9;
     font-weight: bold;
-    border-radius: 100px;
+    border-radius: 8px;
     margin: 3px 3px 3px 0;
-    font-size: 13px;
+    font-size: 14px;
     color: white;
-    border: 1px solid black;
+    border: .5px solid black;
     outline: none;
 }
 
-.button:focus {
-    color:black;
-    border: 2px solid black;
-}
-
-#logout {
-    margin-top: 7px;
+a.button:focus,
+input[type="submit"]:focus {
+    border: 1px solid black;
 }
 
 summary {
@@ -88,8 +85,7 @@ div.toast {
     position: fixed;
     z-index: 1000;
     border-radius: 3px;
-    background: none;
-    background-color: white;
+    background: white none;
 }
 
 .login {
@@ -100,7 +96,7 @@ div.toast {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border-radius: 16px;
+    border-radius: 12px;
 }
 
 .login > .monospace {
@@ -108,12 +104,36 @@ div.toast {
     font-size: 17px;
 }
 
-input {
-    padding: 10px;
-    margin-bottom: 15px;
+form {
+    margin: 0;
 }
 
-.login > form > input {
+input[type="text"],
+input[type="password"],
+select {
+    padding-left: 8px;
+    padding-right: 8px;
+    height: 34px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: .5px solid black;
+}
+
+textarea {
+    border-radius: 8px;
+    border: .5px solid black;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+    border: 1px solid black;
+}
+
+.login > form > input[type="password"],
+.login > form > input[type="text"],
+.login > form > input[type="submit"] {
     width: 100%;
 }
 
@@ -123,30 +143,28 @@ input {
     display: block;
 }
 
-.login > .button {
+.login a.button,
+.login input[type="submit"] {
     margin-left: auto;
     margin-right: auto;
     display: block;
     text-align: center;
-    line-height: 33px;
-    margin-top: 20px;
 }
 
 .login-wrapper {
-    height: 100%;
-    width: 100%;
-    background-color: #0082c9;
-    background-image: linear-gradient(
-            40deg
-            , #0082c9 0%, #30b6ff 100%);
-    background-size: contain;
-    background-image: url('/img/background.png'), linear-gradient(
-            40deg
-            , #0082c9 0%, #30b6ff 100%);
-    position: relative;
+    min-height: 100dvh;
+    min-width: 100vw;
+    position: fixed;
+    width: 100vw;
+    height: auto;
+    background-image: url("img/Background_Light.jpg");
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
-.content {
+main {
     padding: 20px;
     max-width: 100%;
     word-break: break-word;
@@ -173,7 +191,12 @@ header {
     background-image: linear-gradient(40deg, #0082c9 0%, #30b6ff 100%);
     height: 50px;
     justify-content: space-between;
+    align-items: center;
     display: flex;
+}
+
+header > form {
+    margin: 0 8px;
 }
 
 .loading {
@@ -181,18 +204,18 @@ header {
 }
 
 #overlay {
-  position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
-  width: 100%; /* Full width (cover the whole page) */
-  height: 100%; /* Full height (cover the whole page) */
-  top: 0;
-  left: 0;
-  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
-  z-index: 2;
+    position: fixed; /* Sit on top of the page content */
+    display: none; /* Hidden by default */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    z-index: 2;
 }
 
 #overlay.loading {
-  display: block;
+    display: block;
 }
 
 .loader {
@@ -206,15 +229,15 @@ header {
     position: absolute;
     top: calc(50% - 60px);
     left: calc(50% - 60px);
-  }
-  
-  /* Safari */
-  @-webkit-keyframes spin {
+}
+
+/* Safari */
+@-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
-  }
-  
-  @keyframes spin {
+}
+
+@keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-  }
+}

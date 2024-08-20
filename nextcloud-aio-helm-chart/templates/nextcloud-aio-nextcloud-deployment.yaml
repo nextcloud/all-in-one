@@ -25,11 +25,7 @@ spec:
     spec:
       initContainers:
         - name: "delete-lost-found"
-          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
-          {{- else }}
-          image: alpine
-          {{- end }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
           command:
             - rm
             - "-rf"
@@ -40,11 +36,7 @@ spec:
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
         - name: init-volumes
-          {{- if or .Values.IMAGE_MIRROR_PREFIX .Values.ALPINE_IMAGE_ORG }}
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG}}/alpine"
-          {{- else }}
-          image: alpine
-          {{- end }}
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
           command:
             - chmod
             - "777"
@@ -85,6 +77,8 @@ spec:
               value: "{{ .Values.SERVERINFO_TOKEN }}"
             - name: NEXTCLOUD_DEFAULT_QUOTA
               value: "{{ .Values.NEXTCLOUD_DEFAULT_QUOTA }}"
+            - name: NEXTCLOUD_MAINTENANCE_WINDOW
+              value: "{{ .Values.NEXTCLOUD_MAINTENANCE_WINDOW }}"
             - name: ADDITIONAL_APKS
               value: "{{ .Values.NEXTCLOUD_ADDITIONAL_APKS }}"
             - name: ADDITIONAL_PHP_EXTENSIONS
@@ -99,6 +93,8 @@ spec:
               value: "{{ .Values.CLAMAV_ENABLED }}"
             - name: CLAMAV_HOST
               value: nextcloud-aio-clamav
+            - name: CLAMAV_MAX_SIZE
+              value: "{{ .Values.APACHE_MAX_SIZE }}"
             - name: COLLABORA_ENABLED
               value: "{{ .Values.COLLABORA_ENABLED }}"
             - name: COLLABORA_HOST
@@ -173,7 +169,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240606_075829-latest"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240808_083748"
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000

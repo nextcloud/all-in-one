@@ -22,9 +22,8 @@ labels: bug, 0. Needs triage
 
 ### Host OS <!--- (the host OS on which you are trying to install AIO on) -->
 
+#### Docker run command or docker-compose file that you used
 
 #### Nextcloud AIO version <!--- (see Nextcloud AIO interface) -->
-
-#### Current channel <!--- (see the channel name in the AIO interface) -->
 
 #### Other valuable info <!--- (like logs, screenshots & Co.) -->

@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:latest
 # From a file located probably somewhere here: https://github.com/CollaboraOnline/online/tree/master/docker
-FROM collabora/code:24.04.3.1.1
+FROM collabora/code:24.04.6.1.1
 
 USER root
-ARG DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 
 # hadolint ignore=DL3008
 RUN set -ex; \

@@ -11,9 +11,10 @@ directory_empty() {
 }
 
 run_upgrade_if_needed_due_to_app_update() {
+    if php /var/www/html/occ status | grep maintenance | grep -q true; then
+        php /var/www/html/occ maintenance:mode --off
+    fi
     if php /var/www/html/occ status | grep needsDbUpgrade | grep -q true; then
-        # Disable integrity check temporarily until next update
-        php /var/www/html/occ config:system:set integrity.check.disabled --type bool --value true
         php /var/www/html/occ upgrade
         php /var/www/html/occ app:enable nextcloud-aio --force
     fi
@@ -99,6 +100,20 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             # Write output to logfile.
             exec > >(tee -i "/var/www/html/data/update.log")
             exec 2>&1
+            # Run built-in upgrader if version is below 28.0.2 to upgrade to 28.0.x first
+            touch "$NEXTCLOUD_DATA_DIR/update.failed"
+            if ! version_greater "$installed_version" "28.0.1.20"; then
+                php /var/www/html/updater/updater.phar --no-interaction --no-backup
+                if ! php /var/www/html/occ upgrade || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
+                    echo "Upgrade failed. Please restore from backup."
+                    bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup!"
+                    exit 1
+                fi
+                rm "$NEXTCLOUD_DATA_DIR/update.failed"
+                # shellcheck disable=SC2016
+                installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+                INSTALLED_MAJOR="${installed_version%%.*}"
+            fi
         fi
 
         if [ "$installed_version" != "0.0.0.0" ] && [ "$((IMAGE_MAJOR - INSTALLED_MAJOR))" -gt 1 ]; then
@@ -162,8 +177,12 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 declare -Ag APPSTORAGE
                 echo "Disabling apps before the update in order to make the update procedure more safe. This can take a while..."
                 for app in "${NC_APPS_ARRAY[@]}"; do
-                    APPSTORAGE[$app]=$(php /var/www/html/occ config:app:get "$app" enabled)
-                    php /var/www/html/occ app:disable "$app"
+                    if APPSTORAGE[$app]="$(php /var/www/html/occ config:app:get "$app" enabled)"; then
+                        php /var/www/html/occ app:disable "$app"
+                    else
+                        APPSTORAGE[$app]=""
+                        echo "Not disabling $app because the occ command to get the enabled state was failing."
+                    fi
                 done
             fi
 
@@ -291,7 +310,6 @@ DATADIR_PERMISSION_CONF
                 php /var/www/html/occ app:disable updatenotification
                 rm -rf /var/www/html/apps/updatenotification
                 php /var/www/html/occ app:enable nextcloud-aio --force
-                php /var/www/html/occ db:add-missing-indices
                 php /var/www/html/occ db:add-missing-columns
                 php /var/www/html/occ db:add-missing-primary-keys
                 yes | php /var/www/html/occ db:convert-filecache-bigint
@@ -419,12 +437,12 @@ DATADIR_PERMISSION_CONF
             # Apply optimization
             echo "Doing some optimizations..."
             php /var/www/html/occ maintenance:repair
-            php /var/www/html/occ db:add-missing-indices
-            php /var/www/html/occ db:add-missing-columns
-            php /var/www/html/occ db:add-missing-primary-keys
-            yes | php /var/www/html/occ db:convert-filecache-bigint
-            php /var/www/html/occ maintenance:mimetype:update-js
-            php /var/www/html/occ maintenance:mimetype:update-db
+            if [ "$NEXTCLOUD_SKIP_DATABASE_OPTIMIZATION" != yes ]; then
+                php /var/www/html/occ db:add-missing-indices
+                php /var/www/html/occ db:add-missing-columns
+                php /var/www/html/occ db:add-missing-primary-keys
+                yes | php /var/www/html/occ db:convert-filecache-bigint
+            fi
         fi
     fi
 
@@ -500,9 +518,10 @@ if [ -n "$SERVERINFO_TOKEN" ] && [ -z "$(php /var/www/html/occ config:app:get se
     php /var/www/html/occ config:app:set serverinfo token --value="$SERVERINFO_TOKEN"
 fi
 # Set maintenance window so that no warning is shown in the admin overview
-if [ -z "$(php /var/www/html/occ config:system:get maintenance_window_start)" ]; then
-    php /var/www/html/occ config:system:set maintenance_window_start --type=int --value=100
+if [ -z "$NEXTCLOUD_MAINTENANCE_WINDOW" ]; then
+    NEXTCLOUD_MAINTENANCE_WINDOW=100
 fi
+php /var/www/html/occ config:system:set maintenance_window_start --type=int --value="$NEXTCLOUD_MAINTENANCE_WINDOW"
 
 # Apply network settings
 echo "Applying network settings..."
@@ -563,7 +582,7 @@ fi
 IPv4_ADDRESS="$(dig nextcloud-aio-nextcloud A +short +search | head -1)" 
 # Bring it in CIDR notation 
 # shellcheck disable=SC2001
-IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|1/32|')" 
+IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')" 
 php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
 
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
@@ -729,8 +748,8 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
         php /var/www/html/occ config:app:set files_antivirus av_mode --value="daemon"
         php /var/www/html/occ config:app:set files_antivirus av_port --value="3310"
         php /var/www/html/occ config:app:set files_antivirus av_host --value="$CLAMAV_HOST"
-        php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="104857600"
-        php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="104857600"
+        php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="$CLAMAV_MAX_SIZE"
+        php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="$CLAMAV_MAX_SIZE"
         php /var/www/html/occ config:app:set files_antivirus av_infected_action --value="only_log"
     fi
 else
@@ -812,19 +831,17 @@ else
 fi
 
 # Docker socket proxy
-if version_greater "$installed_version" "27.1.2.0"; then
-    if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
-        if ! [ -d "/var/www/html/custom_apps/app_api" ]; then
-            php /var/www/html/occ app:install app_api
-        elif [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
-            php /var/www/html/occ app:enable app_api
-        elif [ "$SKIP_UPDATE" != 1 ]; then
-            php /var/www/html/occ app:update app_api
-        fi
-    else
-        if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
-            php /var/www/html/occ app:remove app_api
-        fi
+if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/app_api" ]; then
+        php /var/www/html/occ app:install app_api
+    elif [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
+        php /var/www/html/occ app:enable app_api
+    elif [ "$SKIP_UPDATE" != 1 ]; then
+        php /var/www/html/occ app:update app_api
+    fi
+else
+    if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
+        php /var/www/html/occ app:remove app_api
     fi
 fi
 

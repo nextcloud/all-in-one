@@ -18,13 +18,14 @@ You can run the containers that are build for AIO with Kubernetes using this Hel
 
 ## How to use this?
 
-First download this file: https://raw.githubusercontent.com/nextcloud/all-in-one/main/nextcloud-aio-helm-chart/values.yaml and adjust at least all values marked with `# TODO!`
+First download this file: https://raw.githubusercontent.com/nextcloud/all-in-one/main/nextcloud-aio-helm-chart/values.yaml and adjust at least all values marked with `# TODO!`<br>
+⚠️ **Warning**: Do not use the symbols `@` and `:` in your passwords. These symbols are used to build database connection strings. You will experience issues when using these symbols!
 
 Then run:
 
 ```
 helm repo add nextcloud-aio https://nextcloud.github.io/all-in-one/
-helm install my-release nextcloud-aio/nextcloud-aio-helm-chart -f values.yaml
+helm install nextcloud-aio nextcloud-aio/nextcloud-aio-helm-chart -f values.yaml
 ```
 
 And after a while, everything should be set up.
