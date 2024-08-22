@@ -99,6 +99,11 @@ The following instructions are meant for installations without a web server or r
     --volume /var/run/docker.sock:/var/run/docker.sock:ro \
     nextcloud/all-in-one:latest
     ```
+
+    ```
+    # Then get your password on a second command line terminal
+    docker exec nextcloud-aio-mastercontainer grep password /mnt/docker-aio-config/data/configuration.json
+    ```
     <details>
     <summary>Explanation of the command</summary>
 
@@ -118,12 +123,12 @@ The following instructions are meant for installations without a web server or r
 
     Note: You may be interested in adjusting Nextcloud’s datadir to store the files in a different location than the default docker volume. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
 
-3. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
+4. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
 E.g. `https://ip.address.of.this.server:8080`<br>
 ⚠️ **Important:** do always use an ip-address if you access this port and not a domain as HSTS might block access to it later! (It is also expected that this port uses a self-signed certificate due to security concerns which you need to accept in your browser)<br><br>
 If your firewall/router has port 80 and 8443 open/forwarded and you point a domain to your server, you can get a valid certificate automatically by opening the Nextcloud AIO Interface via:<br>
 `https://your-domain-that-points-to-this-server.tld:8443`
-4. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
+5. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
 ## FAQ
 ### How does it work?
