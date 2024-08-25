@@ -71,7 +71,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetBackupArchivesList())) {
             return '';
         }
-        
+
         $content = file_get_contents(DataConst::GetBackupArchivesList());
         if ($content === '') {
             return '';
@@ -91,7 +91,7 @@ class ConfigurationManager
         if ($lastBackupTime === "") {
             return '';
         }
-        
+
         return $lastBackupTime;
     }
 
@@ -99,7 +99,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetBackupArchivesList())) {
             return [];
         }
-        
+
         $content = file_get_contents(DataConst::GetBackupArchivesList());
         if ($content === '') {
             return [];
@@ -110,7 +110,7 @@ class ConfigurationManager
         foreach($backupLines as $lines) {
             if ($lines !== "") {
                 $backupTimesTemp = explode(',', $lines);
-                $backupTimes[] = $backupTimesTemp[1];     
+                $backupTimes[] = $backupTimesTemp[1];
             }
         }
 
@@ -140,7 +140,7 @@ class ConfigurationManager
         if (!$this->isx64Platform()) {
             return false;
         }
-        
+
         $config = $this->GetConfig();
         if (isset($config['isClamavEnabled']) && $config['isClamavEnabled'] === 1) {
             return true;
@@ -349,7 +349,7 @@ class ConfigurationManager
             $testUrl = $protocol . $domain . ':443';
             curl_setopt($ch, CURLOPT_URL, $testUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             $response = (string)curl_exec($ch);
             # Get rid of trailing \n
@@ -455,7 +455,7 @@ class ConfigurationManager
         if ($location === '') {
             throw new InvalidSettingConfigurationException("Please enter a path!");
         }
-        
+
         $isValidPath = false;
         if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
             $isValidPath = true;
@@ -518,6 +518,10 @@ class ConfigurationManager
         $configName = 'talk_port';
         $defaultValue = '3478';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function IsOverwriteEnable() : bool {
+        return getenv('DISABLE_OVERWRITE_URL') !== 'yes';
     }
 
     /**
@@ -698,7 +702,7 @@ class ConfigurationManager
         if (!preg_match("#^[0-1][0-9]:[0-5][0-9]$#", $time) && !preg_match("#^2[0-3]:[0-5][0-9]$#", $time)) {
             throw new InvalidSettingConfigurationException("You did not enter a correct time! One correct example is '04:00'!");
         }
-        
+
         if ($enableAutomaticUpdates === false) {
             $time .= PHP_EOL . 'automaticUpdatesAreNotEnabled';
         } else {
