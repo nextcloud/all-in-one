@@ -5,6 +5,7 @@ ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=10G
 ENV PHP_MAX_TIME=3600
 ENV SOURCE_LOCATION=/usr/src/nextcloud
+ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
 ENV NEXTCLOUD_VERSION=29.0.4
@@ -131,7 +132,7 @@ RUN set -ex; \
     \
     { \
         echo 'session.save_handler = redis'; \
-        echo 'session.save_path = "tcp://${REDIS_HOST}:6379?auth=${REDIS_HOST_PASSWORD}"'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:6379/${REDIS_DB_INDEX}?auth=${REDIS_HOST_PASSWORD}"'; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
         echo 'redis.session.lock_wait_time = 10000'; \
