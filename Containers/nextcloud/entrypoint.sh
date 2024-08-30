@@ -597,6 +597,10 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
         COLLABORA_HOST="$NC_DOMAIN"
     fi
     set +x
+    # Remove richdcoumentscode if it should be incorrectly installed
+    if [ -d "/var/www/html/custom_apps/richdocumentscode" ]; then
+        php /var/www/html/occ app:remove richdocumentscode
+    fi
     if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ app:install richdocuments
     elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" != "yes" ]; then
