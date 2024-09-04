@@ -150,7 +150,7 @@ select:focus {
     display: block;
     text-align: center;
     padding: 0px;
-    align-items: center;
+    align-content: center;
 }
 
 .login-wrapper {
