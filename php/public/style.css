@@ -149,6 +149,8 @@ select:focus {
     margin-right: auto;
     display: block;
     text-align: center;
+    padding: 0px;
+    align-items: center;
 }
 
 .login-wrapper {
