@@ -436,12 +436,14 @@ DATADIR_PERMISSION_CONF
 
             # Apply optimization
             echo "Doing some optimizations..."
-            php /var/www/html/occ maintenance:repair
             if [ "$NEXTCLOUD_SKIP_DATABASE_OPTIMIZATION" != yes ]; then
+                php /var/www/html/occ maintenance:repair --include-expensive
                 php /var/www/html/occ db:add-missing-indices
                 php /var/www/html/occ db:add-missing-columns
                 php /var/www/html/occ db:add-missing-primary-keys
                 yes | php /var/www/html/occ db:convert-filecache-bigint
+            else
+                php /var/www/html/occ maintenance:repair
             fi
         fi
     fi
