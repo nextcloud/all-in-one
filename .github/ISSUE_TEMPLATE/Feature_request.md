@@ -1,7 +1,7 @@
 ---
 name: 📖 Existing feature/documentation enhancement
 about: Suggest an enhancement of an existing feature/documentation - for other types, please use the feature request option below
-labels: enhancement, 0. Needs triage
+labels: 0. Needs triage
 ---
 
 <!--- Please fill out the whole template below -->
