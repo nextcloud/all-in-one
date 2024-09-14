@@ -103,7 +103,6 @@ cat << EOL > /tmp/initcontainers.nextcloud
       initContainers:
         - name: "delete-lost-found"
           image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
-          {{- end }}
           command:
             - rm
             - "-rf"
