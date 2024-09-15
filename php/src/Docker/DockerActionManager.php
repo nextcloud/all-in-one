@@ -417,6 +417,8 @@ class DockerActionManager
                     if (in_array('caddy', $communityContainers, true)) {
                         $replacements[1] = gethostbyname('nextcloud-aio-caddy');
                     }
+                } elseif ($out[1] === 'CADDY_ROUTES') {
+                    $replacements[1] = $container->GetCaddyRoutes()->GetFormatedEnv();
                 } else {
                     $secret = $this->configurationManager->GetSecret($out[1]);
                     if ($secret === "") {
