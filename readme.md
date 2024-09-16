@@ -11,6 +11,8 @@ Included are:
 - Imaginary (optional, for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
 - ClamAV (optional, Antivirus backend for Nextcloud)
 - Fulltextsearch (optional)
+- Whiteboard (optional)
+- Docker Socket Proxy (optional, needed for [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi))
 <details><summary>And much more:</summary>
 
 - Simple web interface included that enables easy installation and maintenance
