@@ -778,6 +778,7 @@
       "profiles": [
         "whiteboard"
       ],
+      "read_only": true,
       "networks": [
         "nextcloud-aio"
       ],
