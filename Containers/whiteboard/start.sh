@@ -14,6 +14,4 @@ fi
 export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
 
 # Run it
-npm run server:start
-
-exec "$@"
+exec npm run server:start
