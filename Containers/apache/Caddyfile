@@ -51,6 +51,12 @@ https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
         reverse_proxy {$TALK_HOST}:8081
     }
 
+    # Whiteboard
+    route /whiteboard/* {
+        uri strip_prefix /whiteboard
+        reverse_proxy {$WHITEBOARD_HOST}:3002
+    }
+
     # Nextcloud
     route {
         header Strict-Transport-Security max-age=31536000;

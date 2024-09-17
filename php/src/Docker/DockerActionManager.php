@@ -417,6 +417,12 @@ class DockerActionManager
                     if (in_array('caddy', $communityContainers, true)) {
                         $replacements[1] = gethostbyname('nextcloud-aio-caddy');
                     }
+                } elseif ($out[1] === 'WHITEBOARD_ENABLED') {
+                    if ($this->configurationManager->isWhiteboardEnabled()) {
+                        $replacements[1] = 'yes';
+                    } else {
+                        $replacements[1] = '';
+                    }
                 } else {
                     $secret = $this->configurationManager->GetSecret($out[1]);
                     if ($secret === "") {

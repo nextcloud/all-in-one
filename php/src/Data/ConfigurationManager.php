@@ -164,6 +164,21 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function isWhiteboardEnabled() : bool {
+        $config = $this->GetConfig();
+        if (isset($config['isWhiteboardEnabled']) && $config['isWhiteboardEnabled'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function SetWhiteboardEnabledState(int $value) : void {
+        $config = $this->GetConfig();
+        $config['isWhiteboardEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
     public function SetClamavEnabledState(int $value) : void {
         $config = $this->GetConfig();
         $config['isClamavEnabled'] = $value;
