@@ -3,7 +3,6 @@ This container contains a fork of the Nginx Proxy Manager, which is a WebUI for 
 
 ### Notes
 - This container is incompatible with the [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container. So make sure that you do not enable both at the same time!
-- Only works on linux since it uses network mode host
 - You can ignore the NPM configuration of the reverse-proxy.md. The NPMplus fork already contains the changes of the advanced tab.
 - Make sure that no other service is using port `443 (tcp/upd)` or `81 (tcp)` on your host as otherwise the containers will fail to start. You can check this with `sudo netstat -tulpn | grep "443\|81"` before installing AIO.
 - Please change the default login data first, after you can read inside the logs that the default config for AIO is created and there are no errors.
