@@ -16,6 +16,9 @@ services:
       nextcloud-aio-notify-push:
         condition: service_started
         required: false
+      nextcloud-aio-whiteboard:
+        condition: service_started
+        required: false
     image: nextcloud/aio-apache:latest
     init: true
     ports:
@@ -33,6 +36,7 @@ services:
       - APACHE_MAX_SIZE=${APACHE_MAX_SIZE}
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
       - NOTIFY_PUSH_HOST=nextcloud-aio-notify-push
+      - WHITEBOARD_HOST=nextcloud-aio-whiteboard
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
@@ -152,6 +156,8 @@ services:
       - REMOVE_DISABLED_APPS=${REMOVE_DISABLED_APPS}
       - APACHE_PORT=${APACHE_PORT}
       - IMAGINARY_SECRET=${IMAGINARY_SECRET}
+      - WHITEBOARD_SECRET=${WHITEBOARD_SECRET}
+      - WHITEBOARD_ENABLED=${WHITEBOARD_ENABLED}
     stop_grace_period: 600s
     restart: unless-stopped
     networks:
@@ -364,6 +370,27 @@ services:
     restart: unless-stopped
     profiles:
       - fulltextsearch
+    networks:
+      - nextcloud-aio
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-whiteboard:
+    image: nextcloud/aio-whiteboard:latest
+    init: true
+    expose:
+      - "3002"
+    environment:
+      - TZ=${TIMEZONE}
+      - NEXTCLOUD_URL=https://${NC_DOMAIN}
+      - JWT_SECRET_KEY=${WHITEBOARD_SECRET}
+      - STORAGE_STRATEGY=redis
+      - REDIS_HOST=nextcloud-aio-redis
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+    restart: unless-stopped
+    profiles:
+      - whiteboard
+    read_only: true
     networks:
       - nextcloud-aio
     cap_drop:
