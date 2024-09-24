@@ -6,11 +6,11 @@ use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
 use DateTime;
 
-class AuthManager {
+readonly class AuthManager {
     private const string SESSION_KEY = 'aio_authenticated';
 
     public function __construct(
-        private readonly ConfigurationManager $configurationManager
+        private ConfigurationManager $configurationManager
     ) {
     }
 
