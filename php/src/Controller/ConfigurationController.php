@@ -2,24 +2,19 @@
 
 namespace AIO\Controller;
 
-use AIO\ContainerDefinitionFetcher;
 use AIO\Data\ConfigurationManager;
 use AIO\Data\InvalidSettingConfigurationException;
-use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class ConfigurationController
-{
-    private ConfigurationManager $configurationManager;
+readonly class ConfigurationController {
 
     public function __construct(
-        ConfigurationManager $configurationManager
+        private ConfigurationManager $configurationManager
     ) {
-        $this->configurationManager = $configurationManager;
     }
 
-    public function SetConfig(Request $request, Response $response, array $args) : Response {
+    public function SetConfig(Request $request, Response $response, array $args): Response {
         try {
             $body = $request->getParsedBody();
             if (is_array($body)) {
