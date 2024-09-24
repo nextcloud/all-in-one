@@ -4,7 +4,7 @@ namespace AIO\Auth;
 
 use Random\RandomException;
 
-class PasswordGenerator {
+readonly class PasswordGenerator {
 
     private const array WORDS = [
         'abacus',
