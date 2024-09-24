@@ -4,25 +4,25 @@ namespace AIO\Auth;
 
 use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
-use \DateTime;
+use DateTime;
 
 class AuthManager {
     private const string SESSION_KEY = 'aio_authenticated';
-    private ConfigurationManager $configurationManager;
 
-    public function __construct(ConfigurationManager $configurationManager) {
-        $this->configurationManager = $configurationManager;
+    public function __construct(
+        private readonly ConfigurationManager $configurationManager
+    ) {
     }
 
-    public function CheckCredentials(string $password) : bool {
+    public function CheckCredentials(string $password): bool {
         return hash_equals($this->configurationManager->GetPassword(), $password);
     }
 
-    public function CheckToken(string $token) : bool {
+    public function CheckToken(string $token): bool {
         return hash_equals($this->configurationManager->GetToken(), $token);
     }
 
-    public function SetAuthState(bool $isLoggedIn) : void {
+    public function SetAuthState(bool $isLoggedIn): void {
 
         if (!$this->IsAuthenticated() && $isLoggedIn === true) {
             $date = new DateTime();
@@ -40,7 +40,7 @@ class AuthManager {
         $_SESSION[self::SESSION_KEY] = $isLoggedIn;
     }
 
-    public function IsAuthenticated() : bool {
+    public function IsAuthenticated(): bool {
         return isset($_SESSION[self::SESSION_KEY]) && $_SESSION[self::SESSION_KEY] === true;
     }
 }
