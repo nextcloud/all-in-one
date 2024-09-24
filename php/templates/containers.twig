@@ -297,8 +297,8 @@
                             <p>Your containers are up-to-date.</p>
                             {% if newMajorVersion != '' and isAnyRunning == true and isApacheStarting != true %}
                                 <details>
-                                <summary>Note about <strong>Nextcloud {{ newMajorVersion }}</strong></summary>
-                                    <p>If you haven't upgraded to Nextcloud {{ newMajorVersion }} yet and want to do that now, feel free to follow <strong><a href="https://github.com/nextcloud/all-in-one/discussions/5133">this documentation</a></strong></p>
+                                <summary>Note about <strong>Nextcloud Hub {{ newMajorVersion - 21 }}</strong></summary>
+                                    <p>If you haven't upgraded to Nextcloud Hub {{ newMajorVersion - 21 }} yet and want to do that now, feel free to follow <strong><a href="https://github.com/nextcloud/all-in-one/discussions/5133">this documentation</a></strong></p>
                                 </details>
                             {% endif %}
                         {% endif %}
@@ -343,7 +343,7 @@
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     {% if newMajorVersion != '' %}
-                                        <input type="checkbox" id="install_latest_major" name="install_latest_major"><label for="install_latest_major">Install Nextcloud {{ newMajorVersion }} (if unchecked, Nextcloud {{ newMajorVersion - 1 }} will get installed)</label><br>
+                                        <input type="checkbox" id="install_latest_major" name="install_latest_major"><label for="install_latest_major">Install Nextcloud Hub {{ newMajorVersion - 21 }} (if unchecked, Nextcloud Hub {{ newMajorVersion - 22 }} will get installed)</label><br>
                                     {% endif %}
                                     <input type="submit" value="Download and start containers" />
                                 </form>
