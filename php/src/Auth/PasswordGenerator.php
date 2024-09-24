@@ -2,11 +2,11 @@
 
 namespace AIO\Auth;
 
-use AIO\Data\ConfigurationManager;
+use Random\RandomException;
 
-class PasswordGenerator
-{
-    private array $words = [
+class PasswordGenerator {
+
+    private const array WORDS = [
         'abacus',
         'abdomen',
         'abdominal',
@@ -7785,14 +7785,18 @@ class PasswordGenerator
         'zoom',
     ];
 
-    public function GeneratePassword(int $length) : string {
+
+    /**
+     * @throws RandomException
+     */
+    public function GeneratePassword(int $length): string {
         $password = '';
 
-        for($i = 0; $i < $length; $i ++) {
-            if($password !== '') {
+        for ($i = 0; $i < $length; $i++) {
+            if ($password !== '') {
                 $password = $password . ' ';
             }
-            $password = $password . $this->words[random_int(0, 7775)];
+            $password = $password . PasswordGenerator::WORDS[random_int(0, 7775)];
         }
 
         return $password;
