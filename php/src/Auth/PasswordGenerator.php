@@ -7786,9 +7786,7 @@ class PasswordGenerator {
     ];
 
 
-    /**
-     * @throws RandomException
-     */
+    /** @throws RandomException */
     public function GeneratePassword(int $length): string {
         $password = '';
 
