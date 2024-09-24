@@ -21,123 +21,64 @@ class ConfigurationController
 
     public function SetConfig(Request $request, Response $response, array $args) : Response {
         try {
-            if (isset($request->getParsedBody()['domain'])) {
-                $domain = $request->getParsedBody()['domain'] ?? '';
-                $this->configurationManager->SetDomain($domain);
-            }
+            $body = $request->getParsedBody();
+            if (is_array($body)) {
+                if (is_string($body['domain']))
+                    $this->configurationManager->SetDomain($body['domain']);
 
-            if (isset($request->getParsedBody()['current-master-password']) || isset($request->getParsedBody()['new-master-password'])) {
-                $currentMasterPassword = $request->getParsedBody()['current-master-password'] ?? '';
-                $newMasterPassword = $request->getParsedBody()['new-master-password'] ?? '';
-                $this->configurationManager->ChangeMasterPassword($currentMasterPassword, $newMasterPassword);
-            }
+                $currentMasterPassword = is_string($body['current-master-password']) ? $body['current-master-password'] : null;
+                $newMasterPassword = is_string($body['new-master-password']) ? $body['new-master-password'] : null;
+                if ($currentMasterPassword !== null || $newMasterPassword !== null)
+                    $this->configurationManager->ChangeMasterPassword($currentMasterPassword ?? '', $newMasterPassword ?? '');
 
-            if (isset($request->getParsedBody()['borg_backup_host_location'])) {
-                $location = $request->getParsedBody()['borg_backup_host_location'] ?? '';
-                $this->configurationManager->SetBorgBackupHostLocation($location);
-            }
+                if (is_string($body['borg_backup_host_location']))
+                    $this->configurationManager->SetBorgBackupHostLocation($body['borg_backup_host_location']);
 
-            if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_password'])) {
-                $restoreLocation = $request->getParsedBody()['borg_restore_host_location'] ?? '';
-                $borgPassword = $request->getParsedBody()['borg_restore_password'] ?? '';
-                $this->configurationManager->SetBorgRestoreHostLocationAndPassword($restoreLocation, $borgPassword);
-            }
+                $borgRestoreHostLocation = is_string($body['borg_restore_host_location']) ? $body['borg_restore_host_location'] : null;
+                $borgRestorePassword = is_string($body['borg_restore_password']) ? $body['borg_restore_password'] : null;
+                if ($borgRestoreHostLocation !== null || $borgRestorePassword !== null)
+                    $this->configurationManager->SetBorgRestoreHostLocationAndPassword($borgRestoreHostLocation ?? '', $borgRestorePassword ?? '');
 
-            if (isset($request->getParsedBody()['daily_backup_time'])) {
-                if (isset($request->getParsedBody()['automatic_updates'])) {
-                    $enableAutomaticUpdates = true;
-                } else {
-                    $enableAutomaticUpdates = false;
-                }
-                if (isset($request->getParsedBody()['success_notification'])) {
-                    $successNotification = true;
-                } else {
-                    $successNotification = false;
-                }
-                $dailyBackupTime = $request->getParsedBody()['daily_backup_time'] ?? '';
-                $this->configurationManager->SetDailyBackupTime($dailyBackupTime, $enableAutomaticUpdates, $successNotification);
-            }
+                if (is_string($body['daily_backup_time']))
+                    $this->configurationManager->SetDailyBackupTime(
+                        $body['daily_backup_time'],
+                        isset($body['automatic_updates']),
+                        isset($body['success_notification']));
 
-            if (isset($request->getParsedBody()['delete_daily_backup_time'])) {
-                $this->configurationManager->DeleteDailyBackupTime();
-            }
+                if (isset($body['delete_daily_backup_time']))
+                    $this->configurationManager->DeleteDailyBackupTime();
 
-            if (isset($request->getParsedBody()['additional_backup_directories'])) {
-                $additionalBackupDirectories = $request->getParsedBody()['additional_backup_directories'] ?? '';
-                $this->configurationManager->SetAdditionalBackupDirectories($additionalBackupDirectories);
-            }
+                if (is_string($body['additional_backup_directories']))
+                    $this->configurationManager->SetAdditionalBackupDirectories($body['additional_backup_directories']);
 
-            if (isset($request->getParsedBody()['delete_timezone'])) {
-                $this->configurationManager->DeleteTimezone();
-            }
+                if (isset($body['delete_timezone']))
+                    $this->configurationManager->DeleteTimezone();
 
-            if (isset($request->getParsedBody()['timezone'])) {
-                $timezone = $request->getParsedBody()['timezone'] ?? '';
-                $this->configurationManager->SetTimezone($timezone);
-            }
+                if (is_string($body['timezone']))
+                    $this->configurationManager->SetTimezone($body['timezone']);
 
-            if (isset($request->getParsedBody()['options-form'])) {
-                if (isset($request->getParsedBody()['collabora']) && isset($request->getParsedBody()['onlyoffice'])) {
-                    throw new InvalidSettingConfigurationException("Collabora and Onlyoffice are not allowed to be enabled at the same time!");
+                if (isset($body['options-form'])) {
+                    if (isset($body['collabora']) && isset($body['onlyoffice']))
+                        throw new InvalidSettingConfigurationException("Collabora and Onlyoffice are not allowed to be enabled at the same time!");
+                    $this->configurationManager->SetClamavEnabledState(isset($body['clamav']) ? 1 : 0);
+                    $this->configurationManager->SetOnlyofficeEnabledState(isset($body['onlyoffice']) ? 1 : 0);
+                    $this->configurationManager->SetCollaboraEnabledState(isset($body['collabora']) ? 1 : 0);
+                    $this->configurationManager->SetTalkEnabledState(isset($body['talk']) ? 1 : 0);
+                    $this->configurationManager->SetTalkRecordingEnabledState(isset($body['talk-recording']) ? 1 : 0);
+                    $this->configurationManager->SetImaginaryEnabledState(isset($body['imaginary']) ? 1 : 0);
+                    $this->configurationManager->SetFulltextsearchEnabledState(isset($body['fulltextsearch']) ? 1 : 0);
+                    $this->configurationManager->SetDockerSocketProxyEnabledState(isset($body['docker-socket-proxy']) ? 1 : 0);
+                    $this->configurationManager->SetWhiteboardEnabledState(isset($body['whiteboard']) ? 1 : 0);
                 }
-                if (isset($request->getParsedBody()['clamav'])) {
-                    $this->configurationManager->SetClamavEnabledState(1);
-                } else {
-                    $this->configurationManager->SetClamavEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['onlyoffice'])) {
-                    $this->configurationManager->SetOnlyofficeEnabledState(1);
-                } else {
-                    $this->configurationManager->SetOnlyofficeEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['collabora'])) {
-                    $this->configurationManager->SetCollaboraEnabledState(1);
-                } else {
-                    $this->configurationManager->SetCollaboraEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['talk'])) {
-                    $this->configurationManager->SetTalkEnabledState(1);
-                } else {
-                    $this->configurationManager->SetTalkEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['talk-recording'])) {
-                    $this->configurationManager->SetTalkRecordingEnabledState(1);
-                } else {
-                    $this->configurationManager->SetTalkRecordingEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['imaginary'])) {
-                    $this->configurationManager->SetImaginaryEnabledState(1);
-                } else {
-                    $this->configurationManager->SetImaginaryEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['fulltextsearch'])) {
-                    $this->configurationManager->SetFulltextsearchEnabledState(1);
-                } else {
-                    $this->configurationManager->SetFulltextsearchEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['docker-socket-proxy'])) {
-                    $this->configurationManager->SetDockerSocketProxyEnabledState(1);
-                } else {
-                    $this->configurationManager->SetDockerSocketProxyEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['whiteboard'])) {
-                    $this->configurationManager->SetWhiteboardEnabledState(1);
-                } else {
-                    $this->configurationManager->SetWhiteboardEnabledState(0);
-                }
-            }
 
-            if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {
-                $this->configurationManager->DeleteCollaboraDictionaries();
-            }
+                if (isset($body['delete_collabora_dictionaries']))
+                    $this->configurationManager->DeleteCollaboraDictionaries();
 
-            if (isset($request->getParsedBody()['collabora_dictionaries'])) {
-                $collaboraDictionaries = $request->getParsedBody()['collabora_dictionaries'] ?? '';
-                $this->configurationManager->SetCollaboraDictionaries($collaboraDictionaries);
-            }
+                if (is_string($body['collabora_dictionaries']))
+                    $this->configurationManager->SetCollaboraDictionaries($body['collabora_dictionaries']);
 
-            if (isset($request->getParsedBody()['delete_borg_backup_host_location'])) {
-                $this->configurationManager->DeleteBorgBackupHostLocation();
+                if (isset($body['delete_borg_backup_host_location']))
+                    $this->configurationManager->DeleteBorgBackupHostLocation();
             }
 
             return $response->withStatus(201)->withHeader('Location', '/');
