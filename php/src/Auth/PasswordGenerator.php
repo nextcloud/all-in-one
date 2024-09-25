@@ -4,7 +4,7 @@ namespace AIO\Auth;
 
 use Random\RandomException;
 
-readonly class PasswordGenerator {
+class PasswordGenerator {
 
     private const array WORDS = [
         'abacus',
@@ -7787,7 +7787,7 @@ readonly class PasswordGenerator {
 
 
     /** @throws RandomException */
-    public function GeneratePassword(int $length): string {
+    static function GeneratePassword(int $length): string {
         $password = '';
 
         for ($i = 0; $i < $length; $i++) {

@@ -8,72 +8,70 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 readonly class ConfigurationController {
-
-    public function __construct(
-        private ConfigurationManager $configurationManager
-    ) {
-    }
-
     public function SetConfig(Request $request, Response $response, array $args): Response {
         try {
             $body = $request->getParsedBody();
             if (is_array($body)) {
+                $config = ConfigurationManager::loadConfigFile();
+
                 if (is_string($body['domain']))
-                    $this->configurationManager->SetDomain($body['domain']);
+                    $config->setDomain($body['domain']);
 
                 $currentMasterPassword = is_string($body['current-master-password']) ? $body['current-master-password'] : null;
                 $newMasterPassword = is_string($body['new-master-password']) ? $body['new-master-password'] : null;
                 if ($currentMasterPassword !== null || $newMasterPassword !== null)
-                    $this->configurationManager->ChangeMasterPassword($currentMasterPassword ?? '', $newMasterPassword ?? '');
+                    $config->changeMasterPassword($currentMasterPassword ?? '', $newMasterPassword ?? '');
 
                 if (is_string($body['borg_backup_host_location']))
-                    $this->configurationManager->SetBorgBackupHostLocation($body['borg_backup_host_location']);
+                    $config->setBorgLocation($body['borg_backup_host_location']);
 
                 $borgRestoreHostLocation = is_string($body['borg_restore_host_location']) ? $body['borg_restore_host_location'] : null;
                 $borgRestorePassword = is_string($body['borg_restore_password']) ? $body['borg_restore_password'] : null;
                 if ($borgRestoreHostLocation !== null || $borgRestorePassword !== null)
-                    $this->configurationManager->SetBorgRestoreHostLocationAndPassword($borgRestoreHostLocation ?? '', $borgRestorePassword ?? '');
+                    $config->setBorgRestoreLocationAndPassword($borgRestoreHostLocation ?? '', $borgRestorePassword ?? '');
 
                 if (is_string($body['daily_backup_time']))
-                    $this->configurationManager->SetDailyBackupTime(
+                    ConfigurationManager::SetDailyBackupTime(
                         $body['daily_backup_time'],
                         isset($body['automatic_updates']),
                         isset($body['success_notification']));
 
                 if (isset($body['delete_daily_backup_time']))
-                    $this->configurationManager->DeleteDailyBackupTime();
+                    $config->deleteTimezone();
 
                 if (is_string($body['additional_backup_directories']))
-                    $this->configurationManager->SetAdditionalBackupDirectories($body['additional_backup_directories']);
+                    ConfigurationManager::SetAdditionalBackupDirectories($body['additional_backup_directories']);
 
                 if (isset($body['delete_timezone']))
-                    $this->configurationManager->DeleteTimezone();
+                    $config->DeleteTimezone();
 
                 if (is_string($body['timezone']))
-                    $this->configurationManager->SetTimezone($body['timezone']);
+                    $config->SetTimezone($body['timezone']);
 
                 if (isset($body['options-form'])) {
                     if (isset($body['collabora']) && isset($body['onlyoffice']))
                         throw new InvalidSettingConfigurationException("Collabora and Onlyoffice are not allowed to be enabled at the same time!");
-                    $this->configurationManager->SetClamavEnabledState(isset($body['clamav']) ? 1 : 0);
-                    $this->configurationManager->SetOnlyofficeEnabledState(isset($body['onlyoffice']) ? 1 : 0);
-                    $this->configurationManager->SetCollaboraEnabledState(isset($body['collabora']) ? 1 : 0);
-                    $this->configurationManager->SetTalkEnabledState(isset($body['talk']) ? 1 : 0);
-                    $this->configurationManager->SetTalkRecordingEnabledState(isset($body['talk-recording']) ? 1 : 0);
-                    $this->configurationManager->SetImaginaryEnabledState(isset($body['imaginary']) ? 1 : 0);
-                    $this->configurationManager->SetFulltextsearchEnabledState(isset($body['fulltextsearch']) ? 1 : 0);
-                    $this->configurationManager->SetDockerSocketProxyEnabledState(isset($body['docker-socket-proxy']) ? 1 : 0);
-                    $this->configurationManager->SetWhiteboardEnabledState(isset($body['whiteboard']) ? 1 : 0);
+                    $config->enableClamav(isset($body['clamav']));
+                    $config->enableOnlyoffice(isset($body['onlyoffice']));
+                    $config->enableCollabora(isset($body['collabora']));
+                    $config->talkEnabled = isset($body['talk']);
+                    $config->enableTalkRecording(isset($body['talk-recording']));
+                    $config->imaginaryEnabled = isset($body['imaginary']);
+                    $config->fulltextsearchEnabled = isset($body['fulltextsearch']);
+                    $config->dockerSocketProxyEnabled = isset($body['docker-socket-proxy']);
+                    $config->whiteboardEnabled = isset($body['whiteboard']);
                 }
 
                 if (isset($body['delete_collabora_dictionaries']))
-                    $this->configurationManager->DeleteCollaboraDictionaries();
+                    $config->DeleteCollaboraDictionaries();
 
                 if (is_string($body['collabora_dictionaries']))
-                    $this->configurationManager->SetCollaboraDictionaries($body['collabora_dictionaries']);
+                    $config->SetCollaboraDictionaries($body['collabora_dictionaries']);
 
                 if (isset($body['delete_borg_backup_host_location']))
-                    $this->configurationManager->DeleteBorgBackupHostLocation();
+                    $config->deleteBorgLocation();
+
+                ConfigurationManager::storeConfigFile($config);
             }
 
             return $response->withStatus(201)->withHeader('Location', '/');

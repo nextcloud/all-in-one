@@ -16,15 +16,12 @@ use AIO\Docker\DockerActionManager;
 
 class ContainerDefinitionFetcher
 {
-    private ConfigurationManager $configurationManager;
     private \DI\Container $container;
 
     public function __construct(
-        ConfigurationManager $configurationManager,
         \DI\Container $container
     )
     {
-        $this->configurationManager = $configurationManager;
         $this->container = $container;
     }
 
@@ -47,9 +44,10 @@ class ContainerDefinitionFetcher
     private function GetDefinition(): array
     {
         $data = json_decode(file_get_contents(__DIR__ . '/../containers.json'), true);
+        $config = ConfigurationManager::loadConfigFile();
 
         $additionalContainerNames = [];
-        foreach ($this->configurationManager->GetEnabledCommunityContainers() as $communityContainer) {
+        foreach ($config->aioCommunityContainers as $communityContainer) {
             if ($communityContainer !== '') {
                 $path = DataConst::GetCommunityContainersDirectory() . '/' . $communityContainer . '/' . $communityContainer . '.json';
                 $additionalData = json_decode(file_get_contents($path), true);
@@ -64,46 +62,46 @@ class ContainerDefinitionFetcher
         $containers = [];
         foreach ($data['aio_services_v1'] as $entry) {
             if ($entry['container_name'] === 'nextcloud-aio-clamav') {
-                if (!$this->configurationManager->isClamavEnabled()) {
+                if (!$config->isClamavEnabled()) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-onlyoffice') {
-                if (!$this->configurationManager->isOnlyofficeEnabled()) {
+                if (!$config->isOnlyofficeEnabled()) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-collabora') {
-                if (!$this->configurationManager->isCollaboraEnabled()) {
+                if (!$config->isCollaboraEnabled()) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-talk') {
-                if (!$this->configurationManager->isTalkEnabled()) {
+                if (!$config->talkEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-talk-recording') {
-                if (!$this->configurationManager->isTalkRecordingEnabled()) {
+                if (!$config->isTalkRecordingEnabled()) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-imaginary') {
-                if (!$this->configurationManager->isImaginaryEnabled()) {
+                if (!$config->imaginaryEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-fulltextsearch') {
-                if (!$this->configurationManager->isFulltextsearchEnabled()) {
+                if (!$config->fulltextsearchEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-docker-socket-proxy') {
-                if (!$this->configurationManager->isDockerSocketProxyEnabled()) {
+                if (!$config->dockerSocketProxyEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-whiteboard') {
-                if (!$this->configurationManager->isWhiteboardEnabled()) {
+                if (!$config->whiteboardEnabled) {
                     continue;
                 }
             }
 
             $ports = new ContainerPorts();
             if (isset($entry['ports'])) {
-                foreach ($entry['ports'] as $value) {                    
+                foreach ($entry['ports'] as $value) {
                     $ports->AddPort(
                         new ContainerPort(
                             $value['port_number'],
@@ -118,34 +116,34 @@ class ContainerDefinitionFetcher
             if (isset($entry['volumes'])) {
                 foreach ($entry['volumes'] as $value) {
                     if($value['source'] === '%BORGBACKUP_HOST_LOCATION%') {
-                        $value['source'] = $this->configurationManager->GetBorgBackupHostLocation();
+                        $value['source'] = $config->getBorgLocation();
                         if($value['source'] === '') {
                             continue;
                         }
                     }
                     if($value['source'] === '%NEXTCLOUD_MOUNT%') {
-                        $value['source'] = $this->configurationManager->GetNextcloudMount();
+                        $value['source'] = $config->nextcloudMount;
                         if($value['source'] === '') {
                             continue;
                         }
                     } elseif ($value['source'] === '%NEXTCLOUD_DATADIR%') {
-                        $value['source'] = $this->configurationManager->GetNextcloudDatadirMount();
+                        $value['source'] = $config->nextcloudDatadir;
                         if ($value['source'] === '') {
                             continue;
                         }
                     } elseif ($value['source'] === '%WATCHTOWER_DOCKER_SOCKET_PATH%') {
-                        $value['source'] = $this->configurationManager->GetDockerSocketPath();
+                        $value['source'] = $config->dockerSocketPath;
                         if($value['source'] === '') {
                             continue;
                         }
                     } elseif ($value['source'] === '%NEXTCLOUD_TRUSTED_CACERTS_DIR%') {
-                        $value['source'] = $this->configurationManager->GetTrustedCacertsDir();
+                        $value['source'] = $config->trustedCacertsDir;
                         if($value['source'] === '') {
                             continue;
                         }
                     }
                     if ($value['destination'] === '%NEXTCLOUD_MOUNT%') {
-                        $value['destination'] = $this->configurationManager->GetNextcloudMount();
+                        $value['destination'] = $config->nextcloudMount;
                         if($value['destination'] === '') {
                             continue;
                         }
@@ -173,46 +171,46 @@ class ContainerDefinitionFetcher
                 }
                 foreach ($valueDependsOn as $value) {
                     if ($value === 'nextcloud-aio-clamav') {
-                        if (!$this->configurationManager->isClamavEnabled()) {
+                        if (!$config->isClamavEnabled()) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-onlyoffice') {
-                        if (!$this->configurationManager->isOnlyofficeEnabled()) {
+                        if (!$config->isOnlyofficeEnabled()) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-collabora') {
-                        if (!$this->configurationManager->isCollaboraEnabled()) {
+                        if (!$config->isCollaboraEnabled()) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-talk') {
-                        if (!$this->configurationManager->isTalkEnabled()) {
+                        if (!$config->talkEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-talk-recording') {
-                        if (!$this->configurationManager->isTalkRecordingEnabled()) {
+                        if (!$config->isTalkRecordingEnabled()) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-imaginary') {
-                        if (!$this->configurationManager->isImaginaryEnabled()) {
+                        if (!$config->imaginaryEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-fulltextsearch') {
-                        if (!$this->configurationManager->isFulltextsearchEnabled()) {
+                        if (!$config->fulltextsearchEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-docker-socket-proxy') {
-                        if (!$this->configurationManager->isDockerSocketProxyEnabled()) {
+                        if (!$config->dockerSocketProxyEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-whiteboard') {
-                        if (!$this->configurationManager->isWhiteboardEnabled()) {
+                        if (!$config->whiteboardEnabled) {
                             continue;
                         }
                     }
                     $dependsOn[] = $value;
                 }
             }
-            
+
             $variables = new ContainerEnvironmentVariables();
             if (isset($entry['environment'])) {
                 foreach ($entry['environment'] as $value) {

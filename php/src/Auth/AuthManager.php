@@ -4,22 +4,22 @@ namespace AIO\Auth;
 
 use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
+use AIO\Data\InvalidSettingConfigurationException;
 use DateTime;
 
 readonly class AuthManager {
     private const string SESSION_KEY = 'aio_authenticated';
 
-    public function __construct(
-        private ConfigurationManager $configurationManager
-    ) {
-    }
-
+    /** @throws InvalidSettingConfigurationException */
     public function CheckCredentials(string $password): bool {
-        return hash_equals($this->configurationManager->GetPassword(), $password);
+        $config = ConfigurationManager::loadConfigFile();
+        return hash_equals($config->GetPassword(), $password);
     }
 
+    /** @throws InvalidSettingConfigurationException */
     public function CheckToken(string $token): bool {
-        return hash_equals($this->configurationManager->GetToken(), $token);
+        $config = ConfigurationManager::loadConfigFile();
+        return hash_equals($config->GetToken(), $token);
     }
 
     public function SetAuthState(bool $isLoggedIn): void {
