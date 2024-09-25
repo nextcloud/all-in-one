@@ -37,7 +37,7 @@ updates:
     - "/Containers/whiteboard"
   schedule:
     interval: "daily"
-    time: "12:00"
+    time: "04:00"
   open-pull-requests-limit: 10
   labels:
   - 3. to review
