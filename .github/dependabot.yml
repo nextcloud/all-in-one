@@ -34,7 +34,7 @@ updates:
     - "/Containers/talk"
     - "/Containers/talk-recording"
     - "/Containers/watchtower"
-    - "/Containers/whiteboardy"
+    - "/Containers/whiteboard"
   schedule:
     interval: "daily"
     time: "12:00"
