@@ -14,16 +14,13 @@ class DockerController
     private DockerActionManager $dockerActionManager;
     private ContainerDefinitionFetcher $containerDefinitionFetcher;
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
-    private ConfigurationManager $configurationManager;
 
     public function __construct(
         DockerActionManager $dockerActionManager,
         ContainerDefinitionFetcher $containerDefinitionFetcher,
-        ConfigurationManager $configurationManager
     ) {
         $this->dockerActionManager = $dockerActionManager;
         $this->containerDefinitionFetcher = $containerDefinitionFetcher;
-        $this->configurationManager = $configurationManager;
     }
 
     private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
@@ -48,7 +45,7 @@ class DockerController
             }
         }
 
-        // Check if docker hub is reachable in order to make sure that we do not try to pull an image if it is down 
+        // Check if docker hub is reachable in order to make sure that we do not try to pull an image if it is down
         // and try to mitigate issues that are arising due to that
         if ($pullImage) {
             if (!$this->dockerActionManager->isDockerHubReachable($container)) {
@@ -91,9 +88,9 @@ class DockerController
     }
 
     public function startBackup() : void {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'backup';
-        $this->configurationManager->WriteConfig($config);
+        $config = ConfigurationManager::loadConfigFile();
+        $config->setBackupMode('backup');
+        ConfigurationManager::storeConfigFile($config);
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
@@ -108,19 +105,19 @@ class DockerController
     }
 
     public function checkBackup() : void {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'check';
-        $this->configurationManager->WriteConfig($config);
+        $config = ConfigurationManager::loadConfigFile();
+        $config->setBackupMode('check');
+        ConfigurationManager::storeConfigFile($config);
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'restore';
-        $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
-        $this->configurationManager->WriteConfig($config);
+        $config = ConfigurationManager::loadConfigFile();
+        $config->setBackupMode('restore');
+        $config->setSelectedRestoreTime($request->getParsedBody()['selected_restore_time'] ?? '');
+        ConfigurationManager::storeConfigFile($config);
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
@@ -132,26 +129,26 @@ class DockerController
     }
 
     public function StartBackupContainerCheckRepair(Request $request, Response $response, array $args) : Response {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'check-repair';
-        $this->configurationManager->WriteConfig($config);
+        $config = ConfigurationManager::loadConfigFile();
+        $config->setBackupMode('check-repair');
+        ConfigurationManager::storeConfigFile($config);
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
 
         // Restore to backup check which is needed to make the UI logic work correctly
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'check';
-        $this->configurationManager->WriteConfig($config);
+        $config = ConfigurationManager::loadConfigFile();
+        $config->setBackupMode('check');
+        ConfigurationManager::storeConfigFile($config);
 
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'test';
-        $config['instance_restore_attempt'] = 0;
-        $this->configurationManager->WriteConfig($config);
+        $config = ConfigurationManager::loadConfigFile();
+        $config->setBackupMode('test');
+        $config->instanceRestoreAttempt = 0;
+        ConfigurationManager::storeConfigFile($config);
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
@@ -175,17 +172,14 @@ class DockerController
         if (isset($request->getParsedBody()['install_latest_major'])) {
             $installLatestMajor = 30;
         } else {
-            $installLatestMajor = "";
+            $installLatestMajor = 0;
         }
 
-        $config = $this->configurationManager->GetConfig();
-        // set AIO_URL
-        $config['AIO_URL'] = $host . ':' . $port;
-        // set wasStartButtonClicked
-        $config['wasStartButtonClicked'] = 1;
-        // set install_latest_major
-        $config['install_latest_major'] = $installLatestMajor;
-        $this->configurationManager->WriteConfig($config);
+        $config = ConfigurationManager::loadConfigFile();
+        $config->aioUrl = $host . ':' . $port;
+        $config->wasStartButtonClicked = true;
+        $config->installLatestMajor = $installLatestMajor;
+        ConfigurationManager::storeConfigFile($config);
 
         // Start container
         $this->startTopContainer(true);
@@ -198,10 +192,9 @@ class DockerController
     }
 
     public function startTopContainer(bool $pullImage) : void {
-        $config = $this->configurationManager->GetConfig();
-        // set AIO_TOKEN
-        $config['AIO_TOKEN'] = bin2hex(random_bytes(24));
-        $this->configurationManager->WriteConfig($config);
+        $config = ConfigurationManager::loadConfigFile();
+        $config->setToken(bin2hex(random_bytes(24)));
+        ConfigurationManager::storeConfigFile($config);
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
@@ -250,7 +243,8 @@ class DockerController
     public function StartDomaincheckContainer() : void
     {
         # Don't start if domain is already set
-        if ($this->configurationManager->GetDomain() !== '' || $this->configurationManager->wasStartButtonClicked()) {
+        $config = ConfigurationManager::loadConfigFile();
+        if ($config->getDomain() !== '' || $config->wasStartButtonClicked) {
             return;
         }
 

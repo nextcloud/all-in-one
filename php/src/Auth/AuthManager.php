@@ -4,25 +4,25 @@ namespace AIO\Auth;
 
 use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
-use \DateTime;
+use AIO\Data\InvalidSettingConfigurationException;
+use DateTime;
 
-class AuthManager {
+readonly class AuthManager {
     private const string SESSION_KEY = 'aio_authenticated';
-    private ConfigurationManager $configurationManager;
 
-    public function __construct(ConfigurationManager $configurationManager) {
-        $this->configurationManager = $configurationManager;
+    /** @throws InvalidSettingConfigurationException */
+    public function CheckCredentials(string $password): bool {
+        $config = ConfigurationManager::loadConfigFile();
+        return hash_equals($config->GetPassword(), $password);
     }
 
-    public function CheckCredentials(string $password) : bool {
-        return hash_equals($this->configurationManager->GetPassword(), $password);
+    /** @throws InvalidSettingConfigurationException */
+    public function CheckToken(string $token): bool {
+        $config = ConfigurationManager::loadConfigFile();
+        return hash_equals($config->GetToken(), $token);
     }
 
-    public function CheckToken(string $token) : bool {
-        return hash_equals($this->configurationManager->GetToken(), $token);
-    }
-
-    public function SetAuthState(bool $isLoggedIn) : void {
+    public function SetAuthState(bool $isLoggedIn): void {
 
         if (!$this->IsAuthenticated() && $isLoggedIn === true) {
             $date = new DateTime();
@@ -40,7 +40,7 @@ class AuthManager {
         $_SESSION[self::SESSION_KEY] = $isLoggedIn;
     }
 
-    public function IsAuthenticated() : bool {
+    public function IsAuthenticated(): bool {
         return isset($_SESSION[self::SESSION_KEY]) && $_SESSION[self::SESSION_KEY] === true;
     }
 }

@@ -12,6 +12,7 @@ use AIO\Container\State\NotRestartingState;
 use AIO\Container\State\VersionDifferentState;
 use AIO\Container\State\StoppedState;
 use AIO\Container\State\VersionEqualState;
+use AIO\Data\ConfigFile;
 use AIO\Data\ConfigurationManager;
 use GuzzleHttp\Exception\RequestException;
 use AIO\ContainerDefinitionFetcher;
@@ -21,16 +22,13 @@ class DockerActionManager
 {
     private const string API_VERSION = 'v1.41';
     private \GuzzleHttp\Client $guzzleClient;
-    private ConfigurationManager $configurationManager;
     private ContainerDefinitionFetcher $containerDefinitionFetcher;
     private DockerHubManager $dockerHubManager;
 
     public function __construct(
-        ConfigurationManager  $configurationManager,
         ContainerDefinitionFetcher $containerDefinitionFetcher,
         DockerHubManager $dockerHubManager
     ) {
-        $this->configurationManager = $configurationManager;
         $this->containerDefinitionFetcher = $containerDefinitionFetcher;
         $this->dockerHubManager = $dockerHubManager;
         $this->guzzleClient = new \GuzzleHttp\Client(
@@ -130,12 +128,13 @@ class DockerActionManager
             return new ImageDoesNotExistState();
         }
 
+        $config = ConfigurationManager::loadConfigFile();
         $containerName = $container->GetIdentifier();
         $internalPort = $container->GetInternalPort();
         if($internalPort === '%APACHE_PORT%') {
-            $internalPort = $this->configurationManager->GetApachePort();
+            $internalPort = $config->apachePort;
         } elseif($internalPort === '%TALK_PORT%') {
-            $internalPort = $this->configurationManager->GetTalkPort();
+            $internalPort = $config->talkPort;
         }
 
         if ($internalPort !== "" && $internalPort !== 'host') {
@@ -221,11 +220,13 @@ class DockerActionManager
     }
 
     public function CreateContainer(Container $container) : void {
+        $config = ConfigurationManager::loadConfigFile();
+
         $volumes = [];
         foreach ($container->GetVolumes()->GetVolumes() as $volume) {
             // // NEXTCLOUD_MOUNT gets added via bind-mount later on
             // if ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
-            //     if ($volume->name === $this->configurationManager->GetNextcloudMount()) {
+            //     if ($volume->name === $config->GetNextcloudMount()) {
             //         continue;
             //     }
             // }
@@ -249,17 +250,15 @@ class DockerActionManager
         }
 
         foreach($container->GetSecrets() as $secret) {
-            $this->configurationManager->GetAndGenerateSecret($secret);
+            ConfigurationManager::GetAndGenerateSecret($secret);
         }
 
         $aioVariables = $container->GetAioVariables()->GetVariables();
         foreach($aioVariables as $variable) {
-            $config = $this->configurationManager->GetConfig();
             $variableArray = explode('=', $variable);
-            $config[$variableArray[0]] = $variableArray[1];
-            $this->configurationManager->WriteConfig($config);
-            sleep(1);
+            $config->overwrite($variableArray[0], $variableArray[1]);
         }
+        if(!empty($aioVariables)) ConfigurationManager::storeConfigFile($config);
 
         $envs = $container->GetEnvironmentVariables()->GetVariables();
         // Special thing for the nextcloud container
@@ -269,8 +268,8 @@ class DockerActionManager
         foreach($envs as $key => $env) {
             // TODO: This whole block below is a hack and needs to get reworked in order to support multiple substitutions per line by default for all envs
             if (str_starts_with($env, 'extra_params=')) {
-                $env = str_replace('%COLLABORA_SECCOMP_POLICY%', $this->configurationManager->GetCollaboraSeccompPolicy(), $env);
-                $env = str_replace('%NC_DOMAIN%', $this->configurationManager->GetDomain(), $env);
+                $env = str_replace('%COLLABORA_SECCOMP_POLICY%', $config->getCollaboraSeccompPolicy(), $env);
+                $env = str_replace('%NC_DOMAIN%', $config->getDomain(), $env);
                 $envs[$key] = $env;
                 continue;
             }
@@ -282,130 +281,130 @@ class DockerActionManager
                 $replacements = array();
 
                 if($out[1] === 'NC_DOMAIN') {
-                    $replacements[1] = $this->configurationManager->GetDomain();
+                    $replacements[1] = $config->GetDomain();
                 } elseif($out[1] === 'NC_BASE_DN') {
-                    $replacements[1] = $this->configurationManager->GetBaseDN();
+                    $replacements[1] = $config->GetBaseDN();
                 } elseif ($out[1] === 'AIO_TOKEN') {
-                    $replacements[1] = $this->configurationManager->GetToken();
+                    $replacements[1] = $config->GetToken();
                 } elseif ($out[1] === 'BORGBACKUP_MODE') {
-                    $replacements[1] = $this->configurationManager->GetBackupMode();
+                    $replacements[1] = $config->GetBackupMode();
                 } elseif ($out[1] === 'AIO_URL') {
-                    $replacements[1] = $this->configurationManager->GetAIOURL();
+                    $replacements[1] = $config->aioUrl;
                 } elseif ($out[1] === 'SELECTED_RESTORE_TIME') {
-                    $replacements[1] = $this->configurationManager->GetSelectedRestoreTime();
+                    $replacements[1] = $config->GetSelectedRestoreTime();
                 } elseif ($out[1] === 'APACHE_PORT') {
-                    $replacements[1] = $this->configurationManager->GetApachePort();
+                    $replacements[1] = $config->apachePort;
                 } elseif ($out[1] === 'TALK_PORT') {
-                    $replacements[1] = $this->configurationManager->GetTalkPort();
+                    $replacements[1] = $config->talkPort;
                 } elseif ($out[1] === 'NEXTCLOUD_MOUNT') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudMount();
+                    $replacements[1] = $config->nextcloudMount;
                 } elseif ($out[1] === 'BACKUP_RESTORE_PASSWORD') {
-                    $replacements[1] = $this->configurationManager->GetBorgRestorePassword();
+                    $replacements[1] = $config->getBorgPassword();
                 } elseif ($out[1] === 'CLAMAV_ENABLED') {
-                    if ($this->configurationManager->isClamavEnabled()) {
+                    if ($config->isClamavEnabled()) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'TALK_RECORDING_ENABLED') {
-                    if ($this->configurationManager->isTalkRecordingEnabled()) {
+                    if ($config->isTalkRecordingEnabled()) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'ONLYOFFICE_ENABLED') {
-                    if ($this->configurationManager->isOnlyofficeEnabled()) {
+                    if ($config->isOnlyofficeEnabled()) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'COLLABORA_ENABLED') {
-                    if ($this->configurationManager->isCollaboraEnabled()) {
+                    if ($config->isCollaboraEnabled()) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'TALK_ENABLED') {
-                    if ($this->configurationManager->isTalkEnabled()) {
+                    if ($config->talkEnabled) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'UPDATE_NEXTCLOUD_APPS') {
-                    if ($this->configurationManager->isDailyBackupRunning() && $this->configurationManager->areAutomaticUpdatesEnabled()) {
+                    if (ConfigurationManager::isDailyBackupRunning() && ConfigurationManager::areAutomaticUpdatesEnabled()) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'TIMEZONE') {
-                    if ($this->configurationManager->GetTimezone() === '') {
+                    if ($config->GetTimezone() === '') {
                         $replacements[1] = 'Etc/UTC';
                     } else {
-                        $replacements[1] = $this->configurationManager->GetTimezone();
+                        $replacements[1] = $config->getTimezone();
                     }
                 } elseif ($out[1] === 'COLLABORA_DICTIONARIES') {
-                    if ($this->configurationManager->GetCollaboraDictionaries() === '') {
+                    if ($config->getCollaboraDictionaries() === '') {
                         $replacements[1] = 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru';
                     } else {
-                        $replacements[1] = $this->configurationManager->GetCollaboraDictionaries();
+                        $replacements[1] = $config->getCollaboraDictionaries();
                     }
                 } elseif ($out[1] === 'IMAGINARY_ENABLED') {
-                    if ($this->configurationManager->isImaginaryEnabled()) {
+                    if ($config->imaginaryEnabled) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'FULLTEXTSEARCH_ENABLED') {
-                    if ($this->configurationManager->isFulltextsearchEnabled()) {
+                    if ($config->fulltextsearchEnabled) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'DOCKER_SOCKET_PROXY_ENABLED') {
-                    if ($this->configurationManager->isDockerSocketProxyEnabled()) {
+                    if ($config->dockerSocketProxyEnabled) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'NEXTCLOUD_UPLOAD_LIMIT') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
+                    $replacements[1] = $config->nextcloudUploadLimit;
                 } elseif ($out[1] === 'NEXTCLOUD_MEMORY_LIMIT') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudMemoryLimit();
+                    $replacements[1] = $config->nextcloudMemoryLimit;
                 } elseif ($out[1] === 'NEXTCLOUD_MAX_TIME') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudMaxTime();
+                    $replacements[1] = $config->nextcloudMaxTime;
                 } elseif ($out[1] === 'BORG_RETENTION_POLICY') {
-                    $replacements[1] = $this->configurationManager->GetBorgRetentionPolicy();
+                    $replacements[1] = $config->borgRetentionPolicy;
                 } elseif ($out[1] === 'NEXTCLOUD_TRUSTED_CACERTS_DIR') {
-                    $replacements[1] = $this->configurationManager->GetTrustedCacertsDir();
+                    $replacements[1] = $config->trustedCacertsDir;
                 } elseif ($out[1] === 'ADDITIONAL_DIRECTORIES_BACKUP') {
-                    if ($this->configurationManager->GetAdditionalBackupDirectoriesString() !== '') {
+                    if (ConfigurationManager::GetAdditionalBackupDirectoriesString() !== '') {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'BORGBACKUP_HOST_LOCATION') {
-                    $replacements[1] = $this->configurationManager->GetBorgBackupHostLocation();
+                    $replacements[1] = $config->getBorgLocation();
                 } elseif ($out[1] === 'APACHE_MAX_SIZE') {
-                    $replacements[1] = $this->configurationManager->GetApacheMaxSize();
+                    $replacements[1] = $config->GetApacheMaxSize();
                 } elseif ($out[1] === 'COLLABORA_SECCOMP_POLICY') {
-                    $replacements[1] = $this->configurationManager->GetCollaboraSeccompPolicy();
+                    $replacements[1] = $config->GetCollaboraSeccompPolicy();
                 } elseif ($out[1] === 'NEXTCLOUD_STARTUP_APPS') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudStartupApps();
+                    $replacements[1] = ConfigurationManager::GetNextcloudStartupApps();
                 } elseif ($out[1] === 'NEXTCLOUD_ADDITIONAL_APKS') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudAdditionalApks();
+                    $replacements[1] = $config->nextcloudAdditionalApks;
                 } elseif ($out[1] === 'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudAdditionalPhpExtensions();
+                    $replacements[1] = $config->nextcloudAdditionalPhpExtensions;
                 } elseif ($out[1] === 'INSTALL_LATEST_MAJOR') {
-                    if ($this->configurationManager->shouldLatestMajorGetInstalled()) {
+                    if ($config->installLatestMajor) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } elseif ($out[1] === 'REMOVE_DISABLED_APPS') {
-                    if ($this->configurationManager->shouldDisabledAppsGetRemoved()) {
-                        $replacements[1] = 'yes';
-                    } else {
+                    if ($config->nextcloudKeepDisabledApps) {
                         $replacements[1] = '';
+                    } else {
+                        $replacements[1] = 'yes';
                     }
                 // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
                 } elseif ($out[1] === 'AIO_DATABASE_HOST') {
@@ -413,18 +412,18 @@ class DockerActionManager
                 // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
                 } elseif ($out[1] === 'CADDY_IP_ADDRESS') {
                     $replacements[1] = '';
-                    $communityContainers = $this->configurationManager->GetEnabledCommunityContainers();
+                    $communityContainers = $config->aioCommunityContainers;
                     if (in_array('caddy', $communityContainers, true)) {
                         $replacements[1] = gethostbyname('nextcloud-aio-caddy');
                     }
                 } elseif ($out[1] === 'WHITEBOARD_ENABLED') {
-                    if ($this->configurationManager->isWhiteboardEnabled()) {
+                    if ($config->whiteboardEnabled) {
                         $replacements[1] = 'yes';
                     } else {
                         $replacements[1] = '';
                     }
                 } else {
-                    $secret = $this->configurationManager->GetSecret($out[1]);
+                    $secret = $config->GetSecret($out[1]);
                     if ($secret === "") {
                         throw new \Exception("The secret " . $out[1] . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
                     }
@@ -449,13 +448,13 @@ class DockerActionManager
                 $port = $value->port;
                 $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
-                    $port = $this->configurationManager->GetApachePort();
+                    $port = $config->apachePort;
                     // Do not expose udp if AIO is in reverse proxy mode
                     if ($port !== '443' && $protocol === 'udp') {
                         continue;
                     }
                 } else if ($port === '%TALK_PORT%') {
-                    $port = $this->configurationManager->GetTalkPort();
+                    $port = $config->talkPort;
                 }
                 $portWithProtocol = $port . '/' . $protocol;
                 $exposedPorts[$portWithProtocol] = null;
@@ -471,17 +470,17 @@ class DockerActionManager
                 $port = $value->port;
                 $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
-                    $port = $this->configurationManager->GetApachePort();
+                    $port = $config->apachePort;
                     // Do not expose udp if AIO is in reverse proxy mode
                     if ($port !== '443' && $protocol === 'udp') {
                         continue;
                     }
                 } else if ($port === '%TALK_PORT%') {
-                    $port = $this->configurationManager->GetTalkPort();
+                    $port = $config->talkPort;
                 }
                 $ipBinding = $value->ipBinding;
                 if ($ipBinding === '%APACHE_IP_BINDING%') {
-                    $ipBinding = $this->configurationManager->GetApacheIPBinding();
+                    $ipBinding = $config->apacheIpBinding;
                     // Do not expose if AIO is in internal network mode
                     if ($ipBinding === '@INTERNAL') {
                         continue;
@@ -499,7 +498,7 @@ class DockerActionManager
 
         $devices = [];
         foreach($container->GetDevices() as $device) {
-            if ($device === '/dev/dri' && ! $this->configurationManager->isDriDeviceEnabled()) {
+            if ($device === '/dev/dri' && ! $config->nextcloudEnableDriDevice) {
                 continue;
             }
             $devices[] = ["PathOnHost" => $device, "PathInContainer" => $device, "CgroupPermissions" => "rwm"];
@@ -555,7 +554,7 @@ class DockerActionManager
                     $mounts[] = ["Type" => "volume", "Source" => $additionalBackupVolumes, "Target" => "/nextcloud_aio_volumes/" . $additionalBackupVolumes, "ReadOnly" => false];
                 }
             }
-            foreach ($this->configurationManager->GetAdditionalBackupDirectoriesArray() as $additionalBackupDirectories) {
+            foreach (ConfigurationManager::GetAdditionalBackupDirectoriesArray() as $additionalBackupDirectories) {
                 if ($additionalBackupDirectories !== '') {
                     if (!str_starts_with($additionalBackupDirectories, '/')) {
                         $mounts[] = ["Type" => "volume", "Source" => $additionalBackupDirectories, "Target" => "/docker_volumes/" . $additionalBackupDirectories, "ReadOnly" => true];
@@ -571,7 +570,7 @@ class DockerActionManager
         // // Special things for the nextcloud container which should not be exposed in the containers.json
         // } elseif ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
         //     foreach ($container->GetVolumes()->GetVolumes() as $volume) {
-        //         if ($volume->name !== $this->configurationManager->GetNextcloudMount()) {
+        //         if ($volume->name !== $config->GetNextcloudMount()) {
         //             continue;
         //         }
         //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
@@ -652,7 +651,8 @@ class DockerActionManager
 
     public function isAnyUpdateAvailable() : bool {
         // return early if instance is not installed
-        if (!$this->configurationManager->wasStartButtonClicked()) {
+        $config = ConfigurationManager::loadConfigFile();
+        if (!$config->wasStartButtonClicked) {
             return false;
         }
         $id = 'nextcloud-aio-apache';

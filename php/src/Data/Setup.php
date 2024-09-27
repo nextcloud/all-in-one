@@ -3,30 +3,24 @@
 namespace AIO\Data;
 
 use AIO\Auth\PasswordGenerator;
+use Random\RandomException;
 
-class Setup
-{
-    private PasswordGenerator $passwordGenerator;
-    private ConfigurationManager $configurationManager;
-
-    public function __construct(
-        PasswordGenerator $passwordGenerator,
-        ConfigurationManager $configurationManager) {
-        $this->passwordGenerator = $passwordGenerator;
-        $this->configurationManager = $configurationManager;
-    }
-
-    public function Setup() : string {
-        if(!$this->CanBeInstalled()) {
+readonly class Setup {
+    /**
+     * @throws InvalidSettingConfigurationException
+     * @throws RandomException
+     */
+    static function Setup(): string {
+        if (!self::CanBeInstalled()) {
             return '';
         }
 
-        $password = $this->passwordGenerator->GeneratePassword(8);
-        $this->configurationManager->SetPassword($password);
+        $password = PasswordGenerator::GeneratePassword(8);
+        ConfigurationManager::storeConfigFile(ConfigFile::blank($password));
         return $password;
     }
 
-    public function CanBeInstalled() : bool {
+    static function CanBeInstalled(): bool {
         return !file_exists(DataConst::GetConfigFile());
     }
 }
