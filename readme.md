@@ -11,6 +11,8 @@ Included are:
 - Imaginary (optional, for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
 - ClamAV (optional, Antivirus backend for Nextcloud)
 - Fulltextsearch (optional)
+- Whiteboard (optional)
+- Docker Socket Proxy (optional, needed for [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi))
 <details><summary>And much more:</summary>
 
 - Simple web interface included that enables easy installation and maintenance
@@ -75,7 +77,7 @@ Included are:
 ## Screenshots
 | First setup | After installation |
 |---|---|
-| ![image](https://user-images.githubusercontent.com/42591237/232849125-30e24c85-bfd7-465e-8310-9b69cd9666fe.png) | ![image](https://user-images.githubusercontent.com/42591237/232849036-28c38d9a-3151-4cf1-97a5-4d94c1f0eba0.png) |
+| ![image](https://github.com/user-attachments/assets/6ef5d7b5-86f2-402c-bc6c-b633af2ca7dd) | ![image](https://github.com/user-attachments/assets/5f510667-a172-4841-b916-89025debef3a) |
 
 ## How to use this?
 The following instructions are meant for installations without a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) already being in place. If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), see the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md). Also, the instructions below are especially meant for Linux. For macOS see [this](#how-to-run-aio-on-macos), for Windows see [this](#how-to-run-aio-on-windows) and for Synology see [this](#how-to-run-aio-on-synology-dsm).
@@ -128,6 +130,9 @@ If your firewall/router has port 80 and 8443 open/forwarded and you point a doma
 ## FAQ
 ### How does it work?
 Nextcloud AIO is inspired by projects like Portainer that manage the docker daemon by talking to it through the docker socket directly. This concept allows a user to install only one container with a single command that does the heavy lifting of creating and managing all containers that are needed in order to provide a Nextcloud installation with most features included. It also makes updating a breeze and is not bound to the host system (and its slow updates) anymore as everything is in containers. Additionally, it is very easy to handle from a user perspective because a simple interface for managing your Nextcloud AIO installation is provided.
+
+### How to contribute?
+See [this issue](https://github.com/nextcloud/all-in-one/issues/5251) for a list of feature requests that need help by contributors.
 
 ### Are reverse proxies supported?
 Yes. Please refer to the following documentation on this: [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)

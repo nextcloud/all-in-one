@@ -10,6 +10,7 @@ SIGNALING_SECRET:           # TODO! This needs to be a unique and good password!
 TALK_INTERNAL_SECRET:           # TODO! This needs to be a unique and good password!
 TIMEZONE: Europe/Berlin          # TODO! This is the timezone that your containers will use.
 TURN_SECRET:           # TODO! This needs to be a unique and good password!
+WHITEBOARD_SECRET:           # TODO! This needs to be a unique and good password!
 
 CLAMAV_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 COLLABORA_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
@@ -18,6 +19,7 @@ IMAGINARY_ENABLED: "no"          # Setting this to "yes" (with quotes) enables t
 ONLYOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 TALK_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 TALK_RECORDING_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
+WHITEBOARD_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 
 APACHE_MAX_SIZE: "10737418240"          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT
 APACHE_PORT: 443          # Changing this to a different value than 443 will allow you to run it behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else).

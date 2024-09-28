@@ -16,7 +16,7 @@
     </header>
 
     <main>
-        <h1>Nextcloud AIO v9.5.0</h1>
+        <h1>Nextcloud AIO v9.6.0</h1>
 
         {# Add 2nd tab warning #}
         <script type="text/javascript" src="second-tab-warning.js"></script>
@@ -31,7 +31,7 @@
         {% set isBackupOrRestoreRunning = false %}
         {% set isApacheStarting = false %}
         {# Setting newMajorVersion to '' will hide corresponding options/elements, can be set to an integer like 26 in order to show corresponding elements. If set, also increase installLatestMajor in https://github.com/nextcloud/all-in-one/blob/main/php/src/Controller/DockerController.php #}
-        {% set newMajorVersion = '' %}
+        {% set newMajorVersion = 30 %}
 
         {% if is_backup_container_running == true %}
             {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
@@ -297,8 +297,8 @@
                             <p>Your containers are up-to-date.</p>
                             {% if newMajorVersion != '' and isAnyRunning == true and isApacheStarting != true %}
                                 <details>
-                                <summary>Note about <strong>Nextcloud {{ newMajorVersion }}</strong></summary>
-                                    <p>If you haven't upgraded to Nextcloud {{ newMajorVersion }} yet and want to do that now, feel free to follow <strong><a href="https://github.com/nextcloud/all-in-one/discussions/4542">this documentation</a></strong></p>
+                                <summary>Note about <strong>Nextcloud Hub {{ newMajorVersion - 21 }}</strong></summary>
+                                    <p>If you haven't upgraded to Nextcloud Hub {{ newMajorVersion - 21 }} yet and want to do that now, feel free to follow <strong><a href="https://github.com/nextcloud/all-in-one/discussions/5133">this documentation</a></strong></p>
                                 </details>
                             {% endif %}
                         {% endif %}
@@ -343,7 +343,7 @@
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     {% if newMajorVersion != '' %}
-                                        <input type="checkbox" id="install_latest_major" name="install_latest_major"><label for="install_latest_major">Install Nextcloud {{ newMajorVersion }} (if unchecked, Nextcloud {{ newMajorVersion - 1 }} will get installed)</label><br>
+                                        <input type="checkbox" id="install_latest_major" name="install_latest_major"><label for="install_latest_major">Install Nextcloud Hub {{ newMajorVersion - 21 }} (if unchecked, Nextcloud Hub {{ newMajorVersion - 22 }} will get installed)</label><br>
                                     {% endif %}
                                     <input type="submit" value="Download and start containers" />
                                 </form>
@@ -597,6 +597,11 @@
                         {% else %}
                             <p><input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label></p>
                         {% endif %}
+                        {% if is_whiteboard_enabled == true %}
+                            <p><input type="checkbox" id="whiteboard" name="whiteboard" checked="checked"><label for="whiteboard">Whiteboard</label></p>
+                        {% else %}
+                            <p><input type="checkbox" id="whiteboard" name="whiteboard"><label for="whiteboard">Whiteboard</label></p>
+                        {% endif %}
                         <input id="options-form-submit" type="submit" value="Save changes" />
                         <script type="text/javascript" src="options-form-submit.js"></script>
                     </form>
@@ -612,6 +617,7 @@
                         <script type="text/javascript" src="disable-imaginary.js"></script>
                         <script type="text/javascript" src="disable-fulltextsearch.js"></script>
                         <script type="text/javascript" src="disable-talk-recording.js"></script>
+                        <script type="text/javascript" src="disable-whiteboard.js"></script>
                     {% endif %}
 
                     {% if is_collabora_enabled == true and isAnyRunning == false and was_start_button_clicked == true %}

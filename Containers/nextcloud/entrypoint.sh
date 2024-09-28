@@ -436,12 +436,14 @@ DATADIR_PERMISSION_CONF
 
             # Apply optimization
             echo "Doing some optimizations..."
-            php /var/www/html/occ maintenance:repair
             if [ "$NEXTCLOUD_SKIP_DATABASE_OPTIMIZATION" != yes ]; then
+                php /var/www/html/occ maintenance:repair --include-expensive
                 php /var/www/html/occ db:add-missing-indices
                 php /var/www/html/occ db:add-missing-columns
                 php /var/www/html/occ db:add-missing-primary-keys
                 yes | php /var/www/html/occ db:convert-filecache-bigint
+            else
+                php /var/www/html/occ maintenance:repair
             fi
         fi
     fi
@@ -597,6 +599,10 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
         COLLABORA_HOST="$NC_DOMAIN"
     fi
     set +x
+    # Remove richdcoumentscode if it should be incorrectly installed
+    if [ -d "/var/www/html/custom_apps/richdocumentscode" ]; then
+        php /var/www/html/occ app:remove richdocumentscode
+    fi
     if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ app:install richdocuments
     elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" != "yes" ]; then
@@ -842,6 +848,23 @@ if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
         php /var/www/html/occ app:remove app_api
+    fi
+fi
+
+# Whiteboard app
+if [ "$WHITEBOARD_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/whiteboard" ]; then
+        php /var/www/html/occ app:install whiteboard
+    elif [ "$(php /var/www/html/occ config:app:get whiteboard enabled)" != "yes" ]; then
+        php /var/www/html/occ app:enable whiteboard
+    elif [ "$SKIP_UPDATE" != 1 ]; then
+        php /var/www/html/occ app:update whiteboard
+    fi
+    php /var/www/html/occ config:app:set whiteboard collabBackendUrl --value="https://$NC_DOMAIN/whiteboard"
+    php /var/www/html/occ config:app:set whiteboard jwt_secret_key --value="$WHITEBOARD_SECRET"
+else
+    if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/whiteboard" ]; then
+        php /var/www/html/occ app:remove whiteboard
     fi
 fi
 

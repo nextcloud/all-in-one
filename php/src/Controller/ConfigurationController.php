@@ -120,6 +120,11 @@ class ConfigurationController
                 } else {
                     $this->configurationManager->SetDockerSocketProxyEnabledState(0);
                 }
+                if (isset($request->getParsedBody()['whiteboard'])) {
+                    $this->configurationManager->SetWhiteboardEnabledState(1);
+                } else {
+                    $this->configurationManager->SetWhiteboardEnabledState(0);
+                }
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {

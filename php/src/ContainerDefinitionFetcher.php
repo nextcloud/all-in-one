@@ -95,6 +95,10 @@ class ContainerDefinitionFetcher
                 if (!$this->configurationManager->isDockerSocketProxyEnabled()) {
                     continue;
                 }
+            } elseif ($entry['container_name'] === 'nextcloud-aio-whiteboard') {
+                if (!$this->configurationManager->isWhiteboardEnabled()) {
+                    continue;
+                }
             }
 
             $ports = new ContainerPorts();
@@ -198,6 +202,10 @@ class ContainerDefinitionFetcher
                         }
                     } elseif ($value === 'nextcloud-aio-docker-socket-proxy') {
                         if (!$this->configurationManager->isDockerSocketProxyEnabled()) {
+                            continue;
+                        }
+                    } elseif ($value === 'nextcloud-aio-whiteboard') {
+                        if (!$this->configurationManager->isWhiteboardEnabled()) {
                             continue;
                         }
                     }

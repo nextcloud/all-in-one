@@ -1,13 +1,14 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.2.22-fpm-alpine3.20
+FROM php:8.2.23-fpm-alpine3.20
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=10G
 ENV PHP_MAX_TIME=3600
 ENV SOURCE_LOCATION=/usr/src/nextcloud
+ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=29.0.4
+ENV NEXTCLOUD_VERSION=29.0.7
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
@@ -78,7 +79,7 @@ RUN set -ex; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install igbinary-3.2.16; \ 
-    pecl install APCu-5.1.23; \
+    pecl install APCu-5.1.24; \
     pecl install memcached-3.2.0 \
         --configureoptions 'enable-memcached-igbinary="yes"'; \
     pecl install redis-6.0.2 \
@@ -131,7 +132,7 @@ RUN set -ex; \
     \
     { \
         echo 'session.save_handler = redis'; \
-        echo 'session.save_path = "tcp://${REDIS_HOST}:6379?auth=${REDIS_HOST_PASSWORD}"'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:6379/${REDIS_DB_INDEX}?auth=${REDIS_HOST_PASSWORD}"'; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
         echo 'redis.session.lock_wait_time = 10000'; \

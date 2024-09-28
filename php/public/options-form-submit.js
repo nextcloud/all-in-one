@@ -66,4 +66,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         dockerSocketProxy.addEventListener('change', makeOptionsFormSubmitVisible);
         // dockerSocketProxy.addEventListener('change', handleDockerSocketProxyWarning);
     }
+
+    // Whiteboard
+    let whiteboard = document.getElementById("whiteboard");
+    whiteboard.addEventListener('change', makeOptionsFormSubmitVisible);
 });
