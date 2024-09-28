@@ -18,8 +18,7 @@ This container bundles Local AI and auto-configures it for you.
 - url: github:go-skynet/model-gallery/gpt4all-j.yaml
   name: gpt4all-j
 ```
--  You need to add gpt4all-j under Text Generation (Default completion model to use) in Connected Accounts in the Administration Settings in Nextcloud, the default does not work.
--  Additionally after doing so, you might want to enable or disable specific features for your models in the integration_openai settings: `https://your-nc-domain.com/settings/admin/connected-accounts`
+-  To make it work, you first need to browse `https://your-nc-domain.com/settings/admin/ai` and enable or disable specific features for your models in the openAI settings. Afterwards using the Nextcloud Assistant should work.
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
 ### Repository
