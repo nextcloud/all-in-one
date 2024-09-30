@@ -17,6 +17,11 @@
                     "source": "%NEXTCLOUD_DATADIR%",
                     "destination": "/mnt/ncdata",
                     "writeable": false
+                },
+                { 
+                    "source": "%NEXTCLOUD_MOUNT%", 
+                    "destination": "%NEXTCLOUD_MOUNT%", 
+                    "writeable": false 
                 }
             ],
             "devices": [
