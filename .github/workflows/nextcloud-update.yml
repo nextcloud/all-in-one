@@ -25,7 +25,7 @@ jobs:
             | sort -V \
             | tail -1
         )"
-        sed -i "s|pecl install APCu.*\;|pecl install APCu-$apcu_version\;|" ./Containers/nextcloud/Dockerfile
+        sed -i "s|\(pecl install[^;]*APCu-\)[0-9.]*|\1$apcu_version|" ./Containers/nextcloud/Dockerfile
         
         # Memcached
         memcached_version="$(
@@ -36,7 +36,7 @@ jobs:
             | sort -V \
             | tail -1
         )"
-        sed -i "s|pecl install memcached.* |pecl install memcached-$memcached_version |" ./Containers/nextcloud/Dockerfile
+        sed -i "s|\(pecl install[^;]*memcached-\)[0-9.]*|\1$memcached_version|" ./Containers/nextcloud/Dockerfile
         
         # Redis
         redis_version="$(
@@ -47,18 +47,18 @@ jobs:
             | sort -V \
             | tail -1
         )"
-        sed -i "s|pecl install redis.* |pecl install redis-$redis_version |" ./Containers/nextcloud/Dockerfile
+        sed -i "s|\(pecl install[^;]*redis-\)[0-9.]*|\1$redis_version|" ./Containers/nextcloud/Dockerfile
         
         # Imagick
         imagick_version="$(
-          git ls-remote --tags https://github.com/mkoppanen/imagick.git \
+          git ls-remote --tags https://github.com/Imagick/imagick.git \
             | cut -d/ -f3 \
             | grep -viE '[a-z]' \
             | tr -d '^{}' \
             | sort -V \
             | tail -1
         )"
-        sed -i "s|pecl install imagick.*\;|pecl install imagick-$imagick_version\;|" ./Containers/nextcloud/Dockerfile
+        sed -i "s|\(pecl install[^;]*imagick-\)[0-9.]*|\1$imagick_version|" ./Containers/nextcloud/Dockerfile
 
         # Igbinary
         igbinary_version="$(
@@ -69,7 +69,7 @@ jobs:
             | sort -V \
             | tail -1
         )"
-        sed -i "s|pecl install igbinary.*\;|pecl install igbinary-$igbinary_version\;|" ./Containers/nextcloud/Dockerfile
+        sed -i "s|\(pecl install[^;]*igbinary-\)[0-9.]*|\1$igbinary_version|" ./Containers/nextcloud/Dockerfile
 
         # Nextcloud
         NC_MAJOR="$(grep "ENV NEXTCLOUD_VERSION" ./Containers/nextcloud/Dockerfile | grep -oP '[23][0-9]')"
