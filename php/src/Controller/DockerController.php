@@ -2,7 +2,7 @@
 
 namespace AIO\Controller;
 
-use AIO\Container\State\RunningState;
+use AIO\Container\WorkingState;
 use AIO\ContainerDefinitionFetcher;
 use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -28,7 +28,7 @@ readonly class DockerController {
 
         // Don't start if container is already running
         // This is expected to happen if a container is defined in depends_on of multiple containers
-        if ($container->GetRunningState() instanceof RunningState) {
+        if ($container->GetRunningState() === WorkingState::Running) {
             error_log('Not starting ' . $id . ' because it was already started.');
             return;
         }
@@ -254,10 +254,10 @@ readonly class DockerController {
         $domaincheckContainer = $this->containerDefinitionFetcher->GetContainerById($id);
         $apacheContainer = $this->containerDefinitionFetcher->GetContainerById(self::TOP_CONTAINER);
         // Don't start if apache is already running
-        if ($apacheContainer->GetRunningState() instanceof RunningState) {
+        if ($apacheContainer->GetRunningState() === WorkingState::Running) {
             return;
         // Don't start if domaincheck is already running
-        } elseif ($domaincheckContainer->GetRunningState() instanceof RunningState) {
+        } elseif ($domaincheckContainer->GetRunningState() === WorkingState::Running) {
             $domaincheckWasStarted = apcu_fetch($cacheKey);
             // Start domaincheck again when 10 minutes are over by not returning here
             if($domaincheckWasStarted !== false && is_string($domaincheckWasStarted)) {
