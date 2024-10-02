@@ -21,10 +21,12 @@
 	"require-dev": {
 		"sserbin/twig-linter": "@dev",
 		"vimeo/psalm": "^5.25",
-		"wapmorgan/php-deprecation-detector": "dev-master"
+		"wapmorgan/php-deprecation-detector": "dev-master",
+		"nextcloud/coding-standard": "^1.3",
+		"friendsofphp/php-cs-fixer": "^3"
 	},
 	"scripts": {
-		"dev": [
+			"dev": [
 			"Composer\\Config::disableProcessTimeout",
 			"php -S localhost:8080 -t public"
 		],
@@ -33,6 +35,8 @@
 		"psalm:strict": "psalm --threads=1 --show-info=true",
 		"lint": "php -l src/*.php src/**/*.php public/index.php",
 		"lint:twig": "twig-linter lint ./templates",
+		"cs:check": "php-cs-fixer fix --dry-run --diff",
+		"cs:fix": "php-cs-fixer fix",
 		"php-deprecation-detector": "phpdd scan -n -t 8.3 src/*.php src/**/*.php public/index.php"
 	}
 }
