@@ -6,6 +6,7 @@ You can run the containers that are build for AIO with docker-compose. This come
 - You can run it without a container having access to the docker socket
 - You can modify all values on your own
 - You can run the containers with docker swarm
+- You can run it entirely offline or in air-gapped environment
 
 ### Disadvantages
 - You lose the AIO interface
@@ -30,9 +31,9 @@ Now copy the provided yaml file to a compose.yaml file by running `cp latest.yml
 Now you should be ready to go with `sudo docker compose up`.
 
 ## Docker profiles
-The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, whiteboard, talk-recording, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`. (Note: there is no clamav image for arm64).
+The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, whiteboard, talk-recording, clamav, imaginary, fulltextsearch or docker-socket-proxy use additional arguments for each of them, for example `--profile collabora`. (Note: there is no clamav image for arm64).
 
-For a complete all-in-one with collabora use `sudo docker compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch --profile whiteboard up`. (Note: there is no clamav image for arm64).
+For a complete all-in-one with collabora use `sudo docker compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch --profile whiteboard --profile docker-socket-proxy up`. (Note: there is no clamav image for arm64).
 
 ## How to update?
 Since the AIO containers may change in the future, it is highly recommended to strictly follow the following procedure whenever you want to upgrade your containers.

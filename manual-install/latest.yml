@@ -98,6 +98,9 @@ services:
       nextcloud-aio-imaginary:
         condition: service_started
         required: false
+      nextcloud-aio-docker-socket-proxy:
+        condition: service_started
+        required: false
     image: nextcloud/aio-nextcloud:latest
     init: true
     expose:
@@ -370,6 +373,23 @@ services:
     restart: unless-stopped
     profiles:
       - fulltextsearch
+    networks:
+      - nextcloud-aio
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-docker-socket-proxy:
+    image: nextcloud/aio-docker-socket-proxy
+    restart: unless-stopped
+    init: true
+    expose:
+      - "2375"
+    environment:
+      - "TZ=${TIMEZONE}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    profiles:
+      - docker-socket-proxy
     networks:
       - nextcloud-aio
     cap_drop:
