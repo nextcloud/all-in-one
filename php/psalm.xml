@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<!--TODO: errorLevel="1" see PR #5369-->
 <psalm
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="https://getpsalm.org/schema/config"
