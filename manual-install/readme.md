@@ -12,7 +12,7 @@ You can run the containers that are build for AIO with docker-compose. This come
 - You lose the AIO interface
 - You lose update notifications and automatic updates
 - You lose all AIO backup and restore features
-- You lose all community containers: https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers
+- You lose some community containers: https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers
 - **You need to know what you are doing, especially when modifying the compose.yaml file**
 - For updating, you need to strictly follow the at the bottom described update routine
 - Probably more
@@ -31,9 +31,9 @@ Now copy the provided yaml file to a compose.yaml file by running `cp latest.yml
 Now you should be ready to go with `sudo docker compose up`.
 
 ## Docker profiles
-The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, whiteboard, talk-recording, clamav, imaginary, fulltextsearch or docker-socket-proxy use additional arguments for each of them, for example `--profile collabora`. (Note: there is no clamav image for arm64).
+The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, whiteboard, talk-recording, clamav, imaginary, fulltextsearch or docker-socket-proxy use additional arguments for each of them, for example `--profile collabora`. (Note: there is no clamav image for arm64). For community containers, additional profile flags are required, such as local-ai, caddy, dlna, facerecognition, jellyfin.
 
-For a complete all-in-one with collabora use `sudo docker compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch --profile whiteboard --profile docker-socket-proxy up`. (Note: there is no clamav image for arm64).
+For a complete all-in-one with collabora use `sudo docker compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch --profile whiteboard --profile docker-socket-proxy --profile caddy --profile dlna --profile facerecognition --profile jellyfin --profile local-ai up`. (Note: there is no clamav image for arm64).
 
 ## How to update?
 Since the AIO containers may change in the future, it is highly recommended to strictly follow the following procedure whenever you want to upgrade your containers.

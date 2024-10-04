@@ -1,3 +1,6 @@
+include:
+  - community-compose.yml
+
 services:
   nextcloud-aio-apache:
     depends_on:
