@@ -112,11 +112,11 @@ readonly class Container {
         return $this->volumes;
     }
 
-    public function GetRunningState() : WorkingState {
+    public function GetRunningState() : ContainerState {
         return $this->dockerActionManager->GetContainerRunningState($this);
     }
 
-    public function GetRestartingState() : WorkingState {
+    public function GetRestartingState() : ContainerState {
         return $this->dockerActionManager->GetContainerRestartingState($this);
     }
 
@@ -124,7 +124,7 @@ readonly class Container {
         return $this->dockerActionManager->GetContainerUpdateState($this);
     }
 
-    public function GetStartingState() : WorkingState {
+    public function GetStartingState() : ContainerState {
         return $this->dockerActionManager->GetContainerStartingState($this);
     }
 
