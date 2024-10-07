@@ -9,14 +9,11 @@ use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class LoginController
-{
-    private AuthManager $authManager;
-    private DockerActionManager $dockerActionManager;
-
-    public function __construct(AuthManager $authManager, DockerActionManager $dockerActionManager) {
-        $this->authManager = $authManager;
-        $this->dockerActionManager = $dockerActionManager;
+readonly class LoginController {
+    public function __construct(
+        private AuthManager $authManager,
+        private DockerActionManager $dockerActionManager,
+    ) {
     }
 
     public function TryLogin(Request $request, Response $response, array $args) : Response {

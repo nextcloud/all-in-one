@@ -13,34 +13,21 @@ use AIO\Container\State\VersionDifferentState;
 use AIO\Container\State\StoppedState;
 use AIO\Container\State\VersionEqualState;
 use AIO\Data\ConfigurationManager;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use AIO\ContainerDefinitionFetcher;
 use http\Env\Response;
 
-class DockerActionManager
-{
+readonly class DockerActionManager {
     private const string API_VERSION = 'v1.41';
-    private \GuzzleHttp\Client $guzzleClient;
-    private ConfigurationManager $configurationManager;
-    private ContainerDefinitionFetcher $containerDefinitionFetcher;
-    private DockerHubManager $dockerHubManager;
+    private Client $guzzleClient;
 
     public function __construct(
-        ConfigurationManager  $configurationManager,
-        ContainerDefinitionFetcher $containerDefinitionFetcher,
-        DockerHubManager $dockerHubManager
+        private ConfigurationManager  $configurationManager,
+        private ContainerDefinitionFetcher $containerDefinitionFetcher,
+        private DockerHubManager $dockerHubManager
     ) {
-        $this->configurationManager = $configurationManager;
-        $this->containerDefinitionFetcher = $containerDefinitionFetcher;
-        $this->dockerHubManager = $dockerHubManager;
-        $this->guzzleClient = new \GuzzleHttp\Client(
-            [
-                'curl' => [
-                    CURLOPT_UNIX_SOCKET_PATH => '/var/run/docker.sock',
-
-                ],
-            ]
-        );
+        $this->guzzleClient = new Client(['curl' => [CURLOPT_UNIX_SOCKET_PATH => '/var/run/docker.sock']]);
     }
 
     private function BuildApiUrl(string $url) : string {

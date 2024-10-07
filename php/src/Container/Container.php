@@ -7,87 +7,38 @@ use AIO\Data\ConfigurationManager;
 use AIO\Docker\DockerActionManager;
 use AIO\ContainerDefinitionFetcher;
 
-class Container {
-    private string $identifier;
-    private string $displayName;
-    private string $containerName;
-    private string $restartPolicy;
-    private int $maxShutdownTime;
-    private ContainerPorts $ports;
-    private string $internalPorts;
-    private ContainerVolumes $volumes;
-    private ContainerEnvironmentVariables $containerEnvironmentVariables;
-    /** @var string[] */
-    private array $dependsOn;
-    /** @var string[] */
-    private array $secrets;
-    /** @var string[] */
-    private array $devices;
-    /** @var string[] */
-    private array $capAdd;
-    private int $shmSize;
-    private bool $apparmorUnconfined;
-    /** @var string[] */
-    private array $backupVolumes;
-    private array $nextcloudExecCommands;
-    private bool $readOnlyRootFs;
-    private array $tmpfs;
-    private bool $init;
-    private string $imageTag;
-    private AioVariables $aioVariables;
-    private string $documentation;
-    private DockerActionManager $dockerActionManager;
-
+readonly class Container {
     public function __construct(
-        string $identifier,
-        string $displayName,
-        string $containerName,
-        string $restartPolicy,
-        int $maxShutdownTime,
-        ContainerPorts $ports,
-        string $internalPorts,
-        ContainerVolumes $volumes,
-        ContainerEnvironmentVariables $containerEnvironmentVariables,
-        array $dependsOn,
-        array $secrets,
-        array $devices,
-        array $capAdd,
-        int $shmSize,
-        bool $apparmorUnconfined,
-        array $backupVolumes,
-        array $nextcloudExecCommands,
-        bool $readOnlyRootFs,
-        array $tmpfs,
-        bool $init,
-        string $imageTag,
-        AioVariables $aioVariables,
-        string $documentation,
-        DockerActionManager $dockerActionManager
+        private string                        $identifier,
+        private string                        $displayName,
+        private string                        $containerName,
+        private string                        $restartPolicy,
+        private int                           $maxShutdownTime,
+        private ContainerPorts                $ports,
+        private string                        $internalPorts,
+        private ContainerVolumes              $volumes,
+        private ContainerEnvironmentVariables $containerEnvironmentVariables,
+        /** @var string[] */
+        private array                         $dependsOn,
+        /** @var string[] */
+        private array                         $secrets,
+        /** @var string[] */
+        private array                         $devices,
+        /** @var string[] */
+        private array                         $capAdd,
+        private int                           $shmSize,
+        private bool                          $apparmorUnconfined,
+        /** @var string[] */
+        private array                         $backupVolumes,
+        private array                         $nextcloudExecCommands,
+        private bool                          $readOnlyRootFs,
+        private array                         $tmpfs,
+        private bool                          $init,
+        private string                        $imageTag,
+        private AioVariables                  $aioVariables,
+        private string                        $documentation,
+        private DockerActionManager           $dockerActionManager
     ) {
-        $this->identifier = $identifier;
-        $this->displayName = $displayName;
-        $this->containerName = $containerName;
-        $this->restartPolicy = $restartPolicy;
-        $this->maxShutdownTime = $maxShutdownTime;
-        $this->ports = $ports;
-        $this->internalPorts = $internalPorts;
-        $this->volumes = $volumes;
-        $this->containerEnvironmentVariables = $containerEnvironmentVariables;
-        $this->dependsOn = $dependsOn;
-        $this->secrets = $secrets;
-        $this->devices = $devices;
-        $this->capAdd = $capAdd;
-        $this->shmSize = $shmSize;
-        $this->apparmorUnconfined = $apparmorUnconfined;
-        $this->backupVolumes = $backupVolumes;
-        $this->nextcloudExecCommands = $nextcloudExecCommands;
-        $this->readOnlyRootFs = $readOnlyRootFs;
-        $this->tmpfs = $tmpfs;
-        $this->init = $init;
-        $this->imageTag = $imageTag;
-        $this->aioVariables = $aioVariables;
-        $this->documentation = $documentation;
-        $this->dockerActionManager = $dockerActionManager;
     }
 
     public function GetIdentifier() : string {
