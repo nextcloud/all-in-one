@@ -9,21 +9,14 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
 
-class DockerController
-{
-    private DockerActionManager $dockerActionManager;
-    private ContainerDefinitionFetcher $containerDefinitionFetcher;
+readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
-    private ConfigurationManager $configurationManager;
 
     public function __construct(
-        DockerActionManager $dockerActionManager,
-        ContainerDefinitionFetcher $containerDefinitionFetcher,
-        ConfigurationManager $configurationManager
+        private DockerActionManager           $dockerActionManager,
+        private ContainerDefinitionFetcher    $containerDefinitionFetcher,
+        private ConfigurationManager $configurationManager
     ) {
-        $this->dockerActionManager = $dockerActionManager;
-        $this->containerDefinitionFetcher = $containerDefinitionFetcher;
-        $this->configurationManager = $configurationManager;
     }
 
     private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
@@ -48,7 +41,7 @@ class DockerController
             }
         }
 
-        // Check if docker hub is reachable in order to make sure that we do not try to pull an image if it is down 
+        // Check if docker hub is reachable in order to make sure that we do not try to pull an image if it is down
         // and try to mitigate issues that are arising due to that
         if ($pullImage) {
             if (!$this->dockerActionManager->isDockerHubReachable($container)) {

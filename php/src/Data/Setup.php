@@ -4,16 +4,11 @@ namespace AIO\Data;
 
 use AIO\Auth\PasswordGenerator;
 
-class Setup
-{
-    private PasswordGenerator $passwordGenerator;
-    private ConfigurationManager $configurationManager;
-
+readonly class Setup {
     public function __construct(
-        PasswordGenerator $passwordGenerator,
-        ConfigurationManager $configurationManager) {
-        $this->passwordGenerator = $passwordGenerator;
-        $this->configurationManager = $configurationManager;
+        private PasswordGenerator $passwordGenerator,
+        private ConfigurationManager $configurationManager,
+    ) {
     }
 
     public function Setup() : string {

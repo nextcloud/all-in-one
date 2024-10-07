@@ -8,12 +8,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class AuthMiddleware
-{
-    private AuthManager $authManager;
-
-    public function __construct(AuthManager $authManager) {
-        $this->authManager = $authManager;
+readonly class AuthMiddleware {
+    public function __construct(
+        private AuthManager $authManager
+    ) {
     }
 
     public function __invoke(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
