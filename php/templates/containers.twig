@@ -268,6 +268,13 @@
                                             (<a href="{{ container.GetDocumentation() }}">docs</a>)
                                         {% endif %}
                                         </span>
+                                    {% elseif container.GetRunningState().value == 'unhealthy' %}
+                                      <span class="status running"></span>
+                                      <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank" rel="noopener">Unhealthy</a>)
+                                        {% if container.GetDocumentation() != '' %}
+                                          (<a href="{{ container.GetDocumentation() }}">docs</a>)
+                                        {% endif %}
+                                        </span>
                                     {% elseif container.GetRunningState().value == 'running' %}
                                         <span class="status success"></span>
                                         <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank" rel="noopener">Running</a>)

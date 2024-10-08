@@ -9,4 +9,5 @@ enum ContainerState: string {
     case Running = 'running';
     case Starting = 'starting';
     case Stopped = 'stopped';
+    case Unhealthy = 'unhealthy';
 }
