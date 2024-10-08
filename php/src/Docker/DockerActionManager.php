@@ -49,10 +49,12 @@ readonly class DockerActionManager {
 
         $responseBody = json_decode((string)$response->getBody(), true);
 
-        if ($responseBody['State']['Running'] === true) {
-            return ContainerState::Running;
-        } else {
+        if ($responseBody['State']['Running'] !== true) {
             return ContainerState::Stopped;
+        } elseif(array_key_exists('Health', $responseBody['State']) && $responseBody['State']['Health']['Status'] !== 'healthy') {
+            return ContainerState::Unhealthy;
+        } else {
+            return ContainerState::Running;
         }
     }
 
