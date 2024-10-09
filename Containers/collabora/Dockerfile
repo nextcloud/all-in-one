@@ -9,6 +9,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -ex; \
     \
     apt-get update; \
+    apt-get upgrade -y; \
     apt-get install -y --no-install-recommends \
         tzdata \
         netcat-openbsd \
