@@ -353,10 +353,9 @@ server {
         proxy_set_header X-Forwarded-Scheme $scheme;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header Accept-Encoding "";
         proxy_set_header Host $host;
     
-        client_body_buffer_size 512k;
+        proxy_request_buffering off;
         proxy_read_timeout 86400s;
         client_max_body_size 0;
 
