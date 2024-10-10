@@ -23,6 +23,10 @@ class DataConst {
         return self::GetDataDirectory() . '/configuration.json';
     }
 
+    public static function GetBackupPublicKey() : string {
+        return self::GetDataDirectory() . '/id_borg.pub';
+    }
+
     public static function GetBackupSecretFile() : string {
         return self::GetDataDirectory() . '/backupsecret';
     }
