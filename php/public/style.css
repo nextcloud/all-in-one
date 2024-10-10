@@ -1,12 +1,58 @@
+:root {
+    --color-nextcloud-blue: #0082c9;
+    --color-nextcloud-logo: var(--color-nextcloud-blue);
+    --color-main-background: white;
+    --color-input-background: white;
+    --color-main-text: black;
+    --color-main-border: black;
+    --color-main-border-hover: var(--color-main-border);
+    --color-error: #db0606;
+    --color-error-hover: #df2525;
+    --color-error-text: #c20505;
+    --color-success: #46ba61;
+    --color-running: #ffd000;
+    --color-info: #0071ad;
+    --color-info-hover: #00aaef;
+    --color-border-maxcontrast: #7d7d7d;
+    --border: .5px;
+    --border-hover: 2px;
+    --border-radius: 7px;
+    --border-radius-large: 12px;
+    --default-font-size: 13px;
+    --checkbox-size: 16px;
+    --max-width: 500px;
+}
+
+[data-theme="dark"] {
+    --color-main-background: #171717;
+    --color-input-background: #ebebeb;
+    --color-main-text: #ebebeb;
+    --color-nextcloud-logo: var(--color-main-text);
+    --color-main-border: var(--color-border-maxcontrast);
+    --color-main-border-hover: var(--color-main-text);
+    --color-error: #ff3333;
+    --color-error-hover: #ff6666;
+    --color-error-text: #ff8080;
+    --color-info: #00aeff;
+    --color-info-hover: #33beff;
+    --border-hover: var(--border);
+}
+
 html, body {
     padding: 0;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Cantarell, Ubuntu, Helvetica Neue, Arial, Noto Color Emoji, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen-Sans, Cantarell, Ubuntu, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    background-color: var(--color-main-background);
+    color: var(--color-main-text);
 }
 
 a {
     text-decoration: none;
-    color: #0082c9;
+    color: var(--color-info);
+}
+
+a:hover {
+    color: var(--color-info-hover);
 }
 
 a.button,
@@ -15,19 +61,24 @@ input[type="submit"] {
     width: auto;
     height: 34px;
     cursor: pointer;
-    background-color: #0082c9;
+    background-color: var(--color-nextcloud-blue);
     font-weight: bold;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     margin: 3px 3px 3px 0;
-    font-size: 14px;
+    font-size: var(--default-font-size);
     color: white;
-    border: .5px solid black;
+    border: .5px solid var(--color-main-border);
     outline: none;
 }
 
 a.button:focus,
 input[type="submit"]:focus {
-    border: 1px solid black;
+    border: 1px solid var(--color-main-border);
+}
+
+a.button:hover,
+input[type="submit"]:hover {
+    background-color: var(--color-info-hover);
 }
 
 summary {
@@ -41,38 +92,36 @@ ul {
 
 li {
     padding-bottom: 5px;
+    text-indent: 0;
+    padding-left: 0;
 }
 
 span.error {
-    background-color: #e9322d;
+    background-color: var(--color-error);
 }
 
 div.toast.error {
-    border-left-color: #e9322d;
+    border-left-color: var(--color-error);
 }
 
 .status {
     display: inline-block;
-    height: 16px;
-    width: 16px;
-    vertical-align: text-bottom
-}
-
-.status {
+    height: var(--checkbox-size);
+    width: var(--checkbox-size);
+    vertical-align: text-bottom;
     border-radius: 50%
 }
 
-
 span.success {
-    background-color: #46ba61;
+    background-color: var(--color-success);
 }
 
 span.running {
-    background-color: rgb(255, 208, 0);
+    background-color: var(--color-running);
 }
 
 div.toast.success {
-    border-left-color: #46ba61;
+    border-left-color: var(--color-success);
 }
 
 div.toast {
@@ -84,51 +133,41 @@ div.toast {
     margin-top: 45px;
     position: fixed;
     z-index: 1000;
-    border-radius: 3px;
-    background: white none;
+    border-radius: var(--border-radius);
+    background: var(--color-main-background) none;
+    color: var(--color-main-text);
+}
+
+.nextcloud-logo {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    color: var(--color-nextcloud-logo);
+}
+
+.fallback-text {
+   display: none;
+}
+
+svg:not(:has(use)) .fallback-text {
+    display: block;
 }
 
 .login {
     padding: 50px;
-    background-color: white;
+    background-color: var(--color-main-background);
+    color: var(--color-main-text);
     width: 500px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border-radius: 12px;
+    border-radius: var(--border-radius-large);
 }
 
 .login > .monospace {
     font-family: monospace;
     font-size: 17px;
-}
-
-form {
-    margin: 0;
-}
-
-input[type="text"],
-input[type="password"],
-select {
-    padding-left: 8px;
-    padding-right: 8px;
-    height: 34px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: .5px solid black;
-}
-
-textarea {
-    border-radius: 8px;
-    border: .5px solid black;
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus,
-textarea:focus,
-select:focus {
-    border: 1px solid black;
 }
 
 .login > form > input[type="password"],
@@ -153,34 +192,113 @@ select:focus {
     align-content: center;
 }
 
-.login-wrapper {
+.wrapper {
     min-height: 100dvh;
     min-width: 100vw;
     position: fixed;
     width: 100vw;
-    height: auto;
-    background-image: url("img/Background_Light.jpg");
-
+    background-image: url("img/jenna-kim-the-globe.webp");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+html[data-theme="dark"] .wrapper {
+    background-image: url("img/jenna-kim-the-globe-dark.webp");
+}
+
+form {
+    margin: 0;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+    padding-left: 8px;
+    padding-right: 8px;
+    height: 34px;
+    margin-bottom: 15px;
+    border-radius: var(--border-radius);
+    border: var(--border) solid var(--color-border-maxcontrast);
+    background: var(--color-main-background);
+    color: var(--color-main-text);
+}
+
+input[type="text"]:hover,
+input[type="password"]:hover,
+select:hover {
+    border: var(--border-hover) solid var(--color-main-border-hover);
+}
+
+textarea {
+    border-radius: var(--border-radius);
+    border: .5px solid var(--color-main-border);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+    border: 1px solid var(--color-main-border);
+}
+
+/* Scroll bar for dark mode */
+html[data-theme="dark"] ::-webkit-scrollbar {
+    width: 8px; /* Width of the scroll bar */
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background-color: #444; /* Dark mode scrollbar thumb color */
+    border-radius: 4px; /* Rounded corners for the thumb */
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-track {
+    background-color: #333; /* Dark mode scrollbar track color */
+}
+
+/* Scroll bar for light mode */
+::-webkit-scrollbar {
+    width: 8px; /* Width of the scroll bar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888; /* Light mode scrollbar thumb color */
+    border-radius: 4px; /* Rounded corners for the thumb */
+}
+
+::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* Light mode scrollbar track color */
+}
+
+.container {
+    margin: 20px auto;
+    padding: 2px;
+    max-width: calc(var(--max-width) + 108px);
+    background-color: var(--color-main-background);
+    border-radius: var(--border-radius-large);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: calc(100dvh - 40px);
+    overflow: hidden;
 }
 
 main {
-    padding: 20px;
-    max-width: 100%;
+    padding-left: 50px;
+    padding-right: 50px;
+    background-color: transparent; /* transparent, since color comes from outer container */
+    color: var(--color-main-text);
+    max-height: calc(100dvh - 44px);
+    overflow-y: auto;
+    box-sizing: border-box;
     word-break: break-word;
-    max-width: 500px;
+    max-width: calc(var(--max-width) + 100px);
     margin: 0 auto;
 }
 
 .logo {
-    background-image: url('/img/logo.svg');
+    color: white;
     height: 50px;
-    background-repeat: no-repeat;
-    display: inline-flex;
-    background-size: contain;
-    background-position: center center;
     width: 62px;
     position: absolute;
     left: 12px;
@@ -189,16 +307,62 @@ main {
 }
 
 header {
-    background-color: #0082c9;
-    background-image: linear-gradient(40deg, #0082c9 0%, #30b6ff 100%);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: transparent;
     height: 50px;
     justify-content: space-between;
     align-items: center;
     display: flex;
+    padding: 0 20px;
+    z-index: 1000;
 }
 
 header > form {
-    margin: 0 8px;
+    margin-left: auto;
+    margin-right: 30px;
+}
+
+input[type="checkbox"] {
+    width: var(--checkbox-size);
+    height: var(--checkbox-size);
+    -webkit-appearance: none; /* remove default styling */
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid var(--color-nextcloud-blue);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle; /* align checkbox vertically with text */
+    margin-top: -1px; /* adjust for better alignment */
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--color-nextcloud-blue);
+    border-color: var(--color-border-maxcontrast);
+}
+
+input[type="checkbox"]:checked::after {
+    content: ''; /* Create a pseudo-element for the checkmark */
+    position: absolute; /* Position it absolutely */
+    left: 4px; /* Positioning of the checkmark */
+    top: 0; /* Positioning of the checkmark */
+    width: 4px; /* Width of the checkmark */
+    height: 9px; /* Height of the checkmark */
+    border: solid white; /* Color of the checkmark */
+    border-width: 0 2px 3px 0; /* Create the checkmark shape */
+    transform: rotate(45deg); /* Rotate to form a checkmark */
+}
+
+input[type="checkbox"]:hover {
+    border-color: var(--color-info-hover);
+}
+
+label {
+    cursor: pointer;
+    margin-left: 4px;
+    line-height: var(--checkbox-size);
 }
 
 .loading {
@@ -223,7 +387,7 @@ header > form {
 .loader {
     border: 16px solid #f3f3f3;
     border-radius: 50%;
-    border-top: 16px solid #0082c9;
+    border-top: 16px solid var(--color-nextcloud-blue);
     width: 120px;
     height: 120px;
     -webkit-animation: spin 2s linear infinite; /* Safari */
@@ -242,4 +406,59 @@ header > form {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* General theme button styling */
+#theme-toggle {
+    position: fixed; /* Keep the button in the same position */
+    right: 30px; /* Adjust the distance from the right */
+    bottom: 30px; /* Adjust the distance from the bottom */
+    background-color: transparent; /* Make the background transparent */
+    border: none; /* Remove border */
+    font-size: 36px; /* Adjust font size */
+    cursor: pointer; /* Change cursor to pointer */
+    outline: none;
+}
+
+/* Icon styling: default state */
+#theme-icon {
+    display: inline-block;
+    border-radius: 50%; /* Round shape */
+    position: relative; /* For the pseudo-element positioning */
+    transition: box-shadow 0.3s, background-color 0.3s; /* Smooth transition for hover effect */
+    opacity: 0.6; /* Slightly transparent by default */
+    filter: grayscale(100%); /* Make the icon black and white */
+}
+
+/* Create the inner glow effect with ::after */
+#theme-icon::after {
+    content: ''; /* Empty content for the pseudo-element */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0px; /* Invisible dot */
+    height: 0px; /* Invisible dot */
+    background-color: transparent; /* Invisible by default */
+    border-radius: 50%; /* Circle shape */
+    transform: translate(-50%, -50%); /* Center the dot */
+    transition: box-shadow 0.3s, background-color 0.3s; /* Smooth transition for hover */
+}
+
+/* Hover effect for both light and dark modes */
+#theme-toggle:hover #theme-icon {
+    position: relative; /* Ensures stacking order */
+    filter: grayscale(0%); /* Restore full color */
+    opacity: 1; /* Fully visible on hover */
+    z-index: 1; /* Ensures the icon is on top of the shadow */
+}
+
+/* Inner glow when hovered */
+#theme-toggle:hover #theme-icon::after {
+    box-shadow: 0 0 40px 40px rgba(128, 128, 128, 0.4); /* Blur effect from inside */
+    background-color: rgba(128, 128, 128, 0.2); /* Light glow inside */
+}
+
+/* Remove hover effects when not hovering */
+#theme-toggle:not(:hover) #theme-icon {
+    opacity: 0.6; /* Slightly transparent */
 }

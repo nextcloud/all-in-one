@@ -1,12 +1,16 @@
 <html>
     <head>
         <title>AIO</title>
-        <link rel="stylesheet" href="/style.css?v2" media="all" />
+        <link rel="stylesheet" href="/style.css?v3" media="all" />
         <link rel="icon" href="/img/favicon.png">
         <script type="text/javascript" src="forms.js"></script>
     </head>
 
     <body>
+        <div class="wrapper">
             {% block body %}{% endblock %}
+        </div>
+        <button id="theme-toggle" onclick="toggleTheme()"><span id="theme-icon"/></button>
+        <script type="text/javascript" src="toggle-dark-mode.js"></script>
     </body>
 </html>
