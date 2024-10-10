@@ -1,0 +1,56 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-makekv",
+            "display_name": "MakeMKV",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/makemkv",
+            "image": "jlesage/makemkv",
+            "image_tag": "latest",
+            "internal_port": "5800",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "",
+                    "port_number": "5800",
+                    "protocol": "tcp"
+                }
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_makemkv",
+                    "destination": "/config",
+                    "writeable": true
+                },
+                {
+                    "source": "%NEXTCLOUD_DATADIR%",
+                    "destination": "/storage",
+                    "writeable": false
+                },
+                {
+                    "source": "%NEXTCLOUD_MOUNT%",
+                    "destination": "/output",
+                    "writeable": true
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "SECURE_CONNECTION=1",
+                "WEB_AUTHENTICATION=1",
+                "USER_ID=33",
+                "GROUP_ID=33",
+                "WEB_AUTHENTICATION_USERNAME=makemkv",
+                "WEB_AUTHENTICATION_PASSWORD=%MAKEMKV_PASSWORD%"
+            ],
+            "secrets": [
+                "MAKEMKV_PASSWORD"
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_makemkv"
+            ],
+            "devices": [
+                "/dev/sr0", -> check the devices for my drive, also add to readme that this device needs to be present
+                "/dev/sg2" -> check the devices for my drive, also add to readme that this device needs to be present
+            ]
+        }
+    ]
+}
