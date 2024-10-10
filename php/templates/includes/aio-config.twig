@@ -36,5 +36,15 @@
         {% endif %}
         See the <a href="https://github.com/nextcloud/all-in-one#how-to-enable-hardware-transcoding-for-nextcloud">NEXTCLOUD_ENABLE_DRI_DEVICE documentation</a> on how to change this.</p>
 
+    <p>
+        {% if is_nvidia_runtime_enabled == true %}
+            Nvidia runtime is enabled.
+        {% elseif is_nvidia_gpu_deploy_enabled = true %}
+            Nvidia GPU access is enabled.
+        {% else %}
+            Nvidia GPU access is disabled.
+        {% endif %}
+    </p>
+
     <p>For further documentation on AIO, refer to <strong><a href="https://github.com/nextcloud/all-in-one#nextcloud-all-in-one">this page</a></strong>. You can use the browser search [CTRL]+[F] to search through the documentation. Additional documentation can be found <strong><a href="https://github.com/nextcloud/all-in-one/discussions/categories/wiki">here</a></strong>.</p>
 </details>
