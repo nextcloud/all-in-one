@@ -3,7 +3,7 @@
 > [!NOTE]  
 > The maintainers of AIO noticed that this documentation could be improved to make it easier to follow. All contributions that improve this are very welcome!
 
-A [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) is basically a software service that can be thought of as the gateway of a web server. It enables computers on the internet to access a service or web-site in a [private subnet](https://en.wikipedia.org/wiki/Private_network) of that web server.
+A [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) is a software service that acts as a gateway between services and a client. It is commonly used to allow a client connected to the Internet to access a website located in the [private subnet](https://en.wikipedia.org/wiki/Private_network) of that web server.
 
 **Please note:** Publishing the AIO interface with a valid certificate to the public internet is **not** the goal of this documentation! If you need a valid certificate for the AIO interface, see [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface).
 
