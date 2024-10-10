@@ -26,7 +26,7 @@ spec:
     spec:
       initContainers:
         - name: init-subpath
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine:3.20"
           command:
             - mkdir
             - "-p"
@@ -36,7 +36,7 @@ spec:
             - name: nextcloud-aio-clamav
               mountPath: /nextcloud-aio-clamav
         - name: init-volumes
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine:3.20"
           command:
             - chown
             - 100:100
