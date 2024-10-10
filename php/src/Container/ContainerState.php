@@ -2,7 +2,7 @@
 
 namespace AIO\Container;
 
-enum RunningState: string {
+enum ContainerState: string {
     case DoesNotExist = 'does_not_exist';
     case Restarting = 'restarting';
     case Running = 'running';
