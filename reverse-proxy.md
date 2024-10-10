@@ -19,7 +19,7 @@ In order to run Nextcloud behind a web server or reverse proxy (like Apache, Ngi
 
 **Please note:** Since the Apache container gets created by the mastercontainer, there is **NO** way to provide custom docker labels or custom environmental variables for the Apache container. So please do not attempt to do this because it will fail!
 
-## 1. Configure the reverse proxy 🛠️
+## 1. Configure the reverse proxy
 
 ### Adapting the sample web server configurations below
 1. Replace `<your-nc-domain>` with the domain on which you want to run Nextcloud.
@@ -54,7 +54,7 @@ In order to run Nextcloud behind a web server or reverse proxy (like Apache, Ngi
 
     </details>
 
-### Apache 🪶
+### Apache
 
 <details>
 
@@ -133,7 +133,7 @@ To make the config work you can run the following command:
 
 </details>
 
-### Caddy (recommended) 🔏
+### Caddy (recommended)
 
 <details>
 
@@ -148,13 +148,13 @@ https://<your-nc-domain>:443 {
 ```
 The Caddyfile is a text file called `Caddyfile` (no extension) which – if you should be running Caddy inside a container – should usually be created in the same location as your `compose.yaml` file prior to starting the container.
 
-⚠️ **Please note:** Look in [here](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 **Advice:** You may have a look at [this](https://github.com/nextcloud/all-in-one/discussions/575#discussion-4055615) for a more complete example.
 
 </details>
 
-### Caddy with ACME DNS-challenge 🔀
+### Caddy with ACME DNS-challenge
 
 <details>
 
@@ -182,7 +182,7 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
 
 </details>
 
-### Citrix ADC VPX / Citrix Netscaler 🔀
+### Citrix ADC VPX / Citrix Netscaler
 
 <details>
 
@@ -192,7 +192,7 @@ For a reverse proxy example guide for Citrix ADC VPX / Citrix Netscaler, see thi
 
 </details>
 
-### Cloudflare Tunnel ☁
+### Cloudflare Tunnel
 
 <details>
 
@@ -208,7 +208,7 @@ Although it does not seem like it is the case but from AIO perspective a Cloudfl
 
 </details>
 
-### HaProxy 🔀
+### HaProxy
 
 <details>
 
@@ -305,7 +305,7 @@ backend Nextcloud
 
 </details>
 
-### Nginx, Freenginx, Openresty 🔀
+### Nginx, Freenginx, Openresty
 
 <details>
 
@@ -393,13 +393,13 @@ server {
 
 ```
 
-⚠️ **Please note:** look in [here](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 **Advice:** You may have a look at [this](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-2811152) for a more complete example.
 
 </details>
 
-### Nginx-Proxy-Manager - NPM 🔀
+### Nginx-Proxy-Manager - NPM
 
 <details>
 
@@ -429,7 +429,7 @@ Also change `<you>@<your-mail-provider-domain>` to a mail address of yours.
 
 </details>
 
-### Nginx-Proxy 🔀
+### Nginx-Proxy
 
 <details>
 
@@ -443,7 +443,7 @@ Apart from that, there is a [manual-install](https://github.com/nextcloud/all-in
 
 </details>
 
-### Node.js with Express 🔀
+### Node.js with Express
 
 <details>
 
@@ -526,11 +526,11 @@ httpServer.on('upgrade', (req, socket, head) => {
 });
 ```
 
-⚠️ **Please note:** look in [here](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
 
-### Synology Reverse Proxy 🔀
+### Synology Reverse Proxy
 
 <details>
 
@@ -544,11 +544,11 @@ See these screenshots for a working config:
 
 ![image](https://user-images.githubusercontent.com/70434961/213193789-fa936edc-e307-4e6a-9a53-ae26d1bf2f42.jpg)
 
-⚠️ **Please note:** look [here](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
 
-### Traefik 2 🔀
+### Traefik 2
 
 <details>
 
@@ -631,12 +631,12 @@ The examples below define the dynamic configuration in YAML files. If you rather
 
 ---
 
-⚠️ **Please note:** look [here](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 **Hint**: see https://www.youtube.com/watch?v=VLPSRrLMDmA for a video on configuring Traefik.
 
 </details>
 
-### IIS with ARR and URL Rewrite 🔀
+### IIS with ARR and URL Rewrite
 
 <details>
 
@@ -704,7 +704,7 @@ Add the following `web.config` file to the root of the site you created as the r
 
 </details>
 
-### Others 🔧
+### Others
 
 <details>
 
@@ -714,7 +714,7 @@ Config examples for other reverse proxies are currently not documented. Pull req
 
 </details>
 
-## 2. Use this startup command 🚀
+## 2. Use this startup command
 
 After adjusting your reverse proxy config, use the following command to start AIO:<br>
 
@@ -771,17 +771,17 @@ On Synology DSM see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-sy
 
 Simply translate the docker run command into a docker-compose file. You can have a look at [this file](https://github.com/nextcloud/all-in-one/blob/main/compose.yaml) for some inspiration but you will need to modify it either way. You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
 
-## 3. Limit the access to the Apache container 🔒
+## 3. Limit the access to the Apache container
 
 Use this environment variable during the initial startup of the mastercontainer to make the apache container only listen on localhost: `--env APACHE_IP_BINDING=127.0.0.1`. **Attention:** This is only recommended to be set if you use `localhost` in your reverse proxy config to connect to your AIO instance. If you use an ip-address instead of localhost, you should set it to `0.0.0.0`.
 
-## 4. Open the AIO interface 🖥️
+## 4. Open the AIO interface
 
 After starting AIO, you should be able to access the AIO Interface via `https://ip.address.of.the.host:8080`.<br>
 ⚠️ **Important:** do always use an ip-address if you access this port and not a domain as HSTS might block access to it later! (It is also expected that this port uses a self-signed certificate due to security concerns which you need to accept in your browser)<br>
 Enter your domain in the AIO interface that you've used in the reverse proxy config and you should be done. Please do not forget to open/forward port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
-## 5. Optional: get a valid certificate for the AIO interface 🔐
+## 5. Optional: get a valid certificate for the AIO interface
 
 If you want to also access your AIO interface publicly with a valid certificate, you can add e.g. the following config to your Caddyfile:
 
@@ -798,7 +798,7 @@ https://<your-nc-domain>:8443 {
 
 Afterwards should the AIO interface be accessible via `https://ip.address.of.the.host:8443`. You can alternatively change the domain to a different subdomain by using `https://<your-alternative-domain>:443` instead of `https://<your-nc-domain>:8443` in the Caddyfile and use that to access the AIO interface.
 
-## 6. How to debug things? 🐛
+## 6. How to debug things?
 
 If something does not work, follow the steps below:
 1. Make sure to exactly follow the whole reverse proxy documentation step-for-step from top to bottom!
