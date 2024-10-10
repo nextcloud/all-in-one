@@ -4,7 +4,7 @@ namespace AIO\Docker;
 
 use AIO\Container\Container;
 use AIO\Container\UpdateState;
-use AIO\Container\RunningState;
+use AIO\Container\ContainerState;
 use AIO\Data\ConfigurationManager;
 use AssertionError;
 use GuzzleHttp\Client;
@@ -38,13 +38,13 @@ readonly class DockerActionManager {
     }
 
     /** @throws GuzzleException */
-    public function GetContainerRunningState(Container $container): RunningState {
+    public function GetContainerRunningState(Container $container): ContainerState {
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->GetIdentifier())));
         try {
             $response = $this->guzzleClient->get($url);
         } catch (GuzzleException $e) {
             if ($e->getCode() === 404) {
-                return RunningState::DoesNotExist;
+                return ContainerState::DoesNotExist;
             }
             throw $e;
         }
@@ -54,18 +54,18 @@ readonly class DockerActionManager {
         assert(is_array($body['State']));
 
         $state = match ($body['State']['Status']) {
-            'running' => RunningState::Running,
-            'created' => RunningState::Starting,
-            'restarting' => RunningState::Restarting,
-            'paused', 'removing', 'exited', 'dead' => RunningState::Stopped,
+            'running' => ContainerState::Running,
+            'created' => ContainerState::Starting,
+            'restarting' => ContainerState::Restarting,
+            'paused', 'removing', 'exited', 'dead' => ContainerState::Stopped,
             default => throw new AssertionError()
         };
 
-        if ($state === RunningState::Running && is_array($body['State']['Health'])) {
+        if ($state === ContainerState::Running && is_array($body['State']['Health'])) {
             return match ($body['State']['Health']['Status']) {
-                'starting' => RunningState::Starting,
-                'unhealthy' => RunningState::Unhealthy,
-                default => RunningState::Running,
+                'starting' => ContainerState::Starting,
+                'unhealthy' => ContainerState::Unhealthy,
+                default => ContainerState::Running,
             };
         } else {
             return $state;
@@ -744,7 +744,7 @@ readonly class DockerActionManager {
     }
 
     public function sendNotification(Container $container, string $subject, string $message, string $file = '/notify.sh'): void {
-        if ($this->GetContainerRunningState($container) === RunningState::Running) {
+        if ($this->GetContainerRunningState($container) === ContainerState::Running) {
 
             $containerName = $container->GetIdentifier();
 
@@ -928,7 +928,7 @@ readonly class DockerActionManager {
     public function isLoginAllowed(): bool {
         $id = 'nextcloud-aio-apache';
         $apacheContainer = $this->containerDefinitionFetcher->GetContainerById($id);
-        if ($this->GetContainerRunningState($apacheContainer) === RunningState::Running) {
+        if ($this->GetContainerRunningState($apacheContainer) === ContainerState::Running) {
             return false;
         }
         return true;
@@ -937,7 +937,7 @@ readonly class DockerActionManager {
     public function isBackupContainerRunning(): bool {
         $id = 'nextcloud-aio-borgbackup';
         $backupContainer = $this->containerDefinitionFetcher->GetContainerById($id);
-        if ($this->GetContainerRunningState($backupContainer) === RunningState::Running) {
+        if ($this->GetContainerRunningState($backupContainer) === ContainerState::Running) {
             return true;
         }
         return false;

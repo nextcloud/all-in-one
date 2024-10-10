@@ -114,7 +114,7 @@ readonly class Container {
     }
 
     /** @throws GuzzleException */
-    public function GetRunningState() : RunningState {
+    public function GetRunningState() : ContainerState {
         return $this->dockerActionManager->GetContainerRunningState($this);
     }
 
