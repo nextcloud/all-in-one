@@ -707,6 +707,165 @@ Add the following `web.config` file to the root of the site you created as the r
 
 </details>
 
+### Tailscale
+
+<details>
+
+<summary>click here to expand</summary>
+
+**Disclaimer:** It might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+
+This setup integrates Nextcloud All-in-One (AIO) with Tailscale, using Caddy as a reverse proxy. 
+Since Tailscale currently only allows communication with localhost(127.0.0.1), we use a sidecar with Caddy to communicate with AIO.
+
+- Enhanced security with ACL usage within Tailnet
+- ACME certificate issuance without port forwarding (Tailnet only)
+- Possibility to expose Nextcloud externally using Tailscale's `serve.json` configuration (This document does not provide an example of `serve.json`)
+
+
+### 1. Set Environment Variables
+
+Set the following environment variables:
+
+```env
+TS_HOSTNAME=nextcloud # Hostname in Tailnet
+NC_DOMAIN=nextcloud.your-tailnet.ts.net # Format: {$TS_HOSTNAME}.{$tailnetdomain}.ts.net
+TS_AUTH_KEY=tskey-client-kXGGbs6CNTRL # OAuth client key recommended
+TS_EXTRA_ARGS=--advertise-tags=tag:nextcloud # For OAuth client key usage
+```
+
+>[!NOTE]
+> Ensure NC_DOMAIN is in the correct format.
+> When using OAuth client key, set tags in TS_EXTRA_ARGS and define them in ACL.
+>
+> For more detailed information, please refer to:
+> https://tailscale.com/blog/docker-tailscale-guide
+
+### 2. Configure Docker Compose File
+Create a compose.yml file with the following content. Replace environment variables as appropriate.
+
+#### compose.yml
+
+```yml
+services:
+  nextcloud-aio-mastercontainer:
+    image: nextcloud/all-in-one:latest
+    init: true
+    restart: always
+    container_name: nextcloud-aio-mastercontainer # This line cannot be changed.
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - nextcloud-aio
+    ports:
+      - 0.0.0.0:8080:8080
+    environment:
+      APACHE_PORT: 11000
+      APACHE_IP_BINDING: 127.0.0.1
+      SKIP_DOMAIN_VALIDATION: true
+
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    environment:
+      - NC_DOMAIN=nextcloud.your-tailnet.ts.net # Change this to your domain ending with .ts.net in the format {$TS_HOSTNAME}.{tailnetdomain}
+    volumes:
+      - type: bind
+        source: ./Caddyfile
+        target: /etc/caddy/Caddyfile
+      - type: volume
+        source: caddy_certs
+        target: /certs
+      - type: volume
+        source: caddy_data
+        target: /data
+      - type: volume
+        source: caddy_config
+        target: /config
+      - type: volume
+        source: tailscale_sock
+        target: /var/run/tailscale/ # Mount the volume for /var/run/tailscale/tailscale.sock
+        read_only: true
+    network_mode: service:tailscale
+
+  tailscale:
+    image: tailscale/tailscale:latest
+    environment:
+      - TS_HOSTNAME=nextcloud # Enter the hostname for your tailnet
+      - TS_AUTH_KEY=tskey-client-kXGGbs6CNTRL # OAuth client key recommended
+      - TS_EXTRA_ARGS=--advertise-tags=tag:nextcloud # Tags are required when using OAuth client
+    init: true
+    restart: unless-stopped
+    volumes:
+      - /dev/net/tun:/dev/net/tun
+      - type: volume
+        source: tailscale
+        target: /var/lib/tailscale
+      - type: volume
+        source: tailscale_sock
+        target: /tmp # Mounting the entire /tmp folder to access tailscale.sock
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    networks:
+      - nextcloud-aio
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer # This line cannot be changed.
+  caddy_certs:
+    name: caddy_certs
+  caddy_data:
+    name: caddy_data
+  caddy_config:
+    name: caddy_config
+  tailscale:
+    name: tailscale
+  tailscale_sock:
+    name: tailscale_sock
+
+networks:
+  nextcloud-aio:
+    name: nextcloud-aio
+    driver: bridge
+    enable_ipv6: false
+    driver_opts:
+      com.docker.network.driver.mtu: "9001" # Jumbo Frame
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1" # Harden aio
+```
+
+>[!IMPORTANT]
+> Make sure to replace `NC_DOMAIN`, `TS_HOSTNAME`, `TS_AUTH_KEY`, and `TS_EXTRA_ARGS` with your actual values before running the docker compose file.
+
+
+### 3. Create Caddyfile
+Create a Caddyfile in the current directory with the following content:
+
+#### Caddyfile
+
+```Caddyfile
+https://{$NC_DOMAIN}:443 {
+    reverse_proxy nextcloud-aio-apache:11000
+}
+```
+
+>[!NOTE]
+> Do not manually replace the `{$NC_DOMAIN}` variable. It will be automatically populated with the value set in your environment variables.
+
+
+
+### 4. Set Up Nextcloud AIO
+1. Run `docker compose up -d`
+1. Connect to https://ip.address.of.server:8080/
+1. Enter the configured $NC_DOMAIN
+1. Provision Nextcloud
+1. Connect to `https://$NC_DOMAIN/` (e.g., https://nextcloud.your-tailnet.ts.net/)
+1. Setup complete!
+
+</details>
+
+
 ### Others
 
 <details>
