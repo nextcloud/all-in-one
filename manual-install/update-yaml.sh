@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/bash -ex
 
-set -ex
+type {jq,sudo} || { echo "Commands not found. Please install them"; exit 127; }
 
 jq -c . ./php/containers.json > /tmp/containers.json
 sed -i 's|aio_services_v1|services|g' /tmp/containers.json
@@ -18,6 +18,7 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].devices)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].backup_volumes)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].nextcloud_exec_commands)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].image_tag)')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].networks)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-watchtower"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-domaincheck"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-borgbackup"))')"
@@ -41,6 +42,7 @@ sed -i '/AIO_TOKEN/d' containers.yml
 sed -i '/AIO_URL/d' containers.yml
 sed -i '/DOCKER_SOCKET_PROXY_ENABLED/d' containers.yml
 sed -i '/ADDITIONAL_TRUSTED_PROXY/d' containers.yml
+sed -i 's/\(^[[:space:]]*- \([^=]*\)\)=%\2%/\1/' containers.yml
 
 TCP="$(grep -oP '[%A-Z0-9_]+/tcp' containers.yml | sort -u)"
 mapfile -t TCP <<< "$TCP"
@@ -139,8 +141,8 @@ done
 cat << NETWORK >> containers.yml
 
 networks:
-  nextcloud-aio:
-    name: nextcloud-aio
+  default:
+    driver: bridge
 NETWORK
 
 cat containers.yml > latest.yml
