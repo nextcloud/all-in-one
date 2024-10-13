@@ -170,7 +170,7 @@ services:
       - NC_DOMAIN
       - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
       - REDIS_HOST=nextcloud-aio-redis
-      - REDIS_HOST_PASSWORD
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
       - POSTGRES_HOST=nextcloud-aio-database
       - POSTGRES_PORT=5432
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
