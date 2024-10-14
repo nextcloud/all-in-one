@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 ## Fail2ban
 This container bundles fail2ban and auto-configures it for you in order to block ip-addresses automatically. It also covers https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden, if installed.
 

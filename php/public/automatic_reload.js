@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 document.addEventListener("DOMContentLoaded", function(event) {
     if (document.hasFocus()) {
         // hide reload button if the site reloads automatically

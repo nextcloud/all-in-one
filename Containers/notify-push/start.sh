@@ -1,4 +1,8 @@
 #!/bin/bash
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 if [ -z "$NEXTCLOUD_HOST" ]; then
     echo "NEXTCLOUD_HOST need to be provided. Exiting!"

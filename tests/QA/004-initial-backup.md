@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # Initial backup
 
 - [ ] In the Backup and restore section, you should now see and input box where you should type in the path where the backup should get created and some explanation below

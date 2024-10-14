@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # How to migrate from an already existing Nextcloud installation to Nextcloud AIO?
 
 There are basically three ways how to migrate from an already existing Nextcloud installation to Nextcloud AIO:

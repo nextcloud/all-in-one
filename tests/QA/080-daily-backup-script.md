@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # Daily backup script
 
 The script is delivered within the mastercontainer and allows to run a few things like daily backup and container updates from an external script.

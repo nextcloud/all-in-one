@@ -1,4 +1,8 @@
 #!/bin/bash
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 if [[ "$EUID" = 0 ]]; then
     COMMAND=(sudo -E -u www-data php /var/www/html/occ)

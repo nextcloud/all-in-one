@@ -1,4 +1,9 @@
 #!/bin/bash
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 wait_for_cron() {
     set -x
     while [ -n "$(pgrep -f /var/www/html/cron.php)" ]; do

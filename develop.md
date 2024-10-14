@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 ## Developer channel
 If you want to switch to the develop channel, you simply stop and delete the mastercontainer and create a new one with a changed tag to develop:
 ```shell

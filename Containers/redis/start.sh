@@ -1,4 +1,8 @@
 #!/bin/bash
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 # Show wiki if vm.overcommit is disabled
 if [ "$(sysctl -n vm.overcommit_memory)" != "1" ]; then

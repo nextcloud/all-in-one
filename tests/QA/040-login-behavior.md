@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # Login behavior
 
 - [ ] When opening the AIO interface in a new tab while the apache container is running, it should report on the login page that Nextcloud is running and you should use the automatic login

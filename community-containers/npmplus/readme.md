@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 ## NPMplus
 This container contains a fork of the Nginx Proxy Manager, which is a WebUI for nginx. It will also automatically create a config and cert for AIO.
 
