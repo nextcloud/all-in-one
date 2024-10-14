@@ -11,3 +11,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Fetch history
+        run: git fetch --prune --unshallow
+      - name: Set up php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          coverage: none
+
+      - name: Run script
+        run: |
+          set -x
+          cd .build
+          php license.php
+          cd ../
+
+      - name: Run script 2
+        run: |
+          set -x
+          cd ../
+          # todo: remove the single branch below and clone master
+          git clone https://github.com/nextcloud/github_helper.git --depth 1 --single-branch --branch enh/noid/fix-exit
+          ls -la
+          cd github_helper/spdx-convertor
+          composer install
+          cd ../
+          cd ../
+          ls -la
+          php github_helper/spdx-convertor/convert.php ./all-in-one
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: Update copyright
+          signoff: true
+          title: Update copyright
+          body: Automated updating copyright headers
+          labels: dependencies, 3. to review
+          milestone: next
+          branch: aio-copyright-update
+          token: ${{ secrets.GITHUB_TOKEN }}
