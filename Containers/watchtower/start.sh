@@ -1,4 +1,8 @@
 #!/bin/bash
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 # Check if socket is available and readable
 if ! [ -a "/var/run/docker.sock" ]; then

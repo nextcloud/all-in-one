@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # Backup and restore
 
 - [ ] Expanding all backup options in the Backup and restore sectioin should reveal a Backup information section, Backup creation section, Backup check section, Backup restore section and a Daily backup section.

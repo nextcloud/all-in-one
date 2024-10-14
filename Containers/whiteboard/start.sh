@@ -1,4 +1,8 @@
 #!/bin/bash
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 # Only start container if nextcloud is accessible
 while ! nc -z "$REDIS_HOST" 6379; do

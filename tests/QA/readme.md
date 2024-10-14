@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # QA test plans
 
 In this folder are manual test plans for QA located that allow to manually step through certain features and make sure that everything works as expected.

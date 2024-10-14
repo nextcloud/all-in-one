@@ -1,4 +1,8 @@
 #!/bin/bash
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 # version_greater A B returns whether A > B
 version_greater() {

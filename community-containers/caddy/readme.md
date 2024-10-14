@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 ## Caddy with geoblocking
 This container bundles caddy and auto-configures it for you. It also covers https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden by listening on `bw.$NC_DOMAIN`, if installed. It also covers https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart by listening on `mail.$NC_DOMAIN`, if installed. It also covers https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin by listening on `media.$NC_DOMAIN`, if installed. It also covers https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap by listening on `ldap.$NC_DOMAIN`, if installed. It also covers https://github.com/nextcloud/all-in-one/tree/main/community-containers/nocodb by listening on `tables.$NC_DOMAIN`, if installed.
 

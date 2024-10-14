@@ -1,4 +1,8 @@
 #!/bin/bash
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 while true; do
     if [ -f "/mnt/docker-aio-config/data/daily_backup_time" ]; then

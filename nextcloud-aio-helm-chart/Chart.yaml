@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 name: nextcloud-aio-helm-chart
 description: A generated Helm Chart for Nextcloud AIO from Skippbox Kompose
 version: 9.6.0

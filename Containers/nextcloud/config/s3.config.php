@@ -1,4 +1,8 @@
 <?php
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 if (getenv('OBJECTSTORE_S3_BUCKET')) {
   $use_ssl = getenv('OBJECTSTORE_S3_SSL');
   $use_path = getenv('OBJECTSTORE_S3_USEPATH_STYLE');

@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # Initial setup
 
 - [ ] Verify that after starting the test container, you can access the AIO interface using https://internal.ip.address:8080

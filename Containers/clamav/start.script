@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # Adjust settings
 cat /etc/clamav/clamd.conf > /tmp/clamd.conf
 CLAMAV_FILE="$(sed "s|10G|$MAX_SIZE|" /clamav.conf)"

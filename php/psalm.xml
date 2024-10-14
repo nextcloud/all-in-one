@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 <?xml version="1.0"?>
 <psalm
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

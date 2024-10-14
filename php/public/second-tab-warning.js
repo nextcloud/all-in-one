@@ -1,5 +1,9 @@
-const channel = new BroadcastChannel('tab')
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
+const channel = new BroadcastChannel('tab')
 channel.postMessage('second-tab')
 // note that listener is added after posting the message
 

@@ -1,4 +1,8 @@
 #!/bin/bash
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 nc -z 127.0.0.1 8081 || exit 1
 nc -z 127.0.0.1 8188 || exit 1

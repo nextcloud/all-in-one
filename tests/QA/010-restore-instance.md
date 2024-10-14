@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # Restore instance
 
 For the below to work, you need a backup archive of an AIO instance and the location on the test machine and the password for the backup archive. You can get one here: [backup-archive](./assets/backup-archive/)

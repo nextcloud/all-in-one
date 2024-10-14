@@ -1,3 +1,8 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 # Docker rootless
 
 **Please note:** Due to a bug in Collabora is the Collabora container currently in rootless mode not working. See https://github.com/CollaboraOnline/online/issues/2800. In that case, you need to run a separate Collabora instance on your own if you want to use this feature. The following flag will be useful https://github.com/nextcloud/all-in-one#how-to-keep-disabled-apps.
