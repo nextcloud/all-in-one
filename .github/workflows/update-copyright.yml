@@ -2,8 +2,6 @@ name: Update Copyright
 
 on:
   workflow_dispatch:
-  schedule:
-  - cron:  '00 12 * * *'
 
 jobs:
   update-copyright:
