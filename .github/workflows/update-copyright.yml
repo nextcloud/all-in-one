@@ -1,0 +1,13 @@
+name: Update Copyright
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '00 12 * * *'
+
+jobs:
+  update-copyright:
+    name: update copyright
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
