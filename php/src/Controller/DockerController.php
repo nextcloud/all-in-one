@@ -5,6 +5,7 @@ namespace AIO\Controller;
 use AIO\Container\ContainerState;
 use AIO\ContainerDefinitionFetcher;
 use AIO\Docker\DockerActionManager;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
@@ -19,6 +20,7 @@ readonly class DockerController {
     ) {
     }
 
+    /** @throws GuzzleException */
     private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
@@ -240,6 +242,7 @@ readonly class DockerController {
         $this->PerformRecursiveContainerStop($id);
     }
 
+    /** @throws GuzzleException */
     public function StartDomaincheckContainer() : void
     {
         # Don't start if domain is already set

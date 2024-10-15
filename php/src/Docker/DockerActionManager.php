@@ -7,6 +7,7 @@ use AIO\Container\UpdateState;
 use AIO\Container\ContainerState;
 use AIO\Data\ConfigurationManager;
 use AssertionError;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
@@ -128,7 +129,7 @@ readonly class DockerActionManager {
         try {
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
-            throw new \Exception("Could not start container " . $container->GetIdentifier() . ": " . $e->getMessage());
+            throw new Exception("Could not start container " . $container->GetIdentifier() . ": " . $e->getMessage());
         }
     }
 
@@ -365,7 +366,7 @@ readonly class DockerActionManager {
                 } else {
                     $secret = $this->configurationManager->GetSecret($out[1]);
                     if ($secret === "") {
-                        throw new \Exception("The secret " . $out[1] . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
+                        throw new Exception("The secret " . $out[1] . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
                     }
                     $replacements[1] = $secret;
                 }
@@ -534,7 +535,7 @@ readonly class DockerActionManager {
                 ]
             );
         } catch (RequestException $e) {
-            throw new \Exception("Could not create container " . $container->GetIdentifier() . ": " . $e->getMessage());
+            throw new Exception("Could not create container " . $container->GetIdentifier() . ": " . $e->getMessage());
         }
 
     }
@@ -570,7 +571,7 @@ readonly class DockerActionManager {
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
             if ($imageIsThere === false) {
-                throw new \Exception("Could not pull image " . $imageName . ". Please run 'sudo docker exec -it nextcloud-aio-mastercontainer docker pull " . $imageName . "' in order to find out why it failed.");
+                throw new Exception("Could not pull image " . $imageName . ". Please run 'sudo docker exec -it nextcloud-aio-mastercontainer docker pull " . $imageName . "' in order to find out why it failed.");
             }
         }
     }
@@ -678,7 +679,7 @@ readonly class DockerActionManager {
             }
 
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -707,7 +708,7 @@ readonly class DockerActionManager {
                 $tag = 'latest';
             }
             return $tag;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log('Could not get current channel ' . $e->getMessage());
         }
 
@@ -738,6 +739,7 @@ readonly class DockerActionManager {
         return true;
     }
 
+    /** @throws GuzzleException */
     public function sendNotification(Container $container, string $subject, string $message, string $file = '/notify.sh'): void {
         if ($this->GetContainerState($container) === ContainerState::Running) {
 
@@ -826,7 +828,7 @@ readonly class DockerActionManager {
         } catch (RequestException $e) {
             // 409 is undocumented and gets thrown if the network already exists.
             if ($e->getCode() !== 409) {
-                throw new \Exception("Could not create the nextcloud-aio network: " . $e->getMessage());
+                throw new Exception("Could not create the nextcloud-aio network: " . $e->getMessage());
             }
         }
 
@@ -920,19 +922,24 @@ readonly class DockerActionManager {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function isLoginAllowed(): bool {
         $id = 'nextcloud-aio-apache';
         $apacheContainer = $this->containerDefinitionFetcher->GetContainerById($id);
-        if ($this->GetContainerState($container) === ContainerState::Running) {
+        if ($this->GetContainerState($apacheContainer) === ContainerState::Running) {
             return false;
         }
         return true;
     }
 
+    /** @throws GuzzleException */
     public function isBackupContainerRunning(): bool {
         $id = 'nextcloud-aio-borgbackup';
         $backupContainer = $this->containerDefinitionFetcher->GetContainerById($id);
-        if ($this->GetContainerRunningState($backupContainer) === ContainerState::Running) {
+        if ($this->GetContainerState($backupContainer) === ContainerState::Running) {
             return true;
         }
         return false;
@@ -950,7 +957,7 @@ readonly class DockerActionManager {
             }
 
             return str_replace('T', ' ', (string)$imageOutput['Created']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
