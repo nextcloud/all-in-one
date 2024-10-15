@@ -744,7 +744,7 @@ readonly class DockerActionManager {
     }
 
     public function sendNotification(Container $container, string $subject, string $message, string $file = '/notify.sh'): void {
-        if ($this->GetContainerRunningState($container) === ContainerState::Running) {
+        if ($this->GetContainerState($container) === ContainerState::Running) {
 
             $containerName = $container->GetIdentifier();
 
