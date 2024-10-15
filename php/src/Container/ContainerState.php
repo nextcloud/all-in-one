@@ -3,10 +3,14 @@
 namespace AIO\Container;
 
 enum ContainerState: string {
-    case ImageDoesNotExist = 'image_does_not_exist';
-    case NotRestarting = 'not_restarting';
+    case DoesNotExist = 'does_not_exist';
     case Restarting = 'restarting';
     case Running = 'running';
     case Starting = 'starting';
     case Stopped = 'stopped';
+    case Unhealthy = 'unhealthy';
+    
+    public function isNotStopped(): bool {
+        return in_array($this->value, ['running', 'unhealthy', 'starting']);
+    }
 }
