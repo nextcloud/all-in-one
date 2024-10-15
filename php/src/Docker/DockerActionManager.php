@@ -38,7 +38,7 @@ readonly class DockerActionManager {
     }
 
     /** @throws GuzzleException */
-    public function GetContainerRunningState(Container $container): ContainerState {
+    public function GetContainerState(Container $container): ContainerState {
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->GetIdentifier())));
         try {
             $response = $this->guzzleClient->get($url);
