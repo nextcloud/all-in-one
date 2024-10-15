@@ -28,7 +28,7 @@ readonly class DockerController {
 
         // Don't start if container is already running
         // This is expected to happen if a container is defined in depends_on of multiple containers
-        if ($container->GetRunningState() === ContainerState::Running) {
+        if ($container->GetContainerState() === ContainerState::Running) {
             error_log('Not starting ' . $id . ' because it was already started.');
             return;
         }
@@ -254,10 +254,10 @@ readonly class DockerController {
         $domaincheckContainer = $this->containerDefinitionFetcher->GetContainerById($id);
         $apacheContainer = $this->containerDefinitionFetcher->GetContainerById(self::TOP_CONTAINER);
         // Don't start if apache is already running
-        if ($apacheContainer->GetRunningState() === ContainerState::Running) {
+        if ($apacheContainer->GetContainerState() === ContainerState::Running) {
             return;
         // Don't start if domaincheck is already running
-        } elseif ($domaincheckContainer->GetRunningState() === ContainerState::Running) {
+        } elseif ($domaincheckContainer->GetContainerState() === ContainerState::Running) {
             $domaincheckWasStarted = apcu_fetch($cacheKey);
             // Start domaincheck again when 10 minutes are over by not returning here
             if($domaincheckWasStarted !== false && is_string($domaincheckWasStarted)) {

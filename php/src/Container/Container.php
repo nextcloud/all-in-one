@@ -114,12 +114,12 @@ readonly class Container {
     }
 
     /** @throws GuzzleException */
-    public function GetRunningState() : ContainerState {
-        return $this->dockerActionManager->GetContainerRunningState($this);
+    public function GetContainerState() : ContainerState {
+        return $this->dockerActionManager->GetContainerState($this);
     }
 
     public function GetUpdateState() : UpdateState {
-        return $this->dockerActionManager->GetContainerUpdateState($this);
+        return $this->dockerActionManager->GetUpdateState($this);
     }
 
     /**

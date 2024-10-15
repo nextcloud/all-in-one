@@ -72,7 +72,7 @@ readonly class DockerActionManager {
         }
     }
 
-    public function GetContainerUpdateState(Container $container): UpdateState {
+    public function GetUpdateState(Container $container): UpdateState {
         $tag = $container->GetImageTag();
         if ($tag === '%AIO_CHANNEL%') {
             $tag = $this->GetCurrentChannel();
@@ -87,12 +87,7 @@ readonly class DockerActionManager {
             return UpdateState::Latest;
         }
 
-        foreach ($runningDigests as $runningDigest) {
-            if ($runningDigest === $remoteDigest) {
-                return UpdateState::Latest;
-            }
-        }
-        return UpdateState::Outdated;
+        return in_array($remoteDigest, $runningDigests, true) ? UpdateState::Latest : UpdateState::Outdated;
     }
 
     public function DeleteContainer(Container $container) : void {

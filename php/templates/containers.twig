@@ -40,17 +40,17 @@
         {% endif %}
 
         {% for container in containers %}
-            {% set runingState = container.GetRunningState().value %}
+            {% set runingState = container.GetContainerState().value %}
             {% if container.GetDisplayName() != '' and runingState in ['running', 'unhealthy', 'starting'] %}
                 {% set isAnyRunning = true %}
             {% endif %}
             {% if container.GetDisplayName() != '' and runingState == 'restarting' %}
                 {% set isAnyRestarting = true %}
             {% endif %}
-            {% if container.GetIdentifier() == 'nextcloud-aio-watchtower' and container.GetRunningState().isNotStopped() %}
+            {% if container.GetIdentifier() == 'nextcloud-aio-watchtower' and container.GetContainerState().isNotStopped() %}
                 {% set isWatchtowerRunning = true %}
             {% endif %}
-            {% if container.GetIdentifier() == 'nextcloud-aio-domaincheck' and container.GetRunningState().isNotStopped() %}
+            {% if container.GetIdentifier() == 'nextcloud-aio-domaincheck' and container.GetContainerState().isNotStopped() %}
                 {% set isDomaincheckRunning = true %}
             {% endif %}
             {% if container.GetIdentifier() == 'nextcloud-aio-apache' and runingState == 'starting' %}
@@ -262,7 +262,7 @@
                         {% for container in containers %}
                             {% if container.GetDisplayName() != '' %}
                                 <li>
-                                    {% set runningState = container.GetRunningState().value %}
+                                    {% set runningState = container.GetContainerState().value %}
                                     {% if runningState == 'starting' %}
                                         <span class="status running"></span>
                                         <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank" rel="noopener">Starting</a>)
