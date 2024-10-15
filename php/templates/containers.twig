@@ -47,7 +47,7 @@
             {% if container.GetDisplayName() != '' and runingState == 'restarting' %}
                 {% set isAnyRestarting = true %}
             {% endif %}
-            {% if container.GetIdentifier() == 'nextcloud-aio-watchtower' and runingState in ['running', 'unhealthy', 'starting'] %}
+            {% if container.GetIdentifier() == 'nextcloud-aio-watchtower' and container.GetRunningState().isNotStopped() %}
                 {% set isWatchtowerRunning = true %}
             {% endif %}
             {% if container.GetIdentifier() == 'nextcloud-aio-domaincheck' and runingState in ['running', 'unhealthy', 'starting'] %}
