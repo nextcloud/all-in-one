@@ -928,7 +928,7 @@ readonly class DockerActionManager {
     public function isLoginAllowed(): bool {
         $id = 'nextcloud-aio-apache';
         $apacheContainer = $this->containerDefinitionFetcher->GetContainerById($id);
-        if ($this->GetContainerRunningState($apacheContainer) === ContainerState::Running) {
+        if ($this->GetContainerState($container) === ContainerState::Running) {
             return false;
         }
         return true;
