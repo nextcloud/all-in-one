@@ -9,4 +9,8 @@ enum ContainerState: string {
     case Starting = 'starting';
     case Stopped = 'stopped';
     case Unhealthy = 'unhealthy';
+    
+    public function isNotStopped(): bool {
+        return in_array($this->value, ['running', 'unhealthy', 'starting']);
+    }
 }
