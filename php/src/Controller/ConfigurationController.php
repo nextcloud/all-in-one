@@ -28,15 +28,17 @@ readonly class ConfigurationController {
                 $this->configurationManager->ChangeMasterPassword($currentMasterPassword, $newMasterPassword);
             }
 
-            if (isset($request->getParsedBody()['borg_backup_host_location'])) {
+            if (isset($request->getParsedBody()['borg_backup_host_location']) || isset($request->getParsedBody()['borg_remote_repo'])) {
                 $location = $request->getParsedBody()['borg_backup_host_location'] ?? '';
-                $this->configurationManager->SetBorgBackupHostLocation($location);
+                $borgRemoteRepo = $request->getParsedBody()['borg_remote_repo'] ?? '';
+                $this->configurationManager->SetBorgLocationVars($location, $borgRemoteRepo);
             }
 
-            if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_password'])) {
+            if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_remote_repo']) || isset($request->getParsedBody()['borg_restore_password'])) {
                 $restoreLocation = $request->getParsedBody()['borg_restore_host_location'] ?? '';
+                $borgRemoteRepo = $request->getParsedBody()['borg_restore_remote_repo'] ?? '';
                 $borgPassword = $request->getParsedBody()['borg_restore_password'] ?? '';
-                $this->configurationManager->SetBorgRestoreHostLocationAndPassword($restoreLocation, $borgPassword);
+                $this->configurationManager->SetBorgRestoreLocationVarsAndPassword($restoreLocation, $borgRemoteRepo, $borgPassword);
             }
 
             if (isset($request->getParsedBody()['daily_backup_time'])) {
@@ -132,8 +134,8 @@ readonly class ConfigurationController {
                 $this->configurationManager->SetCollaboraDictionaries($collaboraDictionaries);
             }
 
-            if (isset($request->getParsedBody()['delete_borg_backup_host_location'])) {
-                $this->configurationManager->DeleteBorgBackupHostLocation();
+            if (isset($request->getParsedBody()['delete_borg_backup_location_vars'])) {
+                $this->configurationManager->DeleteBorgBackupLocationVars();
             }
 
             return $response->withStatus(201)->withHeader('Location', '/');

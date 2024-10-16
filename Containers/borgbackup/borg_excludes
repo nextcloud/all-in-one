@@ -1,0 +1,9 @@
+nextcloud_aio_volumes/nextcloud_aio_apache/caddy/
+nextcloud_aio_volumes/nextcloud_aio_mastercontainer/caddy/
+nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*
+nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log
+nextcloud_aio_volumes/nextcloud_aio_mastercontainer/certs/
+nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_running
+nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/session_date_file
+nextcloud_aio_volumes/nextcloud_aio_mastercontainer/session/
+nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/id_borg*
