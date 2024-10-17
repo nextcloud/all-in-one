@@ -14,6 +14,7 @@
     --color-info: #0071ad;
     --color-info-hover: #00aaef;
     --color-border-maxcontrast: #7d7d7d;
+    --color-loader: #f3f3f3;
     --border: .5px;
     --border-hover: 2px;
     --border-radius: 7px;
@@ -35,6 +36,7 @@
     --color-error-text: #ff8080;
     --color-info: #00aeff;
     --color-info-hover: #33beff;
+    --color-loader: var(--color-border-maxcontrast);
     --border-hover: var(--border);
 }
 
@@ -385,7 +387,7 @@ label {
 }
 
 .loader {
-    border: 16px solid #f3f3f3;
+    border: 16px solid var(--color-loader);
     border-radius: 50%;
     border-top: 16px solid var(--color-nextcloud-blue);
     width: 120px;
