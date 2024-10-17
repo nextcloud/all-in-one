@@ -275,6 +275,18 @@ readonly class DockerActionManager {
                     $replacements[1] = $this->configurationManager->GetApachePort();
                 } elseif ($out[1] === 'TALK_PORT') {
                     $replacements[1] = $this->configurationManager->GetTalkPort();
+                } elseif($out[1] === 'OVERWRITEHOST') {
+                    if ($this->configurationManager->IsOverwriteEnable()) {
+                        $replacements[1] = $this->configurationManager->GetDomain();
+                    } else {
+                        $replacements[1] = '';
+                    }
+                } elseif($out[1] === 'OVERWRITEPROTOCOL') {
+                    if ($this->configurationManager->IsOverwriteEnable()) {
+                        $replacements[1] = 'https';
+                    } else {
+                        $replacements[1] = '';
+                    }
                 } elseif ($out[1] === 'NEXTCLOUD_MOUNT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudMount();
                 } elseif ($out[1] === 'BACKUP_RESTORE_PASSWORD') {
