@@ -418,6 +418,7 @@ label {
     font-size: 36px; /* Adjust font size */
     cursor: pointer; /* Change cursor to pointer */
     outline: none;
+    z-index: 9999; /* Ensures the icon is on top of every layer */
 }
 
 /* Icon styling: default state */
@@ -449,7 +450,6 @@ label {
     position: relative; /* Ensures stacking order */
     filter: grayscale(0%); /* Restore full color */
     opacity: 1; /* Fully visible on hover */
-    z-index: 1; /* Ensures the icon is on top of the shadow */
 }
 
 /* Inner glow when hovered */
