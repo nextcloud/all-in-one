@@ -237,6 +237,7 @@ select:hover {
 textarea {
     border-radius: var(--border-radius);
     border: .5px solid var(--color-main-border);
+    max-width: 100%;
 }
 
 input[type="text"]:focus,
@@ -281,7 +282,7 @@ html[data-theme="dark"] ::-webkit-scrollbar-track {
     background-color: var(--color-main-background);
     border-radius: var(--border-radius-large);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: calc(100dvh - 40px);
+    max-height: calc(100dvh - 50px);
     overflow: hidden;
 }
 
@@ -463,4 +464,10 @@ label {
 /* Remove hover effects when not hovering */
 #theme-toggle:not(:hover) #theme-icon {
     opacity: 0.6; /* Slightly transparent */
+}
+
+@media only screen and (max-width: 800px) {
+    .container {
+        margin: 50px auto 0px auto;
+    }
 }
