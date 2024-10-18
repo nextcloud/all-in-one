@@ -4,13 +4,18 @@
         <link rel="stylesheet" href="/style.css?v3" media="all" />
         <link rel="icon" href="/img/favicon.png">
         <script type="text/javascript" src="forms.js"></script>
+        <script type="text/javascript" src="toggle-dark-mode.js"></script>
     </head>
 
     <body>
         <div class="wrapper">
             {% block body %}{% endblock %}
         </div>
-        <button id="theme-toggle" onclick="toggleTheme()"><span id="theme-icon"/></button>
-        <script type="text/javascript" src="toggle-dark-mode.js"></script>
+        <div id="overlay">
+            <div class="loader"></div>
+        </div>
+        <button id="theme-toggle" onclick="toggleTheme()">
+            <span id="theme-icon">🌙</span>
+        </button>
     </body>
 </html>

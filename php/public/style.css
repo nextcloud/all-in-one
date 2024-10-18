@@ -14,6 +14,7 @@
     --color-info: #0071ad;
     --color-info-hover: #00aaef;
     --color-border-maxcontrast: #7d7d7d;
+    --color-loader: #f3f3f3;
     --border: .5px;
     --border-hover: 2px;
     --border-radius: 7px;
@@ -35,6 +36,7 @@
     --color-error-text: #ff8080;
     --color-info: #00aeff;
     --color-info-hover: #33beff;
+    --color-loader: var(--color-border-maxcontrast);
     --border-hover: var(--border);
 }
 
@@ -235,6 +237,7 @@ select:hover {
 textarea {
     border-radius: var(--border-radius);
     border: .5px solid var(--color-main-border);
+    max-width: 100%;
 }
 
 input[type="text"]:focus,
@@ -279,7 +282,7 @@ html[data-theme="dark"] ::-webkit-scrollbar-track {
     background-color: var(--color-main-background);
     border-radius: var(--border-radius-large);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: calc(100dvh - 40px);
+    max-height: calc(100dvh - 50px);
     overflow: hidden;
 }
 
@@ -385,7 +388,7 @@ label {
 }
 
 .loader {
-    border: 16px solid #f3f3f3;
+    border: 16px solid var(--color-loader);
     border-radius: 50%;
     border-top: 16px solid var(--color-nextcloud-blue);
     width: 120px;
@@ -418,6 +421,7 @@ label {
     font-size: 36px; /* Adjust font size */
     cursor: pointer; /* Change cursor to pointer */
     outline: none;
+    z-index: 9999; /* Ensures the icon is on top of every layer */
 }
 
 /* Icon styling: default state */
@@ -449,7 +453,6 @@ label {
     position: relative; /* Ensures stacking order */
     filter: grayscale(0%); /* Restore full color */
     opacity: 1; /* Fully visible on hover */
-    z-index: 1; /* Ensures the icon is on top of the shadow */
 }
 
 /* Inner glow when hovered */
@@ -461,4 +464,10 @@ label {
 /* Remove hover effects when not hovering */
 #theme-toggle:not(:hover) #theme-icon {
     opacity: 0.6; /* Slightly transparent */
+}
+
+@media only screen and (max-width: 800px) {
+    .container {
+        margin: 50px auto 0px auto;
+    }
 }
