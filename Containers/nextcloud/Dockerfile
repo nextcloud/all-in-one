@@ -80,7 +80,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install igbinary-3.2.16; \
     pecl install APCu-5.1.24; \
-    pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.2.0; \
+    pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.3.0; \
     pecl install -D 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.1.0; \
     pecl install imagick-3.7.0; \
     \
