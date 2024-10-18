@@ -38,6 +38,24 @@ readonly class DockerActionManager {
         return $container->GetContainerName() . ':' . $tag;
     }
 
+    public function GetUpdateState(Container $container): UpdateState {
+        $tag = $container->GetImageTag();
+        if ($tag === '%AIO_CHANNEL%') {
+            $tag = $this->GetCurrentChannel();
+        }
+
+        $runningDigests = $this->GetRepoDigestsOfContainer($container->GetIdentifier());
+        if ($runningDigests === null) {
+            return UpdateState::Outdated;
+        }
+        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
+        if ($remoteDigest === null) {
+            return UpdateState::Latest;
+        }
+
+        return in_array($remoteDigest, $runningDigests, true) ? UpdateState::Latest : UpdateState::Outdated;
+    }
+
     /** @throws GuzzleException */
     public function GetContainerState(Container $container): ContainerState {
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->GetIdentifier())));
@@ -89,24 +107,6 @@ readonly class DockerActionManager {
         }
         return $state;
 
-    }
-
-    public function GetUpdateState(Container $container): UpdateState {
-        $tag = $container->GetImageTag();
-        if ($tag === '%AIO_CHANNEL%') {
-            $tag = $this->GetCurrentChannel();
-        }
-
-        $runningDigests = $this->GetRepoDigestsOfContainer($container->GetIdentifier());
-        if ($runningDigests === null) {
-            return UpdateState::Outdated;
-        }
-        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
-        if ($remoteDigest === null) {
-            return UpdateState::Latest;
-        }
-
-        return in_array($remoteDigest, $runningDigests, true) ? UpdateState::Latest : UpdateState::Outdated;
     }
 
     public function DeleteContainer(Container $container) : void {
