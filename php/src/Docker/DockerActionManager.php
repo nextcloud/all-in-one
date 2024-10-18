@@ -63,14 +63,32 @@ readonly class DockerActionManager {
         };
 
         if ($state === ContainerState::Running && is_array($body['State']['Health'])) {
-            return match ($body['State']['Health']['Status']) {
+            $state = match ($body['State']['Health']['Status']) {
                 'starting' => ContainerState::Starting,
                 'unhealthy' => ContainerState::Unhealthy,
                 default => ContainerState::Running,
             };
-        } else {
-            return $state;
         }
+
+        if ($state === ContainerState::Running) {
+            $containerName = $container->GetIdentifier();
+            $internalPort = $container->GetInternalPort();
+            if ($internalPort === '%APACHE_PORT%') {
+                $internalPort = $this->configurationManager->GetApachePort();
+            } elseif ($internalPort === '%TALK_PORT%') {
+                $internalPort = $this->configurationManager->GetTalkPort();
+            }
+            if (is_numeric($internalPort)) {
+                $connection = @fsockopen($containerName, intval($internalPort), $errno, $errstr, 0.2);
+                if ($connection) {
+                    fclose($connection);
+                } else {
+                    $state = ContainerState::Starting;
+                }
+            }
+        }
+        return $state;
+
     }
 
     public function GetUpdateState(Container $container): UpdateState {
