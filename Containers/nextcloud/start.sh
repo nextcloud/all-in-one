@@ -17,6 +17,11 @@ done
 POSTGRES_USER="oc_$POSTGRES_USER"
 export POSTGRES_USER
 
+# Check that db type is not empty
+if [ -z "$DATABASE_TYPE" ]; then
+    export DATABASE_TYPE=postgres
+fi
+
 # Fix false database connection on old instances
 if [ -f "/var/www/html/config/config.php" ]; then
     sleep 2

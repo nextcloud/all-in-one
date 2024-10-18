@@ -1,13 +1,13 @@
 #!/bin/bash
 
 if [ -z "$NEXTCLOUD_HOST" ]; then
-    echo "NEXTCLOUD_HOST need to be provided. Exiting!"
+    echo "NEXTCLOUD_HOST needs to be provided. Exiting!"
     exit 1
 elif [ -z "$POSTGRES_HOST" ]; then
-    echo "POSTGRES_HOST need to be provided. Exiting!"
+    echo "POSTGRES_HOST needs to be provided. Exiting!"
     exit 1
 elif [ -z "$REDIS_HOST" ]; then
-    echo "REDIS_HOST need to be provided. Exiting!"
+    echo "REDIS_HOST needs to be provided. Exiting!"
     exit 1
 fi
 
@@ -52,9 +52,16 @@ fi
 if [ -z "$REDIS_DB_INDEX" ]; then
     REDIS_DB_INDEX=0
 fi
+# Set a default for db type
+if [ -z "$DATABASE_TYPE" ]; then
+    DATABASE_TYPE=postgres
+elif [ "$DATABASE_TYPE" != postgres ] && [ "$DATABASE_TYPE" != mysql ]; then
+    echo "DB type must be either postgres or mysql"
+    exit 1
+fi
 
 # Set sensitive values as env
-export DATABASE_URL="postgres://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
+export DATABASE_URL="$DATABASE_TYPE://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
 export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
 
 # Run it
