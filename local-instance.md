@@ -9,7 +9,7 @@ The recommended way is the following:
 1. Enter the ip-address of your local dns-server in the daemon.json file for docker so that you are sure that all docker containers use the correct local dns-server.
 1. Now, entering the domain in the AIO-interface should work as expected and should allow you to continue with the setup
 
-Here is a video that does shows this a bit more in detail: https://youtu.be/zk-y2wVkY4c
+**Hint:** You may have a look at [this video](https://youtu.be/zk-y2wVkY4c) for a more complete but possibly outdated example.
 
 ## 2. Use the ACME DNS-challenge
 You can alternatively use the ACME DNS-challenge to get a valid certificate for Nextcloud. Here is described how to set it up: https://github.com/nextcloud/all-in-one#how-to-get-nextcloud-running-using-the-acme-dns-challenge
