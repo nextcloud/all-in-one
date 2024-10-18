@@ -22,5 +22,5 @@ function applySavedTheme() {
     }
 }
 
-// Immediately apply the saved theme
-applySavedTheme();
+// Apply theme when the page loads
+document.addEventListener('DOMContentLoaded', applySavedTheme);
