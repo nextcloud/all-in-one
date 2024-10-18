@@ -710,6 +710,17 @@ Add the following `web.config` file to the root of the site you created as the r
 
 </details>
 
+### Tailscale
+
+<details>
+
+<summary>click here to expand</summary>
+
+It's too long to write here, so please jump to **this guide:** https://github.com/nextcloud/all-in-one/discussions/5439
+
+</details>
+
+
 ### Others
 
 <details>
