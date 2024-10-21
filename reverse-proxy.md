@@ -145,6 +145,9 @@ To make the config work you can run the following command:
 
 <summary>click here to expand</summary>
 
+> [!TIP]
+> You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/575#discussion-4055615) for a more complete but possibly outdated example.
+
 Add this to your Caddyfile:
 
 ```
@@ -203,6 +206,10 @@ For a reverse proxy example guide for Citrix ADC VPX / Citrix Netscaler, see thi
 <details>
 
 <summary>click here to expand</summary>
+
+
+> [!TIP]
+> You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/2845#discussioncomment-6423237) for a more complete but possibly outdated example.
 
 Although it does not seem like it is the case but from AIO perspective a Cloudflare Tunnel works like a reverse proxy. Please see the [caveats](https://github.com/nextcloud/all-in-one#notes-on-cloudflare-proxytunnel) before proceeding. Here is then how to make it work:
 
@@ -317,6 +324,9 @@ backend Nextcloud
 
 <summary>click here to expand</summary>
 
+> [!TIP]
+> You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-2811152) for a more complete but possibly outdated example.
+
 **Disclaimer:** This config was tested and should normally work on all modern Nginx versions. Improvements to the config are very welcome!
 
 Add the below template to your Nginx config.
@@ -401,8 +411,6 @@ server {
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
-**Advice:** You may have a look at [this](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-2811152) for a more complete example.
-
 </details>
 
 ### Nginx-Proxy-Manager - NPM
@@ -410,6 +418,9 @@ server {
 <details>
 
 <summary>click here to expand</summary>
+
+> [!TIP]
+> You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-3040493) for a more complete but possibly oudated example.
 
 First, make sure the environmental variables `PUID` and `PGID` in the `compose.yaml` file for NPM are either unset or set to `0`.
 If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. Note: this will cause that non root users can bind privileged ports.
@@ -560,6 +571,9 @@ See these screenshots for a working config:
 
 <summary>click here to expand</summary>
 
+> [!TIP]
+> You may have a look at [this video](https://www.youtube.com/watch?v=VLPSRrLMDmA) for a more complete but possibly outdated example.
+
 **Disclaimer:** it might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
 
 Traefik's building blocks (router, service, middlewares) need to be defined using dynamic configuration similar to [this](https://doc.traefik.io/traefik/providers/file/#configuration-examples) official Traefik configuration example. Using **docker labels _won't work_** because of the nature of the project.
@@ -638,7 +652,6 @@ The examples below define the dynamic configuration in YAML files. If you rather
 ---
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
-**Hint**: see https://www.youtube.com/watch?v=VLPSRrLMDmA for a video on configuring Traefik.
 
 </details>
 
