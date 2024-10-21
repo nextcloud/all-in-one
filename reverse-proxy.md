@@ -713,7 +713,7 @@ Add the following `web.config` file to the root of the site you created as the r
 
 <summary>click here to expand</summary>
 
-It's too long to write here, so please jump to **this guide:** https://github.com/nextcloud/all-in-one/discussions/5439
+For a reverse proxy example guide for Tailscale, see this guide by @flll: https://github.com/nextcloud/all-in-one/discussions/5439
 
 </details>
 
