@@ -137,7 +137,7 @@ It is set to '$NEXTCLOUD_DATADIR'."
 fi
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
     if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/" || [ "$NEXTCLOUD_MOUNT" = "/" ]; then
-        print_red "You've set NEXCLOUD_MOUNT but not to an allowed value.
+        print_red "You've set NEXTCLOUD_MOUNT but not to an allowed value.
 The string must start with '/' and must not be equal to '/'.
 It is set to '$NEXTCLOUD_MOUNT'."
         exit 1
