@@ -168,6 +168,22 @@ It is set to '$NEXTCLOUD_MAX_TIME'."
         exit 1
     fi
 fi
+if [ -n "$NEXTCLOUD_MAX_FILE_UPLOADS" ]; then
+    if ! echo "$NEXTCLOUD_MAX_FILE_UPLOADS" | grep -q '^[0-9]\+$'; then
+        print_red "You've set NEXTCLOUD_MAX_FILE_UPLOADS but not to an allowed value.
+The string must be a number. E.g. '200'.
+It is set to '$NEXTCLOUD_MAX_FILE_UPLOADS'."
+        exit 1
+    fi
+fi
+if [ -n "$NEXTCLOUD_CHUNK_SIZE" ]; then
+    if ! echo "$NEXTCLOUD_CHUNK_SIZE" | grep -q '^[0-9]\+$'; then
+        print_red "You've set NEXTCLOUD_CHUNK_SIZE but not to an allowed value.
+The string must be a number. E.g. '10485760'.
+It is set to '$NEXTCLOUD_CHUNK_SIZE'."
+        exit 1
+    fi
+fi
 if [ -n "$NEXTCLOUD_MEMORY_LIMIT" ]; then
     if ! echo "$NEXTCLOUD_MEMORY_LIMIT" | grep -q '^[0-9]\+M$'; then
         print_red "You've set NEXTCLOUD_MEMORY_LIMIT but not to an allowed value.

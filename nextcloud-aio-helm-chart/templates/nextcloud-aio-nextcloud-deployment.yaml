@@ -127,8 +127,12 @@ spec:
               value: https
             - name: PHP_MAX_TIME
               value: "{{ .Values.NEXTCLOUD_MAX_TIME }}"
+            - name: PHP_MAX_FILE_UPLOADS
+              value: "{{ .Values.NEXTCLOUD_MAX_FILE_UPLOADS }}"
             - name: PHP_MEMORY_LIMIT
               value: "{{ .Values.NEXTCLOUD_MEMORY_LIMIT }}"
+            - name: NEXTCLOUD_CHUNK_SIZE
+              value: "{{ .Values.NEXTCLOUD_CHUNK_SIZE }}"
             - name: PHP_UPLOAD_LIMIT
               value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
             - name: POSTGRES_DB
