@@ -3,10 +3,13 @@
 namespace AIO\Docker;
 
 use AIO\Container\Container;
-use AIO\Container\VersionState;
+use AIO\Container\UpdateState;
 use AIO\Container\ContainerState;
 use AIO\Data\ConfigurationManager;
+use AssertionError;
+use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use AIO\ContainerDefinitionFetcher;
 use http\Env\Response;
@@ -35,50 +38,7 @@ readonly class DockerActionManager {
         return $container->GetContainerName() . ':' . $tag;
     }
 
-    public function GetContainerRunningState(Container $container) : ContainerState
-    {
-        $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->GetIdentifier())));
-        try {
-            $response = $this->guzzleClient->get($url);
-        } catch (RequestException $e) {
-            if ($e->getCode() === 404) {
-                return ContainerState::ImageDoesNotExist;
-            }
-            throw $e;
-        }
-
-        $responseBody = json_decode((string)$response->getBody(), true);
-
-        if ($responseBody['State']['Running'] === true) {
-            return ContainerState::Running;
-        } else {
-            return ContainerState::Stopped;
-        }
-    }
-
-    public function GetContainerRestartingState(Container $container) : ContainerState
-    {
-        $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->GetIdentifier())));
-        try {
-            $response = $this->guzzleClient->get($url);
-        } catch (RequestException $e) {
-            if ($e->getCode() === 404) {
-                return ContainerState::ImageDoesNotExist;
-            }
-            throw $e;
-        }
-
-        $responseBody = json_decode((string)$response->getBody(), true);
-
-        if ($responseBody['State']['Restarting'] === true) {
-            return ContainerState::Restarting;
-        } else {
-            return ContainerState::NotRestarting;
-        }
-    }
-
-    public function GetContainerUpdateState(Container $container) : VersionState
-    {
+    public function GetUpdateState(Container $container): UpdateState {
         $tag = $container->GetImageTag();
         if ($tag === '%AIO_CHANNEL%') {
             $tag = $this->GetCurrentChannel();
@@ -86,47 +46,66 @@ readonly class DockerActionManager {
 
         $runningDigests = $this->GetRepoDigestsOfContainer($container->GetIdentifier());
         if ($runningDigests === null) {
-            return VersionState::Different;
+            return UpdateState::Outdated;
         }
         $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
         if ($remoteDigest === null) {
-            return VersionState::Equal;
+            return UpdateState::Latest;
         }
 
-        foreach($runningDigests as $runningDigest) {
-            if ($runningDigest === $remoteDigest) {
-                return VersionState::Equal;
-            }
-        }
-        return VersionState::Different;
+        return in_array($remoteDigest, $runningDigests, true) ? UpdateState::Latest : UpdateState::Outdated;
     }
 
-    public function GetContainerStartingState(Container $container) : ContainerState
-    {
-        $runningState = $this->GetContainerRunningState($container);
-        if ($runningState === ContainerState::Stopped || $runningState === ContainerState::ImageDoesNotExist) {
-            return $runningState;
-        }
-
-        $containerName = $container->GetIdentifier();
-        $internalPort = $container->GetInternalPort();
-        if($internalPort === '%APACHE_PORT%') {
-            $internalPort = $this->configurationManager->GetApachePort();
-        } elseif($internalPort === '%TALK_PORT%') {
-            $internalPort = $this->configurationManager->GetTalkPort();
-        }
-
-        if ($internalPort !== "" && $internalPort !== 'host') {
-            $connection = @fsockopen($containerName, (int)$internalPort, $errno, $errstr, 0.2);
-            if ($connection) {
-                fclose($connection);
-                return ContainerState::Running;
-            } else {
-                return ContainerState::Starting;
+    /** @throws GuzzleException */
+    public function GetContainerState(Container $container): ContainerState {
+        $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->GetIdentifier())));
+        try {
+            $response = $this->guzzleClient->get($url);
+        } catch (GuzzleException $e) {
+            if ($e->getCode() === 404) {
+                return ContainerState::DoesNotExist;
             }
-        } else {
-            return ContainerState::Running;
+            throw $e;
         }
+
+        $body = json_decode($response->getBody()->getContents(), true);
+        assert(is_array($body));
+        assert(is_array($body['State']));
+
+        $state = match ($body['State']['Status']) {
+            'running' => ContainerState::Healthy,
+            'created' => ContainerState::Starting,
+            'restarting' => ContainerState::Restarting,
+            'paused', 'removing', 'exited', 'dead' => ContainerState::Stopped,
+            default => throw new AssertionError()
+        };
+
+        if ($state->isHealthy() && is_array($body['State']['Health'])) {
+            $state = match ($body['State']['Health']['Status']) {
+                'starting' => ContainerState::Starting,
+                'unhealthy' => ContainerState::Unhealthy,
+                default => $state,
+            };
+        }
+
+        if ($state->isHealthy()) {
+            $containerName = $container->GetIdentifier();
+            $internalPort = $container->GetInternalPort();
+            if ($internalPort === '%APACHE_PORT%') {
+                $internalPort = $this->configurationManager->GetApachePort();
+            } elseif ($internalPort === '%TALK_PORT%') {
+                $internalPort = $this->configurationManager->GetTalkPort();
+            }
+            if (is_numeric($internalPort)) {
+                $connection = @fsockopen($containerName, intval($internalPort), $errno, $errstr, 0.2);
+                if ($connection) {
+                    fclose($connection);
+                } else {
+                    $state = ContainerState::Starting;
+                }
+            }
+        }
+        return $state;
     }
 
     public function DeleteContainer(Container $container) : void {
@@ -167,7 +146,7 @@ readonly class DockerActionManager {
         try {
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
-            throw new \Exception("Could not start container " . $container->GetIdentifier() . ": " . $e->getMessage());
+            throw new Exception("Could not start container " . $container->GetIdentifier() . ": " . $e->getMessage());
         }
     }
 
@@ -404,7 +383,7 @@ readonly class DockerActionManager {
                 } else {
                     $secret = $this->configurationManager->GetSecret($out[1]);
                     if ($secret === "") {
-                        throw new \Exception("The secret " . $out[1] . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
+                        throw new Exception("The secret " . $out[1] . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
                     }
                     $replacements[1] = $secret;
                 }
@@ -573,7 +552,7 @@ readonly class DockerActionManager {
                 ]
             );
         } catch (RequestException $e) {
-            throw new \Exception("Could not create container " . $container->GetIdentifier() . ": " . $e->getMessage());
+            throw new Exception("Could not create container " . $container->GetIdentifier() . ": " . $e->getMessage());
         }
 
     }
@@ -609,17 +588,16 @@ readonly class DockerActionManager {
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
             if ($imageIsThere === false) {
-                throw new \Exception("Could not pull image " . $imageName . ". Please run 'sudo docker exec -it nextcloud-aio-mastercontainer docker pull " . $imageName . "' in order to find out why it failed.");
+                throw new Exception("Could not pull image " . $imageName . ". Please run 'sudo docker exec -it nextcloud-aio-mastercontainer docker pull " . $imageName . "' in order to find out why it failed.");
             }
         }
     }
 
-    private function isContainerUpdateAvailable(string $id) : string
-    {
+    private function isContainerUpdateAvailable(string $id): string {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         $updateAvailable = "";
-        if ($container->GetUpdateState() === VersionState::Different) {
+        if ($container->GetUpdateState() === UpdateState::Outdated) {
             $updateAvailable = '1';
         }
         foreach ($container->GetDependsOn() as $dependency) {
@@ -718,7 +696,7 @@ readonly class DockerActionManager {
             }
 
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -747,7 +725,7 @@ readonly class DockerActionManager {
                 $tag = 'latest';
             }
             return $tag;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log('Could not get current channel ' . $e->getMessage());
         }
 
@@ -778,9 +756,9 @@ readonly class DockerActionManager {
         return true;
     }
 
-    public function sendNotification(Container $container, string $subject, string $message, string $file = '/notify.sh') : void
-    {
-        if ($this->GetContainerStartingState($container) === ContainerState::Running) {
+    /** @throws GuzzleException */
+    public function sendNotification(Container $container, string $subject, string $message, string $file = '/notify.sh'): void {
+        if ($this->GetContainerState($container)->isHealthy()) {
 
             $containerName = $container->GetIdentifier();
 
@@ -867,7 +845,7 @@ readonly class DockerActionManager {
         } catch (RequestException $e) {
             // 409 is undocumented and gets thrown if the network already exists.
             if ($e->getCode() !== 409) {
-                throw new \Exception("Could not create the nextcloud-aio network: " . $e->getMessage());
+                throw new Exception("Could not create the nextcloud-aio network: " . $e->getMessage());
             }
         }
 
@@ -961,19 +939,24 @@ readonly class DockerActionManager {
         }
     }
 
-    public function isLoginAllowed() : bool {
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    public function isLoginAllowed(): bool {
         $id = 'nextcloud-aio-apache';
         $apacheContainer = $this->containerDefinitionFetcher->GetContainerById($id);
-        if ($this->GetContainerStartingState($apacheContainer) === ContainerState::Running) {
+        if ($this->GetContainerState($apacheContainer)->isRunning()) {
             return false;
         }
         return true;
     }
 
-    public function isBackupContainerRunning() : bool {
+    /** @throws GuzzleException */
+    public function isBackupContainerRunning(): bool {
         $id = 'nextcloud-aio-borgbackup';
         $backupContainer = $this->containerDefinitionFetcher->GetContainerById($id);
-        if ($this->GetContainerRunningState($backupContainer) === ContainerState::Running) {
+        if ($this->GetContainerState($backupContainer)->isRunning()) {
             return true;
         }
         return false;
@@ -991,7 +974,7 @@ readonly class DockerActionManager {
             }
 
             return str_replace('T', ' ', (string)$imageOutput['Created']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
