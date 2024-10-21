@@ -652,17 +652,18 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
-    public function GetNexcloudMaxFileUploads() : string {
+    public function GetNextcloudMaxFileUploads() : string {
         $envVariableName = 'NEXTCLOUD_MAX_FILE_UPLOADS';
         $configName = 'nextcloud_max_file_uploads';
         $defaultValue = '200';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
-    public function GetNexcloudChunkSize() : string {
+    public function GetNextcloudChunkSize() : string {
         $envVariableName = 'NEXTCLOUD_CHUNK_SIZE';
         $configName = 'nextcloud_chunk_size';
         $defaultValue = '10485760';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
     public function GetBorgRetentionPolicy() : string {
