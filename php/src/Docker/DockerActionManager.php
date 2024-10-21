@@ -351,6 +351,10 @@ readonly class DockerActionManager {
                     $replacements[1] = $this->configurationManager->GetNextcloudMemoryLimit();
                 } elseif ($out[1] === 'NEXTCLOUD_MAX_TIME') {
                     $replacements[1] = $this->configurationManager->GetNextcloudMaxTime();
+                } elseif ($out[1] === 'NEXTCLOUD_MAX_FILE_UPLOADS') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudMaxFileUploads();
+                } elseif ($out[1] === 'NEXTCLOUD_CHUNK_SIZE') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudChunkSize();
                 } elseif ($out[1] === 'BORG_RETENTION_POLICY') {
                     $replacements[1] = $this->configurationManager->GetBorgRetentionPolicy();
                 } elseif ($out[1] === 'NEXTCLOUD_TRUSTED_CACERTS_DIR') {
