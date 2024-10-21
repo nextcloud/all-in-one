@@ -378,7 +378,7 @@ DATADIR_PERMISSION_CONF
             fi
 
             # Adjust Files app chunk size
-            if [ -n "$NEXTCLOUD_CHUNK_SIZE"]; then
+            if [ -n "$NEXTCLOUD_CHUNK_SIZE" ]; then
                 php /var/www/html/occ config:app:set files max_chunk_size --value="$NEXTCLOUD_CHUNK_SIZE"
             fi
 
