@@ -9,7 +9,6 @@ use AIO\Container\ContainerPort;
 use AIO\Container\ContainerPorts;
 use AIO\Container\ContainerVolume;
 use AIO\Container\ContainerVolumes;
-use AIO\Container\State\RunningState;
 use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
 use AIO\Docker\DockerActionManager;

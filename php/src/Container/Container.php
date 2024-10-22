@@ -2,7 +2,6 @@
 
 namespace AIO\Container;
 
-use AIO\Container\State\IContainerState;
 use AIO\Data\ConfigurationManager;
 use AIO\Docker\DockerActionManager;
 use AIO\ContainerDefinitionFetcher;
@@ -113,19 +112,19 @@ readonly class Container {
         return $this->volumes;
     }
 
-    public function GetRunningState() : IContainerState {
+    public function GetRunningState() : ContainerState {
         return $this->dockerActionManager->GetContainerRunningState($this);
     }
 
-    public function GetRestartingState() : IContainerState {
+    public function GetRestartingState() : ContainerState {
         return $this->dockerActionManager->GetContainerRestartingState($this);
     }
 
-    public function GetUpdateState() : IContainerState {
+    public function GetUpdateState() : VersionState {
         return $this->dockerActionManager->GetContainerUpdateState($this);
     }
 
-    public function GetStartingState() : IContainerState {
+    public function GetStartingState() : ContainerState {
         return $this->dockerActionManager->GetContainerStartingState($this);
     }
 
