@@ -20,6 +20,7 @@ services:
       # COLLABORA_SECCOMP_DISABLED: false # Setting this to true allows to disable Collabora's Seccomp feature. See https://github.com/nextcloud/all-in-one#how-to-disable-collaboras-seccomp-feature
       # NEXTCLOUD_DATADIR: /mnt/ncdata # Allows to set the host directory for Nextcloud's datadir. ⚠️⚠️⚠️ Warning: do not set or adjust this value after the initial Nextcloud installation is done! See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir
       # NEXTCLOUD_MOUNT: /mnt/ # Allows the Nextcloud container to access the chosen directory on the host. See https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host
+      # NEXTCLOUD_TEMPDIR: /tmp/nc-tmpdir # Allows the Nextcloud container to access a custom directory for temporary files. See  https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-a-custom-directory-for-temporary-files
       # NEXTCLOUD_UPLOAD_LIMIT: 10G # Can be adjusted if you need more. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud
       # NEXTCLOUD_MAX_TIME: 3600 # Can be adjusted if you need more. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud
       # NEXTCLOUD_MAX_FILE_UPLOADS: 200 # Can be adjusted if you need more. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-max-file-uploads-limit-for-nextcloud

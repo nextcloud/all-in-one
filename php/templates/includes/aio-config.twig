@@ -18,9 +18,18 @@
         {% if nextcloud_mount == '' %}
             The Nextcloud container is confied and local external storage in Nextcloud is disabled.
         {% else %}
-            The Nextcloud container is getting gets access to the {{ nextcloud_mount }} directory and local external storage in Nextcloud is enabled.
+            The Nextcloud container is getting access to the {{ nextcloud_mount }} directory and local external storage in Nextcloud is enabled.
         {% endif %}
         See the <a href="https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host">NEXTCLOUD_MOUNT documentation</a> on how to change this.</p>
+    
+    <p>
+        {% if nextcloud_tempdir == '' %}
+            The Nextcloud's custom temporary directory is disabled.
+        {% else %}
+            The Nextcloud's custom temporary directory is enabled and set to {{ nextcloud_tempdir }}.
+        {% endif %}
+        See the <a href="https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-a-custom-directory-for-temporary-files
+    </p>
 
     <p>Nextcloud has an upload limit of {{ nextcloud_upload_limit }} configured (for public link uploads. Bigger uploads are always possible when users are logged in). See the <a href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud">NEXTCLOUD_UPLOAD_LIMIT documentation</a> on how to change this.</p>
 
@@ -31,6 +40,7 @@
     <p>Nextcloud has a simultaneous file limit of {{ nextcloud_max_file_uploads }} files per single request. See the <a> href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-max-file-uploads-limit-for-nextcloud">NEXTCLOUD_MAX_FILE_UPLOADS documentation</a> on how to change this.</p>
 
     <p>Nextcloud has a chunk size of {{ nextcloud_chunk_size }} configured for file uploads. See the <a> href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-file-upload-chunk-size-for-nextcloud">NEXTCLOUD_CHUNK_SIZE documentation</a> on how to change this.</p>
+
 
     <p>
         {% if is_dri_device_enabled == true %}

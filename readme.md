@@ -39,6 +39,7 @@ Included are:
 - Video previews work out of the box and when Imaginary is enabled, many recent image formats as well!
 - Only one domain and not multiple domains are required for everything to work (usually you would need to have one domain for each service which is much more complex)
 - [Adjustable location](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) of Nextcloud's datadir (e.g. good for easy file-sharing with host system on Windows and MacOS)
+- [Adjustable location](https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-a-custom-directory-for-temporary-files) of Nextcloud's tempdir
 - By default confined (good for security) but can [allow access to additional storages](https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host) in order to enable the usage of the local external storage feature
 - Possibility included to [adjust default installed Nextcloud apps](https://github.com/nextcloud/all-in-one#how-to-change-the-nextcloud-apps-that-are-installed-on-the-first-startup)
 - Nextcloud installation is not read only - that means you can apply patches if you should need them (instead of having to wait for the next release for them getting applied)
@@ -661,11 +662,24 @@ Be aware though that these locations will not be covered by the built-in backup 
 > [!NOTE]  
 > If you can't see the type "local storage" in the external storage admin options, a restart of the containers from the AIO interface may be required.
 
+###  How to allow the Nextcloud container to access a custom directory for temporary files?
+By default, the Nexcloud container stores temporary files like public uploads and more on the same container, this can be a problem if you installed docker and its data on a small size disk or you need support for really big public file uploads. You can do this by adding the environmental variable `NEXTCLOUD_TEMPDIR` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). Allowed values for that variable are strings that start with `/` and are not equal to `/`.
+
+For this usecase we recommend a fast drive for `/tmp` with enough storage size to hold multiple parallel uploads from multiple users [See](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html#system-configuration).
+
+- Two examples for Linux are `--env NEXTCLOUD_TEMPDIR="/tmp/nc-tmpdir"` and `--env NEXTCLOUD_MOUNT="/srv/disk/nc-tmpdir"`.
+- On macOS it might be `--env NEXTCLOUD_TEMPDIR="/Volumes/your_drive/nc-tmpdir"`
+- For Synology it may be `--env NEXTCLOUD_TEMPDIR="/volume1/nc-tmpdir"`.
+- On Windows it might be `--env NEXTCLOUD_TEMPDIR="/run/desktop/mnt/host/d/your-tmp/nc-tmp"`. (This path is equivalent to `D:\your-tmp\nc-tmp` on your Windows host so you need to translate the path accordingly. Hint: the path that you enter needs to start with `/run/desktop/mnt/host/`. Append to that the exact location on your windows host, e.g. `d/your-tmp/nc-tmp` which is equivalent to `D:\your-tmp`.) ⚠️ **Please note**: This does not work with external drives like USB or network drives and only with internal drives like SATA or NVME drives.
+
+> [!NOTE]  
+> This is optional, we only recommend to set this if you have limited disk space on your host system or docker installation folder.
+
 ### How to adjust the Talk port?
 By default will the talk container use port `3478/UDP` and `3478/TCP` for connections. You can adjust the port by adding e.g. `--env TALK_PORT=3478` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and adjusting the port to your desired value. Best is to use a port over 1024, so e.g. 3479 to not run into this: https://github.com/nextcloud/all-in-one/discussions/2517
 
 ### How to adjust the upload limit for Nextcloud?
-By default, public uploads to Nextcloud are limited to a max of 10G (logged in users can upload much bigger files using the webinterface or the mobile/desktop clients, since chunking is used in that case). You can adjust the upload limit by providing `--env NEXTCLOUD_UPLOAD_LIMIT=10G` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. It must start with a number and end with `G` e.g. `10G`.
+By default, public uploads to Nextcloud are limited to a max of 10G (logged in users can upload much bigger files using the webinterface or the mobile/desktop clients, since chunking is used in that case). You can adjust the upload limit by providing `--env NEXTCLOUD_UPLOAD_LIMIT=10G` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. It must start with a number and end with `G` e.g. `10G`. However, if you plan to upload files bigger than 10G, you should consider to set the [`NEXTCLOUD_TEMPDIR`](https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-a-custom-directory-for-temporary-files) as well, since the upload will be stored apart from the container and prevent to run out of space.
 
 ### How to adjust the max execution time for Nextcloud?
 By default, uploads to Nextcloud are limited to a max of 3600s. You can adjust the upload time limit by providing `--env NEXTCLOUD_MAX_TIME=3600` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. It must be a number e.g. `3600`.

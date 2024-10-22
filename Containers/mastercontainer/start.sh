@@ -152,6 +152,12 @@ if [ -n "$NEXTCLOUD_DATADIR" ] && [ -n "$NEXTCLOUD_MOUNT" ]; then
         exit 1
     fi
 fi
+if [ -n "$NEXTCLOUD_TEMPDIR" ]; then
+    if ! echo "$NEXTCLOUD_TEMPDIR" | grep -q "^/"; then
+        print_red "You've set NEXTCLOUD_TEMPDIR but not to an allowed value.
+        The string must start with '/'"
+    fi
+fi
 if [ -n "$NEXTCLOUD_UPLOAD_LIMIT" ]; then
     if ! echo "$NEXTCLOUD_UPLOAD_LIMIT" | grep -q '^[0-9]\+G$'; then
         print_red "You've set NEXTCLOUD_UPLOAD_LIMIT but not to an allowed value.

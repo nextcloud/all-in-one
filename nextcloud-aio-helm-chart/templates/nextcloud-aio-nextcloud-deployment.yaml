@@ -117,6 +117,8 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_DATA_DIR
               value: /mnt/ncdata
+            - name: NEXTCLOUD_TEMPDIR
+              value: /tmp/nc-data
             - name: ONLYOFFICE_ENABLED
               value: "{{ .Values.ONLYOFFICE_ENABLED }}"
             - name: ONLYOFFICE_HOST

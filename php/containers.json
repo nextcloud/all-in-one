@@ -170,6 +170,11 @@
           "writeable": true
         },
         {
+          "source": "%NEXTCLOUD_TEMPDIR%",
+          "destination": "/tmp",
+          "writeable": true
+        },
+        {
           "source": "%NEXTCLOUD_TRUSTED_CACERTS_DIR%",
           "destination": "/usr/local/share/ca-certificates",
           "writeable": false
@@ -195,6 +200,7 @@
         "ONLYOFFICE_SECRET=%ONLYOFFICE_SECRET%",
         "AIO_URL=%AIO_URL%",
         "NEXTCLOUD_MOUNT=%NEXTCLOUD_MOUNT%",
+        "NEXTCLOUD_TEMPDIR=/tmp",
         "CLAMAV_ENABLED=%CLAMAV_ENABLED%",
         "CLAMAV_HOST=nextcloud-aio-clamav",
         "ONLYOFFICE_ENABLED=%ONLYOFFICE_ENABLED%",

@@ -107,6 +107,7 @@ services:
       - nextcloud_aio_nextcloud:/var/www/html:rw
       - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
       - ${NEXTCLOUD_MOUNT}:${NEXTCLOUD_MOUNT}:rw
+      - ${NEXTCLOUD_TEMPDIR}:/tmp:rw
       - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     environment:
       - POSTGRES_HOST=nextcloud-aio-database
@@ -126,6 +127,7 @@ services:
       - SIGNALING_SECRET=${SIGNALING_SECRET}
       - ONLYOFFICE_SECRET=${ONLYOFFICE_SECRET}
       - NEXTCLOUD_MOUNT=${NEXTCLOUD_MOUNT}
+      - NEXTCLOUD_TEMPDIR=/tmp/nc-tmpdir
       - CLAMAV_ENABLED=${CLAMAV_ENABLED}
       - CLAMAV_HOST=nextcloud-aio-clamav
       - ONLYOFFICE_ENABLED=${ONLYOFFICE_ENABLED}

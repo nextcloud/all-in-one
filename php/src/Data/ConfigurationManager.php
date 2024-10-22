@@ -619,6 +619,13 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetNextcloudTempDirMount() : string {
+        $envVariableName = 'NEXTCLOUD_TEMPDIR';
+        $configName = 'nextcloud_tempdir';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     public function GetNextcloudDatadirMount() : string {
         $envVariableName = 'NEXTCLOUD_DATADIR';
         $configName = 'nextcloud_datadir';

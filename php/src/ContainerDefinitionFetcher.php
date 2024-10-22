@@ -109,15 +109,15 @@ readonly class ContainerDefinitionFetcher {
             $volumes = new ContainerVolumes();
             if (isset($entry['volumes'])) {
                 foreach ($entry['volumes'] as $value) {
-                    if($value['source'] === '%BORGBACKUP_HOST_LOCATION%') {
+                    if ($value['source'] === '%BORGBACKUP_HOST_LOCATION%') {
                         $value['source'] = $this->configurationManager->GetBorgBackupHostLocation();
-                        if($value['source'] === '') {
+                        if ($value['source'] === '') {
                             continue;
                         }
                     }
-                    if($value['source'] === '%NEXTCLOUD_MOUNT%') {
+                    if ($value['source'] === '%NEXTCLOUD_MOUNT%') {
                         $value['source'] = $this->configurationManager->GetNextcloudMount();
-                        if($value['source'] === '') {
+                        if ($value['source'] === '') {
                             continue;
                         }
                     } elseif ($value['source'] === '%NEXTCLOUD_DATADIR%') {
@@ -125,20 +125,25 @@ readonly class ContainerDefinitionFetcher {
                         if ($value['source'] === '') {
                             continue;
                         }
+                    } elseif ($value['source'] === '%NEXTCLOUD_TEMPDIR%') {
+                        $value['source'] = $this->configurationManager->GetNextcloudTempdirMount();
+                        if ($value['source'] === '') {
+                            continue;
+                        }
                     } elseif ($value['source'] === '%WATCHTOWER_DOCKER_SOCKET_PATH%') {
                         $value['source'] = $this->configurationManager->GetDockerSocketPath();
-                        if($value['source'] === '') {
+                        if ($value['source'] === '') {
                             continue;
                         }
                     } elseif ($value['source'] === '%NEXTCLOUD_TRUSTED_CACERTS_DIR%') {
                         $value['source'] = $this->configurationManager->GetTrustedCacertsDir();
-                        if($value['source'] === '') {
+                        if ($value['source'] === '') {
                             continue;
                         }
                     }
                     if ($value['destination'] === '%NEXTCLOUD_MOUNT%') {
                         $value['destination'] = $this->configurationManager->GetNextcloudMount();
-                        if($value['destination'] === '') {
+                        if ($value['destination'] === '') {
                             continue;
                         }
                     }

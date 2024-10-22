@@ -277,6 +277,8 @@ readonly class DockerActionManager {
                     $replacements[1] = $this->configurationManager->GetTalkPort();
                 } elseif ($out[1] === 'NEXTCLOUD_MOUNT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudMount();
+                } elseif ($out[1] === 'NEXTCLOUD_TEMPDIR') {
+                    $replacements[1] = $this->configurationManager->GetNextcloudTempDirMount();
                 } elseif ($out[1] === 'BACKUP_RESTORE_PASSWORD') {
                     $replacements[1] = $this->configurationManager->GetBorgRestorePassword();
                 } elseif ($out[1] === 'CLAMAV_ENABLED') {

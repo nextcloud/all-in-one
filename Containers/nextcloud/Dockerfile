@@ -22,6 +22,7 @@ COPY root.motd /root.motd
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
+VOLUME /tmp
 
 # Custom: change id of www-data user as it needs to be the same like on old installations
 # hadolint ignore=SC2086,DL3003
