@@ -26,7 +26,7 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "next
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= if contains(["nextcloud-aio-docker-socket-proxy"]) then del(.[index("nextcloud-aio-docker-socket-proxy")]) else . end else . end')"
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= map({ (.): { "condition": "service_started", "required": false } }) else . end' | jq '.services[] |= if has("depends_on") then .depends_on |= reduce .[] as $item ({}; . + $item) else . end')"
 
-snap install yq
+sudo snap install yq
 mkdir -p ./manual-install
 echo "$OUTPUT" | yq -P > ./manual-install/containers.yml
 
@@ -42,7 +42,6 @@ sed -i '/AIO_TOKEN/d' containers.yml
 sed -i '/AIO_URL/d' containers.yml
 sed -i '/DOCKER_SOCKET_PROXY_ENABLED/d' containers.yml
 sed -i '/ADDITIONAL_TRUSTED_PROXY/d' containers.yml
-sed -ie 's/\( *- \(\w*\)\)=\${\2\}/\1/' containers.yml
 
 TCP="$(grep -oP '[%A-Z0-9_]+/tcp' containers.yml | sort -u)"
 mapfile -t TCP <<< "$TCP"
@@ -145,9 +144,8 @@ networks:
     driver: bridge
 NETWORK
 
-cat containers.yml > latest.yml
+mv containers.yml latest.yml
 sed -i "/image:/s/$/:latest/" latest.yml
-
-rm containers.yml
+sed -i 's/\( *- \(\w*\)\)=\${\2\}/\1/' latest.yml
 
 set +ex

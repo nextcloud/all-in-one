@@ -255,7 +255,7 @@ services:
     environment:
       - NC_DOMAIN
       - TZ=${TIMEZONE}
-      - RECORDING_SECRET=${RECORDING_SECRET}
+      - RECORDING_SECRET
       - INTERNAL_SECRET=${TALK_INTERNAL_SECRET}
     shm_size: 2147483648
     restart: unless-stopped
