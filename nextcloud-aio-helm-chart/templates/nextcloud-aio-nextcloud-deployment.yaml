@@ -25,7 +25,7 @@ spec:
     spec:
       initContainers:
         - name: "delete-lost-found"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine:3.20"
           command:
             - rm
             - "-rf"
@@ -36,7 +36,7 @@ spec:
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
         - name: init-volumes
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine:3.20"
           command:
             - chmod
             - "777"
