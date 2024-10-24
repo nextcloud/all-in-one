@@ -1,9 +1,11 @@
 #!/bin/bash
 
+[ -z "$1" ] && { echo "Error: Docker tag is not specified. Usage: ./nextcloud-aio-helm-chart/update-helm.sh <Docker tag>"; exit 2; }
+
 DOCKER_TAG="$1"
 
 # The logic needs the files in ./helm-chart
-mv ./nextcloud-aio-helm-chart ./helm-chart
+cp -r ./nextcloud-aio-helm-chart ./helm-chart
 
 # Clean
 rm -f ./helm-chart/values.yaml
@@ -15,13 +17,15 @@ chmod +x kompose
 sudo mv ./kompose /usr/local/bin/kompose
 
 # Install yq
-snap install yq
+sudo snap install yq
 
 set -ex
 
 # Conversion of docker-compose
 cd manual-install
 cp latest.yml latest.yml.backup
+
+sed -i -E '/^( *- )(NET_RAW|SYS_NICE|MKNOD|SYS_ADMIN)$/!s/( *- )([A-Z_]+)$/\1\2=${\2}/' latest.yml
 cp sample.conf /tmp/
 sed -i 's|^|export |' /tmp/sample.conf
 # shellcheck disable=SC1091
@@ -41,8 +45,7 @@ sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
 sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name: nextcloud_aio_nextcloud_trusted_cacerts" latest.yml
 sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cacerts:|g#" latest.yml
-sed -i 's|\${|{{ .Values.|g' latest.yml
-sed -i 's|}| }}|g' latest.yml
+sed -i 's/\${/{{ .Values./g; s/}/ }}/g' latest.yml
 yq -i 'del(.services.[].profiles)' latest.yml
 # Delete read_only and tmpfs setting while https://github.com/kubernetes/kubernetes/issues/48912 is not fixed
 yq -i 'del(.services.[].read_only)' latest.yml
