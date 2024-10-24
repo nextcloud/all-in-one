@@ -4,6 +4,7 @@ FROM php:8.2.24-fpm-alpine3.20
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=10G
 ENV PHP_MAX_TIME=3600
+ENV PHP_MAX_FILE_UPLOADS=200
 ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
@@ -21,6 +22,7 @@ COPY root.motd /root.motd
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
+VOLUME /tmp
 
 # Custom: change id of www-data user as it needs to be the same like on old installations
 # hadolint ignore=SC2086,DL3003
@@ -122,6 +124,7 @@ RUN set -ex; \
     { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
+        echo 'max_file_uploads=${PHP_MAX_FILE_UPLOADS}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
         echo 'max_execution_time=${PHP_MAX_TIME}'; \
         echo 'max_input_time=${PHP_MAX_TIME}'; \
