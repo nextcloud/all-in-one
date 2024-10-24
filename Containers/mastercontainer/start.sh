@@ -137,7 +137,7 @@ It is set to '$NEXTCLOUD_DATADIR'."
 fi
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
     if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/" || [ "$NEXTCLOUD_MOUNT" = "/" ]; then
-        print_red "You've set NEXCLOUD_MOUNT but not to an allowed value.
+        print_red "You've set NEXTCLOUD_MOUNT but not to an allowed value.
 The string must start with '/' and must not be equal to '/'.
 It is set to '$NEXTCLOUD_MOUNT'."
         exit 1
@@ -165,6 +165,22 @@ if [ -n "$NEXTCLOUD_MAX_TIME" ]; then
         print_red "You've set NEXTCLOUD_MAX_TIME but not to an allowed value.
 The string must be a number. E.g. '3600'.
 It is set to '$NEXTCLOUD_MAX_TIME'."
+        exit 1
+    fi
+fi
+if [ -n "$NEXTCLOUD_MAX_FILE_UPLOADS" ]; then
+    if ! echo "$NEXTCLOUD_MAX_FILE_UPLOADS" | grep -q '^[0-9]\+$'; then
+        print_red "You've set NEXTCLOUD_MAX_FILE_UPLOADS but not to an allowed value.
+The string must be a number. E.g. '200'.
+It is set to '$NEXTCLOUD_MAX_FILE_UPLOADS'."
+        exit 1
+    fi
+fi
+if [ -n "$NEXTCLOUD_CHUNK_SIZE" ]; then
+    if ! echo "$NEXTCLOUD_CHUNK_SIZE" | grep -q '^[0-9]\+$'; then
+        print_red "You've set NEXTCLOUD_CHUNK_SIZE but not to an allowed value.
+The string must be a number. E.g. '10485760'.
+It is set to '$NEXTCLOUD_CHUNK_SIZE'."
         exit 1
     fi
 fi
