@@ -5,6 +5,7 @@ namespace AIO\Controller;
 use AIO\Container\ContainerState;
 use AIO\ContainerDefinitionFetcher;
 use AIO\Docker\DockerActionManager;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
@@ -19,6 +20,7 @@ readonly class DockerController {
     ) {
     }
 
+    /** @throws GuzzleException */
     private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
@@ -28,7 +30,7 @@ readonly class DockerController {
 
         // Don't start if container is already running
         // This is expected to happen if a container is defined in depends_on of multiple containers
-        if ($container->GetRunningState() === ContainerState::Running) {
+        if ($container->GetContainerState()->isRunning()) {
             error_log('Not starting ' . $id . ' because it was already started.');
             return;
         }
@@ -240,6 +242,7 @@ readonly class DockerController {
         $this->PerformRecursiveContainerStop($id);
     }
 
+    /** @throws GuzzleException */
     public function StartDomaincheckContainer() : void
     {
         # Don't start if domain is already set
@@ -254,10 +257,10 @@ readonly class DockerController {
         $domaincheckContainer = $this->containerDefinitionFetcher->GetContainerById($id);
         $apacheContainer = $this->containerDefinitionFetcher->GetContainerById(self::TOP_CONTAINER);
         // Don't start if apache is already running
-        if ($apacheContainer->GetRunningState() === ContainerState::Running) {
+        if ($apacheContainer->GetContainerState()->isRunning()) {
             return;
         // Don't start if domaincheck is already running
-        } elseif ($domaincheckContainer->GetRunningState() === ContainerState::Running) {
+        } elseif ($domaincheckContainer->GetContainerState()->isRunning()) {
             $domaincheckWasStarted = apcu_fetch($cacheKey);
             // Start domaincheck again when 10 minutes are over by not returning here
             if($domaincheckWasStarted !== false && is_string($domaincheckWasStarted)) {
