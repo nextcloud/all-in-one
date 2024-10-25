@@ -262,10 +262,10 @@ In general recommended VPS are those that are KVM/non-virtualized as Docker shou
 You can install AIO in reverse proxy mode where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section). Also see https://github.com/dani-garcia/vaultwarden/wiki/Running-a-private-vaultwarden-instance-with-Let%27s-Encrypt-certs#getting-a-custom-caddy-build for additional docs on this topic.
 
 ### How to run Nextcloud locally? No domain wanted, or wanting intranet access within your LAN.
-If you do not want to open Nextcloud to the public internet, you may have a look at the following documentation on how to set it up locally: [local-instance.md](./local-instance.md), but keep in mind you're still required to have https working properly.  This is not recommended, and still requires additional, advanced configuration on your part.
+If you do not want to open Nextcloud to the public internet, you may have a look at the following documentation on how to set it up locally: [local-instance.md](./local-instance.md), but keep in mind you're still required to have https working properly.  This is not recommended due to all of the features bundled into AIO.
 
 ### Can I use an ip-address for Nextcloud instead of a domain?
-No and it will not be added. If you only want to run it locally, you may have a look at the following documentation: [local-instance.md](./local-instance.md) for configuration without a traditional domain. Or, [consider using NextcloudPi](nextcloudpi.com) for ip-address access locally.
+No and it will not be added. If you only want to run it locally, you may have a look at the following documentation: [local-instance.md](./local-instance.md) for configuration without a traditional domain. Or, [consider using NextcloudPi](nextcloudpi.com) for ip-address access locally (because it bundles fewer features than AIO).
 
 ### Can I run AIO offline or in an airgapped system?
 No. This is not possible and will not be added due to multiple reasons: update checks, app installs via app-store, downloading additional docker images on demand and more.
