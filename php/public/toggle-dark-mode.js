@@ -10,17 +10,28 @@ function toggleTheme() {
     themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙'; // Switch between moon and sun icons
 }
 
-// Function to apply saved theme from localStorage
-function applySavedTheme() {
+// Function to immediately apply saved theme without icon update
+function applySavedThemeImmediately() {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+        document.documentElement.removeAttribute('data-theme'); // Default to light theme
+    }
+}
+
+// Function to apply theme-icon update
+function setThemeIcon() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
         document.getElementById('theme-icon').textContent = '☀️'; // Sun icon for dark mode
     } else {
-        document.documentElement.removeAttribute('data-theme'); // Default to light theme (no data-theme)
         document.getElementById('theme-icon').textContent = '🌙'; // Moon icon for light mode
     }
 }
 
+// Immediately apply the saved theme to avoid flickering
+applySavedThemeImmediately();
+
 // Apply theme when the page loads
-document.addEventListener('DOMContentLoaded', applySavedTheme);
+document.addEventListener('DOMContentLoaded', setThemeIcon);
