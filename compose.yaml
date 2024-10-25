@@ -35,21 +35,34 @@ services:
       # WATCHTOWER_DOCKER_SOCKET_PATH: /var/run/docker.sock # Needs to be specified if the docker socket on the host is not located in the default '/var/run/docker.sock'. Otherwise mastercontainer updates will fail. For macos it needs to be '/var/run/docker.sock'
     # security_opt: ["label:disable"] # Is needed when using SELinux
 
-  # # Optional: Caddy reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
-  # # You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
-  # caddy:
-  #   image: caddy:alpine
-  #   restart: always
-  #   container_name: caddy
-  #   volumes:
-  #     - ./Caddyfile:/etc/caddy/Caddyfile
-  #     - ./certs:/certs
-  #     - ./config:/config
-  #     - ./data:/data
-  #     - ./sites:/srv
-  #   network_mode: "host"
+#   # Optional: Caddy reverse proxy. See https://github.com/nextcloud/all-in-one/discussions/575
+#   # Hint: You need to uncomment APACHE_PORT: 11000 above, adjust cloud.example.com to your domain and uncomment the necessary docker volumes at the bottom of this file in order to make it work
+#   # You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
+#   caddy:
+#     image: caddy:alpine
+#     restart: always
+#     container_name: caddy
+#     volumes:
+#       - caddy_certs:/certs
+#       - caddy_config:/config
+#       - caddy_data:/data
+#       - caddy_sites:/srv
+#     network_mode: "host"
+#     configs:
+#       - source: Caddyfile
+#         target: /etc/caddy/Caddyfile
+# configs:
+#   Caddyfile:
+#     content: |
+#       # Adjust cloud.example.com to your domain below
+#       https://cloud.example.com:443 {
+#         reverse_proxy localhost:11000
+#       }
 
 volumes: # If you want to store the data on a different drive, see https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive
   nextcloud_aio_mastercontainer:
     name: nextcloud_aio_mastercontainer # This line is not allowed to be changed as otherwise the built-in backup solution will not work
-
+  # caddy_certs:
+  # caddy_config:
+  # caddy_data:
+  # caddy_sites:
