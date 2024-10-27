@@ -15,6 +15,9 @@
     --color-info-hover: #00aaef;
     --color-border-maxcontrast: #7d7d7d;
     --color-loader: #f3f3f3;
+    --color-disabled: #d3d3d3; /* light gray background for disabled checkboxes */
+    --color-border-disabled: #a9a9a9; /* darker gray border for disabled checkboxes */
+    --color-text-disabled: #a9a9a9; /* matching label text color for disabled checkboxes */
     --border: .5px;
     --border-hover: 2px;
     --border-radius: 7px;
@@ -22,6 +25,21 @@
     --default-font-size: 13px;
     --checkbox-size: 16px;
     --max-width: 500px;
+    --container-top-margin: 20px;
+    --container-bottom-margin: 20px;
+    --container-padding: 2px;
+    --container-height-calculation-difference: calc(var(--container-top-margin) + var(--container-bottom-margin));
+    --main-height-calculation-difference: calc(var(--container-height-calculation-difference) + calc(var(--container-padding) * 2));
+    --main-padding: 50px;
+}
+
+/* Breakpoint calculation: 500px (max-width) + 100px (main-padding * 2) + 200px (additional space) = 800px
+Note: Unfortunately, it's not possible to calculate this dynamically using CSS variables in media queries */
+@media only screen and (max-width: 800px) {
+    :root {
+        --container-top-margin: 50px;
+        --container-bottom-margin: 0px;
+    }
 }
 
 [data-theme="dark"] {
@@ -276,26 +294,26 @@ html[data-theme="dark"] ::-webkit-scrollbar-track {
 }
 
 .container {
-    margin: 20px auto;
-    padding: 2px;
-    max-width: calc(var(--max-width) + 108px);
+    margin: var(--container-top-margin) auto var(--container-bottom-margin) auto;
+    padding: var(--container-padding);
+    max-width: calc(var(--max-width) + calc(var(--main-padding) * 2) + 8px);
     background-color: var(--color-main-background);
     border-radius: var(--border-radius-large);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: calc(100dvh - 50px);
+    max-height: calc(100dvh - var(--container-height-calculation-difference));
     overflow: hidden;
 }
 
 main {
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: var(--main-padding);
+    padding-right: var(--main-padding);
     background-color: transparent; /* transparent, since color comes from outer container */
     color: var(--color-main-text);
-    max-height: calc(100dvh - 44px);
+    max-height: calc(100dvh - var(--main-height-calculation-difference));
     overflow-y: auto;
     box-sizing: border-box;
     word-break: break-word;
-    max-width: calc(var(--max-width) + 100px);
+    max-width: calc(var(--max-width) + calc(var(--main-padding) * 2));
     margin: 0 auto;
 }
 
@@ -327,7 +345,8 @@ header > form {
     margin-right: 30px;
 }
 
-input[type="checkbox"] {
+/* Standard styling for enabled checkboxes */
+input[type="checkbox"]:not(:disabled) {
     width: var(--checkbox-size);
     height: var(--checkbox-size);
     -webkit-appearance: none; /* remove default styling */
@@ -341,31 +360,61 @@ input[type="checkbox"] {
     margin-top: -1px; /* adjust for better alignment */
 }
 
-input[type="checkbox"]:checked {
+/* Hover effects for enabled checkboxes */
+input[type="checkbox"]:not(:disabled):hover {
+    border-color: var(--color-info-hover);
+}
+
+/* Checkmark styling for enabled checkboxes */
+input[type="checkbox"]:checked:not(:disabled) {
     background-color: var(--color-nextcloud-blue);
     border-color: var(--color-border-maxcontrast);
 }
 
-input[type="checkbox"]:checked::after {
-    content: ''; /* Create a pseudo-element for the checkmark */
-    position: absolute; /* Position it absolutely */
+input[type="checkbox"]:checked:not(:disabled)::after {
+    content: ''; /* Creates a pseudo-element for the checkmark */
+    position: absolute; /* Positions it absolutely */
     left: 4px; /* Positioning of the checkmark */
     top: 0; /* Positioning of the checkmark */
     width: 4px; /* Width of the checkmark */
     height: 9px; /* Height of the checkmark */
     border: solid white; /* Color of the checkmark */
-    border-width: 0 2px 3px 0; /* Create the checkmark shape */
-    transform: rotate(45deg); /* Rotate to form a checkmark */
+    border-width: 0 2px 3px 0; /* Creates the checkmark shape */
+    transform: rotate(45deg); /* Rotates to form a checkmark */
 }
 
-input[type="checkbox"]:hover {
-    border-color: var(--color-info-hover);
+/* Styling for disabled checkboxes (grayed out, no hover, no pointer) */
+input[type="checkbox"]:disabled:not(:checked) {
+    background-color: var(--color-disabled);
+    border-color: var(--color-border-disabled);
+    cursor: default;
+    opacity: 0.5; /* Makes the checkbox appear faded */
 }
 
+/* Styling for disabled checked checkboxes (no pointer) */
+input[type="checkbox"]:disabled:checked {
+    cursor: default;
+}
+
+input[type="checkbox"]:disabled:hover {
+    border-color: var(--color-border-disabled); /* Keeps disabled state without hover effect */
+}
+
+/* General Label styling */
 label {
     cursor: pointer;
     margin-left: 4px;
     line-height: var(--checkbox-size);
+}
+
+/* Label cursor for disabled checkboxes */
+input[type="checkbox"]:disabled + label {
+    cursor: default;
+}
+
+/* Label styling for disabled, not checked checkboxes */
+input[type="checkbox"]:disabled:not(:checked) + label {
+    color: var(--color-text-disabled);
 }
 
 .loading {
@@ -464,10 +513,4 @@ label {
 /* Remove hover effects when not hovering */
 #theme-toggle:not(:hover) #theme-icon {
     opacity: 0.6; /* Slightly transparent */
-}
-
-@media only screen and (max-width: 800px) {
-    .container {
-        margin: 50px auto 0px auto;
-    }
 }
