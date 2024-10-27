@@ -350,6 +350,9 @@ if [ "$BORG_MODE" = restore ]; then
         fi
 
         # Restore everything except the configuration file
+        #
+        # These exclude patterns need to be kept in sync with the borg_excludes file and the find excludes in this file,
+        # which use a different syntax (patterns appear in 3 places in total)
         if ! rsync --stats --archive --human-readable -vv --delete \
         --exclude "nextcloud_aio_apache/caddy/**" \
         --exclude "nextcloud_aio_mastercontainer/caddy/**" \
@@ -395,6 +398,8 @@ if [ "$BORG_MODE" = restore ]; then
             # https://unix.stackexchange.com/a/759341
             # This comm does not support -z, but I doubt any file names would have \n in them
             echo "Deleting local files which do not exist in the backup"
+            # These find patterns need to be kept in sync with the borg_excludes file and the rsync excludes in this
+            # file, which use a different syntax (patterns appear in 3 places in total)
             if ! find nextcloud_aio_volumes \
                     -not \( \
                         -path nextcloud_aio_volumes/nextcloud_aio_apache/caddy \
