@@ -1,5 +1,5 @@
 # Local instance
-It is possible due to several reasons that you do not want or cannot open Nextcloud to the public internet. However AIO requires a valid certificate to work correctly. Below is discussed how you can achieve both: Having a valid certificate for Nextcloud and only using it locally.
+It is possible due to several reasons that you do not want or cannot open Nextcloud to the public internet. Perhaps you were hoping to access AIO directly from an `ip.add.r.ess` (unsupported) or without a valid domain.  However, AIO requires a valid certificate to work correctly. Below is discussed how you can achieve both: Having a valid certificate for Nextcloud and only using it locally.
 
 ### Content
 - [1. The recommended way](#1-the-recommended-way)
