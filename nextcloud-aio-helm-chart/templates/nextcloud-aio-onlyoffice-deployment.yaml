@@ -44,7 +44,7 @@ spec:
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-onlyoffice:20240808_083748"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-onlyoffice:20241017_085101"
           name: nextcloud-aio-onlyoffice
           ports:
             - containerPort: 80

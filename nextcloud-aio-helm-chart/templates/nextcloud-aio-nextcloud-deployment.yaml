@@ -169,7 +169,11 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: UPDATE_NEXTCLOUD_APPS
               value: "{{ .Values.UPDATE_NEXTCLOUD_APPS }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240808_083748"
+            - name: WHITEBOARD_ENABLED
+              value: "{{ .Values.WHITEBOARD_ENABLED }}"
+            - name: WHITEBOARD_SECRET
+              value: "{{ .Values.WHITEBOARD_SECRET }}"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20241017_085101"
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000

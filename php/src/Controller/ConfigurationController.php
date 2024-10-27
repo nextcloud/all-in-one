@@ -9,14 +9,10 @@ use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class ConfigurationController
-{
-    private ConfigurationManager $configurationManager;
-
+readonly class ConfigurationController {
     public function __construct(
-        ConfigurationManager $configurationManager
+        private ConfigurationManager $configurationManager
     ) {
-        $this->configurationManager = $configurationManager;
     }
 
     public function SetConfig(Request $request, Response $response, array $args) : Response {
@@ -121,6 +117,11 @@ class ConfigurationController
                     $this->configurationManager->SetDockerSocketProxyEnabledState(1);
                 } else {
                     $this->configurationManager->SetDockerSocketProxyEnabledState(0);
+                }
+                if (isset($request->getParsedBody()['whiteboard'])) {
+                    $this->configurationManager->SetWhiteboardEnabledState(1);
+                } else {
+                    $this->configurationManager->SetWhiteboardEnabledState(0);
                 }
             }
 

@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/bash -ex
 
-set -ex
+type {jq,sudo} || { echo "Commands not found. Please install them"; exit 127; }
 
 jq -c . ./php/containers.json > /tmp/containers.json
 sed -i 's|aio_services_v1|services|g' /tmp/containers.json
@@ -18,6 +18,7 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].devices)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].backup_volumes)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].nextcloud_exec_commands)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].image_tag)')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].networks)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-watchtower"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-domaincheck"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-borgbackup"))')"
@@ -25,7 +26,7 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "next
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= if contains(["nextcloud-aio-docker-socket-proxy"]) then del(.[index("nextcloud-aio-docker-socket-proxy")]) else . end else . end')"
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= map({ (.): { "condition": "service_started", "required": false } }) else . end' | jq '.services[] |= if has("depends_on") then .depends_on |= reduce .[] as $item ({}; . + $item) else . end')"
 
-snap install yq
+sudo snap install yq
 mkdir -p ./manual-install
 echo "$OUTPUT" | yq -P > ./manual-install/containers.yml
 
@@ -139,13 +140,12 @@ done
 cat << NETWORK >> containers.yml
 
 networks:
-  nextcloud-aio:
-    name: nextcloud-aio
+  default:
+    driver: bridge
 NETWORK
 
-cat containers.yml > latest.yml
+mv containers.yml latest.yml
 sed -i "/image:/s/$/:latest/" latest.yml
-
-rm containers.yml
+sed -i 's/\( *- \(\w*\)\)=\${\2\}/\1/' latest.yml
 
 set +ex

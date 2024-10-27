@@ -36,7 +36,7 @@ spec:
               value: --o:ssl.enable=false --o:ssl.termination=true --o:mount_jail_tree=false --o:logging.level=warning --o:home_mode.enable=true {{ .Values.COLLABORA_SECCOMP_POLICY }} --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json
             - name: server_name
               value: "{{ .Values.NC_DOMAIN }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-collabora:20240808_083748"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-collabora:20241017_085101"
           name: nextcloud-aio-collabora
           ports:
             - containerPort: 9980

@@ -20,6 +20,11 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
+# Adjust DATABASE_TYPE to by Nextcloud supported value
+if [ "$DATABASE_TYPE" = postgres ]; then
+    export DATABASE_TYPE=pgsql
+fi
+
 # Only start container if redis is accessible
 # shellcheck disable=SC2153
 while ! nc -z "$REDIS_HOST" "6379"; do
@@ -237,12 +242,12 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 );
 DATADIR_PERMISSION_CONF
 
-            echo "Installing with PostgreSQL database"
+            echo "Installing with $DATABASE_TYPE database"
             # Set a default value for POSTGRES_PORT
             if [ -z "$POSTGRES_PORT" ]; then
               POSTGRES_PORT=5432
             fi
-            INSTALL_OPTIONS+=(--database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST" --database-port "$POSTGRES_PORT")
+            INSTALL_OPTIONS+=(--database "$DATABASE_TYPE" --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST" --database-port "$POSTGRES_PORT")
 
             echo "Starting Nextcloud installation..."
             if ! php /var/www/html/occ maintenance:install "${INSTALL_OPTIONS[@]}"; then
@@ -436,12 +441,14 @@ DATADIR_PERMISSION_CONF
 
             # Apply optimization
             echo "Doing some optimizations..."
-            php /var/www/html/occ maintenance:repair
             if [ "$NEXTCLOUD_SKIP_DATABASE_OPTIMIZATION" != yes ]; then
+                php /var/www/html/occ maintenance:repair --include-expensive
                 php /var/www/html/occ db:add-missing-indices
                 php /var/www/html/occ db:add-missing-columns
                 php /var/www/html/occ db:add-missing-primary-keys
                 yes | php /var/www/html/occ db:convert-filecache-bigint
+            else
+                php /var/www/html/occ maintenance:repair
             fi
         fi
     fi
@@ -597,6 +604,10 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
         COLLABORA_HOST="$NC_DOMAIN"
     fi
     set +x
+    # Remove richdcoumentscode if it should be incorrectly installed
+    if [ -d "/var/www/html/custom_apps/richdocumentscode" ]; then
+        php /var/www/html/occ app:remove richdocumentscode
+    fi
     if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ app:install richdocuments
     elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" != "yes" ]; then
@@ -842,6 +853,23 @@ if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
         php /var/www/html/occ app:remove app_api
+    fi
+fi
+
+# Whiteboard app
+if [ "$WHITEBOARD_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/whiteboard" ]; then
+        php /var/www/html/occ app:install whiteboard
+    elif [ "$(php /var/www/html/occ config:app:get whiteboard enabled)" != "yes" ]; then
+        php /var/www/html/occ app:enable whiteboard
+    elif [ "$SKIP_UPDATE" != 1 ]; then
+        php /var/www/html/occ app:update whiteboard
+    fi
+    php /var/www/html/occ config:app:set whiteboard collabBackendUrl --value="https://$NC_DOMAIN/whiteboard"
+    php /var/www/html/occ config:app:set whiteboard jwt_secret_key --value="$WHITEBOARD_SECRET"
+else
+    if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/whiteboard" ]; then
+        php /var/www/html/occ app:remove whiteboard
     fi
 fi
 

@@ -56,7 +56,7 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-fulltextsearch:20240808_083748"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-fulltextsearch:20241017_085101"
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200

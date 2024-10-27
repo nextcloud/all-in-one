@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:27.1.2-cli AS docker
+FROM docker:27.3.1-cli AS docker
 
 # Caddy is a requirement
 FROM caddy:2.8.4-alpine AS caddy
 
 # From https://github.com/docker-library/php/blob/master/8.3/alpine3.20/fpm/Dockerfile
-FROM php:8.3.10-fpm-alpine3.20
+FROM php:8.3.13-fpm-alpine3.20
 
 EXPOSE 80
 EXPOSE 8080
@@ -42,7 +42,7 @@ RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
         autoconf \
         build-base; \
-    pecl install APCu-5.1.23; \
+    pecl install APCu-5.1.24; \
     docker-php-ext-enable apcu; \
     rm -r /tmp/pear; \
     runDeps="$( \

@@ -91,14 +91,21 @@ else
 fi
 
 # Check Storage drivers
-STORAGE_DRIVER="$(docker info | grep "Storage Driver")"
+STORAGE_DRIVER="$(sudo -u www-data docker info | grep "Storage Driver")"
 # Check if vfs is used: https://github.com/nextcloud/all-in-one/discussions/1467
 if echo "$STORAGE_DRIVER" | grep -q vfs; then
     echo "$STORAGE_DRIVER"
-    echo "Warning: It seems like the storage driver vfs is used. This will lead to problems with disk space and performance and is disrecommended!"
+    print_red "Warning: It seems like the storage driver vfs is used. This will lead to problems with disk space and performance and is disrecommended!"
 elif echo "$STORAGE_DRIVER" | grep -q fuse-overlayfs; then
     echo "$STORAGE_DRIVER"
-    echo "Warning: It seems like the storage driver fuse-overlayfs is used. Please check if you can switch to overlay2 instead."
+    print_red "Warning: It seems like the storage driver fuse-overlayfs is used. Please check if you can switch to overlay2 instead."
+fi
+
+# Check if snap install
+if sudo -u www-data docker info | grep "Docker Root Dir" | grep "/var/snap/docker/"; then
+    print_red "Warning: It looks like your installation uses docker installed via snap."
+    print_red "This comes with some limitations and is disrecommended by the docker maintainers."
+    print_red "See for example https://github.com/nextcloud/all-in-one/discussions/4890#discussioncomment-10386752"
 fi
 
 # Check if startup command was executed correctly

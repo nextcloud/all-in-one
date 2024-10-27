@@ -2,28 +2,21 @@
 
 namespace AIO\Controller;
 
-use AIO\Container\State\RunningState;
+use AIO\Container\ContainerState;
 use AIO\ContainerDefinitionFetcher;
 use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
 
-class DockerController
-{
-    private DockerActionManager $dockerActionManager;
-    private ContainerDefinitionFetcher $containerDefinitionFetcher;
+readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
-    private ConfigurationManager $configurationManager;
 
     public function __construct(
-        DockerActionManager $dockerActionManager,
-        ContainerDefinitionFetcher $containerDefinitionFetcher,
-        ConfigurationManager $configurationManager
+        private DockerActionManager           $dockerActionManager,
+        private ContainerDefinitionFetcher    $containerDefinitionFetcher,
+        private ConfigurationManager $configurationManager
     ) {
-        $this->dockerActionManager = $dockerActionManager;
-        $this->containerDefinitionFetcher = $containerDefinitionFetcher;
-        $this->configurationManager = $configurationManager;
     }
 
     private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
@@ -35,7 +28,7 @@ class DockerController
 
         // Don't start if container is already running
         // This is expected to happen if a container is defined in depends_on of multiple containers
-        if ($container->GetRunningState() instanceof RunningState) {
+        if ($container->GetRunningState() === ContainerState::Running) {
             error_log('Not starting ' . $id . ' because it was already started.');
             return;
         }
@@ -48,7 +41,7 @@ class DockerController
             }
         }
 
-        // Check if docker hub is reachable in order to make sure that we do not try to pull an image if it is down 
+        // Check if docker hub is reachable in order to make sure that we do not try to pull an image if it is down
         // and try to mitigate issues that are arising due to that
         if ($pullImage) {
             if (!$this->dockerActionManager->isDockerHubReachable($container)) {
@@ -173,7 +166,7 @@ class DockerController
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = 29;
+            $installLatestMajor = 30;
         } else {
             $installLatestMajor = "";
         }
@@ -261,10 +254,10 @@ class DockerController
         $domaincheckContainer = $this->containerDefinitionFetcher->GetContainerById($id);
         $apacheContainer = $this->containerDefinitionFetcher->GetContainerById(self::TOP_CONTAINER);
         // Don't start if apache is already running
-        if ($apacheContainer->GetRunningState() instanceof RunningState) {
+        if ($apacheContainer->GetRunningState() === ContainerState::Running) {
             return;
         // Don't start if domaincheck is already running
-        } elseif ($domaincheckContainer->GetRunningState() instanceof RunningState) {
+        } elseif ($domaincheckContainer->GetRunningState() === ContainerState::Running) {
             $domaincheckWasStarted = apcu_fetch($cacheKey);
             // Start domaincheck again when 10 minutes are over by not returning here
             if($domaincheckWasStarted !== false && is_string($domaincheckWasStarted)) {

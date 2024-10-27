@@ -16,170 +16,38 @@ updates:
   - 3. to review
   - dependencies
 - package-ecosystem: "docker"
-  directory: "/Containers/apache"
+  directories:
+    - "/Containers/apache"
+    - "/Containers/borgbackup"
+    - "/Containers/clamav"
+    - "/Containers/collabora"
+    - "/Containers/docker-socket-proxy"
+    - "/Containers/domaincheck"
+    - "/Containers/fulltextsearch"
+    - "/Containers/imaginary"
+    - "/Containers/mastercontainer"
+    - "/Containers/nextcloud"
+    - "/Containers/notify-push"
+    - "/Containers/onlyoffice"
+    - "/Containers/postgresql"
+    - "/Containers/redis"
+    - "/Containers/talk"
+    - "/Containers/talk-recording"
+    - "/Containers/watchtower"
+    - "/Containers/whiteboard"
   schedule:
     interval: "daily"
-    time: "12:00"
+    time: "04:00"
   open-pull-requests-limit: 10
   labels:
   - 3. to review
   - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/borgbackup"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/collabora"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/domaincheck"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/mastercontainer"
-  schedule:
-    interval: "daily"
-    time: "12:00"
   ignore:
     - dependency-name: "php"
       update-types: ["version-update:semver-major", "version-update:semver-minor"]
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/nextcloud"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  ignore:
-    - dependency-name: "php"
-      update-types: ["version-update:semver-major", "version-update:semver-minor"]
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/postgresql"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  ignore:
     - dependency-name: "postgres"
       update-types: ["version-update:semver-major"]
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/redis"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  ignore:
     - dependency-name: "redis"
       update-types: ["version-update:semver-major", "version-update:semver-minor"]
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/talk"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/talk-recording"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/watchtower"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/clamav"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/onlyoffice"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/imaginary"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/fulltextsearch"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  ignore:
     - dependency-name: "elasticsearch"
       update-types: ["version-update:semver-major"]
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/notify-push"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
-- package-ecosystem: "docker"
-  directory: "/Containers/docker-socket-proxy"
-  schedule:
-    interval: "daily"
-    time: "12:00"
-  open-pull-requests-limit: 10
-  labels:
-  - 3. to review
-  - dependencies
