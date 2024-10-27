@@ -40,7 +40,7 @@ if [ -z "$BORG_REMOTE_REPO" ] && ! mountpoint -q "$MOUNT_DIR"; then
 fi
 
 # Check if repo is uninitialized
-if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != test ] && ! borg info &> /dev/null; then
+if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != test ] && ! borg info > /dev/null; then
     if [ -n "$BORG_REMOTE_REPO" ]; then
         echo "The repository is uninitialized or cannot connect to remote. Cannot perform check or restore."
     else
@@ -117,11 +117,10 @@ if [ "$BORG_MODE" = backup ]; then
     fi
 
     # Initialize the repository if can't get info from target
-    if ! borg info &> /dev/null; then
+    if ! borg info > /dev/null; then
         # Don't initialize if already initialized
         if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
             if [ -n "$BORG_REMOTE_REPO" ]; then
-                borg info
                 echo "Borg could not get info from the remote repo."
                 echo "This might be a failure to connect to the remote server. See the above borg info output for details."
             else
@@ -156,8 +155,7 @@ if [ "$BORG_MODE" = backup ]; then
             touch "/root/.cache/borg/$BORG_ID/chunks.archive.d"
         fi
 
-        if ! borg info &> /dev/null; then
-            borg info
+        if ! borg info > /dev/null; then
             echo "Borg can't get info from the repo it created. Something is wrong."
             exit 1
         fi
@@ -530,8 +528,7 @@ fi
 # Do the backup test
 if [ "$BORG_MODE" = test ]; then
     if [ -n "$BORG_REMOTE_REPO" ]; then
-        if ! borg info &> /dev/null; then
-            borg info
+        if ! borg info > /dev/null; then
             echo "Borg could not get info from the remote repo."
             echo "See the above borg info output for details."
             exit 1
