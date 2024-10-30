@@ -134,6 +134,7 @@ RUN set -ex; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
         echo 'redis.session.lock_wait_time = 10000'; \
+        echo 'session.gc_maxlifetime = 86400'; \
     } > /usr/local/etc/php/conf.d/redis-session.ini; \
     \
     mkdir -p /var/www/data; \
