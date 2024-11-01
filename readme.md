@@ -222,45 +222,7 @@ The easiest way to run it with Portainer on Linux is to use Portainer's stacks f
 
 With the Truenas Scale Release 24.10.0 (which was officially released on October 29th 2024 as a stable release) IX Systems ditched the Kubernetes integration and implemented a fully working docker environment.
 
-One way to run Nextcloud AIO on the new Truenas Scale release is:
-- Create a dataset on your Scale instance for your docker containers / stacks (e.g. /mnt/tank/docker)
-
-- Install dockge app (Apps -> Discover Apps -> search Dockge -> Install -> In the Dockge Configuration select:
-  - Port for Dockge (standard is 5001)
-  - Hostpath folder for stacks /mnt/tank/docker
-  - Hostpath folder for dockge data /mnt/tank/docker/dockge
-    
-- Go to the Dockge Webui and create a new Stack for the AIO Mastercontainer
-
-<details>
-<summary> Click here to expand</summary>
-    
-```    
-services:
-  nextcloud:
-    image: nextcloud/all-in-one:latest # Must be changed to 'nextcloud/all-in-one:latest-arm64' when used with an arm64 CPU
-    restart: always
-    container_name: nextcloud-aio-mastercontainer
-    volumes:
-      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    ports:
-      - 8080:8080
-    environment:
-      # Is needed when using any of the options below
-      - APACHE_PORT=11000 # Is needed when running behind a reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
-      - NEXTCLOUD_DATADIR=/mnt/tank/docker/nextcloud_aio/data # Allows to set the host directory for Nextcloud's datadir. See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir
-      - NEXTCLOUD_MOUNT=/mnt/tank/docker/nextcloud_aio # Allows the Nextcloud container to access the chosen directory on the host. See https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host
-      - NEXTCLOUD_MEMORY_LIMIT=4096M
-networks: {}
-
-volumes:
-  nextcloud_aio_mastercontainer:
-    name: nextcloud_aio_mastercontainer
-```    
-</details>
-
-- Deploy the Stack and Nextcloud AIO is running on your Truenas Scale
+For a more complete guide, see this guide by @zybster: https://github.com/nextcloud/all-in-one/discussions/5506
 
 On older TrueNAS SCALE releases with Kubernetes environment, there are two ways to run AIO. The preferred one is to run AIO inside a VM. This is necessary since they do not expose the docker socket for containers on the host, you also cannot use docker-compose on it thus and it is also not possible to run custom helm-charts that are not explicitly written for TrueNAS SCALE.
 
