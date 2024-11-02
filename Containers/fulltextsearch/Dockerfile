@@ -14,8 +14,7 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         tzdata \
     ; \
-    rm -rf /var/lib/apt/lists/*; \
-    elasticsearch-plugin install --batch ingest-attachment
+    rm -rf /var/lib/apt/lists/*;
 
 USER 1000:0
 
