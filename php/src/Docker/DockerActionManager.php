@@ -850,7 +850,7 @@ readonly class DockerActionManager {
             return;
         }
 
-        if($createNetwork) {
+        if ($createNetwork) {
                 $url = $this->BuildApiUrl('networks/create');
                 try {
                     $this->guzzleClient->request(
@@ -876,9 +876,9 @@ readonly class DockerActionManager {
         $url = $this->BuildApiUrl(
             sprintf('networks/%s/connect', $network)
         );
-        $json_payload = [ 'Container' => $id ];
+        $jsonPayload = [ 'Container' => $id ];
         if ($alias !== ''  ) {
-            $json_payload['EndpointConfig'] = [ 'Aliases' => [ $alias ] ];
+            $jsonPayload['EndpointConfig'] = ['Aliases' => [ $alias ]];
         }
 
         try {
@@ -886,7 +886,7 @@ readonly class DockerActionManager {
                 'POST',
                 $url,
                 [
-                    'json' => $json_payload
+                    'json' => $jsonPayload
                 ]
             );
         } catch (RequestException $e) {
@@ -921,7 +921,7 @@ readonly class DockerActionManager {
         if ($container->GetIdentifier() === 'nextcloud-aio-apache' || $container->GetIdentifier() === 'nextcloud-aio-domaincheck') {
             $apacheAdditionalNetwork = $this->configurationManager->GetApacheAdditionalNetwork();
             if ($apacheAdditionalNetwork !== '') {
-                $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort(), $apacheAdditionalNetwork, false, alias: $alias);
+                $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort(), $apacheAdditionalNetwork, false, $alias);
             }
         }
     }
