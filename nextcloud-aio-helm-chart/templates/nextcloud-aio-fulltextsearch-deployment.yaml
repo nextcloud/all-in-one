@@ -62,6 +62,8 @@ spec:
             - containerPort: 9200
               protocol: TCP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - NET_RAW

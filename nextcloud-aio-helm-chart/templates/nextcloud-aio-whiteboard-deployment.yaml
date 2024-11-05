@@ -42,6 +42,8 @@ spec:
             - containerPort: 3002
               protocol: TCP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - NET_RAW

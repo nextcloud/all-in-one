@@ -423,6 +423,13 @@ find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec se
 # shellcheck disable=SC1083
 find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 
+cat << EOL >> /tmp/security.conf
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+EOL
+# shellcheck disable=SC1083
+find ./ \( -not -name '*nextcloud-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^.*securityContext:$/r /tmp/security.conf" \{} \; 
+
 chmod 777 -R ./
 
 # Seems like the dir needs to match the name of the chart
