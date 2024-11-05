@@ -72,6 +72,8 @@ spec:
             - containerPort: {{ .Values.APACHE_PORT }}
               protocol: UDP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - NET_RAW

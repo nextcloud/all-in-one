@@ -34,6 +34,8 @@ spec:
             - containerPort: 9000
               protocol: TCP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               add:
                 - SYS_NICE

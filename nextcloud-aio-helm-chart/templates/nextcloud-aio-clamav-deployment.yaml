@@ -59,6 +59,8 @@ spec:
             - containerPort: 3310
               protocol: TCP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - NET_RAW

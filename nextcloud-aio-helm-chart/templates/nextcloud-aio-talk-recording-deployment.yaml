@@ -38,6 +38,8 @@ spec:
             - containerPort: 1234
               protocol: TCP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - NET_RAW

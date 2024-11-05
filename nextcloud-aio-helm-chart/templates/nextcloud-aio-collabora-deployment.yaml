@@ -42,6 +42,8 @@ spec:
             - containerPort: 9980
               protocol: TCP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               add:
                 - MKNOD
