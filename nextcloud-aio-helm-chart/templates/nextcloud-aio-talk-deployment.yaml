@@ -52,6 +52,8 @@ spec:
             - containerPort: 8081
               protocol: TCP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - NET_RAW
