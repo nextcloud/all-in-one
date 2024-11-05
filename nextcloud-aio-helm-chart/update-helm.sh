@@ -428,7 +428,7 @@ cat << EOL >> /tmp/security.conf
             runAsNonRoot: true
 EOL
 # shellcheck disable=SC1083
-find ./ -name "*deployment.yaml" -exec sed -i "/^.*securityContext:$/r /tmp/security.conf" \{} \; 
+find ./ \( -name "*deployment.yaml" -not -name '*(nextcloud|onlyoffice)-deployment.yaml*' \) -exec sed -i "/^.*securityContext:$/r /tmp/security.conf" \{} \; 
 
 chmod 777 -R ./
 
