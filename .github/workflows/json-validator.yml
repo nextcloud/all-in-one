@@ -21,7 +21,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install python3-pip -y --no-install-recommends
-          sudo pip3 install json-spec --break-system-packages
+          pip3 install json-spec
+          export PATH="$PATH:/home/runner/.local/bin"
           if ! json validate --schema-file=php/containers-schema.json --document-file=php/containers.json; then
             exit 1
           fi
