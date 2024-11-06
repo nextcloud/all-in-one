@@ -19,7 +19,7 @@ RUN set -ex; \
 
 VOLUME /var/lib/clamav
 
-USER clamav
+USER 100
 
 LABEL com.centurylinklabs.watchtower.enable="false"
 
