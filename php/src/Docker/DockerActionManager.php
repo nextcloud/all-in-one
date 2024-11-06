@@ -736,16 +736,13 @@ readonly class DockerActionManager {
             $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true);
             $containerChecksum = $output['Image'];
             $tagArray = explode(':', $output['Config']['Image']);
-            $tag = $tagArray[1];
-            apcu_add($cacheKey, $tag);
-            /**
-             * @psalm-suppress TypeDoesNotContainNull
-             * @psalm-suppress DocblockTypeContradiction
-             */
-            if ($tag === null) {
+            if (count($tagArray) ===  2) {
+                $tag = $tagArray[1];
+            } else {
                 error_log("No tag was found when getting the current channel. You probably did not follow the documentation correctly. Changing the channel to the default 'latest'.");
                 $tag = 'latest';
             }
+            apcu_add($cacheKey, $tag);
             return $tag;
         } catch (\Exception $e) {
             error_log('Could not get current channel ' . $e->getMessage());
