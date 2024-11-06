@@ -69,7 +69,8 @@
 						"type": "integer"
 					},
 					"user": {
-						"type": "integer"
+						"type": "string",
+						"pattern": "^[0-9]{1,6}$"
 					},
 					"ports": {
 						"type": "array",
