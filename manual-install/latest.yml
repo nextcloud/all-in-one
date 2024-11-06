@@ -255,7 +255,7 @@ services:
 
   nextcloud-aio-talk-recording:
     image: nextcloud/aio-talk-recording:latest
-    user: 1000
+    user: 122
     init: true
     expose:
       - "1234"

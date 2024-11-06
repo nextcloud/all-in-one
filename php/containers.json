@@ -428,7 +428,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Talk Recording",
       "image": "nextcloud/aio-talk-recording",
-      "user": 1000,
+      "user": 122,
       "init": true,
       "expose": [
         "1234"
