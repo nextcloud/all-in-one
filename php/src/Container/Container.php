@@ -5,6 +5,7 @@ namespace AIO\Container;
 use AIO\Data\ConfigurationManager;
 use AIO\Docker\DockerActionManager;
 use AIO\ContainerDefinitionFetcher;
+use GuzzleHttp\Exception\GuzzleException;
 
 readonly class Container {
     public function __construct(
@@ -112,20 +113,13 @@ readonly class Container {
         return $this->volumes;
     }
 
-    public function GetRunningState() : ContainerState {
-        return $this->dockerActionManager->GetContainerRunningState($this);
+    /** @throws GuzzleException */
+    public function GetContainerState() : ContainerState {
+        return $this->dockerActionManager->GetContainerState($this);
     }
 
-    public function GetRestartingState() : ContainerState {
-        return $this->dockerActionManager->GetContainerRestartingState($this);
-    }
-
-    public function GetUpdateState() : VersionState {
-        return $this->dockerActionManager->GetContainerUpdateState($this);
-    }
-
-    public function GetStartingState() : ContainerState {
-        return $this->dockerActionManager->GetContainerStartingState($this);
+    public function GetUpdateState() : UpdateState {
+        return $this->dockerActionManager->GetUpdateState($this);
     }
 
     /**
