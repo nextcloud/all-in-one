@@ -256,10 +256,7 @@ RUN set -ex; \
     \
     mkdir -p /nc-updater; \
     chown -R www-data:www-data /nc-updater; \
-    chmod -R 770 /nc-updater; \
-    \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd
+    chmod -R 770 /nc-updater
 
 # hadolint ignore=DL3002
 USER root
