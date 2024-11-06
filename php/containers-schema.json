@@ -68,6 +68,9 @@
 					"stop_grace_period": {
 						"type": "integer"
 					},
+					"user": {
+						"type": "integer"
+					},
 					"ports": {
 						"type": "array",
 						"items": {

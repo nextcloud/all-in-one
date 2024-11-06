@@ -28,7 +28,7 @@ RUN set -ex; \
         build-base \
         linux-headers \
         geckodriver; \
-    useradd -d /tmp --system recording; \
+    useradd -d /tmp --system recording -u 122; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     git clone --recursive https://github.com/nextcloud/nextcloud-talk-recording --depth=1 --single-branch --branch "$RECORDING_VERSION" /src; \
@@ -49,7 +49,7 @@ RUN set -ex; \
         linux-headers;
 
 WORKDIR /tmp
-USER recording
+USER 122
 ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.conf"]
 
