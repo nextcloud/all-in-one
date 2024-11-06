@@ -81,7 +81,7 @@ RUN set -ex; \
     \
     echo "root:$(openssl rand -base64 12)" | chpasswd
 
-USER www-data
+USER 33
 
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]

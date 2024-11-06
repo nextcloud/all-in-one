@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
 FROM ghcr.io/nextcloud-releases/whiteboard:v1.0.4
 
-USER root
+USER 65534
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache bash
