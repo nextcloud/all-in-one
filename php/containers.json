@@ -325,6 +325,7 @@
     {
       "container_name": "nextcloud-aio-collabora",
       "image_tag": "%AIO_CHANNEL%",
+      "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
       "display_name": "Collabora",
       "image": "nextcloud/aio-collabora",
       "init": true,
@@ -362,6 +363,7 @@
     {
       "container_name": "nextcloud-aio-talk",
       "image_tag": "%AIO_CHANNEL%",
+      "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
       "display_name": "Talk",
       "image": "nextcloud/aio-talk",
       "init": true,
@@ -686,6 +688,7 @@
     {
       "container_name": "nextcloud-aio-fulltextsearch",
       "image_tag": "%AIO_CHANNEL%",
+      "documentation": "https://github.com/nextcloud/all-in-one/discussions/1709",
       "display_name": "Fulltextsearch",
       "image": "nextcloud/aio-fulltextsearch",
       "init": false,
