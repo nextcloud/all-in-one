@@ -197,6 +197,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-collabora:
+    documentation: https://github.com/nextcloud/all-in-one/discussions/1358
     image: nextcloud/aio-collabora:latest
     init: true
     expose:
@@ -218,6 +219,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-talk:
+    documentation: https://github.com/nextcloud/all-in-one/discussions/1358
     image: nextcloud/aio-talk:latest
     init: true
     ports:
@@ -328,6 +330,7 @@ services:
       - /tmp
 
   nextcloud-aio-fulltextsearch:
+    documentation: https://github.com/nextcloud/all-in-one/discussions/1709
     image: nextcloud/aio-fulltextsearch:latest
     init: false
     expose:
