@@ -17,7 +17,7 @@ RUN set -ex; \
         bash \
         xvfb \
         ffmpeg \
-        firefox-esr \
+        firefox \
         bind-tools \
         netcat-openbsd \
         git \
