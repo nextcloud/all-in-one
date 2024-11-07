@@ -536,6 +536,7 @@ php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool -
 php /var/www/html/occ config:system:set davstorage.request_timeout --value="$PHP_MAX_TIME" --type=int
 php /var/www/html/occ config:system:set trusted_domains 1 --value="$NC_DOMAIN"
 php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_DOMAIN/"
+php /var/www/html/occ config:system:set documentation_url.server_logs --value="https://github.com/nextcloud/all-in-one/discussions/5425"
 php /var/www/html/occ config:system:set htaccess.RewriteBase --value="/"
 php /var/www/html/occ maintenance:update:htaccess
 
