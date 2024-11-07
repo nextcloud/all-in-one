@@ -33,7 +33,7 @@ COPY --chmod=775 start.sh /start.sh
 
 ENV PORT=9000
 
-USER nobody
+USER 65534
 
 # https://github.com/h2non/imaginary#memory-issues
 ENV MALLOC_ARENA_MAX=2

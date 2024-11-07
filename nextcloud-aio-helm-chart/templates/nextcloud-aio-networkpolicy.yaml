@@ -15,6 +15,22 @@ spec:
   - from:
     - podSelector: {}
   egress:
-  - to:
-    - podSelector: {}
+  - {} # Allows all egress traffic
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: "{{ .Values.NAMESPACE }}"
+  name: nextcloud-aio-webserver-allow
+spec:
+  podSelector:
+    matchExpressions:
+      - key: io.kompose.service
+        operator: In
+        values:
+          - nextcloud-aio-apache
+  policyTypes:
+    - Ingress
+  ingress:
+    - {} # Allows all ingress traffic
 {{- end }}

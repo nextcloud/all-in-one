@@ -13,6 +13,7 @@
       ],
       "display_name": "Apache",
       "image": "nextcloud/aio-apache",
+      "user": "33",
       "init": true,
       "ports": [
         {
@@ -78,6 +79,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Database",
       "image": "nextcloud/aio-postgresql",
+      "user": "999",
       "init": true,
       "expose": [
         "5432"
@@ -251,6 +253,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Notify Push",
       "image": "nextcloud/aio-notify-push",
+      "user": "33",
       "init": true,
       "expose": [
         "7867"
@@ -292,6 +295,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Redis",
       "image": "nextcloud/aio-redis",
+      "user": "999",
       "init": true,
       "expose": [
         "6379"
@@ -325,8 +329,10 @@
     {
       "container_name": "nextcloud-aio-collabora",
       "image_tag": "%AIO_CHANNEL%",
+      "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
       "display_name": "Collabora",
       "image": "nextcloud/aio-collabora",
+      "user": "100",
       "init": true,
       "expose": [
         "9980"
@@ -362,8 +368,10 @@
     {
       "container_name": "nextcloud-aio-talk",
       "image_tag": "%AIO_CHANNEL%",
+      "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
       "display_name": "Talk",
       "image": "nextcloud/aio-talk",
+      "user": "1000",
       "init": true,
       "ports": [
         {
@@ -420,6 +428,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Talk Recording",
       "image": "nextcloud/aio-talk-recording",
+      "user": "122",
       "init": true,
       "expose": [
         "1234"
@@ -573,6 +582,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "ClamAV",
       "image": "nextcloud/aio-clamav",
+      "user": "100",
       "init": false,
       "expose": [
         "3310"
@@ -653,6 +663,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Imaginary",
       "image": "nextcloud/aio-imaginary",
+      "user": "65534",
       "init": true,
       "expose": [
         "9000"
@@ -686,6 +697,7 @@
     {
       "container_name": "nextcloud-aio-fulltextsearch",
       "image_tag": "%AIO_CHANNEL%",
+      "documentation": "https://github.com/nextcloud/all-in-one/discussions/1709",
       "display_name": "Fulltextsearch",
       "image": "nextcloud/aio-fulltextsearch",
       "init": false,
@@ -757,6 +769,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Whiteboard",
       "image": "nextcloud/aio-whiteboard",
+      "user": "65534",
       "init": true,
       "expose": [
         "3002"

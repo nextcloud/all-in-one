@@ -68,6 +68,10 @@
 					"stop_grace_period": {
 						"type": "integer"
 					},
+					"user": {
+						"type": "string",
+						"pattern": "^[0-9]{1,6}$"
+					},
 					"ports": {
 						"type": "array",
 						"items": {

@@ -20,6 +20,7 @@ services:
         condition: service_started
         required: false
     image: nextcloud/aio-apache:latest
+    user: "33"
     init: true
     ports:
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
@@ -53,6 +54,7 @@ services:
 
   nextcloud-aio-database:
     image: nextcloud/aio-postgresql:latest
+    user: "999"
     init: true
     expose:
       - "5432"
@@ -161,6 +163,7 @@ services:
 
   nextcloud-aio-notify-push:
     image: nextcloud/aio-notify-push:latest
+    user: "33"
     init: true
     expose:
       - "7867"
@@ -183,6 +186,7 @@ services:
 
   nextcloud-aio-redis:
     image: nextcloud/aio-redis:latest
+    user: "999"
     init: true
     expose:
       - "6379"
@@ -198,6 +202,7 @@ services:
 
   nextcloud-aio-collabora:
     image: nextcloud/aio-collabora:latest
+    user: "100"
     init: true
     expose:
       - "9980"
@@ -219,6 +224,7 @@ services:
 
   nextcloud-aio-talk:
     image: nextcloud/aio-talk:latest
+    user: "1000"
     init: true
     ports:
       - ${TALK_PORT}:${TALK_PORT}/tcp
@@ -249,6 +255,7 @@ services:
 
   nextcloud-aio-talk-recording:
     image: nextcloud/aio-talk-recording:latest
+    user: "122"
     init: true
     expose:
       - "1234"
@@ -270,6 +277,7 @@ services:
 
   nextcloud-aio-clamav:
     image: nextcloud/aio-clamav:latest
+    user: "100"
     init: false
     expose:
       - "3310"
@@ -310,6 +318,7 @@ services:
 
   nextcloud-aio-imaginary:
     image: nextcloud/aio-imaginary:latest
+    user: "65534"
     init: true
     expose:
       - "9000"
@@ -353,6 +362,7 @@ services:
 
   nextcloud-aio-whiteboard:
     image: nextcloud/aio-whiteboard:latest
+    user: "65534"
     init: true
     expose:
       - "3002"

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.3/alpine/Dockerfile
-FROM clamav/clamav:1.4.1-10
+FROM clamav/clamav:1.4.1-11
 
 COPY clamav.conf /clamav.conf
 COPY --chmod=775 start.script /start.script
@@ -19,7 +19,7 @@ RUN set -ex; \
 
 VOLUME /var/lib/clamav
 
-USER clamav
+USER 100
 
 LABEL com.centurylinklabs.watchtower.enable="false"
 

@@ -99,7 +99,7 @@ RUN set -ex; \
     ln -s /opt/eturnal/bin/stun /usr/local/bin/stun; \
     ln -s /opt/eturnal/bin/eturnalctl /usr/local/bin/eturnalctl
 
-USER eturnal
+USER 1000
 ENTRYPOINT ["/start.sh"]
 CMD ["supervisord", "-c", "/supervisord.conf"]
 

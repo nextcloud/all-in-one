@@ -64,7 +64,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-apache:20241017_085101"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-apache:20241106_101604"
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
@@ -72,9 +72,12 @@ spec:
             - containerPort: {{ .Values.APACHE_PORT }}
               protocol: UDP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - NET_RAW
+            runAsUser: 33
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud

@@ -310,8 +310,24 @@ spec:
   - from:
     - podSelector: {}
   egress:
-  - to:
-    - podSelector: {}
+  - {} # Allows all egress traffic
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: "{{ .Values.NAMESPACE }}"
+  name: nextcloud-aio-webserver-allow
+spec:
+  podSelector:
+    matchExpressions:
+      - key: io.kompose.service
+        operator: In
+        values:
+          - nextcloud-aio-apache
+  policyTypes:
+    - Ingress
+  ingress:
+    - {} # Allows all ingress traffic
 {{- end }}
 EOL
 
@@ -355,7 +371,7 @@ cat << ADDITIONAL_CONFIG >> /tmp/sample.conf
 
 NAMESPACE: default        # By changing this, you can adjust the namespace of the installation which allows to install multiple instances on one kubernetes cluster
 NAMESPACE_DISABLED: "no"        # By setting this to "yes", you can disabled the creation of the namespace so that you can use a pre-created one
-NETWORK_POLICY_ENABLED: "no"        # By setting this to "yes", you can enable a network policy that limits network access to the same namespace. ⚠️ Attention: this breaks if you use an ingress!!! So it should be disabled if you do so!
+NETWORK_POLICY_ENABLED: "no"        # By setting this to "yes", you can enable a network policy that limits network access to the same namespace. Except the Web server service which is reachable from all endpoints.
 SUBSCRIPTION_KEY:        # This allows to set the Nextcloud Enterprise key via ENV
 SERVERINFO_TOKEN:        # This allows to set the serverinfo app token for monitoring your Nextcloud via the serverinfo app
 APPS_ALLOWLIST:        # This allows to configure allowed apps that will be shown in Nextcloud's Appstore. You need to enter the app-IDs of the apps here and separate them with spaces. E.g. 'files richdocuments'
@@ -406,6 +422,13 @@ done
 find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec sed -i "1i\\{{- if eq .Values.FULLTEXTSEARCH_ENABLED \"yes\" }}" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
+
+cat << EOL >> /tmp/security.conf
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+EOL
+# shellcheck disable=SC1083
+find ./ \( -not -name '*nextcloud-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^.*securityContext:$/r /tmp/security.conf" \{} \; 
 
 chmod 777 -R ./
 

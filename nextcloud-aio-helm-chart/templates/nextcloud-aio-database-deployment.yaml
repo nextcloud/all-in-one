@@ -62,15 +62,18 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-postgresql:20241017_085101"
+          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-postgresql:20241106_101604"
           name: nextcloud-aio-database
           ports:
             - containerPort: 5432
               protocol: TCP
           securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - NET_RAW
+            runAsUser: 999
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               subPath: data

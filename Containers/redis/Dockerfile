@@ -14,7 +14,7 @@ RUN set -ex; \
 # Get rid of unused binaries
     rm -f /usr/local/bin/gosu;
 
-USER redis
+USER 999
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD redis-cli -a $REDIS_HOST_PASSWORD PING || exit 1

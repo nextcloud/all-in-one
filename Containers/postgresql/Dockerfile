@@ -39,7 +39,7 @@ RUN set -ex; \
 
 VOLUME /mnt/data
 
-USER postgres
+USER 999
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD /healthcheck.sh

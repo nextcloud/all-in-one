@@ -5,7 +5,7 @@ USER root
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache bash
-USER nobody
+USER 65534
 
 COPY --chmod=775 start.sh /start.sh
 

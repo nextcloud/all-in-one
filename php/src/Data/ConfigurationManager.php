@@ -888,6 +888,13 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function GetApacheAdditionalNetwork() : string {
+        $envVariableName = 'APACHE_ADDITIONAL_NETWORK';
+        $configName = 'apache_additional_network';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     public function GetApacheIPBinding() : string {
         $envVariableName = 'APACHE_IP_BINDING';
         $configName = 'apache_ip_binding';

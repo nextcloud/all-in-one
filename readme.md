@@ -41,7 +41,7 @@ Included are:
 - By default confined (good for security) but can [allow access to additional storages](https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host) in order to enable the usage of the local external storage feature
 - Possibility included to [adjust default installed Nextcloud apps](https://github.com/nextcloud/all-in-one#how-to-change-the-nextcloud-apps-that-are-installed-on-the-first-startup)
 - Nextcloud installation is not read only - that means you can apply patches if you should need them (instead of having to wait for the next release for them getting applied)
-- `ffmpeg`, `smbclient` and `nodejs` are included by default
+- `ffmpeg`, `smbclient`, `libreoffice` and `nodejs` are included by default
 - Possibility included to [permanently add additional OS packages into the Nextcloud container](https://github.com/nextcloud/all-in-one#how-to-change-the-nextcloud-apps-that-are-installed-on-the-first-startup) without having to build your own Docker image
 - Possibility included to [permanently add additional PHP extensions into the Nextcloud container](https://github.com/nextcloud/all-in-one#how-to-add-php-extensions-permanently-to-the-nextcloud-container) without having to build your own Docker image
 - Possibility included to [pass the needed device for hardware transcoding](https://github.com/nextcloud/all-in-one#how-to-enable-hardware-transcoding-for-nextcloud) to the Nextcloud container
@@ -78,7 +78,7 @@ Included are:
 ## Screenshots
 | First setup | After installation |
 |---|---|
-| ![image](https://github.com/user-attachments/assets/6ef5d7b5-86f2-402c-bc6c-b633af2ca7dd) | ![image](https://github.com/user-attachments/assets/5f510667-a172-4841-b916-89025debef3a) |
+| ![image](https://github.com/user-attachments/assets/6ef5d7b5-86f2-402c-bc6c-b633af2ca7dd) | ![image](https://github.com/user-attachments/assets/939d0fdf-436f-433d-82d3-27548263a040) |
 
 ## How to use this?
 The following instructions are meant for installations without a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) already being in place. If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), see the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md). Also, the instructions below are especially meant for Linux. For macOS see [this](#how-to-run-aio-on-macos), for Windows see [this](#how-to-run-aio-on-windows) and for Synology see [this](#how-to-run-aio-on-synology-dsm).
@@ -219,7 +219,12 @@ If you have the NAS setup on your local network (which is most often the case) y
 The easiest way to run it with Portainer on Linux is to use Portainer's stacks feature and use [this docker-compose file](./compose.yaml) in order to start AIO correctly. 
 
 ### Can I run AIO on TrueNAS SCALE?
-On TrueNAS SCALE, there are two ways to run AIO. The preferred one is to run AIO inside a VM. This is necessary since they do not expose the docker socket for containers on the host, you also cannot use docker-compose on it thus and it is also not possible to run custom helm-charts that are not explicitly written for TrueNAS SCALE.
+
+With the Truenas Scale Release 24.10.0 (which was officially released on October 29th 2024 as a stable release) IX Systems ditched the Kubernetes integration and implemented a fully working docker environment.
+
+For a more complete guide, see this guide by @zybster: https://github.com/nextcloud/all-in-one/discussions/5506
+
+On older TrueNAS SCALE releases with Kubernetes environment, there are two ways to run AIO. The preferred one is to run AIO inside a VM. This is necessary since they do not expose the docker socket for containers on the host, you also cannot use docker-compose on it thus and it is also not possible to run custom helm-charts that are not explicitly written for TrueNAS SCALE.
 
 Another but untested way is to install Portainer on your TrueNAS SCALE from here https://truecharts.org/charts/stable/portainer/installation-notes and add the Helm-chart repository https://nextcloud.github.io/all-in-one/ into Portainer by following https://docs.portainer.io/user/kubernetes/helm. More docs on AIOs Helm Chart are available here: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart#nextcloud-aio-helm-chart.
 
@@ -339,7 +344,10 @@ Additionally, there is a cronjob that runs once a day that checks for container 
 AIO ships its own update notifications implementation. It checks if container updates are available. If so, it sends a notification with the title `Container updates available!` on saturdays to Nextcloud users that are part of the `admin` group. If the Nextcloud container image should be older than 90 days (~3 months) and thus badly outdated, AIO sends a notification to all Nextcloud users with the title `AIO is outdated!`. Thus admins should make sure to update the container images at least once every 3 months in order to make sure that the instance gets all security bugfixes as soon as possible.
 
 ### How to easily log in to the AIO interface?
-If your Nextcloud is running and you are logged in as admin in your Nextcloud, you can easily log in to the AIO interface by opening `https://yourdomain.tld/settings/admin/overview` which will show a button on top that enables you to log in to the AIO interface by just clicking on this button. **Note:** You can change the domain/ip-address/port of the button by simply stopping the containers, visiting the AIO interface from the correct and desired domain/ip-address/port and clicking once on `Start containers`.
+If your Nextcloud is running and you are logged in as admin in your Nextcloud, you can easily log in to the AIO interface by opening `https://yourdomain.tld/settings/admin/overview` which will show a button on top that enables you to log in to the AIO interface by just clicking on this button. 
+
+> [!Note]
+> You can change the domain/ip-address/port of the button by simply stopping the containers, visiting the AIO interface from the correct and desired domain/ip-address/port and clicking once on `Start containers`.
 
 ### How to change the domain?
 > [!NOTE]  
@@ -370,7 +378,7 @@ Here is how to reset the AIO instance properly:
 1. Check which volumes are dangling with `sudo docker volume ls --filter "dangling=true"`
 1. Now remove all these dangling volumes: `sudo docker volume prune --filter all=1` (on Windows you might need to remove some volumes afterwards manually with `docker volume rm nextcloud_aio_backupdir`, `docker volume rm nextcloud_aio_nextcloud_datadir`). 
 1. If you've configured `NEXTCLOUD_DATADIR` to a path on your host instead of the default volume, you need to clean that up as well. (E.g. by simply deleting the directory).
-1. Make sure that no volumes are remaining with `sudo docker volume ls --format {{.Name}}`. If no `nextcloud-aio` volumes are listed, you can proceed with the steps below. If there should be some, you will need to stop them with `sudo docker volume rm <volume_name>` until no one is listed anymore.
+1. Make sure that no volumes are remaining with `sudo docker volume ls --format {{.Name}}`. If no `nextcloud-aio` volumes are listed, you can proceed with the steps below. If there should be some, you will need to remove them with `sudo docker volume rm <volume_name>` until no one is listed anymore.
 1. Optional: You can remove all docker images with `sudo docker image prune -a`.
 1. And you are done! Now feel free to start over with the recommended docker run command!
 
