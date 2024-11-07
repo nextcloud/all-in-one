@@ -473,6 +473,7 @@
       "image": "nextcloud/aio-borgbackup",
       "init": true,
       "environment": [
+        "BORG_REMOTE_REPO=%BORGBACKUP_REMOTE_REPO%",
         "BORG_PASSWORD=%BORGBACKUP_PASSWORD%",
         "BORG_MODE=%BORGBACKUP_MODE%",
         "SELECTED_RESTORE_TIME=%SELECTED_RESTORE_TIME%",
