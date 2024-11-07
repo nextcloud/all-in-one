@@ -440,6 +440,13 @@
         "RECORDING_SECRET=%RECORDING_SECRET%",
         "INTERNAL_SECRET=%TALK_INTERNAL_SECRET%"
       ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_talk_recording",
+          "destination": "/tmp",
+          "writeable": true
+        }
+      ],
       "shm_size": 2147483648,
       "secrets": [
         "RECORDING_SECRET",
@@ -454,7 +461,6 @@
       ],
       "read_only": true,
       "tmpfs": [
-        "/tmp",
         "/conf"
       ],
       "cap_drop": [
