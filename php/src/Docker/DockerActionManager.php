@@ -851,26 +851,26 @@ readonly class DockerActionManager {
         }
 
         if ($createNetwork) {
-                $url = $this->BuildApiUrl('networks/create');
-                try {
-                    $this->guzzleClient->request(
-                        'POST',
-                        $url,
-                        [
-                            'json' => [
-                                'Name' => $network,
-                                'CheckDuplicate' => true,
-                                'Driver' => 'bridge',
-                                'Internal' => false,
-                            ]
+            $url = $this->BuildApiUrl('networks/create');
+            try {
+                $this->guzzleClient->request(
+                    'POST',
+                    $url,
+                    [
+                        'json' => [
+                            'Name' => $network,
+                            'CheckDuplicate' => true,
+                            'Driver' => 'bridge',
+                            'Internal' => false,
                         ]
-                    );
-                } catch (RequestException $e) {
-                    // 409 is undocumented and gets thrown if the network already exists.
-                    if ($e->getCode() !== 409) {
-                        throw new \Exception("Could not create the nextcloud-aio network: " . $e->getMessage());
-                    }
+                    ]
+                );
+            } catch (RequestException $e) {
+                // 409 is undocumented and gets thrown if the network already exists.
+                if ($e->getCode() !== 409) {
+                    throw new \Exception("Could not create the nextcloud-aio network: " . $e->getMessage());
                 }
+            }
         }
 
         $url = $this->BuildApiUrl(
