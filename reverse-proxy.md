@@ -44,9 +44,10 @@ All examples below will use port `11000` as `APACHE_PORT`. This port will be exp
 
     <summary>On the same server in a Docker container</summary>
 
-    For this setup, you can use as target `host.docker.internal:$APACHE_PORT` instead of `localhost:$APACHE_PORT`. **⚠️ Important:** In order to make this work on Docker for Linux, you need to add `--add-host=host.docker.internal:host-gateway` to the docker run command of your reverse proxy container or `extra_hosts: ["host.docker.internal:host-gateway"]` in docker compose (it works on Docker Desktop by default).
-
-    Another option (actually the recommended way) in this case is to use `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. By doing so, the default sample configurations that point at `localhost:$APACHE_PORT` should work without having to modify them.
+    The reverse-proxy container needs to be connected to the nextcloud containers. This can be achieved one of these 3 ways:
+    1. Utilize host networking instead of docker bridge networking: Specify `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. With this setup, the default sample configurations with reverse-proxy pointing to `localhost:$APACHE_PORT` should work directly.
+    1. Connect nextcloud's external-facing containers to the reverse-proxy's docker network by specifying env variable APACHE_ADDITIONAL_NETWORK. With this setup, the reverse proxy can utilize Docker bridge network's DNS name resolution to access nextcloud at `http://nextcloud-aio-apache:$APACHE_PORT`. ⚠️⚠️⚠️ Note, the specified network must already exist before Nextcloud AIO is started. Otherwise it will fail to start the container because the network is not existing.
+    1. Connect the reverse-proxy container to the `nextcloud-aio` network by specifying it as a secondary (external) network for the reverse proxy container. With this setup also, the reverse proxy can utilize Docker bridge network's DNS name resolution to access nextcloud at `http://nextcloud-aio-apache:$APACHE_PORT` .
 
     </details>
 

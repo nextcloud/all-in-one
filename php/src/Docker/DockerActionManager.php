@@ -841,44 +841,49 @@ readonly class DockerActionManager {
         }
     }
 
-    private function ConnectContainerIdToNetwork(string $id, string $internalPort, string $network = 'nextcloud-aio') : void
+    private function ConnectContainerIdToNetwork(string $id, string $internalPort, string $network = 'nextcloud-aio', bool $createNetwork = true, string $alias =  '') : void
     {
         if ($internalPort === 'host') {
             return;
         }
 
-        $url = $this->BuildApiUrl('networks/create');
-        try {
-            $this->guzzleClient->request(
-                'POST',
-                $url,
-                [
-                    'json' => [
-                        'Name' => $network,
-                        'CheckDuplicate' => true,
-                        'Driver' => 'bridge',
-                        'Internal' => false,
+        if ($createNetwork) {
+            $url = $this->BuildApiUrl('networks/create');
+            try {
+                $this->guzzleClient->request(
+                    'POST',
+                    $url,
+                    [
+                        'json' => [
+                            'Name' => $network,
+                            'CheckDuplicate' => true,
+                            'Driver' => 'bridge',
+                            'Internal' => false,
+                        ]
                     ]
-                ]
-            );
-        } catch (RequestException $e) {
-            // 409 is undocumented and gets thrown if the network already exists.
-            if ($e->getCode() !== 409) {
-                throw new \Exception("Could not create the nextcloud-aio network: " . $e->getMessage());
+                );
+            } catch (RequestException $e) {
+                // 409 is undocumented and gets thrown if the network already exists.
+                if ($e->getCode() !== 409) {
+                    throw new \Exception("Could not create the nextcloud-aio network: " . $e->getMessage());
+                }
             }
         }
 
         $url = $this->BuildApiUrl(
             sprintf('networks/%s/connect', $network)
         );
+        $jsonPayload = [ 'Container' => $id ];
+        if ($alias !== ''  ) {
+            $jsonPayload['EndpointConfig'] = ['Aliases' => [ $alias ]];
+        }
+
         try {
             $this->guzzleClient->request(
                 'POST',
                 $url,
                 [
-                    'json' => [
-                        'container' => $id,
-                    ]
+                    'json' => $jsonPayload
                 ]
             );
         } catch (RequestException $e) {
@@ -898,7 +903,19 @@ readonly class DockerActionManager {
 
     public function ConnectContainerToNetwork(Container $container) : void
     {
-        $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort());
+        // Add a secondary alias for domaincheck container, to keep it as similar to actual apache controller as possible.
+        // If a reverse-proxy is relying on container name as hostname this allows it to operate as usual and still validate the domain
+        // The domaincheck container and apache container are never supposed to be active at the same time because they use the same APACHE_PORT anyway, so this doesn't add any new constraints.
+        $alias = ($container->GetIdentifier() === 'nextcloud-aio-domaincheck') ? 'nextcloud-aio-apache' : '';
+
+        $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort(), alias: $alias);
+
+        if ($container->GetIdentifier() === 'nextcloud-aio-apache' || $container->GetIdentifier() === 'nextcloud-aio-domaincheck') {
+            $apacheAdditionalNetwork = $this->configurationManager->GetApacheAdditionalNetwork();
+            if ($apacheAdditionalNetwork !== '') {
+                $this->ConnectContainerIdToNetwork($container->GetIdentifier(), $container->GetInternalPort(), $apacheAdditionalNetwork, false, $alias);
+            }
+        }
     }
 
     public function StopContainer(Container $container) : void {
