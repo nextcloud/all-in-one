@@ -66,7 +66,7 @@ if [ -n "$BORG_REMOTE_REPO" ] && ! [ -f "$BORGBACKUP_KEY" ]; then
     ssh-keygen  -f "$BORGBACKUP_KEY" -N ""
     echo "You should configure the remote to accept this public key"
 fi
-if [ -n "$BORG_REMOTE_REPO" ]
+if [ -n "$BORG_REMOTE_REPO" ] && [ -f "$BORGBACKUP_KEY.pub" ]; then
     echo "Your public ssh key for borgbackup is: $(cat "$BORGBACKUP_KEY.pub")"
 fi
 
