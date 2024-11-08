@@ -113,6 +113,11 @@ readonly class DockerController {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'restore';
         $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
+        if (isset($request->getParsedBody()['restore-exclude-previews'])) {
+            $config['restore-exclude-previews'] = 1;
+        } else {
+            $config['restore-exclude-previews'] = '';
+        }
         $this->configurationManager->WriteConfig($config);
 
         $id = self::TOP_CONTAINER;

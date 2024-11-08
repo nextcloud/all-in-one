@@ -320,6 +320,13 @@ if [ "$BORG_MODE" = restore ]; then
     fi
     echo "Restoring '$SELECTED_ARCHIVE'..."
 
+    # Exclude previews from restore if selected to speed up process
+    ADDITIONAL_RSYNC_EXCLUDES=()
+    if [ -n "$RESTORE_EXCLUDE_PREVIEWS" ]; then
+        ADDITIONAL_RSYNC_EXCLUDES=(--exclude "nextcloud_aio_nextcloud_data/appdata_*/preview/**")
+        echo "Excluding previews from restore"
+    fi
+
     # Save Additional Backup dirs
     if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories" ]; then
         ADDITIONAL_BACKUP_DIRECTORIES="$(cat /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories)"
@@ -365,6 +372,7 @@ if [ "$BORG_MODE" = restore ]; then
         --exclude "nextcloud_aio_mastercontainer/data/daily_backup_running" \
         --exclude "nextcloud_aio_mastercontainer/data/session_date_file" \
         --exclude "nextcloud_aio_mastercontainer/session/**" \
+        "${ADDITIONAL_RSYNC_EXCLUDES[@]}" \
         /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes/; then
             RESTORE_FAILED=1
             echo "Something failed while restoring from backup."
@@ -487,6 +495,12 @@ if [ "$BORG_MODE" = restore ]; then
     # Add file to Nextcloud container so that it performs a fingerprint update the next time
     touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/fingerprint.update"
     chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/fingerprint.update"
+
+    # Add file to Netcloud container to trigger a preview scan the next time it starts
+    if [ -n "$RESTORE_EXCLUDE_PREVIEWS" ]; then
+        touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/trigger-preview.scan"
+        chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/trigger-preview.scan"
+    fi
 
     # Delete redis cache
     rm -f "/mnt/redis/dump.rdb"

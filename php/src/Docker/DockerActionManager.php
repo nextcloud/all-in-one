@@ -273,6 +273,8 @@ readonly class DockerActionManager {
                     $replacements[1] = $this->configurationManager->GetAIOURL();
                 } elseif ($out[1] === 'SELECTED_RESTORE_TIME') {
                     $replacements[1] = $this->configurationManager->GetSelectedRestoreTime();
+                } elseif ($out[1] === 'RESTORE_EXCLUDE_PREVIEWS') {
+                    $replacements[1] = $this->configurationManager->GetRestoreExcludePreviews();
                 } elseif ($out[1] === 'APACHE_PORT') {
                     $replacements[1] = $this->configurationManager->GetApachePort();
                 } elseif ($out[1] === 'TALK_PORT') {
