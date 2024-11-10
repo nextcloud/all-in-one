@@ -136,6 +136,10 @@ readonly class ConfigurationController {
                 $this->configurationManager->DeleteBorgBackupHostLocation();
             }
 
+            if (isset($request->getParsedBody()['skip_mastercontainer_update'])) {
+                $this->configurationManager->SetSkipMastercontainerupdate(boolval($request->getParsedBody()['skip_mastercontainer_update']));
+            }
+
             return $response->withStatus(201)->withHeader('Location', '/');
         } catch (InvalidSettingConfigurationException $ex) {
             $response->getBody()->write($ex->getMessage());

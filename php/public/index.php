@@ -90,6 +90,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
         'borgbackup_password' => $configurationManager->GetAndGenerateSecret('BORGBACKUP_PASSWORD'),
         'is_mastercontainer_update_available' => $dockerActionManger->IsMastercontainerUpdateAvailable(),
+        'skip_mastercontainer_update' => $configurationManager->GetSkipMastercontainerUpdate(),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
         'is_backup_container_running' => $dockerActionManger->isBackupContainerRunning(),
         'backup_exit_code' => $dockerActionManger->GetBackupcontainerExitCode(),
