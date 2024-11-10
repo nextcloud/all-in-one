@@ -46,9 +46,6 @@ If you have the borg backup feature enabled, you can copy it over to the new hos
 1. Start the containers in the AIO interface
 
 
-
-
-
 ### Manual process
 **Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned! Also, this will not work on former snap installations as the snap is read-only and thus you cannot install the necessary `pdo_pgsql` PHP extension. So if migrating from snap, you will need to use one of the other methods. However you could try to ask if the snaps maintainer could add this one small PHP extension to the snap here: https://github.com/nextcloud-snap/nextcloud-snap/issues which would allow for an easy migration.
 
