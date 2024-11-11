@@ -48,6 +48,7 @@ RUN set -ex; \
         build-base \
         linux-headers;
 
+VOLUME /tmp
 WORKDIR /tmp
 USER 122
 ENTRYPOINT ["/start.sh"]

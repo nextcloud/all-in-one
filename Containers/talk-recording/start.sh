@@ -16,6 +16,9 @@ if [ -z "$HPB_DOMAIN" ]; then
     export HPB_DOMAIN="$NC_DOMAIN"
 fi
 
+# Delete all contents on startup to start fresh
+rm -fr /tmp/{*,.*}
+
 cat << RECORDING_CONF > "/conf/recording.conf"
 [logs]
 # 30 means Warning

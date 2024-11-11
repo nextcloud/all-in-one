@@ -26,7 +26,7 @@ spec:
     spec:
       initContainers:
         - name: init-subpath
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: "alpine:3.20"
           command:
             - mkdir
             - "-p"
@@ -36,7 +36,7 @@ spec:
             - name: nextcloud-aio-clamav
               mountPath: /nextcloud-aio-clamav
         - name: init-volumes
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: "alpine:3.20"
           command:
             - chown
             - 100:100
@@ -53,7 +53,7 @@ spec:
               value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-clamav:20241106_101604"
+          image: "nextcloud/aio-clamav:20241106_101604"
           name: nextcloud-aio-clamav
           ports:
             - containerPort: 3310

@@ -28,7 +28,7 @@ spec:
               value: "{{ .Values.IMAGINARY_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-imaginary:20241106_101604"
+          image: "nextcloud/aio-imaginary:20241106_101604"
           name: nextcloud-aio-imaginary
           ports:
             - containerPort: 9000
