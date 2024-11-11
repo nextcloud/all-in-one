@@ -9,51 +9,137 @@
     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
     <input type="hidden" name="options-form" value="options-form">
-    {% if is_clamav_enabled == true %}
-        <p><input type="checkbox" id="clamav" name="clamav" checked="checked"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label></p>
-    {% else %}
-        <p><input type="checkbox" id="clamav" name="clamav"><label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label></p>
-    {% endif %}
-    {% if is_collabora_enabled == true %}
-        <p><input type="checkbox" id="collabora" name="collabora" checked="checked"><label for="collabora">Collabora (Nextcloud Office)</label></p>
-    {% else %}
-        <p><input type="checkbox" id="collabora" name="collabora"><label for="collabora">Collabora (Nextcloud Office)</label></p>
-    {% endif %}
-    {% if is_fulltextsearch_enabled == true %}
-        <p><input type="checkbox" id="fulltextsearch" name="fulltextsearch" checked="checked"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM)</label></p>
-    {% else %}
-        <p><input type="checkbox" id="fulltextsearch" name="fulltextsearch"><label for="fulltextsearch">Fulltextsearch (needs ~1GB additional RAM. <strong>Please note:</strong> the initial indexing can take a long time during which Nextcloud will be unavailable)</label></p>
-    {% endif %}
-    {% if is_imaginary_enabled == true %}
-        <p><input type="checkbox" id="imaginary" name="imaginary" checked="checked"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label></p>
-    {% else %}
-        <p><input type="checkbox" id="imaginary" name="imaginary"><label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label></p>
-    {% endif %}
-    {% if is_talk_enabled == true %}
-        <p><input type="checkbox" id="talk" name="talk" checked="checked"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label></p>
-    {% else %}
-        <p><input type="checkbox" id="talk" name="talk"><label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label></p>
-    {% endif %}
-    {% if is_talk_recording_enabled == true %}
-        <p><input type="checkbox" id="talk-recording" name="talk-recording" checked="checked"><label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM and ~2 additional vCPUs)</label></p>
-    {% else %}
-        <p><input type="checkbox" id="talk-recording" name="talk-recording"><label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM ~2 additional vCPUs)</label></p>
-    {% endif %}
-    {% if is_onlyoffice_enabled == true %}
-        <p><input type="checkbox" id="onlyoffice" name="onlyoffice" checked="checked"><label for="onlyoffice">OnlyOffice</label></p>
-    {% else %}
-        {#<p><input type="checkbox" id="onlyoffice" name="onlyoffice"><label for="onlyoffice">OnlyOffice</label></p>#}
-    {% endif %}
-    {% if is_docker_socket_proxy_enabled == true %}
-        <p><input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy" checked="checked"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label></p>
-    {% else %}
-        <p><input type="checkbox" id="docker-socket-proxy" name="docker-socket-proxy"><label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label></p>
-    {% endif %}
-    {% if is_whiteboard_enabled == true %}
-        <p><input type="checkbox" id="whiteboard" name="whiteboard" checked="checked"><label for="whiteboard">Whiteboard</label></p>
-    {% else %}
-        <p><input type="checkbox" id="whiteboard" name="whiteboard"><label for="whiteboard">Whiteboard</label></p>
-    {% endif %}
+    <p>
+        <input
+            type="checkbox"
+            id="clamav"
+            name="clamav"
+            {% if is_clamav_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x64, needs ~1GB additional RAM)</label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
+            id="collabora"
+            name="collabora"
+            {% if is_collabora_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="collabora">Collabora (Nextcloud Office)</label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
+            id="fulltextsearch"
+            name="fulltextsearch"
+            {% if is_fulltextsearch_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="fulltextsearch">
+            Fulltextsearch (needs ~1GB additional RAM)
+            {% if is_fulltextsearch_enabled == false %}
+                . <strong>Please note:</strong> the initial indexing can take a long time during which Nextcloud will be unavailable
+            {% endif %}
+        </label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
+            id="imaginary"
+            name="imaginary"
+            {% if is_imaginary_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
+            id="talk"
+            name="talk"
+            {% if is_talk_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
+            id="talk-recording"
+            name="talk-recording"
+            {% if is_talk_recording_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM and ~2 additional vCPUs)</label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
+            id="onlyoffice"
+            name="onlyoffice"
+            {% if is_onlyoffice_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="onlyoffice">OnlyOffice</label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
+            id="docker-socket-proxy"
+            name="docker-socket-proxy"
+            {% if is_docker_socket_proxy_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
+            id="whiteboard"
+            name="whiteboard"
+            {% if is_whiteboard_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="whiteboard">Whiteboard</label>
+    </p>
     <input id="options-form-submit" type="submit" value="Save changes" />
     <script type="text/javascript" src="options-form-submit.js?v2"></script>
 </form>
