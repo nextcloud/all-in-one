@@ -67,10 +67,10 @@ Included are:
 - Many of the included containers have a read-only root-FS (good for security)
 - Included containers run in its own docker network (good for security) and only really necessary ports are exposed on the host
 - [Multiple instances on one server](https://github.com/nextcloud/all-in-one/blob/main/multiple-instances.md) are doable without having to deal with VMs
-- Adjustable backup path from the AIO interface (good to put the backups e.g. on a different drive)
+- Adjustable backup path or remote borg repository from the AIO interface (good to put the backups e.g. on a different drive if using a local backup path)
 - Possibility included to also back up external Docker Volumes or Host paths (can be used for host backups)
 - Borg backup can be completely managed from the AIO interface, including backup creation, backup restore, backup integrity check and integrity-repair
-- [Remote backups](https://github.com/nextcloud/all-in-one#are-remote-borg-backups-supported) are indirectly possible
+- Other forms of [remote backup](https://github.com/nextcloud/all-in-one#are-remote-borg-backups-supported) are indirectly possible
 - Updates and backups can be [run from an external script](https://github.com/nextcloud/all-in-one#how-to-stopstartupdate-containers-or-trigger-the-daily-backup-from-a-script-externally). See [this documentation](https://github.com/nextcloud/all-in-one#how-to-enable-automatic-updates-without-creating-a-backup-beforehand) for a complete example.
 
 </details>
@@ -383,11 +383,11 @@ Here is how to reset the AIO instance properly:
 1. And you are done! Now feel free to start over with the recommended docker run command!
 
 ### Backup solution
-Nextcloud AIO provides a local backup solution based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup). These backups act as a local restore point in case the installation gets corrupted. By using this tool, backups are incremental, differential, compressed and encrypted – so only the first backup will take a while. Further backups should be fast as only changes are taken into account.
+Nextcloud AIO provides a backup solution based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup). These backups act as a restore point in case the installation gets corrupted. By using this tool, backups are incremental, differential, compressed and encrypted – so only the first backup will take a while. Further backups should be fast as only changes are taken into account.
 
 It is recommended to create a backup before any container update. By doing this, you will be safe regarding any possible complication during updates because you will be able to restore the whole instance with basically one click. 
 
-The restore process should be pretty fast as rsync is used to restore the chosen backup which only transfers changed files and deletes additional ones.
+For local backups, the restore process should be pretty fast as rsync is used to restore the chosen backup which only transfers changed files and deletes additional ones. For remote borg backups, the whole backup archive is extracted from the remote, which depending on how clever `borg extract` is, may require downloading the whole archive.
 
 If you connect an external drive to your host, and choose the backup directory to be on that drive, you are also kind of safe against drive failures of the drive where the docker volumes are stored on. 
 
@@ -403,6 +403,14 @@ If you connect an external drive to your host, and choose the backup directory t
 5. Click on `Create Backup` which should create the first backup on the external disk.
 
 </details>
+
+If you want to back up directly to a remote borg repository:
+
+1. Create your borg repository at the remote. Note down the repository URL for later.
+2. Open the AIO interface
+3. Under backup section, leave the local path blank and fill in the url to your borg repository that you noted down earlier.
+4. Click on `Create backup`, this will create an ssh key pair and fail because the remote doesn't trust this key yet. Copy the public key shown in AIO and add it to your authorized keys on the remote.
+5. Try again to create a backup, this time it should succeed.
 
 Backups can be created and restored in the AIO interface using the buttons `Create Backup` and `Restore selected backup`. Additionally, a backup check is provided that checks the integrity of your backups but it shouldn't be needed in most situations. 
 
@@ -421,8 +429,10 @@ Backed up will get all important data of your Nextcloud AIO instance like the da
 The built-in borg-based backup solution has by default a retention policy of `--keep-within=7d --keep-weekly=4 --keep-monthly=6`. See https://borgbackup.readthedocs.io/en/stable/usage/prune.html for what these values mean. You can adjust the retention policy by providing `--env BORG_RETENTION_POLICY="--keep-within=7d --keep-weekly=4 --keep-monthly=6"` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. ⚠️ Please make sure that this value is valid, otherwise backup pruning will bug out!
 
 #### Are remote borg backups supported?
+Backing up directly to a remote borg repository is supported. This avoids having to store a local copy of your backups, supports append-only borg keys to counter ransomware and allows using the AIO interface to manage your backups.
 
-Not directly but you have multiple options to achieve this:
+Some alternatives, which do not have all the above benefits:
+
 - Mount a network FS like SSHFS, SMB or NFS in the directory that you enter in AIO as backup directory
 - Use rsync or rclone for syncing the borg backup archive that AIO creates locally to a remote target (make sure to lock the backup archive correctly before starting the sync; search for "aio-lockfile"; you can find a local example script here: https://github.com/nextcloud/all-in-one#sync-the-backup-regularly-to-another-drive)
 - You can find a well written guide that uses rclone and e.g. BorgBase for remote backups here: https://github.com/nextcloud/all-in-one/discussions/2247
@@ -457,8 +467,14 @@ You can open the BorgBackup archives on your host by following these steps:<br>
 # Install borgbackup on the host
 sudo apt update && sudo apt install borgbackup
 
-# Mount the archives to /tmp/borg (if you are using the default backup location /mnt/backup/borg)
-sudo mkdir -p /tmp/borg && sudo borg mount "/mnt/backup/borg" /tmp/borg
+# In any shell where you use borg, you must first export this variable
+# If you are using the default backup location /mnt/backup/borg
+export BORG_REPO='/mnt/backup/borg'
+# or if you are using a remote repository
+export BORG_REPO='user@host:/path/to/repo'
+
+# Mount the archives to /tmp/borg
+sudo mkdir -p /tmp/borg && sudo borg mount "$BORG_REPO" /tmp/borg
 
 # After entering your repository key successfully, you should be able to access all archives in /tmp/borg
 # You can now do whatever you want by syncing them to a different place using rsync or doing other things
@@ -478,18 +494,24 @@ You can delete BorgBackup archives on your host manually by following these step
 # Install borgbackup on the host
 sudo apt update && sudo apt install borgbackup
 
+# In any shell where you use borg, you must first export this variable
+# If you are using the default backup location /mnt/backup/borg
+export BORG_REPO='/mnt/backup/borg'
+# or if you are using a remote repository
+export BORG_REPO='user@host:/path/to/repo'
+
 # List all archives (if you are using the default backup location /mnt/backup/borg)
-sudo borg list "/mnt/backup/borg"
+sudo borg list
 
 # After entering your repository key successfully, you should now see a list of all backup archives
 # An example backup archive might be called 20220223_174237-nextcloud-aio
 # Then you can simply delete the archive with:
-sudo borg delete --stats --progress "/mnt/backup/borg::20220223_174237-nextcloud-aio"
+sudo borg delete --stats --progress "::20220223_174237-nextcloud-aio"
 
 # If borg 1.2.0 or higher is installed, you then need to run borg compact in order to clean up the freed space
 sudo borg --version
 # If version number of the command above is higher than 1.2.0 you need to run the command below:
-sudo borg compact "/mnt/backup/borg"
+sudo borg compact
 
 ```
 
@@ -498,8 +520,8 @@ You can do so by clicking on the `Check backup integrity` button or `Create back
 
 ---
 
-#### Sync the backup regularly to another drive
-For increased backup security, you might consider syncing the backup repository regularly to another drive.
+#### Sync local backups regularly to another drive
+For increased backup security, you might consider syncing the local backup repository regularly to another drive.
 
 To do that, first add the drive to `/etc/fstab` so that it is able to get automatically mounted and then create a script that does all the things automatically. Here is an example for such a script:
 
@@ -600,7 +622,7 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/backup
 > [!WARNING]  
 > The below script will only work after the initial setup of AIO. So you will always need to first visit the AIO interface, type in your domain and start the containers the first time or restore an older AIO instance from its borg backup before you can use the script.
 
-You can do so by running the `/daily-backup.sh` script that is stored in the mastercontainer. It accepts the following environmental varilables:
+You can do so by running the `/daily-backup.sh` script that is stored in the mastercontainer. It accepts the following environment variables:
 - `AUTOMATIC_UPDATES` if set to `1`, it will automatically stop the containers, update them and start them including the mastercontainer. If the mastercontainer gets updated, this script's execution will stop as soon as the mastercontainer gets stopped. You can then wait until it is started again and run the script with this flag again in order to update all containers correctly afterwards.
 - `DAILY_BACKUP` if set to `1`, it will automatically stop the containers and create a backup. If you want to start them again afterwards, you may have a look at the `START_CONTAINERS` option.
 - `START_CONTAINERS` if set to `1`, it will automatically start the containers without updating them.

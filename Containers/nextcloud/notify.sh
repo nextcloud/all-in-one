@@ -28,7 +28,7 @@ done
 for admin in "${NC_ADMIN_USER[@]}"
 do
     echo "Posting '$SUBJECT' to: $admin"
-    "${COMMAND[@]}" notification:generate "$admin" "$NC_DOMAIN: $SUBJECT" -l "$MESSAGE"
+    "${COMMAND[@]}" notification:generate "$admin" "$NC_DOMAIN: $SUBJECT" -l "$MESSAGE" --object-type='update' --object-id="$SUBJECT"
 done
 
 echo "Done!"

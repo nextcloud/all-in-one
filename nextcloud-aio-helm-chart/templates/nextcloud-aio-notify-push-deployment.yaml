@@ -25,7 +25,7 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: "alpine:3.20"
           command:
             - chmod
             - "777"
@@ -53,7 +53,7 @@ spec:
               value: nextcloud-aio-redis
             - name: REDIS_HOST_PASSWORD
               value: "{{ .Values.REDIS_PASSWORD }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-notify-push:20241106_101604"
+          image: "nextcloud/aio-notify-push:20241106_101604"
           name: nextcloud-aio-notify-push
           ports:
             - containerPort: 7867

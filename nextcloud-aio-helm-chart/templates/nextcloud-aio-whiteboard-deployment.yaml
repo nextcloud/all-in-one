@@ -36,7 +36,7 @@ spec:
               value: redis
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-whiteboard:20241106_101604"
+          image: "nextcloud/aio-whiteboard:20241106_101604"
           name: nextcloud-aio-whiteboard
           ports:
             - containerPort: 3002

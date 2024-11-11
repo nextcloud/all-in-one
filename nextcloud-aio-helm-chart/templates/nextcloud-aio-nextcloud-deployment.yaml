@@ -25,7 +25,7 @@ spec:
     spec:
       initContainers:
         - name: "delete-lost-found"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: "alpine:3.20"
           command:
             - rm
             - "-rf"
@@ -36,7 +36,7 @@ spec:
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
         - name: init-volumes
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: "alpine:3.20"
           command:
             - chmod
             - "777"
@@ -173,7 +173,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20241106_101604"
+          image: "nextcloud/aio-nextcloud:20241106_101604"
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
