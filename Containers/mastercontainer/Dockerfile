@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
 
 # Create a minimal stage to just clone the repo
-FROM alpine/git AS aio_clone
+FROM alpine/git:2.45.2 AS aio_clone
 WORKDIR /
 RUN git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1
 

@@ -139,7 +139,8 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['skip_mastercontainer_update'])) {
-                $this->configurationManager->SetSkipMastercontainerupdate(boolval($request->getParsedBody()['skip_mastercontainer_update']));
+                $skipMastercontainerUpdate = $request->getParsedBody()['skip_mastercontainer_update'] ?? '';
+                $this->configurationManager->SetSkipMastercontainerupdate(boolval($skipMastercontainerUpdate));
             }
 
             return $response->withStatus(201)->withHeader('Location', '/');
