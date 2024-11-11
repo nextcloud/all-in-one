@@ -200,9 +200,9 @@ It needs to be a string with letters, numbers, hyphens and underscores.
 It is set to '$APACHE_ADDITIONAL_NETWORK'."
         exit 1
     fi
-    tmp_out=$(sudo -u www-data docker network connect $APACHE_ADDITIONAL_NETWORK nextcloud-aio-mastercontainer 2>&1)
-    if [ -n "$tmp_out" ] && [[ ! "$tmp_out" =~ "nextcloud-aio-mastercontainer already exists in network $APACHE_ADDITIONAL_NETWORK" ]]; then
-        print_red "Unable to connect to $APACHE_ADDITIONAL_NETWORK. Cannot continue. Error: \n $tmp_out"
+    tmp_out=$(sudo -u www-data docker network connect "$APACHE_ADDITIONAL_NETWORK" nextcloud-aio-mastercontainer 2>&1)
+    if [ "$?" -ne 0 ] && [[ ! "$tmp_out" == *"nextcloud-aio-mastercontainer already exists in network $APACHE_ADDITIONAL_NETWORK"* ]]; then
+        print_red "Unable to connect to $APACHE_ADDITIONAL_NETWORK. Cannot continue. Error: $tmp_out"
         exit 1
     fi
 fi
