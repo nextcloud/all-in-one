@@ -427,6 +427,15 @@ class ConfigurationManager
         return $config['selected-restore-time'];
     }
 
+    public function GetRestoreExcludePreviews() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['restore-exclude-previews'])) {
+            $config['restore-exclude-previews'] = '';
+        }
+
+        return $config['restore-exclude-previews'];
+    }
+
     public function GetAIOURL() : string {
         $config = $this->GetConfig();
         if(!isset($config['AIO_URL'])) {

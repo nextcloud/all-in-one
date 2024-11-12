@@ -168,7 +168,8 @@
                                                 {% for restore_time in backup_times %}
                                                     <option value="{{ restore_time }}">{{ restore_time }} UTC</option>
                                                 {% endfor %}
-                                            </select>
+                                            </select><br>
+                                            <input type="checkbox" id="restore-exclude-previews" name="restore-exclude-previews"><label for="restore-exclude-previews">Exclude previews from restore which will speed up the restore process but will trigger a scan of the preview folder as soon as the Nextcloud container starts the next time</label><br>
                                             <input type="submit" value="Restore selected backup"/>
                                         </form>
                                     {% endif %}

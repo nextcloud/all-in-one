@@ -495,6 +495,12 @@ if [ -f "$NEXTCLOUD_DATA_DIR/fingerprint.update" ]; then
     rm "$NEXTCLOUD_DATA_DIR/fingerprint.update"
 fi
 
+# Perform preview scan if previews were excluded from restore
+if [ -f "$NEXTCLOUD_DATA_DIR/trigger-preview.scan" ]; then
+    php /var/www/html/occ files:scan-app-data preview -vvv
+    rm "$NEXTCLOUD_DATA_DIR/trigger-preview.scan"
+fi
+
 # AIO one-click settings start # Do not remove or change this line!
 # Apply one-click-instance settings
 echo "Applying one-click-instance settings..."
