@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.2.25-fpm-alpine3.20
+FROM php:8.3.13-fpm-alpine3.20
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=10G
@@ -12,6 +12,9 @@ ENV NEXTCLOUD_VERSION=30.0.2
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
+
+# Define the commit hash for imagick as a variable
+ARG IMAGICK_COMMIT_HASH=28f27044e435a2b203e32675e942eb8de620ee58
 
 COPY --chmod=775 *.sh /
 COPY --chmod=774 upgrade.exclude /upgrade.exclude
@@ -78,17 +81,31 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install igbinary-3.2.16; \
+    pecl install -o igbinary-3.2.16; \
     pecl install APCu-5.1.24; \
     pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.3.0; \
-    pecl install -D 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.1.0; \
-    pecl install imagick-3.7.0; \
+    pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.1.0; \
+#    pecl install -o imagick-3.7.0; \
+# Begin workaround ->
+# The master version on the imagick repository is compatible with PHP 8.3. However, the PECL version is not updated yet.
+# As soon as it will get updated, we can switch back to the PECL version, instead of having this workaround.
+    apk add --no-cache --virtual .git-build-deps git \
+    && git clone https://github.com/imagick/imagick.git --depth 1 /tmp/imagick \
+    && cd /tmp/imagick \
+    && git fetch --depth 1 origin ${IMAGICK_COMMIT_HASH} \
+    && git checkout ${IMAGICK_COMMIT_HASH} \
+    && sed -i "s/@PACKAGE_VERSION@/git-${IMAGICK_COMMIT_HASH:0:7}/" php_imagick.h \
+    && phpize && ./configure && make && make install; \
+    apk del .git-build-deps; \
+    cd && rm -r /tmp/imagick; \
+# <- End workaround
     \
     docker-php-ext-enable \
         igbinary \
         apcu \
         memcached \
         redis \
+        imagick \
     ; \
     rm -r /tmp/pear; \
     \
