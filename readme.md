@@ -394,8 +394,6 @@ If you connect an external drive to your host, and choose the backup directory t
 <details>
 <summary>How to do the above step for step</summary>
 
-<br>
-
 1. Mount an external/backup HDD to the host OS using the built-in functionality or udev rules or whatever way you prefer. (E.g. follow this video: https://www.youtube.com/watch?v=2lSyX4D3v_s) and mount the drive in best case in `/mnt/backup`.
 2. If not already done, fire up the docker container and set up Nextcloud as per the guide.
 3. Now open the AIO interface.
@@ -406,11 +404,16 @@ If you connect an external drive to your host, and choose the backup directory t
 
 If you want to back up directly to a remote borg repository:
 
+<details>
+<summary>How to do the above step for step</summary>
+
 1. Create your borg repository at the remote. Note down the repository URL for later.
 2. Open the AIO interface
 3. Under backup section, leave the local path blank and fill in the url to your borg repository that you noted down earlier.
 4. Click on `Create backup`, this will create an ssh key pair and fail because the remote doesn't trust this key yet. Copy the public key shown in AIO and add it to your authorized keys on the remote.
 5. Try again to create a backup, this time it should succeed.
+
+</details>
 
 Backups can be created and restored in the AIO interface using the buttons `Create Backup` and `Restore selected backup`. Additionally, a backup check is provided that checks the integrity of your backups but it shouldn't be needed in most situations. 
 
