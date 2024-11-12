@@ -51,7 +51,7 @@ jobs:
         
         # Imagick
         imagick_version="$(
-          git ls-remote --tags https://github.com/Imagick/imagick.git \
+          git ls-remote --tags https://github.com/imagick/imagick.git \
             | cut -d/ -f3 \
             | grep -viE '[a-z]' \
             | tr -d '^{}' \
@@ -59,6 +59,12 @@ jobs:
             | tail -1
         )"
         sed -i "s|\(pecl install[^;]*imagick-\)[0-9.]*|\1$imagick_version|" ./Containers/nextcloud/Dockerfile
+
+        # Imagick git-commit-hash from HEAD
+        imagick_commit_hash="$(
+          git ls-remote https://github.com/imagick/imagick.git HEAD | awk '{print $1}'
+        )"
+        sed -i "s/\(ARG IMAGICK_COMMIT_HASH=\)[a-fA-F0-9]*$/\1$imagick_commit_hash/" ./Containers/nextcloud/Dockerfile
 
         # Igbinary
         igbinary_version="$(
