@@ -23,34 +23,39 @@ spec:
       labels:
         io.kompose.service: nextcloud-aio-redis
     spec:
-      initContainers:
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chmod
-            - "777"
-            - /nextcloud-aio-redis
-          volumeMounts:
-            - name: nextcloud-aio-redis
-              mountPath: /nextcloud-aio-redis
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 999
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 999
+        runAsGroup: 999
+        runAsNonRoot: true
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
       containers:
         - env:
             - name: REDIS_HOST_PASSWORD
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "nextcloud/aio-redis:20241106_101604"
+          image: nextcloud/aio-redis:20241106_101604
           name: nextcloud-aio-redis
           ports:
             - containerPort: 6379
               protocol: TCP
           securityContext:
+            # The items below only work in container context
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             capabilities:
-              drop:
-                - NET_RAW
-            runAsUser: 999
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
           volumeMounts:
             - mountPath: /data
               name: nextcloud-aio-redis

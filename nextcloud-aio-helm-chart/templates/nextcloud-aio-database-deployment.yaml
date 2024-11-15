@@ -23,6 +23,18 @@ spec:
       labels:
         io.kompose.service: nextcloud-aio-database
     spec:
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 999
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 999
+        runAsGroup: 999
+        runAsNonRoot: true
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
       initContainers:
         - name: init-subpath
           image: "alpine:3.20"
@@ -30,26 +42,19 @@ spec:
             - mkdir
             - "-p"
             - /nextcloud-aio-database/data
-            - /nextcloud-aio-database
-            - /nextcloud-aio-database-dump
           volumeMounts:
-            - name: nextcloud-aio-database-dump
-              mountPath: /nextcloud-aio-database-dump
             - name: nextcloud-aio-database
               mountPath: /nextcloud-aio-database
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chown
-            - 999:999
-            - "-R"
-            - /nextcloud-aio-database
-            - /nextcloud-aio-database-dump
-          volumeMounts:
-            - name: nextcloud-aio-database-dump
-              mountPath: /nextcloud-aio-database-dump
-            - name: nextcloud-aio-database
-              mountPath: /nextcloud-aio-database
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
       containers:
         - env:
             - name: PGTZ
@@ -62,18 +67,21 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "nextcloud/aio-postgresql:20241106_101604"
+          image: nextcloud/aio-postgresql:20241106_101604
           name: nextcloud-aio-database
           ports:
             - containerPort: 5432
               protocol: TCP
           securityContext:
+            # The items below only work in container context
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             capabilities:
-              drop:
-                - NET_RAW
-            runAsUser: 999
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               subPath: data
