@@ -44,15 +44,11 @@ spec:
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "nextcloud/aio-onlyoffice:20241106_101604"
+          image: nextcloud/aio-onlyoffice:20241106_101604
           name: nextcloud-aio-onlyoffice
           ports:
             - containerPort: 80
               protocol: TCP
-          securityContext:
-            capabilities:
-              drop:
-                - NET_RAW
           volumeMounts:
             - mountPath: /var/lib/onlyoffice
               name: nextcloud-aio-onlyoffice
