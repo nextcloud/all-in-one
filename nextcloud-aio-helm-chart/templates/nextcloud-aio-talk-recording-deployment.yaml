@@ -22,6 +22,18 @@ spec:
       labels:
         io.kompose.service: nextcloud-aio-talk-recording
     spec:
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 122
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 122
+        runAsGroup: 122
+        runAsNonRoot: true
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
       containers:
         - env:
             - name: INTERNAL_SECRET
@@ -32,16 +44,19 @@ spec:
               value: "{{ .Values.RECORDING_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "nextcloud/aio-talk-recording:20241106_101604"
+          image: nextcloud/aio-talk-recording:20241106_101604
           name: nextcloud-aio-talk-recording
           ports:
             - containerPort: 1234
               protocol: TCP
           securityContext:
+            # The items below only work in container context
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             capabilities:
-              drop:
-                - NET_RAW
-            runAsUser: 122
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
 {{- end }}
