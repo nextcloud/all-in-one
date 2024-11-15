@@ -22,6 +22,18 @@ spec:
       labels:
         io.kompose.service: nextcloud-aio-whiteboard
     spec:
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 65534
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
       containers:
         - env:
             - name: JWT_SECRET_KEY
@@ -36,16 +48,19 @@ spec:
               value: redis
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "nextcloud/aio-whiteboard:20241106_101604"
+          image: nextcloud/aio-whiteboard:20241106_101604
           name: nextcloud-aio-whiteboard
           ports:
             - containerPort: 3002
               protocol: TCP
           securityContext:
+            # The items below only work in container context
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             capabilities:
-              drop:
-                - NET_RAW
-            runAsUser: 65534
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
 {{- end }}

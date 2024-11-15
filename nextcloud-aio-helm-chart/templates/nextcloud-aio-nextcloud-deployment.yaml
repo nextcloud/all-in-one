@@ -23,6 +23,20 @@ spec:
       labels:
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
+      {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 33
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 33
+        runAsGroup: 33
+        runAsNonRoot: true
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
+      {{- end }} # AIO-config - do not change this comment!
       initContainers:
         - name: "delete-lost-found"
           image: "alpine:3.20"
@@ -35,6 +49,19 @@ spec:
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
+        {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
+        {{- end }} # AIO-config - do not change this comment!
+# AIO settings start # Do not remove or change this line!
         - name: init-volumes
           image: "alpine:3.20"
           command:
@@ -47,6 +74,7 @@ spec:
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
+# AIO settings end # Do not remove or change this line!
       containers:
         - env:
             - name: SMTP_HOST
@@ -173,17 +201,25 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: "nextcloud/aio-nextcloud:20241106_101604"
+          image: nextcloud/aio-nextcloud:20241106_101604
+          {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
+          {{- end }} # AIO-config - do not change this comment!
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
               protocol: TCP
             - containerPort: 9001
               protocol: TCP
-          securityContext:
-            capabilities:
-              drop:
-                - NET_RAW
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
