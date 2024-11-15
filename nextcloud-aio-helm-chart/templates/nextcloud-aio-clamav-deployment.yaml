@@ -24,6 +24,18 @@ spec:
       labels:
         io.kompose.service: nextcloud-aio-clamav
     spec:
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 100
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 100
+        runAsGroup: 100
+        runAsNonRoot: true
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
       initContainers:
         - name: init-subpath
           image: "alpine:3.20"
@@ -31,20 +43,19 @@ spec:
             - mkdir
             - "-p"
             - /nextcloud-aio-clamav/data
-            - /nextcloud-aio-clamav
           volumeMounts:
             - name: nextcloud-aio-clamav
               mountPath: /nextcloud-aio-clamav
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chown
-            - 100:100
-            - "-R"
-            - /nextcloud-aio-clamav
-          volumeMounts:
-            - name: nextcloud-aio-clamav
-              mountPath: /nextcloud-aio-clamav
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
       containers:
         - env:
             - name: CLAMD_STARTUP_TIMEOUT
@@ -53,18 +64,21 @@ spec:
               value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "nextcloud/aio-clamav:20241106_101604"
+          image: nextcloud/aio-clamav:20241106_101604
           name: nextcloud-aio-clamav
           ports:
             - containerPort: 3310
               protocol: TCP
           securityContext:
+            # The items below only work in container context
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             capabilities:
-              drop:
-                - NET_RAW
-            runAsUser: 100
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
           volumeMounts:
             - mountPath: /var/lib/clamav
               subPath: data

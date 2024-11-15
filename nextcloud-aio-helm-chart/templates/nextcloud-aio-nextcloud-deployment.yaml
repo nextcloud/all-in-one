@@ -30,7 +30,7 @@ spec:
             - rm
             - "-rf"
             - "/nextcloud-aio-nextcloud/lost+found"
-          volumeMounts:
+          volumeMountsInitRmLostFound:
             - name: nextcloud-aio-nextcloud-trusted-cacerts
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
             - name: nextcloud-aio-nextcloud
@@ -173,17 +173,13 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: "nextcloud/aio-nextcloud:20241106_101604"
+          image: nextcloud/aio-nextcloud:20241106_101604
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
               protocol: TCP
             - containerPort: 9001
               protocol: TCP
-          securityContext:
-            capabilities:
-              drop:
-                - NET_RAW
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud

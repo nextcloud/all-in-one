@@ -23,19 +23,18 @@ spec:
       labels:
         io.kompose.service: nextcloud-aio-apache
     spec:
-      initContainers:
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chmod
-            - "777"
-            - /nextcloud-aio-nextcloud
-            - /nextcloud-aio-apache
-          volumeMounts:
-            - name: nextcloud-aio-apache
-              mountPath: /nextcloud-aio-apache
-            - name: nextcloud-aio-nextcloud
-              mountPath: /nextcloud-aio-nextcloud
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 33
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 33
+        runAsGroup: 33
+        runAsNonRoot: true
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
       containers:
         - env:
             - name: ADDITIONAL_TRUSTED_DOMAIN
@@ -64,7 +63,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: "nextcloud/aio-apache:20241106_101604"
+          image: nextcloud/aio-apache:20241106_101604
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
@@ -72,12 +71,15 @@ spec:
             - containerPort: {{ .Values.APACHE_PORT }}
               protocol: UDP
           securityContext:
+            # The items below only work in container context
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             capabilities:
-              drop:
-                - NET_RAW
-            runAsUser: 33
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
