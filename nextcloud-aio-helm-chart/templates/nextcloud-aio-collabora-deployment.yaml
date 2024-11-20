@@ -42,7 +42,7 @@ spec:
             - containerPort: 9980
               protocol: TCP
           securityContext:
-            allowPrivilegeEscalation: false
+            allowPrivilegeEscalation: true
             runAsNonRoot: true
             capabilities:
               add:
