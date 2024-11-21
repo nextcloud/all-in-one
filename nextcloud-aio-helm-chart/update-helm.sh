@@ -105,20 +105,18 @@ cat << EOL > /tmp/initcontainers.nextcloud
             - "-rf"
             - "/nextcloud-aio-nextcloud/lost+found"
           volumeMountsInitRmLostFound:
-        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
           securityContext:
-            # The items below only work in container context
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-        {{- else }}
+        {{- else }} # AIO-config - do not change this comment!
+        {{- if eq .Values.RPSS_ENABLED "yes" }} 
         - name: init-volumes
           image: "alpine:3.20"
           command:
             - chmod
             - "777"
           volumeMountsInitContainer:
-        {{- end }}
+          {{- end }}
+        {{- end }} # AIO-config - do not change this comment!
 EOL
 
 # shellcheck disable=SC1083
@@ -168,7 +166,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
         if echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
             USER=33
             GROUP=33
-            echo '      {{- if eq .Values.RPSS_ENABLED "yes" }}' > /tmp/pod.securityContext
+            echo '      {{- if eq .Values.RPSS_ENABLED "yes" }}  # AIO-config - do not change this comment!' > /tmp/pod.securityContext
         else
             USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
             GROUP="$USER"
@@ -192,7 +190,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
         {{- end }}
 EOL
             if echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
-                echo "      {{- end }}" >> /tmp/pod.securityContext
+                echo "      {{- end }}  # AIO-config - do not change this comment!" >> /tmp/pod.securityContext
             fi
             sed -i "/^    spec:$/r /tmp/pod.securityContext" "$variable"
         fi
@@ -464,7 +462,7 @@ cat << EOL > /tmp/security.conf
               add: ["NET_BIND_SERVICE"]
 EOL
 # shellcheck disable=SC1083
-find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*imaginary-deployment.yaml*' -not -name '*nextcloud-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*imaginary-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
 
 cat << EOL > /tmp/security.conf
             # The items below only work in container context
@@ -480,14 +478,17 @@ EOL
 find ./ -name '*imaginary-deployment.yaml*' -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
 
 cat << EOL > /tmp/security.conf
-          {{- if eq .Values.RPSS_ENABLED "yes" }}
-          securityContext:
+          {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
             # The items below only work in container context
             allowPrivilegeEscalation: false
             capabilities:
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
               drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
               add: ["NET_BIND_SERVICE"]
-          {{- end }}
+          {{- end }} # AIO-config - do not change this comment!
 EOL
 # shellcheck disable=SC1083
 find ./ -name '*nextcloud-deployment.yaml*' -exec sed -i "/nextcloud\/aio-nextcloud:.*/r /tmp/security.conf" \{} \; 
