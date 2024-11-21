@@ -158,6 +158,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
         if echo "$variable" | grep -q fulltextsearch; then
             USER=1000
             GROUP=0
+        fi
         sed -i "/runAsUser/d" "$variable"
         if [ -n "$USER" ]; then
             cat << EOL > /tmp/pod.securityContext
