@@ -459,7 +459,7 @@ cat << EOL > /tmp/security.conf
               {{- end }}
 EOL
 # shellcheck disable=SC1083
-find ./ \(-o -name '*imaginary-deployment.yaml*' \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+find ./ -name '*imaginary-deployment.yaml*' -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
 
 chmod 777 -R ./
 
