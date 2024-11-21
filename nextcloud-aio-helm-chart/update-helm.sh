@@ -104,10 +104,8 @@ cat << EOL > /tmp/initcontainers.nextcloud
             - rm
             - "-rf"
             - "/nextcloud-aio-nextcloud/lost+found"
-          volumeMounts:
-            - name: nextcloud-aio-nextcloud
-              mountPath: /nextcloud-aio-nextcloud
-        - name: init-volumes
+          volumeMountsInitRmLostFound:
+        - name: init-volumes1
           image: "alpine:3.20"
           command:
             - chmod
@@ -136,6 +134,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
             if [ "$volumeName" != "nextcloud-aio-nextcloud-data" ]; then
                 sed -i "/^.*volumeMountsInitContainer:/i\ \ \ \ \ \ \ \ \ \ \ \ - /$volumeName" "$variable"
                 sed -i "/volumeMountsInitContainer:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
+                sed -i "/volumeMountsInitRmLostFound:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
                 # Workaround for the database volume
                 if [ "$volumeName" = nextcloud-aio-database ]; then
                     sed -i "/mountPath: \/var\/lib\/postgresql\/data/a\ \ \ \ \ \ \ \ \ \ \ \ \ \ subPath: data" "$variable"
