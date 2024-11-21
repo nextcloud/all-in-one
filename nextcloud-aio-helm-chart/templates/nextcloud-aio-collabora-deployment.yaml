@@ -45,5 +45,5 @@ spec:
             capabilities:
               add:
                 - MKNOD
-                - SYS_ADMIN
+                - CAP_SYS_ADMIN
 {{- end }}

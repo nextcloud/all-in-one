@@ -54,6 +54,8 @@ yq -i 'del(.services.[].tmpfs)' latest.yml
 yq -i 'del(.services.[].cap_drop)' latest.yml
 # Remove SYS_NICE for imaginary as it is not supported with RPSS
 sed -i "s|- SYS_NICE$|- NET_BIND_SERVICE|" latest.yml
+# cap SYS_ADMIN is called CAP_SYS_ADMIN in k8s
+sed -i "s|- SYS_ADMIN$|- CAP_SYS_ADMIN|" latest.yml
 
 cat latest.yml
 kompose convert -c -f latest.yml --namespace nextcloud-aio-namespace
