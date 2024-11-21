@@ -61,6 +61,15 @@ if [ -f ./templates/manual-install-nextcloud-aio-networkpolicy.yaml ]; then
 fi
 # shellcheck disable=SC1083
 find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
+cat << EOL > /tmp/initcontainers
+      initContainers:
+        - name: init-volumes
+          image: "alpine:3.20"
+          command:
+            - chmod
+            - "777"
+          volumeMountsInitContainer:
+EOL
 cat << EOL > /tmp/initcontainers.database
       initContainers:
         - name: init-subpath
@@ -119,6 +128,8 @@ for variable in "${DEPLOYMENTS[@]}"; do
         for volumeName in "${volumeNames[@]}"; do
             # The Nextcloud container runs as root user and sets the correct permissions automatically for the data-dir if the www-data user cannot write to it
             if [ "$volumeName" != "nextcloud-aio-nextcloud-data" ]; then
+                sed -i "/^.*volumeMountsInitContainer:/i\ \ \ \ \ \ \ \ \ \ \ \ - /$volumeName" "$variable"
+                sed -i "/volumeMountsInitContainer:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
                 # Workaround for the database volume
                 if [ "$volumeName" = nextcloud-aio-database ]; then
                     sed -i "/mountPath: \/var\/lib\/postgresql\/data/a\ \ \ \ \ \ \ \ \ \ \ \ \ \ subPath: data" "$variable"
@@ -128,6 +139,8 @@ for variable in "${DEPLOYMENTS[@]}"; do
                 
             fi
         done
+        sed -i "s|volumeMountsInitContainer:|volumeMounts:|" "$variable"
+        sed -i "s|volumeMountsInitRmLostFound:|volumeMounts:|" "$variable"
         if grep -q claimName "$variable"; then
             claimNames="$(grep claimName "$variable")"
             mapfile -t claimNames <<< "$claimNames"
