@@ -73,11 +73,6 @@ cat << EOL > /tmp/initcontainers.database
             - name: nextcloud-aio-database
               mountPath: /nextcloud-aio-database
           securityContext:
-            # The items below only work in container context
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-              add: ["NET_BIND_SERVICE"]
 EOL
 cat << EOL > /tmp/initcontainers.clamav
       initContainers:
@@ -91,11 +86,6 @@ cat << EOL > /tmp/initcontainers.clamav
             - name: nextcloud-aio-clamav
               mountPath: /nextcloud-aio-clamav
           securityContext:
-            # The items below only work in container context
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-              add: ["NET_BIND_SERVICE"]
 EOL
 cat << EOL > /tmp/initcontainers.nextcloud
       initContainers:
@@ -109,11 +99,6 @@ cat << EOL > /tmp/initcontainers.nextcloud
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
           securityContext:
-            # The items below only work in container context
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-              add: ["NET_BIND_SERVICE"]
 EOL
 
 # shellcheck disable=SC1083
@@ -153,16 +138,18 @@ for variable in "${DEPLOYMENTS[@]}"; do
                 fi
             done
         fi
-        if grep -q runAsUser "$variable"; then
-            USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
-            GROUP="$USER"
-            if echo "$variable" | grep -q fulltextsearch; then
-                USER=1000
-                GROUP=0
-            fi
-            sed -i "/runAsUser/d" "$variable"
-            if [ -n "$USER" ]; then
-                cat << EOL > /tmp/pod.securityContext
+    fi
+    if grep -q runAsUser "$variable"; then
+        USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
+        GROUP="$USER"
+        if echo "$variable" | grep -q fulltextsearch; then
+            USER=1000
+            GROUP=0
+        fi
+        sed -i "/runAsUser:/d" "$variable"
+        sed -i "/capabilities:/d" "$variable"
+        if [ -n "$USER" ]; then
+            cat << EOL > /tmp/pod.securityContext
       securityContext:
         # The items below only work in pod context
         fsGroup: $USER
@@ -176,8 +163,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
           type: RuntimeDefault
         {{- end }}
 EOL
-                sed -i "/^    spec:$/r /tmp/pod.securityContext" "$variable"
-            fi
+            sed -i "/^    spec:$/r /tmp/pod.securityContext" "$variable"
         fi
     fi
 done
