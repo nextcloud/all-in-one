@@ -98,7 +98,6 @@ cat << EOL > /tmp/initcontainers.nextcloud
           volumeMounts:
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
-          securityContext:
 EOL
 
 # shellcheck disable=SC1083
@@ -139,7 +138,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
             done
         fi
     fi
-    if grep -q runAsUser "$variable"; then
+    if grep -q runAsUser "$variable" || echo "$variable" | grep -q fulltextsearch; then
         USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
         GROUP="$USER"
         if echo "$variable" | grep -q fulltextsearch; then
@@ -374,7 +373,6 @@ cat << ADDITIONAL_CONFIG >> /tmp/sample.conf
 NAMESPACE: default        # By changing this, you can adjust the namespace of the installation which allows to install multiple instances on one kubernetes cluster
 NAMESPACE_DISABLED: "no"        # By setting this to "yes", you can disabled the creation of the namespace so that you can use a pre-created one
 NETWORK_POLICY_ENABLED: "no"        # By setting this to "yes", you can enable a network policy that limits network access to the same namespace. Except the Web server service which is reachable from all endpoints.
-RPSS_ENABLED: "no"         # By setting this to "yes", you can make the chart compatible with the Restricted Pod Security Policy. ⚠️ Warning: some components like collabora, fulltextseach and onlyoffice are known to not work with RPSS enabled. They need to be disabled in this chart and get provided externally if you need those.
 SUBSCRIPTION_KEY:        # This allows to set the Nextcloud Enterprise key via ENV
 SERVERINFO_TOKEN:        # This allows to set the serverinfo app token for monitoring your Nextcloud via the serverinfo app
 APPS_ALLOWLIST:        # This allows to configure allowed apps that will be shown in Nextcloud's Appstore. You need to enter the app-IDs of the apps here and separate them with spaces. E.g. 'files richdocuments'
