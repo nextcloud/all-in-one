@@ -107,6 +107,12 @@ cat << EOL > /tmp/initcontainers.nextcloud
           volumeMounts:
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
+        - name: init-volumes
+          image: "alpine:3.20"
+          command:
+            - chmod
+            - "777"
+          volumeMountsInitContainer:
 EOL
 
 # shellcheck disable=SC1083
@@ -140,7 +146,6 @@ for variable in "${DEPLOYMENTS[@]}"; do
             fi
         done
         sed -i "s|volumeMountsInitContainer:|volumeMounts:|" "$variable"
-        sed -i "s|volumeMountsInitRmLostFound:|volumeMounts:|" "$variable"
         if grep -q claimName "$variable"; then
             claimNames="$(grep claimName "$variable")"
             mapfile -t claimNames <<< "$claimNames"
