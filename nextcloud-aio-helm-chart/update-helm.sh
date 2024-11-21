@@ -153,15 +153,16 @@ for variable in "${DEPLOYMENTS[@]}"; do
                 fi
             done
         fi
-        USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
-        GROUP="$USER"
-        if echo "$variable" | grep -q fulltextsearch; then
-            USER=1000
-            GROUP=0
-        fi
-        sed -i "/runAsUser/d" "$variable"
-        if [ -n "$USER" ]; then
-            cat << EOL > /tmp/pod.securityContext
+        if grep -q runAsUser "$variable"; then
+            USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
+            GROUP="$USER"
+            if echo "$variable" | grep -q fulltextsearch; then
+                USER=1000
+                GROUP=0
+            fi
+            sed -i "/runAsUser/d" "$variable"
+            if [ -n "$USER" ]; then
+                cat << EOL > /tmp/pod.securityContext
       securityContext:
         # The items below only work in pod context
         fsGroup: $USER
@@ -175,7 +176,8 @@ for variable in "${DEPLOYMENTS[@]}"; do
           type: RuntimeDefault
         {{- end }}
 EOL
-            sed -i "/^    spec:$/r /tmp/pod.securityContext" "$variable"
+                sed -i "/^    spec:$/r /tmp/pod.securityContext" "$variable"
+            fi
         fi
     fi
 done
