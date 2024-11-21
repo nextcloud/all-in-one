@@ -52,6 +52,8 @@ yq -i 'del(.services.[].read_only)' latest.yml
 yq -i 'del(.services.[].tmpfs)' latest.yml
 # Remove cap_drop in order to add it later again easier
 yq -i 'del(.services.[].cap_drop)' latest.yml
+# Remove SYS_NICE for imaginary as it is not supported with RPSS
+yq -i 'del(.services.[] | select(.cap_add == "SYS_NICE"))' latest.yml
 cat latest.yml
 kompose convert -c -f latest.yml --namespace nextcloud-aio-namespace
 cd latest
