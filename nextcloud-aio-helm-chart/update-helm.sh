@@ -138,14 +138,9 @@ for variable in "${DEPLOYMENTS[@]}"; do
             done
         fi
     fi
-    if grep -q runAsUser "$variable" || echo "$variable" | grep -q fulltextsearch; then
-        if ! echo "$variable" | grep -q fulltextsearch; then
-            USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
-            GROUP="$USER"
-        else
-            USER=1000
-            GROUP=0
-        fi
+    if grep -q runAsUser "$variable"; then
+        USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
+        GROUP="$USER"
         sed -i "/runAsUser:/d" "$variable"
         sed -i "/capabilities:/d" "$variable"
         if [ -n "$USER" ]; then
