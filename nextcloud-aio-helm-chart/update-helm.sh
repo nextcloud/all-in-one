@@ -145,6 +145,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
             fi
         done
         sed -i "s|volumeMountsInitContainer:|volumeMounts:|" "$variable"
+        sed -i "s|volumeMountsInitRmLostFound:|volumeMounts:|" "$variable"
         if grep -q claimName "$variable"; then
             claimNames="$(grep claimName "$variable")"
             mapfile -t claimNames <<< "$claimNames"
@@ -458,7 +459,7 @@ cat << EOL > /tmp/security.conf
               {{- end }}
 EOL
 # shellcheck disable=SC1083
-find ./ \( -name '*collabora-deployment.yaml*' -o -name '*imaginary-deployment.yaml*' \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+find ./ \(-o -name '*imaginary-deployment.yaml*' \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
 
 chmod 777 -R ./
 
