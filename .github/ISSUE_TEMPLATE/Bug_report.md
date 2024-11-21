@@ -1,6 +1,6 @@
 ---
-name: 🐛 Bug report
-about: Help us improving by reporting a bug
+name: 🐛 Bug report - this is **not** for questions and support!
+about: Help us improving by reporting a bug - this is **not** for questions and support! Please use one of the options below for questions and support
 labels: 0. Needs triage
 ---
 
