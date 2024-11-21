@@ -168,7 +168,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
         if echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
             USER=33
             GROUP=33
-            echo "      {{- if eq .Values.RPSS_ENABLED "yes" }}" > /tmp/pod.securityContext
+            echo '      {{- if eq .Values.RPSS_ENABLED "yes" }}' > /tmp/pod.securityContext
         else
           echo "" > /tmp/pod.securityContext
         fi
