@@ -107,15 +107,14 @@ cat << EOL > /tmp/initcontainers.nextcloud
           volumeMountsInitRmLostFound:
         {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
           securityContext:
-        {{- else }} # AIO-config - do not change this comment!
-        {{- if eq .Values.RPSS_ENABLED "yes" }} 
+        {{- if ne .Values.RPSS_ENABLED "yes" }} 
         - name: init-volumes
           image: "alpine:3.20"
           command:
             - chmod
             - "777"
           volumeMountsInitContainer:
-          {{- end }}
+        {{- end }}
         {{- end }} # AIO-config - do not change this comment!
 EOL
 
@@ -166,7 +165,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
         if echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
             USER=33
             GROUP=33
-            echo '      {{- if eq .Values.RPSS_ENABLED "yes" }}  # AIO-config - do not change this comment!' > /tmp/pod.securityContext
+            echo '      {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!' > /tmp/pod.securityContext
         else
             USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
             GROUP="$USER"
@@ -190,7 +189,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
         {{- end }}
 EOL
             if echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
-                echo "      {{- end }}  # AIO-config - do not change this comment!" >> /tmp/pod.securityContext
+                echo "      {{- end }} # AIO-config - do not change this comment!" >> /tmp/pod.securityContext
             fi
             sed -i "/^    spec:$/r /tmp/pod.securityContext" "$variable"
         fi
