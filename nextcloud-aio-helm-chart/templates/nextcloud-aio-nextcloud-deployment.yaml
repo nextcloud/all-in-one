@@ -60,7 +60,7 @@ spec:
               drop: ["NET_RAW"]
               {{- end }}
               add: ["NET_BIND_SERVICE"]
-        {{- if ne .Values.RPSS_ENABLED "yes" }} 
+# AIO settings start # Do not remove or change this line!
         - name: init-volumes
           image: "alpine:3.20"
           command:
@@ -73,7 +73,7 @@ spec:
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
-        {{- end }}
+# AIO settings end # Do not remove or change this line!
         {{- end }} # AIO-config - do not change this comment!
       containers:
         - env:
@@ -201,7 +201,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: nextcloud/aio-nextcloud:20241106_10160
+          image: nextcloud/aio-nextcloud:20241106_101604
           {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
             # The items below only work in container context
             allowPrivilegeEscalation: false
