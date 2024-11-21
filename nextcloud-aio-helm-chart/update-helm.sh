@@ -172,13 +172,12 @@ for variable in "${DEPLOYMENTS[@]}"; do
         else
             USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
             GROUP="$USER"
-            echo "" > /tmp/pod.securityContext
+            rm -f /tmp/pod.securityContext
         fi
         sed -i "/runAsUser:/d" "$variable"
         sed -i "/capabilities:/d" "$variable"
         if [ -n "$USER" ]; then
             cat << EOL >> /tmp/pod.securityContext
-
       securityContext:
         # The items below only work in pod context
         fsGroup: $USER
@@ -491,7 +490,7 @@ cat << EOL > /tmp/security.conf
           {{- end }}
 EOL
 # shellcheck disable=SC1083
-find ./ -name '*nextcloud-deployment.yaml*' -exec sed -i "/nextcloud/aio-nextcloud:.*/r /tmp/security.conf" \{} \; 
+find ./ -name '*nextcloud-deployment.yaml*' -exec sed -i "/nextcloud\/aio-nextcloud:.*/r /tmp/security.conf" \{} \; 
 
 chmod 777 -R ./
 
