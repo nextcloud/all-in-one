@@ -170,10 +170,10 @@ for variable in "${DEPLOYMENTS[@]}"; do
             GROUP=33
             echo '      {{- if eq .Values.RPSS_ENABLED "yes" }}' > /tmp/pod.securityContext
         else
-          echo "" > /tmp/pod.securityContext
+            USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
+            GROUP="$USER"
+            echo "" > /tmp/pod.securityContext
         fi
-        USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
-        GROUP="$USER"
         sed -i "/runAsUser:/d" "$variable"
         sed -i "/capabilities:/d" "$variable"
         if [ -n "$USER" ]; then
