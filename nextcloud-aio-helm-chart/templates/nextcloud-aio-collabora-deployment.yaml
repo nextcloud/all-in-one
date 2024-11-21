@@ -42,14 +42,6 @@ spec:
             - containerPort: 9980
               protocol: TCP
           securityContext:
-            # The items below only work in container context
-            allowPrivilegeEscalation: false
-            capabilities:
-              {{- if eq .Values.RPSS_ENABLED "yes" }}
-              drop: ["ALL"]
-              {{- else }}
-              drop: ["NET_RAW"]
-              {{- end }}
             capabilities:
               add:
                 - MKNOD
