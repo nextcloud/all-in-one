@@ -107,14 +107,14 @@ cat << EOL > /tmp/initcontainers.nextcloud
           volumeMountsInitRmLostFound:
         {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
           securityContext:
-        {{- if ne .Values.RPSS_ENABLED "yes" }} 
+        # AIO settings start # Do not remove or change this line!
         - name: init-volumes
           image: "alpine:3.20"
           command:
             - chmod
             - "777"
           volumeMountsInitContainer:
-        {{- end }}
+        # AIO settings end # Do not remove or change this line!
         {{- end }} # AIO-config - do not change this comment!
 EOL
 
