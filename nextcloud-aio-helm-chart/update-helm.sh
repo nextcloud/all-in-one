@@ -50,6 +50,8 @@ yq -i 'del(.services.[].profiles)' latest.yml
 # Delete read_only and tmpfs setting while https://github.com/kubernetes/kubernetes/issues/48912 is not fixed
 yq -i 'del(.services.[].read_only)' latest.yml
 yq -i 'del(.services.[].tmpfs)' latest.yml
+# Remove cap_drop in order to add it later again easier
+yq -i 'del(.services.[].cap_drop)' latest.yml
 cat latest.yml
 kompose convert -c -f latest.yml --namespace nextcloud-aio-namespace
 cd latest
@@ -59,15 +61,6 @@ if [ -f ./templates/manual-install-nextcloud-aio-networkpolicy.yaml ]; then
 fi
 # shellcheck disable=SC1083
 find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
-cat << EOL > /tmp/initcontainers
-      initContainers:
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chmod
-            - "777"
-          volumeMountsInitContainer:
-EOL
 cat << EOL > /tmp/initcontainers.database
       initContainers:
         - name: init-subpath
@@ -76,14 +69,15 @@ cat << EOL > /tmp/initcontainers.database
             - mkdir
             - "-p"
             - /nextcloud-aio-database/data
-          volumeMountsInitContainer:
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chown
-            - 999:999
-            - "-R"
-          volumeMountsInitContainer:
+          volumeMounts:
+            - name: nextcloud-aio-database
+              mountPath: /nextcloud-aio-database
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+              add: ["NET_BIND_SERVICE"]
 EOL
 cat << EOL > /tmp/initcontainers.clamav
       initContainers:
@@ -93,14 +87,15 @@ cat << EOL > /tmp/initcontainers.clamav
             - mkdir
             - "-p"
             - /nextcloud-aio-clamav/data
-          volumeMountsInitContainer:
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chown
-            - 100:100
-            - "-R"
-          volumeMountsInitContainer:
+          volumeMounts:
+            - name: nextcloud-aio-clamav
+              mountPath: /nextcloud-aio-clamav
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+              add: ["NET_BIND_SERVICE"]
 EOL
 cat << EOL > /tmp/initcontainers.nextcloud
       initContainers:
@@ -110,14 +105,17 @@ cat << EOL > /tmp/initcontainers.nextcloud
             - rm
             - "-rf"
             - "/nextcloud-aio-nextcloud/lost+found"
-          volumeMountsInitRmLostFound:
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chmod
-            - "777"
-          volumeMountsInitContainer:
+          volumeMounts:
+            - name: nextcloud-aio-nextcloud
+              mountPath: /nextcloud-aio-nextcloud
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+              add: ["NET_BIND_SERVICE"]
 EOL
+
 # shellcheck disable=SC1083
 DEPLOYMENTS="$(find ./ -name '*deployment.yaml')"
 mapfile -t DEPLOYMENTS <<< "$DEPLOYMENTS"
@@ -137,9 +135,6 @@ for variable in "${DEPLOYMENTS[@]}"; do
         for volumeName in "${volumeNames[@]}"; do
             # The Nextcloud container runs as root user and sets the correct permissions automatically for the data-dir if the www-data user cannot write to it
             if [ "$volumeName" != "nextcloud-aio-nextcloud-data" ]; then
-                sed -i "/^.*volumeMountsInitContainer:/i\ \ \ \ \ \ \ \ \ \ \ \ - /$volumeName" "$variable"
-                sed -i "/volumeMountsInitContainer:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
-                sed -i "/volumeMountsInitRmLostFound:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
                 # Workaround for the database volume
                 if [ "$volumeName" = nextcloud-aio-database ]; then
                     sed -i "/mountPath: \/var\/lib\/postgresql\/data/a\ \ \ \ \ \ \ \ \ \ \ \ \ \ subPath: data" "$variable"
@@ -149,8 +144,6 @@ for variable in "${DEPLOYMENTS[@]}"; do
                 
             fi
         done
-        sed -i "s|volumeMountsInitContainer:|volumeMounts:|" "$variable"
-        sed -i "s|volumeMountsInitRmLostFound:|volumeMounts:|" "$variable"
         if grep -q claimName "$variable"; then
             claimNames="$(grep claimName "$variable")"
             mapfile -t claimNames <<< "$claimNames"
@@ -159,6 +152,29 @@ for variable in "${DEPLOYMENTS[@]}"; do
                     sed -i "/^$claimName$/{n;d}" "$variable"
                 fi
             done
+        fi
+        USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
+        GROUP="$USER"
+        if echo "$variable" | grep -q fulltextsearch; then
+            USER=1000
+            GROUP=0
+        sed -i "/runAsUser/d" "$variable"
+        if [ -n "$USER" ]; then
+            cat << EOL > /tmp/pod.securityContext
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: $USER
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: $USER
+        runAsGroup: $GROUP
+        runAsNonRoot: true
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
+EOL
+            sed -i "/^    spec:$/r /tmp/pod.securityContext" "$variable"
         fi
     fi
 done
@@ -369,6 +385,7 @@ cat << ADDITIONAL_CONFIG >> /tmp/sample.conf
 NAMESPACE: default        # By changing this, you can adjust the namespace of the installation which allows to install multiple instances on one kubernetes cluster
 NAMESPACE_DISABLED: "no"        # By setting this to "yes", you can disabled the creation of the namespace so that you can use a pre-created one
 NETWORK_POLICY_ENABLED: "no"        # By setting this to "yes", you can enable a network policy that limits network access to the same namespace. Except the Web server service which is reachable from all endpoints.
+RPSS_ENABLED: "no"         # By setting this to "yes", you can make the chart compatible with the Restricted Pod Security Policy. ⚠️ Warning: some components like collabora, fulltextseach and onlyoffice are known to not work with RPSS enabled. They need to be disabled in this chart and get provided externally if you need those.
 SUBSCRIPTION_KEY:        # This allows to set the Nextcloud Enterprise key via ENV
 SERVERINFO_TOKEN:        # This allows to set the serverinfo app token for monitoring your Nextcloud via the serverinfo app
 APPS_ALLOWLIST:        # This allows to configure allowed apps that will be shown in Nextcloud's Appstore. You need to enter the app-IDs of the apps here and separate them with spaces. E.g. 'files richdocuments'
@@ -416,12 +433,32 @@ find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec se
 # shellcheck disable=SC1083
 find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 
-cat << EOL >> /tmp/security.conf
+cat << EOL > /tmp/security.conf
+            # The items below only work in container context
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
+            capabilities:
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
 EOL
 # shellcheck disable=SC1083
-find ./ \( -not -name '*nextcloud-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^.*securityContext:$/r /tmp/security.conf" \{} \; 
+find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*imaginary-deployment.yaml*' -not -name '*nextcloud-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+
+cat << EOL > /tmp/security.conf
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+EOL
+# shellcheck disable=SC1083
+find ./ \( -name '*collabora-deployment.yaml*' -o -name '*imaginary-deployment.yaml*' \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
 
 chmod 777 -R ./
 
