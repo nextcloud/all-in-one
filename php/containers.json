@@ -332,7 +332,6 @@
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
       "display_name": "Collabora",
       "image": "nextcloud/aio-collabora",
-      "user": "100",
       "init": true,
       "expose": [
         "9980"

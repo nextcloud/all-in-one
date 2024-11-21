@@ -50,5 +50,4 @@ spec:
                 - SYS_ADMIN
               drop:
                 - NET_RAW
-            runAsUser: 100
 {{- end }}

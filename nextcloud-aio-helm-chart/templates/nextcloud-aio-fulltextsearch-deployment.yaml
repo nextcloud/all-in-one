@@ -24,9 +24,6 @@ spec:
       labels:
         io.kompose.service: nextcloud-aio-fulltextsearch
     spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 0
       initContainers:
         - name: init-volumes
           image: "alpine:3.20"

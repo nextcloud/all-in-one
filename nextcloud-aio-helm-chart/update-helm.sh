@@ -120,7 +120,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
             sed -i "/^    spec:/r /tmp/initcontainers.clamav" "$variable"
         elif echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
             sed -i "/^    spec:/r /tmp/initcontainers.nextcloud" "$variable"
-        else
+        elif echo "$variable" | grep -q "fulltextsearch" || echo "$variable" | grep -q "onlyoffice" || echo "$variable" | grep -q "collabora"; then
             sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
         fi
         volumeNames="$(grep -A1 mountPath "$variable" | grep -v mountPath | sed 's|.*name: ||' | sed '/^--$/d')"
