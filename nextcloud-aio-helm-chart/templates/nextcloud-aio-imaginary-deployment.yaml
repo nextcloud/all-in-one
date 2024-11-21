@@ -55,5 +55,5 @@ spec:
               drop: ["NET_RAW"]
               {{- end }}
               add:
-                - SYS_NICE
+                - NET_BIND_SERVICE
 {{- end }}
