@@ -264,13 +264,14 @@ services:
       - TZ=${TIMEZONE}
       - RECORDING_SECRET
       - INTERNAL_SECRET=${TALK_INTERNAL_SECRET}
+    volumes:
+      - nextcloud_aio_talk_recording:/tmp:rw
     shm_size: 2147483648
     restart: unless-stopped
     profiles:
       - talk-recording
     read_only: true
     tmpfs:
-      - /tmp
       - /conf
     cap_drop:
       - NET_RAW
@@ -397,6 +398,8 @@ volumes:
     name: nextcloud_aio_onlyoffice
   nextcloud_aio_redis:
     name: nextcloud_aio_redis
+  nextcloud_aio_talk_recording:
+    name: nextcloud_aio_talk_recording
   nextcloud_aio_nextcloud_data:
     name: nextcloud_aio_nextcloud_data
 
