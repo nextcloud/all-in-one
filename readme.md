@@ -13,6 +13,7 @@ Included are:
 - Fulltextsearch (optional)
 - Whiteboard (optional)
 - Docker Socket Proxy (optional, needed for [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi))
+- Up to 100 free users, more with [Nextcloud Enterprise](https://nextcloud.com/all-in-one/)
 <details><summary>And much more:</summary>
 
 - Simple web interface included that enables easy installation and maintenance
