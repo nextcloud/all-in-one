@@ -102,18 +102,8 @@ cat << EOL > /tmp/initcontainers.clamav
           securityContext:
 EOL
 cat << EOL > /tmp/initcontainers.nextcloud
-      initContainers:
-        - name: "delete-lost-found"
-          image: "alpine:3.20"
-          command:
-            - rm
-            - "-rf"
-            - "/nextcloud-aio-nextcloud/lost+found"
-          volumeMountsInitRmLostFound:
-        {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
-          securityContext:
-        {{- end }} # AIO-config - do not change this comment!
 # AIO settings start # Do not remove or change this line!
+      initContainers:
         - name: init-volumes
           image: "alpine:3.20"
           command:
@@ -144,7 +134,6 @@ for variable in "${DEPLOYMENTS[@]}"; do
             if [ "$volumeName" != "nextcloud-aio-nextcloud-data" ]; then
                 sed -i "/^.*volumeMountsInitContainer:/i\ \ \ \ \ \ \ \ \ \ \ \ - /$volumeName" "$variable"
                 sed -i "/volumeMountsInitContainer:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
-                sed -i "/volumeMountsInitRmLostFound:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
                 # Workaround for the database volume
                 if [ "$volumeName" = nextcloud-aio-database ]; then
                     sed -i "/mountPath: \/var\/lib\/postgresql\/data/a\ \ \ \ \ \ \ \ \ \ \ \ \ \ subPath: data" "$variable"
@@ -155,7 +144,6 @@ for variable in "${DEPLOYMENTS[@]}"; do
             fi
         done
         sed -i "s|volumeMountsInitContainer:|volumeMounts:|" "$variable"
-        sed -i "s|volumeMountsInitRmLostFound:|volumeMounts:|" "$variable"
         if grep -q claimName "$variable"; then
             claimNames="$(grep claimName "$variable")"
             mapfile -t claimNames <<< "$claimNames"
