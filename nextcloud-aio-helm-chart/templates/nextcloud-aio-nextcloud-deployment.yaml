@@ -37,30 +37,6 @@ spec:
           type: RuntimeDefault
         {{- end }}
       {{- end }} # AIO-config - do not change this comment!
-      initContainers:
-        - name: "delete-lost-found"
-          image: "alpine:3.20"
-          command:
-            - rm
-            - "-rf"
-            - "/nextcloud-aio-nextcloud/lost+found"
-          volumeMounts:
-            - name: nextcloud-aio-nextcloud-trusted-cacerts
-              mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
-            - name: nextcloud-aio-nextcloud
-              mountPath: /nextcloud-aio-nextcloud
-        {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
-          securityContext:
-            # The items below only work in container context
-            allowPrivilegeEscalation: false
-            capabilities:
-              {{- if eq .Values.RPSS_ENABLED "yes" }}
-              drop: ["ALL"]
-              {{- else }}
-              drop: ["NET_RAW"]
-              {{- end }}
-              add: ["NET_BIND_SERVICE"]
-        {{- end }} # AIO-config - do not change this comment!
 # AIO settings start # Do not remove or change this line!
         - name: init-volumes
           image: "alpine:3.20"
@@ -201,7 +177,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: nextcloud/aio-nextcloud:20241106_10160
+          image: nextcloud/aio-nextcloud:20241106_101604
           {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context
