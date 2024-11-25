@@ -572,12 +572,18 @@ if [ "$BORG_MODE" = test ]; then
         fi
     fi
 
-    if ! borg list; then
+    if ! borg list >/dev/null; then
         echo "The entered path seems to be valid but could not open the backup archive."
         echo "Most likely the entered password was wrong so please adjust it accordingly!"
         exit 1
     else
-        echo "Everything looks fine so feel free to continue!"
-        exit 0
+        if ! borg list | grep "nextcloud-aio"; then
+            echo "The backup archive does not contain a valid Nextcloud AIO backup."
+            echo "Most likely was the archive not created via Nextcloud AIO."
+            exit 1
+        else
+            echo "Everything looks fine so feel free to continue!"
+            exit 0
+        fi
     fi
 fi
