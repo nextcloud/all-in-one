@@ -202,7 +202,6 @@ services:
 
   nextcloud-aio-collabora:
     image: nextcloud/aio-collabora:latest
-    user: "100"
     init: true
     expose:
       - "9980"
