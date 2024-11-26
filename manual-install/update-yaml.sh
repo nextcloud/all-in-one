@@ -18,6 +18,7 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].devices)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].backup_volumes)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].nextcloud_exec_commands)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].image_tag)')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].networks)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].documentation)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-watchtower"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-domaincheck"))')"
@@ -140,8 +141,8 @@ done
 cat << NETWORK >> containers.yml
 
 networks:
-  nextcloud-aio:
-    name: nextcloud-aio
+  default:
+    driver: bridge
 NETWORK
 
 mv containers.yml latest.yml
