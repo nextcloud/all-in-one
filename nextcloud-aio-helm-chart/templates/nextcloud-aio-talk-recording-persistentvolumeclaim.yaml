@@ -1,0 +1,18 @@
+{{- if eq .Values.TALK_RECORDING_ENABLED "yes" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    io.kompose.service: nextcloud-aio-talk-recording
+  name: nextcloud-aio-talk-recording
+  namespace: "{{ .Values.NAMESPACE }}"
+spec:
+  {{- if .Values.STORAGE_CLASS }}
+  storageClassName: {{ .Values.STORAGE_CLASS }}
+  {{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.TALK_RECORDING_STORAGE_SIZE }}
+{{- end }}

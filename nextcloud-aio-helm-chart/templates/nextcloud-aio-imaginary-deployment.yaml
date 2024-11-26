@@ -40,7 +40,7 @@ spec:
               value: "{{ .Values.IMAGINARY_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-imaginary:20241106_101604
+          image: nextcloud/aio-imaginary:20241125_091756
           name: nextcloud-aio-imaginary
           ports:
             - containerPort: 9000

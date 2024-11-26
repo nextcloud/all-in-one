@@ -64,7 +64,7 @@ spec:
               value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-clamav:20241106_101604
+          image: nextcloud/aio-clamav:20241125_091756
           name: nextcloud-aio-clamav
           ports:
             - containerPort: 3310
