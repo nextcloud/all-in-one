@@ -48,6 +48,7 @@ NEXTCLOUD_DATA_STORAGE_SIZE: 5Gi       # You can change the size of the nextclou
 NEXTCLOUD_TRUSTED_CACERTS_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud-trusted-cacerts volume that default to 1Gi with this value
 ONLYOFFICE_STORAGE_SIZE: 1Gi       # You can change the size of the onlyoffice volume that default to 1Gi with this value
 REDIS_STORAGE_SIZE: 1Gi       # You can change the size of the redis volume that default to 1Gi with this value
+TALK_RECORDING_STORAGE_SIZE: 1Gi       # You can change the size of the talk-recording volume that default to 1Gi with this value
 
 NAMESPACE: default        # By changing this, you can adjust the namespace of the installation which allows to install multiple instances on one kubernetes cluster
 NAMESPACE_DISABLED: "no"        # By setting this to "yes", you can disabled the creation of the namespace so that you can use a pre-created one

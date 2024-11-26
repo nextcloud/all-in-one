@@ -56,7 +56,7 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: nextcloud/aio-fulltextsearch:20241106_101604
+          image: nextcloud/aio-fulltextsearch:20241125_091756
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200

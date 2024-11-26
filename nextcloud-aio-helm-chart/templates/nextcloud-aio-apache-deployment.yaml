@@ -63,7 +63,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: nextcloud/aio-apache:20241106_101604
+          image: nextcloud/aio-apache:20241125_091756
           name: nextcloud-aio-apache
           ports:
             - containerPort: {{ .Values.APACHE_PORT }}
