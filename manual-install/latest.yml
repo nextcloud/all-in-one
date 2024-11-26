@@ -42,6 +42,8 @@ services:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
     restart: unless-stopped
+    networks:
+      - nextcloud-aio
     read_only: true
     tmpfs:
       - /var/log/supervisord
@@ -70,6 +72,8 @@ services:
     stop_grace_period: 1800s
     restart: unless-stopped
     shm_size: 268435456
+    networks:
+      - nextcloud-aio
     read_only: true
     tmpfs:
       - /var/run/postgresql
@@ -158,6 +162,8 @@ services:
       - WHITEBOARD_ENABLED
     stop_grace_period: 600s
     restart: unless-stopped
+    networks:
+      - nextcloud-aio
     cap_drop:
       - NET_RAW
 
@@ -180,6 +186,8 @@ services:
       - POSTGRES_DB=nextcloud_database
       - POSTGRES_USER=nextcloud
     restart: unless-stopped
+    networks:
+      - nextcloud-aio
     read_only: true
     cap_drop:
       - NET_RAW
@@ -196,6 +204,8 @@ services:
     volumes:
       - nextcloud_aio_redis:/data:rw
     restart: unless-stopped
+    networks:
+      - nextcloud-aio
     read_only: true
     cap_drop:
       - NET_RAW
@@ -215,6 +225,8 @@ services:
     restart: unless-stopped
     profiles:
       - collabora
+    networks:
+      - nextcloud-aio
     cap_add:
       - MKNOD
       - SYS_ADMIN
@@ -242,6 +254,8 @@ services:
     profiles:
       - talk
       - talk-recording
+    networks:
+      - nextcloud-aio
     read_only: true
     tmpfs:
       - /var/log/supervisord
@@ -269,6 +283,8 @@ services:
     restart: unless-stopped
     profiles:
       - talk-recording
+    networks:
+      - nextcloud-aio
     read_only: true
     tmpfs:
       - /conf
@@ -290,6 +306,8 @@ services:
     restart: unless-stopped
     profiles:
       - clamav
+    networks:
+      - nextcloud-aio
     read_only: true
     tmpfs:
       - /var/lock
@@ -313,6 +331,8 @@ services:
     restart: unless-stopped
     profiles:
       - onlyoffice
+    networks:
+      - nextcloud-aio
     cap_drop:
       - NET_RAW
 
@@ -332,6 +352,8 @@ services:
       - NET_RAW
     profiles:
       - imaginary
+    networks:
+      - nextcloud-aio
     read_only: true
     tmpfs:
       - /tmp
@@ -357,6 +379,8 @@ services:
     restart: unless-stopped
     profiles:
       - fulltextsearch
+    networks:
+      - nextcloud-aio
     cap_drop:
       - NET_RAW
 
@@ -377,6 +401,8 @@ services:
     profiles:
       - whiteboard
     read_only: true
+    networks:
+      - nextcloud-aio
     cap_drop:
       - NET_RAW
 
@@ -403,5 +429,5 @@ volumes:
     name: nextcloud_aio_nextcloud_data
 
 networks:
-  default:
-    driver: bridge
+  nextcloud-aio:
+    name: nextcloud-aio
