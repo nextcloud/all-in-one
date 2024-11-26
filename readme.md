@@ -13,7 +13,6 @@ Included are:
 - Fulltextsearch (optional)
 - Whiteboard (optional)
 - Docker Socket Proxy (optional, needed for [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi))
-- Up to 100 free users, more with [Nextcloud Enterprise](https://nextcloud.com/all-in-one/)
 <details><summary>And much more:</summary>
 
 - Simple web interface included that enables easy installation and maintenance
@@ -144,6 +143,9 @@ Nextcloud AIO is inspired by projects like Portainer that manage the docker daem
 
 ### How to contribute?
 See [this issue](https://github.com/nextcloud/all-in-one/issues/5251) for a list of feature requests that need help by contributors.
+
+### How many users are possible?
+Up to 100 users are free, more are possible with [Nextcloud Enterprise](https://nextcloud.com/all-in-one/)
 
 ### Are reverse proxies supported?
 Yes. Please refer to the following documentation on this: [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
