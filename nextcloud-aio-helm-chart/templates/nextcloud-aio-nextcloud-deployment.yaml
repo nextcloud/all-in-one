@@ -23,7 +23,7 @@ spec:
       labels:
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
-      {{- if eq .Values.RPSS_ENABLED "yes" | default "no" }} # AIO-config - do not change this comment!
+      {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
       securityContext:
         # The items below only work in pod context
         fsGroup: 33
@@ -32,7 +32,7 @@ spec:
         runAsUser: 33
         runAsGroup: 33
         runAsNonRoot: true
-        {{- if eq .Values.RPSS_ENABLED "yes" | default "no" }}
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
         seccompProfile:
           type: RuntimeDefault
         {{- end }}
@@ -179,12 +179,12 @@ spec:
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
           image: nextcloud/aio-nextcloud:20241125_091756
-          {{- if eq .Values.RPSS_ENABLED "yes" | default "no" }} # AIO-config - do not change this comment!
+          {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context
             allowPrivilegeEscalation: false
             capabilities:
-              {{- if eq .Values.RPSS_ENABLED "yes" | default "no" }}
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
               drop: ["ALL"]
               {{- else }}
               drop: ["NET_RAW"]

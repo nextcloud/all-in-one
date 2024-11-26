@@ -31,7 +31,7 @@ spec:
         runAsUser: 33
         runAsGroup: 33
         runAsNonRoot: true
-        {{- if eq .Values.RPSS_ENABLED "yes" | default "no" }}
+        {{- if eq .Values.RPSS_ENABLED "yes" }}
         seccompProfile:
           type: RuntimeDefault
         {{- end }}
@@ -64,7 +64,7 @@ spec:
             # The items below only work in container context
             allowPrivilegeEscalation: false
             capabilities:
-              {{- if eq .Values.RPSS_ENABLED "yes" | default "no" }}
+              {{- if eq .Values.RPSS_ENABLED "yes" }}
               drop: ["ALL"]
               {{- else }}
               drop: ["NET_RAW"]
