@@ -158,7 +158,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
         if echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
             USER=33
             GROUP=33
-            echo '      {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!' > /tmp/pod.securityContext
+            echo '      {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!' > /tmp/pod.securityContext
         else
             USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
             GROUP="$USER"
@@ -176,7 +176,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
         runAsUser: $USER
         runAsGroup: $GROUP
         runAsNonRoot: true
-        {{- if eq .Values.RPSS_ENABLED "yes" }}
+        {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
         seccompProfile:
           type: RuntimeDefault
         {{- end }}
@@ -446,7 +446,7 @@ cat << EOL > /tmp/security.conf
             # The items below only work in container context
             allowPrivilegeEscalation: false
             capabilities:
-              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
               drop: ["ALL"]
               {{- else }}
               drop: ["NET_RAW"]
@@ -460,7 +460,7 @@ cat << EOL > /tmp/security.conf
             # The items below only work in container context
             allowPrivilegeEscalation: false
             capabilities:
-              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
               drop: ["ALL"]
               {{- else }}
               drop: ["NET_RAW"]
@@ -470,12 +470,12 @@ EOL
 find ./ -name '*imaginary-deployment.yaml*' -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
 
 cat << EOL > /tmp/security.conf
-          {{- if eq .Values.RPSS_ENABLED "yes" }} # AIO-config - do not change this comment!
+          {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context
             allowPrivilegeEscalation: false
             capabilities:
-              {{- if eq .Values.RPSS_ENABLED "yes" }}
+              {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
               drop: ["ALL"]
               {{- else }}
               drop: ["NET_RAW"]
