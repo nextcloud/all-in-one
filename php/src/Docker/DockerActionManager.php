@@ -612,8 +612,11 @@ readonly class DockerActionManager {
         try {
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
+            $message = "Could not pull image " . $imageName . ". Please run 'sudo docker exec -it nextcloud-aio-mastercontainer docker pull " . $imageName . "' in order to find out why it failed.";
             if ($imageIsThere === false) {
-                throw new \Exception("Could not pull image " . $imageName . ". Please run 'sudo docker exec -it nextcloud-aio-mastercontainer docker pull " . $imageName . "' in order to find out why it failed.");
+                throw new \Exception($message);
+            } else {
+                error_log($message);
             }
         }
     }
