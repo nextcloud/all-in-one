@@ -178,6 +178,7 @@
         }
       ],
       "environment": [
+        "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "POSTGRES_HOST=nextcloud-aio-database",
         "POSTGRES_PORT=5432",
         "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
