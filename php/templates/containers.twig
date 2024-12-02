@@ -196,7 +196,7 @@
                                 </p>
                                 <form method="POST" action="/api/configuration" class="xhr">
                                     <label>Local backup location</label> <input type="text" name="borg_restore_host_location" value="{{borg_backup_host_location}}" placeholder="/mnt/backup"/><br>
-                                    <label>Remote borg repo</label> <input type="text" name="borg_restore_remote_repo" value="{{borg_remote_repo}}" placeholder="user@host:/path/to/repo"/><br>
+                                    <label>Remote borg repo</label> <input type="text" name="borg_restore_remote_repo" value="{{borg_remote_repo}}" placeholder="ssh://user@host:/path/to/repo"/><br>
                                     <label>Borg passphrase</label> <input type="text" name="borg_restore_password" value="{{borg_restore_password}}" placeholder="encryption password"/><br>
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -394,7 +394,7 @@
                                 </p>
                                 <form method="POST" action="/api/configuration" class="xhr">
                                     <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
-                                    <label>Remote borg repo</label> <input type="text" name="borg_remote_repo" placeholder="user@host:/path/to/repo"/><br>
+                                    <label>Remote borg repo</label> <input type="text" name="borg_remote_repo" placeholder="ssh://user@host:/path/to/repo"/><br>
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <input type="submit" value="Submit backup location" />
@@ -435,7 +435,7 @@
                                             <p>You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on <strong>Create Backup</strong> to test the new value.</p>
                                             <form method="POST" action="/api/configuration" class="xhr">
                                                 <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
-                                                <label>Remote borg repo</label> <input type="text" name="borg_remote_repo" placeholder="user@host:/path/to/repo"/><br>
+                                                <label>Remote borg repo</label> <input type="text" name="borg_remote_repo" placeholder="ssh://user@host:/path/to/repo"/><br>
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <input type="submit" value="Set backup location again" />
