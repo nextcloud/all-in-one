@@ -15,6 +15,14 @@
       "image": "nextcloud/aio-apache",
       "user": "33",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "ports": [
         {
           "ip_binding": "%APACHE_IP_BINDING%",
