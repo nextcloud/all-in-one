@@ -2,6 +2,7 @@
 FROM python:3.13.0-alpine3.20
 
 COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 ENV RECORDING_VERSION=v0.1
 ENV ALLOW_ALL=false
@@ -54,5 +55,5 @@ USER 122
 ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.conf"]
 
-HEALTHCHECK CMD nc -z 127.0.0.1 1234 || exit 1
+HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"

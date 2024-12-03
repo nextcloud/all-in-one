@@ -94,6 +94,36 @@
 							}
 						}
 					},
+					"healthcheck": {
+						"type": "object",
+						"additionalProperties": false,
+						"minProperties": 6,
+						"properties": {
+							"interval": {
+								"type": "string",
+								"pattern": "^[0-9]+s$"
+							},
+							"timeout": {
+								"type": "string",
+								"pattern": "^[0-9]+s$"
+							},
+							"retries": {
+								"type": "integer"
+							},
+							"start_period": {
+								"type": "string",
+								"pattern": "^[0-9]+s$"
+							},
+							"start_interval": {
+								"type": "string",
+								"pattern": "^[0-9]+s$"
+							},
+							"test": {
+								"type": "string",
+								"pattern": "^.*$"
+							}
+						}
+					},
 					"aio_variables": {
 						"type": "array",
 						"items": {

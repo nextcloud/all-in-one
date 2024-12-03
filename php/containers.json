@@ -15,6 +15,14 @@
       "image": "nextcloud/aio-apache",
       "user": "33",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "ports": [
         {
           "ip_binding": "%APACHE_IP_BINDING%",
@@ -81,6 +89,14 @@
       "image": "nextcloud/aio-postgresql",
       "user": "999",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "5432"
       ],
@@ -140,6 +156,14 @@
       "display_name": "Nextcloud",
       "image": "nextcloud/aio-nextcloud",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "9000",
         "9001"
@@ -255,6 +279,14 @@
       "image": "nextcloud/aio-notify-push",
       "user": "33",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "7867"
       ],
@@ -297,6 +329,14 @@
       "image": "nextcloud/aio-redis",
       "user": "999",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "6379"
       ],
@@ -333,6 +373,14 @@
       "display_name": "Collabora",
       "image": "nextcloud/aio-collabora",
       "init": true,
+      "healthcheck": {
+        "start_period": "360s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "9980"
       ],
@@ -372,6 +420,14 @@
       "image": "nextcloud/aio-talk",
       "user": "1000",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "ports": [
         {
           "ip_binding": "",
@@ -429,6 +485,14 @@
       "image": "nextcloud/aio-talk-recording",
       "user": "122",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "1234"
       ],
@@ -591,6 +655,14 @@
       "image": "nextcloud/aio-clamav",
       "user": "100",
       "init": false,
+      "healthcheck": {
+        "start_period": "360s",
+        "test": "clamdcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "3310"
       ],
@@ -630,6 +702,14 @@
       "display_name": "OnlyOffice",
       "image": "nextcloud/aio-onlyoffice",
       "init": true,
+      "healthcheck": {
+        "start_period": "360s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "80"
       ],
@@ -672,6 +752,14 @@
       "image": "nextcloud/aio-imaginary",
       "user": "65534",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "9000"
       ],
@@ -708,6 +796,14 @@
       "display_name": "Fulltextsearch",
       "image": "nextcloud/aio-fulltextsearch",
       "init": false,
+      "healthcheck": {
+        "start_period": "60s",
+        "test": "/healthcheck.sh",
+        "interval": "10s",
+        "timeout": "5s",
+        "start_interval": "5s",
+        "retries": 5
+      },
       "expose": [
         "9200"
       ],
@@ -778,6 +874,14 @@
       "image": "nextcloud/aio-whiteboard",
       "user": "65534",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "3002"
       ],

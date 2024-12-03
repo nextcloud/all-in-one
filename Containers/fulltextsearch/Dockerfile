@@ -16,7 +16,9 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*;
 
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
+
 USER 1000:0
 
-HEALTHCHECK CMD nc -z 127.0.0.1 9200 || exit 1
+HEALTHCHECK --interval=10s --timeout=5s --start-period=1m --retries=5 CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"

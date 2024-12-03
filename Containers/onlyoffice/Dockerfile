@@ -4,5 +4,7 @@ FROM onlyoffice/documentserver:8.2.2.1
 
 # USER root is probably used
 
-HEALTHCHECK CMD nc -z 127.0.0.1 80 || exit 1
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
+
+HEALTHCHECK --start-period=360s CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"
