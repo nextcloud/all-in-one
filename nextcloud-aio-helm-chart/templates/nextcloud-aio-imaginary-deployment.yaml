@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
     kompose.version: 1.34.0 (cbf2835db)
   labels:
     io.kompose.service: nextcloud-aio-imaginary
@@ -17,7 +16,6 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
         kompose.version: 1.34.0 (cbf2835db)
       labels:
         io.kompose.service: nextcloud-aio-imaginary
@@ -41,6 +39,20 @@ spec:
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
           image: nextcloud/aio-imaginary:20241125_091756
+          readinessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 30
           name: nextcloud-aio-imaginary
           ports:
             - containerPort: 9000
