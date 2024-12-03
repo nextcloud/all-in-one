@@ -25,6 +25,8 @@ set -ex
 cd manual-install
 cp latest.yml latest.yml.backup
 
+# Additional config
+# shellcheck disable=SC1083
 sed -i -E '/^( *- )(NET_RAW|SYS_NICE|MKNOD|SYS_ADMIN)$/!s/( *- )([A-Z_]+)$/\1\2=${\2}/' latest.yml
 cp sample.conf /tmp/
 sed -i 's|^|export |' /tmp/sample.conf
@@ -117,6 +119,12 @@ EOL
 DEPLOYMENTS="$(find ./ -name '*deployment.yaml')"
 mapfile -t DEPLOYMENTS <<< "$DEPLOYMENTS"
 for variable in "${DEPLOYMENTS[@]}"; do
+    if grep -q livenessProbe "$variable"; then
+        sed -n "/.*livenessProbe/,/timeoutSeconds.*/p" "$variable" > /tmp/liveness.probe
+        cat /tmp/liveness.probe
+        sed -i "s|livenessProbe|readinessProbe|" /tmp/liveness.probe
+        sed -i "/^          image:/r /tmp/liveness.probe" "$variable"
+    fi
     if grep -q volumeMounts "$variable"; then
         if echo "$variable" | grep -q database; then
             sed -i "/^    spec:/r /tmp/initcontainers.database" "$variable"
@@ -196,6 +204,8 @@ find ./ -name '*service.yaml' -exec sed -i "/^status:/,$ d" \{} \;
 find ./ -name '*deployment.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "/medium: Memory/d" \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*.yaml' -exec sed -i "/kompose.cmd/d" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "s|emptyDir:|emptyDir: \{\}|" \{} \; 
 # shellcheck disable=SC1083
