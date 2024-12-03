@@ -670,6 +670,14 @@
       "display_name": "OnlyOffice",
       "image": "nextcloud/aio-onlyoffice",
       "init": true,
+      "healthcheck": {
+        "start_period": "360s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "80"
       ],
