@@ -732,6 +732,14 @@
       "display_name": "Fulltextsearch",
       "image": "nextcloud/aio-fulltextsearch",
       "init": false,
+      "healthcheck": {
+        "start_period": "60s",
+        "test": "/healthcheck.sh",
+        "interval": "10s",
+        "timeout": "5s",
+        "start_interval": "5s",
+        "retries": 5
+      },
       "expose": [
         "9200"
       ],
