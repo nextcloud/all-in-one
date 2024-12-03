@@ -14,8 +14,10 @@ RUN set -ex; \
 # Get rid of unused binaries
     rm -f /usr/local/bin/gosu;
 
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
+
 USER 999
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD redis-cli -a $REDIS_HOST_PASSWORD PING || exit 1
+HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"
