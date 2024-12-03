@@ -148,6 +148,14 @@
       "display_name": "Nextcloud",
       "image": "nextcloud/aio-nextcloud",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "9000",
         "9001"

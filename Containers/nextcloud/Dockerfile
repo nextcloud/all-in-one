@@ -279,5 +279,5 @@ USER root
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK --start-period=60s CMD sudo -E -u www-data bash /healthcheck.sh
+HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"
