@@ -599,6 +599,14 @@
       "image": "nextcloud/aio-clamav",
       "user": "100",
       "init": false,
+      "healthcheck": {
+        "start_period": "360s",
+        "test": "clamdcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "expose": [
         "3310"
       ],
