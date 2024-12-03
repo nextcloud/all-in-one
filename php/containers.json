@@ -420,6 +420,14 @@
       "image": "nextcloud/aio-talk",
       "user": "1000",
       "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "ports": [
         {
           "ip_binding": "",
