@@ -10,7 +10,8 @@ RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        tzdata \
+#        # Disable because seems to be failing currently
+#        # tzdata \
         netcat-openbsd \
     ; \
     rm -rf /var/lib/apt/lists/*;
