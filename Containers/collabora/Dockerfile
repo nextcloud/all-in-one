@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # From a file located probably somewhere here: https://github.com/CollaboraOnline/online/tree/master/docker
-FROM collabora/code:24.04.10.1.1
+FROM collabora/code:24.04.10.2.1
 
 USER root
 ARG DEBIAN_FRONTEND=noninteractive
