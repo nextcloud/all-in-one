@@ -608,7 +608,7 @@ rm "$TARGET_DIRECTORY/aio-lockfile"
 umount "$DRIVE_MOUNTPOINT"
 
 if docker ps --format "{{.Names}}" | grep "^nextcloud-aio-nextcloud$"; then
-    docker exec -it nextcloud-aio-nextcloud bash /notify.sh "Rsync backup successful!" "Synced the backup repository successfully."
+    docker exec nextcloud-aio-nextcloud bash /notify.sh "Rsync backup successful!" "Synced the backup repository successfully."
 else
     echo "Synced the backup repository successfully."
 fi
