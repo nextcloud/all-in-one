@@ -1,7 +1,24 @@
 #!/bin/bash
 
-# Wait 15s for domain to be reachable
+# ENV Variables
+MAX_RETRY=3
+COUNT=3
+
+# Wait until the domain is reachable
 sleep 15
+while [ $COUNT -le $MAX_RETRY ]; do
+    if nc -z $NC_DOMAIN 443; then
+        echo "Domain reached."
+        break
+    else
+        echo "Attempt $COUNT: Domain not reachable. Retrying in 15 seconds..."
+        sleep 15
+        ((COUNT++))
+    fi
+done
+if [ $COUNT -gt $MAX_RETRY ]; then
+    echo "The domain could not be reached after $MAX_RETRY attempts. Proceeding anyway..."
+fi
 
 if [ -n "$NEXTCLOUD_EXEC_COMMANDS" ]; then
     echo "#!/bin/bash" > /tmp/nextcloud-exec-commands
