@@ -2,7 +2,7 @@
 
 # ENV Variables
 MAX_RETRY=3
-COUNT=3
+COUNT=1
 
 # Wait until the domain is reachable
 sleep 15
