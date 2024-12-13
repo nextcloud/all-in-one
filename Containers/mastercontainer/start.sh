@@ -194,7 +194,7 @@ It is set to '$APACHE_IP_BINDING'."
     fi
 fi
 if [ -n "$APACHE_ADDITIONAL_NETWORK" ]; then
-    if ! echo "$APACHE_ADDITIONAL_NETWORK" | grep -q "^[a-zA-Z0-9_-]\+$"; then
+    if ! echo "$APACHE_ADDITIONAL_NETWORK" | grep -q "^[a-zA-Z0-9._-]\+$"; then
         print_red "You've set APACHE_ADDITIONAL_NETWORK but not to an allowed value.
 It needs to be a string with letters, numbers, hyphens and underscores.
 It is set to '$APACHE_ADDITIONAL_NETWORK'."
