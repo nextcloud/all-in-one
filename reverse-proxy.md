@@ -317,7 +317,7 @@ backend Nextcloud
 
 </details>
 
-### Nginx, Freenginx, Openresty
+### Nginx, Freenginx, Openresty, Angie
 
 <details>
 
@@ -344,24 +344,27 @@ server {
     if ($scheme = "http") {
         return 301 https://$host$request_uri;
     }
+    if ($http_x_forwarded_proto = "http") {
+        return 301 https://$host$request_uri;
+    }
 
     listen 443 ssl http2;      # for nginx versions below v1.25.1
     listen [::]:443 ssl http2; # for nginx versions below v1.25.1 - comment to disable IPv6
 
     # listen 443 ssl;      # for nginx v1.25.1+
     # listen [::]:443 ssl; # for nginx v1.25.1+ - keep comment to disable IPv6
-	
-    # http2 on;                                 # uncomment to enable HTTP/2        - supported on nginx v1.25.1+
+    # http2 on;            # uncomment to enable HTTP/2 - supported on nginx v1.25.1+
+
+    # listen 443 quic reuseport;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport
+    # listen [::]:443 quic reuseport;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport - keep comment to disable IPv6
     # http3 on;                                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
     # quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
     # add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # listen 443 quic reuseport;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport
-    # listen [::]:443 quic reuseport;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport - keep comment to disable IPv6
 
     server_name <your-nc-domain>;
 
     location / {
-        proxy_pass http://127.0.0.1:11000$request_uri;
+        proxy_pass http://127.0.0.1:11000$request_uri; # adjust to match APACHE_PORT and APACHE_IP_BINDING
 
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Port $server_port;
@@ -369,6 +372,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
+        proxy_set_header Early-Data $ssl_early_data;
     
         proxy_request_buffering off;
         proxy_read_timeout 86400s;
@@ -386,23 +390,18 @@ server {
     ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
     ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
 
+    ssl_dhparam /etc/dhparam; # curl -L https://ssl-config.mozilla.org/ffdhe2048.txt -o /etc/dhparam
+
+    ssl_early_data on;
     ssl_session_timeout 1d;
-    ssl_session_cache shared:MozSSL:10m; # about 40000 sessions
-    ssl_session_tickets off;
+    ssl_session_cache shared:SSL:10m;
 
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305;
+    ssl_ecdh_curve x25519:x448:secp521r1:secp384r1:secp256r1;
+
     ssl_prefer_server_ciphers on;
-
-    # Optional settings:
-
-    # OCSP stapling
-    # ssl_stapling on;
-    # ssl_stapling_verify on;
-    # ssl_trusted_certificate /etc/letsencrypt/live/<your-nc-domain>/chain.pem;
-
-    # replace with the IP address of your resolver
-    # resolver 127.0.0.1; # needed for oscp stapling: e.g. use 94.140.15.15 for adguard / 1.1.1.1 for cloudflared or 8.8.8.8 for google - you can use the same nameserver as listed in your /etc/resolv.conf file
+    ssl_conf_command Options PrioritizeChaCha;
+    ssl_ciphers TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256;
 }
 
 ```
