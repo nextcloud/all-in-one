@@ -47,16 +47,16 @@ spec:
             exec:
               command:
                 - /healthcheck.sh
-            failureThreshold: 3
-            initialDelaySeconds: 360
+            failureThreshold: 9
+            initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 30
           livenessProbe:
             exec:
               command:
                 - /healthcheck.sh
-            failureThreshold: 3
-            initialDelaySeconds: 360
+            failureThreshold: 9
+            initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 30
           name: nextcloud-aio-onlyoffice
