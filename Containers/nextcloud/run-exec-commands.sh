@@ -6,8 +6,8 @@ COUNT=1
 
 # Wait until the domain is reachable
 sleep 15
-while [ $COUNT -le $MAX_RETRY ]; do
-    if nc -z $NC_DOMAIN 443; then
+while [ "$COUNT" -le "$MAX_RETRY" ]; do
+    if nc -z "$NC_DOMAIN" 443; then
         echo "Domain reached."
         break
     else
@@ -16,7 +16,7 @@ while [ $COUNT -le $MAX_RETRY ]; do
         ((COUNT++))
     fi
 done
-if [ $COUNT -gt $MAX_RETRY ]; then
+if [ "$COUNT" -gt "$MAX_RETRY" ]; then
     echo "The domain could not be reached after $MAX_RETRY attempts. Proceeding anyway..."
 fi
 
