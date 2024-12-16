@@ -362,6 +362,14 @@ server {
     # quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
     # add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
 
+    proxy_buffering off;
+    proxy_request_buffering off;
+
+    client_max_body_size 0;
+    client_body_buffer_size 1m;
+    http3_stream_buffer_size 1m;
+    proxy_read_timeout 86400s;
+
     server_name <your-nc-domain>;
 
     location / {
@@ -374,11 +382,6 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
         proxy_set_header Early-Data $ssl_early_data;
-
-        proxy_buffering off;
-        proxy_request_buffering off;
-        proxy_read_timeout 86400s;
-        client_max_body_size 0;
 
         # Websocket
         proxy_http_version 1.1;
@@ -434,7 +437,7 @@ Second, see these screenshots for a working config:
 ![grafik](https://user-images.githubusercontent.com/75573284/213889746-87dbe8c5-4d1f-492f-b251-bbf82f1510d0.png)
 
 ```
-client_body_buffer_size 512k;
+client_body_buffer_size 1m;
 proxy_read_timeout 86400s;
 client_max_body_size 0;
 ```
