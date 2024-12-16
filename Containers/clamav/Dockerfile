@@ -23,4 +23,6 @@ USER 100
 
 LABEL com.centurylinklabs.watchtower.enable="false"
 
+HEALTHCHECK --start-period=60s --retries=9 CMD clamdcheck.sh
+
 ENTRYPOINT ["/init-unprivileged"]

@@ -240,12 +240,12 @@ services:
     image: nextcloud/aio-collabora:latest
     init: true
     healthcheck:
-      start_period: 360s
+      start_period: 60s
       test: /healthcheck.sh
       interval: 30s
       timeout: 30s
       start_interval: 5s
-      retries: 3
+      retries: 9
     expose:
       - "9980"
     environment:
@@ -337,12 +337,12 @@ services:
     user: "100"
     init: false
     healthcheck:
-      start_period: 360s
+      start_period: 60s
       test: clamdcheck.sh
       interval: 30s
       timeout: 30s
       start_interval: 5s
-      retries: 3
+      retries: 9
     expose:
       - "3310"
     environment:
@@ -366,12 +366,12 @@ services:
     image: nextcloud/aio-onlyoffice:latest
     init: true
     healthcheck:
-      start_period: 360s
+      start_period: 60s
       test: /healthcheck.sh
       interval: 30s
       timeout: 30s
       start_interval: 5s
-      retries: 3
+      retries: 9
     expose:
       - "80"
     environment:

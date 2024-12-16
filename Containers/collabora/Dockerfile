@@ -20,5 +20,5 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 USER 100
 
-HEALTHCHECK --start-period=360s CMD /healthcheck.sh
+HEALTHCHECK --start-period=60s --retries=9 CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"
