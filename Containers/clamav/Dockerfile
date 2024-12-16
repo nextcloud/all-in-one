@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.3/alpine/Dockerfile
-FROM clamav/clamav:1.4.1-16
+FROM clamav/clamav:1.4.1-17
 
 COPY clamav.conf /clamav.conf
 COPY --chmod=775 start.script /start.script
@@ -22,5 +22,7 @@ VOLUME /var/lib/clamav
 USER 100
 
 LABEL com.centurylinklabs.watchtower.enable="false"
+
+HEALTHCHECK --start-period=60s --retries=9 CMD clamdcheck.sh
 
 ENTRYPOINT ["/init-unprivileged"]

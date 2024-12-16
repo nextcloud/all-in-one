@@ -3,8 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-    kompose.version: 1.34.0 (cbf2835db)
+    kompose.version: 1.35.0 (9532ceef3)
   labels:
     io.kompose.service: nextcloud-aio-collabora
   name: nextcloud-aio-collabora
@@ -17,8 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-        kompose.version: 1.34.0 (cbf2835db)
+        kompose.version: 1.35.0 (9532ceef3)
       labels:
         io.kompose.service: nextcloud-aio-collabora
     spec:
@@ -33,10 +31,26 @@ spec:
             - name: dictionaries
               value: "{{ .Values.COLLABORA_DICTIONARIES }}"
             - name: extra_params
-              value: --o:ssl.enable=false --o:ssl.termination=true --o:mount_jail_tree=false --o:logging.level=warning --o:home_mode.enable=true {{ .Values.COLLABORA_SECCOMP_POLICY }} --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json
+              value: --o:ssl.enable=false --o:ssl.termination=true --o:mount_jail_tree=false --o:logging.level=warning --o:home_mode.enable=true {{ .Values.COLLABORA_SECCOMP_POLICY }} --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json --o:net.post_allow_host[0]=0.0.0.0/0 --o:net.post_allow_host[1]=::/0
             - name: server_name
               value: "{{ .Values.NC_DOMAIN }}"
-          image: nextcloud/aio-collabora:20241125_091756
+          image: nextcloud/aio-collabora:20241216_102930
+          readinessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 9
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 9
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 30
           name: nextcloud-aio-collabora
           ports:
             - containerPort: 9980

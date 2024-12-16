@@ -22,6 +22,13 @@ services:
     image: nextcloud/aio-apache:latest
     user: "33"
     init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
     ports:
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
       - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/udp
@@ -56,6 +63,13 @@ services:
     image: nextcloud/aio-postgresql:latest
     user: "999"
     init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
     expose:
       - "5432"
     volumes:
@@ -98,6 +112,13 @@ services:
         required: false
     image: nextcloud/aio-nextcloud:latest
     init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
     expose:
       - "9000"
       - "9001"
@@ -107,6 +128,7 @@ services:
       - ${NEXTCLOUD_MOUNT}:${NEXTCLOUD_MOUNT}:rw
       - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     environment:
+      - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
       - POSTGRES_HOST=nextcloud-aio-database
       - POSTGRES_PORT=5432
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
@@ -165,6 +187,13 @@ services:
     image: nextcloud/aio-notify-push:latest
     user: "33"
     init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
     expose:
       - "7867"
     volumes:
@@ -188,6 +217,13 @@ services:
     image: nextcloud/aio-redis:latest
     user: "999"
     init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
     expose:
       - "6379"
     environment:
@@ -203,11 +239,18 @@ services:
   nextcloud-aio-collabora:
     image: nextcloud/aio-collabora:latest
     init: true
+    healthcheck:
+      start_period: 60s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 9
     expose:
       - "9980"
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443
-      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:mount_jail_tree=false --o:logging.level=warning --o:home_mode.enable=true ${COLLABORA_SECCOMP_POLICY} --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:mount_jail_tree=false --o:logging.level=warning --o:home_mode.enable=true ${COLLABORA_SECCOMP_POLICY} --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json --o:net.post_allow_host[0]=0.0.0.0/0 --o:net.post_allow_host[1]=::/0
       - dictionaries=${COLLABORA_DICTIONARIES}
       - TZ=${TIMEZONE}
       - server_name=${NC_DOMAIN}
@@ -225,6 +268,13 @@ services:
     image: nextcloud/aio-talk:latest
     user: "1000"
     init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
     ports:
       - ${TALK_PORT}:${TALK_PORT}/tcp
       - ${TALK_PORT}:${TALK_PORT}/udp
@@ -256,6 +306,13 @@ services:
     image: nextcloud/aio-talk-recording:latest
     user: "122"
     init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
     expose:
       - "1234"
     environment:
@@ -279,6 +336,13 @@ services:
     image: nextcloud/aio-clamav:latest
     user: "100"
     init: false
+    healthcheck:
+      start_period: 60s
+      test: clamdcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 9
     expose:
       - "3310"
     environment:
@@ -301,6 +365,13 @@ services:
   nextcloud-aio-onlyoffice:
     image: nextcloud/aio-onlyoffice:latest
     init: true
+    healthcheck:
+      start_period: 60s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 9
     expose:
       - "80"
     environment:
@@ -320,6 +391,13 @@ services:
     image: nextcloud/aio-imaginary:latest
     user: "65534"
     init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
     expose:
       - "9000"
     environment:
@@ -339,6 +417,13 @@ services:
   nextcloud-aio-fulltextsearch:
     image: nextcloud/aio-fulltextsearch:latest
     init: false
+    healthcheck:
+      start_period: 60s
+      test: /healthcheck.sh
+      interval: 10s
+      timeout: 5s
+      start_interval: 5s
+      retries: 5
     expose:
       - "9200"
     environment:
@@ -364,6 +449,13 @@ services:
     image: nextcloud/aio-whiteboard:latest
     user: "65534"
     init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
     expose:
       - "3002"
     environment:

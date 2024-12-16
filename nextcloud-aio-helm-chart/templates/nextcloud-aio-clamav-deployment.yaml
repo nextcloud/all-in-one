@@ -3,8 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-    kompose.version: 1.34.0 (cbf2835db)
+    kompose.version: 1.35.0 (9532ceef3)
   labels:
     io.kompose.service: nextcloud-aio-clamav
   name: nextcloud-aio-clamav
@@ -19,8 +18,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-        kompose.version: 1.34.0 (cbf2835db)
+        kompose.version: 1.35.0 (9532ceef3)
       labels:
         io.kompose.service: nextcloud-aio-clamav
     spec:
@@ -64,7 +62,23 @@ spec:
               value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-clamav:20241125_091756
+          image: nextcloud/aio-clamav:20241216_102930
+          readinessProbe:
+            exec:
+              command:
+                - clamdcheck.sh
+            failureThreshold: 9
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            exec:
+              command:
+                - clamdcheck.sh
+            failureThreshold: 9
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 30
           name: nextcloud-aio-clamav
           ports:
             - containerPort: 3310
