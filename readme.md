@@ -434,6 +434,30 @@ Backed up will get all important data of your Nextcloud AIO instance like the da
 #### How to adjust borgs retention policy?
 The built-in borg-based backup solution has by default a retention policy of `--keep-within=7d --keep-weekly=4 --keep-monthly=6`. See https://borgbackup.readthedocs.io/en/stable/usage/prune.html for what these values mean. You can adjust the retention policy by providing `--env BORG_RETENTION_POLICY="--keep-within=7d --keep-weekly=4 --keep-monthly=6"` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. ⚠️ Please make sure that this value is valid, otherwise backup pruning will bug out!
 
+#### How to migrate from AIO to AIO?
+If you have the borg backup feature enabled, you can copy it over to the new host and restore from the backup. This guide assumes the new installation data dir will be on `/mnt/datadir`, you can adjust the steps if it's elsewhere.
+
+1. Set the DNS entry to 60 seconds TTL if applicable
+1. On your current installation, use the AIO interface to:
+    1. Update AIO and all containers
+    1. Stop all containers (from now on, your cloud is down)
+    1. Create a current borg backup
+    1. Note the path where the backups are stored and the encryption password
+1. Navigate to the backup folder
+1. Create archive of the backup so it's easier to copy: `tar -czvf borg.tar.gz borg`
+1. Copy the archive over to the new host: `cp borg.tar.gz user@new.host:/mnt`. Make sure to replace `user` with your actual user and `new.host` with the IP or domain of the actual host. You can also use another way to copy the archive.
+1. Switch to the new host
+1. Go to the folder you put the backup archive and extract it with `tar -xf borg.tar.gz`
+1. Follow the installation guide to create a new aio instance, but do not start the containers yet (the `docker run` or `docker compose up -d` command)
+1. Change the DNS entry to the new host's IP
+1. Configure your reverse proxy if you use one
+1. Start the AIO container and open the new AIO interface in your browser
+1. Make sure to save the newly generated passphrase and enter it in the next step
+1. Select the "Restore former AIO instance from backup" option and enter the encryption password from the old backup and the path in which the extracted `borg` folder lies in (without the borg part) and hit `Submit location and password`
+1. Choose the latest backup in the dropdown and hit `Restore selected backup`
+1. Wait until the backup is restored
+1. Start the containers in the AIO interface
+
 #### Are remote borg backups supported?
 Backing up directly to a remote borg repository is supported. This avoids having to store a local copy of your backups, supports append-only borg keys to counter ransomware and allows using the AIO interface to manage your backups.
 
