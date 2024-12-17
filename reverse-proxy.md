@@ -367,8 +367,8 @@ server {
     proxy_request_buffering off;
 
     client_max_body_size 0;
-    client_body_buffer_size 1m;
-    http3_stream_buffer_size 1m;
+    client_body_buffer_size 512k;
+    http3_stream_buffer_size 512k;
     proxy_read_timeout 86400s;
 
     server_name <your-nc-domain>;
@@ -438,7 +438,7 @@ Second, see these screenshots for a working config:
 ![grafik](https://user-images.githubusercontent.com/75573284/213889746-87dbe8c5-4d1f-492f-b251-bbf82f1510d0.png)
 
 ```
-client_body_buffer_size 1m;
+client_body_buffer_size 512k;
 proxy_read_timeout 86400s;
 client_max_body_size 0;
 ```
