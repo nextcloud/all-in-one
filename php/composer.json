@@ -1,35 +1,36 @@
 {
-    "autoload": {
-        "psr-4": {
-            "AIO\\": ["src/"]
-        }
-    },
-    "require": {
-        "php": "8.3.*",
-        "ext-json": "*",
-        "ext-sodium": "*",
-        "ext-curl": "*",
-        "slim/slim": "^4.11",
-        "php-di/slim-bridge": "^3.3",
-        "guzzlehttp/guzzle": "^7.5",
-        "guzzlehttp/psr7": "^2.4",
-        "http-interop/http-factory-guzzle": "^1.2",
-        "slim/twig-view": "^3.3",
-        "slim/csrf": "^1.3",
-        "ext-apcu": "*"
-    },
-    "require-dev": {
-        "sserbin/twig-linter": "@dev",
-        "vimeo/psalm": "^5.25",
-        "wapmorgan/php-deprecation-detector": "dev-master"
-    },
-    "scripts": {
-        "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "php -S localhost:8080 -t public"
-        ],
+	"autoload": {
+		"psr-4": {
+			"AIO\\": ["src/"]
+		}
+	},
+	"require": {
+		"php": "8.3.*",
+		"ext-json": "*",
+		"ext-sodium": "*",
+		"ext-curl": "*",
+		"slim/slim": "^4.11",
+		"php-di/slim-bridge": "^3.3",
+		"guzzlehttp/guzzle": "^7.5",
+		"guzzlehttp/psr7": "^2.4",
+		"http-interop/http-factory-guzzle": "^1.2",
+		"slim/twig-view": "^3.3",
+		"slim/csrf": "^1.3",
+		"ext-apcu": "*"
+	},
+	"require-dev": {
+		"sserbin/twig-linter": "@dev",
+		"vimeo/psalm": "^5.25",
+		"wapmorgan/php-deprecation-detector": "dev-master"
+	},
+	"scripts": {
+		"dev": [
+			"Composer\\Config::disableProcessTimeout",
+			"php -S localhost:8080 -t public"
+		],
 		"psalm": "psalm --threads=1",
 		"psalm:update-baseline": "psalm --threads=1 --monochrome --no-progress --output-format=text --update-baseline",
+		"psalm:strict": "psalm --threads=1 --show-info=true",
 		"lint": "php -l src/*.php src/**/*.php public/index.php",
 		"lint:twig": "twig-linter lint ./templates",
 		"php-deprecation-detector": "phpdd scan -n -t 8.3 src/*.php src/**/*.php public/index.php"

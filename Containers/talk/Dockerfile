@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.10.18-scratch AS nats
-FROM eturnal/eturnal:1.12.0 AS eturnal
-FROM strukturag/nextcloud-spreed-signaling:1.3.2 AS signaling
-FROM alpine:3.20.2 AS janus
+FROM nats:2.10.23-scratch AS nats
+FROM eturnal/eturnal:1.12.1 AS eturnal
+FROM strukturag/nextcloud-spreed-signaling:2.0.1 AS signaling
+FROM alpine:3.21.0 AS janus
 
-ARG JANUS_VERSION=v0.14.3
+ARG JANUS_VERSION=v1.3.0
 WORKDIR /src
 RUN set -ex; \
     apk add --no-cache \
@@ -34,7 +34,7 @@ RUN set -ex; \
     make configs; \
     rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
 
-FROM alpine:3.20.2
+FROM alpine:3.21.0
 ENV ETURNAL_ETC_DIR="/conf"
 COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/local                          /usr/local
 COPY --from=eturnal   --chmod=777 --chown=1000:1000 /opt/eturnal                        /opt/eturnal
@@ -99,7 +99,7 @@ RUN set -ex; \
     ln -s /opt/eturnal/bin/stun /usr/local/bin/stun; \
     ln -s /opt/eturnal/bin/eturnalctl /usr/local/bin/eturnalctl
 
-USER eturnal
+USER 1000
 ENTRYPOINT ["/start.sh"]
 CMD ["supervisord", "-c", "/supervisord.conf"]
 

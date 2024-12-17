@@ -91,14 +91,21 @@ else
 fi
 
 # Check Storage drivers
-STORAGE_DRIVER="$(docker info | grep "Storage Driver")"
+STORAGE_DRIVER="$(sudo -u www-data docker info | grep "Storage Driver")"
 # Check if vfs is used: https://github.com/nextcloud/all-in-one/discussions/1467
 if echo "$STORAGE_DRIVER" | grep -q vfs; then
     echo "$STORAGE_DRIVER"
-    echo "Warning: It seems like the storage driver vfs is used. This will lead to problems with disk space and performance and is disrecommended!"
+    print_red "Warning: It seems like the storage driver vfs is used. This will lead to problems with disk space and performance and is disrecommended!"
 elif echo "$STORAGE_DRIVER" | grep -q fuse-overlayfs; then
     echo "$STORAGE_DRIVER"
-    echo "Warning: It seems like the storage driver fuse-overlayfs is used. Please check if you can switch to overlay2 instead."
+    print_red "Warning: It seems like the storage driver fuse-overlayfs is used. Please check if you can switch to overlay2 instead."
+fi
+
+# Check if snap install
+if sudo -u www-data docker info | grep "Docker Root Dir" | grep "/var/snap/docker/"; then
+    print_red "Warning: It looks like your installation uses docker installed via snap."
+    print_red "This comes with some limitations and is disrecommended by the docker maintainers."
+    print_red "See for example https://github.com/nextcloud/all-in-one/discussions/4890#discussioncomment-10386752"
 fi
 
 # Check if startup command was executed correctly
@@ -130,7 +137,7 @@ It is set to '$NEXTCLOUD_DATADIR'."
 fi
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
     if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/" || [ "$NEXTCLOUD_MOUNT" = "/" ]; then
-        print_red "You've set NEXCLOUD_MOUNT but not to an allowed value.
+        print_red "You've set NEXTCLOUD_MOUNT but not to an allowed value.
 The string must start with '/' and must not be equal to '/'.
 It is set to '$NEXTCLOUD_MOUNT'."
         exit 1
@@ -183,6 +190,14 @@ if [ -n "$APACHE_IP_BINDING" ]; then
     if ! echo "$APACHE_IP_BINDING" | grep -q '^[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$\|^[0-9a-f:]\+$\|^@INTERNAL$'; then
         print_red "You provided an ip-address for the apache container's ip-binding but it was not a valid ip-address.
 It is set to '$APACHE_IP_BINDING'."
+        exit 1
+    fi
+fi
+if [ -n "$APACHE_ADDITIONAL_NETWORK" ]; then
+    if ! echo "$APACHE_ADDITIONAL_NETWORK" | grep -q "^[a-zA-Z0-9._-]\+$"; then
+        print_red "You've set APACHE_ADDITIONAL_NETWORK but not to an allowed value.
+It needs to be a string with letters, numbers, hyphens and underscores.
+It is set to '$APACHE_ADDITIONAL_NETWORK'."
         exit 1
     fi
 fi

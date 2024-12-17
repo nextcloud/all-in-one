@@ -2,7 +2,7 @@
 FROM caddy:2.8.4-alpine AS caddy
 
 # From https://github.com/docker-library/httpd/blob/master/2.4/alpine/Dockerfile
-FROM httpd:2.4.62-alpine3.20
+FROM httpd:2.4.62-alpine3.21
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
@@ -81,7 +81,7 @@ RUN set -ex; \
     \
     echo "root:$(openssl rand -base64 12)" | chpasswd
 
-USER www-data
+USER 33
 
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]

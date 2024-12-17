@@ -20,8 +20,10 @@ jobs:
       - name: Validate Json
         run: |
           sudo apt-get update
-          sudo apt-get install python3-pip -y --no-install-recommends
-          sudo pip3 install json-spec
+          sudo apt-get install python3-venv -y --no-install-recommends
+          python3 -m venv venv
+          . venv/bin/activate
+          pip3 install json-spec
           if ! json validate --schema-file=php/containers-schema.json --document-file=php/containers.json; then
             exit 1
           fi

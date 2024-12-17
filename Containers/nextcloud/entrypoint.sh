@@ -20,6 +20,11 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
+# Adjust DATABASE_TYPE to by Nextcloud supported value
+if [ "$DATABASE_TYPE" = postgres ]; then
+    export DATABASE_TYPE=pgsql
+fi
+
 # Only start container if redis is accessible
 # shellcheck disable=SC2153
 while ! nc -z "$REDIS_HOST" "6379"; do
@@ -143,13 +148,14 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             rm -r /usr/src/tmp
             rm -r /usr/src/temp-nextcloud
             # shellcheck disable=SC2016
-            image_version="$(php -r "require $SOURCE_LOCATION/version.php; echo implode('.', \$OC_Version);")"
+            image_version="$(php -r "require '$SOURCE_LOCATION/version.php'; echo implode('.', \$OC_Version);")"
             IMAGE_MAJOR="${image_version%%.*}"
             set +ex
 # Do not skip major versions end # Do not remove or change this line!
         fi
 
         if [ "$installed_version" != "0.0.0.0" ]; then
+# Check connection to appstore start # Do not remove or change this line!
             while true; do
                 echo -e "Checking connection to appstore"
                 CURL_STATUS="$(curl -LI "https://apps.nextcloud.com/" -o /dev/null -w '%{http_code}\n' -s)"
@@ -162,6 +168,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                     sleep 5
                 fi
             done
+# Check connection to appstore end # Do not remove or change this line!
 
             run_upgrade_if_needed_due_to_app_update
 
@@ -237,12 +244,12 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 );
 DATADIR_PERMISSION_CONF
 
-            echo "Installing with PostgreSQL database"
+            echo "Installing with $DATABASE_TYPE database"
             # Set a default value for POSTGRES_PORT
             if [ -z "$POSTGRES_PORT" ]; then
               POSTGRES_PORT=5432
             fi
-            INSTALL_OPTIONS+=(--database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST" --database-port "$POSTGRES_PORT")
+            INSTALL_OPTIONS+=(--database "$DATABASE_TYPE" --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST" --database-port "$POSTGRES_PORT")
 
             echo "Starting Nextcloud installation..."
             if ! php /var/www/html/occ maintenance:install "${INSTALL_OPTIONS[@]}"; then
@@ -436,12 +443,14 @@ DATADIR_PERMISSION_CONF
 
             # Apply optimization
             echo "Doing some optimizations..."
-            php /var/www/html/occ maintenance:repair
             if [ "$NEXTCLOUD_SKIP_DATABASE_OPTIMIZATION" != yes ]; then
+                php /var/www/html/occ maintenance:repair --include-expensive
                 php /var/www/html/occ db:add-missing-indices
                 php /var/www/html/occ db:add-missing-columns
                 php /var/www/html/occ db:add-missing-primary-keys
                 yes | php /var/www/html/occ db:convert-filecache-bigint
+            else
+                php /var/www/html/occ maintenance:repair
             fi
         fi
     fi
@@ -488,6 +497,12 @@ if [ -f "$NEXTCLOUD_DATA_DIR/fingerprint.update" ]; then
     rm "$NEXTCLOUD_DATA_DIR/fingerprint.update"
 fi
 
+# Perform preview scan if previews were excluded from restore
+if [ -f "$NEXTCLOUD_DATA_DIR/trigger-preview.scan" ]; then
+    php /var/www/html/occ files:scan-app-data preview -vvv
+    rm "$NEXTCLOUD_DATA_DIR/trigger-preview.scan"
+fi
+
 # AIO one-click settings start # Do not remove or change this line!
 # Apply one-click-instance settings
 echo "Applying one-click-instance settings..."
@@ -529,6 +544,7 @@ php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool -
 php /var/www/html/occ config:system:set davstorage.request_timeout --value="$PHP_MAX_TIME" --type=int
 php /var/www/html/occ config:system:set trusted_domains 1 --value="$NC_DOMAIN"
 php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_DOMAIN/"
+php /var/www/html/occ config:system:set documentation_url.server_logs --value="https://github.com/nextcloud/all-in-one/discussions/5425"
 php /var/www/html/occ config:system:set htaccess.RewriteBase --value="/"
 php /var/www/html/occ maintenance:update:htaccess
 
@@ -578,12 +594,17 @@ if [ -n "$ADDITIONAL_TRUSTED_PROXY" ]; then
     php /var/www/html/occ config:system:set trusted_proxies 2 --value="$ADDITIONAL_TRUSTED_PROXY"
 fi
 
-# Get ipv4-address of Nextcloud 
-IPv4_ADDRESS="$(dig nextcloud-aio-nextcloud A +short +search | head -1)" 
+# Get ipv4-address of Nextcloud
+if [ -z "$NEXTCLOUD_HOST" ]; then
+    export NEXTCLOUD_HOST="nextcloud-aio-nextcloud"
+fi
+IPv4_ADDRESS="$(dig "$NEXTCLOUD_HOST" A +short +search | head -1)" 
 # Bring it in CIDR notation 
 # shellcheck disable=SC2001
 IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')" 
-php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
+if [ -n "$IPv4_ADDRESS" ]; then
+    php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
+fi
 
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
     php /var/www/html/occ config:system:set trusted_domains 2 --value="$ADDITIONAL_TRUSTED_DOMAIN"
@@ -597,6 +618,10 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
         COLLABORA_HOST="$NC_DOMAIN"
     fi
     set +x
+    # Remove richdcoumentscode if it should be incorrectly installed
+    if [ -d "/var/www/html/custom_apps/richdocumentscode" ]; then
+        php /var/www/html/occ app:remove richdocumentscode
+    fi
     if ! [ -d "/var/www/html/custom_apps/richdocuments" ]; then
         php /var/www/html/occ app:install richdocuments
     elif [ "$(php /var/www/html/occ config:app:get richdocuments enabled)" != "yes" ]; then
@@ -761,6 +786,7 @@ fi
 # Imaginary
 if [ "$IMAGINARY_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
+    php /var/www/html/occ config:system:set enabledPreviewProviders 23 --value="OC\\Preview\\ImaginaryPDF"
     php /var/www/html/occ config:system:set preview_imaginary_url --value="http://$IMAGINARY_HOST:9000"
     php /var/www/html/occ config:system:set preview_imaginary_key --value="$IMAGINARY_SECRET"
 else
@@ -770,6 +796,7 @@ else
         php /var/www/html/occ config:system:delete enabledPreviewProviders 20
         php /var/www/html/occ config:system:delete enabledPreviewProviders 21
         php /var/www/html/occ config:system:delete enabledPreviewProviders 22
+        php /var/www/html/occ config:system:delete enabledPreviewProviders 23
     fi
 fi
 
@@ -842,6 +869,23 @@ if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
         php /var/www/html/occ app:remove app_api
+    fi
+fi
+
+# Whiteboard app
+if [ "$WHITEBOARD_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/whiteboard" ]; then
+        php /var/www/html/occ app:install whiteboard
+    elif [ "$(php /var/www/html/occ config:app:get whiteboard enabled)" != "yes" ]; then
+        php /var/www/html/occ app:enable whiteboard
+    elif [ "$SKIP_UPDATE" != 1 ]; then
+        php /var/www/html/occ app:update whiteboard
+    fi
+    php /var/www/html/occ config:app:set whiteboard collabBackendUrl --value="https://$NC_DOMAIN/whiteboard"
+    php /var/www/html/occ config:app:set whiteboard jwt_secret_key --value="$WHITEBOARD_SECRET"
+else
+    if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/whiteboard" ]; then
+        php /var/www/html/occ app:remove whiteboard
     fi
 fi
 

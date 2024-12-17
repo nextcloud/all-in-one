@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM alpine:3.20.2
+FROM alpine:3.21.0
 
 RUN set -ex; \
     \
@@ -11,11 +11,13 @@ RUN set -ex; \
         rsync \
         fuse \
         py3-llfuse \
-        jq
+        jq \
+        openssh-client
 
 VOLUME /root
 
 COPY --chmod=770 *.sh /
+COPY borg_excludes /
 
 ENTRYPOINT ["/start.sh"]
 # hadolint ignore=DL3002

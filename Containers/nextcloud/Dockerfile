@@ -1,16 +1,20 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.2.22-fpm-alpine3.20
+FROM php:8.3.14-fpm-alpine3.21
 
 ENV PHP_MEMORY_LIMIT=512M
-ENV PHP_UPLOAD_LIMIT=10G
+ENV PHP_UPLOAD_LIMIT=16G
 ENV PHP_MAX_TIME=3600
 ENV SOURCE_LOCATION=/usr/src/nextcloud
+ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=29.0.4
+ENV NEXTCLOUD_VERSION=30.0.4
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
+
+# Define the commit hash for imagick as a variable
+ARG IMAGICK_COMMIT_HASH=28f27044e435a2b203e32675e942eb8de620ee58
 
 COPY --chmod=775 *.sh /
 COPY --chmod=774 upgrade.exclude /upgrade.exclude
@@ -77,13 +81,24 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install igbinary-3.2.16; \ 
-    pecl install APCu-5.1.23; \
-    pecl install memcached-3.2.0 \
-        --configureoptions 'enable-memcached-igbinary="yes"'; \
-    pecl install redis-6.0.2 \
-        --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
-    pecl install imagick-3.7.0; \
+    pecl install -o igbinary-3.2.16; \
+    pecl install APCu-5.1.24; \
+    pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.3.0; \
+    pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.1.0; \
+#    pecl install -o imagick-3.7.0; \
+# Begin workaround ->
+# The master version on the imagick repository is compatible with PHP 8.3. However, the PECL version is not updated yet.
+# As soon as it will get updated, we can switch back to the PECL version, instead of having this workaround.
+    apk add --no-cache --virtual .git-build-deps git \
+    && git clone https://github.com/imagick/imagick.git --depth 1 /tmp/imagick \
+    && cd /tmp/imagick \
+    && git fetch --depth 1 origin ${IMAGICK_COMMIT_HASH} \
+    && git checkout ${IMAGICK_COMMIT_HASH} \
+    && sed -i "s/@PACKAGE_VERSION@/git-${IMAGICK_COMMIT_HASH:0:7}/" php_imagick.h \
+    && phpize && ./configure && make && make install; \
+    apk del .git-build-deps; \
+    cd && rm -r /tmp/imagick; \
+# <- End workaround
     \
     docker-php-ext-enable \
         igbinary \
@@ -131,10 +146,11 @@ RUN set -ex; \
     \
     { \
         echo 'session.save_handler = redis'; \
-        echo 'session.save_path = "tcp://${REDIS_HOST}:6379?auth=${REDIS_HOST_PASSWORD}"'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:6379/${REDIS_DB_INDEX}?auth=${REDIS_HOST_PASSWORD}"'; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
         echo 'redis.session.lock_wait_time = 10000'; \
+        echo 'session.gc_maxlifetime = 86400'; \
     } > /usr/local/etc/php/conf.d/redis-session.ini; \
     \
     mkdir -p /var/www/data; \
@@ -222,6 +238,7 @@ RUN set -ex; \
         sudo \
         grep \
         nodejs \
+        libreoffice \
         bind-tools \
         imagemagick \
         imagemagick-svg \
@@ -255,15 +272,12 @@ RUN set -ex; \
     \
     mkdir -p /nc-updater; \
     chown -R www-data:www-data /nc-updater; \
-    chmod -R 770 /nc-updater; \
-    \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd
+    chmod -R 770 /nc-updater
 
 # hadolint ignore=DL3002
 USER root
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK --start-period=60s CMD sudo -E -u www-data bash /healthcheck.sh
+HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"

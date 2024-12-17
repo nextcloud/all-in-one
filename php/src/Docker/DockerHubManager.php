@@ -6,12 +6,11 @@ use AIO\ContainerDefinitionFetcher;
 use AIO\Data\ConfigurationManager;
 use GuzzleHttp\Client;
 
-class DockerHubManager
-{
+readonly class DockerHubManager {
     private Client $guzzleClient;
 
-    public function __construct()
-    {
+    public function __construct(
+    ) {
         $this->guzzleClient = new Client();
     }
 

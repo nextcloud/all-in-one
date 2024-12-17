@@ -18,7 +18,8 @@ You can run AIO with docker rootless by following the steps below.
 Almost all commands in this project's documentation use `sudo docker ...`. Since `sudo` is not needed in case of docker rootless, you simply remove `sudo` from the commands and they should work. 
 
 ### Note regarding permissions
-All files outside the containers get created, written to and accessed as the user that is running the docker daemon or a subuid of it. So for the built-in backup to work you need to allow this user to write to the target directory. E.g. with `sudo chown -R USERNAME:GROUPNAME /mnt/backup`. The same applies when changing Nextcloud's datadir. E.g. `sudo chown -R USERNAME:GROUPNAME /mnt/ncdata`. When you want to use the NEXTCLOUD_MOUNT option for local external storage, you need to adjust the permissions of the chosen folders to be accessible/writeable by the userid `100032:100032` (if running `grep ^$(whoami): /etc/subuid` as the user that is running the docker daemon returns 100000 as first value). 
+All files outside the containers get created, written to and accessed as the user that is running the docker daemon or a subuid of it. So for the built-in backup to work you need to allow this user to write to the target directory. E.g. with `sudo chown -R USERNAME:GROUPNAME /mnt/backup`. The same applies when changing Nextcloud's datadir via NEXTCLOUD_DATADIR. E.g. `sudo chown -R USERNAME:GROUPNAME /mnt/ncdata`. When you want to use the NEXTCLOUD_MOUNT option for local external storage, you need to adjust the permissions of the chosen folders to be accessible/writeable by the userid `100032:100032` (if running `grep ^$(whoami): /etc/subuid` as the user that is running the docker daemon returns 100000 as first value). 
+
 
 ### Note regarding docker network driver
 By default rootless docker uses the `slirp4netns` IP driver and the `builtin` port driver. As mentioned in [the documentation](https://docs.docker.com/engine/security/rootless/#networking-errors), this combination doesn't provide "Source IP propagation". This means that Apache and Nextcloud will see all connections as coming from the docker gateway (e.g 172.19.0.1), which can lead to the Nextcloud brute force protection blocking all connection attempts. To expose the correct source IP, you will need to configure docker to also use `slirp4netns` as the port driver (see also [this guide](https://rootlesscontaine.rs/getting-started/docker/#changing-the-port-forwarder)).
@@ -29,6 +30,7 @@ As stated in the documentation, this change will likely lead to decreased networ
   with the following content:
   ```
   [Service]
+  Environment="DOCKERD_ROOTLESS_ROOTLESSKIT_NET=slirp4netns"
   Environment="DOCKERD_ROOTLESS_ROOTLESSKIT_PORT_DRIVER=slirp4netns"
   ```
 * Restart the docker daemon

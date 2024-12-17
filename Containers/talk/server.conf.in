@@ -55,6 +55,15 @@ blockkey = -encryption-key-
 # value as configured in the respective internal services.
 internalsecret = the-shared-secret-for-internal-clients
 
+[federation]
+# If set to "true", certificate validation of federation targets will be skipped.
+# This should only be enabled during development, e.g. to work with self-signed
+# certificates.
+#skipverify = false
+
+# Timeout in seconds for requests to federation targets.
+#timeout = 10
+
 [backend]
 # Type of backend configuration.
 # Defaults to "static".

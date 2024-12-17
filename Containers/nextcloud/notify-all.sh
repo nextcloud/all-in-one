@@ -20,7 +20,7 @@ mapfile -t NC_USERS <<< "$NC_USERS"
 for user in "${NC_USERS[@]}"
 do
     echo "Posting '$SUBJECT' to: $user"
-    "${COMMAND[@]}" notification:generate "$user" "$NC_DOMAIN: $SUBJECT" -l "$MESSAGE"
+    "${COMMAND[@]}" notification:generate "$user" "$NC_DOMAIN: $SUBJECT" -l "$MESSAGE" --object-type='update' --object-id="$SUBJECT"
 done
 
 echo "Done!"

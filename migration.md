@@ -1,13 +1,13 @@
 # How to migrate from an already existing Nextcloud installation to Nextcloud AIO?
 
-There are basically three ways how to migrate from an already existing Nextcloud installation to Nextcloud AIO:
+There are basically three ways how to migrate from an already existing Nextcloud installation to Nextcloud AIO (if you ran AIO on the former installation already, you can follow [these steps](https://github.com/nextcloud/all-in-one#how-to-migrate-from-aio-to-aio)):
 
-1. Migrate only the files which is the easiest way
+1. Migrate only the files which is the easiest way (this excludes all calendar data for example)
 1. Migrate the files and the database which is much more complicated (and doesn't work on former snap installations)
 1. Use the user_migration app that allows to migrate some of the user's data from a former instance to a new instance but needs to be done manually for each user
 
 ## Migrate only the files 
-**Please note**: If you used groupfolders or encrypted your files before, you will need to restore the database, as well!
+**Please note**: If you used groupfolders or encrypted your files before, you will need to restore the database, as well! (This will also exclude all calendar data for example).
 
 The procedure for migrating only the files works like this:
 1. Take a backup of your former instance (especially from your datadirectory, see `'datadirectory'` in your `config.php`)

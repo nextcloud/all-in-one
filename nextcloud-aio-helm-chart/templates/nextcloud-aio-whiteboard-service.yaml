@@ -1,0 +1,19 @@
+{{- if eq .Values.WHITEBOARD_ENABLED "yes" }}
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.version: 1.35.0 (9532ceef3)
+  labels:
+    io.kompose.service: nextcloud-aio-whiteboard
+  name: nextcloud-aio-whiteboard
+  namespace: "{{ .Values.NAMESPACE }}"
+spec:
+  ipFamilyPolicy: PreferDualStack
+  ports:
+    - name: "3002"
+      port: 3002
+      targetPort: 3002
+  selector:
+    io.kompose.service: nextcloud-aio-whiteboard
+{{- end }}

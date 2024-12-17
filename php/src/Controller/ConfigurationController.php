@@ -9,14 +9,10 @@ use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class ConfigurationController
-{
-    private ConfigurationManager $configurationManager;
-
+readonly class ConfigurationController {
     public function __construct(
-        ConfigurationManager $configurationManager
+        private ConfigurationManager $configurationManager
     ) {
-        $this->configurationManager = $configurationManager;
     }
 
     public function SetConfig(Request $request, Response $response, array $args) : Response {
@@ -32,15 +28,17 @@ class ConfigurationController
                 $this->configurationManager->ChangeMasterPassword($currentMasterPassword, $newMasterPassword);
             }
 
-            if (isset($request->getParsedBody()['borg_backup_host_location'])) {
+            if (isset($request->getParsedBody()['borg_backup_host_location']) || isset($request->getParsedBody()['borg_remote_repo'])) {
                 $location = $request->getParsedBody()['borg_backup_host_location'] ?? '';
-                $this->configurationManager->SetBorgBackupHostLocation($location);
+                $borgRemoteRepo = $request->getParsedBody()['borg_remote_repo'] ?? '';
+                $this->configurationManager->SetBorgLocationVars($location, $borgRemoteRepo);
             }
 
-            if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_password'])) {
+            if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_remote_repo']) || isset($request->getParsedBody()['borg_restore_password'])) {
                 $restoreLocation = $request->getParsedBody()['borg_restore_host_location'] ?? '';
+                $borgRemoteRepo = $request->getParsedBody()['borg_restore_remote_repo'] ?? '';
                 $borgPassword = $request->getParsedBody()['borg_restore_password'] ?? '';
-                $this->configurationManager->SetBorgRestoreHostLocationAndPassword($restoreLocation, $borgPassword);
+                $this->configurationManager->SetBorgRestoreLocationVarsAndPassword($restoreLocation, $borgRemoteRepo, $borgPassword);
             }
 
             if (isset($request->getParsedBody()['daily_backup_time'])) {
@@ -120,6 +118,11 @@ class ConfigurationController
                 } else {
                     $this->configurationManager->SetDockerSocketProxyEnabledState(0);
                 }
+                if (isset($request->getParsedBody()['whiteboard'])) {
+                    $this->configurationManager->SetWhiteboardEnabledState(1);
+                } else {
+                    $this->configurationManager->SetWhiteboardEnabledState(0);
+                }
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {
@@ -131,8 +134,8 @@ class ConfigurationController
                 $this->configurationManager->SetCollaboraDictionaries($collaboraDictionaries);
             }
 
-            if (isset($request->getParsedBody()['delete_borg_backup_host_location'])) {
-                $this->configurationManager->DeleteBorgBackupHostLocation();
+            if (isset($request->getParsedBody()['delete_borg_backup_location_vars'])) {
+                $this->configurationManager->DeleteBorgBackupLocationVars();
             }
 
             return $response->withStatus(201)->withHeader('Location', '/');

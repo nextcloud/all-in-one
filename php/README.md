@@ -33,6 +33,7 @@ docker run \
 --rm \
 --name nextcloud-aio-mastercontainer \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+--volume /var/run/docker.sock:/var/run/docker.sock \
 nextcloud/all-in-one:latest
 ```
 
@@ -55,6 +56,7 @@ Note: You can restart the server by preceding the command with other environment
 |-----------------------------------------|----------------------------------------|
 | `composer run dev`                      | Starts the development server          |
 | `composer run psalm`                    | Run Psalm static analysis              |
+| `composer run psalm:strict`             | Run Psalm static analysis strict       |
 | `composer run psalm:update-baseline`    | Run Psalm with `--update-baseline` arg |
 | `composer run lint`                     | Run PHP Syntax check                   |
 | `composer run lint:twig`                | Run Twig Syntax check                  |

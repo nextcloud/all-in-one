@@ -1,7 +1,7 @@
 ---
-name: 🐛 Bug report
-about: Help us improving by reporting a bug
-labels: bug, 0. Needs triage
+name: 🐛 Bug report - no questions and no support!
+about: Help us improving by reporting a bug - this category is not for questions and also not for support! Please use one of the options below for questions and support
+labels: 0. Needs triage
 ---
 
 <!---
@@ -20,11 +20,11 @@ labels: bug, 0. Needs triage
 ### Actual behavior <!--- Tell us what happens instead -->
 
 
-### Host OS <!--- (the host OS on which you are trying to install AIO on) -->
+### Other information
+#### Host OS <!--- (the host OS on which you are trying to install AIO on) -->
 
+#### Output of `sudo docker info`
 
-#### Nextcloud AIO version <!--- (see Nextcloud AIO interface) -->
-
-#### Current channel <!--- (see the channel name in the AIO interface) -->
+#### Docker run command or docker-compose file that you used
 
 #### Other valuable info <!--- (like logs, screenshots & Co.) -->
