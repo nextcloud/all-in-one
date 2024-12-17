@@ -317,7 +317,7 @@ backend Nextcloud
 
 </details>
 
-### Nginx, Freenginx, Openresty
+### Nginx, Freenginx, Openresty, Angie
 
 <details>
 
@@ -344,24 +344,37 @@ server {
     if ($scheme = "http") {
         return 301 https://$host$request_uri;
     }
+    if ($http_x_forwarded_proto = "http") {
+        return 301 https://$host$request_uri;
+    }
 
     listen 443 ssl http2;      # for nginx versions below v1.25.1
     listen [::]:443 ssl http2; # for nginx versions below v1.25.1 - comment to disable IPv6
 
     # listen 443 ssl;      # for nginx v1.25.1+
     # listen [::]:443 ssl; # for nginx v1.25.1+ - keep comment to disable IPv6
-	
-    # http2 on;                                 # uncomment to enable HTTP/2        - supported on nginx v1.25.1+
-    # http3 on;                                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # http2 on;            # uncomment to enable HTTP/2 - supported on nginx v1.25.1+
+
     # listen 443 quic reuseport;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport
     # listen [::]:443 quic reuseport;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport - keep comment to disable IPv6
+    # http3 on;                                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # quic_gso on;                              # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # quic_bpf on;                              # improves  HTTP/3 / QUIC - supported on nginx v1.25.0+, if nginx runs as a docker container you need to give it privileged permission to use this option
+    # add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+
+    proxy_buffering off;
+    proxy_request_buffering off;
+
+    client_max_body_size 0;
+    client_body_buffer_size 512k;
+    http3_stream_buffer_size 512k;
+    proxy_read_timeout 86400s;
 
     server_name <your-nc-domain>;
 
     location / {
-        proxy_pass http://127.0.0.1:11000$request_uri;
+        proxy_pass http://127.0.0.1:11000$request_uri; # adjust to match APACHE_PORT and APACHE_IP_BINDING
 
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Port $server_port;
@@ -369,10 +382,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
-    
-        proxy_request_buffering off;
-        proxy_read_timeout 86400s;
-        client_max_body_size 0;
+        proxy_set_header Early-Data $ssl_early_data;
 
         # Websocket
         proxy_http_version 1.1;
@@ -386,27 +396,49 @@ server {
     ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
     ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
 
+    ssl_dhparam /etc/dhparam; # curl -L https://ssl-config.mozilla.org/ffdhe2048.txt -o /etc/dhparam
+
+    ssl_early_data on;
     ssl_session_timeout 1d;
-    ssl_session_cache shared:MozSSL:10m; # about 40000 sessions
-    ssl_session_tickets off;
+    ssl_session_cache shared:SSL:10m;
 
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305;
+    ssl_ecdh_curve x25519:x448:secp521r1:secp384r1:secp256r1;
+
     ssl_prefer_server_ciphers on;
-
-    # Optional settings:
-
-    # OCSP stapling
-    # ssl_stapling on;
-    # ssl_stapling_verify on;
-    # ssl_trusted_certificate /etc/letsencrypt/live/<your-nc-domain>/chain.pem;
-
-    # replace with the IP address of your resolver
-    # resolver 127.0.0.1; # needed for oscp stapling: e.g. use 94.140.15.15 for adguard / 1.1.1.1 for cloudflared or 8.8.8.8 for google - you can use the same nameserver as listed in your /etc/resolv.conf file
+    ssl_conf_command Options PrioritizeChaCha;
+    ssl_ciphers TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256;
 }
 
 ```
 
+⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+
+</details>
+
+### NPMplus (Fork of Nginx-Proxy-Manager - NPM)
+
+<details>
+
+<summary>click here to expand</summary>
+
+⚠️ **Please note:** This is not needed when running NPMplus as a community container.
+
+First, make sure the environmental variables `PUID` and `PGID` in the `compose.yaml` file for NPM are either unset or set to `0`. <br>
+If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. <br>
+Note: this will cause that a non root user can bind privileged ports.
+
+Second, see these screenshots for a working config:
+
+![grafik](https://github.com/user-attachments/assets/c32c8fe8-7417-4f8f-9625-24b95651e630)
+
+![grafik](https://github.com/user-attachments/assets/a26c53fd-6cc8-4a6b-a86f-c2f94b70088f)
+
+![grafik](https://github.com/user-attachments/assets/75d7f539-35d1-4a3e-8c51-43123f698893)
+
+![grafik](https://github.com/user-attachments/assets/e494edb5-8b70-4d45-bc9b-374219230041)
+
+⚠️ **Please note:** Nextcloud will complain that X-XXS-Protection is set to the wrong value, this is intended by NPMplus. <br>
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
@@ -419,8 +451,9 @@ server {
 
 **Hint:** You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-3040493) for a more complete but possibly oudated example.
 
-First, make sure the environmental variables `PUID` and `PGID` in the `compose.yaml` file for NPM are either unset or set to `0`.
-If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. Note: this will cause that non root users can bind privileged ports.
+First, make sure the environmental variables `PUID` and `PGID` in the `compose.yaml` file for NPM are either unset or set to `0`. <br>
+If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. <br>
+Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
