@@ -1,7 +1,5 @@
 # Environmental variables
 
-[//]: # (TODO NEXTCLOUD_GPU_MODE)
-
 - [ ] When starting the mastercontainer with `--env APACHE_PORT=11000` on a clean instance, the domaincheck container should be started with that same port published. That makes sure that also the Apache container will use that port later on. Using a value here that is not a port will not allow the mastercontainer to start correctly. However `@INTERNAL` is also an allowed value which skips publishing the port on the host for internal usage inside a bridged network for example.
 - [ ] When starting the mastercontainer with `--env APACHE_IP_BINDING=127.0.0.1` on a clean instance, the domaincheck container's apache port should only listen on localhost on the host. Using a value here that is not a number or dot will not allow the mastercontainer to start correctly.
 - [ ] When starting the mastercontainer with `--env APACHE_ADDITIONAL_NETWORK=frontend_net` on a clean instance, the domaincheck and subsequently the apache containers should be connected to the specified `frontend_net` docker network, in addition to the default `nextcloud-aio` network. Specifying the network that doesn't already exist will not allow the mastercontainer to start correctly.
@@ -22,7 +20,7 @@ See https://github.com/nextcloud/all-in-one#how-to-trust-user-defined-certificat
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_STARTUP_APPS=deck`, the resulting Nextcloud should have only installed the deck app and not the other apps that get installed by default. Default are `deck twofactor_totp tasks calendar contacts notes`.
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_ADDITIONAL_APKS=zip`, the resulting Nextcloud container should have the zip package installed and not imagemagick.
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=inotify`, the resulting Nextcloud container should have the inotify extension installed and not the imagick extension.
-- [ ] When starting the mastercontainer with `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true`, the resulting Nextcloud container should have the /dev/dri device mounted into the container. (Only works if a `/dev/dri` device is present on the host)
+- [ ] When starting the mastercontainer with `--env NEXTCLOUD_GPU_MODE=dri`, the resulting Nextcloud container should have the /dev/dri device mounted into the container. (Only works if a `/dev/dri` device is present on the host)
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_KEEP_DISABLED_APPS=true` it should keep apps in Nextcloud that are disabled in the AIO interface. For example if Collabora is disabled in the AIO interface and you install the richdocuments app in Nextcloud, a restart should not uninstall the richdocuments app in Nextcloud anymore.
 - [ ] When starting the mastercontainer with `--env AIO_COMMUNITY_CONTAINERS="fail2ban"`, it should add the fail2ban container to the container stack and show it in the AIO interface as well as start it, etc.
 

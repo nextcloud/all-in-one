@@ -768,7 +768,7 @@ The [facerecognition app](https://apps.nextcloud.com/apps/facerecognition) requi
 ### How to enable GPU acceleration for Nextcloud?
 Some container can use GPU acceleration to increase performance like [memories app](https://apps.nextcloud.com/apps/memories) allows to enable hardware transcoding for videos.
 
-To enable it you need to add `--env NEXTCLOUD_GPU_MODE=<gpu_driver>` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used).
+To enable it you need to add `--env NEXTCLOUD_GPU_MODE=<mode>` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used).
 
 #### With open source drivers MESA for AMD, Intel and **new** drivers `Nouveau` for Nvidia
 
@@ -777,21 +777,22 @@ To enable it you need to add `--env NEXTCLOUD_GPU_MODE=<gpu_driver>` to the dock
 
 A list of supported device can be fond in [MESA 3D documentation](https://docs.mesa3d.org/systems.html).
 
-This methode use the [Direct Rendering Infrastructure](https://dri.freedesktop.org/wiki/) with the access to the `/dev/dri` device.
-
-To enable it, use `--env NEXTCLOUD_GPU_MODE=dri` as driver mode.
+This methode use the [Direct Rendering Infrastructure](https://dri.freedesktop.org/wiki/) with the access to the `/dev/dri` device. To enable it, use `--env NEXTCLOUD_GPU_MODE=dri` as mode.
 
 #### With proprietary drivers for Nvidia :warning: BETA
 
-> [!WARNING]  
-> This feature is in beta. Since the proprietary, we haven't a lot of user using proprietary drivers, we can't guarantee the stability of this feature.
-> Your feedback is welcome.
+> [!WARNING]
+> This only works if the Nvidia Toolkit is installed on the host! Make sure that it is correctly configured on the host.
+> 
+> This feature is in beta. Since the proprietary, we haven't a lot of user using proprietary drivers, we can't guarantee the stability of this feature. Your feedback is welcome.
 
 This methode use the [Nvidia Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html) with the nvidia runtime.
 
-To enable it, use `--env NEXTCLOUD_GPU_MODE=nvidia-runtime` as driver mode.
+To enable it, use `--env NEXTCLOUD_GPU_MODE=nvidia-runtime` as mode.
 
-You can use docker resource allocation with `--env NEXTCLOUD_GPU_MODE=nvidia-deploy` as driver mode. 
+You can also use [docker resource allocation](https://docs.docker.com/compose/gpu-support/) with `--env NEXTCLOUD_GPU_MODE=nvidia-deploy` as mode. 
+
+If you're using WSL2 and want to use the NVIDIA runtime, please follow the instructions to [install the NVIDIA Container Toolkit meta-version in WSL](https://docs.nvidia.com/cuda/wsl-user-guide/index.html#cuda-support-for-wsl-2).
 
 ### How to keep disabled apps?
 In certain situations you might want to keep Nextcloud apps that are disabled in the AIO interface and not uninstall them if they should be installed in Nextcloud. You can do so by adding `--env NEXTCLOUD_KEEP_DISABLED_APPS=true` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). 
