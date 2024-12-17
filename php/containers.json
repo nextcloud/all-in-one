@@ -263,6 +263,7 @@
       "devices": [
         "/dev/dri"
       ],
+      "nvidia": true,
       "backup_volumes": [
         "nextcloud_aio_nextcloud"
       ],

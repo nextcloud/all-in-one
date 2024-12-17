@@ -23,6 +23,7 @@ readonly class Container {
         private array                         $secrets,
         /** @var string[] */
         private array                         $devices,
+        private bool                          $nvidia,
         /** @var string[] */
         private array                         $capAdd,
         private int                           $shmSize,
@@ -90,6 +91,10 @@ readonly class Container {
 
     public function GetDevices() : array {
         return $this->devices;
+    }
+
+    public function CanUseNvidia() : bool {
+        return $this->nvidia;
     }
 
     public function GetCapAdds() : array {
