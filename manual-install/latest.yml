@@ -136,6 +136,8 @@ services:
       - POSTGRES_USER=nextcloud
       - REDIS_HOST=nextcloud-aio-redis
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - APACHE_HOST=nextcloud-aio-apache
+      - APACHE_PORT
       - NC_DOMAIN
       - ADMIN_USER=admin
       - ADMIN_PASSWORD=${NEXTCLOUD_PASSWORD}
@@ -174,7 +176,6 @@ services:
       - TALK_RECORDING_HOST=nextcloud-aio-talk-recording
       - FULLTEXTSEARCH_PASSWORD
       - REMOVE_DISABLED_APPS
-      - APACHE_PORT
       - IMAGINARY_SECRET
       - WHITEBOARD_SECRET
       - WHITEBOARD_ENABLED

@@ -1,24 +1,10 @@
 #!/bin/bash
 
-# ENV Variables
-MAX_RETRY=3
-COUNT=1
-
-# Wait until the domain is reachable
-sleep 15
-while [ "$COUNT" -le "$MAX_RETRY" ]; do
-    if nc -z "$NC_DOMAIN" 443; then
-        echo "Domain reached."
-        break
-    else
-        echo "Attempt $COUNT: Domain not reachable. Retrying in 15 seconds..."
-        sleep 15
-        ((COUNT++))
-    fi
+# Wait until the apache container is ready
+while ! nc -z "$APACHE_HOST" "$APACHE_PORT"; do
+    echo "Waiting for Apache to become available..."
+    sleep 15
 done
-if [ "$COUNT" -gt "$MAX_RETRY" ]; then
-    echo "The domain could not be reached after $MAX_RETRY attempts. Proceeding anyway..."
-fi
 
 if [ -n "$NEXTCLOUD_EXEC_COMMANDS" ]; then
     echo "#!/bin/bash" > /tmp/nextcloud-exec-commands
