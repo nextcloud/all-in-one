@@ -990,11 +990,11 @@ class ConfigurationManager
     }
 
     public function isNvidiaRuntimeEnabled() : bool {
-        $this->GetEnabledNvidiaGPUMode() === 'runtime'
+        return $this->GetEnabledNvidiaGPUMode() === 'runtime';
     }
 
     public function isNvidiaDeployEnabled() : bool {
-        $this->GetEnabledNvidiaGPUMode() === 'deploy'
+        return $this->GetEnabledNvidiaGPUMode() === 'deploy';
     }
 
     private function GetKeepDisabledApps() : string {
