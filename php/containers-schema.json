@@ -160,6 +160,9 @@
 							"pattern": "^/dev/[a-z]+$"
 						}
 					},
+					"nvidia": {
+						"type": "boolean"
+					},
 					"apparmor_unconfined": {
 						"type": "boolean"
 					},
