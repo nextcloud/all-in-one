@@ -968,24 +968,34 @@ class ConfigurationManager
         return explode(' ', $this->GetCommunityContainers());
     }
 
-
-    private function GetEnabledGPUMode() : string {
-        $envVariableName = 'NEXTCLOUD_GPU_MODE';
-        $configName = 'nextcloud_gpu_mode';
+    private function GetEnabledDriDevice() : string {
+        $envVariableName = 'NEXTCLOUD_ENABLE_DRI_DEVICE';
+        $configName = 'nextcloud_enable_dri_device';
         $defaultValue = '';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
     public function isDriDeviceEnabled() : bool {
-        return $this->GetEnabledGPUMode() === 'dri';
+        if ($this->GetEnabledDriDevice() === 'true') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function GetEnabledGPUMode() : string {
+        $envVariableName = 'NEXTCLOUD_NVIDIA_GPU_MODE';
+        $configName = 'nextcloud_nvidia_gpu_mode';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
     public function isNvidiaRuntimeEnabled() : bool {
-        return $this->GetEnabledGPUMode() === 'nvidia-runtime';
+        return $this->GetEnabledGPUMode() === 'runtime';
     }
 
     public function isNvidiaDeployEnabled() : bool {
-        return $this->GetEnabledGPUMode() === 'nvidia-deploy';
+        return $this->GetEnabledGPUMode() === 'deploy';
     }
 
     private function GetKeepDisabledApps() : string {
