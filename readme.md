@@ -765,11 +765,33 @@ You can do so by adding `--env NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS="imagick exte
 ### What about the pdlib PHP extension for the facerecognition app?
 The [facerecognition app](https://apps.nextcloud.com/apps/facerecognition) requires the pdlib PHP extension to be installed. Unfortunately, it is not available on PECL nor via PHP core, so there is no way to add this into AIO currently. However you can use [this community container](https://github.com/nextcloud/all-in-one/tree/main/community-containers/facerecognition) in order to run facerecognition.
 
-### How to enable hardware-transcoding for Nextcloud?
-> [!WARNING]  
-> This only works if the `/dev/dri` device is present on the host! If it does not exists on your host, don't proceed as otherwise the Nextcloud container will fail to start! If you are unsure about this, better do not proceed with the instructions below.
+### How to enable GPU acceleration for Nextcloud?
+Some container can use GPU acceleration to increase performance like [memories app](https://apps.nextcloud.com/apps/memories) allows to enable hardware transcoding for videos.
 
-The [memories app](https://apps.nextcloud.com/apps/memories) allows to enable hardware transcoding for videos. In order to use that, you need to add `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) which will mount the `/dev/dri` device into the container. There is now a community container which allows to easily add the transcoding container of Memories to AIO: https://github.com/nextcloud/all-in-one/tree/main/community-containers/memories
+To enable it you need to add `--env NEXTCLOUD_GPU_MODE=<gpu_driver>` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used).
+
+#### With open source drivers MESA for AMD, Intel and **new** drivers `Nouveau` for Nvidia
+
+> [!WARNING]  
+> This only works if the `/dev/dri` device is present on the host! If it does not exists on your host, don't proceed as otherwise the Nextcloud container will fail to start! If you are unsure about this, better do not proceed with the instructions below. Make sure that your driver is correctly configured on the host.
+
+A list of supported device can be fond in [MESA 3D documentation](https://docs.mesa3d.org/systems.html).
+
+This methode use the [Direct Rendering Infrastructure](https://dri.freedesktop.org/wiki/) with the access to the `/dev/dri` device.
+
+To enable it, use `--env NEXTCLOUD_GPU_MODE=dri` as driver mode.
+
+#### With proprietary drivers for Nvidia :warning: BETA
+
+> [!WARNING]  
+> This feature is in beta. Since the proprietary, we haven't a lot of user using proprietary drivers, we can't guarantee the stability of this feature.
+> Your feedback is welcome.
+
+This methode use the [Nvidia Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html) with the nvidia runtime.
+
+To enable it, use `--env NEXTCLOUD_GPU_MODE=nvidia-runtime` as driver mode.
+
+You can use docker resource allocation with `--env NEXTCLOUD_GPU_MODE=nvidia-deploy` as driver mode. 
 
 ### How to keep disabled apps?
 In certain situations you might want to keep Nextcloud apps that are disabled in the AIO interface and not uninstall them if they should be installed in Nextcloud. You can do so by adding `--env NEXTCLOUD_KEEP_DISABLED_APPS=true` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). 

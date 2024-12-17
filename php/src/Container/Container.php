@@ -23,7 +23,7 @@ readonly class Container {
         private array                         $secrets,
         /** @var string[] */
         private array                         $devices,
-        private bool                          $nvidia,
+        private bool                          $enable_gpu,
         /** @var string[] */
         private array                         $capAdd,
         private int                           $shmSize,
@@ -93,8 +93,8 @@ readonly class Container {
         return $this->devices;
     }
 
-    public function CanUseNvidia() : bool {
-        return $this->nvidia;
+    public function GetGpuMode() : bool {
+        return $this->enable_gpu;
     }
 
     public function GetCapAdds() : array {

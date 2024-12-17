@@ -30,10 +30,7 @@
                     "writeable": false
                 }
             ],
-            "devices": [
-                "/dev/dri"
-            ],
-            "nvidia": true,
+            "enable_gpu": true,
             "backup_volumes": [
                 "nextcloud_aio_plex"
             ]
