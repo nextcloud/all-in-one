@@ -249,7 +249,7 @@ readonly class ContainerDefinitionFetcher {
                 $devices = $entry['devices'];
             }
 
-            $enable_gpu = $entry['enable_gpu'] === true;
+            $enable_gpu = $entry['enable_nvidia_gpu'] === true;
 
             $capAdd = [];
             if (isset($entry['cap_add'])) {

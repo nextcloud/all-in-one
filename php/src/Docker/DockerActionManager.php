@@ -481,13 +481,18 @@ readonly class DockerActionManager {
 
         $devices = [];
         foreach($container->GetDevices() as $device) {
+            if ($device === '/dev/dri' && ! $this->configurationManager->isDriDeviceEnabled()) {
+                continue;
+            }
             $devices[] = ["PathOnHost" => $device, "PathInContainer" => $device, "CgroupPermissions" => "rwm"];
         }
 
-        if ($container->canUseNvidia()) {
-            if($this->configurationManager->isDriDeviceEnabled()) {
-                $devices[] = ["PathOnHost" => '/dev/dri', "PathInContainer" => '/dev/dri', "CgroupPermissions" => "rwm"];
-            } elseif ($this->configurationManager->isNvidiaRuntimeEnabled()) {
+        if (count($devices) > 0) {
+            $requestBody['HostConfig']['Devices'] = $devices;
+        }
+
+        if ($container->CanUseNidiaGpu()) {
+            if ($this->configurationManager->isNvidiaRuntimeEnabled()) {
                 $requestBody['HostConfig']['Runtime'] = 'nvidia';
             } elseif ($this->configurationManager->isNvidiaDeployEnabled()) {
                 $requestBody['HostConfig']['DeviceRequests'] = [
@@ -498,10 +503,6 @@ readonly class DockerActionManager {
                     ]
                 ];
             }
-        }
-
-        if (count($devices) > 0) {
-            $requestBody['HostConfig']['Devices'] = $devices;
         }
 
         $shmSize = $container->GetShmSize();
