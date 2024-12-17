@@ -1,5 +1,7 @@
 # Environmental variables
 
+[//]: # (TODO NEXTCLOUD_GPU_MODE)
+
 - [ ] When starting the mastercontainer with `--env APACHE_PORT=11000` on a clean instance, the domaincheck container should be started with that same port published. That makes sure that also the Apache container will use that port later on. Using a value here that is not a port will not allow the mastercontainer to start correctly. However `@INTERNAL` is also an allowed value which skips publishing the port on the host for internal usage inside a bridged network for example.
 - [ ] When starting the mastercontainer with `--env APACHE_IP_BINDING=127.0.0.1` on a clean instance, the domaincheck container's apache port should only listen on localhost on the host. Using a value here that is not a number or dot will not allow the mastercontainer to start correctly.
 - [ ] When starting the mastercontainer with `--env APACHE_ADDITIONAL_NETWORK=frontend_net` on a clean instance, the domaincheck and subsequently the apache containers should be connected to the specified `frontend_net` docker network, in addition to the default `nextcloud-aio` network. Specifying the network that doesn't already exist will not allow the mastercontainer to start correctly.

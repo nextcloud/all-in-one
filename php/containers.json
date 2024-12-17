@@ -260,10 +260,7 @@
       ],
       "stop_grace_period": 600,
       "restart": "unless-stopped",
-      "devices": [
-        "/dev/dri"
-      ],
-      "nvidia": true,
+      "enable_gpu": true,
       "backup_volumes": [
         "nextcloud_aio_nextcloud"
       ],

@@ -24,10 +24,7 @@
                     "writeable": false 
                 }
             ],
-            "devices": [
-                "/dev/dri"
-            ],
-            "nvidia": true,
+            "enable_gpu": true,
             "nextcloud_exec_commands": [
                 "php /var/www/html/occ app:install memories",
                 "php /var/www/html/occ app:enable memories",
