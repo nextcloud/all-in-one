@@ -1,6 +1,6 @@
 # How to migrate from an already existing Nextcloud installation to Nextcloud AIO?
 
-There are basically three ways how to migrate from an already existing Nextcloud installation to Nextcloud AIO:
+There are basically three ways how to migrate from an already existing Nextcloud installation to Nextcloud AIO (if you ran AIO on the former installation already, you can follow [these steps](https://github.com/nextcloud/all-in-one#how-to-migrate-from-aio-to-aio)):
 
 1. Migrate only the files which is the easiest way (this excludes all calendar data for example)
 1. Migrate the files and the database which is much more complicated (and doesn't work on former snap installations)
@@ -21,32 +21,6 @@ The procedure for migrating only the files works like this:
 1. If the restored data is older than any clients you want to continue to sync, for example if the server was down for a period of time during migration, you may want to take a look at [Synchronising with clients after migration](/migration.md#synchronising-with-clients-after-migration) below.
 
 ## Migrate the files and the database
-### Using the borg backup
-If you have the borg backup feature enabled, you can copy it over to the new host and restore from the backup. This guide assumes the new installation data dir will be on /mnt/datadir, you can adjust the steps if it's elsewhere.
-
-1. Set the DNS entry to 60 seconds TTL if applicable
-1. On your current installation, use the AIO interface to:
-    1. Update AIO and all containers
-    1. Stop all containers (from now on, your cloud is down)
-    1. Create a current borg backup
-    1. Note the path where the backups are stored and the encryption password
-1. Navigate to the backup folder
-1. Create archive of the backup so it's easier to copy: `tar -czvf borg.tar.gz borg`
-1. Copy the archive over to the new host: `cp borg.tar.gz user@new.host:/mnt`. Make sure to replace `user` with your actual user and `new.host` with the IP or domain of the actual host. You can also use another way to copy the archive.
-1. Switch to the new host
-1. Go to the folder you put the backup archive and extract it with `tar -xf borg.tar.gz`
-1. Follow the installation guide to create a new aio instance, but do not start the containers yet (the `docker run` or `docker compose up -d` command)
-1. Change the DNS entry to the new host's IP
-1. Configure your reverse proxy if you use one
-1. Start the AIO container and open the new AIO interface in your browser
-1. Make sure to save the newly generated passphrase and enter it in the next step
-1. Select the "Restore former AIO instance from backup" option and enter the encryption password from the old backup and the path in which the extracted `borg` folder lies in (without the borg part) and hit "Submit location and password"
-1. Choose the latest backup in the dropdown and hit "Restore selected backup"
-1. Wait until the backup is restored
-1. Start the containers in the AIO interface
-
-
-### Manual process
 **Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned! Also, this will not work on former snap installations as the snap is read-only and thus you cannot install the necessary `pdo_pgsql` PHP extension. So if migrating from snap, you will need to use one of the other methods. However you could try to ask if the snaps maintainer could add this one small PHP extension to the snap here: https://github.com/nextcloud-snap/nextcloud-snap/issues which would allow for an easy migration.
 
 The procedure for migrating the files and the database works like this:
