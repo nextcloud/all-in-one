@@ -93,13 +93,13 @@ Add this as a new Apache site config:
     RequestHeader set X-Real-IP %{REMOTE_ADDR}s
     AllowEncodedSlashes NoDecode
     
-    ProxyPass / http://localhost:11000/ nocanon
-    ProxyPassReverse / http://localhost:11000/
+    ProxyPass / http://localhost:11000/ nocanon # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
+    ProxyPassReverse / http://localhost:11000/ # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
     
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
     RewriteCond %{THE_REQUEST} "^[a-zA-Z]+ /(.*) HTTP/\d+(\.\d+)?$"
-    RewriteRule .? "ws://localhost:11000/%1" [P,L,UnsafeAllow3F]
+    RewriteRule .? "ws://localhost:11000/%1" [P,L,UnsafeAllow3F] # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
     # Enable h2, h2c and http1.1
     Protocols h2 h2c http/1.1
@@ -152,7 +152,7 @@ Add this to your Caddyfile:
 
 ```
 https://<your-nc-domain>:443 {
-    reverse_proxy localhost:11000
+    reverse_proxy localhost:11000 # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 }
 ```
 The Caddyfile is a text file called `Caddyfile` (no extension) which – if you should be running Caddy inside a container – should usually be created in the same location as your `compose.yaml` file prior to starting the container.
@@ -175,7 +175,7 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
 1. Add this to your Caddyfile:
     ```
     https://<your-nc-domain>:443 {
-        reverse_proxy localhost:11000
+        reverse_proxy localhost:11000 # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
         tls {
             dns <provider> <key>
         }
@@ -310,7 +310,7 @@ backend acme_challenge_backend
 backend Nextcloud
     mode http
     balance source
-    server Nextcloud localhost:11000 
+    server Nextcloud localhost:11000 # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 ```
 
 ⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
@@ -374,7 +374,7 @@ server {
     server_name <your-nc-domain>;
 
     location / {
-        proxy_pass http://127.0.0.1:11000$request_uri; # adjust to match APACHE_PORT and APACHE_IP_BINDING
+        proxy_pass http://127.0.0.1:11000$request_uri; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Port $server_port;
@@ -509,7 +509,7 @@ const http = require('http');
 
 const app = express();
 const proxy = HttpProxy.createProxyServer({
-	target: 'http://localhost:11000',
+	target: 'http://localhost:11000', // Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 	// Timeout can be changed to your liking.
 	timeout: 1000 * 60 * 3,
 	proxyTimeout: 1000 * 60 * 3,
@@ -657,7 +657,7 @@ The examples below define the dynamic configuration in YAML files. If you rather
         nextcloud:
           loadBalancer:
             servers:
-              - url: "http://localhost:11000" # Use the host's IP address if Traefik runs outside the host network
+              - url: "http://localhost:11000" # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
       middlewares:
         nextcloud-secure-headers:
