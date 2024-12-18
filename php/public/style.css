@@ -11,8 +11,12 @@
     --color-error-text: #c20505;
     --color-success: #46ba61;
     --color-running: #ffd000;
-    --color-info: #0071ad;
-    --color-info-hover: #00aaef;
+    --color-primary-element: #00679e;
+    --color-primary-element-hover: #005a8a;
+    --color-primary-element-text: #ffffff;
+    --color-primary-element-light: #e5eff5;
+    --color-primary-element-light-hover: #dbe4ea;
+    --color-primary-element-light-text: #00293f;
     --color-border-maxcontrast: #7d7d7d;
     --color-loader: #f3f3f3;
     --color-disabled: #d3d3d3; /* light gray background for disabled checkboxes */
@@ -52,8 +56,12 @@ Note: Unfortunately, it's not possible to calculate this dynamically using CSS v
     --color-error: #ff3333;
     --color-error-hover: #ff6666;
     --color-error-text: #ff8080;
-    --color-info: #00aeff;
-    --color-info-hover: #33beff;
+    --color-primary-element:#0091f2;
+    --color-primary-element-hover:#079cff;
+    --color-primary-element-text:#000000;
+    --color-primary-element-light:#14232c;
+    --color-primary-element-light-hover:#1e2d35;
+    --color-primary-element-light-text:#99d3f9;
     --color-loader: var(--color-border-maxcontrast);
     --border-hover: var(--border);
 }
@@ -68,11 +76,11 @@ html, body {
 
 a {
     text-decoration: none;
-    color: var(--color-info);
+    color: var(--color-primary-element);
 }
 
 a:hover {
-    color: var(--color-info-hover);
+    color: var(--color-primary-element-hover);
 }
 
 a.button,
@@ -81,25 +89,51 @@ input[type="submit"] {
     width: auto;
     height: 34px;
     cursor: pointer;
-    background-color: var(--color-nextcloud-blue);
+    background-color: var(--color-primary-element);
     font-weight: bold;
     border-radius: var(--border-radius);
     margin: 3px 3px 3px 0;
     font-size: var(--default-font-size);
-    color: white;
-    border: .5px solid var(--color-main-border);
+    color: var(--color-primary-element-text);
+    border: none;
     outline: none;
 }
 
 a.button:focus,
 input[type="submit"]:focus {
-    border: 1px solid var(--color-main-border);
+    outline: 2px solid var(--color-main-border);
 }
 
 a.button:hover,
 input[type="submit"]:hover {
-    background-color: var(--color-info-hover);
+    background-color: var(--color-primary-element-hover);
 }
+
+
+a.button.light:hover,
+input[type="submit"].light:hover {
+    background-color: var(--color-primary-element-light);
+    color: var(--color-primary-element-light-text);
+}
+
+
+a.button.light,
+input[type="submit"].light {
+    background-color: var(--color-primary-element-light);
+}
+
+a.button.error,
+input[type="submit"].error {
+    background-color: var(--color-error);
+}
+
+a.button.error:hover,
+input[type="submit"].error:hover {
+    background-color: var(--color-error-hover);
+}
+
+
+
 
 summary {
     cursor: pointer;
@@ -352,7 +386,7 @@ input[type="checkbox"]:not(:disabled) {
     -webkit-appearance: none; /* remove default styling */
     -moz-appearance: none;
     appearance: none;
-    border: 1px solid var(--color-nextcloud-blue);
+    border: 1px solid var(--color-primary-element);
     border-radius: 2px;
     cursor: pointer;
     position: relative;
@@ -362,12 +396,12 @@ input[type="checkbox"]:not(:disabled) {
 
 /* Hover effects for enabled checkboxes */
 input[type="checkbox"]:not(:disabled):hover {
-    border-color: var(--color-info-hover);
+    border-color: var(--color-primary-element-hover);
 }
 
 /* Checkmark styling for enabled checkboxes */
 input[type="checkbox"]:checked:not(:disabled) {
-    background-color: var(--color-nextcloud-blue);
+    background-color: var(--color-primary-element);
     border-color: var(--color-border-maxcontrast);
 }
 
