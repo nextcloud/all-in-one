@@ -50,7 +50,7 @@
             {% endif %}
         >
         <label for="fulltextsearch">
-            Fulltextsearch (needs ~1GB additional RAM)
+            Fulltextsearch (needs ~1GB additional RAM, <a href="https://github.com/nextcloud/all-in-one/discussions/5768">does not work on Kernels without Seccomp</a>)
             {% if is_fulltextsearch_enabled == false %}
                 . <strong>Please note:</strong> the initial indexing can take a long time during which Nextcloud will be unavailable
             {% endif %}
