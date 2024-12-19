@@ -210,6 +210,11 @@ class ConfigurationManager
     }
 
     public function SetFulltextsearchEnabledState(int $value) : void {
+        # Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
+        if ($this->GetCollaboraSeccompDisabledState() === 'true') {
+            $value = 0;
+        }
+
         $config = $this->GetConfig();
         $config['isFulltextsearchEnabled'] = $value;
         $this->WriteConfig($config);
