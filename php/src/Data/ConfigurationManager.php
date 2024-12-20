@@ -984,18 +984,14 @@ class ConfigurationManager
     }
 
     private function GetEnabledGPUMode() : string {
-        $envVariableName = 'NEXTCLOUD_NVIDIA_GPU_MODE';
-        $configName = 'nextcloud_nvidia_gpu_mode';
+        $envVariableName = 'NVIDIA_GPU_MODE';
+        $configName = 'nvidia_gpu_mode';
         $defaultValue = '';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
     public function isNvidiaRuntimeEnabled() : bool {
-        return $this->GetEnabledGPUMode() === 'runtime';
-    }
-
-    public function isNvidiaDeployEnabled() : bool {
-        return $this->GetEnabledGPUMode() === 'deploy';
+        return $this->GetEnabledGPUMode() === 'true';
     }
 
     private function GetKeepDisabledApps() : string {
