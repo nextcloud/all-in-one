@@ -983,7 +983,7 @@ class ConfigurationManager
         }
     }
 
-    private function GetEnabledGPUMode() : string {
+    private function GetEnabledNvidiaGpu() : string {
         $envVariableName = 'ENABLE_NVIDIA_GPU';
         $configName = 'enable_nvidia_gpu';
         $defaultValue = '';
@@ -991,7 +991,7 @@ class ConfigurationManager
     }
 
     public function isNvidiaGpuEnabled() : bool {
-        return $this->GetEnabledGPUMode() === 'true';
+        return $this->GetEnabledNvidiaGpu() === 'true';
     }
 
     private function GetKeepDisabledApps() : string {
