@@ -990,7 +990,7 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
-    public function isNvidiaRuntimeEnabled() : bool {
+    public function isNvidiaGpuEnabled() : bool {
         return $this->GetEnabledGPUMode() === 'true';
     }
 

@@ -93,7 +93,7 @@ readonly class Container {
         return $this->devices;
     }
 
-    public function CanUseNidiaGpu() : bool {
+    public function isNvidiaGpuEnabled() : bool {
         return $this->enable_nvidia_gpu;
     }
 
