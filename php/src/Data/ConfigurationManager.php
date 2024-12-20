@@ -984,8 +984,8 @@ class ConfigurationManager
     }
 
     private function GetEnabledGPUMode() : string {
-        $envVariableName = 'NVIDIA_GPU_MODE';
-        $configName = 'nvidia_gpu_mode';
+        $envVariableName = 'ENABLE_NVIDIA_GPU';
+        $configName = 'enable_nvidia_gpu';
         $defaultValue = '';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }

@@ -783,13 +783,13 @@ In order to use that, you need to add `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true` t
 #### With proprietary drivers for Nvidia :warning: BETA
 
 > [!WARNING]
-> This only works if the Nvidia Toolkit is installed on the host! Make sure that it is correctly configured on the host.
+> This only works if the Nvidia Toolkit is installed on the host and an NVIDIA GPU is enabled! Make sure that it is correctly configured on the host.
 > 
 > This feature is in beta. Since the proprietary, we haven't a lot of user using proprietary drivers, we can't guarantee the stability of this feature. Your feedback is welcome.
 
 This method use the [Nvidia Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html) with the nvidia runtime.
 
-In order to use that, you need to add `--env NVIDIA_GPU_MODE=true` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) which will enable the nvidia runtime.
+In order to use that, you need to add `--env ENABLE_NVIDIA_GPU=true` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) which will enable the nvidia runtime.
 
 If you're using WSL2 and want to use the NVIDIA runtime, please follow the instructions to [install the NVIDIA Container Toolkit meta-version in WSL](https://docs.nvidia.com/cuda/wsl-user-guide/index.html#cuda-support-for-wsl-2).
 
