@@ -771,7 +771,7 @@ Some container can use GPU acceleration to increase performance like [memories a
 #### With open source drivers MESA for AMD, Intel and **new** drivers `Nouveau` for Nvidia
 
 > [!WARNING]  
-> This only works if the `/dev/dri` device is present on the host! If it does not exists on your host, don't proceed as otherwise the Nextcloud container will fail to start! If you are unsure about this, better do not proceed with the instructions below. Make sure that your driver is correctly configured on the host.
+> This only works if the `/dev/dri` device is present on the host! If it does not exist on your host, don't proceed as otherwise the Nextcloud container will fail to start! If you are unsure about this, better do not proceed with the instructions below. Make sure that your driver is correctly configured on the host.
 
 A list of supported device can be fond in [MESA 3D documentation](https://docs.mesa3d.org/systems.html).
 
@@ -783,7 +783,7 @@ In order to use that, you need to add `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true` t
 #### With proprietary drivers for Nvidia :warning: BETA
 
 > [!WARNING]
-> This only works if the Nvidia Toolkit is installed on the host and an NVIDIA GPU is enabled! Make sure that it is correctly configured on the host.
+> This only works if the Nvidia Toolkit is installed on the host and an NVIDIA GPU is enabled! Make sure that it is correctly configured on the host. If it does not exist on your host, don't proceed as otherwise the Nextcloud container will fail to start! If you are unsure about this, better do not proceed with the instructions below.
 > 
 > This feature is in beta. Since the proprietary, we haven't a lot of user using proprietary drivers, we can't guarantee the stability of this feature. Your feedback is welcome.
 
