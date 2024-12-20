@@ -250,7 +250,7 @@ readonly class ContainerDefinitionFetcher {
             }
 
             $enableNvidiaGpu = false;
-            if (is_bool($entry['enable_nvidia_gpu'])) {
+            if (isset($entry['enable_nvidia_gpu'])) {
                 $enableNvidiaGpu = $entry['enable_nvidia_gpu'];
             }
 
