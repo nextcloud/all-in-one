@@ -29,11 +29,11 @@
     <p>Nextcloud has a timeout of {{ nextcloud_max_time }} seconds configured (important for big file uploads). See the <a href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud">NEXTCLOUD_MAX_TIME documentation</a> on how to change this.</p>
 
     <p>
-        {% if is_dri_device_enabled == true and is_nvidia_runtime_enabled == true %}
+        {% if is_dri_device_enabled == true and is_nvidia_gpu_enabled == true %}
             Hardware acceleration is enabled with the /dev/dri device and the Nvidia runtime.
         {% elseif is_dri_device_enabled == true %}
             Hardware acceleration is enabled with the /dev/dri device.
-        {% elseif is_nvidia_runtime_enabled == true %}
+        {% elseif is_nvidia_gpu_enabled == true %}
             Hardware acceleration is enabled with the Nvidia runtime.
         {% else %}
             Hardware acceleration is not enabled. It's recommended to enable hardware transcoding for better performance.
