@@ -125,6 +125,7 @@ RUN set -ex; \
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
     { \
+        echo 'opcache.max_accelerated_files=10000'; \
         echo 'opcache.memory_consumption=256'; \
         echo 'opcache.interned_strings_buffer=64'; \
         echo 'opcache.save_comments=1'; \
