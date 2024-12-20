@@ -263,6 +263,7 @@
       "devices": [
         "/dev/dri"
       ],
+      "enable_nvidia_gpu": true,
       "backup_volumes": [
         "nextcloud_aio_nextcloud"
       ],
@@ -520,6 +521,10 @@
       "profiles": [
         "talk-recording"
       ],
+      "devices": [
+        "/dev/dri"
+      ],
+      "enable_nvidia_gpu": true,
       "networks": [
         "nextcloud-aio"
       ],

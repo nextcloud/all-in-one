@@ -29,12 +29,16 @@
     <p>Nextcloud has a timeout of {{ nextcloud_max_time }} seconds configured (important for big file uploads). See the <a href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud">NEXTCLOUD_MAX_TIME documentation</a> on how to change this.</p>
 
     <p>
-        {% if is_dri_device_enabled == true %}
-            The /dev/dri device which is needed for hardware transcoding is getting attached to the Nextcloud container.
+        {% if is_dri_device_enabled == true and is_nvidia_gpu_enabled == true %}
+            Hardware acceleration is enabled with the /dev/dri device and the Nvidia runtime.
+        {% elseif is_dri_device_enabled == true %}
+            Hardware acceleration is enabled with the /dev/dri device.
+        {% elseif is_nvidia_gpu_enabled == true %}
+            Hardware acceleration is enabled with the Nvidia runtime.
         {% else %}
-            The /dev/dri device which is needed for hardware transcoding is not attached to the Nextcloud container.
+            Hardware acceleration is not enabled. It's recommended to enable hardware transcoding for better performance.
         {% endif %}
-        See the <a href="https://github.com/nextcloud/all-in-one#how-to-enable-hardware-transcoding-for-nextcloud">NEXTCLOUD_ENABLE_DRI_DEVICE documentation</a> on how to change this.</p>
+        See the <a href="https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud">hardware acceleration documentation</a> on how to change this.</p>
 
     <p>For further documentation on AIO, refer to <strong><a href="https://github.com/nextcloud/all-in-one#nextcloud-all-in-one">this page</a></strong>. You can use the browser search [CTRL]+[F] to search through the documentation. Additional documentation can be found <strong><a href="https://github.com/nextcloud/all-in-one/discussions/categories/wiki">here</a></strong>.</p>
 </details>

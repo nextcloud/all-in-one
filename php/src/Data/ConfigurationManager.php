@@ -983,6 +983,17 @@ class ConfigurationManager
         }
     }
 
+    private function GetEnabledNvidiaGpu() : string {
+        $envVariableName = 'ENABLE_NVIDIA_GPU';
+        $configName = 'enable_nvidia_gpu';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function isNvidiaGpuEnabled() : bool {
+        return $this->GetEnabledNvidiaGpu() === 'true';
+    }
+
     private function GetKeepDisabledApps() : string {
         $envVariableName = 'NEXTCLOUD_KEEP_DISABLED_APPS';
         $configName = 'nextcloud_keep_disabled_apps';

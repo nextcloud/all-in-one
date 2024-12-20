@@ -160,6 +160,9 @@
 							"pattern": "^/dev/[a-z]+$"
 						}
 					},
+					"enable_nvidia_gpu": {
+						"type": "boolean"
+					},
 					"apparmor_unconfined": {
 						"type": "boolean"
 					},

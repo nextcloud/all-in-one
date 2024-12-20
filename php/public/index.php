@@ -125,6 +125,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_max_time' => $configurationManager->GetNextcloudMaxTime(),
         'nextcloud_memory_limit' => $configurationManager->GetNextcloudMemoryLimit(),
         'is_dri_device_enabled' => $configurationManager->isDriDeviceEnabled(),
+        'is_nvidia_gpu_enabled' => $configurationManager->isNvidiaGpuEnabled(),
         'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled(),
         'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled(),
         'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled(),        
