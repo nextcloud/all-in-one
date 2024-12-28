@@ -1,0 +1,49 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-local-ai-vulkan",
+            "display_name": "Local AI",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/local-ai-vulkan",
+            "image": "docjyJ/aio-local-ai-vulkan",
+            "image_tag": "%AIO_CHANNEL%",
+            "internal_port": "8080",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "MODELS_PATH=/models"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_localai_vulkan_models",
+                    "destination": "/models",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_localai_vulkan_images",
+                    "destination": "/tmp/generated/images/",
+                    "writeable": true
+                },
+                {
+                    "source": "%NEXTCLOUD_DATADIR%",
+                    "destination": "/nextcloud",
+                    "writeable": false
+                }
+            ],
+            "devices": [
+                "/dev/dri"
+            ],
+            "enable_nvidia_gpu": true,
+            "nextcloud_exec_commands": [
+                "mkdir '/mnt/ncdata/admin/files/nextcloud-aio-local-ai-vulkan'",
+                "touch '/mnt/ncdata/admin/files/nextcloud-aio-local-ai-vulkan/models.yaml'",
+                "echo 'Scanning nextcloud-aio-local-ai-vulkan folder for admin user...'",
+                "php /var/www/html/occ files:scan --path='/admin/files/nextcloud-aio-local-ai-vulkan'",
+                "php /var/www/html/occ app:install integration_openai",
+                "php /var/www/html/occ app:enable integration_openai",
+                "php /var/www/html/occ config:app:set integration_openai url --value http://nextcloud-aio-local-ai-vulkan:8080",
+                "php /var/www/html/occ app:install assistant",
+                "php /var/www/html/occ app:enable assistant"
+            ]
+        }
+    ]
+}
