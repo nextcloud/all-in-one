@@ -29,10 +29,7 @@
                     "writeable": false
                 }
             ],
-            "devices": [
-                "/dev/dri"
-            ],
-            "enable_nvidia_gpu": true,
+            "enable_nvidia_gpu": false,
             "nextcloud_exec_commands": [
                 "mkdir '/mnt/ncdata/admin/files/nextcloud-aio-local-ai'",
                 "touch '/mnt/ncdata/admin/files/nextcloud-aio-local-ai/models.yaml'",
