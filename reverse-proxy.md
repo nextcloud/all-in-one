@@ -737,12 +737,6 @@ Add the following `web.config` file to the root of the site you created as the r
           </conditions>
           <!-- Note that {UNENCODED_URL} already contains starting slash, so we must add it directly after the port number without additional slash -->
           <action type="Rewrite" url="http://nc-server-farm:11000{UNENCODED_URL}" appendQueryString="false" />
-          <!-- Setting forwarded headers is not strictly needed but it is a good practice -->
-	  <serverVariables>
-            <set name="HTTP_X_FORWARDED_HOST" value="{HTTP_HOST}" />
-	    <set name="HTTP_X_FORWARDED_SCHEMA" value="https" />
-	    <set name="HTTP_X_FORWARDED_PROTO" value="https" />
-	  </serverVariables>
         </rule>
       </rules>
     </rewrite>
