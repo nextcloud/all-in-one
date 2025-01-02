@@ -1,0 +1,99 @@
+services:
+  nextcloud-aio-local-ai:
+    image: szaimen/aio-local-ai:v2
+    expose: "8080"
+    restart: unless-stopped
+    environment:
+      - "TZ=${TIMEZONE}"
+      - MODELS_PATH=/models
+    volumes:
+      - nextcloud_aio_localai_models:/models
+      - nextcloud_aio_localai_images:/tmp/generated/images/
+      - ${NEXTCLOUD_DATADIR}:/nextcloud:ro
+    profiles:
+      - local-ai
+    networks:
+      - nextcloud-aio
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-caddy:
+    image: szaimen/aio-caddy:v2
+    expose: "443"
+    restart: unless-stopped
+    ports:
+      - 443:443/tcp
+      - 443:443/udp
+    environment:
+      - "TZ=${TIMEZONE}"
+      - "NC_DOMAIN=${NC_DOMAIN}"
+      - "APACHE_PORT=${APACHE_PORT}"
+    volumes:
+      - nextcloud_aio_caddy:/data
+      - "${NEXTCLOUD-DATADIR}:/nextcloud:ro"
+    profiles:
+      - caddy
+    networks:
+      - nextcloud-aio
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-dlna:
+    image: thanek/nextcloud-dlna
+    network_mode: host
+    restart: unless-stopped
+    depends_on:
+      - nextcloud-aio-database
+    environment:
+      - "NC_DOMAIN=${NC_DOMAIN}"
+      - NC_PORT=443
+      - NEXTCLOUD_DLNA_SERVER_PORT=9999
+      - NEXTCLOUD_DLNA_FRIENDLY_NAME=nextcloud-aio
+      - NEXTCLOUD_DATA_DIR=/data
+      - NEXTCLOUD_DB_TYPE=postgres
+      - NEXTCLOUD_DB_HOST=nextcloud-aio-database
+      - NEXTCLOUD_DB_PORT=5432
+      - NEXTCLOUD_DB_NAME=nextcloud_database
+      - NEXTCLOUD_DB_USER=oc_nextcloud
+      - "NEXTCLOUD_DB_PASS=${DATABASE_PASSWORD}"
+    volumes:
+      - ${NEXTCLOUD_DATADIR}:/data:ro
+    profiles:
+      - dlna
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-facerecognition:
+    image: matiasdelellis/facerecognition-external-model:v1
+    expose: "5000"
+    restart: unless-stopped
+    environment:
+      - "TZ=${TIMEZONE}"
+      - API_KEY=some-super-secret-api-key
+      - FACE_MODEL=3
+    aio_variables:
+      - nextcloud_memory_limit=2048M
+    profiles:
+      - facerecognition
+    networks:
+      - nextcloud-aio
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-jellyfin:
+    image: jellyfin/jellyfin
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      - "TZ=${TIMEZONE}"
+    volumes:
+      - nextcloud_aio_jellyfin:"/config"
+      - ${NEXTCLOUD_DATADIR}:/media:ro
+      - ${NEXTCLOUD_MOUNT}:${NEXTCLOUD_MOUNT}:ro
+    devices:
+      - "/dev/dri"
+    profiles:
+      - jellyfin
+    cap_drop:
+      - NET_RAW
+# TODO: inject post run commands
