@@ -879,7 +879,7 @@ Use this environment variable during the initial startup of the mastercontainer 
 
 ## 4. Open the AIO interface
 
-After starting AIO, you should be able to access the AIO Interface via `https://ip.address.of.the.host:8080`.<br>
+After starting AIO, you should be able to access the AIO Interface via `https://ip.address.of.the.host:8080` and type in and validate the domain that you have configured.<br>
 ⚠️ **Important:** do always use an ip-address if you access this port and not a domain as HSTS might block access to it later! (It is also expected that this port uses a self-signed certificate due to security concerns which you need to accept in your browser)<br>
 Enter your domain in the AIO interface that you've used in the reverse proxy config and you should be done. Please do not forget to open/forward port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
