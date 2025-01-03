@@ -1348,12 +1348,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "3.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
@@ -1633,16 +1633,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.17.1",
+            "version": "v3.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "677ef8da6497a03048192aeeb5aa3018e379ac71"
+                "reference": "acffa88cc2b40dbe42eaf3a5025d6c0d4600cc50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/677ef8da6497a03048192aeeb5aa3018e379ac71",
-                "reference": "677ef8da6497a03048192aeeb5aa3018e379ac71",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/acffa88cc2b40dbe42eaf3a5025d6c0d4600cc50",
+                "reference": "acffa88cc2b40dbe42eaf3a5025d6c0d4600cc50",
                 "shasum": ""
             },
             "require": {
@@ -1697,7 +1697,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v3.17.1"
+                "source": "https://github.com/twigphp/Twig/tree/v3.18.0"
             },
             "funding": [
                 {
@@ -1709,7 +1709,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-12-12T09:58:10+00:00"
+            "time": "2024-12-29T10:51:50+00:00"
         }
     ],
     "packages-dev": [
@@ -1973,13 +1973,13 @@
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "3.x-dev"
-                },
                 "phpstan": {
                     "includes": [
                         "extension.neon"
                     ]
+                },
+                "branch-alias": {
+                    "dev-main": "3.x-dev"
                 }
             },
             "autoload": {
@@ -2940,16 +2940,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v6.4.15",
+            "version": "v6.4.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "f1fc6f47283e27336e7cebb9e8946c8de7bff9bd"
+                "reference": "799445db3f15768ecc382ac5699e6da0520a0a04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/f1fc6f47283e27336e7cebb9e8946c8de7bff9bd",
-                "reference": "f1fc6f47283e27336e7cebb9e8946c8de7bff9bd",
+                "url": "https://api.github.com/repos/symfony/console/zipball/799445db3f15768ecc382ac5699e6da0520a0a04",
+                "reference": "799445db3f15768ecc382ac5699e6da0520a0a04",
                 "shasum": ""
             },
             "require": {
@@ -3014,7 +3014,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v6.4.15"
+                "source": "https://github.com/symfony/console/tree/v6.4.17"
             },
             "funding": [
                 {
@@ -3030,7 +3030,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-11-06T14:19:14+00:00"
+            "time": "2024-12-07T12:07:30+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -3100,16 +3100,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v6.4.13",
+            "version": "v6.4.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "daea9eca0b08d0ed1dc9ab702a46128fd1be4958"
+                "reference": "1d0e8266248c5d9ab6a87e3789e6dc482af3c9c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/daea9eca0b08d0ed1dc9ab702a46128fd1be4958",
-                "reference": "daea9eca0b08d0ed1dc9ab702a46128fd1be4958",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/1d0e8266248c5d9ab6a87e3789e6dc482af3c9c7",
+                "reference": "1d0e8266248c5d9ab6a87e3789e6dc482af3c9c7",
                 "shasum": ""
             },
             "require": {
@@ -3144,7 +3144,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v6.4.13"
+                "source": "https://github.com/symfony/finder/tree/v6.4.17"
             },
             "funding": [
                 {
@@ -3160,7 +3160,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-10-01T08:30:56+00:00"
+            "time": "2024-12-29T13:51:37+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
@@ -3345,12 +3345,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "3.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
