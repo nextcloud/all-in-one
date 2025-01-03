@@ -7,7 +7,7 @@ This container bundles Local AI and auto-configures it for you.
 - Example for content of `models.yaml` (if you add all of them, it takes around 10GB additional space):
 ```yaml
 # Stable Diffusion in NCNN with c++, supported txt2img and img2img 
-- url: github:mudler/LocalAI/gallery/stablediffusion.yaml
+- url: github:mudler/LocalAI/blob/master/gallery/stablediffusion.yaml
   name: Stable_diffusion
 ```
 -  To make it work, you first need to browse `https://your-nc-domain.com/settings/admin/ai` and enable or disable specific features for your models in the openAI settings. Afterwards using the Nextcloud Assistant should work.
