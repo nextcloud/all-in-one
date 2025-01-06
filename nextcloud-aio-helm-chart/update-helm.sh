@@ -55,7 +55,7 @@ yq -i 'del(.services.[].tmpfs)' latest.yml
 # Remove cap_drop in order to add it later again easier
 yq -i 'del(.services.[].cap_drop)' latest.yml
 # Remove SYS_NICE for imaginary as it is not supported with RPSS
-sed -i "s|- SYS_NICE$|- NET_BIND_SERVICE|" latest.yml
+yq -i 'del(.services."nextcloud-aio-imaginary".cap_add)' latest.yml
 # cap SYS_ADMIN is called CAP_SYS_ADMIN in k8s
 sed -i "s|- SYS_ADMIN$|- CAP_SYS_ADMIN|" latest.yml
 
@@ -461,10 +461,9 @@ cat << EOL > /tmp/security.conf
               {{- else }}
               drop: ["NET_RAW"]
               {{- end }}
-              add: ["NET_BIND_SERVICE"]
 EOL
 # shellcheck disable=SC1083
-find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*imaginary-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*apache-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
 
 cat << EOL > /tmp/security.conf
             # The items below only work in container context
@@ -475,9 +474,11 @@ cat << EOL > /tmp/security.conf
               {{- else }}
               drop: ["NET_RAW"]
               {{- end }}
+              add: ["NET_BIND_SERVICE"]
 EOL
+
 # shellcheck disable=SC1083
-find ./ -name '*imaginary-deployment.yaml*' -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+find ./ -name '*apache-deployment.yaml*' -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
 
 cat << EOL > /tmp/security.conf
           {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
@@ -490,7 +491,6 @@ cat << EOL > /tmp/security.conf
               {{- else }}
               drop: ["NET_RAW"]
               {{- end }}
-              add: ["NET_BIND_SERVICE"]
           {{- end }} # AIO-config - do not change this comment!
 EOL
 # shellcheck disable=SC1083
