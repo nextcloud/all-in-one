@@ -989,7 +989,7 @@ class ConfigurationManager
     }
 
     private function GetEnabledNvidiaGpu() : string {
-        $envVariableName = 'ENABLE_NVIDIA_GPU';
+        $envVariableName = 'NEXTCLOUD_ENABLE_NVIDIA_GPU';
         $configName = 'enable_nvidia_gpu';
         $defaultValue = '';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
