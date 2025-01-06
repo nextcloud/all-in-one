@@ -762,7 +762,8 @@ Add the following `web.config` file to the root of the site you created as the r
   </system.web>
   <system.webServer>
     <rewrite>
-      <rules>
+      <!-- useOriginalURLEncoding needs to be set to false, otherwise IIS will double encode urls causing all files with spaces or special characters to be inaccessible -->
+      <rules useOriginalURLEncoding="false">
         <!-- Force https -->
         <rule name="Https" stopProcessing="true">
           <match url="(.*)" />
@@ -777,7 +778,8 @@ Add the following `web.config` file to the root of the site you created as the r
           <conditions>
             <add input="{HTTPS}" pattern="^ON$" />
           </conditions>
-          <action type="Rewrite" url="http://nc-server-farm:11000/{UNENCODED_URL}" appendQueryString="false" />
+          <!-- Note that {UNENCODED_URL} already contains starting slash, so we must add it directly after the port number without additional slash -->
+          <action type="Rewrite" url="http://nc-server-farm:11000{UNENCODED_URL}" appendQueryString="false" />
         </rule>
       </rules>
     </rewrite>
