@@ -3,6 +3,7 @@ This container bundles the external model of facerecognition and auto-configures
 
 ### Notes
 - This container needs imaginary in order to analyze modern file format images. Make sure to enable imaginary in the AIO interface before adding this container.
+- The image analysis is currently set to fixed value of `1G`. See [this](https://github.com/search?q=repo%3Anextcloud%2Fall-in-one+1G+path%3A%2F%5Ecommunity-containers%5C%2Ffacerecognition%5C%2F%2F&type=code)
 - Facerecognition is by default disabled for all users, if you want to enable facerecognition for all users, you can run the following before adding this container:
     ```bash
     # Go into the container
