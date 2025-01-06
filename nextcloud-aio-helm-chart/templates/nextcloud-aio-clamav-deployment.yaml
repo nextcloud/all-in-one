@@ -53,7 +53,6 @@ spec:
               {{- else }}
               drop: ["NET_RAW"]
               {{- end }}
-              add: ["NET_BIND_SERVICE"]
       containers:
         - env:
             - name: CLAMD_STARTUP_TIMEOUT
@@ -92,7 +91,6 @@ spec:
               {{- else }}
               drop: ["NET_RAW"]
               {{- end }}
-              add: ["NET_BIND_SERVICE"]
           volumeMounts:
             - mountPath: /var/lib/clamav
               subPath: data
