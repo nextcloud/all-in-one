@@ -90,6 +90,8 @@ spec:
               value: "{{ .Values.NEXTCLOUD_PASSWORD }}"
             - name: ADMIN_USER
               value: admin
+            - name: APACHE_HOST
+              value: nextcloud-aio-apache
             - name: APACHE_PORT
               value: "{{ .Values.APACHE_PORT }}"
             - name: CLAMAV_ENABLED
@@ -178,7 +180,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: nextcloud/aio-nextcloud:20241216_102930
+          image: nextcloud/aio-nextcloud:20250106_094420
           {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context
