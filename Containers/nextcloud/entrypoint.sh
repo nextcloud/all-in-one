@@ -864,17 +864,20 @@ else
 fi
 
 # Docker socket proxy
+# app_api is a shipped app
+if [ -d "/var/www/html/custom_apps/app_api" ]; then
+    php /var/www/html/occ app:disable app_api
+    rm -r "/var/www/html/custom_apps/app_api"
+fi
 if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
-    if ! [ -d "/var/www/html/custom_apps/app_api" ]; then
-        php /var/www/html/occ app:install app_api
-    elif [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
+    if [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable app_api
-    elif [ "$SKIP_UPDATE" != 1 ]; then
-        php /var/www/html/occ app:update app_api
     fi
 else
-    if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
-        php /var/www/html/occ app:remove app_api
+    if [ "$REMOVE_DISABLED_APPS" = yes ]; then
+        if [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "no" ]; then
+            php /var/www/html/occ app:disable app_api
+        fi
     fi
 fi
 
