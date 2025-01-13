@@ -62,7 +62,7 @@ fi
 
 # Set sensitive values as env
 export DATABASE_URL="$DATABASE_TYPE://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
-export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
+export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
 
 # Run it
 /nextcloud/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \

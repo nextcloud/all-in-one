@@ -18,4 +18,8 @@ if (getenv('REDIS_HOST')) {
   if (getenv('REDIS_DB_INDEX')) {
     $CONFIG['redis']['dbindex'] = (int) getenv('REDIS_DB_INDEX');
   }
+
+  if (getenv('REDIS_USER') !== false) {
+    $CONFIG['redis']['user'] = getenv('REDIS_USER');
+  }
 }
