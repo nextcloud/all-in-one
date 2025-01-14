@@ -11,6 +11,10 @@ if [ -z "$REDIS_DB_INDEX" ]; then
     REDIS_DB_INDEX=0
 fi
 
+if [ -n "$REDIS_USER_AUTH" ]; then
+    # shellcheck disable=SC2001
+    REDIS_USER="$(echo "$REDIS_USER_AUTH" | sed 's|&auth[]=||')"
+fi
 export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
 
 # Run it

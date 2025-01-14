@@ -19,7 +19,7 @@ if (getenv('REDIS_HOST')) {
     $CONFIG['redis']['dbindex'] = (int) getenv('REDIS_DB_INDEX');
   }
 
-  if (getenv('REDIS_USER') !== false) {
-    $CONFIG['redis']['user'] = getenv('REDIS_USER');
+  if (getenv('REDIS_USER_AUTH') !== false) {
+    $CONFIG['redis']['user'] = str_replace("&auth[]=", "", getenv('REDIS_USER_AUTH'));
   }
 }
