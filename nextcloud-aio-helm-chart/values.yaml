@@ -34,7 +34,7 @@ NEXTCLOUD_STARTUP_APPS: deck twofactor_totp tasks calendar contacts notes       
 NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container
 NEXTCLOUD_UPLOAD_LIMIT: 16G          # This allows to change the upload limit of the Nextcloud container
 REMOVE_DISABLED_APPS: yes        # Setting this to no keep Nextcloud apps that are disabled via their switch and not uninstall them if they should be installed in Nextcloud.
-TALK_PORT: 3478          # This allows to adjust the port that the talk container is using.
+TALK_PORT: 3478          # This allows to adjust the port that the talk container is using. It should be set to something higher than 1024! Otherwise it might not work!
 UPDATE_NEXTCLOUD_APPS: no          # When setting to yes (with quotes), it will automatically update all installed Nextcloud apps upon container startup on saturdays.
 
 STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes
