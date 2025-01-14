@@ -2,7 +2,7 @@
     "aio_services_v1": [
         {
             "container_name": "nextcloud-aio-calcardbackup",
-            "display_name": "Cal and card backup",
+            "display_name": "Calendar and contacts backup",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/calcardbackup",
             "image": "waja/calcardbackup",
             "image_tag": "latest",
@@ -16,13 +16,6 @@
                 "DB_HOST=nextcloud-aio-database",
                 "DB_PORT=5432",
                 "CALCARD_OPTS=-ltm 5"
-            ],
-            "networks": [
-                "nextcloud-aio"
-              ],
-            "depends_on": [
-              "nextcloud-aio-database",
-              "nextcloud-aio-nextcloud"
             ],
             "volumes": [
                 {
