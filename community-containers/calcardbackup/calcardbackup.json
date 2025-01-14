@@ -8,7 +8,7 @@
             "image_tag": "latest",
             "restart": "unless-stopped",
             "environment": [
-                "CRON_TIME=5 4 * * *",
+                "CRON_TIME=0 0 * * *",
                 "INIT_BACKUP=yes",
                 "BACKUP_DIR=/backup",
                 "NC_DIR=/nextcloud",
