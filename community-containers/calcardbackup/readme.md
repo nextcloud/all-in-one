@@ -4,8 +4,12 @@ This container packages calcardbackup. This is a container to exports calendars 
 https://hub.docker.com/r/waja/calcardbackup  
   
 ### Notes  
+- Backups will be created at 00:00 CEST every day. Make sure that this does not conflict with the configured daily backups inside AIO.
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack  
   
 ### Repository  
-https://codeberg.org/BernieO/calcardbackup  
+https://github.com/waja/docker-calcardbackup
+
+### Maintainer
+https://github.com/pailloM
   
