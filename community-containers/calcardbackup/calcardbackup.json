@@ -1,0 +1,37 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-calcardbackup",
+            "display_name": "Calendar and contacts backup",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/calcardbackup",
+            "image": "waja/calcardbackup",
+            "image_tag": "latest",
+            "restart": "unless-stopped",
+            "environment": [
+                "CRON_TIME=0 0 * * *",
+                "INIT_BACKUP=yes",
+                "BACKUP_DIR=/backup",
+                "NC_DIR=/nextcloud",
+                "NC_HOST=%NC_DOMAIN%",
+                "DB_HOST=nextcloud-aio-database",
+                "DB_PORT=5432",
+                "CALCARD_OPTS=-ltm 5"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_calcardbackup",
+                    "destination": "/backup",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_nextcloud",
+                    "destination": "/nextcloud",
+                    "writeable": false
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_calcardbackup"
+            ]
+        }
+    ]
+}
