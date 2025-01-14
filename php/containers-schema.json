@@ -187,13 +187,6 @@
 							"pattern": "^[a-z-]+$"
 						}
 					},
-					"networks": {
-						"type": "array",
-						"items": {
-							"type": "string",
-							"pattern": "^nextcloud-aio$"
-						}
-					},
 					"read_only": {
 						"type": "boolean"
 					},

@@ -67,9 +67,6 @@
         "nextcloud_aio_nextcloud",
         "nextcloud_aio_apache"
       ],
-      "networks": [
-        "nextcloud-aio"
-      ],
       "read_only": true,
       "tmpfs": [
         "/var/log/supervisord",
@@ -129,9 +126,6 @@
       "backup_volumes": [
         "nextcloud_aio_database",
         "nextcloud_aio_database_dump"
-      ],
-      "networks": [
-        "nextcloud-aio"
       ],
       "read_only": true,
       "tmpfs": [
@@ -268,9 +262,6 @@
       "backup_volumes": [
         "nextcloud_aio_nextcloud"
       ],
-      "networks": [
-        "nextcloud-aio"
-      ],
       "cap_drop": [
         "NET_RAW"
       ]
@@ -317,9 +308,6 @@
         "POSTGRES_USER=nextcloud"
       ],
       "restart": "unless-stopped",
-      "networks": [
-        "nextcloud-aio"
-      ],
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
@@ -361,9 +349,6 @@
         "RECORDING_SECRET"
       ],
       "restart": "unless-stopped",
-      "networks": [
-        "nextcloud-aio"
-      ],
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
@@ -403,9 +388,6 @@
       ],
       "profiles": [
         "collabora"
-      ],
-      "networks": [
-        "nextcloud-aio"
       ],
       "cap_add": [
         "MKNOD",
@@ -466,9 +448,6 @@
         "talk",
         "talk-recording"
       ],
-      "networks": [
-        "nextcloud-aio"
-      ],
       "read_only": true,
       "tmpfs": [
         "/var/log/supervisord",
@@ -526,9 +505,6 @@
         "/dev/dri"
       ],
       "enable_nvidia_gpu": true,
-      "networks": [
-        "nextcloud-aio"
-      ],
       "read_only": true,
       "tmpfs": [
         "/conf"
@@ -690,9 +666,6 @@
       "profiles": [
         "clamav"
       ],
-      "networks": [
-        "nextcloud-aio"
-      ],
       "read_only": true,
       "tmpfs": [
         "/var/lock",
@@ -745,9 +718,6 @@
       "profiles": [
         "onlyoffice"
       ],
-      "networks": [
-        "nextcloud-aio"
-      ],
       "cap_drop": [
         "NET_RAW"
       ]
@@ -784,9 +754,6 @@
       ],
       "profiles": [
         "imaginary"
-      ],
-      "networks": [
-        "nextcloud-aio"
       ],
       "read_only": true,
       "tmpfs": [
@@ -837,9 +804,6 @@
       "restart": "unless-stopped",
       "profiles": [
         "fulltextsearch"
-      ],
-      "networks": [
-        "nextcloud-aio"
       ],
       "secrets": [
         "FULLTEXTSEARCH_PASSWORD"
@@ -910,9 +874,6 @@
         "whiteboard"
       ],
       "read_only": true,
-      "networks": [
-        "nextcloud-aio"
-      ],
       "cap_drop": [
         "NET_RAW"
       ]
