@@ -11,7 +11,7 @@ if [ -z "$REDIS_DB_INDEX" ]; then
     REDIS_DB_INDEX=0
 fi
 
-export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
+export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
 
 # Run it
 exec npm run server:start
