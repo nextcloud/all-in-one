@@ -25,6 +25,11 @@
                     "source": "nextcloud_aio_vaultwarden_logs",
                     "destination": "/vaultwarden",
                     "writeable": false
+                },
+                {
+                    "source": "nextcloud_aio_jellyfin",
+                    "destination": "/jellyfin",
+                    "writeable": false
                 }
             ]
         }
