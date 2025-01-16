@@ -283,6 +283,15 @@ if [ "$?" = 6 ]; then
     exit 1
 fi
 
+# Check if auth.docker.io is reachable
+# Solves issues like https://github.com/nextcloud/all-in-one/discussions/5268
+if ! curl https://auth.docker.io/token | grep -q token; then
+    print_red "Could not reach https://auth.docker.io."
+    echo "Most likely is something blocking access to it."
+    echo "You should be able to fix this by using https://github.com/nextcloud/all-in-one/tree/main/manual-install"
+    exit 1
+fi
+
 # Check that no changes have been made to timezone settings since AIO only supports running in Etc/UTC timezone
 if [ -n "$TZ" ]; then
     print_red "The environmental variable TZ has been set which is not supported by AIO since it only supports running in the default Etc/UTC timezone!"

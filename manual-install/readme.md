@@ -6,11 +6,13 @@ You can run the containers that are build for AIO with docker-compose. This come
 - You can run it without a container having access to the docker socket
 - You can modify all values on your own
 - You can run the containers with docker swarm
+- You can run this in environments where access to docker.io is not possible. See [this issue](https://github.com/nextcloud/all-in-one/discussions/5268).
 
 ### Disadvantages
 - You lose the AIO interface
 - You lose update notifications and automatic updates
 - You lose all AIO backup and restore features
+- You lose the built-in [Docker Socket Proxy container](https://github.com/nextcloud/docker-socket-proxy#readme) (needed for [Nextcloud App API](https://github.com/nextcloud/app_api#nextcloud-appapi))
 - You lose all community containers: https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers
 - **You need to know what you are doing, especially when modifying the compose.yaml file**
 - For updating, you need to strictly follow the at the bottom described update routine
