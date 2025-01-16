@@ -504,6 +504,9 @@
                                         {% endif %}
 
                                         {% if has_backup_run_once == true %}
+                                            <h3>Backup Viewer</h3>
+                                            <p>There is now a community container that allows to access your backups in a web session. See <a href="https://github.com/nextcloud/all-in-one/tree/main/community-containers/borgbackup-viewer"><strong>this documentation</strong></a>.</p>
+
                                             <h3>Backup check</h3>
                                             <p>Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact. It shouldn't be needed in most situations.</p>
                                             <form method="POST" action="/api/docker/backup-check" class="xhr">

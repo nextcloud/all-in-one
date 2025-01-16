@@ -541,19 +541,23 @@ readonly class DockerActionManager {
         $mounts = [];
 
         // Special things for the backup container which should not be exposed in the containers.json
-        if ($container->GetIdentifier() === 'nextcloud-aio-borgbackup') {
+        if (str_starts_with($container->GetIdentifier(), 'nextcloud-aio-borgbackup')) {
             // Additional backup directories
             foreach ($this->getAllBackupVolumes() as $additionalBackupVolumes) {
                 if ($additionalBackupVolumes !== '') {
                     $mounts[] = ["Type" => "volume", "Source" => $additionalBackupVolumes, "Target" => "/nextcloud_aio_volumes/" . $additionalBackupVolumes, "ReadOnly" => false];
                 }
             }
+
+            // Make volumes read only in case of borgbackup container. The viewer makes them writeable
+            $isReadOnly = $container->GetIdentifier() === 'nextcloud-aio-borgbackup';
+
             foreach ($this->configurationManager->GetAdditionalBackupDirectoriesArray() as $additionalBackupDirectories) {
                 if ($additionalBackupDirectories !== '') {
                     if (!str_starts_with($additionalBackupDirectories, '/')) {
-                        $mounts[] = ["Type" => "volume", "Source" => $additionalBackupDirectories, "Target" => "/docker_volumes/" . $additionalBackupDirectories, "ReadOnly" => true];
+                        $mounts[] = ["Type" => "volume", "Source" => $additionalBackupDirectories, "Target" => "/docker_volumes/" . $additionalBackupDirectories, "ReadOnly" => $isReadOnly];
                     } else {
-                        $mounts[] = ["Type" => "bind", "Source" => $additionalBackupDirectories, "Target" => "/host_mounts" . $additionalBackupDirectories, "ReadOnly" => true, "BindOptions" => ["NonRecursive" => true]];
+                        $mounts[] = ["Type" => "bind", "Source" => $additionalBackupDirectories, "Target" => "/host_mounts" . $additionalBackupDirectories, "ReadOnly" => $isReadOnly, "BindOptions" => ["NonRecursive" => true]];
                     }
                 }
             }
