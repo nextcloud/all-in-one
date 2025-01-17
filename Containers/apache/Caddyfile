@@ -40,7 +40,7 @@ https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
     route /onlyoffice/* {
         uri strip_prefix /onlyoffice
         reverse_proxy {$ONLYOFFICE_HOST}:80 {
-            header_up X-Forwarded-Host {http.request.host}/onlyoffice
+            header_up X-Forwarded-Host {http.request.hostport}/onlyoffice
             header_up X-Forwarded-Proto https
         }
     }
