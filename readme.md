@@ -129,13 +129,15 @@ curl -fsSL https://get.docker.com | sudo sh
     </details>
 
     Note: You may be interested in adjusting Nextcloud’s datadir to store the files in a different location than the default docker volume. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
+   
+    Note: you may be interested in running nextCloud beind reverse proxy see [this documentation](/reverse-proxy.md) on how to do it.
 
-4. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
+5. After the initial startup, you should be able to open the Nextcloud AIO Interface now on port 8080 of this server.<br>
 E.g. `https://ip.address.of.this.server:8080`<br>
 ⚠️ **Important:** do always use an ip-address if you access this port and not a domain as HSTS might block access to it later! (It is also expected that this port uses a self-signed certificate due to security concerns which you need to accept in your browser)<br><br>
 If your firewall/router has port 80 and 8443 open/forwarded and you point a domain to your server, you can get a valid certificate automatically by opening the Nextcloud AIO Interface via:<br>
 `https://your-domain-that-points-to-this-server.tld:8443`
-5. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
+6. Please do not forget to open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
 ## FAQ
 ### How does it work?
