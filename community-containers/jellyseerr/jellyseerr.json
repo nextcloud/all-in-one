@@ -9,9 +9,9 @@
             "restart": "unless-stopped",
             "ports": [
                 {
-                  "ip_binding": "",
-                  "port_number": "5055",
-                  "protocol": "tcp"
+                    "ip_binding": "",
+                    "port_number": "5055",
+                    "protocol": "tcp"
                 },
                 {
                     "ip_binding": "",
