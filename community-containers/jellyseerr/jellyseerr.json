@@ -18,6 +18,7 @@
                     "port_number": "5055",
                     "protocol": "udp"
                 }
+            ],
             "environment": [
                 "TZ=%TIMEZONE%"
             ],
