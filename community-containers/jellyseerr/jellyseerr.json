@@ -5,7 +5,6 @@
             "display_name": "Jellyseerr",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin",
             "image": "fallenbagel/jellyseerr",
-            "image_tag": "latest",
             "internal_port": "host",
             "restart": "unless-stopped",
             "environment": [
