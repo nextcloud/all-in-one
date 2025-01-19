@@ -25,7 +25,7 @@
             "volumes": [
                 {
                     "source": "nextcloud_aio_jellyseerr",
-                    "destination": "/config",
+                    "destination": "/app/config",
                     "writeable": true
                 }
             ],
