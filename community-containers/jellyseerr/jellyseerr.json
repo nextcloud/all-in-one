@@ -5,8 +5,19 @@
             "display_name": "Jellyseerr",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin",
             "image": "fallenbagel/jellyseerr",
-            "internal_port": "host",
+            "internal_port": "5055",
             "restart": "unless-stopped",
+            "ports": [
+                {
+                  "ip_binding": "",
+                  "port_number": "5055",
+                  "protocol": "tcp"
+                },
+                {
+                    "ip_binding": "",
+                    "port_number": "5055",
+                    "protocol": "udp"
+                },
             "environment": [
                 "TZ=%TIMEZONE%"
             ],
