@@ -3,6 +3,7 @@
     {
       "container_name": "nextcloud-aio-apache",
       "image_tag": "%AIO_CHANNEL%",
+      "documentation": "https://github.com/nextcloud/all-in-one/discussions/2105",
       "depends_on": [
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
