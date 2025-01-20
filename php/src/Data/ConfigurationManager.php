@@ -120,6 +120,23 @@ class ConfigurationManager
         return $backupTimes;
     }
 
+    public function GetBackupExcludePreviews() : string {
+        $envVariableName = 'BACKUP_EXCLUDE_PREVIEWS';
+        $configName = 'backup_exclude_previews';
+        $defaultValue = 'false';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function arePreviewsExcludedFromBackups() : bool {
+        return $this->GetBackupExcludePreviews() === 'true';
+    }
+
+    public function SetBackupExcludePreviewsEnabledState(string $value) : void {
+        $config = $this->GetConfig();
+        $config['backup_exclude_previews'] = $value;
+        $this->WriteConfig($config);
+    }
+
     public function wasStartButtonClicked() : bool {
         if (isset($this->GetConfig()['wasStartButtonClicked'])) {
             return true;

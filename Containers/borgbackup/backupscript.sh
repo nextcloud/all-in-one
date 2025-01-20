@@ -193,6 +193,13 @@ if [ "$BORG_MODE" = backup ]; then
     # Exclude the nextcloud log and audit log for GDPR reasons
     BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log")
 
+    # Exclude previews from backup if selected to speed up process
+    ADDITIONAL_BORG_EXCLUDES=()
+    if [ -n "$BACKUP_EXCLUDE_PREVIEWS" ]; then
+        ADDITIONAL_BORG_EXCLUDES=(--exclude "sh:nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/**")
+        echo "Excluding previews from backup"
+    fi
+
     # Make sure that there is always a borg.config file before creating a new backup
     if ! [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
         echo "Did not find borg.config file in the mastercontainer volume."
@@ -203,7 +210,7 @@ if [ "$BORG_MODE" = backup ]; then
     # Create the backup
     echo "Starting the backup..."
     get_start_time
-    if ! borg create "${BORG_OPTS[@]}" "${BORG_EXCLUDE[@]}" "::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/" --exclude-from /borg_excludes; then
+    if ! borg create "${BORG_OPTS[@]}" "${BORG_EXCLUDE[@]}" "::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/" --exclude-from /borg_excludes "${ADDITIONAL_BORG_EXCLUDES[@]}"; then
         echo "Deleting the failed backup archive..."
         borg delete --stats "::$CURRENT_DATE-nextcloud-aio"
         echo "Backup failed!"

@@ -110,6 +110,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'borg_restore_password' => $configurationManager->GetBorgRestorePassword(),
         'daily_backup_time' => $configurationManager->GetDailyBackupTime(),
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
+        'are_previews_excluded_from_backups' => $configurationManager->arePreviewsExcludedFromBackups(),
         'timezone' => $configurationManager->GetTimezone(),
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped(),
         'talk_port' => $configurationManager->GetTalkPort(),

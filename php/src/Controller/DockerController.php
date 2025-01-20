@@ -79,6 +79,15 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerBackup(Request $request, Response $response, array $args) : Response {
+        $config = $this->configurationManager->GetConfig();
+
+        if (isset($request->getParsedBody()['backup_exclude_previews'])) {
+            $config['backup_exclude_previews'] = true;
+        } else {
+            $config['backup_exclude_previews'] = false;
+        }
+
+        $this->configurationManager->WriteConfig($config);
         $this->startBackup();
         return $response->withStatus(201)->withHeader('Location', '/');
     }

@@ -169,7 +169,19 @@
                                                     <option value="{{ restore_time }}">{{ restore_time }} UTC</option>
                                                 {% endfor %}
                                             </select><br>
-                                            <input type="checkbox" id="restore-exclude-previews" name="restore-exclude-previews"><label for="restore-exclude-previews">Exclude previews from restore which will speed up the restore process but will trigger a scan of the preview folder as soon as the Nextcloud container starts the next time</label><br>
+                                            <input
+                                                type="checkbox"
+                                                id="restore-exclude-previews"
+                                                name="restore-exclude-previews"
+                                                {% if are_previews_excluded_from_backups == true %}
+                                                    {# if previews are excluded from daily backups then the user will probably want to exclude them from the restore too #}
+                                                    checked="checked"
+                                                    data-initial-state="true"
+                                                {% else %}
+                                                    data-initial-state="false"
+                                                {% endif %}
+                                            >
+                                            <label for="restore-exclude-previews">Exclude previews from restore which will speed up the restore process but will trigger a scan of the preview folder as soon as the Nextcloud container starts the next time</label><br>
                                             <input type="submit" value="Restore selected backup"/>
                                         </form>
                                     {% endif %}
@@ -483,6 +495,18 @@
                                         <form method="POST" action="/api/docker/backup" class="xhr">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input
+                                                type="checkbox"
+                                                id="backup_exclude_previews"
+                                                name="backup_exclude_previews"
+                                                {% if are_previews_excluded_from_backups == true %}
+                                                    checked="checked"
+                                                    data-initial-state="true"
+                                                {% else %}
+                                                    data-initial-state="false"
+                                                {% endif %}
+                                            >
+                                            <label for="backup_exclude_previews">Exclude previews from backup which will speed up the backup process</label><br>
                                             <input type="submit" value="Create backup" onclick="return confirm('Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.')" />
                                         </form>
 
@@ -533,6 +557,18 @@
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                     <input type="submit" value="Submit backup time" /><br>
+                                                    <input
+                                                        type="checkbox"
+                                                        id="daily_backup_exclude_previews"
+                                                        name="backup_exclude_previews"
+                                                        {% if are_previews_excluded_from_backups == true %}
+                                                            checked="checked"
+                                                            data-initial-state="true"
+                                                        {% else %}
+                                                            data-initial-state="false"
+                                                        {% endif %}
+                                                    >
+                                                    <label for="daily_backup_exclude_previews">Exclude previews from daily backups which will speed up the backup process</label><br>
                                                     <input type="checkbox" id="automatic_updates" name="automatic_updates" checked="checked"><label for="automatic_updates">Automatically update all containers, the mastercontainer and on saturdays your Nextcloud apps</label><br>
                                                     <input type="checkbox" id="success_notification" name="success_notification" checked="checked"><label for="success_notification">Send notifications about successful backups (notifications about unsuccessful backups will always be sent)</label>
                                                 </form>

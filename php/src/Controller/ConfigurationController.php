@@ -41,6 +41,12 @@ readonly class ConfigurationController {
                 $this->configurationManager->SetBorgRestoreLocationVarsAndPassword($restoreLocation, $borgRemoteRepo, $borgPassword);
             }
 
+            if (isset($request->getParsedBody()['backup_exclude_previews'])) {
+                $this->configurationManager->SetBackupExcludePreviewsEnabledState('true');
+            } else {
+                $this->configurationManager->SetBackupExcludePreviewsEnabledState('false');
+            }
+
             if (isset($request->getParsedBody()['daily_backup_time'])) {
                 if (isset($request->getParsedBody()['automatic_updates'])) {
                     $enableAutomaticUpdates = true;
