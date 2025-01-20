@@ -10,7 +10,7 @@
             "restart": "unless-stopped",
             "ports": [
                 {
-                    "ip_binding": "",
+                    "ip_binding": "%APACHE_IP_BINDING%",
                     "port_number": "5055",
                     "protocol": "tcp"
                 }
