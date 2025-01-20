@@ -41,7 +41,7 @@ jobs:
           helm lint ./nextcloud-aio-helm-chart
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
+        uses: helm/chart-releaser-action@v1.7.0
         with:
           mark_as_latest: false
           charts_dir: .
