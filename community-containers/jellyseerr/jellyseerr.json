@@ -16,6 +16,7 @@
                 }
             ],
             "environment": [
+                "PORT=5055",
                 "TZ=%TIMEZONE%"
             ],
             "volumes": [
