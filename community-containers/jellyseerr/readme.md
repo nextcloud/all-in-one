@@ -8,7 +8,6 @@ This container bundles Jellyseerr and auto-configures it for you.
 - The config of Jellyseerr will be automatically included in AIO's backup solution!
 - See [here](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers) how to add it to the AIO stack.
 
-
 ### Repository
 https://github.com/Fallenbagel/jellyseerr
 
