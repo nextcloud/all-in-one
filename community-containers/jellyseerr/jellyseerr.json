@@ -3,8 +3,9 @@
         {
             "container_name": "nextcloud-aio-jellyseerr",
             "display_name": "Jellyseerr",
-            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr",
             "image": "fallenbagel/jellyseerr",
+            "image_tag": "latest",
             "internal_port": "5055",
             "restart": "unless-stopped",
             "ports": [
