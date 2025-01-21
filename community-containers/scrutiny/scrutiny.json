@@ -1,0 +1,55 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-scrutiny",
+            "display_name": "Scrutiny",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/scrutiny",
+            "image": "szaimen/aio-scrutiny",
+            "image_tag": "v1",
+            "internal_port": "8000",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                  "ip_binding": "",
+                  "port_number": "8000",
+                  "protocol": "tcp"
+                }
+            ],
+            "cap_add": [
+                "SYS_RAWIO",
+                "SYS_ADMIN"
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "SCRUTINY_WEB_LISTEN_PORT=8000",
+                "COLLECTOR_API_ENDPOINT=http://127.0.0.1:8000"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_scrutiny",
+                    "destination": "/opt/scrutiny/config",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_scrutiny_db",
+                    "destination": "/opt/scrutiny/influxdb",
+                    "writeable": true
+                },
+                {
+                    "source": "/run/udev",
+                    "destination": "/run/udev",
+                    "writeable": false
+                },
+                {
+                    "source": "/dev",
+                    "destination": "/dev",
+                    "writeable": false
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_scrutiny",
+                "nextcloud_aio_scrutiny_db"
+            ]
+        }
+    ]
+}
