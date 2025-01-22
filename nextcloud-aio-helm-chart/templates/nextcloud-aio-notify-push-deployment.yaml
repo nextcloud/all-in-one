@@ -53,7 +53,7 @@ spec:
               value: nextcloud-aio-redis
             - name: REDIS_HOST_PASSWORD
               value: "{{ .Values.REDIS_PASSWORD }}"
-          image: nextcloud/aio-notify-push:20250114_092611
+          image: nextcloud/aio-notify-push:20250122_091948
           readinessProbe:
             exec:
               command:
