@@ -13,6 +13,7 @@ Included are:
 - Fulltextsearch (optional)
 - Whiteboard (optional)
 - Docker Socket Proxy (optional, needed for [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi))
+- [Community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers)
 <details><summary>And much more:</summary>
 
 - Simple web interface included that enables easy installation and maintenance
@@ -46,7 +47,6 @@ Included are:
 - Possibility included to [permanently add additional PHP extensions into the Nextcloud container](https://github.com/nextcloud/all-in-one#how-to-add-php-extensions-permanently-to-the-nextcloud-container) without having to build your own Docker image
 - Possibility included to [pass the needed device for hardware transcoding](https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud) to the Nextcloud container
 - Possibility included to [store all docker related files on a separate drive](https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive)
-- [Additional features can be added very easily](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers)
 - [LDAP can be used as user backend for Nextcloud](https://github.com/nextcloud/all-in-one/tree/main#ldap)
 - Migration from any former Nextcloud installation to AIO is possible. See [this documentation](https://github.com/nextcloud/all-in-one/blob/main/migration.md)
 - [Fail2Ban can be added](https://github.com/nextcloud/all-in-one#fail2ban)
