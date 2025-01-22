@@ -521,7 +521,7 @@ if [ "$BORG_MODE" = check ]; then
     # Perform the check
     if ! borg check -v --verify-data; then
         echo "Some errors were found while checking the backup integrity!"
-        echo "Check the AIO interface for advices on how to proceed now!"
+        echo "Check the AIO interface for advice on how to proceed now!"
         exit 1
     fi
 
