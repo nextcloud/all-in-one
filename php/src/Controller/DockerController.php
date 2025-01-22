@@ -46,7 +46,7 @@ readonly class DockerController {
         if ($pullImage) {
             if (!$this->dockerActionManager->isDockerHubReachable($container)) {
                 $pullImage = false;
-                error_log('Not pulling the image for the ' . $container->GetContainerName() . ' container because docker hub does not seem to be reachable.');
+                error_log('Not pulling the ' . $container->GetContainerName() . ' image for the ' . $container->GetIdentifier() . ' container because docker hub does not seem to be reachable.');
             }
         }
 
