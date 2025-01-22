@@ -1,0 +1,34 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-jellyseerr",
+            "display_name": "Jellyseerr",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr",
+            "image": "fallenbagel/jellyseerr",
+            "image_tag": "latest",
+            "internal_port": "5055",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "5055",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "PORT=5055",
+                "TZ=%TIMEZONE%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_jellyseerr",
+                    "destination": "/app/config",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_jellyseerr"
+            ]
+        }
+    ]
+}

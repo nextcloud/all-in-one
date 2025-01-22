@@ -30,6 +30,11 @@
                     "source": "nextcloud_aio_jellyfin",
                     "destination": "/jellyfin",
                     "writeable": false
+                },
+                {
+                    "source": "nextcloud_aio_jellyseerr",
+                    "destination": "/jellyseerr",
+                    "writeable": false
                 }
             ]
         }
