@@ -493,6 +493,9 @@ In this example, it would mount `E:\your\backup\path` into the volume so for a d
 #### Pro-tip: Backup archives access
 You can open the BorgBackup archives on your host by following these steps:<br>
 (instructions for Ubuntu Desktop)
+
+Alternatively, there is now a community container that allows to access your backups in a web session: https://github.com/nextcloud/all-in-one/tree/main/community-containers/borgbackup-viewer.
+
 ```bash
 # Install borgbackup on the host
 sudo apt update && sudo apt install borgbackup
@@ -520,6 +523,9 @@ sudo umount /tmp/borg
 #### Delete backup archives manually
 You can delete BorgBackup archives on your host manually by following these steps:<br>
 (instructions for Debian based OS' like Ubuntu)
+
+Alternatively, there is now a community container that allows to access your backups in a web session: https://github.com/nextcloud/all-in-one/tree/main/community-containers/borgbackup-viewer.
+
 ```bash
 # Install borgbackup on the host
 sudo apt update && sudo apt install borgbackup
