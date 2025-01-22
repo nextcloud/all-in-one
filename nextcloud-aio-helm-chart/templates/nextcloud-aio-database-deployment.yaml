@@ -64,7 +64,7 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-postgresql:20250114_092611
+          image: nextcloud/aio-postgresql:20250122_091948
           readinessProbe:
             exec:
               command:

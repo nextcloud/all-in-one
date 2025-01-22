@@ -42,7 +42,7 @@ spec:
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-onlyoffice:20250114_092611
+          image: nextcloud/aio-onlyoffice:20250122_091948
           readinessProbe:
             exec:
               command:

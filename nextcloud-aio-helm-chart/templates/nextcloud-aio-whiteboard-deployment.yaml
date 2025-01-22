@@ -46,7 +46,7 @@ spec:
               value: redis
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-whiteboard:20250114_092611
+          image: nextcloud/aio-whiteboard:20250122_091948
           readinessProbe:
             exec:
               command:

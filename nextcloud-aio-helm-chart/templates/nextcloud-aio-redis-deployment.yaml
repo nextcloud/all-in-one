@@ -39,7 +39,7 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-redis:20250114_092611
+          image: nextcloud/aio-redis:20250122_091948
           readinessProbe:
             exec:
               command:
