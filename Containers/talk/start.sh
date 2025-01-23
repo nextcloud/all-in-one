@@ -32,8 +32,8 @@ fi
 
 IP_BINDING="::"
 if grep -q "1" /sys/module/ipv6/parameters/disable \
-|| sysctl -a 2>/dev/null | grep "net.ipv6.conf.all.disable_ipv6" | grep -q "1" \
-|| sysctl -a 2>/dev/null | grep "net.ipv6.conf.default.disable_ipv6" | grep -q "1"; then
+|| grep -q "1" /proc/sys/net/ipv6/conf/all/disable_ipv6 \
+|| grep -q "1" /proc/sys/net/ipv6/conf/default/disable_ipv6; then
     IP_BINDING="0.0.0.0"
 fi
 
