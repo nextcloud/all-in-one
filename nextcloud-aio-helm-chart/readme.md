@@ -1,5 +1,8 @@
 # Nextcloud AIO Helm-chart
 
+> [!NOTE]
+> For an enterprise-ready and scalable deployment method based on Helm Charts (also available for Podman), please [contact Nextcloud GmbH](https://nextcloud.com/enterprise/).
+
 You can run the containers that are build for AIO with Kubernetes using this Helm chart. This comes with a few downsides, that are discussed below.
 
 ### Advantages
