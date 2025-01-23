@@ -26,6 +26,7 @@
                 "BORGBACKUP_VIEWER_PASSWORD",
                 "BORGBACKUP_PASSWORD"
             ],
+            "ui_secret": "BORGBACKUP_VIEWER_PASSWORD",
             "volumes": [
             {
                 "source": "nextcloud_aio_backup_cache",

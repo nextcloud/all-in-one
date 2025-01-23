@@ -1032,6 +1032,10 @@ readonly class DockerActionManager {
         }
     }
 
+    public function GetAndGenerateSecretWrapper(string $secretId) : string {
+        return $this->configurationManager->GetAndGenerateSecret($secretId);
+    }
+
     public function isNextcloudImageOutdated() : bool {
         $createdTime = $this->GetCreatedTimeOfNextcloudImage();
 
