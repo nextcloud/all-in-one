@@ -232,6 +232,7 @@ On older TrueNAS SCALE releases with Kubernetes environment, there are two ways 
 Another but untested way is to install Portainer on your TrueNAS SCALE from here https://truecharts.org/charts/stable/portainer/installation-notes and add the Helm-chart repository https://nextcloud.github.io/all-in-one/ into Portainer by following https://docs.portainer.io/user/kubernetes/helm. More docs on AIOs Helm Chart are available here: https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart#nextcloud-aio-helm-chart.
 
 ### Notes on Cloudflare (proxy/tunnel)
+Since Cloudflare Proxy/Tunnel comes with a lot of limitations which are listed below, it is rather recommended to switch to [Tailscale](https://github.com/nextcloud/all-in-one/discussions/5439) if possible.
 - Cloudflare Proxy and Cloudflare Tunnel both require Cloudflare to perform TLS termination on their side and thus decrypt all the traffic on their infrastructure. This is a privacy concern and you will need to look for other solutions if it's unacceptable for you.
 - Using Cloudflare Tunnel might potentially slow down Nextcloud since local access via the configured domain is not possible because TLS termination is in that case offloaded to Cloudflare's infrastructure. There is no way to disable this behavior in Cloudflare Tunnel.
 - It is known that the domain validation may not work correctly behind Cloudflare since Cloudflare might block the validation attempt. You can simply skip it in that case by following: https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation
@@ -273,22 +274,22 @@ You can install AIO in reverse proxy mode where is also documented how to get it
 If you do not want to open Nextcloud to the public internet, you may have a look at the following documentation on how to set it up locally: [local-instance.md](./local-instance.md), but keep in mind you're still required to have https working properly.
 
 ### Can I use an ip-address for Nextcloud instead of a domain?
-No and it will not be added. If you only want to run it locally, you may have a look at the following documentation: [local-instance.md](./local-instance.md) for configuration without a traditional domain. Or, [consider using NextcloudPi](nextcloudpi.com) for ip-address access locally (it bundles fewer features than AIO).
+No and it will not be added. If you only want to run it locally, you may have a look at the following documentation: [local-instance.md](./local-instance.md). Recommended is to use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/5439).
 
 ### Can I run AIO offline or in an airgapped system?
 No. This is not possible and will not be added due to multiple reasons: update checks, app installs via app-store, downloading additional docker images on demand and more.
 
 ### Are self-signed certificates supported for Nextcloud?
-No and they will not be. If you want to run it locally, without opening Nextcloud to the public internet, please have a look at the [local instance documentation](./local-instance.md).
+No and they will not be. If you want to run it locally, without opening Nextcloud to the public internet, please have a look at the [local instance documentation](./local-instance.md). Recommended is to use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/5439).
 
 ### Can I use AIO with multiple domains?
 No and it will not be added. However you can use [this feature](https://github.com/nextcloud/all-in-one/blob/main/multiple-instances.md) in order to create multiple AIO instances, one for each domain.
 
 ### Are other ports than the default 443 for Nextcloud supported?
-No and they will not be. Please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). If port 443 and/or 80 is blocked for you, you may use the a Cloudflare Tunnel if you want to publish it online. You could also use the ACME DNS-challenge to get a valid certificate. However in all cases the Nextcloud interface will redirect you to port 443.
+No and they will not be. If port 443 and/or 80 is blocked for you, you may use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/5439) if you want to publish it online. If you already run a different service on port 443, please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). However in all cases the Nextcloud interface will redirect you to port 443.
 
 ### Can I run Nextcloud in a subdirectory on my domain?
-No and it will not be added. Please use a dedicated (sub-)domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md).
+No and it will not be added. Please use a dedicated (sub-)domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). Alternatively, you may use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/5439) if you want to publish it online.
 
 ### How can I access Nextcloud locally?
 Please note that local access is not possible if you are running AIO behind Cloudflare Tunnel since TLS proxying is in that case offloaded to Cloudflares infrastructure. You can fix this by setting up your own reverse proxy that handles TLS proxying locally and will make the steps below work.
