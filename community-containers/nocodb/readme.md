@@ -17,7 +17,7 @@ This is an alternative of **Airtable**.
 - You need to configure a reverse proxy in order to run this container since nocodb needs a dedicated (sub)domain! For that, you might have a look at https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy.
 - Currently, only `tables.$NC_DOMAIN` is supported as subdomain! So if Nextcloud is using `your-domain.com`, nocodb will use `tables.your-domain.com`.
 - The data of NocoDb will be automatically included in AIOs backup solution!
-- After adding and starting the container, you need to run `docker inspect nextcloud-aio-nocodb  | grep NC_ADMIN_PASS` to obtain the system administrator password (username: `admin@noco.db`). With this information, you can log in to the web interface at `https://tables.$NC_DOMAIN/#/signin`
+- After adding and starting the container, you can log in to the web interface at `https://tables.$NC_DOMAIN/#/signin` with the username `admin@noco.db` and the password that you can see in the AIO interface next to the container. 
 - See https://docs.nocodb.com/ for usage of NocoDb
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 

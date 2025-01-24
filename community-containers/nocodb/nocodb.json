@@ -28,6 +28,7 @@
                 "NOCODB_JWT_SECRET",
                 "NOCODB_USER_PASS"
             ],
+            "ui_secret": "NOCODB_USER_PASS",
             "volumes": [
                 {
                     "source": "nextcloud_aio_nocodb",
