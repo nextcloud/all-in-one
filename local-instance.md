@@ -2,13 +2,13 @@
 It is possible due to several reasons that you do not want or cannot open Nextcloud to the public internet. Perhaps you were hoping to access AIO directly from an `ip.add.r.ess` (unsupported) or without a valid domain.  However, AIO requires a valid certificate to work correctly. Below is discussed how you can achieve both: Having a valid certificate for Nextcloud and only using it locally.
 
 ### Content
-- [1. Tailscale network](#1-tailscale-network)
+- [1. Tailscale](#1-tailscale)
 - [2. The normal way](#2-the-normal-way)
 - [3. Use the ACME DNS-challenge](#3-use-the-acme-dns-challenge)
 - [4. Use Cloudflare](#4-use-cloudflare)
 - [5. Buy a certificate and use that](#5-buy-a-certificate-and-use-that)
 
-## 1. Tailscale network
+## 1. Tailscale
 This is the recommended way. For a reverse proxy example guide for Tailscale, see this guide by @flll: https://github.com/nextcloud/all-in-one/discussions/5439
 
 ## 2. The normal way
