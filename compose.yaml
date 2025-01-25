@@ -38,6 +38,7 @@ services:
     # security_opt: ["label:disable"] # Is needed when using SELinux
 
 #   # Optional: Caddy reverse proxy. See https://github.com/nextcloud/all-in-one/discussions/575
+#   # Alternatively, use Tailscale if you don't have a domain yet. See https://github.com/nextcloud/all-in-one/discussions/5439
 #   # Hint: You need to uncomment APACHE_PORT: 11000 above, adjust cloud.example.com to your domain and uncomment the necessary docker volumes at the bottom of this file in order to make it work
 #   # You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
 #   caddy:
