@@ -2,6 +2,7 @@
 
 > [!NOTE]
 > Please note that AIO comes secured with TLS out-of-the-box. So you don't need to necessarily set up your own reverse proxy if you only want to run Nextcloud AIO which is much easier. See [the normal readme](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#how-to-use-this) in that case. However if port 443 should already be used because you already run a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), you need to follow this reverse proxy documentation to set up Nextcloud AIO.
+
 > [!TIP]
 > If you don't have a domain yet, [Tailscale is recommended](https://github.com/nextcloud/all-in-one/discussions/5439). If you don't have a reverse proxy yet, [Caddy is recommended](https://github.com/nextcloud/all-in-one/discussions/575).
 
