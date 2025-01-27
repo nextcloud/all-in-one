@@ -149,7 +149,6 @@ readonly class DockerActionManager {
             ));
         $responseBody = (string)$this->guzzleClient->get($url)->getBody();
 
-        $response = "";
         $separator = "\r\n";
         $line = strtok($responseBody, $separator);
         $response = substr($line, 8) . $separator;
@@ -756,7 +755,6 @@ readonly class DockerActionManager {
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
             $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true);
-            $containerChecksum = $output['Image'];
             $tagArray = explode(':', $output['Config']['Image']);
             if (count($tagArray) ===  2) {
                 $tag = $tagArray[1];
@@ -842,26 +840,26 @@ readonly class DockerActionManager {
         }
     }
 
-    private function DisconnectContainerFromBridgeNetwork(string $id) : void
-    {
+    // private function DisconnectContainerFromBridgeNetwork(string $id) : void
+    // {
 
-        $url = $this->BuildApiUrl(
-            sprintf('networks/%s/disconnect', 'bridge')
-        );
+    //     $url = $this->BuildApiUrl(
+    //         sprintf('networks/%s/disconnect', 'bridge')
+    //     );
 
-        try {
-            $this->guzzleClient->request(
-                'POST',
-                $url,
-                [
-                    'json' => [
-                        'container' => $id,
-                    ],
-                ]
-            );
-        } catch (RequestException $e) {
-        }
-    }
+    //     try {
+    //         $this->guzzleClient->request(
+    //             'POST',
+    //             $url,
+    //             [
+    //                 'json' => [
+    //                     'container' => $id,
+    //                 ],
+    //             ]
+    //         );
+    //     } catch (RequestException $e) {
+    //     }
+    // }
 
     private function ConnectContainerIdToNetwork(string $id, string $internalPort, string $network = 'nextcloud-aio', bool $createNetwork = true, string $alias =  '') : void
     {

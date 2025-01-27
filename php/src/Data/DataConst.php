@@ -4,19 +4,35 @@ namespace AIO\Data;
 
 class DataConst {
     public static function GetDataDirectory() : string {
-        if(is_dir('/mnt/docker-aio-config/data/')) {
-            return '/mnt/docker-aio-config/data/';
+        $dataDirectory = '/mnt/docker-aio-config/data/';
+
+        if (is_dir($dataDirectory)) {
+            return $dataDirectory;
         }
 
-        return realpath(__DIR__ . '/../../data/');
+        $newDataDirectory = realpath(__DIR__ . '/../../data/');
+
+        if ($newDataDirectory === false) {
+            return $dataDirectory;
+        }
+
+        return $newDataDirectory;
     }
 
     public static function GetSessionDirectory() : string {
-        if(is_dir('/mnt/docker-aio-config/session/')) {
-            return '/mnt/docker-aio-config/session/';
+        $sessionDirectory = '/mnt/docker-aio-config/session/';
+
+        if (is_dir($sessionDirectory)) {
+            return $sessionDirectory;
         }
 
-        return realpath(__DIR__ . '/../../session/');
+        $newSessionDirectory = realpath(__DIR__ . '/../../session/');
+
+        if ($newSessionDirectory === false) {
+            return $sessionDirectory;
+        }
+
+        return $newSessionDirectory;
     }
 
     public static function GetConfigFile() : string {
@@ -56,6 +72,18 @@ class DataConst {
     }
 
     public static function GetCommunityContainersDirectory() : string {
-        return realpath(__DIR__ . '/../../../community-containers/');
+        $communityContainersDirectory = '/var/www/docker-aio/community-containers/';
+
+        if (is_dir($communityContainersDirectory)) {
+            return $communityContainersDirectory;
+        }
+
+        $newCommunityContainersDirectory = realpath(__DIR__ . '/../../../community-containers/');
+
+        if ($newCommunityContainersDirectory === false) {
+            return $communityContainersDirectory;
+        }
+
+        return $newCommunityContainersDirectory;
     }
 }
