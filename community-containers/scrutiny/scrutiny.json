@@ -7,6 +7,7 @@
             "image": "szaimen/aio-scrutiny",
             "image_tag": "v1",
             "internal_port": "8000",
+            "init": false,
             "restart": "unless-stopped",
             "ports": [
                 {
