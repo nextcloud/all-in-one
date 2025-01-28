@@ -840,27 +840,6 @@ readonly class DockerActionManager {
         }
     }
 
-    // private function DisconnectContainerFromBridgeNetwork(string $id) : void
-    // {
-
-    //     $url = $this->BuildApiUrl(
-    //         sprintf('networks/%s/disconnect', 'bridge')
-    //     );
-
-    //     try {
-    //         $this->guzzleClient->request(
-    //             'POST',
-    //             $url,
-    //             [
-    //                 'json' => [
-    //                     'container' => $id,
-    //                 ],
-    //             ]
-    //         );
-    //     } catch (RequestException $e) {
-    //     }
-    // }
-
     private function ConnectContainerIdToNetwork(string $id, string $internalPort, string $network = 'nextcloud-aio', bool $createNetwork = true, string $alias =  '') : void
     {
         if ($internalPort === 'host') {
