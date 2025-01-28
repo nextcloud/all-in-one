@@ -459,6 +459,8 @@ services:
       retries: 3
     expose:
       - "3002"
+    tmpfs:
+      - /tmp
     environment:
       - TZ=${TIMEZONE}
       - NEXTCLOUD_URL=https://${NC_DOMAIN}
@@ -466,6 +468,7 @@ services:
       - STORAGE_STRATEGY=redis
       - REDIS_HOST=nextcloud-aio-redis
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - BACKUP_DIR=/tmp
     restart: unless-stopped
     profiles:
       - whiteboard
