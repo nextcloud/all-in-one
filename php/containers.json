@@ -857,6 +857,9 @@
       "expose": [
         "3002"
       ],
+      "tmpfs": [
+        "/app"
+      ],
       "internal_port": "3002",
       "environment": [
         "TZ=%TIMEZONE%",
