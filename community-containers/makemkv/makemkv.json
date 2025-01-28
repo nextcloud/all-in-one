@@ -50,6 +50,7 @@
             "secrets": [
                 "MAKEMKV_PASSWORD"
             ],
+            "ui_secret": "MAKEMKV_PASSWORD",
             "backup_volumes": [
                 "nextcloud_aio_makemkv"
             ]

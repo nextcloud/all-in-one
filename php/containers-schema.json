@@ -145,6 +145,10 @@
 							"pattern": "^[A-Z_]+$"
 						}
 					},
+					"ui_secret": {
+						"type": "string",
+						"pattern": "^[A-Z_]+$"
+					},
 					"image_tag": {
 						"type": "string",
 						"pattern": "^([a-z0-9.-]+|%AIO_CHANNEL%)$"

@@ -14,6 +14,7 @@ cat /tmp/containers.json
 OUTPUT="$(cat /tmp/containers.json)"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].internal_port)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].secrets)')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].ui_secrets)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].devices)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].enable_nvidia_gpu)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].backup_volumes)')"

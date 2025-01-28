@@ -244,6 +244,11 @@ readonly class ContainerDefinitionFetcher {
                 $secrets = $entry['secrets'];
             }
 
+            $uiSecret = '';
+            if (isset($entry['ui_secret'])) {
+                $uiSecret = $entry['ui_secret'];
+            }
+
             $devices = [];
             if (isset($entry['devices'])) {
                 $devices = $entry['devices'];
@@ -316,6 +321,7 @@ readonly class ContainerDefinitionFetcher {
                 $variables,
                 $dependsOn,
                 $secrets,
+                $uiSecret,
                 $devices,
                 $enableNvidiaGpu,
                 $capAdd,

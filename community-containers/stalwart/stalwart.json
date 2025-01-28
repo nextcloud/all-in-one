@@ -53,6 +53,7 @@
             "secrets": [
                 "STALWART_USER_PASS"
             ],
+            "ui_secret": "STALWART_USER_PASS",
             "volumes": [
                 {
                     "source": "nextcloud_aio_stalwart",

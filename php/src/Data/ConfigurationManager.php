@@ -33,6 +33,10 @@ class ConfigurationManager
     }
 
     public function GetAndGenerateSecret(string $secretId) : string {
+        if ($secretId === '') {
+            return '';
+        }
+
         $config = $this->GetConfig();
         if(!isset($config['secrets'][$secretId])) {
             $config['secrets'][$secretId] = bin2hex(random_bytes(24));

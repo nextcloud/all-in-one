@@ -21,6 +21,7 @@ readonly class Container {
         private array                         $dependsOn,
         /** @var string[] */
         private array                         $secrets,
+        private string                        $uiSecret,
         /** @var string[] */
         private array                         $devices,
         private bool                          $enableNvidiaGpu,
@@ -83,6 +84,10 @@ readonly class Container {
 
     public function GetSecrets() : array {
         return $this->secrets;
+    }
+
+    public function GetUiSecret() : string {
+        return $this->dockerActionManager->GetAndGenerateSecretWrapper($this->uiSecret);
     }
 
     public function GetTmpfs() : array {
