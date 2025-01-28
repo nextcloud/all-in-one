@@ -867,7 +867,8 @@
         "JWT_SECRET_KEY=%WHITEBOARD_SECRET%",
         "STORAGE_STRATEGY=redis",
         "REDIS_HOST=nextcloud-aio-redis",
-        "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%"
+        "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
+        "BACKUP_DIR=/tmp"
       ],
       "secrets": [
         "WHITEBOARD_SECRET",
