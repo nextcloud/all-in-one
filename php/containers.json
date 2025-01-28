@@ -858,7 +858,7 @@
         "3002"
       ],
       "tmpfs": [
-        "/app"
+        "/tmp"
       ],
       "internal_port": "3002",
       "environment": [

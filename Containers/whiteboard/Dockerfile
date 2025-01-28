@@ -13,6 +13,8 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 HEALTHCHECK CMD /healthcheck.sh
 
+WORKDIR /tmp
+
 ENTRYPOINT ["/start.sh"]
 
 LABEL com.centurylinklabs.watchtower.enable="false"
