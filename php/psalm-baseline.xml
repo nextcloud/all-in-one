@@ -1,72 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="6.0.0@b8e96bb617bf59382113b1b56cef751f648a7dc9">
-  <file src="src/Container/Container.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[GetDisplayName]]></code>
-      <code><![CDATA[GetDocumentation]]></code>
-      <code><![CDATA[GetRestartingState]]></code>
-      <code><![CDATA[GetStartingState]]></code>
-    </PossiblyUnusedMethod>
-  </file>
   <file src="src/ContainerDefinitionFetcher.php">
     <PossiblyFalseArgument>
       <code><![CDATA[file_get_contents($path)]]></code>
       <code><![CDATA[file_get_contents(__DIR__ . '/../containers.json')]]></code>
     </PossiblyFalseArgument>
-  </file>
-  <file src="src/Controller/ConfigurationController.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[SetConfig]]></code>
-      <code><![CDATA[__construct]]></code>
-    </PossiblyUnusedMethod>
-    <PossiblyUnusedParam>
-      <code><![CDATA[$args]]></code>
-    </PossiblyUnusedParam>
-  </file>
-  <file src="src/Controller/DockerController.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[GetLogs]]></code>
-      <code><![CDATA[StartBackupContainerBackup]]></code>
-      <code><![CDATA[StartBackupContainerCheck]]></code>
-      <code><![CDATA[StartBackupContainerCheckRepair]]></code>
-      <code><![CDATA[StartBackupContainerRestore]]></code>
-      <code><![CDATA[StartBackupContainerTest]]></code>
-      <code><![CDATA[StartContainer]]></code>
-      <code><![CDATA[StartWatchtowerContainer]]></code>
-      <code><![CDATA[StopContainer]]></code>
-      <code><![CDATA[__construct]]></code>
-    </PossiblyUnusedMethod>
-    <PossiblyUnusedParam>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$request]]></code>
-      <code><![CDATA[$request]]></code>
-      <code><![CDATA[$request]]></code>
-      <code><![CDATA[$request]]></code>
-      <code><![CDATA[$request]]></code>
-      <code><![CDATA[$request]]></code>
-    </PossiblyUnusedParam>
-  </file>
-  <file src="src/Controller/LoginController.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[GetTryLogin]]></code>
-      <code><![CDATA[Logout]]></code>
-      <code><![CDATA[TryLogin]]></code>
-      <code><![CDATA[__construct]]></code>
-    </PossiblyUnusedMethod>
-    <PossiblyUnusedParam>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$request]]></code>
-    </PossiblyUnusedParam>
   </file>
   <file src="src/Data/ConfigurationManager.php">
     <PossiblyFalseArgument>
