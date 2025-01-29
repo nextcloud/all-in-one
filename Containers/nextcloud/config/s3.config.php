@@ -30,4 +30,4 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
   if ($sse_c_key) {
     $CONFIG['objectstore']['arguments']['sse_c_key'] = $sse_c_key;
   }
-} 
+}
