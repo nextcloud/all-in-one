@@ -12,7 +12,7 @@
                 {
                     "ip_binding": "%APACHE_IP_BINDING%",
                     "port_number": "5055",
-                    "protocol": "tcp"
+                    "protocol": "tcp",
                     "host_port": "5055"
                 }
             ],
