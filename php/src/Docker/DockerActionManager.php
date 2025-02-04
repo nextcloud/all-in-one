@@ -357,6 +357,8 @@ readonly class DockerActionManager {
                     $replacements[1] = $this->configurationManager->GetNextcloudMaxTime();
                 } elseif ($out[1] === 'BORG_RETENTION_POLICY') {
                     $replacements[1] = $this->configurationManager->GetBorgRetentionPolicy();
+                } elseif ($out[1] === 'FULLTEXTSEARCH_JAVA_OPTIONS') {
+                    $replacements[1] = $this->configurationManager->GetFulltextsearchJavaOptions();
                 } elseif ($out[1] === 'NEXTCLOUD_TRUSTED_CACERTS_DIR') {
                     $replacements[1] = $this->configurationManager->GetTrustedCacertsDir();
                 } elseif ($out[1] === 'ADDITIONAL_DIRECTORIES_BACKUP') {

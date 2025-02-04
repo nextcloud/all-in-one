@@ -714,6 +714,13 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetFulltextsearchJavaOptions() : string {
+        $envVariableName = 'FULLTEXTSEARCH_JAVA_OPTIONS';
+        $configName = 'fulltextsearch_java_options';
+        $defaultValue = '-Xms512M -Xmx512M';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     public function GetDockerSocketPath() : string {
         $envVariableName = 'WATCHTOWER_DOCKER_SOCKET_PATH';
         $configName = 'docker_socket_path';
