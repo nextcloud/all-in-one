@@ -307,7 +307,7 @@ EOL
 # shellcheck disable=SC1083
 find ./ -name '*nextcloud-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional.config"  \{} \;
 # shellcheck disable=SC1083
-find ./ -name '*nextcloud-deployment.yaml' -exec sed -i 's/{{ .Values.FULLTEXTSEARCH_JAVA_OPTIONS }}/{{ .Values.FULLTEXTSEARCH_JAVA_OPTIONS | default "-Xms512M -Xmx512M" }}/'  \{} \;
+find ./ -name '*fulltextsearch-deployment.yaml' -exec sed -i 's/{{ .Values.FULLTEXTSEARCH_JAVA_OPTIONS }}/{{ .Values.FULLTEXTSEARCH_JAVA_OPTIONS | default "-Xms512M -Xmx512M" }}/'  \{} \;
 
 # Additional config
 cat << EOL > /tmp/additional-apache.config
