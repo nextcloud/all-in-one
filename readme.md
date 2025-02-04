@@ -17,9 +17,6 @@
   - Whiteboard
   - Docker Socket Proxy (for [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi))
 
-
-
-
 <details><summary>See the features</summary>
 
 ## User-Friendly Web Interface
@@ -85,13 +82,12 @@
 - Compatible with [Docker Swarm](https://github.com/nextcloud/all-in-one#can-i-run-this-with-docker-swarm) and [Kubernetes](https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart)
 - [Multiple instances on one server](https://github.com/nextcloud/all-in-one/blob/main/multiple-instances.md)
 - Can be installed [without giving access to the Docker socket](https://github.com/nextcloud/all-in-one/tree/main/manual-install)
-- Almost all included containers Alpine Linux based (good for security and size)
 
-- Many of the included containers run as non-root user (good for security)
-
-- Many of the included containers have a read-only root-FS (good for security)
-
-- Included containers run in its own docker network (good for security) and only really necessary ports are exposed on the host
+**Note:** 
+- Almost all included containers Alpine Linux-based
+- Many of the included containers run as non-root user
+- Many of the included containers have a read-only root filesystem
+- Included containers run in their own docker network, and only really necessary ports are exposed on the host
 
 > **Nextcloud AIO is not read only and will let you apply patches manually.**
 
