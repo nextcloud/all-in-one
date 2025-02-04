@@ -1,19 +1,23 @@
 # Nextcloud All-in-One
-The official Nextcloud installation method. Nextcloud AIO provides easy deployment and maintenance with most features included in this one Nextcloud instance. 
+### *official containerized installation method*
+> Nextcloud AIO provides easy deployment and maintenance with most features, including:
 
-Included are:
-- Nextcloud
+- Nextcloud (of course)
+
 - High performance backend for Nextcloud Files
-- Nextcloud Office (optional)
-- High performance backend for Nextcloud Talk and TURN-server (optional)
-- Nextcloud Talk Recording-server (optional)
-- Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
-- Imaginary (optional, for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
-- ClamAV (optional, Antivirus backend for Nextcloud)
-- Fulltextsearch (optional)
-- Whiteboard (optional)
-- Docker Socket Proxy (optional, needed for [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi))
-- [Community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers)
+
+- Optional:
+  - Nextcloud Office
+  - High performance backend for Nextcloud Talk and TURN-server (optional)
+  - Nextcloud Talk Recording-server
+  - Backup solution (based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
+  - Imaginary (for previews of file formats like: HEIC, HEIF, Illustrator, PDF, SVG, TIFF, and WebP)
+  - ClamAV (Antivirus backend)
+  - Fulltextsearch
+  - Whiteboard
+  - Docker Socket Proxy (for [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi))
+  - [Community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers)
+
 <details><summary>And much more:</summary>
 
 - Simple web interface included that enables easy installation and maintenance
