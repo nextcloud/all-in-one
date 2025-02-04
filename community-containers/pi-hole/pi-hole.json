@@ -48,6 +48,7 @@
                 "nextcloud_aio_pihole",
                 "nextcloud_aio_pihole_dnsmasq"
             ],
+            "ui_secret": "PIHOLE_WEBPASSWORD",
             "secrets": [
                 "PIHOLE_WEBPASSWORD"
             ]

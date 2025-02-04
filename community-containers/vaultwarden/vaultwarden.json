@@ -40,6 +40,7 @@
             "backup_volumes": [
                 "nextcloud_aio_vaultwarden"
             ],
+            "ui_secret": "VAULTWARDEN_ADMIN_TOKEN",
             "secrets": [
                 "VAULTWARDEN_ADMIN_TOKEN"
             ]
