@@ -229,7 +229,7 @@ If your firewall/router has port 80 and 8443 open/forwarded and you point a doma
 - [How to enable automatic updates without creating a backup beforehand?](#how-to-enable-automatic-updates-without-creating-a-backup-beforehand)
 - [Securing the AIO interface from unauthorized ACME challenges](#securing-the-aio-interface-from-unauthorized-acme-challenges)
 
-## Where can I find additional documentation?
+### Where can I find additional documentation?
 Some of the documentation is available on [GitHub Discussions](https://github.com/nextcloud/all-in-one/discussions/categories/wiki).
 
 ### How does it work?
