@@ -2,7 +2,7 @@
 
 # Wait until the apache container is ready
 while ! nc -z "$APACHE_HOST" "$APACHE_PORT"; do
-    echo "Waiting for Apache to become available..."
+    echo "Waiting for $APACHE_HOST to become available..."
     sleep 15
 done
 
