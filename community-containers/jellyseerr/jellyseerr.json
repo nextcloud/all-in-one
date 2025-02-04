@@ -17,8 +17,7 @@
             ],
             "environment": [
                 "PORT=5055",
-                "TZ=%TIMEZONE%",
-                "TINI_SUBREAPER="
+                "TZ=%TIMEZONE%"
             ],
             "volumes": [
                 {
