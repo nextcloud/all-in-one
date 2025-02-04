@@ -34,6 +34,8 @@ spec:
         {{- end }}
       containers:
         - env:
+            - name: BACKUP_DIR
+              value: /tmp
             - name: JWT_SECRET_KEY
               value: "{{ .Values.WHITEBOARD_SECRET }}"
             - name: NEXTCLOUD_URL
@@ -46,7 +48,7 @@ spec:
               value: redis
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-whiteboard:20250122_091948
+          image: nextcloud/aio-whiteboard:20250204_102259
           readinessProbe:
             exec:
               command:
