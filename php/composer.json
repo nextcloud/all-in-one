@@ -20,7 +20,7 @@
 	},
 	"require-dev": {
 		"sserbin/twig-linter": "@dev",
-		"vimeo/psalm": "^5.25",
+		"vimeo/psalm": "^6.4",
 		"wapmorgan/php-deprecation-detector": "dev-master"
 	},
 	"scripts": {
