@@ -300,6 +300,7 @@
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
+        "TZ=%TIMEZONE%",
         "REDIS_HOST=nextcloud-aio-redis",
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "POSTGRES_HOST=nextcloud-aio-database",
