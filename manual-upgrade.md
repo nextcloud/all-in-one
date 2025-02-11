@@ -7,7 +7,11 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
 
 ---
 
-## Method 1
+## Method 1 using `assaflavie/runlike`
+
+> [!Warning]
+> Please note that this method is apparently currently broken. See https://help.nextcloud.com/t/manual-upgrade-keeps-failing/217164/10
+> So please refer to method 2 using Portainer.
 
 1. Start all containers from the AIO interface 
     - Now, it will report that Nextcloud is restarting because it is not able to start due to the above mentioned problem
@@ -54,13 +58,10 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
 
 ---
 
-## Method 2
+## Method 2 using Portainer
 #### *Approach using portainer if method 1 does not work for you*
 
 Prerequisite: have all containers from AIO interface running.
-
-<details>
-<summary>Click to expand</summary>
 
 ##### 1. Install portainer if not installed:
 ```bash
@@ -119,5 +120,3 @@ docker rm portainer
 docker volume rm portainer_data
 ```
 - Make sure you close port 9443 on your firewall and delete any necessary reverse proxy hosts.
-
-</details>
