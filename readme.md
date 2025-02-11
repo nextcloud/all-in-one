@@ -216,6 +216,7 @@ If your firewall/router has port 80 and 8443 open/forwarded and you point a doma
 - [How to store the files/installation on a separate drive?](#how-to-store-the-filesinstallation-on-a-separate-drive)
 - [How to edit Nextclouds config.php file with a texteditor?](#how-to-edit-nextclouds-configphp-file-with-a-texteditor)
 - [How to change default files by creating a custom skeleton directory?](#how-to-change-default-files-by-creating-a-custom-skeleton-directory)
+- [How to adjust the version retention policy and trashbin retention policy?](#how-to-adjust-the-version-retention-policy-and-trashbin-retention-policy)
 - [Fail2ban](#fail2ban)
 - [LDAP](#ldap)
 - [Netdata](#netdata)
@@ -925,6 +926,9 @@ You can edit Nextclouds config.php file directly from the host with your favorit
 
 ### How to change default files by creating a custom skeleton directory?
 All users see a set of [default files and folders](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/default_files_configuration.html) as dictated by Nextcloud's configuration.  To change these default files and folders a custom skeleton directory must first be created; this can be accomplished by copying your skeleton files `sudo docker cp --follow-link /path/to/nextcloud/skeleton/ nextcloud-aio-nextcloud:/mnt/ncdata/skeleton/`, applying the correct permissions with `sudo docker exec nextcloud-aio-nextcloud chown -R 33:0 /mnt/ncdata/skeleton/` and `sudo docker exec nextcloud-aio-nextcloud chmod -R 750 /mnt/ncdata/skeleton/` and setting the skeleton directory option with `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:system:set skeletondirectory --value="/mnt/ncdata/skeleton"`.  Further information is available in the Nextcloud documentation on [configuration parameters for the skeleton directory](https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/config_sample_php_parameters.html#skeletondirectory).
+
+### How to adjust the version retention policy and trashbin retention policy?
+By default, AIO sets the `versions_retention_obligation` and `versions_retention_obligation` both to `auto, 30` which means that versions and items in the trashbin get deleted after 30 days. If you want to change this, see https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/file_versioning.html.
 
 ### Fail2ban
 You can configure your server to block certain ip-addresses using fail2ban as bruteforce protection. Here is how to set it up: https://docs.nextcloud.com/server/stable/admin_manual/installation/harden_server.html#setup-fail2ban. The logpath of AIO is by default `/var/lib/docker/volumes/nextcloud_aio_nextcloud/_data/data/nextcloud.log`. Do not forget to add `chain=DOCKER-USER` to your nextcloud jail config (`nextcloud.local`) otherwise the nextcloud service running on docker will still be accessible even if the IP is banned. Also, you may change the blocked ports to cover all AIO ports: by default `80,443,8080,8443,3478` (see [this](https://github.com/nextcloud/all-in-one#explanation-of-used-ports)). Apart from that there is now a community container that can be added to the AIO stack: https://github.com/nextcloud/all-in-one/tree/main/community-containers/fail2ban
