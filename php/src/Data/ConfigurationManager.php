@@ -847,6 +847,9 @@ class ConfigurationManager
             return '';
         }
         $additionalBackupDirectories = file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile());
+        if ($additionalBackupDirectories === false) {
+            return '';
+        }
         return $additionalBackupDirectories;
     }
 

@@ -71,7 +71,7 @@ $app->post('/api/auth/logout', AIO\Controller\LoginController::class . ':Logout'
 $app->post('/api/configuration', \AIO\Controller\ConfigurationController::class . ':SetConfig');
 
 // Views
-$app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {
+$app->get('/containers', function (Request $request, Response $response) use ($container) {
     $view = Twig::fromRequest($request);
     $view->addExtension(new \AIO\Twig\ClassExtension());
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
@@ -131,7 +131,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled(),        
     ]);
 })->setName('profile');
-$app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
+$app->get('/login', function (Request $request, Response $response) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
     $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
@@ -139,7 +139,7 @@ $app->get('/login', function (Request $request, Response $response, array $args)
         'is_login_allowed' => $dockerActionManger->isLoginAllowed(),
     ]);
 });
-$app->get('/setup', function (Request $request, Response $response, array $args) use ($container) {
+$app->get('/setup', function (Request $request, Response $response) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Data\Setup $setup */
     $setup = $container->get(\AIO\Data\Setup::class);
@@ -161,7 +161,7 @@ $app->get('/setup', function (Request $request, Response $response, array $args)
 });
 
 // Auth Redirector
-$app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $response, array $args) use ($container) {
+$app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $response) use ($container) {
     /** @var \AIO\Auth\AuthManager $authManager */
     $authManager = $container->get(\AIO\Auth\AuthManager::class);
 
@@ -184,6 +184,6 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
     }
 });
 
-$errorMiddleware = $app->addErrorMiddleware(false, true, true);
+$app->addErrorMiddleware(false, true, true);
 
 $app->run();
