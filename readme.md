@@ -227,6 +227,7 @@ If your firewall/router has port 80 and 8443 open/forwarded and you point a doma
 - [Requirements for integrating new containers](#requirements-for-integrating-new-containers)
 - [How to trust user-defined Certification Authorities (CA)?](#how-to-trust-user-defined-certification-authorities-ca)
 - [How to disable Collabora's Seccomp feature?](#how-to-disable-collaboras-seccomp-feature)
+- [How to adjust the Fulltextsearch Java options?](#how-to-adjust-the-fulltextsearch-java-options)
 - [How to enable automatic updates without creating a backup beforehand?](#how-to-enable-automatic-updates-without-creating-a-backup-beforehand)
 - [Securing the AIO interface from unauthorized ACME challenges](#securing-the-aio-interface-from-unauthorized-acme-challenges)
 
@@ -974,7 +975,10 @@ When using `docker run`, the environmental variable can be set with `--env NEXTC
 In order for the value to be valid, the path should start with `/` and not end with `/` and point to an existing **directory**. Pointing the variable directly to a certificate **file** will not work and may also break things.
 
 ### How to disable Collabora's Seccomp feature?
-The Collabora container enables Seccomp by default, which is a security feature of the Linux kernel. On systems without this kernel feature enabled, you need to provide `--env COLLABORA_SECCOMP_DISABLED=true` to the initial docker run command in order to make it work.
+The Collabora container enables Seccomp by default, which is a security feature of the Linux kernel. On systems without this kernel feature enabled, you need to provide `--env COLLABORA_SECCOMP_DISABLED=true` to the initial docker run command in order to make it work. If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used. 
+
+### How to adjust the Fulltextsearch Java options?
+The Fulltextsearch Java options are by default set to `-Xms512M -Xmx512M` which might not be enough on some systems. You can adjust this by adding e.g. `--env FULLTEXTSEARCH_JAVA_OPTIONS="-Xms1024M -Xmx1024M"` to the initial docker run command. If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used.
 
 ### How to enable automatic updates without creating a backup beforehand?
 If you have an external backup solution, you might want to enable automatic updates without creating a backup first. However note that doing this is disrecommended since you will not be able to easily create and restore a backup from the AIO interface anymore and you need to make sure to shut down all the containers properly before creating the backup, e.g. by stopping them from the AIO interface first. 
