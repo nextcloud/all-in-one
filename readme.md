@@ -190,6 +190,7 @@ If your firewall/router has port 80 and 8443 open/forwarded and you point a doma
     - [Pro-tip: Backup archives access](#pro-tip-backup-archives-access)
     - [Delete backup archives manually](#delete-backup-archives-manually)
     - [Sync local backups regularly to another drive](#sync-local-backups-regularly-to-another-drive)
+    - [How to exclude Nextcloud's data directory or the preview folder from backup?](#how-to-exclude-nextclouds-data-directory-or-the-preview-folder-from-backup)
 - [How to stop/start/update containers or trigger the daily backup from a script externally?](#how-to-stopstartupdate-containers-or-trigger-the-daily-backup-from-a-script-externally)
 - [How to disable the backup section?](#how-to-disable-the-backup-section)
 - [How to change the default location of Nextcloud's Datadir?](#how-to-change-the-default-location-of-nextclouds-datadir)
@@ -750,6 +751,19 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/backup
 1. Open the cronjob with `sudo crontab -u root -e` (and choose your editor of choice if not already done. I'd recommend nano). 
 1. Add the following new line to the crontab if not already present: `0 20 * * 7 /root/backup-script.sh` which will run the script at 20:00 on Sundays each week. 
 1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
+
+#### How to exclude Nextcloud's data directory or the preview folder from backup?
+In order to speed up the backups and to keep the backup archives small, you might want to exclude Nextcloud's data directory or its preview folder from backup. 
+
+> [!WARNING]
+> However please note that you will run into problems if the database and the data directory or preview folder get out of sync. **So please only read further, if you have an additional external backup of the data directory!** See [this guide](#how-to-enable-automatic-updates-without-creating-a-backup-beforehand) for example.
+
+> [!TIP]
+> A better option is to use the external storage app inside Nextcloud as the data connected via the external storage app is not backed up by AIO's backup solution. See [this documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/external_storage_configuration_gui.html) on how to configure the app.
+
+If you still want to proceed, you can exclude the data directory by simply creating a `.noaiobackup` file in the root directory of the specified `NEXTCLOUD_DATADIR` target. The same logic is implemented for the preview folder that is located inside the data directory, inside the `appdata_*/preview` folder. So simply create a `.noaiobackup` file in there if you want to exclude the preview folder.
+
+After doing a restore via the AIO interface, you might run into problems due to the data directory and database being out of sync. You might be able to fix this by running `occ files:scan --all` and `occ maintenance:repair` and `occ files:scan-app-data`. See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands. If only the preview folder is excluded, the command `occ files:scan-app-data preview` should be used.
 
 ### How to stop/start/update containers or trigger the daily backup from a script externally?
 > [!WARNING]  
