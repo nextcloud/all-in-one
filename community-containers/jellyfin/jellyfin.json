@@ -25,7 +25,7 @@
                 {
                     "source": "%NEXTCLOUD_MOUNT%",
                     "destination": "%NEXTCLOUD_MOUNT%",
-                    "writeable": false
+                    "writeable": true
                 }
             ],
             "devices": [
