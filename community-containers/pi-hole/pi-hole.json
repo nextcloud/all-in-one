@@ -28,9 +28,9 @@
             ],
             "environment": [
                 "TZ=%TIMEZONE%",
-                "WEBPASSWORD=%PIHOLE_WEBPASSWORD%",
-                "DNSMASQ_LISTENING=all",
-                "WEB_PORT=8573"
+                "FTLCONF_webserver_api_password=%PIHOLE_WEBPASSWORD%",
+                "FTLCONF_dns_listeningMode=all",
+                "FTLCONF_webserver_port=8573"
             ],
             "volumes": [
                 {
