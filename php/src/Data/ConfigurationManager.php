@@ -950,6 +950,42 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public function SetAdditionalCollaboraOptions(string $additionalCollaboraOptions) : void {
+        if ($additionalCollaboraOptions === "") {
+            throw new InvalidSettingConfigurationException("The additional options must not be empty!");
+        }
+
+        if (!preg_match("#^--o:#", $additionalCollaboraOptions)) {
+            throw new InvalidSettingConfigurationException("The entered options must start with '--o:'. So the config does not seem to be a valid!");
+        }
+
+        $config = $this->GetConfig();
+        $config['collabora_additional_options'] = $additionalCollaboraOptions;
+        $this->WriteConfig($config);
+    }
+
+    public function GetAdditionalCollaboraOptions() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['collabora_additional_options'])) {
+            $config['collabora_additional_options'] = '';
+        }
+
+        return $config['collabora_additional_options'];
+    }
+
+    public function GetAdditionalCollaboraOptionsArray() : array {
+        return explode(' ', $this->GetAdditionalCollaboraOptions());
+    }
+
+    public function DeleteAdditionalCollaboraOptions() : void {
+        $config = $this->GetConfig();
+        $config['collabora_additional_options'] = '';
+        $this->WriteConfig($config);
+    }
+
     public function GetApacheAdditionalNetwork() : string {
         $envVariableName = 'APACHE_ADDITIONAL_NETWORK';
         $configName = 'apache_additional_network';

@@ -37,6 +37,7 @@ cd manual-install || exit
 sed -i "s|'||g" containers.yml
 sed -i '/display_name:/d' containers.yml
 sed -i '/THIS_IS_AIO/d' containers.yml
+sed -i "s|%COLLABORA_SECCOMP_POLICY% ||g" containers.yml
 sed -i '/stop_grace_period:/s/$/s/' containers.yml
 sed -i '/: \[\]/d' containers.yml
 sed -i 's|- source: |- |' containers.yml
@@ -128,6 +129,13 @@ echo "$OUTPUT" > containers.yml
 
 sed -i '/container_name/d' containers.yml
 sed -i 's|^ $||' containers.yml
+
+# Additional config for collabora
+cat << EOL > /tmp/additional-collabora.config
+    command: \${ADDITIONAL_COLLABORA_OPTIONS}
+EOL
+sed -i "/^  nextcloud-aio-collabora:/r /tmp/additional-collabora.config" containers.yml
+sed -i "/^COLLABORA_DICTIONARIES.*/i ADDITIONAL_COLLABORA_OPTIONS=['--o:security.seccomp=true']          # You can add additional collabora options here by using the array syntax." sample.conf
 
 VOLUMES="$(grep -oP 'nextcloud_aio_[a-z_]+' containers.yml | sort -u)"
 mapfile -t VOLUMES <<< "$VOLUMES"
