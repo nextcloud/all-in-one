@@ -228,9 +228,6 @@ find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|
 # shellcheck disable=SC1083
 find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} \;
 # shellcheck disable=SC1083
-find ./ -name '*collabora-deployment.yaml*' -exec sed -i "/ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER/d" \{} \;
-find ./ -name '*collabora-deployment.yaml*' -exec sed -i "s/- args:/\{\{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default .Values.COLLABORA_SECCOMP_POLICY \}\}/" \{} \;
-# shellcheck disable=SC1083
 find ./ -name '*apache-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*talk-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
@@ -470,6 +467,10 @@ cat << EOL > /tmp/security.conf
 EOL
 # shellcheck disable=SC1083
 find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*apache-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml*' -exec sed -i "/ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER/d" \{} \;
+find ./ -name '*collabora-deployment.yaml*' -exec sed -i "s/- args:/- args: \{\{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default .Values.COLLABORA_SECCOMP_POLICY \}\}/" \{} \;
 
 cat << EOL > /tmp/security.conf
             # The items below only work in container context
