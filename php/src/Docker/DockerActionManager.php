@@ -578,6 +578,11 @@ readonly class DockerActionManager {
         // Special things for the caddy community container
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-caddy') {
             $requestBody['HostConfig']['ExtraHosts'] = ['host.docker.internal:host-gateway'];
+        // Special things for the collabora container which should not be exposed in the containers.json
+        } elseif ($container->GetIdentifier() === 'nextcloud-aio-collabora') {
+            if ($this->configurationManager->GetAdditionalCollaboraOptions() !== '') {
+                $requestBody['HostConfig']['Config']['Cmd'] = $this->configurationManager->GetAdditionalCollaboraOptionsArray();
+            }
         }
 
         if (count($mounts) > 0) {

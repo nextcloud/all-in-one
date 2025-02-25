@@ -247,6 +247,8 @@ find ./ -name '*talk-service.yaml' -exec grep -v '{{ .Values.TALK.*}}\|protocol:
 # shellcheck disable=SC1083
 find ./ -name '*talk-service.yaml' -exec mv /tmp/talk-service.copy \{} \;
 # shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml' -exec sed -i "s/{{ .Values.ADDITIONAL_COLLABORA_OPTIONS }}/{{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default .Values.COLLABORA_SECCOMP_POLICY }}/" \{} \;
+# shellcheck disable=SC1083
 find ./ -name '*service.yaml' -exec sed -i "/type: LoadBalancer/a\ \ externalTrafficPolicy: Local" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*service.yaml' -exec sed -i "/^spec:/a\ \ ipFamilyPolicy: PreferDualStack" \{} \;
