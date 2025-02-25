@@ -228,7 +228,8 @@ find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|
 # shellcheck disable=SC1083
 find ./ -name '*talk*' -exec sed -i "s|$TALK_PORT|{{ .Values.TALK_PORT }}|" \{} \;
 # shellcheck disable=SC1083
-find ./ -name '*collabora-deployment.yaml*' -exec sed -i "s/ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER/\{\{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default .Values.COLLABORA_SECCOMP_POLICY \}\}/" \{} \;
+find ./ -name '*collabora-deployment.yaml*' -exec sed -i "/ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER/d" \{} \;
+find ./ -name '*collabora-deployment.yaml*' -exec sed -i "s/- args:/\{\{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default .Values.COLLABORA_SECCOMP_POLICY \}\}/" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*apache-service.yaml' -exec sed -i "/^spec:/a\ \ type: LoadBalancer" \{} \;
 # shellcheck disable=SC1083
