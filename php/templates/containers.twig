@@ -60,11 +60,11 @@
             {% endfor %}
 
             {% if is_daily_backup_running == true %}
-                <p><span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank" rel="noopener">Logs</a>)</p>
+                <p><span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank">Logs</a>)</p>
                 {% if automatic_updates == true %}
                     <p>This will update your containers, the mastercontainer and, on Saturdays, your Nextcloud apps if the backup is successful.</p>
                     {% if is_mastercontainer_update_available == true %}
-                        <p>When the mastercontainer is updated it will restart, making it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)</p>
+                        <p>When the mastercontainer is updated it will restart, making it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank">Logs</a>)</p>
                     {% endif %}
                 {% endif %}
                 {% if has_update_available == false %}
@@ -75,13 +75,13 @@
                 <p><a href="" class="button reload">Reload ↻</a></p>
                 <p>If the daily backup is stuck somehow, you can unstick it by running <strong>sudo docker exec nextcloud-aio-mastercontainer rm /mnt/docker-aio-config/data/daily_backup_running</strong> and afterwards reloading this interface.</p>
             {% elseif isWatchtowerRunning == true %}
-                <p><span class="status running"></span> Mastercontainer update currently running. Once the update is complete the mastercontainer will restart, making it unavailable for a moment. Please wait until it's done. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank" rel="noopener">Logs</a>)</p>
+                <p><span class="status running"></span> Mastercontainer update currently running. Once the update is complete the mastercontainer will restart, making it unavailable for a moment. Please wait until it's done. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank">Logs</a>)</p>
                 <p><a href="" class="button reload">Reload ↻</a></p>
             {% else %}
                 {% if is_backup_container_running == false and domain == "" %}
                     {% if isDomaincheckRunning == false %}
                         <h2>Domaincheck container is not running</h2>
-                        <p>This is not expected. Most likely this happened because port {{ apache_port }} is already in use on your server. You can check the mastercontainer logs and domaincheck container logs for further clues. You should be able to resolve this by adjusting the APACHE_PORT by following the <strong><a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></strong>. Advice: have a detailed look at the changed docker run command for AIO.</p>
+                        <p>This is not expected. Most likely this happened because port {{ apache_port }} is already in use on your server. You can check the mastercontainer logs and domaincheck container logs for further clues. You should be able to resolve this by adjusting the APACHE_PORT by following the <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></strong>. Advice: have a detailed look at the changed docker run command for AIO.</p>
                     {% elseif is_mastercontainer_update_available == true %}
                         <h2>Mastercontainer update</h2>
                         <p>⚠️ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.</p>
@@ -97,7 +97,7 @@
                             {{ include('includes/aio-config.twig') }}
                             <h2>New AIO instance</h2>
                             {% if apache_port == '443' %}
-                                <p>AIO is currently in "normal mode" which means that it handles the TLS proxying itself. This also means that it cannot be installed behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), see the <strong><a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></strong>. Advice: have a detailed look at the changed docker run command for AIO.</p>
+                                <p>AIO is currently in "normal mode" which means that it handles the TLS proxying itself. This also means that it cannot be installed behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), see the <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></strong>. Advice: have a detailed look at the changed docker run command for AIO.</p>
                             {% else %}
                                 <p>AIO is currently in "reverse proxy mode" which means that it can be installed behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) and does not do the TLS proxying itself.</p>
                             {% endif %}
@@ -115,14 +115,14 @@
                                 <p>Make sure that this server is reachable on port 443 (port 443/tcp is open/forwarded in your firewall/router and 443/udp as well if you want to enable http3) and that you've correctly set up the DNS config for the domain that you enter (set the A record to your public ipv4-address and if you need ipv6, set the AAAA record to your public ipv6-address. A CNAME record is, of course, also possible). You should see hints on what went wrong in the top right corner if your domain is not accepted.</p>
                                 <details>
                                     <summary>Click here for further hints</summary>
-                                    <p>If you do not have a domain yet, you can get one for free e.g. from duckdns.org and others. Recommended is to use <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/discussions/5439">Tailscale</a></p>
-                                    <p>If you have a dynamic public IP-address, you can use e.g. <a target="_blank" rel="noopener" href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates.</p>
-                                    <p>If you only want to install AIO locally without exposing it to the public internet or if you cannot do so, feel free to follow <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/blob/main/local-instance.md">this documentation</a>.</p>
+                                    <p>If you do not have a domain yet, you can get one for free e.g. from duckdns.org and others. Recommended is to use <a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/5439">Tailscale</a></p>
+                                    <p>If you have a dynamic public IP-address, you can use e.g. <a target="_blank" href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates.</p>
+                                    <p>If you only want to install AIO locally without exposing it to the public internet or if you cannot do so, feel free to follow <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/local-instance.md">this documentation</a>.</p>
                                     <p>If you should be using Cloudflare Proxy for your domain, make sure to disable the Proxy feature temporarily as it might block the domain validation attempts.</p>
                                     {% if apache_port != '443' %}
-                                        <p>If you run into issues with your domain being accepted, see <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things">these steps</a> for how to debug things.</p>
+                                        <p>If you run into issues with your domain being accepted, see <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things">these steps</a> for how to debug things.</p>
                                     {% endif %}
-                                    <p><strong>Hint:</strong> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.</p>
+                                    <p><strong>Hint:</strong> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.</p>
                                 </details>
                             {% endif %}
 
@@ -134,11 +134,11 @@
                             {% if hasBackupLocation %}
                                 {% if borg_backup_mode in ['test', 'check'] %}
                                     {% if backup_exit_code > 0 %}
-                                        <p><span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
+                                        <p><span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank">Logs</a>)</p>
                                         {% if borg_backup_mode == 'test' %}
                                             <p>Please adjust the path and/or the encryption password in order to make it work!</p>
                                         {% elseif borg_backup_mode == 'check' %}
-                                            <p>The backup archive seems to be corrupt. Please try to use a different intact backup archive or try to fix it by following <a target="_blank" rel="noopener" href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><strong>this documentation</strong></a></p>
+                                            <p>The backup archive seems to be corrupt. Please try to use a different intact backup archive or try to fix it by following <a target="_blank" href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><strong>this documentation</strong></a></p>
                                             <details>
                                                 <summary>Reveal repair option</summary>
                                                 <p>Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)</p>
@@ -150,7 +150,7 @@
                                             </details>
                                         {% endif %}
                                     {% elseif backup_exit_code == 0 %}
-                                        <p><span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
+                                        <p><span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank">Logs</a>)</p>
                                         {% if borg_backup_mode == 'test' %}
                                             <p>Feel free to check the integrity of the backup archive below before starting the restore process in order to make ensure that the restore will work. This can take a long time though depending on the size of the backup archive and is thus not required.</p>
                                             <form method="POST" action="/api/docker/backup-check" class="xhr">
@@ -160,7 +160,7 @@
                                             </form>
                                         {% endif %}
                                         <p>Choose the backup that you want to restore and click on the button below to restore the selected backup. This will restore the whole AIO instance. Please note that the current AIO passphrase will be kept and the previous AIO passphrase will not be restored from backup!</p>
-                                        <p><strong>Please note:</strong> If the backup that you want to restore contained any <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">community container</a>, but you did not specify the same community containers via environmental variable while creating this new AIO instance, you need to restore the same backup a second time after this attempt so that the community container data is also correctly restored.</p>
+                                        <p><strong>Please note:</strong> If the backup that you want to restore contained any <a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">community container</a>, but you did not specify the same community containers via environmental variable while creating this new AIO instance, you need to restore the same backup a second time after this attempt so that the community container data is also correctly restored.</p>
                                         <form method="POST" action="/api/docker/restore" class="xhr" id="restore_selection">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -175,7 +175,7 @@
                                     {% endif %}
                                 {% elseif borg_backup_mode == 'restore' %}
                                     {% if backup_exit_code > 0 %}
-                                        <p><span class="status error"></span> Last restore failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
+                                        <p><span class="status error"></span> Last restore failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank">Logs</a>)</p>
                                         <p>The restore process has unexpectedly failed! Please adjust the path and encryption password, test it and try to restore again!</p>
                                     {% endif %}
                                 {% endif %}
@@ -191,7 +191,7 @@
 
                                 <p>
                                 Please enter the location of the backup archive on your host or a
-                                <a target="_blank" rel="noopener" href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>
+                                <a target="_blank" href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>
                                 if stored remotely; and the encryption password of the backup archive below:
                                 </p>
                                 <form method="POST" action="/api/configuration" class="xhr">
@@ -215,19 +215,19 @@
                         {% endif %}
                     {% endif %}
                     <h2>How to reset the AIO instance?</h2>
-                    <p>If something should be going wrong, for example during the initial installation, you can reset the instance by following <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance">this documentation</a>.</p>
+                    <p>If something should be going wrong, for example during the initial installation, you can reset the instance by following <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance">this documentation</a>.</p>
                 {% endif %}
 
                 {% if was_start_button_clicked == true %}
                     {% if current_channel starts with 'latest' or current_channel starts with 'beta' or current_channel starts with 'develop' %}
-                        <p>You are running the <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one#how-to-switch-the-channel"><strong>{{ current_channel }}</strong></a> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank" rel="noopener">Logs</a>)</p>
+                        <p>You are running the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-switch-the-channel"><strong>{{ current_channel }}</strong></a> channel. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank">Logs</a>)</p>
                     {% else %}
                         <p>No channel was found. This means that AIO is not able to update itself and its component and will also not be able to report about updates. Updates need to be done externally.</p>
                     {% endif %}
                 {% endif %}
 
                 {% if is_backup_container_running == true %}
-                    <p><span class="status running"></span> Backup container is currently running: {{ borg_backup_mode }} (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
+                    <p><span class="status running"></span> Backup container is currently running: {{ borg_backup_mode }} (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank">Logs</a>)</p>
                     <p><a href="" class="button reload">Reload ↻</a></p>
                 {% endif %}
 
@@ -245,9 +245,9 @@
                             {% else %}
                                 <p>Initial Nextcloud password: <strong>{{ nextcloud_password }}</strong></p>
                             {% endif %}
-                            <p><a href="https://{{ domain }}" class="button" target="_blank" rel="noopener">Open your Nextcloud ↗</a></p>
+                            <p><a href="https://{{ domain }}" class="button" target="_blank">Open your Nextcloud ↗</a></p>
                             {% if not hasBackupLocation %}
-                                <p>If your Nextcloud does not open when clicking the button above, see <strong><a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/discussions/2105">this documentation</a></strong></p>
+                                <p>If your Nextcloud does not open when clicking the button above, see <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/2105">this documentation</a></strong></p>
                             {% endif %}
                         {% else %}
                             {% if isAnyRestarting == false %}
@@ -278,9 +278,9 @@
                                     <li>
                                         {% if container.GetStartingState().value == 'starting' %}
                                             <span class="status running"></span>
-                                            <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank" rel="noopener">Starting</a>)
+                                            <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank">Starting</a>)
                                             {% if container.GetDocumentation() != '' %}
-                                                (<a target="_blank" rel="noopener" href="{{ container.GetDocumentation() }}">docs</a>)
+                                                (<a target="_blank" href="{{ container.GetDocumentation() }}">docs</a>)
                                             {% endif %}
                                             {% if container.GetUiSecret() != '' %}
                                                 (password: {{ container.GetUiSecret() }})
@@ -288,9 +288,9 @@
                                             </span>
                                         {% elseif container.GetRunningState().value == 'running' %}
                                             <span class="status success"></span>
-                                            <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank" rel="noopener">Running</a>)
+                                            <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank">Running</a>)
                                             {% if container.GetDocumentation() != '' %}
-                                                (<a target="_blank" rel="noopener" href="{{ container.GetDocumentation() }}">docs</a>)
+                                                (<a target="_blank" href="{{ container.GetDocumentation() }}">docs</a>)
                                             {% endif %}
                                             {% if container.GetUiSecret() != '' %}
                                                 (password: {{ container.GetUiSecret() }})
@@ -298,9 +298,9 @@
                                             </span>
                                         {% else %}
                                             <span class="status error"></span>
-                                            <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank" rel="noopener">Stopped</a>)
+                                            <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank">Stopped</a>)
                                             {% if container.GetDocumentation() != '' %}
-                                                (<a target="_blank" rel="noopener" href="{{ container.GetDocumentation() }}">docs</a>)
+                                                (<a target="_blank" href="{{ container.GetDocumentation() }}">docs</a>)
                                             {% endif %}
                                             {% if container.GetUiSecret() != '' %}
                                                 (password: {{ container.GetUiSecret() }})
@@ -322,7 +322,7 @@
                                 {% if newMajorVersion != '' and isAnyRunning == true and isApacheStarting != true %}
                                     <details>
                                     <summary>Note about <strong>Nextcloud Hub {{ newMajorVersion - 21 }}</strong></summary>
-                                        <p>If you haven't upgraded to Nextcloud Hub {{ newMajorVersion - 21 }} yet and want to do that now, feel free to follow <strong><a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/discussions/6053">this documentation</a></strong></p>
+                                        <p>If you haven't upgraded to Nextcloud Hub {{ newMajorVersion - 21 }} yet and want to do that now, feel free to follow <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/6053">this documentation</a></strong></p>
                                     </details>
                                 {% endif %}
                             {% endif %}
@@ -334,11 +334,11 @@
                             {% if is_mastercontainer_update_available == true %}
                                 <p>⚠️ A mastercontainer update is available. Please click on the button below to stop your containers in order to update the mastercontainer.</p>
                                 {% if current_channel starts with 'latest' %}
-                                    <p>You can find the changelog <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/releases/latest"><strong>here</strong></a></p>
+                                    <p>You can find the changelog <a target="_blank" href="https://github.com/nextcloud/all-in-one/releases/latest"><strong>here</strong></a></p>
                                 {% elseif current_channel starts with 'beta' %}
-                                    <p>You can find the changelog <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/releases"><strong>here</strong></a></p>
+                                    <p>You can find the changelog <a target="_blank" href="https://github.com/nextcloud/all-in-one/releases"><strong>here</strong></a></p>
                                 {% elseif current_channel starts with 'develop' %}
-                                    <p>You can find all changes <a target="_blank" rel="noopener" href="https://github.com/nextcloud-releases/all-in-one/commits/main"><strong>here</strong></a></p>
+                                    <p>You can find all changes <a target="_blank" href="https://github.com/nextcloud-releases/all-in-one/commits/main"><strong>here</strong></a></p>
                                 {% endif %}
                             {% endif %}
                             <form method="POST" action="/api/docker/stop" class="xhr">
@@ -399,7 +399,7 @@
                                 <p>Please enter the directory path below where backups will be created on the host system. It's best to choose a location on a separate drive and not on your root drive.</p>
                                 <p>
                                 To store backups remotely instead, fill in the
-                                <a target="_blank" rel="noopener" href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>.
+                                <a target="_blank" href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>.
                                 </p>
                                 <form method="POST" action="/api/configuration" class="xhr">
                                     <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
@@ -418,9 +418,9 @@
                                 {% if is_backup_container_running == false %}
                                     <h2>Backup and restore</h2>
                                     {% if backup_exit_code > 0 %}
-                                        <p><span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
+                                        <p><span class="status error"></span> Last {{ borg_backup_mode }} failed! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank">Logs</a>)</p>
                                         {% if borg_backup_mode == "check" %}
-                                            <p>The backup check was not successful. This might indicate a corrupt archive (look at the logs). If that should be the case, you can try to fix it by following <a target="_blank" rel="noopener" href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><strong>this documentation</strong></a></p>
+                                            <p>The backup check was not successful. This might indicate a corrupt archive (look at the logs). If that should be the case, you can try to fix it by following <a target="_blank" href="https://borgbackup.readthedocs.io/en/stable/faq.html#i-get-an-integrityerror-or-similar-what-now"><strong>this documentation</strong></a></p>
                                             <details>
                                                 <summary>Reveal repair option</summary>
                                                 <p>Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)</p>
@@ -452,9 +452,9 @@
                                         {% endif %}
                                     {% elseif backup_exit_code == 0 %}
                                         {% if borg_backup_mode == "backup" %}
-                                            <p><span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }} UTC! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
+                                            <p><span class="status success"></span> Last {{ borg_backup_mode }} successful on {{ last_backup_time }} UTC! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank">Logs</a>)</p>
                                         {% else %}
-                                            <p><span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank" rel="noopener">Logs</a>)</p>
+                                            <p><span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank">Logs</a>)</p>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
@@ -468,7 +468,7 @@
                                     <p>This is your encryption password for backups: <strong>{{ borgbackup_password }}</strong></p>
                                     <p>Please save this password in a safe place. You won't be able to restore from backup if you lose this password!</p>
                                     <p>All important data from your Nextcloud AIO instance such as the database, your files and the mastercontainer's configuration files, will be backed up.</p>
-                                    <p>The backup uses a tool called <a target="_blank" rel="noopener" href="https://github.com/borgbackup/borg#what-is-borgbackup"><strong>BorgBackup</strong></a>, a well-known server backup tool that efficiently backs up your files and encrypts them on the fly.</p>
+                                    <p>The backup uses a tool called <a target="_blank" href="https://github.com/borgbackup/borg#what-is-borgbackup"><strong>BorgBackup</strong></a>, a well-known server backup tool that efficiently backs up your files and encrypts them on the fly.</p>
                                     <p>By using this tool, backups are incremental, differential, compressed and encrypted – so only the first backup will take a while. Further backups should be fast as only changes are taken into account.</p>
                                     {% if borg_remote_repo != '' %}
                                         <p>
@@ -482,9 +482,9 @@
                                         <p>Backups will be created in the following directory on the host: <strong>{{ borg_backup_host_location }}/borg</strong></p>
                                     {% endif %}
                                     <p>Be aware that this solution does not backup files and folders that are mounted into Nextcloud using the external storage app, but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.</p>
-                                    <p>For information about backup retention, see <strong><a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one#how-to-adjust-borgs-retention-policy">this</a></strong>.</p>
+                                    <p>For information about backup retention, see <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-borgs-retention-policy">this</a></strong>.</p>
                                     <p>Daily backups can be enabled after the initial backup is done. Enabling this also allows you to enable an option to update all containers, Nextcloud, and its apps automatically.</p>
-                                    <p>For further documentation and options on this backup solution refer to <strong><a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one#backup-solution">this section</a></strong> and below.</p>
+                                    <p>For further documentation and options on this backup solution refer to <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one#backup-solution">this section</a></strong> and below.</p>
 
                                     {% if isApacheStarting != true %}
                                         <h3>Backup creation</h3>
@@ -514,7 +514,7 @@
 
                                         {% if has_backup_run_once == true %}
                                             <h3>Backup Viewer</h3>
-                                            <p>There is now a community container that allows to access your backups in a web session. See <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers/borgbackup-viewer"><strong>this documentation</strong></a>.</p>
+                                            <p>There is now a community container that allows to access your backups in a web session. See <a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers/borgbackup-viewer"><strong>this documentation</strong></a>.</p>
 
                                             <h3>Backup check</h3>
                                             <p>Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact. It shouldn't be needed in most situations.</p>
@@ -571,7 +571,7 @@
                                                 <input type="submit" value="Submit additional backup locations" />
                                             </form>
                                             <p>Each line and entry needs to start with a slash or letter/digit. Only <strong>a-z</strong>, <strong>A-Z</strong>, <strong>.</strong>, <strong>0-9</strong>, <strong>_</strong>, <strong>-</strong>, and <strong>/</strong> are allowed. If the entry begins with a letter/digit slashes are not supported. Two valid entries are <strong>/directory/on/the/host</strong> and <strong>my_custom_docker_volume</strong>. You need to make sure that all given directories exist or the backup container will fail to start!</p>
-                                            <p>Be sure to individually specify all storage that you want to back up as storage will not be mounted recursively. E.g. providing <strong>/</strong> as additional backup directory will only back up files and folders that are stored on the root partition and not on the EFI partition or any other. Excluded by the backup will be caches and a few other directories. If you want to back up the root partition you should make sure to stop all services before the backup so it can run correctly. For automating this see <a target="_blank" rel="noopener" href="https://github.com/nextcloud/all-in-one#how-to-stopstartupdate-containers-or-trigger-the-daily-backup-from-a-script-externally">this documentation</a></p>
+                                            <p>Be sure to individually specify all storage that you want to back up as storage will not be mounted recursively. E.g. providing <strong>/</strong> as additional backup directory will only back up files and folders that are stored on the root partition and not on the EFI partition or any other. Excluded by the backup will be caches and a few other directories. If you want to back up the root partition you should make sure to stop all services before the backup so it can run correctly. For automating this see <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-stopstartupdate-containers-or-trigger-the-daily-backup-from-a-script-externally">this documentation</a></p>
                                             <p>Please note that the chosen directories/volumes will not be restored when you restore your instance, so this would need to be done manually.</p>
                                             {% if additional_backup_directories != "" %}
                                                 <p>This option is currently set. You can disable it again by clearing the field and submitting your changes.</p>
@@ -598,7 +598,7 @@
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input type="submit" value="Submit passphrase change" />
                                     </form>
-                                    <p>The new passphrase needs to be at least 24 characters long. Allowed characters are the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><strong>latin characters</strong></a> <strong>a-z</strong>, <strong>A-Z</strong>, <strong>0-9</strong> and <strong>spaces</strong>.</p>
+                                    <p>The new passphrase needs to be at least 24 characters long. Allowed characters are the <a target="_blank" href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><strong>latin characters</strong></a> <strong>a-z</strong>, <strong>A-Z</strong>, <strong>0-9</strong> and <strong>spaces</strong>.</p>
                                 </details>
                             {% endif %}
                         {% endif %}
@@ -623,7 +623,7 @@
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <input type="submit" value="Submit timezone" onclick="return confirm('Are you sure that this is a valid timezone? Please double check by following the wikipedia article and checking the correct column. If the timezone is not valid, it will break the startup since the database will not be correctly initialized and you will end up in a startup loop.')" />
                                 </form>
-                                <p>You need to make sure that the timezone that you enter is valid. An example is <strong>Europe/Berlin</strong>. You can get valid values by looking at the 'TZ identifier' column of this list: <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"><strong>click here</strong></a>. The default is <strong>Etc/UTC</strong> if nothing is entered.</p>
+                                <p>You need to make sure that the timezone that you enter is valid. An example is <strong>Europe/Berlin</strong>. You can get valid values by looking at the 'TZ identifier' column of this list: <a target="_blank" href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"><strong>click here</strong></a>. The default is <strong>Etc/UTC</strong> if nothing is entered.</p>
                             {% else %}
                                 <p>The timezone for Nextcloud is currently set to <strong>{{ timezone }}</strong>. You can change the timezone by clicking on the button below.</p>
                                 <form method="POST" action="/api/configuration" class="xhr">
