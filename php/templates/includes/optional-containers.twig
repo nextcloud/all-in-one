@@ -1,5 +1,5 @@
 <h2>Optional containers</h2>
-<p>In this section you can enable or disable optional containers. There are further community containers available that are not listed below. See <strong><a href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">this documentation</a></strong> how to add them.</p>
+<p>In this section you can enable or disable optional containers. There are further community containers available that are not listed below. See <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">this documentation</a></strong> how to add them.</p>
 {% if isAnyRunning == true %}
     <p><strong>Please note:</strong> You can enable or disable the options below only when your containers are stopped.</p>
 {% else %}
@@ -50,7 +50,7 @@
             {% endif %}
         >
         <label for="fulltextsearch">
-            Fulltextsearch (needs ~1GB additional RAM, <a href="https://github.com/nextcloud/all-in-one/discussions/5768">does not work on Kernels without Seccomp</a>)
+            Fulltextsearch (needs ~1GB additional RAM, <a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/5768">does not work on Kernels without Seccomp</a>)
             {% if is_fulltextsearch_enabled == false %}
                 . <strong>Please note:</strong> the initial indexing can take a long time during which Nextcloud will be unavailable
             {% endif %}
@@ -68,7 +68,7 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label>
+        <label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a target="_blank" href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label>
     </p>
     <p>
         <input
@@ -96,7 +96,7 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM and ~2 additional vCPUs, currently <a href="https://github.com/nextcloud/nextcloud-talk-recording/issues/17">only works on x86_64</a>)</label>
+        <label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM and ~2 additional vCPUs, currently <a target="_blank" href="https://github.com/nextcloud/nextcloud-talk-recording/issues/17">only works on x86_64</a>)</label>
     </p>
     {% if is_onlyoffice_enabled == true %}
     <p>
@@ -126,7 +126,7 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="docker-socket-proxy">Docker Socket Proxy (needed for <a href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label>
+        <label for="docker-socket-proxy">Docker Socket Proxy (needed for <a target="_blank" href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label>
     </p>
     <p>
         <input
@@ -145,7 +145,7 @@
     <input id="options-form-submit" type="submit" value="Save changes" />
     <script type="text/javascript" src="options-form-submit.js?v3"></script>
 </form>
-<p><strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advice and recommendations see <strong><a href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong></p>
+<p><strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advice and recommendations see <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong></p>
 {% if isAnyRunning == true or is_x64_platform == false %}
     <script type="text/javascript" src="disable-clamav.js"></script>
 {% endif %}

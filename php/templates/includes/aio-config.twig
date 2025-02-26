@@ -1,8 +1,8 @@
 <details>
     <summary>Click here to view the current AIO config and documentation links</summary>
     {% if was_start_button_clicked == true %}
-        <p>Nextcloud's config.php file is stored in the nextcloud_aio_nextcloud Docker volume and can be edited by following the <a href="https://github.com/nextcloud/all-in-one#how-to-edit-nextclouds-configphp-file-with-a-texteditor">config.php documentation</a>.</p>
-        <p>You can run Nextcloud's usual occ commands by following the <a href="https://github.com/nextcloud/all-in-one#how-to-run-occ-commands">occ documentation</a></strong>.</p>
+        <p>Nextcloud's config.php file is stored in the nextcloud_aio_nextcloud Docker volume and can be edited by following the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-edit-nextclouds-configphp-file-with-a-texteditor">config.php documentation</a>.</p>
+        <p>You can run Nextcloud's usual occ commands by following the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-run-occ-commands">occ documentation</a></strong>.</p>
     {% endif %}
 
     <p>
@@ -11,7 +11,7 @@
         {% else %}
             Nextcloud's datadir is getting stored in the {{ nextcloud_datadir }} Docker volume.
         {% endif %}
-        See the <a href="https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir">NEXTCLOUD_DATADIR documentation</a> on how to change this.
+        See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir">NEXTCLOUD_DATADIR documentation</a> on how to change this.
     </p>
 
     <p>
@@ -20,13 +20,13 @@
         {% else %}
             The Nextcloud container is getting access to the {{ nextcloud_mount }} directory and local external storage in Nextcloud is enabled.
         {% endif %}
-        See the <a href="https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host">NEXTCLOUD_MOUNT documentation</a> on how to change this.</p>
+        See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host">NEXTCLOUD_MOUNT documentation</a> on how to change this.</p>
 
-    <p>Nextcloud has an upload limit of {{ nextcloud_upload_limit }} configured (for public link uploads. Bigger uploads are always possible when users are logged in). See the <a href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud">NEXTCLOUD_UPLOAD_LIMIT documentation</a> on how to change this.</p>
+    <p>Nextcloud has an upload limit of {{ nextcloud_upload_limit }} configured (for public link uploads. Bigger uploads are always possible when users are logged in). See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud">NEXTCLOUD_UPLOAD_LIMIT documentation</a> on how to change this.</p>
 
-    <p>For Nextcloud, a memory limit of {{ nextcloud_memory_limit }} per PHP process is configured. See the <a href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud">NEXTCLOUD_MEMORY_LIMIT documentation</a> on how to change this.</p>
+    <p>For Nextcloud, a memory limit of {{ nextcloud_memory_limit }} per PHP process is configured. See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud">NEXTCLOUD_MEMORY_LIMIT documentation</a> on how to change this.</p>
 
-    <p>Nextcloud has a timeout of {{ nextcloud_max_time }} seconds configured (important for big file uploads). See the <a href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud">NEXTCLOUD_MAX_TIME documentation</a> on how to change this.</p>
+    <p>Nextcloud has a timeout of {{ nextcloud_max_time }} seconds configured (important for big file uploads). See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud">NEXTCLOUD_MAX_TIME documentation</a> on how to change this.</p>
 
     <p>
         {% if is_dri_device_enabled == true and is_nvidia_gpu_enabled == true %}
@@ -38,7 +38,7 @@
         {% else %}
             Hardware acceleration is not enabled. It's recommended to enable hardware transcoding for better performance.
         {% endif %}
-        See the <a href="https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud">hardware acceleration documentation</a> on how to change this.</p>
+        See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud">hardware acceleration documentation</a> on how to change this.</p>
 
-    <p>For further documentation on AIO, refer to <strong><a href="https://github.com/nextcloud/all-in-one#nextcloud-all-in-one">this page</a></strong>. You can use the browser search [CTRL]+[F] to search through the documentation. Additional documentation can be found <strong><a href="https://github.com/nextcloud/all-in-one/discussions/categories/wiki">here</a></strong>.</p>
+    <p>For further documentation on AIO, refer to <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one#nextcloud-all-in-one">this page</a></strong>. You can use the browser search [CTRL]+[F] to search through the documentation. Additional documentation can be found <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/categories/wiki">here</a></strong>.</p>
 </details>
