@@ -114,6 +114,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped(),
         'talk_port' => $configurationManager->GetTalkPort(),
         'collabora_dictionaries' => $configurationManager->GetCollaboraDictionaries(),
+        'collabora_additional_options' => $configurationManager->GetAdditionalCollaboraOptions(),
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
         'is_backup_section_enabled' => $configurationManager->isBackupSectionEnabled(),
         'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled(),
