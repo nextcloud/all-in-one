@@ -9,7 +9,8 @@ RUN apk upgrade --no-cache -a && \
     sed -i "s|#\?MaxFileSize.*|MaxFileSize 2G|g" /etc/clamav/clamd.conf && \
     sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize aio-placeholder|g" /etc/clamav/clamd.conf && \
     sed -i "s|#\?StreamMaxLength.*|StreamMaxLength aio-placeholder|g" /etc/clamav/clamd.conf && \
-    sed -i "s|#\?TCPSocket|TCPSocket|g" /etc/clamav/clamd.conf
+    sed -i "s|#\?TCPSocket|TCPSocket|g" /etc/clamav/clamd.conf && \
+    freshclam --foreground --stdout
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
