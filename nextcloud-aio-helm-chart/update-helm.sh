@@ -42,6 +42,7 @@ sed -i "s|\${TALK_PORT}:\${TALK_PORT}/|$TALK_PORT:$TALK_PORT/|g" latest.yml
 sed -i "s|- \${APACHE_PORT}|- $APACHE_PORT|" latest.yml
 sed -i "s|- \${TALK_PORT}|- $TALK_PORT|" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
+sed -i "s|\${ADDITIONAL_COLLABORA_OPTIONS}|ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER|" latest.yml
 sed -i "/name: nextcloud-aio/,$ d" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
@@ -466,6 +467,11 @@ cat << EOL > /tmp/security.conf
 EOL
 # shellcheck disable=SC1083
 find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*apache-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml*' -exec sed -i "/ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER/d" \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml*' -exec sed -i "s/- args:/- args: \{\{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default list | toJson \}\}/" \{} \;
 
 cat << EOL > /tmp/security.conf
             # The items below only work in container context
