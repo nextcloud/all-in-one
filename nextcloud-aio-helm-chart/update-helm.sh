@@ -471,7 +471,7 @@ find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*apache-deployme
 # shellcheck disable=SC1083
 find ./ -name '*collabora-deployment.yaml*' -exec sed -i "/ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER/d" \{} \;
 # shellcheck disable=SC1083
-find ./ -name '*collabora-deployment.yaml*' -exec sed -i "s/- args:/- args: \{\{ .Values.ADDITIONAL_COLLABORA_OPTIONS \}\}/" \{} \;
+find ./ -name '*collabora-deployment.yaml*' -exec sed -i "s/- args:/- args: \{\{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default list | toJson \}\}/" \{} \;
 
 cat << EOL > /tmp/security.conf
             # The items below only work in container context

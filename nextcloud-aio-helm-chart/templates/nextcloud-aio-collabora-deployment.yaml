@@ -21,7 +21,7 @@ spec:
         io.kompose.service: nextcloud-aio-collabora
     spec:
       containers:
-        - args: {{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default [] }}
+        - args: {{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default list | toJson }}
           env:
             - name: DONT_GEN_SSL_CERT
               value: "1"
