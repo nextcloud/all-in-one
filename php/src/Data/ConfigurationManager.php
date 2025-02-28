@@ -976,10 +976,6 @@ class ConfigurationManager
         return $config['collabora_additional_options'];
     }
 
-    public function GetAdditionalCollaboraOptionsArray() : array {
-        return explode(' ', $this->GetAdditionalCollaboraOptions());
-    }
-
     public function DeleteAdditionalCollaboraOptions() : void {
         $config = $this->GetConfig();
         $config['collabora_additional_options'] = '';
