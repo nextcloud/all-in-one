@@ -275,39 +275,7 @@
                             {# @var containers \AIO\Container\Container[] #}
                             {% for container in containers %}
                                 {% if container.GetDisplayName() != '' %}
-                                    <li>
-                                        {% if container.GetStartingState().value == 'starting' %}
-                                            <span class="status running"></span>
-                                            <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank">Starting</a>)
-                                            {% if container.GetDocumentation() != '' %}
-                                                (<a target="_blank" href="{{ container.GetDocumentation() }}">docs</a>)
-                                            {% endif %}
-                                            {% if container.GetUiSecret() != '' %}
-                                                (password: {{ container.GetUiSecret() }})
-                                            {% endif %}
-                                            </span>
-                                        {% elseif container.GetRunningState().value == 'running' %}
-                                            <span class="status success"></span>
-                                            <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank">Running</a>)
-                                            {% if container.GetDocumentation() != '' %}
-                                                (<a target="_blank" href="{{ container.GetDocumentation() }}">docs</a>)
-                                            {% endif %}
-                                            {% if container.GetUiSecret() != '' %}
-                                                (password: {{ container.GetUiSecret() }})
-                                            {% endif %}
-                                            </span>
-                                        {% else %}
-                                            <span class="status error"></span>
-                                            <span>{{ container.GetDisplayName() }} (<a href="/api/docker/logs?id={{ container.GetIdentifier() }}" target="_blank">Stopped</a>)
-                                            {% if container.GetDocumentation() != '' %}
-                                                (<a target="_blank" href="{{ container.GetDocumentation() }}">docs</a>)
-                                            {% endif %}
-                                            {% if container.GetUiSecret() != '' %}
-                                                (password: {{ container.GetUiSecret() }})
-                                            {% endif %}
-                                            </span>
-                                        {% endif %}
-                                    </li>
+                                    {% include 'components/container-state.twig'  with {'c': container} only %}
                                 {% endif %}
                             {% endfor %}
                         </ul>
