@@ -671,7 +671,9 @@
       "tmpfs": [
         "/tmp",
         "/var/log/clamav",
-        "/run/clamav"
+        "/run/clamav",
+        "/var/log/supervisord",
+        "/var/run/supervisord"
       ],
       "cap_drop": [
         "NET_RAW"
