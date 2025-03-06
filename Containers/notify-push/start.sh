@@ -63,6 +63,7 @@ fi
 # Use the correct Postgres username
 if [ "$POSTGRES_USER" = nextcloud ]; then
     POSTGRES_USER="oc_$POSTGRES_USER"
+    export POSTGRES_USER
 fi
 
 # Set sensitive values as env
