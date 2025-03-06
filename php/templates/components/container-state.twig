@@ -1,14 +1,14 @@
 {# @var c \App\Containers\Container #}
 <li>
   <span>
-    {% if c.GetRunningState().value == 'running' %}
-      <span class="status success"></span>
-      {{ c.GetDisplayName() }}
-      (<a href="/api/docker/logs?id={{ c.GetIdentifier() }}" target="_blank">Running</a>)
-    {% elseif c.GetStartingState().value == 'starting' %}
+    {% if c.GetStartingState().value == 'starting' %}
       <span class="status running"></span>
       {{ c.GetDisplayName() }}
       (<a href="/api/docker/logs?id={{ c.GetIdentifier() }}" target="_blank">Starting</a>)
+    {% elseif c.GetRunningState().value == 'running' %}
+      <span class="status success"></span>
+      {{ c.GetDisplayName() }}
+      (<a href="/api/docker/logs?id={{ c.GetIdentifier() }}" target="_blank">Running</a>)
     {% else %}
       <span class="status error"></span>
       {{ c.GetDisplayName() }}
