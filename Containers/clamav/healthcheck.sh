@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 if [ "$(echo "PING" | nc 127.0.0.1 3310)" != "PONG" ]; then
 	echo "ERROR: Unable to contact server"
