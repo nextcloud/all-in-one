@@ -351,7 +351,7 @@ If you get an error during the domain validation which states that your ip-addre
 ### Which CPU architectures are supported?
 You can check this on Linux by running: `uname -m`
 - x86_64/x64/amd64
-- aarch64/arm64/armv8 (Note: ClamAV is currently not supported on this CPU architecture)
+- aarch64/arm64/armv8
 
 ### Disrecommended VPS providers
 - *Older* Strato VPS using Virtuozzo caused problems though ones from Q3 2023 and later should work.

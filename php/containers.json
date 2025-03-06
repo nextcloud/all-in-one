@@ -642,7 +642,7 @@
       "init": false,
       "healthcheck": {
         "start_period": "60s",
-        "test": "clamdcheck.sh",
+        "test": "/healthcheck.sh",
         "interval": "30s",
         "timeout": "30s",
         "start_interval": "5s",
@@ -654,8 +654,7 @@
       "internal_port": "3310",
       "environment": [
         "TZ=%TIMEZONE%",
-        "MAX_SIZE=%NEXTCLOUD_UPLOAD_LIMIT%",
-        "CLAMD_STARTUP_TIMEOUT=90"
+        "MAX_SIZE=%NEXTCLOUD_UPLOAD_LIMIT%"
       ],
       "volumes": [
         {
@@ -670,9 +669,11 @@
       ],
       "read_only": true,
       "tmpfs": [
-        "/var/lock",
+        "/tmp",
         "/var/log/clamav",
-        "/tmp"
+        "/run/clamav",
+        "/var/log/supervisord",
+        "/var/run/supervisord"
       ],
       "cap_drop": [
         "NET_RAW"

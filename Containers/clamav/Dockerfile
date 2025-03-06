@@ -1,28 +1,25 @@
 # syntax=docker/dockerfile:latest
-# Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.3/alpine/Dockerfile
-FROM clamav/clamav:1.4.2-29
-
-COPY clamav.conf /clamav.conf
-COPY --chmod=775 start.script /start.script
+FROM alpine:3.21.3
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache tzdata bash; \
-    mkdir -p /var/run/clamav /run/lock; \
-    chown -R clamav:clamav /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock; \
-    chmod 777 -R /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock /tmp; \
-    sed -i "/^set -eu/r /start.script" /init-unprivileged; \
-    rm /start.script; \
-    grep -q 'clamd --foreground &' /init-unprivileged; \
-    sed -i "s|clamd --foreground \&|clamd --foreground --config-file /tmp/clamd.conf \&|" /init-unprivileged; \
-    cat /init-unprivileged
+    apk add --no-cache tzdata clamav supervisord; \
+    mkdir /run/clamav; \
+    chmod 777 -R /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
+    sed -i "s|#\?MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?MaxFileSize.*|MaxFileSize 2G|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize aio-placeholder|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?StreamMaxLength.*|StreamMaxLength aio-placeholder|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?TCPSocket|TCPSocket|g" /etc/clamav/clamd.conf; \
+    freshclam --foreground --stdout
 
-VOLUME /var/lib/clamav
+COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
+COPY --chmod=664 supervisord.conf /supervisord.conf
 
 USER 100
-
+VOLUME /var/lib/clamav
+ENTRYPOINT ["/start.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 LABEL com.centurylinklabs.watchtower.enable="false"
-
-HEALTHCHECK --start-period=60s --retries=9 CMD clamdcheck.sh
-
-ENTRYPOINT ["/init-unprivileged"]
+HEALTHCHECK --start-period=60s --retries=9 CMD /healthcheck.sh

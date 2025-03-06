@@ -5,7 +5,8 @@ FROM ghcr.io/nextcloud-releases/whiteboard:v1.0.5
 USER root
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache bash
+    apk add --no-cache bash; \
+    chmod 777 -R /tmp
 USER 65534
 
 COPY --chmod=775 start.sh /start.sh

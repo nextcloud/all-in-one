@@ -1,4 +1,0 @@
-# Adjust settings
-cat /etc/clamav/clamd.conf > /tmp/clamd.conf
-CLAMAV_FILE="$(sed "s|16G|$MAX_SIZE|" /clamav.conf)"
-echo "$CLAMAV_FILE" >> /tmp/clamd.conf
