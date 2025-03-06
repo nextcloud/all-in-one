@@ -1,0 +1,27 @@
+{# @var c \App\Containers\Container #}
+<li>
+  <span>
+    {% if c.GetRunningState().value == 'running' %}
+      <span class="status success"></span>
+      {{ c.GetDisplayName() }}
+      (<a href="/api/docker/logs?id={{ c.GetIdentifier() }}" target="_blank">Running</a>)
+    {% elseif c.GetStartingState().value == 'starting' %}
+      <span class="status running"></span>
+      {{ c.GetDisplayName() }}
+      (<a href="/api/docker/logs?id={{ c.GetIdentifier() }}" target="_blank">Starting</a>)
+    {% else %}
+      <span class="status error"></span>
+      {{ c.GetDisplayName() }}
+      (<a href="/api/docker/logs?id={{ c.GetIdentifier() }}" target="_blank">Stopped</a>)
+    {% endif %}
+    {% if c.GetDocumentation() != '' %}
+      (<a target="_blank" href="{{ c.GetDocumentation() }}">docs</a>)
+    {% endif %}
+  </span>
+  {% if c.GetUiSecret() != '' %}
+    <details>
+      <summary>Show password for {{ c.GetDisplayName() }}</summary>
+      <input type="text" value="{{ c.GetUiSecret() }}" readonly>
+    </details>
+  {% endif %}
+</li>
