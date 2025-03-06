@@ -132,7 +132,7 @@ class ConfigurationManager
         }
     }
 
-    public function isx64Platform() : bool {
+    private function isx64Platform() : bool {
         if (php_uname('m') === 'x86_64') {
             return true;
         } else {
