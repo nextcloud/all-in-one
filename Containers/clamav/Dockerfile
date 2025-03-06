@@ -3,7 +3,7 @@ FROM alpine:3.21.3
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache tzdata clamav supervisord; \
+    apk add --no-cache tzdata clamav supervisor; \
     mkdir /run/clamav; \
     chmod 777 -R /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
     sed -i "s|#\?MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|g" /etc/clamav/clamd.conf; \
