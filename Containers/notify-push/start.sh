@@ -60,8 +60,14 @@ elif [ "$DATABASE_TYPE" != postgres ] && [ "$DATABASE_TYPE" != mysql ]; then
     exit 1
 fi
 
+# Use the correct Postgres username
+if [ "$POSTGRES_USER" = nextcloud ]; then
+    POSTGRES_USER="oc_$POSTGRES_USER"
+    export POSTGRES_USER
+fi
+
 # Set sensitive values as env
-export DATABASE_URL="$DATABASE_TYPE://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
+export DATABASE_URL="$DATABASE_TYPE://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
 export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
 
 # Run it
