@@ -5,7 +5,7 @@ RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache tzdata clamav supervisord; \
     mkdir /run/clamav; \
-    chmod 777 -R /run/clamav /var/log/clamav; \
+    chmod 777 -R /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
     sed -i "s|#\?MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?MaxFileSize.*|MaxFileSize 2G|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize aio-placeholder|g" /etc/clamav/clamd.conf; \
