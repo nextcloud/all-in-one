@@ -21,7 +21,7 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="clamav">ClamAV (Antivirus backend for Nextcloud, only supported on x86_64, needs ~1GB additional RAM)</label>
+        <label for="clamav">ClamAV (Antivirus backend for Nextcloud, needs ~1GB additional RAM)</label>
     </p>
     <p>
         <input
@@ -146,10 +146,8 @@
     <script type="text/javascript" src="options-form-submit.js?v3"></script>
 </form>
 <p><strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advice and recommendations see <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong></p>
-{% if isAnyRunning == true or is_x64_platform == false %}
-    <script type="text/javascript" src="disable-clamav.js"></script>
-{% endif %}
 {% if isAnyRunning == true %}
+    <script type="text/javascript" src="disable-clamav.js"></script>
     <script type="text/javascript" src="disable-docker-socket-proxy.js"></script>
     <script type="text/javascript" src="disable-talk.js"></script>
     <script type="text/javascript" src="disable-collabora.js"></script>

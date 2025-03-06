@@ -75,7 +75,7 @@ do
 done
 
 sed -i 's|_ENABLED=|_ENABLED="no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.|' sample.conf
-sed -i 's|CLAMAV_ENABLED=no.*|CLAMAV_ENABLED="no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically. Note: arm64 has no clamav support|' sample.conf
+sed -i 's|CLAMAV_ENABLED=no.*|CLAMAV_ENABLED="no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.|' sample.conf
 sed -i 's|TALK_ENABLED=no|TALK_ENABLED="yes"|' sample.conf
 sed -i 's|COLLABORA_ENABLED=no|COLLABORA_ENABLED="yes"|' sample.conf
 sed -i 's|COLLABORA_DICTIONARIES=|COLLABORA_DICTIONARIES="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru"        # You can change this in order to enable other dictionaries for collabora|' sample.conf

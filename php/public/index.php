@@ -102,7 +102,6 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'last_backup_time' => $configurationManager->GetLastBackupTime(),
         'backup_times' => $configurationManager->GetBackupTimes(),
         'current_channel' => $dockerActionManger->GetCurrentChannel(),
-        'is_x64_platform' => $configurationManager->isx64Platform(),
         'is_clamav_enabled' => $configurationManager->isClamavEnabled(),
         'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled(),
         'is_collabora_enabled' => $configurationManager->isCollaboraEnabled(),

@@ -24,7 +24,7 @@ First, install docker and docker-compose (v2) if not already done. Then simply r
 git clone https://github.com/nextcloud/all-in-one.git
 cd all-in-one/manual-install
 ```
-Then copy the sample.conf to default environment file, e.g. `cp sample.conf .env`, open the new conf file, e.g. with `nano .env`, edit all values that are marked with `# TODO!`, close and save the file. (Note: there is no clamav image for arm64).<br>
+Then copy the sample.conf to default environment file, e.g. `cp sample.conf .env`, open the new conf file, e.g. with `nano .env`, edit all values that are marked with `# TODO!`, close and save the file.<br>
 ⚠️ **Warning**: Do not use the symbols `@` and `:` in your passwords. These symbols are used to build database connection strings. You will experience issues when using these symbols! Also please note that values inside the latest.yaml that are not exposed as variables are not officially supported to be changed. See for example [this report](https://github.com/nextcloud/all-in-one/issues/5612).
 
 Now copy the provided yaml file to a compose.yaml file by running `cp latest.yml compose.yaml`.
@@ -32,9 +32,9 @@ Now copy the provided yaml file to a compose.yaml file by running `cp latest.yml
 Now you should be ready to go with `sudo docker compose up`.
 
 ## Docker profiles
-The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, whiteboard, talk-recording, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`. (Note: there is no clamav image for arm64).
+The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, whiteboard, talk-recording, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`.
 
-For a complete all-in-one with collabora use `sudo docker compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch --profile whiteboard up`. (Note: there is no clamav image for arm64).
+For a complete all-in-one with collabora use `sudo docker compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch --profile whiteboard up`.
 
 ## How to update?
 Since the AIO containers may change in the future, it is highly recommended to strictly follow the following procedure whenever you want to upgrade your containers.
