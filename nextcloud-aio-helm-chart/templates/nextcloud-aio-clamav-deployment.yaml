@@ -61,7 +61,7 @@ spec:
               value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-clamav:20250225_125724
+          image: nextcloud/aio-clamav:20250306_093458
           readinessProbe:
             exec:
               command:
