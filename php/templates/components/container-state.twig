@@ -16,7 +16,7 @@
   </span>
   {% if c.GetUiSecret() != '' %}
     <details>
-      <summary>Show password</summary>
+      <summary>Show password for {{ c.GetDisplayName() }}</summary>
       <p>{{ c.GetUiSecret() }}</p>
     </details>
   {% endif %}
