@@ -93,7 +93,7 @@ readonly class DockerActionManager
         if ($runningDigests === null) {
             return VersionState::Different;
         }
-        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
+        $remoteDigest = $this->GetLatestDigestOfTag($container->GetContainerName(), $tag);
         if ($remoteDigest === null) {
             return VersionState::Equal;
         }
@@ -619,7 +619,7 @@ readonly class DockerActionManager
             $tag = $this->GetCurrentChannel();
         }
 
-        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($container->GetContainerName(), $tag);
+        $remoteDigest = $this->GetLatestDigestOfTag($container->GetContainerName(), $tag);
 
         if ($remoteDigest === null) {
             return false;
@@ -804,7 +804,7 @@ readonly class DockerActionManager
         if ($runningDigests === null) {
             return true;
         }
-        $remoteDigest = $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
+        $remoteDigest = $this->GetLatestDigestOfTag($imageName, $tag);
         if ($remoteDigest === null) {
             return false;
         }
