@@ -478,11 +478,15 @@ Second, see these screenshots for a working config:
 
 ![grafik](https://github.com/user-attachments/assets/c32c8fe8-7417-4f8f-9625-24b95651e630)
 
-![grafik](https://github.com/user-attachments/assets/a26c53fd-6cc8-4a6b-a86f-c2f94b70088f)
+![grafik](https://github.com/user-attachments/assets/f14bba5c-69ce-4514-a2ac-5e5d7fb97792)
+
+<!-- ![grafik](https://github.com/user-attachments/assets/a26c53fd-6cc8-4a6b-a86f-c2f94b70088f) -->
 
 ![grafik](https://github.com/user-attachments/assets/75d7f539-35d1-4a3e-8c51-43123f698893)
 
 ![grafik](https://github.com/user-attachments/assets/e494edb5-8b70-4d45-bc9b-374219230041)
+
+`proxy_set_header Accept-Encoding $http_accept_encoding;`
 
 ⚠️ **Please note:** Nextcloud will complain that X-XXS-Protection is set to the wrong value, this is intended by NPMplus. <br>
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
