@@ -478,7 +478,9 @@ Second, see these screenshots for a working config:
 
 ![grafik](https://github.com/user-attachments/assets/c32c8fe8-7417-4f8f-9625-24b95651e630)
 
-![grafik](https://github.com/user-attachments/assets/a26c53fd-6cc8-4a6b-a86f-c2f94b70088f)
+<!-- ![grafik](https://github.com/user-attachments/assets/a26c53fd-6cc8-4a6b-a86f-c2f94b70088f) -->
+
+![grafik](https://github.com/user-attachments/assets/8cd25455-51fa-4e47-8af1-362bda8bb902)
 
 ![grafik](https://github.com/user-attachments/assets/75d7f539-35d1-4a3e-8c51-43123f698893)
 
