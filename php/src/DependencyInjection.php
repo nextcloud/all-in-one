@@ -4,6 +4,7 @@ namespace AIO;
 
 use AIO\Docker\DockerHubManager;
 use DI\Container;
+use AIO\Docker\GitHubContainerRegistryManager;
 
 class DependencyInjection
 {
@@ -16,6 +17,11 @@ class DependencyInjection
         );
 
         $container->set(
+            GitHubContainerRegistryManager::class,
+            new GitHubContainerRegistryManager()
+        );
+
+        $container->set(
             \AIO\Data\ConfigurationManager::class,
             new \AIO\Data\ConfigurationManager()
         );
@@ -24,7 +30,8 @@ class DependencyInjection
             new \AIO\Docker\DockerActionManager(
                 $container->get(\AIO\Data\ConfigurationManager::class),
                 $container->get(\AIO\ContainerDefinitionFetcher::class),
-                $container->get(DockerHubManager::class)
+                $container->get(DockerHubManager::class),
+                $container->get(GitHubContainerRegistryManager::class)
             )
         );
         $container->set(

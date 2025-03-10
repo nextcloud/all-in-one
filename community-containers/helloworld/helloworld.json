@@ -1,0 +1,12 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-helloworld",
+            "display_name": "Hello world",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/helloworld",
+            "image": "ghcr.io/docjyj/aio-helloworld",
+            "image_tag": "%AIO_CHANNEL%",
+            "restart": "unless-stopped"
+        }
+    ]
+}
