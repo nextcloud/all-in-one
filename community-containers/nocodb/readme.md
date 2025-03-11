@@ -22,7 +22,7 @@ This is an alternative of **Airtable**.
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
 ### Repository
-https://github.com/docjyJ/aio-nocodb
+https://github.com/nocodb/nocodb
 
 ### Maintainer
 https://github.com/docjyJ
