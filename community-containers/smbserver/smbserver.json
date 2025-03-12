@@ -1,0 +1,60 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-smbserver",
+            "display_name": "SMB-server",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/smbserver",
+            "image": "szaimen/aio-smbserver",
+            "image_tag": "v1",
+            "internal_port": "5803",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "",
+                    "port_number": "5803",
+                    "protocol": "tcp"
+                },
+                {
+                    "ip_binding": "",
+                    "port_number": "445",
+                    "protocol": "tcp"
+                },
+                {
+                    "ip_binding": "",
+                    "port_number": "139",
+                    "protocol": "tcp"
+                }
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_smbserver",
+                    "destination": "/smbserver",
+                    "writeable": true
+                },
+                {
+                    "source": "%NEXTCLOUD_DATADIR%",
+                    "destination": "/mnt/ncdata",
+                    "writeable": true
+                },
+                {
+                    "source": "%NEXTCLOUD_MOUNT%",
+                    "destination": "/mnt",
+                    "writeable": true
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "WEB_AUTHENTICATION_USERNAME=smbserver",
+                "WEB_AUTHENTICATION_PASSWORD=%SMBSERVER_PASSWORD%",
+                "WEB_LISTENING_PORT=5803"
+            ],
+            "secrets": [
+                "SMBSERVER_PASSWORD"
+            ],
+            "ui_secret": "SMBSERVER_PASSWORD",
+            "backup_volumes": [
+                "nextcloud_aio_smbserver"
+            ]
+        }
+    ]
+}
