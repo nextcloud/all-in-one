@@ -15,7 +15,7 @@
 					"image": {
 						"type": "string",
 						"minLength": 1,
-						"pattern": "^[a-z0-9/-]+$"
+						"pattern": "^(ghcr.io/)?[a-z0-9/-]+$"
 					},
 					"expose": {
 						"type": "array",
