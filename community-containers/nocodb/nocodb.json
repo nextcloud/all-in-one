@@ -4,8 +4,8 @@
             "container_name": "nextcloud-aio-nocodb",
             "display_name": "NocoDB",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/nocodb",
-            "image": "docjyj/aio-nocodb",
-            "image_tag": "%AIO_CHANNEL%",
+            "image": "nocodb/nocodb",
+            "image_tag": "latest",
             "internal_port": "10028",
             "restart": "unless-stopped",
             "ports": [
