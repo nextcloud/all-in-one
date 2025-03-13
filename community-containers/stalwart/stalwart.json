@@ -5,7 +5,7 @@
             "display_name": "Stalwart",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart",
             "image": "ghcr.io/docjyj/aio-stalwart",
-            "image_tag": "%AIO_CHANNEL%",
+            "image_tag": "v3",
             "internal_port": "10003",
             "restart": "unless-stopped",
             "ports": [
