@@ -14,7 +14,7 @@ ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
 
 # Define the commit hash for imagick as a variable
-ARG IMAGICK_COMMIT_HASH=28f27044e435a2b203e32675e942eb8de620ee58
+ARG IMAGICK_COMMIT_HASH=cec37ecb4e9e2f13d756f93c008b2a287fc592c2
 
 COPY --chmod=775 *.sh /
 COPY --chmod=774 upgrade.exclude /upgrade.exclude
