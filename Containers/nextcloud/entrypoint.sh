@@ -33,7 +33,7 @@ while ! nc -z "$REDIS_HOST" "6379"; do
 done
 
 # Check permissions in ncdata
-touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
+touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
     echo "The www-data user doesn't seem to have access rights in the datadir.
 Most likely are the files located on a drive that does not follow linux permissions.
