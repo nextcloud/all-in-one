@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v4
-    - uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # v2
+    - uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401 # v2
       with:
         php-version: 8.3
         extensions: apcu
