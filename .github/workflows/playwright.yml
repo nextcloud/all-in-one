@@ -1,0 +1,77 @@
+name: Playwright Tests
+
+on:
+  workflow_dispatch:
+
+env:
+  BASE_URL: https://localhost:8080
+
+jobs:
+  test:
+    timeout-minutes: 60
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: cd php/tests && npm ci
+
+      - name: Install Playwright Browsers
+        run: cd php/tests && npx playwright install --with-deps chromium
+
+      - name: Start fresh development server
+        run: |
+          docker rm --force nextcloud-aio-{mastercontainer,apache,notify-push,nextcloud,redis,database,domaincheck,whiteboard,imaginary,talk,collabora,borgbackup} || true
+          docker volume rm nextcloud_aio_{mastercontainer,apache,database,database_dump,nextcloud,nextcloud_data,redis,backup_cache,elasticsearch} || true
+          docker pull nextcloud/all-in-one:develop
+          docker run \
+            -d \
+            --init \
+            --name nextcloud-aio-mastercontainer \
+            --restart always \
+            --publish 8080:8080 \
+            --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+            --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+            --env SKIP_DOMAIN_VALIDATION=true \
+            --env APACHE_PORT=11000 \
+            nextcloud/all-in-one:develop
+          echo Waiting for 10 seconds for the development container to start ...
+          sleep 10
+
+      - name: Run Playwright tests for initial setup
+        run: cd php/tests && DEBUG=pw:api npx playwright test tests/initial-setup.spec.js
+
+      - name: Start fresh development server
+        run: |
+          docker rm --force nextcloud-aio-{mastercontainer,apache,notify-push,nextcloud,redis,database,domaincheck,whiteboard,imaginary,talk,collabora,borgbackup} || true
+          docker volume rm nextcloud_aio_{mastercontainer,apache,database,database_dump,nextcloud,nextcloud_data,redis,backup_cache,elasticsearch} || true
+          docker run \
+            -d \
+            --init \
+            --name nextcloud-aio-mastercontainer \
+            --restart always \
+            --publish 8080:8080 \
+            --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+            --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+            --env SKIP_DOMAIN_VALIDATION=false \
+            --env APACHE_PORT=11000 \
+            nextcloud/all-in-one:develop
+          echo Waiting for 10 seconds for the development container to start ...
+          sleep 10
+
+      - name: Run Playwright tests for backup restore
+        run: cd php/tests && DEBUG=pw:api npx playwright test tests/restore-instance.spec.js
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: php/tests/playwright-report/
+          retention-days: 14
+          overwrite: true
