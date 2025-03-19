@@ -900,7 +900,7 @@ class ConfigurationManager
     }
 
     public function shouldDomainValidationBeSkipped() : bool {
-        if (getenv('SKIP_DOMAIN_VALIDATION') !== false) {
+        if (getenv('SKIP_DOMAIN_VALIDATION') === 'true') {
             return true;
         }
         return false;
