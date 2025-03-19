@@ -106,7 +106,7 @@
                                 <p><strong>Please note:</strong> The domain validation is disabled so any domain will be accepted here! Make sure you do not make a typo here as you will not be able to change it afterwards!</p>
                             {% endif %}
                             <form method="POST" action="/api/configuration" class="xhr">
-                                <input type="text" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
+                                <input type="text" id="domain" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input type="submit" value="Submit domain" />
@@ -195,9 +195,9 @@
                                 if stored remotely; and the encryption password of the backup archive below:
                                 </p>
                                 <form method="POST" action="/api/configuration" class="xhr">
-                                    <label>Local backup location</label> <input type="text" name="borg_restore_host_location" value="{{borg_backup_host_location}}" placeholder="/mnt/backup"/><br>
+                                    <label>Local backup location</label> <input type="text" id="borg_restore_host_location" name="borg_restore_host_location" value="{{borg_backup_host_location}}" placeholder="/mnt/backup"/><br>
                                     <label>Remote borg repo</label> <input type="text" name="borg_restore_remote_repo" value="{{borg_remote_repo}}" placeholder="ssh://user@host:port/path/to/repo"/><br>
-                                    <label>Borg passphrase</label> <input type="text" name="borg_restore_password" value="{{borg_restore_password}}" placeholder="encryption password"/><br>
+                                    <label>Borg passphrase</label> <input type="text" id="borg_restore_password" name="borg_restore_password" value="{{borg_restore_password}}" placeholder="encryption password"/><br>
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <input type="submit" value="Submit location and encryption password" />
