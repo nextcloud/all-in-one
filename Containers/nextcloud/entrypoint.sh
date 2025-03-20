@@ -535,6 +535,13 @@ php /var/www/html/occ config:system:set upgrade.cli-upgrade-link --value="https:
 php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
 php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
+if [ -n "$NEXTCLOUD_SKELETON_DIRECTORY" ]; then
+    if [ "$NEXTCLOUD_SKELETON_DIRECTORY" = "empty" ]; then
+        php /var/www/html/occ config:system:set skeletondirectory --value=""
+    else
+        php /var/www/html/occ config:system:set skeletondirectory --value="$NEXTCLOUD_SKELETON_DIRECTORY"
+    fi
+fi
 if [ -n "$SERVERINFO_TOKEN" ] && [ -z "$(php /var/www/html/occ config:app:get serverinfo token)" ]; then
     php /var/www/html/occ config:app:set serverinfo token --value="$SERVERINFO_TOKEN"
 fi
