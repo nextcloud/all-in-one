@@ -32,16 +32,16 @@ test('Restore instance', async ({ page: setupPage }) => {
 
   // Reject invalid backup location
   await containersPage.locator('#borg_restore_host_location').click();
-  await containersPage.locator('#borg_restore_host_location').fill('/mnt/foobar');
+  await containersPage.locator('#borg_restore_host_location').fill('/mnt/test/aio-incorrect-path');
   await containersPage.locator('#borg_restore_password').click();
-  await containersPage.locator('#borg_restore_password').fill('foobar');
+  await containersPage.locator('#borg_restore_password').fill(borgBackupPassword);
   await containersPage.getByRole('button', { name: 'Submit location and encryption password' }).click()
   await containersPage.getByRole('button', { name: 'Test path and encryption' }).click();
   await expect(containersPage.getByRole('main')).toContainText('Last test failed!', { timeout: 60 * 1000 });
 
   // Reject invalid backup password
   await containersPage.locator('#borg_restore_host_location').click();
-  await containersPage.locator('#borg_restore_host_location').fill('/mnt/backup');
+  await containersPage.locator('#borg_restore_host_location').fill(borgBackupLocation);
   await containersPage.locator('#borg_restore_password').click();
   await containersPage.locator('#borg_restore_password').fill('foobar');
   await containersPage.getByRole('button', { name: 'Submit location and encryption password' }).click()
