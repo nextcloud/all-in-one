@@ -241,9 +241,9 @@
                                     <p>Initial Nextcloud username: <strong>admin</strong></p>
                             {% if hasBackupLocation %}
                                 {# nextcloud_password needs to be duplicated due to a bug in Firefox. See https://github.com/nextcloud/all-in-one/issues/638. #}
-                                <p>Initial Nextcloud password: <strong>{{ nextcloud_password }}</strong></p></details>
+                                <p>Initial Nextcloud password: <strong id="initial-nextcloud-password">{{ nextcloud_password }}</strong></p></details>
                             {% else %}
-                                <p>Initial Nextcloud password: <strong>{{ nextcloud_password }}</strong></p>
+                                <p>Initial Nextcloud password: <strong id="initial-nextcloud-password">{{ nextcloud_password }}</strong></p>
                             {% endif %}
                             <p><a href="https://{{ domain }}" class="button" target="_blank">Open your Nextcloud ↗</a></p>
                             {% if not hasBackupLocation %}
@@ -370,7 +370,7 @@
                                 <a target="_blank" href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>.
                                 </p>
                                 <form method="POST" action="/api/configuration" class="xhr">
-                                    <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
+                                    <label>Local backup location</label> <input type="text" id="borg_backup_host_location" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
                                     <label>Remote borg repo</label> <input type="text" name="borg_remote_repo" placeholder="ssh://user@host:port/path/to/repo"/><br>
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -408,7 +408,7 @@
                                             To try again, click <strong>Create backup</strong>.
                                             </p>
                                             {% endif %}
-                                            
+
                                             <p>You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on <strong>Create Backup</strong> to test the new value.</p>
                                             <form method="POST" action="/api/configuration" class="xhr">
                                                 <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
@@ -433,7 +433,7 @@
                                         <summary>Click here to reveal all backup options (including an option for automatic updates)</summary>
                                     {% endif %}
                                     <h3>Backup information</h3>
-                                    <p>This is your encryption password for backups: <strong>{{ borgbackup_password }}</strong></p>
+                                    <p>This is your encryption password for backups: <strong id="borg-backup-password">{{ borgbackup_password }}</strong></p>
                                     <p>Please save this password in a safe place. You won't be able to restore from backup if you lose this password!</p>
                                     <p>All important data from your Nextcloud AIO instance such as the database, your files and the mastercontainer's configuration files, will be backed up.</p>
                                     <p>The backup uses a tool called <a target="_blank" href="https://github.com/borgbackup/borg#what-is-borgbackup"><strong>BorgBackup</strong></a>, a well-known server backup tool that efficiently backs up your files and encrypts them on the fly.</p>
