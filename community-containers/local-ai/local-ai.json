@@ -6,11 +6,23 @@
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/local-ai",
             "image": "szaimen/aio-local-ai",
             "image_tag": "v2",
-            "internal_port": "8080",
+            "internal_port": "8000",
             "restart": "unless-stopped",
+            "ports": [
+                {
+                  "ip_binding": "%APACHE_IP_BINDING%",
+                  "port_number": "8000",
+                  "protocol": "tcp"
+                }
+            ],
             "environment": [
                 "TZ=%TIMEZONE%",
-                "MODELS_PATH=/models"
+                "MODELS_PATH=/models",
+                "API_KEY=%LOCAL_AI_API_KEY%",
+                "LOCALAI_ADDRESS=:8000"
+            ],
+            "secrets": [
+                "LOCAL_AI_API_KEY"
             ],
             "volumes": [
                 {
@@ -22,22 +34,14 @@
                     "source": "nextcloud_aio_localai_images",
                     "destination": "/tmp/generated/images/",
                     "writeable": true
-                },
-                {
-                    "source": "%NEXTCLOUD_DATADIR%",
-                    "destination": "/nextcloud",
-                    "writeable": false
                 }
             ],
             "enable_nvidia_gpu": false,
             "nextcloud_exec_commands": [
-                "mkdir '/mnt/ncdata/admin/files/nextcloud-aio-local-ai'",
-                "touch '/mnt/ncdata/admin/files/nextcloud-aio-local-ai/models.yaml'",
-                "echo 'Scanning nextcloud-aio-local-ai folder for admin user...'",
-                "php /var/www/html/occ files:scan --path='/admin/files/nextcloud-aio-local-ai'",
                 "php /var/www/html/occ app:install integration_openai",
                 "php /var/www/html/occ app:enable integration_openai",
-                "php /var/www/html/occ config:app:set integration_openai url --value http://nextcloud-aio-local-ai:8080",
+                "php /var/www/html/occ config:app:set integration_openai url --value http://nextcloud-aio-local-ai:8000",
+                "php /var/www/html/occ config:app:set integration_openai api_key --value $LOCAL_AI_API_KEY",
                 "php /var/www/html/occ app:install assistant",
                 "php /var/www/html/occ app:enable assistant"
             ]
