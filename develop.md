@@ -27,6 +27,8 @@ Before testing, make sure that at least the amd64 containers are built successfu
 
 There is a testing-VM available for the maintainer of AIO that allows for some final testing before releasing new version. See [this](https://cloud.nextcloud.com/apps/collectives/Nextcloud%20Handbook/Technical/AIO%20testing%20VM?fileId=6350152) for details.
 
+Additionally, there are now E2EE tests available that can be run via https://github.com/nextcloud/all-in-one/actions/workflows/playwright.yml
+
 ## How to promote builds from develop to beta
 1. Verify that no job is running here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml
 2. Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-beta.yml, click on `Run workflow`.
