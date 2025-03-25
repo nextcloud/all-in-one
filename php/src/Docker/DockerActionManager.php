@@ -742,6 +742,33 @@ readonly class DockerActionManager {
         }
     }
 
+    private function GetCurrentImageName(): string {
+        $cacheKey = 'aio-image-name';
+        $imageName = apcu_fetch($cacheKey);
+        if ($imageName !== false && is_string($imageName)) {
+            return $imageName;
+        }
+
+        $containerName = 'nextcloud-aio-mastercontainer';
+        $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
+        try {
+            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true);
+            $imageNameArray = explode(':', $output['Config']['Image']);
+            if (count($imageNameArray) === 2) {
+                $imageName = $imageNameArray[0];
+            } else {
+                error_log("No tag was found when getting the current channel. You probably did not follow the documentation correctly. Changing the imageName to the default " . $output['Config']['Image']);
+                $imageName = $output['Config']['Image'];
+            }
+            apcu_add($cacheKey, $imageName);
+            return $imageName;
+        } catch (\Exception $e) {
+            error_log('Could not get current imageName ' . $e->getMessage());
+        }
+
+        return 'nextcloud/all-in-one';
+    }
+
     public function GetCurrentChannel(): string {
         $cacheKey = 'aio-ChannelName';
         $channelName = apcu_fetch($cacheKey);
@@ -753,7 +780,6 @@ readonly class DockerActionManager {
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
             $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true);
-            $containerChecksum = $output['Image'];
             $tagArray = explode(':', $output['Config']['Image']);
             if (count($tagArray) === 2) {
                 $tag = $tagArray[1];
@@ -771,7 +797,7 @@ readonly class DockerActionManager {
     }
 
     public function IsMastercontainerUpdateAvailable(): bool {
-        $imageName = 'nextcloud/all-in-one';
+        $imageName = $this->GetCurrentImageName();
         $containerName = 'nextcloud-aio-mastercontainer';
 
         $tag = $this->GetCurrentChannel();

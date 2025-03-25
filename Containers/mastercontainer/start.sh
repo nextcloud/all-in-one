@@ -283,10 +283,10 @@ if [ "$?" = 6 ]; then
     exit 1
 fi
 
-# Check if auth.docker.io is reachable
+# Check if ghcr.io is reachable
 # Solves issues like https://github.com/nextcloud/all-in-one/discussions/5268
-if ! curl https://auth.docker.io/token 2>&1 | grep -q token; then
-    print_red "Could not reach https://auth.docker.io."
+if ! curl https://ghcr.io 2>&1; then
+    print_red "Could not reach https://ghcr.io."
     echo "Most likely is something blocking access to it."
     echo "You should be able to fix this by using https://github.com/nextcloud/all-in-one/tree/main/manual-install"
     exit 1
