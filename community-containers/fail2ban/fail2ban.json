@@ -4,7 +4,7 @@
             "container_name": "nextcloud-aio-fail2ban",
             "display_name": "Fail2ban",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/fail2ban",
-            "image": "szaimen/aio-fail2ban",
+            "image": "ghcr.io/szaimen/aio-fail2ban",
             "image_tag": "v1",
             "internal_port": "host",
             "restart": "unless-stopped",
