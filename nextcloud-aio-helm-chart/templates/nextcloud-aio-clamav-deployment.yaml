@@ -55,17 +55,15 @@ spec:
               {{- end }}
       containers:
         - env:
-            - name: CLAMD_STARTUP_TIMEOUT
-              value: "90"
             - name: MAX_SIZE
               value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: nextcloud/aio-clamav:20250306_093458
+          image: nextcloud/aio-clamav:20250325_084656
           readinessProbe:
             exec:
               command:
-                - clamdcheck.sh
+                - /healthcheck.sh
             failureThreshold: 9
             initialDelaySeconds: 60
             periodSeconds: 30
@@ -73,7 +71,7 @@ spec:
           livenessProbe:
             exec:
               command:
-                - clamdcheck.sh
+                - /healthcheck.sh
             failureThreshold: 9
             initialDelaySeconds: 60
             periodSeconds: 30
