@@ -341,7 +341,7 @@ services:
     init: false
     healthcheck:
       start_period: 60s
-      test: clamdcheck.sh
+      test: /healthcheck.sh
       interval: 30s
       timeout: 30s
       start_interval: 5s
@@ -351,7 +351,6 @@ services:
     environment:
       - TZ=${TIMEZONE}
       - MAX_SIZE=${NEXTCLOUD_UPLOAD_LIMIT}
-      - CLAMD_STARTUP_TIMEOUT=90
     volumes:
       - nextcloud_aio_clamav:/var/lib/clamav:rw
     restart: unless-stopped
@@ -359,9 +358,11 @@ services:
       - clamav
     read_only: true
     tmpfs:
-      - /var/lock
-      - /var/log/clamav
       - /tmp
+      - /var/log/clamav
+      - /run/clamav
+      - /var/log/supervisord
+      - /var/run/supervisord
     cap_drop:
       - NET_RAW
 
