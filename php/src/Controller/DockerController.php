@@ -41,12 +41,12 @@ readonly class DockerController {
             }
         }
 
-        // Check if docker hub is reachable in order to make sure that we do not try to pull an image if it is down
+        // Check if registry is reachable in order to make sure that we do not try to pull an image if it is down
         // and try to mitigate issues that are arising due to that
         if ($pullImage) {
-            if (!$this->dockerActionManager->isDockerHubReachable($container)) {
+            if (!$this->dockerActionManager->isRegistryReachable($container)) {
                 $pullImage = false;
-                error_log('Not pulling the ' . $container->GetContainerName() . ' image for the ' . $container->GetIdentifier() . ' container because docker hub does not seem to be reachable.');
+                error_log('Not pulling the ' . $container->GetContainerName() . ' image for the ' . $container->GetIdentifier() . ' container because the registry does not seem to be reachable.');
             }
         }
 
