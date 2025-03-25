@@ -13,7 +13,7 @@
         "nextcloud-aio-whiteboard"
       ],
       "display_name": "Apache",
-      "image": "nextcloud/aio-apache",
+      "image": "ghcr.io/nextcloud-releases/aio-apache",
       "user": "33",
       "init": true,
       "healthcheck": {
@@ -84,7 +84,7 @@
       "container_name": "nextcloud-aio-database",
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Database",
-      "image": "nextcloud/aio-postgresql",
+      "image": "ghcr.io/nextcloud-releases/aio-postgresql",
       "user": "999",
       "init": true,
       "healthcheck": {
@@ -149,7 +149,7 @@
         "nextcloud-aio-docker-socket-proxy"
       ],
       "display_name": "Nextcloud",
-      "image": "nextcloud/aio-nextcloud",
+      "image": "ghcr.io/nextcloud-releases/aio-nextcloud",
       "init": true,
       "healthcheck": {
         "start_period": "0s",
@@ -271,7 +271,7 @@
       "container_name": "nextcloud-aio-notify-push",
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Notify Push",
-      "image": "nextcloud/aio-notify-push",
+      "image": "ghcr.io/nextcloud-releases/aio-notify-push",
       "user": "33",
       "init": true,
       "healthcheck": {
@@ -319,7 +319,7 @@
       "container_name": "nextcloud-aio-redis",
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Redis",
-      "image": "nextcloud/aio-redis",
+      "image": "ghcr.io/nextcloud-releases/aio-redis",
       "user": "999",
       "init": true,
       "healthcheck": {
@@ -361,7 +361,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
       "display_name": "Collabora",
-      "image": "nextcloud/aio-collabora",
+      "image": "ghcr.io/nextcloud-releases/aio-collabora",
       "init": true,
       "healthcheck": {
         "start_period": "60s",
@@ -404,7 +404,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
       "display_name": "Talk",
-      "image": "nextcloud/aio-talk",
+      "image": "ghcr.io/nextcloud-releases/aio-talk",
       "user": "1000",
       "init": true,
       "healthcheck": {
@@ -466,7 +466,7 @@
       "container_name": "nextcloud-aio-talk-recording",
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Talk Recording",
-      "image": "nextcloud/aio-talk-recording",
+      "image": "ghcr.io/nextcloud-releases/aio-talk-recording",
       "user": "122",
       "init": true,
       "healthcheck": {
@@ -518,7 +518,7 @@
     {
       "container_name": "nextcloud-aio-borgbackup",
       "image_tag": "%AIO_CHANNEL%",
-      "image": "nextcloud/aio-borgbackup",
+      "image": "ghcr.io/nextcloud-releases/aio-borgbackup",
       "init": true,
       "environment": [
         "BORG_REMOTE_REPO=%BORGBACKUP_REMOTE_REPO%",
@@ -586,7 +586,7 @@
     {
       "container_name": "nextcloud-aio-watchtower",
       "image_tag": "%AIO_CHANNEL%",
-      "image": "nextcloud/aio-watchtower",
+      "image": "ghcr.io/nextcloud-releases/aio-watchtower",
       "init": true,
       "environment": [
         "CONTAINER_TO_UPDATE=nextcloud-aio-mastercontainer"
@@ -606,7 +606,7 @@
     {
       "container_name": "nextcloud-aio-domaincheck",
       "image_tag": "%AIO_CHANNEL%",
-      "image": "nextcloud/aio-domaincheck",
+      "image": "ghcr.io/nextcloud-releases/aio-domaincheck",
       "init": true,
       "ports": [
         {
@@ -637,7 +637,7 @@
       "container_name": "nextcloud-aio-clamav",
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "ClamAV",
-      "image": "nextcloud/aio-clamav",
+      "image": "ghcr.io/nextcloud-releases/aio-clamav",
       "user": "100",
       "init": false,
       "healthcheck": {
@@ -683,7 +683,7 @@
       "container_name": "nextcloud-aio-onlyoffice",
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "OnlyOffice",
-      "image": "nextcloud/aio-onlyoffice",
+      "image": "ghcr.io/nextcloud-releases/aio-onlyoffice",
       "init": true,
       "healthcheck": {
         "start_period": "60s",
@@ -729,7 +729,7 @@
       "container_name": "nextcloud-aio-imaginary",
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Imaginary",
-      "image": "nextcloud/aio-imaginary",
+      "image": "ghcr.io/nextcloud-releases/aio-imaginary",
       "user": "65534",
       "init": true,
       "healthcheck": {
@@ -771,7 +771,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1709",
       "display_name": "Fulltextsearch",
-      "image": "nextcloud/aio-fulltextsearch",
+      "image": "ghcr.io/nextcloud-releases/aio-fulltextsearch",
       "init": false,
       "healthcheck": {
         "start_period": "60s",
@@ -819,7 +819,7 @@
       "container_name": "nextcloud-aio-docker-socket-proxy",
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Docker Socket Proxy",
-      "image": "nextcloud/aio-docker-socket-proxy",
+      "image": "ghcr.io/nextcloud-releases/aio-docker-socket-proxy",
       "init": true,
       "internal_port": "2375",
       "environment": [
@@ -845,7 +845,7 @@
       "container_name": "nextcloud-aio-whiteboard",
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Whiteboard",
-      "image": "nextcloud/aio-whiteboard",
+      "image": "ghcr.io/nextcloud-releases/aio-whiteboard",
       "user": "65534",
       "init": true,
       "healthcheck": {

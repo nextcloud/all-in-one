@@ -11,7 +11,7 @@ sudo docker run \
 --publish 8443:8443 \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
-nextcloud/all-in-one:develop
+ghcr.io/nextcloud-releases/all-in-one:develop
 ```
 And you are done :)
 It will now also select the developer channel for all other containers automatically.

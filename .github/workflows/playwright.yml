@@ -29,7 +29,7 @@ jobs:
         run: |
           docker rm --force nextcloud-aio-{mastercontainer,apache,notify-push,nextcloud,redis,database,domaincheck,whiteboard,imaginary,talk,collabora,borgbackup} || true
           docker volume rm nextcloud_aio_{mastercontainer,apache,database,database_dump,nextcloud,nextcloud_data,redis,backup_cache,elasticsearch} || true
-          docker pull nextcloud/all-in-one:develop
+          docker pull ghcr.io/nextcloud-releases/all-in-one:develop
           docker run \
             -d \
             --init \
@@ -40,7 +40,7 @@ jobs:
             --volume /var/run/docker.sock:/var/run/docker.sock:ro \
             --env SKIP_DOMAIN_VALIDATION=true \
             --env APACHE_PORT=11000 \
-            nextcloud/all-in-one:develop
+            ghcr.io/nextcloud-releases/all-in-one:develop
           echo Waiting for 10 seconds for the development container to start ...
           sleep 10
 
@@ -61,7 +61,7 @@ jobs:
             --volume /var/run/docker.sock:/var/run/docker.sock:ro \
             --env SKIP_DOMAIN_VALIDATION=false \
             --env APACHE_PORT=11000 \
-            nextcloud/all-in-one:develop
+            ghcr.io/nextcloud-releases/all-in-one:develop
           echo Waiting for 10 seconds for the development container to start ...
           sleep 10
 
