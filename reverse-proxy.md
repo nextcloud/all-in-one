@@ -707,6 +707,7 @@ The examples below define the dynamic configuration in YAML files. If you rather
         nextcloud:
           loadBalancer:
             servers:
+    		#When adding Traefik to the aio network: This needs to be changed in the installation process! Point this to nextcloud-aio-domaincheck first, then change to nextcloud-aio-apache after the domaincheck
               - url: "http://localhost:11000" # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
       middlewares:
