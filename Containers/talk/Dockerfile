@@ -7,6 +7,7 @@ FROM alpine:3.21.3 AS janus
 ARG JANUS_VERSION=v1.3.1
 WORKDIR /src
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         ca-certificates \
         git \
