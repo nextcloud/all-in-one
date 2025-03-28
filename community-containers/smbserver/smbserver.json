@@ -4,7 +4,7 @@
             "container_name": "nextcloud-aio-smbserver",
             "display_name": "SMB-server",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/smbserver",
-            "image": "szaimen/aio-smbserver",
+            "image": "ghcr.io/szaimen/aio-smbserver",
             "image_tag": "v1",
             "internal_port": "5803",
             "restart": "unless-stopped",

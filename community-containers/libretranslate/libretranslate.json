@@ -4,7 +4,7 @@
             "container_name": "nextcloud-aio-libretranslate",
             "display_name": "LibreTranslate",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/libretranslate",
-            "image": "szaimen/aio-libretranslate",
+            "image": "ghcr.io/szaimen/aio-libretranslate",
             "image_tag": "v1",
             "internal_port": "5000",
             "restart": "unless-stopped",

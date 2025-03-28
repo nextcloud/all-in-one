@@ -4,7 +4,7 @@
             "container_name": "nextcloud-aio-scrutiny",
             "display_name": "Scrutiny",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/scrutiny",
-            "image": "szaimen/aio-scrutiny",
+            "image": "ghcr.io/szaimen/aio-scrutiny",
             "image_tag": "v1",
             "internal_port": "8000",
             "init": false,
