@@ -24,7 +24,12 @@
             ],
             "working_dir": "/data",
             "command": "server",
-            "environment": "MOLLY_HOST"="%APACHE_IP_BINDING%",
+            "environment": [
+                {
+                "MOLLY_HOST"="%APACHE_IP_BINDING%",
+                "MOLLY_ALLOWED_ENDPOINTS"=['https://push.{\$NC_DOMAIN}:443']
+                }
+            ]
         }
     ]
 }
