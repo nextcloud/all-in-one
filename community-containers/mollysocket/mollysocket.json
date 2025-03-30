@@ -8,7 +8,6 @@
             "image_tag": "latest",
             "internal_port": "8020",
             "restart": "always",
-            "init": false,
             "ports": [
                 {
                     "ip_binding": "%APACHE_IP_BINDING%",
