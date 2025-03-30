@@ -486,6 +486,9 @@ In certain situations you might want to keep Nextcloud apps that are disabled in
 > Doing this might cause unintended problems in Nextcloud if an app that requires an external dependency is still installed but the external dependency not for example.
 
 ### How to trust user-defined Certification Authorities (CA)?
+> [!NOTE]
+> Please note, that this feature is only intended to make LDAPS connections with self-signed certificates work. It will not make other interconnectivity between the different containers work, as they expect a valid publicly trusted certificate like one from Let's Encrypt.
+
 For some applications it might be necessary to establish a secure connection to another host/server which is using a certificate issued by a Certification Authority that is not trusted out of the box. An example could be configuring LDAPS against a domain controller (Active Directory or Samba-based) of an organization.
 
 You can make the Nextcloud container trust any Certification Authority by providing the environmental variable `NEXTCLOUD_TRUSTED_CACERTS_DIR` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). The value of the variables should be set to the absolute paths of the directory on the host, which contains one or more Certification Authorities certificates. You should use X.509 certificates, Base64 encoded. (Other formats may work but have not been tested!) All the certificates in the directory will be trusted.
