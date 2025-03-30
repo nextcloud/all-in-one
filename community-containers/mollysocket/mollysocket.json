@@ -26,7 +26,7 @@
             "environment": [
                 "MOLLY_DB": "/data/mollysocket.db",
                 "MOLLY_ALLOWED_ENDPOINTS": ["*"],
-                "MOLLY_ALLOWED_ENDPOINTS": "["*","https://push.{$NC_DOMAIN}"]"
+                "MOLLY_ALLOWED_ENDPOINTS": "['*','https://push.{$NC_DOMAIN}']"
                 "MOLLY_ALLOWED_UUIDS": ["*"],
                 "MOLLY_HOST": "%APACHE_IP_BINDING%",
                 "MOLLY_PORT": "8020",
