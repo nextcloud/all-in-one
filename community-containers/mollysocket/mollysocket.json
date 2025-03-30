@@ -12,7 +12,7 @@
                 {
                     "ip_binding": "%APACHE_IP_BINDING%",
                     "port_number": "8020",
-                    "protocol": "tcp",
+                    "protocol": "tcp"
                 }
             ],
             "volumes": [
