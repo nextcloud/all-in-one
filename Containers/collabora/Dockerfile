@@ -14,7 +14,9 @@ RUN set -ex; \
 #        # tzdata \
         netcat-openbsd \
     ; \
-    rm -rf /var/lib/apt/lists/*;
+    rm -rf /var/lib/apt/lists/*; \
+# Fix permissions for coolwsd.xml file. See https://github.com/CollaboraOnline/online/issues/11345
+    chmod +r /etc/coolwsd/coolwsd.xml
 
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
