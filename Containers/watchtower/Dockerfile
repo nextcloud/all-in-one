@@ -13,7 +13,7 @@ RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache bash ca-certificates tzdata
 
-COPY --from=go /go/bin/watchtower /usr/local/bin/watchtower
+COPY --from=go /go/bin/watchtower /watchtower
 
 COPY --chmod=775 start.sh /start.sh
 
