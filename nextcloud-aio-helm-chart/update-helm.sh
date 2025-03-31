@@ -72,7 +72,7 @@ find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio
 cat << EOL > /tmp/initcontainers
       initContainers:
         - name: init-volumes
-          image: "ghcr.io/nextcloud-releases/alpine:$DOCKER_TAG"
+          image: "ghcr.io/nextcloud-releases/aio-alpine:$DOCKER_TAG"
           command:
             - chmod
             - "777"
@@ -81,7 +81,7 @@ EOL
 cat << EOL > /tmp/initcontainers.database
       initContainers:
         - name: init-subpath
-          image: "ghcr.io/nextcloud-releases/alpine:$DOCKER_TAG"
+          image: "ghcr.io/nextcloud-releases/aio-alpine:$DOCKER_TAG"
           command:
             - mkdir
             - "-p"
@@ -94,7 +94,7 @@ EOL
 cat << EOL > /tmp/initcontainers.clamav
       initContainers:
         - name: init-subpath
-          image: "ghcr.io/nextcloud-releases/alpine:$DOCKER_TAG"
+          image: "ghcr.io/nextcloud-releases/aio-alpine:$DOCKER_TAG"
           command:
             - mkdir
             - "-p"
@@ -108,7 +108,7 @@ cat << EOL > /tmp/initcontainers.nextcloud
 # AIO settings start # Do not remove or change this line!
       initContainers:
         - name: init-volumes
-          image: "ghcr.io/nextcloud-releases/alpine:$DOCKER_TAG"
+          image: "ghcr.io/nextcloud-releases/aio-alpine:$DOCKER_TAG"
           command:
             - chmod
             - "777"
