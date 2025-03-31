@@ -505,7 +505,7 @@ cat << EOL > /tmp/security.conf
           {{- end }} # AIO-config - do not change this comment!
 EOL
 # shellcheck disable=SC1083
-find ./ -name '*nextcloud-deployment.yaml*' -exec sed -i "/nextcloud\/aio-nextcloud:.*/r /tmp/security.conf" \{} \; 
+find ./ -name '*nextcloud-deployment.yaml*' -exec sed -i "/image: .*nextcloud.*aio-nextcloud:.*/r /tmp/security.conf" \{} \; 
 
 chmod 777 -R ./
 
