@@ -5,7 +5,7 @@
             "image_tag": "v1",
             "display_name": "Borg Backup Viewer",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/borgbackup-viewer",
-            "image": "szaimen/aio-borgbackup-viewer",
+            "image": "ghcr.io/szaimen/aio-borgbackup-viewer",
             "internal_port": "5801",
             "ports": [
                 {
