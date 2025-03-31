@@ -84,7 +84,7 @@ RUN set -ex; \
     pecl install -o igbinary-3.2.16; \
     pecl install APCu-5.1.24; \
     pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.3.0; \
-    pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.1.0; \
+    pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.2.0; \
 #    pecl install -o imagick-3.7.0; \
 # Begin workaround ->
 # The master version on the imagick repository is compatible with PHP 8.3. However, the PECL version is not updated yet.
