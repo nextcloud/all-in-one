@@ -191,7 +191,7 @@ if [ "$BORG_MODE" = backup ]; then
     fi
 
     # Exclude the nextcloud log and audit log for GDPR reasons
-    BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log")
+    BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/lost+found")
     BORG_INCLUDE=()
 
     # Exclude datadir if .noaiobackup file was found
@@ -405,6 +405,7 @@ if [ "$BORG_MODE" = restore ]; then
         --exclude "nextcloud_aio_mastercontainer/data/daily_backup_running" \
         --exclude "nextcloud_aio_mastercontainer/data/session_date_file" \
         --exclude "nextcloud_aio_mastercontainer/session/**" \
+        --exclude "nextcloud_aio_nextcloud_data/lost+found" \
         "${ADDITIONAL_RSYNC_EXCLUDES[@]}" \
         /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes/; then
             RESTORE_FAILED=1
@@ -459,6 +460,7 @@ if [ "$BORG_MODE" = restore ]; then
                         -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_running \
                         -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/session_date_file \
                         -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/id_borg*" \
+                        -o -path "nextcloud_aio_nextcloud_data/lost+found" \
                         "${ADDITIONAL_FIND_EXCLUDES[@]}" \
                     \) \
                     | LC_ALL=C sort \
