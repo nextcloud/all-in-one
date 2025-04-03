@@ -17,7 +17,7 @@
 
     <div class="container">
         <main>
-            <h1>Nextcloud AIO v10.10.0</h1>
+            <h1>Nextcloud AIO v10.11.0</h1>
 
             {# Add 2nd tab warning #}
             <script type="text/javascript" src="second-tab-warning.js"></script>
@@ -60,7 +60,7 @@
             {% endfor %}
 
             {% if is_daily_backup_running == true %}
-                <p><span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank">Logs</a>)</p>
+                <p><span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank">Mastercontainer logs</a>) (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank">Borg backup container logs</a>)</p>
                 {% if automatic_updates == true %}
                     <p>This will update your containers, the mastercontainer and, on Saturdays, your Nextcloud apps if the backup is successful.</p>
                     {% if is_mastercontainer_update_available == true %}

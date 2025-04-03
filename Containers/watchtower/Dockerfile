@@ -1,14 +1,19 @@
 # syntax=docker/dockerfile:latest
-# From https://github.com/containrrr/watchtower/blob/main/dockerfiles/Dockerfile.self-contained
-FROM containrrr/watchtower:1.7.1 AS watchtower
+FROM golang:1.24.1-alpine3.21 AS go
+
+RUN set -ex; \
+    apk upgrade --no-cache -a; \
+    apk add --no-cache \
+        build-base; \
+    go install github.com/containrrr/watchtower@76f9cea516593fabb8ca91ff13de55caa6aa0a8b;
 
 FROM alpine:3.21.3
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache bash
+    apk add --no-cache bash ca-certificates tzdata
 
-COPY --from=watchtower /watchtower /watchtower
+COPY --from=go /go/bin/watchtower /watchtower
 
 COPY --chmod=775 start.sh /start.sh
 

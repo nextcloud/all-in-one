@@ -80,6 +80,8 @@ spec:
               value: "{{ .Values.SERVERINFO_TOKEN }}"
             - name: NEXTCLOUD_DEFAULT_QUOTA
               value: "{{ .Values.NEXTCLOUD_DEFAULT_QUOTA }}"
+            - name: NEXTCLOUD_SKELETON_DIRECTORY
+              value: "{{ .Values.NEXTCLOUD_SKELETON_DIRECTORY | default "" }}"
             - name: NEXTCLOUD_MAINTENANCE_WINDOW
               value: "{{ .Values.NEXTCLOUD_MAINTENANCE_WINDOW }}"
             - name: ADDITIONAL_APKS
@@ -180,7 +182,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: nextcloud/aio-nextcloud:20250325_084656
+          image: ghcr.io/nextcloud-releases/aio-nextcloud:20250331_082515
           {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context

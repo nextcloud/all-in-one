@@ -599,7 +599,7 @@ readonly class DockerActionManager {
 
     }
 
-    public function isDockerHubReachable(Container $container): bool {
+    public function isRegistryReachable(Container $container): bool {
         $tag = $container->GetImageTag();
         if ($tag === '%AIO_CHANNEL%') {
             $tag = $this->GetCurrentChannel();

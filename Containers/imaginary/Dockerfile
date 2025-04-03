@@ -4,6 +4,7 @@ FROM golang:1.24.1-alpine3.21 AS go
 ENV IMAGINARY_HASH=1d4e251cfcd58ea66f8361f8721d7b8cc85002a3
 
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache \
         vips-dev \
         vips-magick \

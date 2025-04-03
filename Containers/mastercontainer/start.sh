@@ -272,17 +272,6 @@ It is set to '$AIO_COMMUNITY_CONTAINERS'."
     fi
 fi
 
-# Check DNS resolution
-# Prevents issues like https://github.com/nextcloud/all-in-one/discussions/565
-curl https://nextcloud.com &>/dev/null
-if [ "$?" = 6 ]; then
-    print_red "Could not resolve the host nextcloud.com."
-    echo "Most likely the DNS resolving does not work."
-    echo "You should be able to fix this by following https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html"
-    echo "Apart from that, there has been this: https://github.com/nextcloud/all-in-one/discussions/2065"
-    exit 1
-fi
-
 # Check if ghcr.io is reachable
 # Solves issues like https://github.com/nextcloud/all-in-one/discussions/5268
 if ! curl https://ghcr.io &>/dev/null; then

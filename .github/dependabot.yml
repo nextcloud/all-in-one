@@ -22,6 +22,7 @@ updates:
   - dependencies
 - package-ecosystem: "docker"
   directories:
+    - "/Containers/alpine"
     - "/Containers/apache"
     - "/Containers/borgbackup"
     - "/Containers/clamav"
