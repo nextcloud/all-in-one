@@ -7,7 +7,7 @@
             "image": "ghcr.io/mollyim/mollysocket",
             "image_tag": "latest",
             "internal_port": "8020",
-            "restart": "unless-stopped",
+            "restart": "always",
             "ports": [
                 {
                     "ip_binding": "%APACHE_IP_BINDING%",
