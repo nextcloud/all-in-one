@@ -6,14 +6,9 @@
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/mollysocket",
             "image": "ghcr.io/mollyim/mollysocket",
             "image_tag": "latest",
-            "internal_port": "8020",
             "restart": "always",
             "ports": [
-                {
-                    "ip_binding": "%APACHE_IP_BINDING%",
-                    "port_number": "8020",
-                    "protocol": "tcp"
-                }
+                "8020:8020"
             ],
             "volumes": [
                 {
@@ -27,8 +22,8 @@
             "environment": [
                 "TZ=%TIMEZONE%",
                 "MOLLY_DB='/data/mollysocket.db'",
-                "MOLLY_ALLOWED_ENDPOINTS=['*','https://push.{$NC_DOMAIN}']",
-                "MOLLY_ALLOWED_UUIDS=['*']",
+                "MOLLY_ALLOWED_ENDPOINTS=[\"*\",\"https://push.{$NC_DOMAIN}\"]",
+                "MOLLY_ALLOWED_UUIDS=[\"*\"]",
                 "MOLLY_HOST=%APACHE_IP_BINDING%",
                 "MOLLY_PORT=8020",
                 "RUST_LOG=error"
