@@ -25,7 +25,7 @@
             "working_dir": "/data",
             "command": "server",
             "environment": [
-                "TZ=%TIMEZONE%"
+                "TZ=%TIMEZONE%",
                 "MOLLY_DB='/data/mollysocket.db'",
                 "MOLLY_ALLOWED_ENDPOINTS=['*','https://push.{$NC_DOMAIN}']",
                 "MOLLY_ALLOWED_UUIDS=['*']",
