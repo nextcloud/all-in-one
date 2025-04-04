@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.24.1-alpine3.21 AS go
+FROM golang:1.24.2-alpine3.21 AS go
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
