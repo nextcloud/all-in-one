@@ -5,7 +5,7 @@
             "display_name": "MollySocket",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/mollysocket",
             "image": "ghcr.io/mollyim/mollysocket",
-            "image_tag": "latest",
+            "image_tag": "1",
             "restart": "always",
             "ports": [
                 "8020:8020"
