@@ -36,7 +36,7 @@ spec:
         {{- end }}
       initContainers:
         - name: init-subpath
-          image: "ghcr.io/nextcloud-releases/aio-alpine:20250408_081359"
+          image: ghcr.io/nextcloud-releases/aio-alpine:20250408_081359
           command:
             - mkdir
             - "-p"
