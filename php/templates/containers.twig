@@ -512,7 +512,7 @@
                                                     <input type="text" name="daily_backup_time" placeholder="04:00"/>
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                    <input type="submit" value="Submit backup time" /><br>
+                                                    <input type="submit" value="Submit daily backup time and settings" /><br>
                                                     <input type="checkbox" id="automatic_updates" name="automatic_updates" checked="checked"><label for="automatic_updates">Automatically update all containers, the mastercontainer and on saturdays your Nextcloud apps</label><br>
                                                     <input type="checkbox" id="success_notification" name="success_notification" checked="checked"><label for="success_notification">Send notifications about successful backups (notifications about unsuccessful backups will always be sent)</label>
                                                 </form>
@@ -526,7 +526,7 @@
                                                     <input type="hidden" name="delete_daily_backup_time" value="yes"/>
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                    <input type="submit" value="Disable or change daily backups" />
+                                                    <input type="submit" value="Disable or change daily backup settings" />
                                                 </form>
                                             {% endif %}
 
