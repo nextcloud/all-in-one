@@ -101,7 +101,7 @@
                             {% else %}
                                 <p>AIO is currently in "reverse proxy mode" which means that it can be installed behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) and does not do the TLS proxying itself.</p>
                             {% endif %}
-                            <p>Please type the domain that will be used for Nextcloud.</p>
+                            <p>Please type in the domain that will be used for Nextcloud and submit it.</p>
                             {% if skip_domain_validation == true %}
                                 <p><strong>Please note:</strong> The domain validation is disabled so any domain will be accepted here! Make sure you do not make a typo here as you will not be able to change it afterwards!</p>
                             {% endif %}
@@ -192,7 +192,7 @@
                                 <p>
                                 Please enter the location of the backup archive on your host or a
                                 <a target="_blank" href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>
-                                if stored remotely; and the encryption password of the backup archive below:
+                                if stored remotely; and the encryption password of the backup archive below and submit all values:
                                 </p>
                                 <form method="POST" action="/api/configuration" class="xhr">
                                     <label>Local backup location</label> <input type="text" id="borg_restore_host_location" name="borg_restore_host_location" value="{{borg_backup_host_location}}" placeholder="/mnt/backup"/><br>
@@ -364,10 +364,10 @@
                         {% else %}
                             {% if is_backup_container_running == false and not hasBackupLocation and isApacheStarting != true %}
                                 <h2>Backup and restore</h2>
-                                <p>Please enter the directory path below where backups will be created on the host system. It's best to choose a location on a separate drive and not on your root drive.</p>
+                                <p>Please enter the directory path below where backups will be created on the host system and submit it. It's best to choose a location on a separate drive and not on your root drive.</p>
                                 <p>
                                 To store backups remotely instead, fill in the
-                                <a target="_blank" href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url</a>.
+                                <a target="_blank" href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url and submit it</a>.
                                 </p>
                                 <form method="POST" action="/api/configuration" class="xhr">
                                     <label>Local backup location</label> <input type="text" id="borg_backup_host_location" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
@@ -507,7 +507,7 @@
 
                                             <h3>Daily backup and automatic updates</h3>
                                             {% if daily_backup_time == "" %}
-                                                <p>By entering a time below, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <strong>04:00</strong> will create backups at 4 am UTC and <strong>16:00</strong> at 4 pm UTC. When creating the backup, containers will be stopped and restarted after the backup is complete.</p>
+                                                <p>By entering a time below and submitting it, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <strong>04:00</strong> will create backups at 4 am UTC and <strong>16:00</strong> at 4 pm UTC. When creating the backup, containers will be stopped and restarted after the backup is complete.</p>
                                                 <form method="POST" action="/api/configuration" class="xhr">
                                                     <input type="text" name="daily_backup_time" placeholder="04:00"/>
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -531,7 +531,7 @@
                                             {% endif %}
 
                                             <h3>Back up additional directories and docker volumes of your host</h3>
-                                            <p>Below you can enter directories and docker volumes of your host that will be backed up into the same borg backup archive.</p>
+                                            <p>Below you can enter directories and docker volumes of your host that will be backed up into the same borg backup archive. Make sure to press the submit button after changing anything.</p>
                                             <form method="POST" action="/api/configuration" class="xhr">
                                                 <textarea id="additional_backup_directories" name="additional_backup_directories" rows="4" cols="50" placeholder="/directory/on/the/host&#10;my_custom_docker_volume">{{ additional_backup_directories }}</textarea>
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -584,7 +584,7 @@
                         {% else %}
                             {% if timezone == "" %}
                                 <p>To get the correct time values for certain Nextcloud features, set the timezone for Nextcloud to the one that your users mainly use. Please note that this setting does not apply to the mastercontainer and any backup option.</p>
-                                <p>You can configure the timezone for Nextcloud below:</p>
+                                <p>You can configure the timezone for Nextcloud below (Do not forget to submit the value!):</p>
                                 <form method="POST" action="/api/configuration" class="xhr">
                                     <input type="text" id="timezone" name="timezone" placeholder="Europe/Berlin" />
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">

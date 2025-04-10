@@ -184,7 +184,7 @@
 
     {% if collabora_additional_options == "" %}
         <p>You can configure additional options for collabora below.</p>
-        <p>(This can be used for configuring the net.content_security_policy and more)</p>
+        <p>(This can be used for configuring the net.content_security_policy and more. Make sure to submit the value!)</p>
         <form method="POST" action="/api/configuration" class="xhr">
             <input type="text" name="collabora_additional_options" />
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
