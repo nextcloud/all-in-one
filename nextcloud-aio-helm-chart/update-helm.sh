@@ -303,7 +303,7 @@ cat << EOL > /tmp/additional.config
             - name: NEXTCLOUD_DEFAULT_QUOTA
               value: "{{ .Values.NEXTCLOUD_DEFAULT_QUOTA }}"
             - name: NEXTCLOUD_SKELETON_DIRECTORY
-              value: "{{ .Values.NEXTCLOUD_SKELETON_DIRECTORY | default "" }}"
+              value: "{{ .Values.NEXTCLOUD_SKELETON_DIRECTORY }}"
             - name: NEXTCLOUD_MAINTENANCE_WINDOW
               value: "{{ .Values.NEXTCLOUD_MAINTENANCE_WINDOW }}"
 EOL
