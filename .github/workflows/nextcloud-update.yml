@@ -60,12 +60,6 @@ jobs:
         )"
         sed -i "s|\(pecl install[^;]*imagick-\)[0-9.]*|\1$imagick_version|" ./Containers/nextcloud/Dockerfile
 
-        # Imagick git-commit-hash from HEAD
-        imagick_commit_hash="$(
-          git ls-remote https://github.com/imagick/imagick.git HEAD | awk '{print $1}'
-        )"
-        sed -i "s/\(ARG IMAGICK_COMMIT_HASH=\)[a-fA-F0-9]*$/\1$imagick_commit_hash/" ./Containers/nextcloud/Dockerfile
-
         # Igbinary
         igbinary_version="$(
           git ls-remote --tags https://github.com/igbinary/igbinary.git \
