@@ -191,7 +191,7 @@
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
             <input type="submit" value="Submit additional collabora options" />
         </form>
-        <p>You need to make sure that the options that you enter are valid. An example is <strong>--o:net.content_security_policy="frame-ancestors *.example.com:*;"</strong>.</p>
+        <p>You need to make sure that the options that you enter are valid. An example is <strong>--o:net.content_security_policy=frame-ancestors *.example.com:*;</strong>.</p>
     {% else %}
         <p>The additioinal options for Collabora are currently set to <strong>{{ collabora_additional_options }}</strong>. You can reset them again by clicking on the button below.</p>
         <form method="POST" action="/api/configuration" class="xhr">
