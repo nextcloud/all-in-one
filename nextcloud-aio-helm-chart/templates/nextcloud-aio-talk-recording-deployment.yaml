@@ -44,7 +44,7 @@ spec:
               value: "{{ .Values.RECORDING_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-talk-recording:20250417_082355
+          image: ghcr.io/nextcloud-releases/aio-talk-recording:20250424_092733
           readinessProbe:
             exec:
               command:
