@@ -16,6 +16,7 @@
             "aio_variables": [
                 "nextcloud_memory_limit=2048M"
             ],
+            "enable_nvidia_gpu": false,
             "nextcloud_exec_commands": [
                 "php /var/www/html/occ app:install facerecognition",
                 "php /var/www/html/occ app:enable facerecognition", 

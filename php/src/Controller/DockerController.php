@@ -41,12 +41,12 @@ readonly class DockerController {
             }
         }
 
-        // Check if docker hub is reachable in order to make sure that we do not try to pull an image if it is down
+        // Check if registry is reachable in order to make sure that we do not try to pull an image if it is down
         // and try to mitigate issues that are arising due to that
         if ($pullImage) {
-            if (!$this->dockerActionManager->isDockerHubReachable($container)) {
+            if (!$this->dockerActionManager->isRegistryReachable($container)) {
                 $pullImage = false;
-                error_log('Not pulling the image for the ' . $container->GetContainerName() . ' container because docker hub does not seem to be reachable.');
+                error_log('Not pulling the ' . $container->GetContainerName() . ' image for the ' . $container->GetIdentifier() . ' container because the registry does not seem to be reachable.');
             }
         }
 
@@ -113,6 +113,11 @@ readonly class DockerController {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'restore';
         $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
+        if (isset($request->getParsedBody()['restore-exclude-previews'])) {
+            $config['restore-exclude-previews'] = 1;
+        } else {
+            $config['restore-exclude-previews'] = '';
+        }
         $this->configurationManager->WriteConfig($config);
 
         $id = self::TOP_CONTAINER;
@@ -166,7 +171,7 @@ readonly class DockerController {
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = 30;
+            $installLatestMajor = 31;
         } else {
             $installLatestMajor = "";
         }

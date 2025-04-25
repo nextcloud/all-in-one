@@ -27,6 +27,7 @@
         "LLDAP_JWT_SECRET",
         "LLDAP_LDAP_USER_PASS"
       ],
+      "ui_secret": "LLDAP_JWT_SECRET",
       "volumes": [
         {
           "source": "nextcloud_aio_lldap",

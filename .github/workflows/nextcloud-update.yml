@@ -51,7 +51,7 @@ jobs:
         
         # Imagick
         imagick_version="$(
-          git ls-remote --tags https://github.com/Imagick/imagick.git \
+          git ls-remote --tags https://github.com/imagick/imagick.git \
             | cut -d/ -f3 \
             | grep -viE '[a-z]' \
             | tr -d '^{}' \
@@ -79,7 +79,7 @@ jobs:
         fi
 
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v7
+      uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
       with:
         commit-message: nextcloud-update automated change
         signoff: true

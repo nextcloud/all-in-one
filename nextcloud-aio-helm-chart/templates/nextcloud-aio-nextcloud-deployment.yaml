@@ -2,8 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-    kompose.version: 1.34.0 (cbf2835db)
+    kompose.version: 1.35.0 (9532ceef3)
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
@@ -18,25 +17,28 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-        kompose.version: 1.34.0 (cbf2835db)
+        kompose.version: 1.35.0 (9532ceef3)
       labels:
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
+      {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 33
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 33
+        runAsGroup: 33
+        runAsNonRoot: true
+        {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
+      {{- end }} # AIO-config - do not change this comment!
+# AIO settings start # Do not remove or change this line!
       initContainers:
-        - name: "delete-lost-found"
-          image: "alpine:3.20"
-          command:
-            - rm
-            - "-rf"
-            - "/nextcloud-aio-nextcloud/lost+found"
-          volumeMounts:
-            - name: nextcloud-aio-nextcloud-trusted-cacerts
-              mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
-            - name: nextcloud-aio-nextcloud
-              mountPath: /nextcloud-aio-nextcloud
         - name: init-volumes
-          image: "alpine:3.20"
+          image: ghcr.io/nextcloud-releases/aio-alpine:20250424_092733
           command:
             - chmod
             - "777"
@@ -47,6 +49,7 @@ spec:
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
+# AIO settings end # Do not remove or change this line!
       containers:
         - env:
             - name: SMTP_HOST
@@ -77,6 +80,8 @@ spec:
               value: "{{ .Values.SERVERINFO_TOKEN }}"
             - name: NEXTCLOUD_DEFAULT_QUOTA
               value: "{{ .Values.NEXTCLOUD_DEFAULT_QUOTA }}"
+            - name: NEXTCLOUD_SKELETON_DIRECTORY
+              value: "{{ .Values.NEXTCLOUD_SKELETON_DIRECTORY }}"
             - name: NEXTCLOUD_MAINTENANCE_WINDOW
               value: "{{ .Values.NEXTCLOUD_MAINTENANCE_WINDOW }}"
             - name: ADDITIONAL_APKS
@@ -87,6 +92,8 @@ spec:
               value: "{{ .Values.NEXTCLOUD_PASSWORD }}"
             - name: ADMIN_USER
               value: admin
+            - name: APACHE_HOST
+              value: nextcloud-aio-apache
             - name: APACHE_PORT
               value: "{{ .Values.APACHE_PORT }}"
             - name: CLAMAV_ENABLED
@@ -117,6 +124,8 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_DATA_DIR
               value: /mnt/ncdata
+            - name: NEXTCLOUD_HOST
+              value: nextcloud-aio-nextcloud
             - name: ONLYOFFICE_ENABLED
               value: "{{ .Values.ONLYOFFICE_ENABLED }}"
             - name: ONLYOFFICE_HOST
@@ -173,17 +182,38 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: "nextcloud/aio-nextcloud:20241106_101604"
+          image: ghcr.io/nextcloud-releases/aio-nextcloud:20250424_092733
+          {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+          {{- end }} # AIO-config - do not change this comment!
+          readinessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 30
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
               protocol: TCP
             - containerPort: 9001
               protocol: TCP
-          securityContext:
-            capabilities:
-              drop:
-                - NET_RAW
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud

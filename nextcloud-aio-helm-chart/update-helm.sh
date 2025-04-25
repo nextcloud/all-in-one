@@ -25,6 +25,8 @@ set -ex
 cd manual-install
 cp latest.yml latest.yml.backup
 
+# Additional config
+# shellcheck disable=SC1083
 sed -i -E '/^( *- )(NET_RAW|SYS_NICE|MKNOD|SYS_ADMIN)$/!s/( *- )([A-Z_]+)$/\1\2=${\2}/' latest.yml
 cp sample.conf /tmp/
 sed -i 's|^|export |' /tmp/sample.conf
@@ -40,6 +42,7 @@ sed -i "s|\${TALK_PORT}:\${TALK_PORT}/|$TALK_PORT:$TALK_PORT/|g" latest.yml
 sed -i "s|- \${APACHE_PORT}|- $APACHE_PORT|" latest.yml
 sed -i "s|- \${TALK_PORT}|- $TALK_PORT|" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
+sed -i "s|\${ADDITIONAL_COLLABORA_OPTIONS}|ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER|" latest.yml
 sed -i "/name: nextcloud-aio/,$ d" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
@@ -50,6 +53,13 @@ yq -i 'del(.services.[].profiles)' latest.yml
 # Delete read_only and tmpfs setting while https://github.com/kubernetes/kubernetes/issues/48912 is not fixed
 yq -i 'del(.services.[].read_only)' latest.yml
 yq -i 'del(.services.[].tmpfs)' latest.yml
+# Remove cap_drop in order to add it later again easier
+yq -i 'del(.services.[].cap_drop)' latest.yml
+# Remove SYS_NICE for imaginary as it is not supported with RPSS
+yq -i 'del(.services."nextcloud-aio-imaginary".cap_add)' latest.yml
+# cap SYS_ADMIN is called CAP_SYS_ADMIN in k8s
+sed -i "s|- SYS_ADMIN$|- CAP_SYS_ADMIN|" latest.yml
+
 cat latest.yml
 kompose convert -c -f latest.yml --namespace nextcloud-aio-namespace
 cd latest
@@ -62,7 +72,7 @@ find ./ -name '*networkpolicy.yaml' -exec sed -i "s|manual-install-nextcloud-aio
 cat << EOL > /tmp/initcontainers
       initContainers:
         - name: init-volumes
-          image: "alpine:3.20"
+          image: ghcr.io/nextcloud-releases/aio-alpine:$DOCKER_TAG
           command:
             - chmod
             - "777"
@@ -71,57 +81,51 @@ EOL
 cat << EOL > /tmp/initcontainers.database
       initContainers:
         - name: init-subpath
-          image: "alpine:3.20"
+          image: ghcr.io/nextcloud-releases/aio-alpine:$DOCKER_TAG
           command:
             - mkdir
             - "-p"
             - /nextcloud-aio-database/data
-          volumeMountsInitContainer:
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chown
-            - 999:999
-            - "-R"
-          volumeMountsInitContainer:
+          volumeMounts:
+            - name: nextcloud-aio-database
+              mountPath: /nextcloud-aio-database
+          securityContext:
 EOL
 cat << EOL > /tmp/initcontainers.clamav
       initContainers:
         - name: init-subpath
-          image: "alpine:3.20"
+          image: ghcr.io/nextcloud-releases/aio-alpine:$DOCKER_TAG
           command:
             - mkdir
             - "-p"
             - /nextcloud-aio-clamav/data
-          volumeMountsInitContainer:
-        - name: init-volumes
-          image: "alpine:3.20"
-          command:
-            - chown
-            - 100:100
-            - "-R"
-          volumeMountsInitContainer:
+          volumeMounts:
+            - name: nextcloud-aio-clamav
+              mountPath: /nextcloud-aio-clamav
+          securityContext:
 EOL
 cat << EOL > /tmp/initcontainers.nextcloud
+# AIO settings start # Do not remove or change this line!
       initContainers:
-        - name: "delete-lost-found"
-          image: "alpine:3.20"
-          command:
-            - rm
-            - "-rf"
-            - "/nextcloud-aio-nextcloud/lost+found"
-          volumeMountsInitRmLostFound:
         - name: init-volumes
-          image: "alpine:3.20"
+          image: ghcr.io/nextcloud-releases/aio-alpine:$DOCKER_TAG
           command:
             - chmod
             - "777"
           volumeMountsInitContainer:
+# AIO settings end # Do not remove or change this line!
 EOL
+
 # shellcheck disable=SC1083
 DEPLOYMENTS="$(find ./ -name '*deployment.yaml')"
 mapfile -t DEPLOYMENTS <<< "$DEPLOYMENTS"
 for variable in "${DEPLOYMENTS[@]}"; do
+    if grep -q livenessProbe "$variable"; then
+        sed -n "/.*livenessProbe/,/timeoutSeconds.*/p" "$variable" > /tmp/liveness.probe
+        cat /tmp/liveness.probe
+        sed -i "s|livenessProbe|readinessProbe|" /tmp/liveness.probe
+        sed -i "/^          image:/r /tmp/liveness.probe" "$variable"
+    fi
     if grep -q volumeMounts "$variable"; then
         if echo "$variable" | grep -q database; then
             sed -i "/^    spec:/r /tmp/initcontainers.database" "$variable"
@@ -129,7 +133,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
             sed -i "/^    spec:/r /tmp/initcontainers.clamav" "$variable"
         elif echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
             sed -i "/^    spec:/r /tmp/initcontainers.nextcloud" "$variable"
-        else
+        elif echo "$variable" | grep -q "fulltextsearch" || echo "$variable" | grep -q "onlyoffice" || echo "$variable" | grep -q "collabora"; then
             sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
         fi
         volumeNames="$(grep -A1 mountPath "$variable" | grep -v mountPath | sed 's|.*name: ||' | sed '/^--$/d')"
@@ -139,7 +143,6 @@ for variable in "${DEPLOYMENTS[@]}"; do
             if [ "$volumeName" != "nextcloud-aio-nextcloud-data" ]; then
                 sed -i "/^.*volumeMountsInitContainer:/i\ \ \ \ \ \ \ \ \ \ \ \ - /$volumeName" "$variable"
                 sed -i "/volumeMountsInitContainer:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
-                sed -i "/volumeMountsInitRmLostFound:/a\ \ \ \ \ \ \ \ \ \ \ \ - name: $volumeName\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ mountPath: /$volumeName" "$variable"
                 # Workaround for the database volume
                 if [ "$volumeName" = nextcloud-aio-database ]; then
                     sed -i "/mountPath: \/var\/lib\/postgresql\/data/a\ \ \ \ \ \ \ \ \ \ \ \ \ \ subPath: data" "$variable"
@@ -150,7 +153,6 @@ for variable in "${DEPLOYMENTS[@]}"; do
             fi
         done
         sed -i "s|volumeMountsInitContainer:|volumeMounts:|" "$variable"
-        sed -i "s|volumeMountsInitRmLostFound:|volumeMounts:|" "$variable"
         if grep -q claimName "$variable"; then
             claimNames="$(grep claimName "$variable")"
             mapfile -t claimNames <<< "$claimNames"
@@ -159,6 +161,39 @@ for variable in "${DEPLOYMENTS[@]}"; do
                     sed -i "/^$claimName$/{n;d}" "$variable"
                 fi
             done
+        fi
+    fi
+    if grep -q runAsUser "$variable" || echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
+        if echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
+            USER=33
+            GROUP=33
+            echo '      {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!' > /tmp/pod.securityContext
+        else
+            USER="$(grep runAsUser "$variable" | grep -oP '[0-9]+')"
+            GROUP="$USER"
+            rm -f /tmp/pod.securityContext
+        fi
+        sed -i "/runAsUser:/d" "$variable"
+        sed -i "/capabilities:/d" "$variable"
+        if [ -n "$USER" ]; then
+            cat << EOL >> /tmp/pod.securityContext
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: $USER
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: $USER
+        runAsGroup: $GROUP
+        runAsNonRoot: true
+        {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
+EOL
+            if echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
+                echo "      {{- end }} # AIO-config - do not change this comment!" >> /tmp/pod.securityContext
+            fi
+            sed -i "/^    spec:$/r /tmp/pod.securityContext" "$variable"
         fi
     fi
 done
@@ -170,6 +205,8 @@ find ./ -name '*service.yaml' -exec sed -i "/^status:/,$ d" \{} \;
 find ./ -name '*deployment.yaml' -exec sed -i "s|manual-install-nextcloud-aio|nextcloud-aio|" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "/medium: Memory/d" \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*.yaml' -exec sed -i "/kompose.cmd/d" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "s|emptyDir:|emptyDir: \{\}|" \{} \; 
 # shellcheck disable=SC1083
@@ -265,11 +302,15 @@ cat << EOL > /tmp/additional.config
               value: "{{ .Values.SERVERINFO_TOKEN }}"
             - name: NEXTCLOUD_DEFAULT_QUOTA
               value: "{{ .Values.NEXTCLOUD_DEFAULT_QUOTA }}"
+            - name: NEXTCLOUD_SKELETON_DIRECTORY
+              value: "{{ .Values.NEXTCLOUD_SKELETON_DIRECTORY }}"
             - name: NEXTCLOUD_MAINTENANCE_WINDOW
               value: "{{ .Values.NEXTCLOUD_MAINTENANCE_WINDOW }}"
 EOL
 # shellcheck disable=SC1083
 find ./ -name '*nextcloud-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional.config"  \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*fulltextsearch-deployment.yaml' -exec sed -i 's/{{ .Values.FULLTEXTSEARCH_JAVA_OPTIONS }}/{{ .Values.FULLTEXTSEARCH_JAVA_OPTIONS | default "-Xms512M -Xmx512M" }}/'  \{} \;
 
 # Additional config
 cat << EOL > /tmp/additional-apache.config
@@ -352,7 +393,7 @@ sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
 sed -i '/_ENABLED.*/s/ yes / "yes" /' /tmp/sample.conf
 sed -i '/_ENABLED.*/s/ no / "no" /' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
-sed -i 's|10737418240|"10737418240"|' /tmp/sample.conf
+sed -i 's|17179869184|"17179869184"|' /tmp/sample.conf
 # shellcheck disable=SC2129
 echo "" >> /tmp/sample.conf
 # shellcheck disable=SC2129
@@ -375,6 +416,7 @@ APPS_ALLOWLIST:        # This allows to configure allowed apps that will be show
 ADDITIONAL_TRUSTED_PROXY:        # Allows to add one additional ip-address to Nextcloud's trusted proxies and to the Office WOPI-allowlist automatically. Set it e.g. like this: 'your.public.ip-address'. You can also use an ip-range here.
 ADDITIONAL_TRUSTED_DOMAIN:        # Allows to add one domain to Nextcloud's trusted domains and also generates a certificate automatically for it
 NEXTCLOUD_DEFAULT_QUOTA: "10 GB"       # Allows to adjust the default quota that will be taken into account in Nextcloud for new users. Setting it to "unlimited" will set it to unlimited
+NEXTCLOUD_SKELETON_DIRECTORY:        # Allows to adjust the sekeleton dir for Nextcloud. Setting it to "empty" will set the value to an empty string "" which will turn off the setting for new users in Nextcloud.
 NEXTCLOUD_MAINTENANCE_WINDOW:        # Allows to define the maintenance window for Nextcloud. See https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/background_jobs_configuration.html#parameters for possible values
 SMTP_HOST:        # (empty by default): The hostname of the SMTP server.
 SMTP_SECURE:         # (empty by default): Set to 'ssl' to use SSL, or 'tls' to use STARTTLS.
@@ -416,12 +458,54 @@ find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec se
 # shellcheck disable=SC1083
 find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 
-cat << EOL >> /tmp/security.conf
+cat << EOL > /tmp/security.conf
+            # The items below only work in container context
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
+            capabilities:
+              {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
 EOL
 # shellcheck disable=SC1083
-find ./ \( -not -name '*nextcloud-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^.*securityContext:$/r /tmp/security.conf" \{} \; 
+find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*apache-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml*' -exec sed -i "/ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER/d" \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml*' -exec sed -i "s/- args:/- args: \{\{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default list | toJson \}\}/" \{} \;
+
+cat << EOL > /tmp/security.conf
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+              add: ["NET_BIND_SERVICE"]
+EOL
+
+# shellcheck disable=SC1083
+find ./ -name '*apache-deployment.yaml*' -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+
+cat << EOL > /tmp/security.conf
+          {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+          {{- end }} # AIO-config - do not change this comment!
+EOL
+# shellcheck disable=SC1083
+find ./ -name '*nextcloud-deployment.yaml*' -exec sed -i "/image: .*nextcloud.*aio-nextcloud:.*/r /tmp/security.conf" \{} \; 
 
 chmod 777 -R ./
 

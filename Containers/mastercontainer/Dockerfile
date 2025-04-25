@@ -10,13 +10,13 @@ FROM scratch AS aio_root
 COPY --from=aio_clone all-in-one /
 
 # Docker CLI is a requirement
-FROM docker:27.3.1-cli AS docker
+FROM docker:28.1.1-cli AS docker
 
 # Caddy is a requirement
-FROM caddy:2.8.4-alpine AS caddy
+FROM caddy:2.10.0-alpine AS caddy
 
-# From https://github.com/docker-library/php/blob/master/8.3/alpine3.20/fpm/Dockerfile
-FROM php:8.3.13-fpm-alpine3.20
+# From https://github.com/docker-library/php/blob/master/8.3/alpine3.21/fpm/Dockerfile
+FROM php:8.3.20-fpm-alpine3.21
 
 EXPOSE 80
 EXPOSE 8080
@@ -26,6 +26,7 @@ COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
 
 COPY --from=aio_root /php /var/www/docker-aio/php
+RUN rm -r /var/www/docker-aio/php/tests
 COPY --from=aio_root /community-containers /var/www/docker-aio/community-containers
 
 WORKDIR /var/www/docker-aio
@@ -76,9 +77,8 @@ RUN set -ex; \
     \
     wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer; \
     chmod +x /usr/local/bin/composer; \
-    cd /var/www/docker-aio; \
     chown www-data:www-data -R /var/www/docker-aio; \
-    cd php; \
+    cd /var/www/docker-aio/php; \
     sudo -u www-data composer install --no-dev; \
     sudo -u www-data composer clear-cache; \
     cd ..; \

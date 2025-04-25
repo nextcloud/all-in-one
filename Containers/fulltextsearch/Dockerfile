@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Probably from here https://github.com/elastic/elasticsearch/blob/main/distribution/docker/src/docker/Dockerfile
-FROM elasticsearch:8.15.3
+FROM elasticsearch:8.18.0
 
 USER root
 
@@ -16,7 +16,10 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*;
 
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
+
 USER 1000:0
 
-HEALTHCHECK CMD nc -z 127.0.0.1 9200 || exit 1
+HEALTHCHECK --interval=10s --timeout=5s --start-period=1m --retries=5 CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"
+ENV ES_JAVA_OPTS="-Xms512M -Xmx512M"

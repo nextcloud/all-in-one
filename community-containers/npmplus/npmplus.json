@@ -4,7 +4,7 @@
             "container_name": "nextcloud-aio-npmplus",
             "display_name": "NPMplus",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/npmplus",
-            "image": "zoeyvid/npmplus",
+            "image": "ghcr.io/zoeyvid/npmplus",
             "image_tag": "latest",
             "internal_port": "host",
             "restart": "unless-stopped",

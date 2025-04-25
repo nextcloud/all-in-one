@@ -1,22 +1,28 @@
 version: 2
 updates:
 - package-ecosystem: "github-actions"
-  directory: "/"
+  directory: ".github/workflows"
   schedule:
     interval: "daily"
     time: "12:00"
   open-pull-requests-limit: 10
+  rebase-strategy: "disabled"
+  labels:
+  - 3. to review
+  - dependencies
 - package-ecosystem: composer
   directory: "/php/"
   schedule:
     interval: "daily"
     time: "12:00"
   open-pull-requests-limit: 10
+  rebase-strategy: "auto"
   labels:
   - 3. to review
   - dependencies
 - package-ecosystem: "docker"
   directories:
+    - "/Containers/alpine"
     - "/Containers/apache"
     - "/Containers/borgbackup"
     - "/Containers/clamav"
@@ -39,6 +45,7 @@ updates:
     interval: "daily"
     time: "04:00"
   open-pull-requests-limit: 10
+  rebase-strategy: "disabled"
   labels:
   - 3. to review
   - dependencies

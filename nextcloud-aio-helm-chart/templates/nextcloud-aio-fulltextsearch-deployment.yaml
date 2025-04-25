@@ -3,8 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-    kompose.version: 1.34.0 (cbf2835db)
+    kompose.version: 1.35.0 (9532ceef3)
   labels:
     io.kompose.service: nextcloud-aio-fulltextsearch
   name: nextcloud-aio-fulltextsearch
@@ -19,14 +18,13 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-        kompose.version: 1.34.0 (cbf2835db)
+        kompose.version: 1.35.0 (9532ceef3)
       labels:
         io.kompose.service: nextcloud-aio-fulltextsearch
     spec:
       initContainers:
         - name: init-volumes
-          image: "alpine:3.20"
+          image: ghcr.io/nextcloud-releases/aio-alpine:20250424_092733
           command:
             - chmod
             - "777"
@@ -37,7 +35,7 @@ spec:
       containers:
         - env:
             - name: ES_JAVA_OPTS
-              value: -Xms512M -Xmx512M
+              value: "{{ .Values.FULLTEXTSEARCH_JAVA_OPTIONS | default "-Xms512M -Xmx512M" }}"
             - name: FULLTEXTSEARCH_PASSWORD
               value: "{{ .Values.FULLTEXTSEARCH_PASSWORD }}"
             - name: TZ
@@ -56,17 +54,27 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: "nextcloud/aio-fulltextsearch:20241106_101604"
+          image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20250424_092733
+          readinessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 5
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 5
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
           name: nextcloud-aio-fulltextsearch
           ports:
             - containerPort: 9200
               protocol: TCP
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            capabilities:
-              drop:
-                - NET_RAW
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
               name: nextcloud-aio-elasticsearch

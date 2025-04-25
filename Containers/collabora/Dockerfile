@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
-# From a file located probably somewhere here: https://github.com/CollaboraOnline/online/tree/master/docker
-FROM collabora/code:24.04.9.2.1
+# From a file located probably somewhere here: https://github.com/CollaboraOnline/online/blob/master/docker/from-packages/Dockerfile
+FROM collabora/code:24.04.13.3.1
 
 USER root
 ARG DEBIAN_FRONTEND=noninteractive
@@ -10,12 +10,13 @@ RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        tzdata \
         netcat-openbsd \
     ; \
     rm -rf /var/lib/apt/lists/*;
 
-USER 100
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
-HEALTHCHECK CMD nc -z 127.0.0.1 9980 || exit 1
+USER 1001
+
+HEALTHCHECK --start-period=60s --retries=9 CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"

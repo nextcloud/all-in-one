@@ -4,7 +4,7 @@
             "container_name": "nextcloud-aio-local-ai",
             "display_name": "Local AI",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/local-ai",
-            "image": "szaimen/aio-local-ai",
+            "image": "ghcr.io/szaimen/aio-local-ai",
             "image_tag": "v2",
             "internal_port": "8080",
             "restart": "unless-stopped",
@@ -29,6 +29,7 @@
                     "writeable": false
                 }
             ],
+            "enable_nvidia_gpu": false,
             "nextcloud_exec_commands": [
                 "mkdir '/mnt/ncdata/admin/files/nextcloud-aio-local-ai'",
                 "touch '/mnt/ncdata/admin/files/nextcloud-aio-local-ai/models.yaml'",

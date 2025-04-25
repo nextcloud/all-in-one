@@ -1,29 +1,75 @@
 # Reverse Proxy Documentation
 
-> [!NOTE]  
-> The maintainers of AIO noticed that this documentation could be improved to make it easier to follow. All contributions that improve this are very welcome!
+> [!NOTE]
+> Please note that AIO comes secured with TLS out-of-the-box. So you don't need to necessarily set up your own reverse proxy if you only want to run Nextcloud AIO which is much easier. See [the normal readme](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#how-to-use-this) in that case. However if port 443 should already be used because you already run a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), you need to follow this reverse proxy documentation to set up Nextcloud AIO.
 
-A [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) is a software service that acts as a gateway between services and a client. It is commonly used to allow a client connected to the Internet to access a website located in the [private subnet](https://en.wikipedia.org/wiki/Private_network) of that web server.
+> [!TIP]
+> If you don't have a domain yet, [Tailscale is recommended](https://github.com/nextcloud/all-in-one/discussions/5439). If you don't have a reverse proxy yet, [Caddy is recommended](https://github.com/nextcloud/all-in-one/discussions/575).
 
-**Please note:** Publishing the AIO interface with a valid certificate to the public internet is **not** the goal of this documentation! If you need a valid certificate for the AIO interface, see [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface).
-
+## Introduction
 In order to run Nextcloud behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), you need to:
-1. specify the port that AIO's integrated Apache container shall use
-2. add a specific config to your web server or reverse proxy
-3. modify the startup command a bit.
-All examples below will use port `11000` as `APACHE_PORT`. This port will be exposed in the private network to receive unencrypted HTTP traffic from the reverse proxy.
+1. add a specific config to your web server or reverse proxy. [See the documentation below.](#1-configure-the-reverse-proxy)
+2. specify the port that AIO's integrated Apache container shall use via the environmental variable `APACHE_PORT` (that runs inside its own container and published this port on the host) and adjust the `docker run` command of AIO. [See the documentation below.](#2-use-this-startup-command).
+3. Open the AIO interface at port `8080` and type in and validate your domain. [See the documentation below.](#4-open-the-aio-interface)
+
+Here one example with all reverse proxy settings for Linux:
+```
+sudo docker run \
+--init \
+--sig-proxy=false \
+--name nextcloud-aio-mastercontainer \
+--restart always \
+--publish 8080:8080 \
+--env APACHE_PORT=11000 \
+--env APACHE_IP_BINDING=0.0.0.0 \
+--env APACHE_ADDITIONAL_NETWORK="" \
+--env SKIP_DOMAIN_VALIDATION=false \
+--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+--volume /var/run/docker.sock:/var/run/docker.sock:ro \
+ghcr.io/nextcloud-releases/all-in-one:latest
+```
+
+<details>
+
+<summary>Explanation of the command</summary>
+
+- `sudo docker run` This command spins up a new docker container. Docker commands can optionally be used without `sudo` if the user is added to the docker group (this is not the same as docker rootless, see FAQ in the normal readme).
+- `--init` This option makes sure that no zombie-processes are created, ever. See [the Docker documentation](https://docs.docker.com/reference/cli/docker/container/run/#init).
+- `--sig-proxy=false` This option allows to exit the container shell that gets attached automatically when using `docker run` by using `[CTRL] + [C]` without shutting down the container.
+- `--name nextcloud-aio-mastercontainer` This is the name of the container. This line is not allowed to be changed, since mastercontainer updates would fail.
+- `--restart always` This is the "restart policy". `always` means that the container should always get started with the Docker daemon. See the Docker documentation for further detail about restart policies: https://docs.docker.com/config/containers/start-containers-automatically/
+- `--publish 8080:8080` This means that port 8080 of the container should get published on the host using port 8080. This port is used for the AIO interface and uses a self-signed certificate by default. You can also use a different host port if port 8080 is already used on your host, for example `--publish 8081:8080` (only the first port can be changed for the host, the second port is for the container and must remain at 8080).
+- `--env APACHE_PORT=11000` This is the port that is published on the host that runs Docker and Nextcloud AIO at which the reverse proxy should point at.
+- `--env APACHE_IP_BINDING=0.0.0.0` This can be modified to allow access to the published port on the host only from certain ip-addresses. [See this documentation](#3-limit-the-access-to-the-apache-container)
+- `--env APACHE_ADDITIONAL_NETWORK=""` This can be used to put the sibling apache container that is created by AIO into a specified network - useful if your reverse proxy runs as a container on the same host. [See this documentation](#adapting-the-sample-web-server-configurations-below)
+- `--env SKIP_DOMAIN_VALIDATION=false` This can be set to `true` if the domain validation does not work and you are sure that you configured everything correctly after you followed [the debug documentation](#6-how-to-debug-things).
+- `--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config` This means that the files that are created by the mastercontainer will be stored in a docker volume that is called `nextcloud_aio_mastercontainer`. This line is not allowed to be changed, since built-in backups would fail later on.
+- `--volume /var/run/docker.sock:/var/run/docker.sock:ro` The docker socket is mounted into the container which is used for spinning up all the other containers and for further features. It needs to be adjusted on Windows/macOS and on docker rootless. See the applicable documentation on this. If adjusting, don't forget to also set `WATCHTOWER_DOCKER_SOCKET_PATH`! If you dislike this, see https://github.com/nextcloud/all-in-one/tree/main/manual-install.
+- `ghcr.io/nextcloud-releases/all-in-one:latest` This is the docker container image that is used.
+- Further options can be set using environment variables, for example `--env NEXTCLOUD_DATADIR="/mnt/ncdata"` (This is an example for Linux. See [this](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) for other OS' and for an explanation of what this value does. This specific one needs to be specified upon the first startup if you want to change it to a specific path instead of the default Docker volume). To see explanations and examples for further variables (like changing the location of Nextcloud's datadir or mounting some locations as external storage into the Nextcloud container), read through this readme and look at the docker-compose file: https://github.com/nextcloud/all-in-one/blob/main/compose.yaml
+
+</details>
+
+> [!Note] 
+> If you run into troubles, see [the debug section](#6-how-to-debug-things).
+
+---
+
 > [!IMPORTANT] 
 > If you need HTTPS between Nextcloud and the reverse proxy because it is running on a different server in the same network, simply add another reverse proxy to the chain that runs on the same server like AIO and takes care of HTTPS proxying (most likely via self-signed certificates). Another option would be to create a VPN between the server that runs AIO and the server that runs the reverse proxy which takes care of encrypting the connection.
 
-**Attention:** The process to run Nextcloud behind a reverse proxy consists of at least steps 1, 2 and 4:
+> [!NOTE]
+> Since the Apache container gets created by the mastercontainer, there is **NO** way to provide custom docker labels or custom environmental variables for the Apache container. So please do not attempt to do this because it will fail!
+
+## Content
+
+The process to run Nextcloud behind a reverse proxy consists of at least steps 1, 2 and 4:
 1. **Configure the reverse proxy! See [point 1](#1-configure-the-reverse-proxy)**
 1. **Use this startup command! See [point 2](#2-use-this-startup-command)**
 1. Optional: if the reverse proxy is installed on the same host and in the host network, you should limit the apache container to only listen on localhost. See [point 3](#3-limit-the-access-to-the-apache-container)
 1. **Open the AIO interface. See [point 4](#4-open-the-aio-interface)**
 1. Optional: get a valid certificate for the AIO interface! See [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface)
 1. Optional: how to debug things? See [point 6](#6-how-to-debug-things)
-
-**Please note:** Since the Apache container gets created by the mastercontainer, there is **NO** way to provide custom docker labels or custom environmental variables for the Apache container. So please do not attempt to do this because it will fail!
 
 ## 1. Configure the reverse proxy
 
@@ -93,13 +139,14 @@ Add this as a new Apache site config:
     RequestHeader set X-Real-IP %{REMOTE_ADDR}s
     AllowEncodedSlashes NoDecode
     
+    # Adjust the two lines below to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
     ProxyPass / http://localhost:11000/ nocanon
     ProxyPassReverse / http://localhost:11000/
     
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
     RewriteCond %{THE_REQUEST} "^[a-zA-Z]+ /(.*) HTTP/\d+(\.\d+)?$"
-    RewriteRule .? "ws://localhost:11000/%1" [P,L,UnsafeAllow3F]
+    RewriteRule .? "ws://localhost:11000/%1" [P,L,UnsafeAllow3F] # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
     # Enable h2, h2c and http1.1
     Protocols h2 h2c http/1.1
@@ -152,7 +199,7 @@ Add this to your Caddyfile:
 
 ```
 https://<your-nc-domain>:443 {
-    reverse_proxy localhost:11000
+    reverse_proxy localhost:11000 # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 }
 ```
 The Caddyfile is a text file called `Caddyfile` (no extension) which – if you should be running Caddy inside a container – should usually be created in the same location as your `compose.yaml` file prior to starting the container.
@@ -175,7 +222,7 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
 1. Add this to your Caddyfile:
     ```
     https://<your-nc-domain>:443 {
-        reverse_proxy localhost:11000
+        reverse_proxy localhost:11000 # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
         tls {
             dns <provider> <key>
         }
@@ -185,7 +232,7 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
 
     You also need to adjust `<provider>` and `<key>` to match your case.
 
-1. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command of the mastercontainer (but before the last line `nextcloud/all-in-one:latest`) which will disable the domain validation (because it is known that the domain validation will not work when using the DNS-challenge since no port is publicly opened).
+1. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`) which will disable the domain validation (because it is known that the domain validation will not work when using the DNS-challenge since no port is publicly opened).
 
 **Advice:** In order to make it work in your home network, you may add the internal ipv4-address of your reverse proxy as A DNS-record to your domain and disable the dns-rebind-protection in your router. Another way it to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-adddress of your reverse proxy (see https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally). If both is not possible, you may add the domain to the hosts file which is needed then for any devices that shall use the server.
 
@@ -310,14 +357,14 @@ backend acme_challenge_backend
 backend Nextcloud
     mode http
     balance source
-    server Nextcloud localhost:11000 
+    server Nextcloud localhost:11000 # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 ```
 
 ⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
 
-### Nginx, Freenginx, Openresty
+### Nginx, Freenginx, Openresty, Angie
 
 <details>
 
@@ -344,24 +391,37 @@ server {
     if ($scheme = "http") {
         return 301 https://$host$request_uri;
     }
+    if ($http_x_forwarded_proto = "http") {
+        return 301 https://$host$request_uri;
+    }
 
     listen 443 ssl http2;      # for nginx versions below v1.25.1
     listen [::]:443 ssl http2; # for nginx versions below v1.25.1 - comment to disable IPv6
 
     # listen 443 ssl;      # for nginx v1.25.1+
     # listen [::]:443 ssl; # for nginx v1.25.1+ - keep comment to disable IPv6
-	
-    # http2 on;                                 # uncomment to enable HTTP/2        - supported on nginx v1.25.1+
-    # http3 on;                                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # http2 on;            # uncomment to enable HTTP/2 - supported on nginx v1.25.1+
+
     # listen 443 quic reuseport;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport
     # listen [::]:443 quic reuseport;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport - keep comment to disable IPv6
+    # http3 on;                                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # quic_gso on;                              # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    # quic_bpf on;                              # improves  HTTP/3 / QUIC - supported on nginx v1.25.0+, if nginx runs as a docker container you need to give it privileged permission to use this option
+    # add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+
+    proxy_buffering off;
+    proxy_request_buffering off;
+
+    client_max_body_size 0;
+    client_body_buffer_size 512k;
+    # http3_stream_buffer_size 512k; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    proxy_read_timeout 86400s;
 
     server_name <your-nc-domain>;
 
     location / {
-        proxy_pass http://127.0.0.1:11000$request_uri;
+        proxy_pass http://127.0.0.1:11000$request_uri; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Port $server_port;
@@ -369,10 +429,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
-    
-        proxy_request_buffering off;
-        proxy_read_timeout 86400s;
-        client_max_body_size 0;
+        proxy_set_header Early-Data $ssl_early_data;
 
         # Websocket
         proxy_http_version 1.1;
@@ -386,27 +443,53 @@ server {
     ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
     ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
 
+    ssl_dhparam /etc/dhparam; # curl -L https://ssl-config.mozilla.org/ffdhe2048.txt -o /etc/dhparam
+
+    ssl_early_data on;
     ssl_session_timeout 1d;
-    ssl_session_cache shared:MozSSL:10m; # about 40000 sessions
-    ssl_session_tickets off;
+    ssl_session_cache shared:SSL:10m;
 
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305;
+    ssl_ecdh_curve x25519:x448:secp521r1:secp384r1:secp256r1;
+
     ssl_prefer_server_ciphers on;
-
-    # Optional settings:
-
-    # OCSP stapling
-    # ssl_stapling on;
-    # ssl_stapling_verify on;
-    # ssl_trusted_certificate /etc/letsencrypt/live/<your-nc-domain>/chain.pem;
-
-    # replace with the IP address of your resolver
-    # resolver 127.0.0.1; # needed for oscp stapling: e.g. use 94.140.15.15 for adguard / 1.1.1.1 for cloudflared or 8.8.8.8 for google - you can use the same nameserver as listed in your /etc/resolv.conf file
+    ssl_conf_command Options PrioritizeChaCha;
+    ssl_ciphers TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256;
 }
 
 ```
 
+⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+
+</details>
+
+### NPMplus (Fork of Nginx-Proxy-Manager - NPM)
+
+<details>
+
+<summary>click here to expand</summary>
+
+⚠️ **Please note:** This is not needed when running NPMplus as a community container.
+
+First, make sure the environmental variables `PUID` and `PGID` in the `compose.yaml` file for NPM are either unset or set to `0`. <br>
+If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. <br>
+Note: this will cause that a non root user can bind privileged ports.
+
+Second, see these screenshots for a working config:
+
+![grafik](https://github.com/user-attachments/assets/c32c8fe8-7417-4f8f-9625-24b95651e630)
+
+![grafik](https://github.com/user-attachments/assets/f14bba5c-69ce-4514-a2ac-5e5d7fb97792)
+
+<!-- ![grafik](https://github.com/user-attachments/assets/a26c53fd-6cc8-4a6b-a86f-c2f94b70088f) -->
+
+![grafik](https://github.com/user-attachments/assets/75d7f539-35d1-4a3e-8c51-43123f698893)
+
+![grafik](https://github.com/user-attachments/assets/e494edb5-8b70-4d45-bc9b-374219230041)
+
+`proxy_set_header Accept-Encoding $http_accept_encoding;`
+
+⚠️ **Please note:** Nextcloud will complain that X-XXS-Protection is set to the wrong value, this is intended by NPMplus. <br>
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
@@ -419,8 +502,9 @@ server {
 
 **Hint:** You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-3040493) for a more complete but possibly oudated example.
 
-First, make sure the environmental variables `PUID` and `PGID` in the `compose.yaml` file for NPM are either unset or set to `0`.
-If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. Note: this will cause that non root users can bind privileged ports.
+First, make sure the environmental variables `PUID` and `PGID` in the `compose.yaml` file for NPM are either unset or set to `0`. <br>
+If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. <br>
+Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
@@ -476,7 +560,7 @@ const http = require('http');
 
 const app = express();
 const proxy = HttpProxy.createProxyServer({
-	target: 'http://localhost:11000',
+	target: 'http://localhost:11000', // Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 	// Timeout can be changed to your liking.
 	timeout: 1000 * 60 * 3,
 	proxyTimeout: 1000 * 60 * 3,
@@ -624,7 +708,7 @@ The examples below define the dynamic configuration in YAML files. If you rather
         nextcloud:
           loadBalancer:
             servers:
-              - url: "http://localhost:11000" # Use the host's IP address if Traefik runs outside the host network
+              - url: "http://localhost:11000" # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
       middlewares:
         nextcloud-secure-headers:
@@ -686,7 +770,8 @@ Add the following `web.config` file to the root of the site you created as the r
   </system.web>
   <system.webServer>
     <rewrite>
-      <rules>
+      <!-- useOriginalURLEncoding needs to be set to false, otherwise IIS will double encode urls causing all files with spaces or special characters to be inaccessible -->
+      <rules useOriginalURLEncoding="false">
         <!-- Force https -->
         <rule name="Https" stopProcessing="true">
           <match url="(.*)" />
@@ -701,7 +786,8 @@ Add the following `web.config` file to the root of the site you created as the r
           <conditions>
             <add input="{HTTPS}" pattern="^ON$" />
           </conditions>
-          <action type="Rewrite" url="http://nc-server-farm:11000/{UNENCODED_URL}" appendQueryString="false" />
+          <!-- Note that {UNENCODED_URL} already contains starting slash, so we must add it directly after the port number without additional slash -->
+          <action type="Rewrite" url="http://nc-server-farm:11000{UNENCODED_URL}" appendQueryString="false" />
         </rule>
       </rules>
     </rewrite>
@@ -756,9 +842,11 @@ sudo docker run \
 --publish 8080:8080 \
 --env APACHE_PORT=11000 \
 --env APACHE_IP_BINDING=0.0.0.0 \
+--env APACHE_ADDITIONAL_NETWORK="" \
+--env SKIP_DOMAIN_VALIDATION=false \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
-nextcloud/all-in-one:latest
+ghcr.io/nextcloud-releases/all-in-one:latest
 ```
 
 Note: you may be interested in adjusting Nextcloud’s datadir to store the files in a different location than the default docker volume. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
@@ -782,9 +870,11 @@ docker run ^
 --publish 8080:8080 ^
 --env APACHE_PORT=11000 ^
 --env APACHE_IP_BINDING=0.0.0.0 ^
+--env APACHE_ADDITIONAL_NETWORK="" ^
+--env SKIP_DOMAIN_VALIDATION=false ^
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config ^
 --volume //var/run/docker.sock:/var/run/docker.sock:ro ^
-nextcloud/all-in-one:latest
+ghcr.io/nextcloud-releases/all-in-one:latest
 ```
 
 Also, you may be interested in adjusting Nextcloud's Datadir to store the files on the host system. See [this documentation](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) on how to do it.
@@ -803,7 +893,7 @@ Use this environment variable during the initial startup of the mastercontainer 
 
 ## 4. Open the AIO interface
 
-After starting AIO, you should be able to access the AIO Interface via `https://ip.address.of.the.host:8080`.<br>
+After starting AIO, you should be able to access the AIO Interface via `https://ip.address.of.the.host:8080` and type in and validate the domain that you have configured.<br>
 ⚠️ **Important:** do always use an ip-address if you access this port and not a domain as HSTS might block access to it later! (It is also expected that this port uses a self-signed certificate due to security concerns which you need to accept in your browser)<br>
 Enter your domain in the AIO interface that you've used in the reverse proxy config and you should be done. Please do not forget to open/forward port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
@@ -838,5 +928,6 @@ If something does not work, follow the steps below:
 1. If you use Cloudflare, you might need to skip the domain validation anyways since it is known that Cloudflare might block the validation attempts. In that case, see the last option below!
 1. If your reverse proxy is configured to use the host network (as recommended in the above docs) or running on the host, make sure that you've configured your firewall to open port 443 (and 80)!
 1. Check if you have a public IPv4- and public IPv6-address. If you only have a public IPv6-address (e.g. due to DS-Lite), make sure to enable IPv6 in Docker and your whole networking infrastructure (e.g. also by adding an AAAA DNS-entry to your domain)!
+1. [Enable Hairpin NAT in your router](https://github.com/nextcloud/all-in-one/discussions/5849) or [set up a local DNS server and add a custom dns-record](https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally) that allows the server to reach itself locally
 1. Try to configure everything from scratch - if it still does not work by following https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance.
 1. As last resort, you may disable the domain validation by adding `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command. But only use this if you are completely sure that you've correctly configured everything!

@@ -3,8 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-    kompose.version: 1.34.0 (cbf2835db)
+    kompose.version: 1.35.0 (9532ceef3)
   labels:
     io.kompose.service: nextcloud-aio-talk
   name: nextcloud-aio-talk
@@ -17,11 +16,22 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-        kompose.version: 1.34.0 (cbf2835db)
+        kompose.version: 1.35.0 (9532ceef3)
       labels:
         io.kompose.service: nextcloud-aio-talk
     spec:
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
       containers:
         - env:
             - name: TALK_MAX_STREAM_BITRATE
@@ -42,7 +52,21 @@ spec:
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: "nextcloud/aio-talk:20241106_101604"
+          image: ghcr.io/nextcloud-releases/aio-talk:20250424_092733
+          readinessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 30
           name: nextcloud-aio-talk
           ports:
             - containerPort: {{ .Values.TALK_PORT }}
@@ -52,10 +76,12 @@ spec:
             - containerPort: 8081
               protocol: TCP
           securityContext:
+            # The items below only work in container context
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             capabilities:
-              drop:
-                - NET_RAW
-            runAsUser: 1000
+              {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
 {{- end }}

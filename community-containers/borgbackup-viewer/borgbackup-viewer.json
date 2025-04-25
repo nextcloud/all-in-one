@@ -1,0 +1,71 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-borgbackup-viewer",
+            "image_tag": "v1",
+            "display_name": "Borg Backup Viewer",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/borgbackup-viewer",
+            "image": "ghcr.io/szaimen/aio-borgbackup-viewer",
+            "internal_port": "5801",
+            "ports": [
+                {
+                  "ip_binding": "",
+                  "port_number": "5801",
+                  "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "BORG_HOST_ID=nextcloud-aio-borgbackup-viewer",
+                "WEB_AUTHENTICATION_USERNAME=nextcloud",
+                "WEB_AUTHENTICATION_PASSWORD=%BORGBACKUP_VIEWER_PASSWORD%",
+                "WEB_LISTENING_PORT=5801",
+                "BORG_PASSPHRASE=%BORGBACKUP_PASSWORD%",
+                "BORG_REPO=/mnt/borgbackup/borg"
+            ],
+            "secrets": [
+                "BORGBACKUP_VIEWER_PASSWORD",
+                "BORGBACKUP_PASSWORD"
+            ],
+            "ui_secret": "BORGBACKUP_VIEWER_PASSWORD",
+            "volumes": [
+            {
+                "source": "nextcloud_aio_backup_cache",
+                "destination": "/root",
+                "writeable": true
+            },
+            {
+                "source": "%NEXTCLOUD_DATADIR%",
+                "destination": "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data",
+                "writeable": true
+            },
+            {
+                "source": "nextcloud_aio_mastercontainer",
+                "destination": "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer",
+                "writeable": true
+            },
+            {
+                "source": "%BORGBACKUP_HOST_LOCATION%",
+                "destination": "/mnt/borgbackup",
+                "writeable": true
+            },
+            {
+                "source": "nextcloud_aio_elasticsearch",
+                "destination": "/nextcloud_aio_volumes/nextcloud_aio_elasticsearch",
+                "writeable": true
+            },
+            {
+                "source": "nextcloud_aio_redis",
+                "destination": "/mnt/redis",
+                "writeable": true
+            }
+            ],
+            "devices": [
+                "/dev/fuse"
+            ],
+            "cap_add": [
+                "SYS_ADMIN"
+            ],
+            "apparmor_unconfined": true
+        }
+    ]
+}

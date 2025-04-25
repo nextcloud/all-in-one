@@ -1,0 +1,59 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-makekv",
+            "display_name": "MakeMKV",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/makemkv",
+            "image": "jlesage/makemkv",
+            "image_tag": "latest",
+            "internal_port": "5802",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "",
+                    "port_number": "5802",
+                    "protocol": "tcp"
+                }
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_makemkv",
+                    "destination": "/config",
+                    "writeable": true
+                },
+                {
+                    "source": "%NEXTCLOUD_DATADIR%",
+                    "destination": "/storage",
+                    "writeable": false
+                },
+                {
+                    "source": "%NEXTCLOUD_MOUNT%",
+                    "destination": "/output",
+                    "writeable": true
+                },
+                {
+                    "source": "/dev",
+                    "destination": "/dev",
+                    "writeable": false
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "SECURE_CONNECTION=1",
+                "WEB_AUTHENTICATION=1",
+                "USER_ID=33",
+                "GROUP_ID=33",
+                "WEB_AUTHENTICATION_USERNAME=makemkv",
+                "WEB_AUTHENTICATION_PASSWORD=%MAKEMKV_PASSWORD%",
+                "WEB_LISTENING_PORT=5802"
+            ],
+            "secrets": [
+                "MAKEMKV_PASSWORD"
+            ],
+            "ui_secret": "MAKEMKV_PASSWORD",
+            "backup_volumes": [
+                "nextcloud_aio_makemkv"
+            ]
+        }
+    ]
+}

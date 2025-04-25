@@ -137,7 +137,7 @@ It is set to '$NEXTCLOUD_DATADIR'."
 fi
 if [ -n "$NEXTCLOUD_MOUNT" ]; then
     if ! echo "$NEXTCLOUD_MOUNT" | grep -q "^/" || [ "$NEXTCLOUD_MOUNT" = "/" ]; then
-        print_red "You've set NEXCLOUD_MOUNT but not to an allowed value.
+        print_red "You've set NEXTCLOUD_MOUNT but not to an allowed value.
 The string must start with '/' and must not be equal to '/'.
 It is set to '$NEXTCLOUD_MOUNT'."
         exit 1
@@ -194,7 +194,7 @@ It is set to '$APACHE_IP_BINDING'."
     fi
 fi
 if [ -n "$APACHE_ADDITIONAL_NETWORK" ]; then
-    if ! echo "$APACHE_ADDITIONAL_NETWORK" | grep -q "^[a-zA-Z0-9_-]\+$"; then
+    if ! echo "$APACHE_ADDITIONAL_NETWORK" | grep -q "^[a-zA-Z0-9._-]\+$"; then
         print_red "You've set APACHE_ADDITIONAL_NETWORK but not to an allowed value.
 It needs to be a string with letters, numbers, hyphens and underscores.
 It is set to '$APACHE_ADDITIONAL_NETWORK'."
@@ -272,14 +272,13 @@ It is set to '$AIO_COMMUNITY_CONTAINERS'."
     fi
 fi
 
-# Check DNS resolution
-# Prevents issues like https://github.com/nextcloud/all-in-one/discussions/565
-curl https://nextcloud.com &>/dev/null
-if [ "$?" = 6 ]; then
-    print_red "Could not resolve the host nextcloud.com."
-    echo "Most likely the DNS resolving does not work."
+# Check if ghcr.io is reachable
+# Solves issues like https://github.com/nextcloud/all-in-one/discussions/5268
+if ! curl --no-progress-meter https://ghcr.io/v2/ >/dev/null; then
+    print_red "Could not reach https://ghcr.io."
+    echo "Most likely is something blocking access to it."
     echo "You should be able to fix this by following https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html"
-    echo "Apart from that, there has been this: https://github.com/nextcloud/all-in-one/discussions/2065"
+    echo "Another solution is using https://github.com/nextcloud/all-in-one/tree/main/manual-install"
     exit 1
 fi
 

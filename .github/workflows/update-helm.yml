@@ -14,13 +14,16 @@ jobs:
         uses: actions/checkout@v4
       - name: update helm chart
         run: |
-          DOCKER_TAG="$(curl -L -s 'https://registry.hub.docker.com/v2/repositories/nextcloud/all-in-one/tags?page_size=1024' | jq '."results"[]["name"]' | sed 's|"||g' | grep '^20[0-9_]\+' | grep -v latest | sort -r | head -1)"
+          set -x
+          GHCR_TOKEN="$(curl https://ghcr.io/token?scope=repository:nextcloud-releases/nce-php-fpm-mgmt:pull | jq '.token' | sed 's|"||g')"
+          DOCKER_TAG="$(curl -H "Authorization: Bearer ${GHCR_TOKEN}" -L -s 'https://ghcr.io/v2/nextcloud-releases/all-in-one/tags/list?page_size=1024' | jq '.tags' | sed 's|"||g;s|[[:space:]]||g;s|,||g' | grep '^20[0-9_]\+' | grep -v latest | sort -r | head -1)"
           export DOCKER_TAG
+          set +x
           if [ -n "$DOCKER_TAG" ] && ! grep -q "$DOCKER_TAG" ./nextcloud-aio-helm-chart/templates/nextcloud-aio-nextcloud-deployment.yaml; then
             sudo bash nextcloud-aio-helm-chart/update-helm.sh "$DOCKER_TAG"
           fi
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
         with:
           commit-message: Helm Chart updates
           signoff: true

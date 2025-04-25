@@ -11,13 +11,16 @@ sudo docker run \
 --publish 8443:8443 \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
-nextcloud/all-in-one:develop
+ghcr.io/nextcloud-releases/all-in-one:develop
 ```
 And you are done :)
 It will now also select the developer channel for all other containers automatically.
 
 ## How to publish new releases?
 Simply use https://github.com/nextcloud/all-in-one/issues/180 as template.
+
+## How to update existing instances to a new major Nextcloud version?
+Simply use https://github.com/nextcloud/all-in-one/issues/6198 as template.
 
 ## How to build new containers
 Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/repo-sync.yml and run the workflow that will first sync the repo and then build new container that automatically get published to `develop` and `develop-arm64`.
@@ -26,6 +29,8 @@ Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/repo-sy
 Before testing, make sure that at least the amd64 containers are built successfully by checking the last workflow here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml. 
 
 There is a testing-VM available for the maintainer of AIO that allows for some final testing before releasing new version. See [this](https://cloud.nextcloud.com/apps/collectives/Nextcloud%20Handbook/Technical/AIO%20testing%20VM?fileId=6350152) for details.
+
+Additionally, there are now E2E tests available that can be run via https://github.com/nextcloud/all-in-one/actions/workflows/playwright.yml
 
 ## How to promote builds from develop to beta
 1. Verify that no job is running here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml

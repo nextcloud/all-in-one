@@ -185,13 +185,24 @@ if [ "$BORG_MODE" = backup ]; then
     # Borg options
     # auto,zstd compression seems to has the best ratio based on:
     # https://forum.level1techs.com/t/optimal-compression-for-borg-backups/145870/6
-    BORG_OPTS=(-v --stats --compression "auto,zstd" --exclude-caches)
-    if [ "$NEW_REPOSITORY" = 1 ]; then
-        BORG_OPTS+=(--progress)
-    fi
+    BORG_OPTS=(-v --stats --compression "auto,zstd" --progress)
 
     # Exclude the nextcloud log and audit log for GDPR reasons
-    BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log")
+    BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/lost+found")
+    BORG_INCLUDE=()
+
+    # Exclude datadir if .noaiobackup file was found
+    # shellcheck disable=SC2144
+    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup" ]; then
+        BORG_EXCLUDE+=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/")
+        BORG_INCLUDE+=(--pattern="+/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup")
+        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextclouds data directory. Excluding the data directory from backup!"
+    # Exclude preview folder if .noaiobackup file was found
+    elif [ -f /nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/.noaiobackup ]; then
+        BORG_EXCLUDE+=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/")
+        BORG_INCLUDE+=(--pattern="+/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/.noaiobackup")
+        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in the preview directory. Excluding the preview directory from backup!"
+    fi
 
     # Make sure that there is always a borg.config file before creating a new backup
     if ! [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
@@ -203,7 +214,7 @@ if [ "$BORG_MODE" = backup ]; then
     # Create the backup
     echo "Starting the backup..."
     get_start_time
-    if ! borg create "${BORG_OPTS[@]}" "${BORG_EXCLUDE[@]}" "::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/" --exclude-from /borg_excludes; then
+    if ! borg create "${BORG_OPTS[@]}" "${BORG_INCLUDE[@]}" "${BORG_EXCLUDE[@]}" "::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/" --exclude-from /borg_excludes; then
         echo "Deleting the failed backup archive..."
         borg delete --stats "::$CURRENT_DATE-nextcloud-aio"
         echo "Backup failed!"
@@ -320,6 +331,32 @@ if [ "$BORG_MODE" = restore ]; then
     fi
     echo "Restoring '$SELECTED_ARCHIVE'..."
 
+    ADDITIONAL_RSYNC_EXCLUDES=()
+    ADDITIONAL_BORG_EXCLUDES=()
+    ADDITIONAL_FIND_EXCLUDES=()
+    # Exclude datadir if .noaiobackup file was found
+    # shellcheck disable=SC2144
+    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup" ]; then
+        # Keep these 3 in sync. Beware, the pattern syntax and the paths differ
+        ADDITIONAL_RSYNC_EXCLUDES=(--exclude "nextcloud_aio_nextcloud_data/**")
+        ADDITIONAL_BORG_EXCLUDES=(--exclude "sh:nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/**")
+        ADDITIONAL_FIND_EXCLUDES=(-o -regex 'nextcloud_aio_volumes/nextcloud_aio_nextcloud_data\(/.*\)?')
+        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextclouds data directory. Excluding the data directory from restore!"
+        echo "You might run into problems due to this afterwards as potentially this makes the directory go out of sync with the database."
+        echo "You might be able to fix this by running 'occ files:scan --all' and 'occ maintenance:repair' and 'occ files:scan-app-data' after the restore."
+        echo "See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands"
+    # Exclude previews from restore if selected to speed up process or exclude preview folder if .noaiobackup file was found
+    elif [ -n "$RESTORE_EXCLUDE_PREVIEWS" ] || [ -f /nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/.noaiobackup ]; then
+        # Keep these 3 in sync. Beware, the pattern syntax and the paths differ
+        ADDITIONAL_RSYNC_EXCLUDES=(--exclude "nextcloud_aio_nextcloud_data/appdata_*/preview/**")
+        ADDITIONAL_BORG_EXCLUDES=(--exclude "sh:nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/**")
+        ADDITIONAL_FIND_EXCLUDES=(-o -regex 'nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_[^/]*/preview\(/.*\)?')
+        echo "⚠️⚠️⚠️ Excluding previews from restore!"
+        echo "You might run into problems due to this afterwards as potentially this makes the directory go out of sync with the database."
+        echo "You might be able to fix this by running 'occ files:scan-app-data preview' after the restore."
+        echo "See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands"
+    fi
+
     # Save Additional Backup dirs
     if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories" ]; then
         ADDITIONAL_BACKUP_DIRECTORIES="$(cat /nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/additional_backup_directories)"
@@ -365,6 +402,8 @@ if [ "$BORG_MODE" = restore ]; then
         --exclude "nextcloud_aio_mastercontainer/data/daily_backup_running" \
         --exclude "nextcloud_aio_mastercontainer/data/session_date_file" \
         --exclude "nextcloud_aio_mastercontainer/session/**" \
+        --exclude "nextcloud_aio_nextcloud_data/lost+found" \
+        "${ADDITIONAL_RSYNC_EXCLUDES[@]}" \
         /tmp/borg/nextcloud_aio_volumes/ /nextcloud_aio_volumes/; then
             RESTORE_FAILED=1
             echo "Something failed while restoring from backup."
@@ -391,7 +430,7 @@ if [ "$BORG_MODE" = restore ]; then
         #
         # Older backups may still contain files we've since excluded, so we have to exclude on extract as well.
         cd /  # borg extract has no destination arg and extracts to CWD
-        if ! borg extract "::$SELECTED_ARCHIVE" --progress --exclude-from /borg_excludes --pattern '+nextcloud_aio_volumes/**'
+        if ! borg extract "::$SELECTED_ARCHIVE" --progress --exclude-from /borg_excludes "${ADDITIONAL_BORG_EXCLUDES[@]}" --pattern '+nextcloud_aio_volumes/**'
         then
             RESTORE_FAILED=1
             echo "Failed to extract backup archive."
@@ -399,9 +438,10 @@ if [ "$BORG_MODE" = restore ]; then
             # Delete files/dirs present locally, but not in the backup archive, excluding conf files
             # https://unix.stackexchange.com/a/759341
             # This comm does not support -z, but I doubt any file names would have \n in them
-            echo "Deleting local files which do not exist in the backup"
+            #
             # These find patterns need to be kept in sync with the borg_excludes file and the rsync excludes in this
             # file, which use a different syntax (patterns appear in 3 places in total)
+            echo "Deleting local files which do not exist in the backup"
             if ! find nextcloud_aio_volumes \
                     -not \( \
                         -path nextcloud_aio_volumes/nextcloud_aio_apache/caddy \
@@ -417,6 +457,8 @@ if [ "$BORG_MODE" = restore ]; then
                         -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/daily_backup_running \
                         -o -path nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/session_date_file \
                         -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/id_borg*" \
+                        -o -path "nextcloud_aio_nextcloud_data/lost+found" \
+                        "${ADDITIONAL_FIND_EXCLUDES[@]}" \
                     \) \
                     | LC_ALL=C sort \
                     | LC_ALL=C comm -23 - \
@@ -488,6 +530,12 @@ if [ "$BORG_MODE" = restore ]; then
     touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/fingerprint.update"
     chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/fingerprint.update"
 
+    # Add file to Netcloud container to trigger a preview scan the next time it starts
+    if [ -n "$RESTORE_EXCLUDE_PREVIEWS" ]; then
+        touch "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/trigger-preview.scan"
+        chmod 777 "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/trigger-preview.scan"
+    fi
+
     # Delete redis cache
     rm -f "/mnt/redis/dump.rdb"
 fi
@@ -500,7 +548,7 @@ if [ "$BORG_MODE" = check ]; then
     # Perform the check
     if ! borg check -v --verify-data; then
         echo "Some errors were found while checking the backup integrity!"
-        echo "Check the AIO interface for advices on how to proceed now!"
+        echo "Check the AIO interface for advice on how to proceed now!"
         exit 1
     fi
 
@@ -551,12 +599,18 @@ if [ "$BORG_MODE" = test ]; then
         fi
     fi
 
-    if ! borg list; then
+    if ! borg list >/dev/null; then
         echo "The entered path seems to be valid but could not open the backup archive."
         echo "Most likely the entered password was wrong so please adjust it accordingly!"
         exit 1
     else
-        echo "Everything looks fine so feel free to continue!"
-        exit 0
+        if ! borg list | grep "nextcloud-aio"; then
+            echo "The backup archive does not contain a valid Nextcloud AIO backup."
+            echo "Most likely was the archive not created via Nextcloud AIO."
+            exit 1
+        else
+            echo "Everything looks fine so feel free to continue!"
+            exit 0
+        fi
     fi
 fi

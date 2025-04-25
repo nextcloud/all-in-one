@@ -7,7 +7,11 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
 
 ---
 
-## Method 1
+## Method 1 using `assaflavie/runlike`
+
+> [!Warning]
+> Please note that this method is apparently currently broken. See https://help.nextcloud.com/t/manual-upgrade-keeps-failing/217164/10
+> So please refer to method 2 using Portainer.
 
 1. Start all containers from the AIO interface 
     - Now, it will report that Nextcloud is restarting because it is not able to start due to the above mentioned problem
@@ -37,7 +41,7 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
 
 
  - e.g. `nextcloud/aio-nextcloud:php8.0-latest` or `nextcloud/aio-nextcloud:php8.0-latest-arm64`
- - However, if you are unsure check the docker hub (https://hub.docker.com/r/nextcloud/aio-nextcloud/tags)
+ - However, if you are unsure check the ghcr.io (https://github.com/nextcloud-releases/all-in-one/pkgs/container/aio-nextcloud/versions?filters%5Bversion_type%5D=tagged)
  - Using nano and the arrow keys to navigate:
   - `sudo nano /tmp/nextcloud-aio-nextcloud` making changes as above, then `[Ctrl]+[o]` -> `[Enter]` and `[Ctrl]+[x]` to save and exit.
 6. Next, stop and remove the current container: 
@@ -54,13 +58,10 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
 
 ---
 
-## Method 2
+## Method 2 using Portainer
 #### *Approach using portainer if method 1 does not work for you*
 
 Prerequisite: have all containers from AIO interface running.
-
-<details>
-<summary>Click to expand</summary>
 
 ##### 1. Install portainer if not installed:
 ```bash
@@ -94,7 +95,7 @@ Make **note** of the version which is compatible, rounding down to 1 digit after
 
 ##### 5. Find the correct container version
 In general it should be ```nextcloud/aio-nextcloud:php8.x-latest-arm64``` or `nextcloud/aio-nextcloud:php8.x-latest` replacing `x` with the version you require.
-However, if you are unsure check the docker hub (https://hub.docker.com/r/nextcloud/aio-nextcloud/tags)
+However, if you are unsure check the ghcr.io (https://github.com/nextcloud-releases/all-in-one/pkgs/container/aio-nextcloud/versions?filters%5Bversion_type%5D=tagged)
 
 ##### 6. Replace the container
 - Navigate to the ```nextcloud-aio-nextcloud``` container within portainer
@@ -119,5 +120,3 @@ docker rm portainer
 docker volume rm portainer_data
 ```
 - Make sure you close port 9443 on your firewall and delete any necessary reverse proxy hosts.
-
-</details>

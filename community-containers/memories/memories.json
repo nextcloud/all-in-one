@@ -27,6 +27,7 @@
             "devices": [
                 "/dev/dri"
             ],
+            "enable_nvidia_gpu": true,
             "nextcloud_exec_commands": [
                 "php /var/www/html/occ app:install memories",
                 "php /var/www/html/occ app:enable memories",

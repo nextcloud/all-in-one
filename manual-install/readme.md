@@ -6,11 +6,13 @@ You can run the containers that are build for AIO with docker-compose. This come
 - You can run it without a container having access to the docker socket
 - You can modify all values on your own
 - You can run the containers with docker swarm
+- You can run this in environments where access to docker.io is not possible. See [this issue](https://github.com/nextcloud/all-in-one/discussions/5268).
 
 ### Disadvantages
 - You lose the AIO interface
 - You lose update notifications and automatic updates
 - You lose all AIO backup and restore features
+- You lose the built-in [Docker Socket Proxy container](https://github.com/nextcloud/docker-socket-proxy#readme) (needed for [Nextcloud App API](https://github.com/nextcloud/app_api#nextcloud-appapi))
 - You lose all community containers: https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers
 - **You need to know what you are doing, especially when modifying the compose.yaml file**
 - For updating, you need to strictly follow the at the bottom described update routine
@@ -22,17 +24,17 @@ First, install docker and docker-compose (v2) if not already done. Then simply r
 git clone https://github.com/nextcloud/all-in-one.git
 cd all-in-one/manual-install
 ```
-Then copy the sample.conf to default environment file, e.g. `cp sample.conf .env`, open the new conf file, e.g. with `nano .env`, edit all values that are marked with `# TODO!`, close and save the file. (Note: there is no clamav image for arm64).<br>
-⚠️ **Warning**: Do not use the symbols `@` and `:` in your passwords. These symbols are used to build database connection strings. You will experience issues when using these symbols!
+Then copy the sample.conf to default environment file, e.g. `cp sample.conf .env`, open the new conf file, e.g. with `nano .env`, edit all values that are marked with `# TODO!`, close and save the file.<br>
+⚠️ **Warning**: Do not use the symbols `@` and `:` in your passwords. These symbols are used to build database connection strings. You will experience issues when using these symbols! Also please note that values inside the latest.yaml that are not exposed as variables are not officially supported to be changed. See for example [this report](https://github.com/nextcloud/all-in-one/issues/5612).
 
 Now copy the provided yaml file to a compose.yaml file by running `cp latest.yml compose.yaml`.
 
 Now you should be ready to go with `sudo docker compose up`.
 
 ## Docker profiles
-The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, whiteboard, talk-recording, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`. (Note: there is no clamav image for arm64).
+The default profile of `latest.yml` only provide the minimum necessary services: nextcloud, database, redis and apache. To get optional services collabora, talk, whiteboard, talk-recording, clamav, imaginary or fulltextsearch use additional arguments for each of them, for example `--profile collabora`.
 
-For a complete all-in-one with collabora use `sudo docker compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch --profile whiteboard up`. (Note: there is no clamav image for arm64).
+For a complete all-in-one with collabora use `sudo docker compose --profile collabora --profile talk --profile talk-recording --profile clamav --profile imaginary --profile fulltextsearch --profile whiteboard up`.
 
 ## How to update?
 Since the AIO containers may change in the future, it is highly recommended to strictly follow the following procedure whenever you want to upgrade your containers.

@@ -33,7 +33,7 @@ while ! nc -z "$REDIS_HOST" "6379"; do
 done
 
 # Check permissions in ncdata
-touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
+touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
     echo "The www-data user doesn't seem to have access rights in the datadir.
 Most likely are the files located on a drive that does not follow linux permissions.
@@ -148,16 +148,23 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             rm -r /usr/src/tmp
             rm -r /usr/src/temp-nextcloud
             # shellcheck disable=SC2016
-            image_version="$(php -r "require $SOURCE_LOCATION/version.php; echo implode('.', \$OC_Version);")"
+            image_version="$(php -r "require '$SOURCE_LOCATION/version.php'; echo implode('.', \$OC_Version);")"
             IMAGE_MAJOR="${image_version%%.*}"
             set +ex
 # Do not skip major versions end # Do not remove or change this line!
         fi
 
         if [ "$installed_version" != "0.0.0.0" ]; then
+# Check connection to appstore start # Do not remove or change this line!
             while true; do
                 echo -e "Checking connection to appstore"
-                CURL_STATUS="$(curl -LI "https://apps.nextcloud.com/" -o /dev/null -w '%{http_code}\n' -s)"
+                APPSTORE_URL="https://apps.nextcloud.com/"
+                if grep -q appstoreurl /var/www/html/config/config.php; then
+                    set -x
+                    APPSTORE_URL="$(grep appstoreurl /var/www/html/config/config.php | grep -oP 'https://.*v[0-9]+')"
+                    set +x
+                fi
+                CURL_STATUS="$(curl -LI "$APPSTORE_URL" -o /dev/null -w '%{http_code}\n' -s)"
                 if [[ "$CURL_STATUS" = "200" ]]
                 then
                     echo "Appstore is reachable"
@@ -167,6 +174,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                     sleep 5
                 fi
             done
+# Check connection to appstore end # Do not remove or change this line!
 
             run_upgrade_if_needed_due_to_app_update
 
@@ -495,6 +503,12 @@ if [ -f "$NEXTCLOUD_DATA_DIR/fingerprint.update" ]; then
     rm "$NEXTCLOUD_DATA_DIR/fingerprint.update"
 fi
 
+# Perform preview scan if previews were excluded from restore
+if [ -f "$NEXTCLOUD_DATA_DIR/trigger-preview.scan" ]; then
+    php /var/www/html/occ files:scan-app-data preview -vvv
+    rm "$NEXTCLOUD_DATA_DIR/trigger-preview.scan"
+fi
+
 # AIO one-click settings start # Do not remove or change this line!
 # Apply one-click-instance settings
 echo "Applying one-click-instance settings..."
@@ -521,6 +535,13 @@ php /var/www/html/occ config:system:set upgrade.cli-upgrade-link --value="https:
 php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
 php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
+if [ -n "$NEXTCLOUD_SKELETON_DIRECTORY" ]; then
+    if [ "$NEXTCLOUD_SKELETON_DIRECTORY" = "empty" ]; then
+        php /var/www/html/occ config:system:set skeletondirectory --value=""
+    else
+        php /var/www/html/occ config:system:set skeletondirectory --value="$NEXTCLOUD_SKELETON_DIRECTORY"
+    fi
+fi
 if [ -n "$SERVERINFO_TOKEN" ] && [ -z "$(php /var/www/html/occ config:app:get serverinfo token)" ]; then
     php /var/www/html/occ config:app:set serverinfo token --value="$SERVERINFO_TOKEN"
 fi
@@ -586,12 +607,17 @@ if [ -n "$ADDITIONAL_TRUSTED_PROXY" ]; then
     php /var/www/html/occ config:system:set trusted_proxies 2 --value="$ADDITIONAL_TRUSTED_PROXY"
 fi
 
-# Get ipv4-address of Nextcloud 
-IPv4_ADDRESS="$(dig nextcloud-aio-nextcloud A +short +search | head -1)" 
+# Get ipv4-address of Nextcloud
+if [ -z "$NEXTCLOUD_HOST" ]; then
+    export NEXTCLOUD_HOST="nextcloud-aio-nextcloud"
+fi
+IPv4_ADDRESS="$(dig "$NEXTCLOUD_HOST" A +short +search | head -1)" 
 # Bring it in CIDR notation 
 # shellcheck disable=SC2001
 IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')" 
-php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
+if [ -n "$IPv4_ADDRESS" ]; then
+    php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
+fi
 
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
     php /var/www/html/occ config:system:set trusted_domains 2 --value="$ADDITIONAL_TRUSTED_DOMAIN"
@@ -773,6 +799,7 @@ fi
 # Imaginary
 if [ "$IMAGINARY_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
+    php /var/www/html/occ config:system:set enabledPreviewProviders 23 --value="OC\\Preview\\ImaginaryPDF"
     php /var/www/html/occ config:system:set preview_imaginary_url --value="http://$IMAGINARY_HOST:9000"
     php /var/www/html/occ config:system:set preview_imaginary_key --value="$IMAGINARY_SECRET"
 else
@@ -782,6 +809,7 @@ else
         php /var/www/html/occ config:system:delete enabledPreviewProviders 20
         php /var/www/html/occ config:system:delete enabledPreviewProviders 21
         php /var/www/html/occ config:system:delete enabledPreviewProviders 22
+        php /var/www/html/occ config:system:delete enabledPreviewProviders 23
     fi
 fi
 
@@ -843,17 +871,20 @@ else
 fi
 
 # Docker socket proxy
+# app_api is a shipped app
+if [ -d "/var/www/html/custom_apps/app_api" ]; then
+    php /var/www/html/occ app:disable app_api
+    rm -r "/var/www/html/custom_apps/app_api"
+fi
 if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
-    if ! [ -d "/var/www/html/custom_apps/app_api" ]; then
-        php /var/www/html/occ app:install app_api
-    elif [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
+    if [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable app_api
-    elif [ "$SKIP_UPDATE" != 1 ]; then
-        php /var/www/html/occ app:update app_api
     fi
 else
-    if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/app_api" ]; then
-        php /var/www/html/occ app:remove app_api
+    if [ "$REMOVE_DISABLED_APPS" = yes ]; then
+        if [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "no" ]; then
+            php /var/www/html/occ app:disable app_api
+        fi
     fi
 fi
 

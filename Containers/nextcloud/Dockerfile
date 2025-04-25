@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.2.25-fpm-alpine3.20
+FROM php:8.3.20-fpm-alpine3.21
 
 ENV PHP_MEMORY_LIMIT=512M
-ENV PHP_UPLOAD_LIMIT=10G
+ENV PHP_UPLOAD_LIMIT=16G
 ENV PHP_MAX_TIME=3600
 ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=30.0.2
+ENV NEXTCLOUD_VERSION=30.0.10
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
@@ -78,11 +78,11 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install igbinary-3.2.16; \
+    pecl install -o igbinary-3.2.16; \
     pecl install APCu-5.1.24; \
     pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.3.0; \
-    pecl install -D 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.1.0; \
-    pecl install imagick-3.7.0; \
+    pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.2.0; \
+   pecl install -o imagick-3.8.0; \
     \
     docker-php-ext-enable \
         igbinary \
@@ -109,6 +109,7 @@ RUN set -ex; \
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
     { \
+        echo 'opcache.max_accelerated_files=10000'; \
         echo 'opcache.memory_consumption=256'; \
         echo 'opcache.interned_strings_buffer=64'; \
         echo 'opcache.save_comments=1'; \
@@ -125,12 +126,12 @@ RUN set -ex; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
         echo 'max_execution_time=${PHP_MAX_TIME}'; \
         echo 'max_input_time=${PHP_MAX_TIME}'; \
-        echo 'default_socket_timeout=600'; \
+        echo 'default_socket_timeout=${PHP_MAX_TIME}'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
     { \
         echo 'session.save_handler = redis'; \
-        echo 'session.save_path = "tcp://${REDIS_HOST}:6379/${REDIS_DB_INDEX}?auth=${REDIS_HOST_PASSWORD}"'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:6379?database=${REDIS_DB_INDEX}${REDIS_USER_AUTH}&auth[]=${REDIS_HOST_PASSWORD}"'; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
         echo 'redis.session.lock_wait_time = 10000'; \
@@ -263,5 +264,5 @@ USER root
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK --start-period=60s CMD sudo -E -u www-data bash /healthcheck.sh
+HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false"

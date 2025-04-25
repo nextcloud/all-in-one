@@ -21,8 +21,10 @@ readonly class Container {
         private array                         $dependsOn,
         /** @var string[] */
         private array                         $secrets,
+        private string                        $uiSecret,
         /** @var string[] */
         private array                         $devices,
+        private bool                          $enableNvidiaGpu,
         /** @var string[] */
         private array                         $capAdd,
         private int                           $shmSize,
@@ -84,12 +86,20 @@ readonly class Container {
         return $this->secrets;
     }
 
+    public function GetUiSecret() : string {
+        return $this->dockerActionManager->GetAndGenerateSecretWrapper($this->uiSecret);
+    }
+
     public function GetTmpfs() : array {
         return $this->tmpfs;
     }
 
     public function GetDevices() : array {
         return $this->devices;
+    }
+
+    public function isNvidiaGpuEnabled() : bool {
+        return $this->enableNvidiaGpu;
     }
 
     public function GetCapAdds() : array {

@@ -25,12 +25,13 @@
                 {
                     "source": "%NEXTCLOUD_MOUNT%",
                     "destination": "%NEXTCLOUD_MOUNT%",
-                    "writeable": false
+                    "writeable": true
                 }
             ],
             "devices": [
                 "/dev/dri"
             ],
+            "enable_nvidia_gpu": true,
             "backup_volumes": [
                 "nextcloud_aio_jellyfin"
             ]
