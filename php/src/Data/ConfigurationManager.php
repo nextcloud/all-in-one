@@ -124,20 +124,6 @@ class ConfigurationManager
         return $backupTimes;
     }
 
-    public function SetSkipMastercontainerUpdate(bool $value) : void {
-        $config = $this->GetConfig();
-        $config['skipMastercontainerUpdate'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function GetSkipMastercontainerUpdate() : bool {
-        if (isset($this->GetConfig()['skipMastercontainerUpdate'])) {
-            return $this->GetConfig()['skipMastercontainerUpdate'];
-        } else {
-	    return false;
-	}
-    }
-
     public function wasStartButtonClicked() : bool {
         if (isset($this->GetConfig()['wasStartButtonClicked'])) {
             return true;

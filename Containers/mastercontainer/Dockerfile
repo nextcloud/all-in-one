@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
 
 # Create a minimal stage to just clone the repo
-FROM alpine/git:2.45.2 AS aio_clone
+FROM alpine/git:2.47.2 AS aio_clone
 WORKDIR /
 RUN git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1
 
@@ -30,7 +30,6 @@ RUN rm -r /var/www/docker-aio/php/tests
 COPY --from=aio_root /community-containers /var/www/docker-aio/community-containers
 
 WORKDIR /var/www/docker-aio
-
 
 # hadolint ignore=SC2086,DL3047,DL3003,DL3004
 RUN set -ex; \

@@ -63,7 +63,7 @@
                 <p><span class="status running"></span> Daily backup currently running. (<a href="/api/docker/logs?id=nextcloud-aio-mastercontainer" target="_blank">Mastercontainer logs</a>) (<a href="/api/docker/logs?id=nextcloud-aio-borgbackup" target="_blank">Borg backup container logs</a>)</p>
                 {% if automatic_updates == true %}
                     <p>This will update your containers, the mastercontainer and, on Saturdays, your Nextcloud apps if the backup is successful.</p>
-                    {% if is_mastercontainer_update_available == true and skip_mastercontainer_update == false %}
+                    {% if is_mastercontainer_update_available == true %}
                         <p>When the mastercontainer is updated it will restart, making it unavailable for a moment. (<a href="/api/docker/logs?id=nextcloud-aio-watchtower" target="_blank">Logs</a>)</p>
                     {% endif %}
                 {% endif %}
@@ -82,7 +82,7 @@
                     {% if isDomaincheckRunning == false %}
                         <h2>Domaincheck container is not running</h2>
                         <p>This is not expected. Most likely this happened because port {{ apache_port }} is already in use on your server. You can check the mastercontainer logs and domaincheck container logs for further clues. You should be able to resolve this by adjusting the APACHE_PORT by following the <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md">reverse proxy documentation</a></strong>. Advice: have a detailed look at the changed docker run command for AIO.</p>
-                    {% elseif is_mastercontainer_update_available == true and skip_mastercontainer_update == false %}
+                    {% elseif is_mastercontainer_update_available == true %}
                         <h2>Mastercontainer update</h2>
                         <p>⚠️ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.</p>
                         <form method="POST" action="/api/docker/watchtower" class="xhr">
@@ -90,25 +90,7 @@
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                             <input type="submit" value="Update mastercontainer" />
                         </form>
-                        <p>Alternatively, skip the update and proceed. (⚠️ ⚠️ ⚠️ NOT RECOMMENDED, only for debug / development).</p>
-                        <form method="POST" action="/api/configuration" class="xhr">
-                            <input type="hidden" name="skip_mastercontainer_update" value="1"/>
-                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                            <input type="submit" value="Skip update" />
-                        </form>
                     {% else %}
-                        {% if is_mastercontainer_update_available == true and skip_mastercontainer_update == true %}
-                             <p>⚠️ A mastercontainer update is available, but was skipped manually.
-                             <form method="POST" action="/api/configuration" class="xhr">
-                                 <input type="hidden" name="skip_mastercontainer_update" value="0"/>
-                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                 <input type="submit" value="Reset skip update" />
-                             </form>
-                             </p>
-                        {% endif %}
-
                         {% if not hasBackupLocation %}
                             <p>The official Nextcloud installation method. Nextcloud All-in-One provides easy deployment and maintenance with most features included in this one Nextcloud instance.</p>
                             <p>You can either create a new AIO instance or restore a former AIO instance from backup. See the two sections below.</p>
@@ -299,11 +281,11 @@
                         </ul>
 
                         {% if has_update_available == true %}
-                            {% if is_mastercontainer_update_available == false or skip_mastercontainer_update == true %}
+                            {% if is_mastercontainer_update_available == false %}
                                 <p>⚠️ Container updates are available. Click on <strong>Stop containers</strong> and <strong>Start and update containers</strong> to update them. You should consider creating a backup first.</p>
                             {% endif %}
                         {% else %}
-                            {% if is_mastercontainer_update_available == false or skip_mastercontainer_update == true %}
+                            {% if is_mastercontainer_update_available == false %}
                                 <p>Your containers are up-to-date.</p>
                                 {% if newMajorVersion != '' and isAnyRunning == true and isApacheStarting != true %}
                                     <details>
@@ -340,32 +322,14 @@
                             {% if was_start_button_clicked == false %}
                                 <p>Clicking on the button below will download all docker containers and start them. This can take a long time depending on your internet connection. Since the overall size is a few GB, this can take around 5-10 min or more. Please be patient!</p>
                             {% endif %}
-                            {% if is_mastercontainer_update_available == true and skip_mastercontainer_update == false %}
+                            {% if is_mastercontainer_update_available == true %}
                                 <p>⚠️ A mastercontainer update is available. Please click on the button below to update it.</p>
                                 <form method="POST" action="/api/docker/watchtower" class="xhr">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <input type="submit" value="Update mastercontainer" />
                                 </form>
-                                <p>Alternatively, skip the update and proceed. (⚠️ ⚠️ ⚠️ NOT RECOMMENDED, only for debug / development).</p>
-                                <form method="POST" action="/api/configuration" class="xhr">
-                                    <input type="hidden" name="skip_mastercontainer_update" value="1"/>
-                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                    <input type="submit" value="Skip update" />
-                                </form>
                             {% else %}
-                                {% if is_mastercontainer_update_available == true and skip_mastercontainer_update == true %}
-                                     <p>⚠️ A mastercontainer update is available, but was skipped manually.
-                                     <form method="POST" action="/api/configuration" class="xhr">
-                                         <input type="hidden" name="skip_mastercontainer_update" value="0"/>
-                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                         <input type="submit" value="Reset skip update" />
-                                     </form>
-                                     </p>
-                                {% endif %}
-
                                 {% if was_start_button_clicked == false %}
                                     <form method="POST" action="/api/docker/start" class="xhr">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
