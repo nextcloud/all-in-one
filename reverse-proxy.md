@@ -259,21 +259,36 @@ For a reverse proxy example guide for Citrix ADC VPX / Citrix Netscaler, see thi
 
 Although it does not seem like it is the case but from AIO perspective a Cloudflare Tunnel works like a reverse proxy. Please see the [caveats](https://github.com/nextcloud/all-in-one#notes-on-cloudflare-proxytunnel) before proceeding. Here is then how to make it work:
 
+1. Install the Cloudflare Tunnel on the same machine where AIO will be running on and point the Tunnel with the domain that you want to use for AIO to `http://localhost:11000`.<br>
+⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+1. Now continue with [point 2](#2-use-this-startup-command) but add `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command - which will disable the domain validation (because it is known that the domain validation will not work behind a Cloudflare Tunnel).
+
+**Advice:** Make sure to [disable Cloudflares Rocket Loader feature](https://help.nextcloud.com/t/login-page-not-working-solved/149417/8) as otherwise Nextcloud's login prompt will not be shown.
+
+</details>
+
+### Cloudflare (without any server-side configuration)
+
+<details>
+
+<summary>click here to expand</summary>
+
 1. Set your AIO server binding IP to 0.0.0.0 (`--env APACHE_IP_BINDING=0.0.0.0 \`) and disable domain validation (`--env SKIP_DOMAIN_VALIDATION=true \`) when [setting up AIO](#2-use-this-startup-command).
 
 2. In your Cloudflare domain dashboard, go to DNS -> Records, and Create a new DNS A record, pointing your desired subdomain to the server IP address. (Remember to set it to proxy mode here)
-![image](https://github.com/user-attachments/assets/f35a58d3-0f82-413d-93b6-ca2529a9b074)
-
-3. In your Cloudflare domain dashboard, go to Rules -> Overview, and Create a new origin rule.
 ![image](https://github.com/user-attachments/assets/9e62a5f7-3e56-4731-8a64-d84e40cbdc91)
 
-4. For this origin rule, select a name (it doesn't matter), then set a custom filter, **contain**ing your **subdomain** in the **hostname**.
-![image](https://github.com/user-attachments/assets/9ac1d700-5b7e-4d39-861b-80b018d20bc4)
+4. In your Cloudflare domain dashboard, go to Rules -> Overview, and Create a new origin rule.
+
+5. For this origin rule, select a name (it doesn't matter), then set a custom filter, **contain**ing your **subdomain** in the **hostname**.
+![image](https://github.com/user-attachments/assets/f35a58d3-0f82-413d-93b6-ca2529a9b074)
+
 and have its destination port rewritten to your AIO server port (11000 per default)
 ![image](https://github.com/user-attachments/assets/d1e3002c-ebc0-4787-849b-cbd2b56ab7fa)
 
-5. In your Cloudflare domain dashboard, go to Rules -> Overview, and Create a new cache rule.
+7. In your Cloudflare domain dashboard, go to Rules -> Overview, and Create a new cache rule.
 ![image](https://github.com/user-attachments/assets/768b03f4-5365-4b8d-844a-78c5608ea4e6)
+
 Fill it out with a custom filter, **contain**ing your **subdomain** in the **hostname**, and set it to bypass.
 ![image](https://github.com/user-attachments/assets/f7be50ba-ae8f-434e-9875-aa81d3a7731e)
 
