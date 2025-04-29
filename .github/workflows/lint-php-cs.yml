@@ -1,0 +1,52 @@
+# This workflow is provided via the organization template repository
+#
+# https://github.com/nextcloud/.github
+# https://docs.github.com/en/actions/learn-github-actions/sharing-workflows-with-your-organization
+#
+# SPDX-FileCopyrightText: 2021-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
+
+name: Lint php-cs
+
+on:
+  pull_request:
+    paths:
+      - 'php/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'php/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-php-cs-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: [ "8.3" ]
+
+    name: php-cs
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Set up php ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: none
+          ini-file: development
+
+      - name: Install dependencies
+        run: cd php && composer i
+
+      - name: Lint
+        run: cd php && composer run cs:check || ( echo 'Please run `composer run cs:fix` to format your code' && exit 1 )

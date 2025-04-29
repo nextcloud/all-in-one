@@ -6,7 +6,8 @@
 /php/session/*
 !/php/data/.gitkeep
 !/php/session/.gitkeep
-/php/vendor
+/php/vendor/
+/php/.php-cs-fixer.cache
 
 /manual-install/*.conf
 !/manual-install/sample.conf
