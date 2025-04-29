@@ -3738,7 +3738,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "8.3.*",
+        "php": "8.4.*",
         "ext-json": "*",
         "ext-sodium": "*",
         "ext-curl": "*",
