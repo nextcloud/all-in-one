@@ -29,7 +29,7 @@
 			"php -S localhost:8080 -t public"
 		],
 		"psalm": "psalm --threads=1",
-		"psalm:update-baseline": "psalm --threads=1 --monochrome --no-progress --output-format=text --update-baseline",
+		"psalm:update-baseline": "psalm --threads=1 --monochrome --no-progress --output-format=text --set-baseline",
 		"psalm:strict": "psalm --threads=1 --show-info=true",
 		"lint": "php -l src/*.php src/**/*.php public/index.php",
 		"lint:twig": "twig-linter lint ./templates",
