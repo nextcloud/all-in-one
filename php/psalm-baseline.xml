@@ -1,2 +1,170 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.26.1@d747f6500b38ac4f7dfc5edbcae6e4b637d7add0"/>
+<files psalm-version="6.10.1@f9fd6bc117e9ce1e854c2ed6777e7135aaa4966b">
+  <file src="src/Auth/AuthManager.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[AuthManager]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Auth/PasswordGenerator.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[PasswordGenerator]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Container/AioVariables.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[AioVariables]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Container/Container.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Container]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Container/ContainerEnvironmentVariables.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ContainerEnvironmentVariables]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Container/ContainerPort.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ContainerPort]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Container/ContainerPorts.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ContainerPorts]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Container/ContainerVolume.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ContainerVolume]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Container/ContainerVolumes.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ContainerVolumes]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/ContainerDefinitionFetcher.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ContainerDefinitionFetcher]]></code>
+    </ClassMustBeFinal>
+    <PossiblyFalseArgument>
+      <code><![CDATA[file_get_contents($path)]]></code>
+      <code><![CDATA[file_get_contents(__DIR__ . '/../containers.json')]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Controller/ConfigurationController.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ConfigurationController]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Controller/DockerController.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[DockerController]]></code>
+    </ClassMustBeFinal>
+    <InvalidOperand>
+      <code><![CDATA[$port]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/LoginController.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[LoginController]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Data/ConfigurationManager.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ConfigurationManager]]></code>
+    </ClassMustBeFinal>
+    <FalsableReturnStatement>
+      <code><![CDATA[$additionalBackupDirectories]]></code>
+    </FalsableReturnStatement>
+    <InvalidFalsableReturnType>
+      <code><![CDATA[string]]></code>
+    </InvalidFalsableReturnType>
+    <PossiblyFalseArgument>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$configContent]]></code>
+      <code><![CDATA[$content]]></code>
+      <code><![CDATA[$content]]></code>
+      <code><![CDATA[$dailyBackupFile]]></code>
+      <code><![CDATA[$dailyBackupFile]]></code>
+      <code><![CDATA[file_get_contents(DataConst::GetBackupPublicKey())]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Data/DataConst.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[DataConst]]></code>
+    </ClassMustBeFinal>
+    <FalsableReturnStatement>
+      <code><![CDATA[realpath(__DIR__ . '/../../../community-containers/')]]></code>
+      <code><![CDATA[realpath(__DIR__ . '/../../data/')]]></code>
+      <code><![CDATA[realpath(__DIR__ . '/../../session/')]]></code>
+    </FalsableReturnStatement>
+    <InvalidFalsableReturnType>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+    </InvalidFalsableReturnType>
+  </file>
+  <file src="src/Data/InvalidSettingConfigurationException.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[InvalidSettingConfigurationException]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Data/Setup.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Setup]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/DependencyInjection.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[DependencyInjection]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Docker/DockerActionManager.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[DockerActionManager]]></code>
+    </ClassMustBeFinal>
+    <PossiblyFalseArgument>
+      <code><![CDATA[$line]]></code>
+      <code><![CDATA[$line]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Docker/DockerHubManager.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[DockerHubManager]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Docker/GitHubContainerRegistryManager.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[GitHubContainerRegistryManager]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Middleware/AuthMiddleware.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[AuthMiddleware]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Twig/ClassExtension.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ClassExtension]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getFunctions() : array]]></code>
+    </MissingOverrideAttribute>
+  </file>
+  <file src="src/Twig/CsrfExtension.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[CsrfExtension]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getGlobals() : array]]></code>
+    </MissingOverrideAttribute>
+  </file>
+</files>

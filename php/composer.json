@@ -5,7 +5,7 @@
 		}
 	},
 	"require": {
-		"php": "8.3.*",
+		"php": "8.4.*",
 		"ext-json": "*",
 		"ext-sodium": "*",
 		"ext-curl": "*",
@@ -20,7 +20,7 @@
 	},
 	"require-dev": {
 		"sserbin/twig-linter": "@dev",
-		"vimeo/psalm": "^5.25",
+		"vimeo/psalm": "^6.0",
 		"wapmorgan/php-deprecation-detector": "dev-master"
 	},
 	"scripts": {
@@ -33,6 +33,6 @@
 		"psalm:strict": "psalm --threads=1 --show-info=true",
 		"lint": "php -l src/*.php src/**/*.php public/index.php",
 		"lint:twig": "twig-linter lint ./templates",
-		"php-deprecation-detector": "phpdd scan -n -t 8.3 src/*.php src/**/*.php public/index.php"
+		"php-deprecation-detector": "phpdd scan -n -t 8.4 src/*.php src/**/*.php public/index.php"
 	}
 }
