@@ -260,7 +260,8 @@ Here's how you can create a new Virtual Host:
 3. **Fill in things according to this information.**
 
 Host root being `/usr/local/lsws/Example/` <br>
-And the config being `/usr/local/lsws/conf/vhosts/nextcloud.conf`
+And the config being `/usr/local/lsws/conf/vhosts/nextcloud.conf` <br>
+And enable both Restrained and Scripts/ExtApps
 
 ![image](https://github.com/user-attachments/assets/4bf59f89-c558-4b61-84f4-a07bcfadcb9d)
 
@@ -276,7 +277,9 @@ Now, we must inflict some changes to the Virtual Host we just created, so click 
    
 ![image](https://github.com/user-attachments/assets/a011d8e5-28f8-463a-9ebb-dd4c4b6aaa41)
 
-6. Add these to the general tab.
+6. Add Document Root and Domain Name in the general tab.<br>
+The document Root should be `/usr/local/lsws/nextcloud/html/`<br>
+And the domain name should be where you'd like your nextcloud to be!
 
 ![image](https://github.com/user-attachments/assets/6b27033d-d60a-4e27-8dfb-b0d9f128702a)
 
@@ -284,9 +287,13 @@ Now, we must inflict some changes to the Virtual Host we just created, so click 
 
 ![image](https://github.com/user-attachments/assets/43c92804-8ef5-4b29-bdfa-71d7ff2dddfd)
 
+Select Web Server and procceed
+
 ![image](https://github.com/user-attachments/assets/4480d39b-dd92-4327-854c-864d2a58b29d)
 
-Fill it out accordingly and save
+Name it `nextcloud`<br>
+Define the address as the default `127.0.0.1:11000`, or what you selected during installation
+
 ![image](https://github.com/user-attachments/assets/d20a4d5f-753b-44e7-9408-8ee675b70ce7)
 
 8. In the same Vhost, Create a "Context"
@@ -297,7 +304,7 @@ Set the new Context to proxy and procceed
 
 ![image](https://github.com/user-attachments/assets/91700c47-3d9b-4a05-a99e-38ddea6fcded)
 
-Add "/" as URI or address as URI and select your nextcloud web server
+Add "/" as URI, and select your nextcloud web server
 
 ![image](https://github.com/user-attachments/assets/2e0fd085-b9e5-4df7-927d-24eb22487696)
 
