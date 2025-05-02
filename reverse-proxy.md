@@ -238,6 +238,16 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
 
 </details>
 
+### OpenLiteSpeed
+
+<details>
+
+<summary>click here to expand</summary>
+
+You can find the OpenLiteSpeed reverse proxy guide by @MorrowShore here: https://github.com/nextcloud/all-in-one/discussions/6370
+
+</details>
+
 ### Citrix ADC VPX / Citrix Netscaler
 
 <details>
