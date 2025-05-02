@@ -243,92 +243,10 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
 <details>
 
 <summary>click here to expand</summary>
-<br>
-Here's how you can set up a name-based reverse proxy to your nextcloud on an OpenLiteSpeed server.<br><sub>Courtesy of Ruikai Wang from the LiteSpeed team, and Morrow Shore.</sub>
-<br><br>
 
-1. Access your OpenLiteSpeed dashboard.
-
-OpenLiteSpeed panel is installed on port 7080 per default.
-<br> You can access it by visiting <server's_IP>:7080
-
-2. Create a new VHost.
-
-Here's how you can create a new Virtual Host:
-![image](https://github.com/user-attachments/assets/703aa010-cf2b-4293-9d12-b6987938c05a)
-
-3. **Fill in things according to this information.**
-
-Host root being `/usr/local/lsws/Example/` <br>
-And the config being `/usr/local/lsws/conf/vhosts/nextcloud.conf` <br>
-And enable both Restrained and Scripts/ExtApps
-
-![image](https://github.com/user-attachments/assets/4bf59f89-c558-4b61-84f4-a07bcfadcb9d)
-
-If you'd like to change the address of Virtual Host Root or Document Root, make sure they actually exist in the server!
-
-4. Edit the new VHost.
-   
-Now, we must inflict some changes to the Virtual Host we just created, so click on your new VHost!
-
-![image](https://github.com/user-attachments/assets/2ef76b1f-88bf-4c7a-8fd6-aabf9a699640)
-
-5. First check the basic tab to make sure everything's alright.
-   
-![image](https://github.com/user-attachments/assets/a011d8e5-28f8-463a-9ebb-dd4c4b6aaa41)
-
-6. Add Document Root and Domain Name in the general tab.<br>
-The document Root should be `/usr/local/lsws/nextcloud/html/`<br>
-And the domain name should be where you'd like your nextcloud to be!
-
-![image](https://github.com/user-attachments/assets/6b27033d-d60a-4e27-8dfb-b0d9f128702a)
-
-7. Create an "External Aplication"
-
-![image](https://github.com/user-attachments/assets/43c92804-8ef5-4b29-bdfa-71d7ff2dddfd)
-
-Select Web Server and procceed
-
-![image](https://github.com/user-attachments/assets/4480d39b-dd92-4327-854c-864d2a58b29d)
-
-Name it `nextcloud`<br>
-Define the address as the default `127.0.0.1:11000`, or what you selected during installation
-
-![image](https://github.com/user-attachments/assets/d20a4d5f-753b-44e7-9408-8ee675b70ce7)
-
-8. In the same Vhost, Create a "Context"
-
-![image](https://github.com/user-attachments/assets/80af7dfb-a0be-4b32-93e2-3b2c1d518a3a)
-
-Set the new Context to proxy and procceed
-
-![image](https://github.com/user-attachments/assets/91700c47-3d9b-4a05-a99e-38ddea6fcded)
-
-Add "/" as URI, and select your nextcloud web server
-
-![image](https://github.com/user-attachments/assets/2e0fd085-b9e5-4df7-927d-24eb22487696)
-
-9. Go to the Listener settings
-
-![image](https://github.com/user-attachments/assets/abfd9637-7dc0-4468-a947-69643f465745)
-
-Add a new Virtual Host Mapping
-![image](https://github.com/user-attachments/assets/235fa088-60e0-43b9-b544-b50cacf5edff)
-
-Now select your nextcloud VHost and write in your desired address
-
-![image](https://github.com/user-attachments/assets/99a56408-b2ea-4b20-9eb6-954b8d15b8d5)
-
-10. Congratulations.
-
-Just do a gradeful restart by pressing on this green restart icon, and you should be good to go.
-
-![image](https://github.com/user-attachments/assets/58acfec9-2f55-46ee-9646-69fa61f951f6)
-
-
+You can find the OpenLiteSpeed reverse proxy guide by @MorrowShore here: https://github.com/nextcloud/all-in-one/discussions/6370
 
 </details>
-
 
 ### Citrix ADC VPX / Citrix Netscaler
 
