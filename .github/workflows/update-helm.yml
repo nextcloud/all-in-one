@@ -19,7 +19,7 @@ jobs:
           DOCKER_TAG="$(curl -H "Authorization: Bearer ${GHCR_TOKEN}" -L -s 'https://ghcr.io/v2/nextcloud-releases/all-in-one/tags/list?page_size=1024' | jq '.tags' | sed 's|"||g;s|[[:space:]]||g;s|,||g' | grep '^20[0-9_]\+' | grep -v latest | sort -r | head -1)"
           export DOCKER_TAG
           set +x
-          if [ -n "$DOCKER_TAG" ] && ! grep -q "$DOCKER_TAG" ./nextcloud-aio-helm-chart/templates/nextcloud-aio-nextcloud-deployment.yaml; then
+          if [ -n "$DOCKER_TAG" ] && ! grep -q "aio-nextcloud:$DOCKER_TAG" ./nextcloud-aio-helm-chart/templates/nextcloud-aio-nextcloud-deployment.yaml; then
             sudo bash nextcloud-aio-helm-chart/update-helm.sh "$DOCKER_TAG"
           fi
       - name: Create Pull Request

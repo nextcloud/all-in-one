@@ -182,7 +182,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: ghcr.io/nextcloud-releases/aio-nextcloud:20250424_092733
+          image: ghcr.io/nextcloud-releases/aio-nextcloud:20250424_09273
           {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context
