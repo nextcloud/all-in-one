@@ -259,6 +259,15 @@ find ./ \( -not -name '*service.yaml' -name '*.yaml' \) -exec sed -i "/^status:/
 find ./ \( -not -name '*persistentvolumeclaim.yaml' -name '*.yaml' \) -exec sed -i "/resources:/d" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name "*namespace.yaml" -exec sed -i "1i\\{{- if and \(ne .Values.NAMESPACE \"default\"\) \(ne .Values.NAMESPACE_DISABLED \"yes\"\) }}" \{} \; 
+# Additional config
+cat << EOL > /tmp/additional-namespace.config
+  {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+  {{- end }}
+EOL
+# shellcheck disable=SC1083
+find ./ -name "*namespace.yaml" -exec sed -i "/namespace.*/r /tmp/additional-namespace.config"  \{} \;
 # shellcheck disable=SC1083
 find ./ -name "*namespace.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 # shellcheck disable=SC1083
