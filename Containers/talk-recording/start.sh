@@ -39,7 +39,7 @@ videoheight = 1080
 directory = /tmp
 
 [backend-1]
-url = ${HPB_PROTOCOL}://${NC_DOMAIN}
+url = ${NC_PROTOCOL}://${NC_DOMAIN}
 secret = ${RECORDING_SECRET}
 skipverify = ${SKIP_VERIFY}
 
