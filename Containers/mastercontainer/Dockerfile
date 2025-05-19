@@ -122,6 +122,8 @@ COPY --chmod=664 Caddyfile /Caddyfile
 COPY --chmod=664 supervisord.conf /supervisord.conf
 COPY mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
 
+LABEL org.label-schema.vendor="Nextcloud"
+
 # hadolint ignore=DL3002
 USER root
 

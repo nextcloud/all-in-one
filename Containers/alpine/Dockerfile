@@ -3,3 +3,5 @@ FROM alpine:3.21.3
 
 RUN set -ex; \
     apk upgrade --no-cache -a
+
+LABEL org.label-schema.vendor="Nextcloud"
