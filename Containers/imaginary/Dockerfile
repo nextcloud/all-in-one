@@ -42,4 +42,5 @@ ENV MALLOC_ARENA_MAX=2
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"

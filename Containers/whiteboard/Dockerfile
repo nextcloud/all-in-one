@@ -18,4 +18,5 @@ WORKDIR /tmp
 
 ENTRYPOINT ["/start.sh"]
 
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"
