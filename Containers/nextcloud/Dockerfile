@@ -118,7 +118,10 @@ RUN set -ex; \
         echo 'opcache.jit_buffer_size=8M'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
-    echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
+    { \
+        echo 'apc.enable_cli=1'; \
+        echo 'apc.shm_size=64M'; \
+    } >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
     { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
