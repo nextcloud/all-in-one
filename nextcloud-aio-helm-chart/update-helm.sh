@@ -27,7 +27,7 @@ cp latest.yml latest.yml.backup
 
 # Additional config
 # shellcheck disable=SC1083
-sed -i -E '/^( *- )(NET_RAW|SYS_NICE|MKNOD|SYS_ADMIN)$/!s/( *- )([A-Z_]+)$/\1\2=${\2}/' latest.yml
+sed -i -E '/^( *- )(NET_RAW|SYS_NICE|MKNOD|SYS_ADMIN|CHOWN)$/!s/( *- )([A-Z_]+)$/\1\2=${\2}/' latest.yml
 cp sample.conf /tmp/
 sed -i 's|^|export |' /tmp/sample.conf
 # shellcheck disable=SC1091
