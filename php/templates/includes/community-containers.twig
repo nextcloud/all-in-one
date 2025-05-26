@@ -1,0 +1,33 @@
+<h2>Community Containers</h2>
+<p>In this section you can enable or disable optional community containers that are not included by default in the main installation. These containers are provided by the community and can be useful for various purposes.</p>
+{% if isAnyRunning == true %}
+    <p><strong>Please note:</strong> You can enable or disable the options below only when your containers are stopped.</p>
+{% else %}
+    <p><strong>Please note:</strong> Make sure to save your changes by clicking <strong>Save changes</strong> below the list of optional containers. The changes will not be auto-saved.</p>
+{% endif %}
+<form id="cc-form" method="POST" action="/api/configuration" class="xhr">
+    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+    <input type="hidden" name="cc-form" value="cc-form">
+    {% for cc in community_containers %}
+        <p>
+            <input
+                type="checkbox"
+                id="{{ cc.id }}"
+                name="{{ cc.id }}"
+                {% if cc.id in community_containers_enabled %}
+                    checked="checked"
+                    data-initial-state="true"
+                {% else %}
+                    data-initial-state="false"
+                {% endif %}
+                {% if isAnyRunning == true %}
+                    disabled="disabled"
+                {% endif %}
+            >
+            <label for="{{ cc.id }}">{{ cc.name }} <a href="{{ cc.documentation }}" target="_blank">(Documentation)</a></label>
+        </p>
+    {% endfor %}
+
+    <input id="options-form-submit" type="submit" value="Save changes" />
+</form>
