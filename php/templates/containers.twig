@@ -574,6 +574,7 @@
                     {% if is_backup_container_running == false %}
 
                         {{ include('includes/optional-containers.twig') }}
+                        {{ include('includes/community-containers.twig') }}
 
                         <h2>Timezone change</h2>
                         {% if isAnyRunning == true %}
