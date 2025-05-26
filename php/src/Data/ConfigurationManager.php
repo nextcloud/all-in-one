@@ -1015,7 +1015,20 @@ class ConfigurationManager
         return $config['aio_community_containers'];
     }
 
-    public function GetEnabledCommunityContainers() : array {
+
+    /** @return list<string> */
+    public function listAvailableCommunityContainers() : array {
+        $cc = [];
+        foreach (scandir(DataConst::GetCommunityContainersDirectory()) as $file) {
+            if (file_exists(DataConst::GetCommunityContainersDirectory() . '/' . $file . '/' . $file . '.json')) {
+                $cc[] = $file;
+            }
+        }
+
+    }
+
+    /** @return list<string> */
+    public function GetEnabledCommunityContainers(): array {
         return explode(' ', $this->GetCommunityContainers());
     }
 
