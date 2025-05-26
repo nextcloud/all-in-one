@@ -1038,6 +1038,12 @@ class ConfigurationManager
         return explode(' ', $this->GetCommunityContainers());
     }
 
+    public function SetEnabledCommunityContainers(array $enabledCommunityContainers) : void {
+        $config = $this->GetConfig();
+        $config['aio_community_containers'] = implode(' ', $enabledCommunityContainers);
+        $this->WriteConfig($config);
+    }
+
     private function GetEnabledDriDevice() : string {
         $envVariableName = 'NEXTCLOUD_ENABLE_DRI_DEVICE';
         $configName = 'nextcloud_enable_dri_device';
