@@ -227,6 +227,7 @@ RUN set -ex; \
         grep \
         nodejs \
         libreoffice \
+        pandoc-cli \
         bind-tools \
         imagemagick \
         imagemagick-svg \
