@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.version: 1.35.0 (9532ceef3)
+    kompose.version: 1.36.0 (ae2a39403)
   labels:
     io.kompose.service: nextcloud-aio-whiteboard
   name: nextcloud-aio-whiteboard
@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.version: 1.35.0 (9532ceef3)
+        kompose.version: 1.36.0 (ae2a39403)
       labels:
         io.kompose.service: nextcloud-aio-whiteboard
     spec:
@@ -48,7 +48,7 @@ spec:
               value: redis
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-whiteboard:20250512_082954
+          image: ghcr.io/nextcloud-releases/aio-whiteboard:20250526_095855
           readinessProbe:
             exec:
               command:
