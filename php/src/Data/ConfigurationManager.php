@@ -1009,6 +1009,7 @@ class ConfigurationManager
     }
 
     private function GetCommunityContainers() : string {
+        $config = $this->GetConfig();
         if(!isset($config['aio_community_containers'])) {
             $config['aio_community_containers'] = '';
         }
@@ -1020,7 +1021,11 @@ class ConfigurationManager
     /** @return list<CommunityContainer> */
     public function listAvailableCommunityContainers() : array {
         $cc = [];
-        foreach (scandir(DataConst::GetCommunityContainersDirectory()) as $id) {
+        $dir = scandir(DataConst::GetCommunityContainersDirectory());
+        if ($dir === false) {
+            return $cc;
+        }
+        foreach ($dir as $id) {
             $json = json_decode(DataConst::GetCommunityContainersDirectory() . '/' . $id . '/' . $id . '.json');
             if (is_string($json['aio_services_v1'][0]['display_name'])
                 && is_string($json['aio_services_v1'][0]['description'])) {

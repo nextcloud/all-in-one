@@ -20,6 +20,11 @@
       <code><![CDATA[Container]]></code>
     </ClassMustBeFinal>
   </file>
+  <file src="src/Container/CommunityContainer.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[CommunityContainer]]></code>
+    </ClassMustBeFinal>
+  </file>
   <file src="src/Container/ContainerEnvironmentVariables.php">
     <ClassMustBeFinal>
       <code><![CDATA[ContainerEnvironmentVariables]]></code>
