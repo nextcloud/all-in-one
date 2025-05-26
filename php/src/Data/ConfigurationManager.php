@@ -3,6 +3,7 @@
 namespace AIO\Data;
 
 use AIO\Auth\PasswordGenerator;
+use AIO\Container\CommunityContainer;
 use AIO\Controller\DockerController;
 
 class ConfigurationManager
@@ -75,7 +76,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetBackupArchivesList())) {
             return '';
         }
-        
+
         $content = file_get_contents(DataConst::GetBackupArchivesList());
         if ($content === '') {
             return '';
@@ -95,7 +96,7 @@ class ConfigurationManager
         if ($lastBackupTime === "") {
             return '';
         }
-        
+
         return $lastBackupTime;
     }
 
@@ -103,7 +104,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetBackupArchivesList())) {
             return [];
         }
-        
+
         $content = file_get_contents(DataConst::GetBackupArchivesList());
         if ($content === '') {
             return [];
@@ -114,7 +115,7 @@ class ConfigurationManager
         foreach($backupLines as $lines) {
             if ($lines !== "") {
                 $backupTimesTemp = explode(',', $lines);
-                $backupTimes[] = $backupTimesTemp[1];     
+                $backupTimes[] = $backupTimesTemp[1];
             }
         }
 
@@ -140,7 +141,7 @@ class ConfigurationManager
         }
     }
 
-    public function isClamavEnabled() : bool {        
+    public function isClamavEnabled() : bool {
         $config = $this->GetConfig();
         if (isset($config['isClamavEnabled']) && $config['isClamavEnabled'] === 1) {
             return true;
@@ -375,7 +376,7 @@ class ConfigurationManager
             $testUrl = $protocol . $domain . ':443';
             curl_setopt($ch, CURLOPT_URL, $testUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             $response = (string)curl_exec($ch);
             # Get rid of trailing \n
@@ -474,7 +475,7 @@ class ConfigurationManager
         } elseif ($location !== '' && $repo !== '') {
             throw new InvalidSettingConfigurationException("Location and remote repo url are mutually exclusive!");
         }
-        
+
         if ($location !== '') {
             $isValidPath = false;
             if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
@@ -629,7 +630,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetBackupPublicKey())) {
             return "";
         }
-        
+
         return trim(file_get_contents(DataConst::GetBackupPublicKey()));
     }
 
@@ -771,7 +772,7 @@ class ConfigurationManager
         if (!preg_match("#^[0-1][0-9]:[0-5][0-9]$#", $time) && !preg_match("#^2[0-3]:[0-5][0-9]$#", $time)) {
             throw new InvalidSettingConfigurationException("You did not enter a correct time! One correct example is '04:00'!");
         }
-        
+
         if ($enableAutomaticUpdates === false) {
             $time .= PHP_EOL . 'automaticUpdatesAreNotEnabled';
         } else {
@@ -1016,15 +1017,20 @@ class ConfigurationManager
     }
 
 
-    /** @return list<string> */
+    /** @return list<CommunityContainer> */
     public function listAvailableCommunityContainers() : array {
         $cc = [];
-        foreach (scandir(DataConst::GetCommunityContainersDirectory()) as $file) {
-            if (file_exists(DataConst::GetCommunityContainersDirectory() . '/' . $file . '/' . $file . '.json')) {
-                $cc[] = $file;
+        foreach (scandir(DataConst::GetCommunityContainersDirectory()) as $id) {
+            $json = json_decode(DataConst::GetCommunityContainersDirectory() . '/' . $id . '/' . $id . '.json');
+            if (is_string($json['aio_services_v1'][0]['display_name'])
+                && is_string($json['aio_services_v1'][0]['description'])) {
+                $cc[] = new CommunityContainer(
+                    $id,
+                    $json['aio_services_v1'][0]['display_name'],
+                    $json['aio_services_v1'][0]['documentation']);
             }
         }
-
+        return $cc;
     }
 
     /** @return list<string> */
