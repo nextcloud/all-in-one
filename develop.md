@@ -41,8 +41,9 @@ This is documented here: https://github.com/nextcloud-releases/all-in-one/tree/m
 
 ## How to promote builds from beta to latest
 
+1. Verify that GitHub Services are running correctly: https://www.githubstatus.com/
 1. Verify that no job is running here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-beta.yml
-2. Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-latest.yml, click on `Run workflow`.
+1. Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-latest.yml, click on `Run workflow`.
 
 ## How to connect to the database?
 Simply run `sudo docker exec -it nextcloud-aio-database psql -U oc_nextcloud nextcloud_database` and you should be in.
