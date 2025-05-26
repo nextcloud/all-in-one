@@ -1008,10 +1008,11 @@ class ConfigurationManager
     }
 
     private function GetCommunityContainers() : string {
-        $envVariableName = 'AIO_COMMUNITY_CONTAINERS';
-        $configName = 'aio_community_containers';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+        if(!isset($config['aio_community_containers'])) {
+            $config['aio_community_containers'] = '';
+        }
+
+        return $config['aio_community_containers'];
     }
 
     public function GetEnabledCommunityContainers() : array {
