@@ -74,7 +74,7 @@ readonly class ConfigurationController {
                 $this->configurationManager->SetTimezone($timezone);
             }
 
-            if (isset($request->getParsedBody()['options-form'])) {
+            if (isset($request->getParsedBody()['container-form'])) {
                 if (isset($request->getParsedBody()['collabora']) && isset($request->getParsedBody()['onlyoffice'])) {
                     throw new InvalidSettingConfigurationException("Collabora and Onlyoffice are not allowed to be enabled at the same time!");
                 }

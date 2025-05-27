@@ -1,11 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Hide submit button initially
-    const optionsFormSubmit = document.getElementById("options-form-submit");
-    optionsFormSubmit.style.display = 'none';
+    const optionsFormSubmit = document.querySelectorAll(".options-form-submit");
+    optionsFormSubmit.forEach(optionsFormSubmit => {
+        optionsFormSubmit.style.display = 'none';
+    });
 
     // Store initial states for all checkboxes
     const initialState = {};
-    const checkboxes = document.querySelectorAll("#options-form input[type='checkbox']");
+    const checkboxes = document.querySelectorAll(".options-form input[type='checkbox']");
 
     checkboxes.forEach(checkbox => {
         initialState[checkbox.id] = checkbox.checked;  // Use checked property to capture actual initial state
@@ -22,7 +24,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // Show or hide submit button based on changes
-        optionsFormSubmit.style.display = hasChanges ? 'block' : 'none';
+        optionsFormSubmit.forEach(optionsFormSubmit => {
+            optionsFormSubmit.style.display = hasChanges ? 'block' : 'none';
+        });
     }
 
     // Event listener to trigger visibility check on each change
