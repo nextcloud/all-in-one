@@ -74,7 +74,7 @@ readonly class ConfigurationController {
                 $this->configurationManager->SetTimezone($timezone);
             }
 
-            if (isset($request->getParsedBody()['container-form'])) {
+            if (isset($request->getParsedBody()['options-form'])) {
                 if (isset($request->getParsedBody()['collabora']) && isset($request->getParsedBody()['onlyoffice'])) {
                     throw new InvalidSettingConfigurationException("Collabora and Onlyoffice are not allowed to be enabled at the same time!");
                 }
@@ -125,8 +125,8 @@ readonly class ConfigurationController {
                 }
             }
 
-            if (isset($request->getParsedBody()['cc-form'])) {
-                $this->configurationManager->SetEnabledCommunityContainers($request->getParsedBody()['enabled-cc'] ?? []);
+            if (isset($request->getParsedBody()['community-form'])) {
+                $this->configurationManager->SetEnabledCommunityContainers($request->getParsedBody()['enabled-community'] ?? []);
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {

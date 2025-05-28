@@ -8,15 +8,15 @@
     {% else %}
         <p><strong>Please note:</strong> Make sure to save your changes by clicking <strong>Save changes</strong> below the list of Community Containers. The changes will not be auto-saved.</p>
     {% endif %}
-    <form id="cc-form" method="POST" action="/api/configuration" class="xhr options-form">
+    <form id="community-form" method="POST" action="/api/configuration" class="xhr">
         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-        <input type="hidden" name="cc-form" value="cc-form">
+        <input type="hidden" name="community-form" value="community-form">
         {% for cc in community_containers %}
             <p>
                 <input
                     type="checkbox"
-                    id="enabled-cc[]"
+                    id="enabled-community[]"
                     value="{{ cc.id }}"
                     name="{{ cc.id }}"
                     {% if cc.id in community_containers_enabled %}
@@ -33,6 +33,6 @@
             </p>
         {% endfor %}
 
-        <input id="cc-form-submit" class="options-form-submit" type="submit" value="Save changes" />
+        <input id="community-form-submit" type="submit" value="Save changes" />
     </form>
 </details>
