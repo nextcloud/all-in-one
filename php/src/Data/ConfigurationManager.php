@@ -1031,8 +1031,8 @@ class ConfigurationManager
             $json = $fileContents ? json_decode($fileContents) : false;
             if(is_array($json) && is_array($json['aio_services_v1'])) {
                 foreach ($json['aio_services_v1'] as $service) {
-                    $documentation = isset($service['documentation']) ? $service['documentation'] : '';
-                    if (isset($service['display_name'])) {
+                    $documentation = is_string($service['documentation']) ? $service['documentation'] : '';
+                    if (is_string($service['display_name'])) {
                         $cc[] = new CommunityContainer(
                             $id,
                             $service['display_name'],
