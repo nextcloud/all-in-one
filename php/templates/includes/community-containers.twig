@@ -37,6 +37,6 @@
             </p>
         {% endfor %}
 
-        <input id="community-form-submit" type="submit" value="Save changes" />
+        <input id="community-form-submit" type="submit" value="Save changes" onclick="return confirm('Are you sure that you read the documentation of all community containers that you enabled? If no, please do not continue as this might break your instance!')" />
     </form>
 </details>
