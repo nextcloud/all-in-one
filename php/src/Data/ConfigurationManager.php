@@ -1028,7 +1028,7 @@ class ConfigurationManager
         foreach ($dir as $id) {
             $filePath = DataConst::GetCommunityContainersDirectory() . '/' . $id . '/' . $id . '.json';
             $fileContents = file_get_contents($filePath);
-            $json = $fileContents ? json_decode($fileContents) : false;
+            $json = is_string($fileContents) ? json_decode($fileContents) : false;
             if(is_array($json) && is_array($json['aio_services_v1'])) {
                 foreach ($json['aio_services_v1'] as $service) {
                     $documentation = is_string($service['documentation']) ? $service['documentation'] : '';
