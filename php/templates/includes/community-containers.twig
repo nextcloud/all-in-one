@@ -29,7 +29,11 @@
                         disabled="disabled"
                     {% endif %}
                 >
-                <label for="{{ cc.id }}">{{ cc.name }} <a href="{{ cc.documentation }}" target="_blank">(Documentation)</a></label>
+                <label for="{{ cc.id }}">{{ cc.name }} 
+                    {% if cc.documentation != '' %}
+                        <a href="{{ cc.documentation }}" target="_blank">(Documentation)</a>
+                    {% endif %}
+                </label>
             </p>
         {% endfor %}
 
