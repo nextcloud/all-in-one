@@ -1028,8 +1028,8 @@ class ConfigurationManager
         foreach ($dir as $id) {
             $filePath = DataConst::GetCommunityContainersDirectory() . '/' . $id . '/' . $id . '.json';
             $fileContents = file_get_contents($filePath);
-            $json = json_decode($fileContents, true);
-            if(is_array($json['aio_services_v1'])) {
+            $json = json_decode($fileContents);
+            if(is_array($json) && is_array($json['aio_services_v1'])) {
                 foreach ($json['aio_services_v1'] as $service) {
                     $documentation = isset($service['documentation']) ? $service['documentation'] : '';
                     if (isset($service['display_name'])) {
