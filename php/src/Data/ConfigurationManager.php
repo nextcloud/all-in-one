@@ -1027,12 +1027,17 @@ class ConfigurationManager
         }
         foreach ($dir as $id) {
             $json = json_decode(DataConst::GetCommunityContainersDirectory() . '/' . $id . '/' . $id . '.json');
-            if (is_string($json['aio_services_v1'][0]['display_name'])
-                && is_string($json['aio_services_v1'][0]['description'])) {
-                $cc[] = new CommunityContainer(
-                    $id,
-                    $json['aio_services_v1'][0]['display_name'],
-                    $json['aio_services_v1'][0]['documentation']);
+            if(is_array($json['aio_services_v1'])) {
+                foreach ($json['aio_services_v1'] as $service) {
+                    if (is_string($service['display_name'])
+                        && is_string($service['description'])) {
+                        $cc[] = new CommunityContainer(
+                            $id,
+                            $service['display_name'],
+                            $service['documentation']);
+                    }
+                    break;
+                }
             }
         }
         return $cc;
