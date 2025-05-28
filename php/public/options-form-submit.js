@@ -6,27 +6,45 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Store initial states for all checkboxes
-    const initialState = {};
-    const checkboxes = document.querySelectorAll(".options-form input[type='checkbox']");
+    const initialStateContainers = {};
+    const initialStateCommunityContainers = {};
+    const containersCheckboxes = document.querySelectorAll(".container-form input[type='checkbox']");
+    const communityContainersCheckboxes = document.querySelectorAll(".cc-form input[type='checkbox']");
 
-    checkboxes.forEach(checkbox => {
-        initialState[checkbox.id] = checkbox.checked;  // Use checked property to capture actual initial state
+    containersCheckboxes.forEach(checkbox => {
+        initialStateContainers[checkbox.id] = checkbox.checked;  // Use checked property to capture actual initial state
+    });
+
+    communityContainersCheckboxes.forEach(checkbox => {
+        initialStateCommunityContainers[checkbox.id] = checkbox.checked;  // Use checked property to capture actual initial state
     });
 
     // Function to compare current states to initial states
-    function checkForChanges() {
+    function checkForContainerChanges() {
         let hasChanges = false;
         
         checkboxes.forEach(checkbox => {
-            if (checkbox.checked !== initialState[checkbox.id]) {
+            if (checkbox.checked !== initialStateContainers[checkbox.id]) {
                 hasChanges = true;
             }
         });
 
         // Show or hide submit button based on changes
-        optionsFormSubmit.forEach(optionsFormSubmit => {
-            optionsFormSubmit.style.display = hasChanges ? 'block' : 'none';
+        document.getElementById("container-form-submit").style.display = hasChanges ? 'block' : 'none';
+    }
+
+    // Function to compare current states to initial states
+    function checkForCommunityContainerChanges() {
+        let hasChanges = false;
+        
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked !== initialStateCommunityContainers[checkbox.id]) {
+                hasChanges = true;
+            }
         });
+
+        // Show or hide submit button based on changes
+        document.getElementById("cc-form-submit").style.display = hasChanges ? 'block' : 'none';
     }
 
     // Event listener to trigger visibility check on each change
@@ -60,5 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
     handleTalkVisibility();  // Ensure talk-recording is correctly initialized
 
     // Initial call to check for changes
-    checkForChanges();
+    checkForContainerChanges();
+    checkForCommunityContainerChanges();
 });
