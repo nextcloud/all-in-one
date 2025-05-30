@@ -9,6 +9,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -ex; \
     \
     apt-get update; \
+    apt --fix-broken install; \
     apt-get install -y --no-install-recommends \
         netcat-openbsd \
     ; \
