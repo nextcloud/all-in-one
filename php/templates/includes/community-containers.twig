@@ -1,0 +1,42 @@
+<h2>Community Containers</h2>
+<p>In this section you can enable or disable optional Community Containers that are not included by default in the main installation. These containers are provided by the community and can be useful for various purposes and are automatically integrated in AIOs backup solution and update mechanisms.</p>
+<p><strong>⚠️ Caution: </strong>Community Containers are maintained by the community and not officially by Nextcloud. Some containers may not be compatible with your system, may not work as expected or may discontinue. Use them at your own risk. Please read the documentation for each container first before adding any as some are also incompatible between each other! Never add all of them at the same time!</p>
+<details>
+    <summary>Show/Hide available Community Containers</summary>
+    {% if isAnyRunning == true %}
+        <p><strong>Please note:</strong> You can enable or disable the options below only when your containers are stopped.</p>
+    {% else %}
+        <p><strong>Please note:</strong> Make sure to save your changes by clicking <strong>Save changes</strong> below the list of Community Containers. The changes will not be auto-saved.</p>
+    {% endif %}
+    <form id="community-form" method="POST" action="/api/configuration" class="xhr">
+        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+        <input type="hidden" name="community-form" value="community-form">
+        {% for cc in community_containers %}
+            <p>
+                <input
+                    type="checkbox"
+                    id="enabled-community[]"
+                    value="{{ cc.id }}"
+                    name="{{ cc.id }}"
+                    {% if cc.id in community_containers_enabled %}
+                        checked="checked"
+                        data-initial-state="true"
+                    {% else %}
+                        data-initial-state="false"
+                    {% endif %}
+                    {% if isAnyRunning == true %}
+                        disabled="disabled"
+                    {% endif %}
+                >
+                <label for="{{ cc.id }}">{{ cc.name }} 
+                    {% if cc.documentation != '' %}
+                        <a href="{{ cc.documentation }}" target="_blank">(Documentation)</a>
+                    {% endif %}
+                </label>
+            </p>
+        {% endfor %}
+
+        <input id="community-form-submit" type="submit" value="Save changes" onclick="return confirm('Are you sure that you read the documentation of all community containers that you enabled? If no, please do not continue as this might break your instance!')" />
+    </form>
+</details>

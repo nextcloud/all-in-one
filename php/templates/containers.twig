@@ -606,6 +606,10 @@
                 {% endif %}
             {% endif %}
 
+            {{ include('includes/community-containers.twig') }}
+
+        <script type="text/javascript" src="containers-form-submit.js?v4"></script>
+
         {% if isApacheStarting == true or is_backup_container_running == true or isWatchtowerRunning == true or is_daily_backup_running == true %}
             <script type="text/javascript" src="automatic_reload.js"></script>
         {% else %}

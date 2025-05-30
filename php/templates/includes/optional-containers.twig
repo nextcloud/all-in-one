@@ -1,11 +1,11 @@
 <h2>Optional containers</h2>
-<p>In this section you can enable or disable optional containers. There are further community containers available that are not listed below. See <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">this documentation</a></strong> how to add them.</p>
+<p>In this section you can enable or disable optional containers.</p>
 {% if isAnyRunning == true %}
     <p><strong>Please note:</strong> You can enable or disable the options below only when your containers are stopped.</p>
 {% else %}
     <p><strong>Please note:</strong> Make sure to save your changes by clicking <strong>Save changes</strong> below the list of optional containers. The changes will not be auto-saved.</p>
 {% endif %}
-<form id="options-form" method="POST" action="/api/configuration" class="xhr">
+<form id="container-form" method="POST" action="/api/configuration" class="xhr">
     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
     <input type="hidden" name="options-form" value="options-form">
@@ -143,7 +143,6 @@
         <label for="whiteboard">Whiteboard</label>
     </p>
     <input id="options-form-submit" type="submit" value="Save changes" />
-    <script type="text/javascript" src="options-form-submit.js?v3"></script>
 </form>
 <p><strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advice and recommendations see <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong></p>
 {% if isAnyRunning == true %}
