@@ -5,7 +5,7 @@ This directory features containers that are built for AIO which allows to add ad
 All containers that are in this directory are community maintained so the responsibility is on the community to keep them updated and secure. There is no guarantee that this will be the case in the future.
 
 ## How to use this?
-Starting with v11 of AIO, the management of Community Containers is done via the web interface. 
+Starting with v11 of AIO, the management of Community Containers is done via the AIO interface (it is the last section in the AIO interface, so only visible if you scroll down). 
 ⚠️⚠️⚠️ Please review the folder for documentation on each of the containers before adding them! Not reviewing the documentation for each of them first might break starting the AIO containers because e.g. fail2ban only works on Linux and not on Docker Desktop! **Hint:** If the containers where running already, in order to actually start the added container, you need to click on `Stop containers` and the `Update and start containers` in order to actually start it.
 
 ## How to add containers?
