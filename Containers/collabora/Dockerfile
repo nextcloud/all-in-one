@@ -5,16 +5,6 @@ FROM collabora/code:25.04.2.1.1
 USER root
 ARG DEBIAN_FRONTEND=noninteractive
 
-# hadolint ignore=DL3008
-RUN set -ex; \
-    \
-    apt-get update; \
-    apt-get --fix-broken install -y --no-install-recommends; \
-    apt-get install -y --no-install-recommends \
-        netcat-openbsd \
-    ; \
-    rm -rf /var/lib/apt/lists/*;
-
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 USER 1001
