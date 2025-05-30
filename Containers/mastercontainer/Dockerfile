@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:28.1.1-cli AS docker
+FROM docker:28.2.1-cli AS docker
 
 # Caddy is a requirement
 FROM caddy:2.10.0-alpine AS caddy
