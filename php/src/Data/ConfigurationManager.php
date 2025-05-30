@@ -1026,7 +1026,7 @@ class ConfigurationManager
             return $cc;
         }
         // Get rid of dots from the scandir command
-        $dir = array_diff($dir, array('..', '.'));
+        $dir = array_diff($dir, array('..', '.', 'readme.md'));
         foreach ($dir as $id) {
             $filePath = DataConst::GetCommunityContainersDirectory() . '/' . $id . '/' . $id . '.json';
             $fileContents = apcu_fetch($filePath);
