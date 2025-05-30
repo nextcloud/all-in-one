@@ -1025,6 +1025,8 @@ class ConfigurationManager
         if ($dir === false) {
             return $cc;
         }
+        // Get rid of dots from the scandir command
+        $dir = array_diff($dir, array('..', '.'));
         foreach ($dir as $id) {
             $filePath = DataConst::GetCommunityContainersDirectory() . '/' . $id . '/' . $id . '.json';
             $fileContents = apcu_fetch($filePath);
