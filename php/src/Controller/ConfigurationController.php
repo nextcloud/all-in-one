@@ -126,7 +126,17 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['community-form'])) {
-                $this->configurationManager->SetEnabledCommunityContainers($request->getParsedBody()['enabled-community'] ?? []);
+                $cc = $this->configurationManager->listAvailableCommunityContainers();
+                $enabledCC = [];
+                /**
+                 * @psalm-suppress PossiblyNullIterator
+                 */
+                foreach ($request->getParsedBody() as $item) {
+                    if (array_key_exists($item , $cc)) {
+                        $enabledCC[] = $item;
+                    }
+                }
+                $this->configurationManager->SetEnabledCommunityContainers($enabledCC);
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {
