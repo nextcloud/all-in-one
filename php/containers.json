@@ -393,7 +393,8 @@
       ],
       "cap_add": [
         "MKNOD",
-        "SYS_ADMIN"
+        "SYS_ADMIN",
+        "CHOWN"
       ],
       "cap_drop": [
         "NET_RAW"

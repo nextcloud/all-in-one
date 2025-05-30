@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.24.2-alpine3.21 AS go
+FROM golang:1.24.3-alpine3.21 AS go
 
 ENV IMAGINARY_HASH=1d4e251cfcd58ea66f8361f8721d7b8cc85002a3
 
@@ -42,4 +42,5 @@ ENV MALLOC_ARENA_MAX=2
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"

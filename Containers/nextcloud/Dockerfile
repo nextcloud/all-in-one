@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.3.20-fpm-alpine3.21
+FROM php:8.3.21-fpm-alpine3.21
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=16G
@@ -8,7 +8,7 @@ ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=30.0.10
+ENV NEXTCLOUD_VERSION=31.0.5
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
@@ -118,7 +118,10 @@ RUN set -ex; \
         echo 'opcache.jit_buffer_size=8M'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
-    echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
+    { \
+        echo 'apc.enable_cli=1'; \
+        echo 'apc.shm_size=64M'; \
+    } >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
     { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
@@ -209,8 +212,8 @@ RUN set -ex; \
     /var/log/supervisord \
     /var/run/supervisord \
     ; \
-    chown www-data:root -R /var/log/supervisord; \
-    chown www-data:root -R /var/run/supervisord; \
+    chmod 777 -R /var/log/supervisord; \
+    chmod 777 -R /var/run/supervisord; \
     \
     apk add --no-cache \
         bash \
@@ -250,14 +253,13 @@ RUN set -ex; \
 # AIO cloning end # Do not remove or change this line!
     \
     chown www-data:root -R /usr/src && \
-    chown www-data:root -R /usr/local/etc/php/conf.d && \
-    chown www-data:root -R /usr/local/etc/php-fpm.d && \
+    chmod 777 -R /usr/local/etc/php/conf.d && \
+    chmod 777 -R /usr/local/etc/php-fpm.d && \
     chmod -R 777 /tmp; \
     rm -rf /usr/src/nextcloud/apps/updatenotification; \
     \
     mkdir -p /nc-updater; \
-    chown -R www-data:www-data /nc-updater; \
-    chmod -R 770 /nc-updater
+    chmod -R 777 /nc-updater
 
 # hadolint ignore=DL3002
 USER root
@@ -265,4 +267,5 @@ ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.24.2-alpine3.21 AS go
+FROM golang:1.24.3-alpine3.21 AS go
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -21,4 +21,5 @@ COPY --chmod=775 start.sh /start.sh
 USER root
 
 ENTRYPOINT ["/start.sh"]
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"

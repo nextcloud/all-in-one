@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # From https://github.com/docker-library/redis/blob/master/7.2/alpine/Dockerfile
-FROM redis:7.2.8-alpine
+FROM redis:7.2.9-alpine
 
 COPY --chmod=775 start.sh /start.sh
 
@@ -20,4 +20,5 @@ USER 999
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"

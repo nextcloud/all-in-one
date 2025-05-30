@@ -15,7 +15,7 @@ readonly class ConfigurationController {
     ) {
     }
 
-    public function SetConfig(Request $request, Response $response, array $args) : Response {
+    public function SetConfig(Request $request, Response $response, array $args): Response {
         try {
             if (isset($request->getParsedBody()['domain'])) {
                 $domain = $request->getParsedBody()['domain'] ?? '';
@@ -123,6 +123,10 @@ readonly class ConfigurationController {
                 } else {
                     $this->configurationManager->SetWhiteboardEnabledState(0);
                 }
+            }
+
+            if (isset($request->getParsedBody()['community-form'])) {
+                $this->configurationManager->SetEnabledCommunityContainers($request->getParsedBody()['enabled-community'] ?? []);
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {

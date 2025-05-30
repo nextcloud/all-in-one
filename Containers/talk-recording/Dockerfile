@@ -7,6 +7,7 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 ENV RECORDING_VERSION=v0.1
 ENV ALLOW_ALL=false
 ENV HPB_PROTOCOL=https
+ENV NC_PROTOCOL=https
 ENV SKIP_VERIFY=false
 ENV HPB_PATH=/standalone-signaling/
 
@@ -56,4 +57,5 @@ ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"

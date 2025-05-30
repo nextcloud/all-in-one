@@ -10,13 +10,13 @@ FROM scratch AS aio_root
 COPY --from=aio_clone all-in-one /
 
 # Docker CLI is a requirement
-FROM docker:28.1.1-cli AS docker
+FROM docker:28.2.1-cli AS docker
 
 # Caddy is a requirement
 FROM caddy:2.10.0-alpine AS caddy
 
-# From https://github.com/docker-library/php/blob/master/8.3/alpine3.21/fpm/Dockerfile
-FROM php:8.3.20-fpm-alpine3.21
+# From https://github.com/docker-library/php/blob/master/8.4/alpine3.21/fpm/Dockerfile
+FROM php:8.4.7-fpm-alpine3.21
 
 EXPOSE 80
 EXPOSE 8080
@@ -130,6 +130,8 @@ COPY --from=aio_root --chmod=775 /Containers/mastercontainer/*.sh /
 COPY --from=aio_root --chmod=664 /Containers/mastercontainer/Caddyfile /Caddyfile
 COPY --from=aio_root --chmod=664 /Containers/mastercontainer/supervisord.conf /supervisord.conf
 COPY --from=aio_root /Containers/mastercontainer/mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
+
+LABEL org.label-schema.vendor="Nextcloud"
 
 # hadolint ignore=DL3002
 USER root

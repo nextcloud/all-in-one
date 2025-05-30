@@ -7,4 +7,5 @@ FROM onlyoffice/documentserver:8.3.3.1
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 HEALTHCHECK --start-period=60s --retries=9 CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"
