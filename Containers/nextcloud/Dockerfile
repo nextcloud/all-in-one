@@ -212,8 +212,8 @@ RUN set -ex; \
     /var/log/supervisord \
     /var/run/supervisord \
     ; \
-    chown www-data:root -R /var/log/supervisord; \
-    chown www-data:root -R /var/run/supervisord; \
+    chmod 777 -R /var/log/supervisord; \
+    chmod 777 -R /var/run/supervisord; \
     \
     apk add --no-cache \
         bash \
@@ -254,14 +254,13 @@ RUN set -ex; \
 # AIO cloning end # Do not remove or change this line!
     \
     chown www-data:root -R /usr/src && \
-    chown www-data:root -R /usr/local/etc/php/conf.d && \
-    chown www-data:root -R /usr/local/etc/php-fpm.d && \
+    chmod 777 -R /usr/local/etc/php/conf.d && \
+    chmod 777 -R /usr/local/etc/php-fpm.d && \
     chmod -R 777 /tmp; \
     rm -rf /usr/src/nextcloud/apps/updatenotification; \
     \
     mkdir -p /nc-updater; \
-    chown -R www-data:www-data /nc-updater; \
-    chmod -R 770 /nc-updater
+    chmod -R 777 /nc-updater
 
 # hadolint ignore=DL3002
 USER root
