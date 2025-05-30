@@ -5,7 +5,7 @@
 {% else %}
     <p><strong>Please note:</strong> Make sure to save your changes by clicking <strong>Save changes</strong> below the list of optional containers. The changes will not be auto-saved.</p>
 {% endif %}
-<form id="container-form" method="POST" action="/api/configuration" class="xhr">
+<form id="options-form" method="POST" action="/api/configuration" class="xhr">
     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
     <input type="hidden" name="options-form" value="options-form">
