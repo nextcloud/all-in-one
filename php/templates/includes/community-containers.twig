@@ -16,7 +16,7 @@
             <p>
                 <input
                     type="checkbox"
-                    id="enabled-community[]"
+                    id="{{ cc.id }}"
                     value="{{ cc.id }}"
                     name="{{ cc.id }}"
                     {% if cc.id in community_containers_enabled %}
