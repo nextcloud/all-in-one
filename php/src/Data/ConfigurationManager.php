@@ -1028,7 +1028,7 @@ class ConfigurationManager
         foreach ($dir as $id) {
             $filePath = DataConst::GetCommunityContainersDirectory() . '/' . $id . '/' . $id . '.json';
             $fileContents = apcu_fetch($filePath);
-            if ($fileContents === false || !is_string($fileContents)) {
+            if (!is_string($fileContents)) {
                 $fileContents = file_get_contents($filePath);
                 if (is_string($fileContents)) {
                     apcu_add($filePath, $fileContents);
