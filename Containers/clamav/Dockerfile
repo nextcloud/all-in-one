@@ -11,6 +11,7 @@ RUN set -ex; \
     sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize aio-placeholder|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?StreamMaxLength.*|StreamMaxLength aio-placeholder|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?TCPSocket|TCPSocket|g" /etc/clamav/clamd.conf; \
+    sed -i "s|^LocalSocket .*|LocalSocket /tmp/clamd.sock|g" /etc/clamav/clamd.conf; \
     freshclam --foreground --stdout
 
 COPY --chmod=775 start.sh /start.sh
