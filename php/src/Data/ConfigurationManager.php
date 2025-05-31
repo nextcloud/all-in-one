@@ -3,7 +3,6 @@
 namespace AIO\Data;
 
 use AIO\Auth\PasswordGenerator;
-use AIO\Container\CommunityContainer;
 use AIO\Controller\DockerController;
 
 class ConfigurationManager
@@ -1018,7 +1017,6 @@ class ConfigurationManager
     }
 
 
-    /** @return list<CommunityContainer> */
     public function listAvailableCommunityContainers() : array {
         $cc = [];
         $dir = scandir(DataConst::GetCommunityContainersDirectory());
@@ -1036,15 +1034,16 @@ class ConfigurationManager
                     apcu_add($filePath, $fileContents);
                 }
             } 
-            $json = is_string($fileContents) ? json_decode($fileContents) : false;
+            $json = is_string($fileContents) ? json_decode($fileContents, true) : false;
             if(is_array($json) && is_array($json['aio_services_v1'])) {
                 foreach ($json['aio_services_v1'] as $service) {
                     $documentation = is_string($service['documentation']) ? $service['documentation'] : '';
                     if (is_string($service['display_name'])) {
-                        $cc[] = new CommunityContainer(
-                            $id,
-                            $service['display_name'],
-                            $documentation);
+                        $cc[$id] = [ 
+                            'id' => $id,
+                            'name' => $service['display_name'],
+                            'documentation' => $documentation
+                        ];
                     }
                     break;
                 }
