@@ -150,7 +150,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                     APPSTORE_URL="$(grep appstoreurl /var/www/html/config/config.php | grep -oP 'https://.*v[0-9]+')"
                     set +x
                 fi
-                CURL_STATUS="$(curl -LI "$APPSTORE_URL" -o /dev/null -w '%{http_code}\n' -s)"
+                CURL_STATUS="$(curl -LI "$APPSTORE_URL"/apps.json -o /dev/null -w '%{http_code}\n' -s)"
                 if [[ "$CURL_STATUS" = "200" ]]
                 then
                     echo "Appstore is reachable"
