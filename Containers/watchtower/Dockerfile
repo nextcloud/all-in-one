@@ -7,7 +7,7 @@ RUN set -ex; \
         build-base; \
     go install github.com/containrrr/watchtower@76f9cea516593fabb8ca91ff13de55caa6aa0a8b;
 
-FROM alpine:3.21.3
+FROM alpine:3.22.0
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
