@@ -23,7 +23,8 @@ First, you need to retrieve the LLDAP admin password, this will be used later on
 sudo docker inspect nextcloud-aio-lldap | grep LLDAP_LDAP_USER_PASS
 ```
 
-Now go into the Nextcloud container:
+Now go into the Nextcloud container:<br>
+**Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management. This script below can be run from inside the container-management container via `bash /lldap.sh`.
 ```bash
 sudo docker exec --user www-data -it nextcloud-aio-nextcloud bash
 ```
