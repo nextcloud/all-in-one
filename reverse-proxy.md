@@ -745,6 +745,89 @@ The examples below define the dynamic configuration in YAML files. If you rather
 
 </details>
 
+### Traefik 3
+
+<details>
+
+<summary>click here to expand</summary>
+
+**Disclaimer:** it might be possible that the config below is not working 100% correctly, yet. Improvements to it are very welcome!
+
+Traefik's building blocks (router, service, middlewares) need to be defined using dynamic configuration similar to [this](https://doc.traefik.io/traefik/providers/file/#configuration-examples) official Traefik configuration example. Using **docker labels _won't work_** because of the nature of the project.
+
+The examples below define the dynamic configuration in YAML files. If you rather prefer TOML, use a YAML to TOML converter.
+
+1. In Traefik's static configuration define a [file provider](https://doc.traefik.io/traefik/providers/file/) for dynamic providers:
+
+    ```yml
+    # STATIC CONFIGURATION
+   
+    entryPoints:
+      https:
+        address: ":443" # Create an entrypoint called "https" that uses port 443
+        # If you want to enable HTTP/3 support, uncomment the line below
+        # http3: {}
+    
+    certificatesResolvers:
+      # Define "letsencrypt" certificate resolver
+      letsencrypt:
+        acme:
+          storage: /letsencrypt/acme.json # Defines the path where certificates should be stored
+          email: <your-email-address> # Where LE sends notification about certificates expiring
+          tlschallenge: true
+   
+    providers:
+      file:
+        directory: "/path/to/dynamic/conf" # Adjust the path according your needs.
+        watch: true
+    ```
+
+2. Declare the router, service and middlewares for Nextcloud in `/path/to/dynamic/conf/nextcloud.yml`:
+
+    ```yml
+    http:
+      routers:
+        nextcloud:
+          rule: "Host(`<your-nc-domain>`)"
+          entrypoints:
+            - "https"
+          service: nextcloud
+          middlewares:
+            - nextcloud-chain
+          tls:
+            certresolver: "letsencrypt"
+
+      services:
+        nextcloud:
+          loadBalancer:
+            servers:
+              - url: "http://localhost:11000" # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
+
+      middlewares:
+        nextcloud-secure-headers:
+          headers:
+            hostsProxyHeaders:
+              - "X-Forwarded-Host"
+            referrerPolicy: "same-origin"
+
+        https-redirect:
+          redirectscheme:
+            scheme: https 
+
+        nextcloud-chain:
+          chain:
+            middlewares:
+              # - ... (e.g. rate limiting middleware)
+              - https-redirect
+              - nextcloud-secure-headers
+    ```
+
+---
+
+⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+
+</details>
+
 ### IIS with ARR and URL Rewrite
 
 <details>
