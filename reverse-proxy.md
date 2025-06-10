@@ -693,6 +693,10 @@ The examples below define the dynamic configuration in YAML files. If you rather
       file:
         directory: "/path/to/dynamic/conf" # Adjust the path according your needs.
         watch: true
+
+    # Enable HTTP/3 feature by uncommenting the lines below. Don't forget to route 443 UDP to Traefik (Firewall\NAT\Traefik Container)
+    # experimental:
+      # http3: true
     ```
 
 1. Declare the router, service and middlewares for Nextcloud in `/path/to/dynamic/conf/nextcloud.yml`:
