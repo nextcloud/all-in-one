@@ -62,7 +62,11 @@ readonly class DockerController {
 
     public function GetLogs(Request $request, Response $response, array $args) : Response
     {
-        $id = $request->getQueryParams()['id'];
+        $requestParams = $request->getQueryParams();
+        $id = '';
+        if (is_string($requestParams['id'])) {
+            $id = $requestParams['id'];
+        }
         if (str_starts_with($id, 'nextcloud-aio-')) {
             $logs = $this->dockerActionManager->GetLogs($id);
         } else {
