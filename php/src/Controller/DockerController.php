@@ -64,7 +64,7 @@ readonly class DockerController {
     {
         $requestParams = $request->getQueryParams();
         $id = '';
-        if (is_string($requestParams['id'])) {
+        if (isset($requestParams['id']) && is_string($requestParams['id'])) {
             $id = $requestParams['id'];
         }
         if (str_starts_with($id, 'nextcloud-aio-')) {
