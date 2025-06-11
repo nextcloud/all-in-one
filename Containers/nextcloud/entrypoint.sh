@@ -144,7 +144,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 # Check connection to appstore start # Do not remove or change this line!
             while true; do
                 echo -e "Checking connection to appstore"
-                APPSTORE_URL="https://apps.nextcloud.com/"
+                APPSTORE_URL="https://apps.nextcloud.com/api/v1"
                 if grep -q appstoreurl /var/www/html/config/config.php; then
                     set -x
                     APPSTORE_URL="$(grep appstoreurl /var/www/html/config/config.php | grep -oP 'https://.*v[0-9]+')"
