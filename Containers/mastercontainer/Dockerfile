@@ -1,14 +1,4 @@
 # syntax=docker/dockerfile:latest
-
-# Create a minimal stage to just clone the repo
-FROM alpine/git:2.47.2 AS aio_clone
-WORKDIR /
-RUN git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1
-
-# Create an empty image with just the source. This is useful stage that can be overridden to local path for testing with command: docker buildx build --build-context aio_root=../../ -t nextcloud/all-in-one:latest .
-FROM scratch AS aio_root
-COPY --from=aio_clone all-in-one /
-
 # Docker CLI is a requirement
 FROM docker:28.2.2-cli AS docker
 
@@ -24,10 +14,6 @@ EXPOSE 8443
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
-
-COPY --from=aio_root /php /var/www/docker-aio/php
-RUN rm -r /var/www/docker-aio/php/tests
-COPY --from=aio_root /community-containers /var/www/docker-aio/community-containers
 
 WORKDIR /var/www/docker-aio
 
@@ -74,10 +60,15 @@ RUN set -ex; \
     grep -q ';listen.allowed_clients' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|;listen.allowed_clients.*|listen.allowed_clients = 127.0.0.1,::1|' /usr/local/etc/php-fpm.d/www.conf; \
     \
+    apk add --no-cache git; \
     wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer; \
     chmod +x /usr/local/bin/composer; \
+    cd /var/www/docker-aio; \
+    git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
+    find ./ -maxdepth 1 -mindepth 1 -not -path ./php -not -path ./community-containers -exec rm -r {} \; ; \
+    rm -r ./php/tests; \
     chown www-data:www-data -R /var/www/docker-aio; \
-    cd /var/www/docker-aio/php; \
+    cd php; \
     sudo -u www-data composer install --no-dev; \
     sudo -u www-data composer clear-cache; \
     cd ..; \
@@ -126,10 +117,10 @@ RUN set -ex; \
     mkdir /var/log/supervisord; \
     mkdir /var/run/supervisord;
 
-COPY --from=aio_root --chmod=775 /Containers/mastercontainer/*.sh /
-COPY --from=aio_root --chmod=664 /Containers/mastercontainer/Caddyfile /Caddyfile
-COPY --from=aio_root --chmod=664 /Containers/mastercontainer/supervisord.conf /supervisord.conf
-COPY --from=aio_root /Containers/mastercontainer/mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
+COPY --chmod=775 *.sh /
+COPY --chmod=664 Caddyfile /Caddyfile
+COPY --chmod=664 supervisord.conf /supervisord.conf
+COPY mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
 
 LABEL org.label-schema.vendor="Nextcloud"
 
