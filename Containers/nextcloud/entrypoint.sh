@@ -144,13 +144,14 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 # Check connection to appstore start # Do not remove or change this line!
             while true; do
                 echo -e "Checking connection to appstore"
-                APPSTORE_URL="https://apps.nextcloud.com/"
+                APPSTORE_URL="https://apps.nextcloud.com/api/v1"
                 if grep -q appstoreurl /var/www/html/config/config.php; then
                     set -x
                     APPSTORE_URL="$(grep appstoreurl /var/www/html/config/config.php | grep -oP 'https://.*v[0-9]+')"
                     set +x
                 fi
-                CURL_STATUS="$(curl -LI "$APPSTORE_URL" -o /dev/null -w '%{http_code}\n' -s)"
+                # Default appstoreurl parameter in config.php defaults to 'https://apps.nextcloud.com/api/v1' so we check for the apps.json file stored in there
+                CURL_STATUS="$(curl -LI "$APPSTORE_URL"/apps.json -o /dev/null -w '%{http_code}\n' -s)"
                 if [[ "$CURL_STATUS" = "200" ]]
                 then
                     echo "Appstore is reachable"

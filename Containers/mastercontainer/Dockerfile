@@ -10,13 +10,13 @@ FROM scratch AS aio_root
 COPY --from=aio_clone all-in-one /
 
 # Docker CLI is a requirement
-FROM docker:28.2.1-cli AS docker
+FROM docker:28.2.2-cli AS docker
 
 # Caddy is a requirement
 FROM caddy:2.10.0-alpine AS caddy
 
 # From https://github.com/docker-library/php/blob/master/8.4/alpine3.21/fpm/Dockerfile
-FROM php:8.4.7-fpm-alpine3.21
+FROM php:8.4.8-fpm-alpine3.21
 
 EXPOSE 80
 EXPOSE 8080
