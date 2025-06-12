@@ -193,14 +193,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             php /var/www/html/occ app:update --all
 
             run_upgrade_if_needed_due_to_app_update
-
-            # Fix removing the updatenotification for old instances
-            UPDATENOTIFICATION_STATUS="$(php /var/www/html/occ config:app:get updatenotification enabled)"
-            if [ -d "/var/www/html/apps/updatenotification" ]; then
-                php /var/www/html/occ app:disable updatenotification
-            elif [ "$UPDATENOTIFICATION_STATUS" != "no" ] && [ -n "$UPDATENOTIFICATION_STATUS" ]; then
-                php /var/www/html/occ config:app:set updatenotification enabled --value="no"
-            fi
         fi
 
         echo "Initializing nextcloud $image_version ..."
@@ -277,6 +269,10 @@ DATADIR_PERMISSION_CONF
             # unset admin password
             unset ADMIN_PASSWORD
 
+            # Enable the updatenotification app but disable its UI and server update notifications
+            php /var/www/html/occ config:system:set updatechecker --type=bool --value=false
+            php /var/www/html/occ config:app:set updatenotification notify_groups --value="[]"
+
 # AIO update to latest start # Do not remove or change this line!
             if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
                 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
@@ -307,8 +303,7 @@ DATADIR_PERMISSION_CONF
                     # shellcheck disable=SC2016
                     installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
                 fi
-                php /var/www/html/occ app:disable updatenotification
-                rm -rf /var/www/html/apps/updatenotification
+                php /var/www/html/occ config:system:set updatechecker --type=bool --value=true
                 php /var/www/html/occ app:enable nextcloud-aio --force
                 php /var/www/html/occ db:add-missing-columns
                 php /var/www/html/occ db:add-missing-primary-keys
@@ -354,8 +349,6 @@ DATADIR_PERMISSION_CONF
             php /var/www/html/occ config:system:set activity_expire_days --value="30" --type=integer
             php /var/www/html/occ config:system:set simpleSignUpLink.shown --type=bool --value=false
             php /var/www/html/occ config:system:set share_folder --value="/Shared"
-            # Not needed anymore with the removal of the updatenotification app:
-            # php /var/www/html/occ config:app:set updatenotification notify_groups --value="[]"
 
             # Install some apps by default
             if [ -n "$STARTUP_APPS" ]; then
@@ -433,6 +426,11 @@ DATADIR_PERMISSION_CONF
             php /var/www/html/occ app:update --all
 
             run_upgrade_if_needed_due_to_app_update
+
+            # Enable the updatenotification app but disable its UI and server update notifications
+            php /var/www/html/occ config:system:set updatechecker --type=bool --value=false
+            php /var/www/html/occ app:enable updatenotification
+            php /var/www/html/occ config:app:set updatenotification notify_groups --value="[]"
 
             # Apply optimization
             echo "Doing some optimizations..."

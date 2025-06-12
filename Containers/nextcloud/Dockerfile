@@ -256,7 +256,6 @@ RUN set -ex; \
     chmod 777 -R /usr/local/etc/php/conf.d && \
     chmod 777 -R /usr/local/etc/php-fpm.d && \
     chmod -R 777 /tmp; \
-    rm -rf /usr/src/nextcloud/apps/updatenotification; \
     \
     mkdir -p /nc-updater; \
     chmod -R 777 /nc-updater

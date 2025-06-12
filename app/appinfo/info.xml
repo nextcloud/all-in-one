@@ -20,13 +20,4 @@
 		<admin>OCA\AllInOne\Settings\Admin</admin>
 	</settings>
 
- <!-- not implemented yet - but might be useful:
-        <background-jobs>
-		<job>OCA\AllInOne\Notification\BackgroundJob</job>
-	</background-jobs>
-	<commands>
-		<command>OCA\UpdateNotification\Command\Check</command>
-	</commands>
- -->
-
 </info>
