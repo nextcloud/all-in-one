@@ -8,6 +8,9 @@ FROM caddy:2.10.0-alpine AS caddy
 # From https://github.com/docker-library/php/blob/master/8.4/alpine3.21/fpm/Dockerfile
 FROM php:8.4.8-fpm-alpine3.21
 
+ARG AIO_GIT_URL="https://github.com/nextcloud-releases/all-in-one.git"
+ARG AIO_GIT_BRANCH="main"
+
 EXPOSE 80
 EXPOSE 8080
 EXPOSE 8443
@@ -64,7 +67,7 @@ RUN set -ex; \
     wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer; \
     chmod +x /usr/local/bin/composer; \
     cd /var/www/docker-aio; \
-    git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
+    git clone "$AIO_GIT_URL" --depth 1 --single-branch --branch "$AIO_GIT_BRANCH" .; \
     find ./ -maxdepth 1 -mindepth 1 -not -path ./php -not -path ./community-containers -exec rm -r {} \; ; \
     rm -r ./php/tests; \
     chown www-data:www-data -R /var/www/docker-aio; \

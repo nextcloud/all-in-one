@@ -47,3 +47,13 @@ This is documented here: https://github.com/nextcloud-releases/all-in-one/tree/m
 
 ## How to connect to the database?
 Simply run `sudo docker exec -it nextcloud-aio-database psql -U oc_nextcloud nextcloud_database` and you should be in.
+
+## How to locally build and test changes to mastercontainer?
+1. Push changes to your own git fork and branch.
+1. Use below commands to build mastercontainer image for a custom git url and branch:
+```
+cd Containers/mastercontainer
+docker buildx build -t ghcr.io/nextcloud-releases/all-in-one:latest --build-arg AIO_GIT_URL="https://github.com/my-fork-repo/all-in-one.git" --build-arg AIO_GIT_BRANCH="my-feature-branch" --load .
+```
+1. Start a container with above built image.
+1. Since the hash of a locally built image doesn't match the latest release mastercontainer, it prompts for a mandatory update. To temporarily bypass the update suffix `?bypass_mastercontainer_update` to the URL. Eg: `https://localhost:8080/containers?bypass_mastercontainer_update`
