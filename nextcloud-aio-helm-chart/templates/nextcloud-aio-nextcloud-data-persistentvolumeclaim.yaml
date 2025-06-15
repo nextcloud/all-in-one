@@ -6,7 +6,9 @@ metadata:
   name: nextcloud-aio-nextcloud-data
   namespace: "{{ .Values.NAMESPACE }}"
 spec:
-  {{- if .Values.STORAGE_CLASS }}
+  {{- if .Values.STORAGE_CLASS_DATA }}
+  storageClassName: {{ .Values.STORAGE_CLASS_DATA }}
+  {{- else if .Values.STORAGE_CLASS }}
   storageClassName: {{ .Values.STORAGE_CLASS }}
   {{- end }}
   accessModes:
