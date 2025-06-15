@@ -569,6 +569,15 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetTurnDomain() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['turn_domain'])) {
+            $config['turn_domain'] = '';
+        }
+
+        return $config['turn_domain'];
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */
