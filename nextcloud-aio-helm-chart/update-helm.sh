@@ -222,6 +222,10 @@ find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ sto
 # shellcheck disable=SC1083
 find ./ -name '*persistentvolumeclaim.yaml' -exec sed -i "/accessModes:/i\ \ {{- end }}" \{} \; 
 # shellcheck disable=SC1083
+find ./ -name 'nextcloud-aio-nextcloud-data-persistentvolumeclaim.yaml' -exec sed -i "/{{- if .Values.STORAGE_CLASS }}/i\  {{- if .Values.STORAGE_CLASS_DATA }}\n  storageClassName: {{ .Values.STORAGE_CLASS_DATA }}" \{} \;
+# shellcheck disable=SC1083
+find ./ -name 'nextcloud-aio-nextcloud-data-persistentvolumeclaim.yaml' -exec sed -i "s/{{- if .Values.STORAGE_CLASS }}/{{- else if .Values.STORAGE_CLASS }}/" \{} \;
+# shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "/restartPolicy:/d" \{} \;  
 # shellcheck disable=SC1083
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;
@@ -407,6 +411,7 @@ sed -i 's|17179869184|"17179869184"|' /tmp/sample.conf
 echo "" >> /tmp/sample.conf
 # shellcheck disable=SC2129
 echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes' >> /tmp/sample.conf
+echo 'STORAGE_CLASS_DATA:        # Allows to set a dedicated storage class for the Nextcloud data volume' >> /tmp/sample.conf
 for variable in "${VOLUME_VARIABLE[@]}"; do
     echo "$variable: 1Gi       # You can change the size of the $(echo "$variable" | sed 's|_STORAGE_SIZE||;s|_|-|g' | tr '[:upper:]' '[:lower:]') volume that default to 1Gi with this value" >> /tmp/sample.conf
 done
