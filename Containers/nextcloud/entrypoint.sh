@@ -676,7 +676,12 @@ fi
 
 # OnlyOffice
 if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
-    while ! nc -z "$ONLYOFFICE_HOST" 80; do
+    if echo "$ONLYOFFICE_HOST" | grep -q "nextcloud-.*-onlyoffice"; then
+        ONLYOFFICE_PORT=80
+    else
+        ONLYOFFICE_PORT=443
+    fi
+    while ! nc -z "$ONLYOFFICE_HOST" "$ONLYOFFICE_PORT"; do
         echo "waiting for OnlyOffice to become available..."
         sleep 5
     done
@@ -690,7 +695,11 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
     php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
     php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
-    php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$NC_DOMAIN/onlyoffice"
+    if echo "$ONLYOFFICE_HOST" | grep -q "nextcloud-.*-onlyoffice"; then
+        ONLYOFFICE_HOST="$NC_DOMAIN/onlyoffice"
+        export ONLYOFFICE_HOST
+    fi
+    php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$ONLYOFFICE_HOST"
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/onlyoffice" ] && [ -n "$ONLYOFFICE_SECRET" ] && [ "$(php /var/www/html/occ config:system:get onlyoffice jwt_secret)" = "$ONLYOFFICE_SECRET" ]; then
         php /var/www/html/occ app:remove onlyoffice
