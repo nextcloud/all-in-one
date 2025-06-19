@@ -410,8 +410,8 @@ sed -i 's|17179869184|"17179869184"|' /tmp/sample.conf
 # shellcheck disable=SC2129
 echo "" >> /tmp/sample.conf
 # shellcheck disable=SC2129
-echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes' >> /tmp/sample.conf
-echo 'STORAGE_CLASS_DATA:        # Allows to set a dedicated storage class for the Nextcloud data volume' >> /tmp/sample.conf
+echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes. This should be a fast storage like SSD backed storage!' >> /tmp/sample.conf
+echo 'STORAGE_CLASS_DATA:        # Allows to set a dedicated storage class for the Nextcloud data volume. This can be a bit slower storage than the one above. ⚠️ Warning: only set this for new installations, not existing ones!' >> /tmp/sample.conf
 for variable in "${VOLUME_VARIABLE[@]}"; do
     echo "$variable: 1Gi       # You can change the size of the $(echo "$variable" | sed 's|_STORAGE_SIZE||;s|_|-|g' | tr '[:upper:]' '[:lower:]') volume that default to 1Gi with this value" >> /tmp/sample.conf
 done
