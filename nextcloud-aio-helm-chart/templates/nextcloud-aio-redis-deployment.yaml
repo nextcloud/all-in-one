@@ -39,7 +39,7 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-redis:20250610_074316
+          image: ghcr.io/nextcloud-releases/aio-redis:20250619_082329
           readinessProbe:
             exec:
               command:

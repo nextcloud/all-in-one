@@ -52,7 +52,7 @@ spec:
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-talk:20250610_074316
+          image: ghcr.io/nextcloud-releases/aio-talk:20250619_082329
           readinessProbe:
             exec:
               command:
