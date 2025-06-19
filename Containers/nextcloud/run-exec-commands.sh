@@ -26,4 +26,11 @@ else
     fi
 fi
 
-sleep inf
+signal_handler() {
+    exit 0
+}
+
+trap signal_handler SIGINT SIGTERM
+
+sleep inf &
+wait $!
