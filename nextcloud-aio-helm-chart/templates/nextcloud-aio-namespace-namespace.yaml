@@ -4,4 +4,8 @@ kind: Namespace
 metadata:
   name: "{{ .Values.NAMESPACE }}"
   namespace: "{{ .Values.NAMESPACE }}"
+  {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+  {{- end }}
 {{- end }}

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    kompose.version: 1.35.0 (9532ceef3)
+    kompose.version: 1.36.0 (ae2a39403)
   labels:
     io.kompose.service: nextcloud-aio-database
   name: nextcloud-aio-database

@@ -1,2 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.26.1@d747f6500b38ac4f7dfc5edbcae6e4b637d7add0"/>
+<files psalm-version="6.12.0@cf420941d061a57050b6c468ef2c778faf40aee2">
+  <file src="src/ContainerDefinitionFetcher.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[file_get_contents($path)]]></code>
+      <code><![CDATA[file_get_contents(__DIR__ . '/../containers.json')]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Controller/DockerController.php">
+    <InvalidOperand>
+      <code><![CDATA[$port]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Data/ConfigurationManager.php">
+    <FalsableReturnStatement>
+      <code><![CDATA[$additionalBackupDirectories]]></code>
+    </FalsableReturnStatement>
+    <InvalidFalsableReturnType>
+      <code><![CDATA[string]]></code>
+    </InvalidFalsableReturnType>
+    <PossiblyFalseArgument>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$ch]]></code>
+      <code><![CDATA[$configContent]]></code>
+      <code><![CDATA[$content]]></code>
+      <code><![CDATA[$content]]></code>
+      <code><![CDATA[$dailyBackupFile]]></code>
+      <code><![CDATA[$dailyBackupFile]]></code>
+      <code><![CDATA[file_get_contents(DataConst::GetBackupPublicKey())]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Data/DataConst.php">
+    <FalsableReturnStatement>
+      <code><![CDATA[realpath(__DIR__ . '/../../../community-containers/')]]></code>
+      <code><![CDATA[realpath(__DIR__ . '/../../data/')]]></code>
+      <code><![CDATA[realpath(__DIR__ . '/../../session/')]]></code>
+    </FalsableReturnStatement>
+    <InvalidFalsableReturnType>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+    </InvalidFalsableReturnType>
+  </file>
+  <file src="src/Docker/DockerActionManager.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[$line]]></code>
+      <code><![CDATA[$line]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Twig/ClassExtension.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getFunctions() : array]]></code>
+    </MissingOverrideAttribute>
+  </file>
+  <file src="src/Twig/CsrfExtension.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getGlobals() : array]]></code>
+    </MissingOverrideAttribute>
+  </file>
+</files>

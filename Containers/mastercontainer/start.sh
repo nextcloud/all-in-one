@@ -258,26 +258,17 @@ It is set to '$NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS'."
     fi
 fi
 if [ -n "$AIO_COMMUNITY_CONTAINERS" ]; then
-    read -ra AIO_CCONTAINERS <<< "$AIO_COMMUNITY_CONTAINERS"
-    for container in "${AIO_CCONTAINERS[@]}"; do
-        if ! [ -d "/var/www/docker-aio/community-containers/$container" ]; then
-            print_red "The community container $container was not found!"
-            FAIL_CCONTAINERS=1
-        fi
-    done
-    if [ -n "$FAIL_CCONTAINERS" ]; then
-        print_red "You've set AIO_COMMUNITY_CONTAINERS but at least one container was not found.
-It is set to '$AIO_COMMUNITY_CONTAINERS'."
-        exit 1
-    fi
+    print_red "You've set AIO_COMMUNITY_CONTAINERS but the option was removed.
+The community containers get managed via the AIO interface now."
 fi
 
 # Check if ghcr.io is reachable
 # Solves issues like https://github.com/nextcloud/all-in-one/discussions/5268
-if ! curl https://ghcr.io &>/dev/null; then
+if ! curl --no-progress-meter https://ghcr.io/v2/ >/dev/null; then
     print_red "Could not reach https://ghcr.io."
     echo "Most likely is something blocking access to it."
-    echo "You should be able to fix this by using https://github.com/nextcloud/all-in-one/tree/main/manual-install"
+    echo "You should be able to fix this by following https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html"
+    echo "Another solution is using https://github.com/nextcloud/all-in-one/tree/main/manual-install"
     exit 1
 fi
 

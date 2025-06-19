@@ -349,6 +349,7 @@ main {
     word-break: break-word;
     max-width: calc(var(--max-width) + calc(var(--main-padding) * 2));
     margin: 0 auto;
+    padding-bottom: var(--main-padding);
 }
 
 .logo {

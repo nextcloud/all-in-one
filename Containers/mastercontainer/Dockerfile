@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:28.0.4-cli AS docker
+FROM docker:28.2.2-cli AS docker
 
 # Caddy is a requirement
-FROM caddy:2.9.1-alpine AS caddy
+FROM caddy:2.10.0-alpine AS caddy
 
-# From https://github.com/docker-library/php/blob/master/8.3/alpine3.21/fpm/Dockerfile
-FROM php:8.3.19-fpm-alpine3.21
+# From https://github.com/docker-library/php/blob/master/8.4/alpine3.21/fpm/Dockerfile
+FROM php:8.4.8-fpm-alpine3.21
 
 EXPOSE 80
 EXPOSE 8080
@@ -121,6 +121,8 @@ COPY --chmod=775 *.sh /
 COPY --chmod=664 Caddyfile /Caddyfile
 COPY --chmod=664 supervisord.conf /supervisord.conf
 COPY mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
+
+LABEL org.label-schema.vendor="Nextcloud"
 
 # hadolint ignore=DL3002
 USER root

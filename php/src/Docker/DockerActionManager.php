@@ -1030,8 +1030,8 @@ readonly class DockerActionManager {
         return false;
     }
 
-    private function GetCreatedTimeOfNextcloudImage(): ?string {
-        $imageName = 'nextcloud/aio-nextcloud' . ':' . $this->GetCurrentChannel();
+    private function GetCreatedTimeOfNextcloudImage(string $imageName): ?string {
+        $imageName = $imageName . ':' . $this->GetCurrentChannel();
         try {
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
             $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true);
@@ -1052,7 +1052,11 @@ readonly class DockerActionManager {
     }
 
     public function isNextcloudImageOutdated(): bool {
-        $createdTime = $this->GetCreatedTimeOfNextcloudImage();
+        $createdTime = $this->GetCreatedTimeOfNextcloudImage('ghcr.io/nextcloud-releases/aio-nextcloud');
+
+        if ($createdTime === null) {
+            $createdTime = $this->GetCreatedTimeOfNextcloudImage('nextcloud/aio-nextcloud');
+        }
 
         if ($createdTime === null) {
             return false;

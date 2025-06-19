@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.11.0-scratch AS nats
+FROM nats:2.11.4-scratch AS nats
 FROM eturnal/eturnal:1.12.1 AS eturnal
-FROM strukturag/nextcloud-spreed-signaling:2.0.2 AS signaling
+FROM strukturag/nextcloud-spreed-signaling:2.0.3 AS signaling
 FROM alpine:3.21.3 AS janus
 
 ARG JANUS_VERSION=v1.3.1
@@ -105,4 +105,5 @@ ENTRYPOINT ["/start.sh"]
 CMD ["supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"

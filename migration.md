@@ -57,9 +57,9 @@ The procedure for migrating the files and the database works like this:
     ```
     **Please note:** The exact name of the database export file is important! (`database-dump.sql`)<br>
     And of course you need to to use the correct name that the Postgresql database has for the export (if `$PG_DATABASE` doesn't work directly).
-1. At this point, you can finally install Nextcloud AIO on a new server/linux installation, enter your domain in the AIO interface (use the same domain that you used on your former installation) and wait until all containers are running. Then you should check the included Nextcloud version by running `sudo docker inspect nextcloud-aio-nextcloud | grep NEXTCLOUD_VERSION`. Also install all apps via the apps management site that were installed on the old Nextcloud installation. Otherwise they will show as installed, but will not work.
-1. Next, take a backup using Nextcloud AIO's built-in backup solution (so that you can easily restore to this state again) (Note: this will stop all containers and is expected: don't start the container again at this point!)
-1. Now, we are slowly starting to import your files and database. First, you need to modify the datadirectory that is stored inside the database export:
+1. At this point, you can finally install Nextcloud AIO on a new server/linux installation, enter your domain in the AIO interface (use the same domain that you used on your former installation) and wait until all containers are running. Then you should check the included Nextcloud version by running `sudo docker inspect nextcloud-aio-nextcloud | grep NEXTCLOUD_VERSION`. On the AIO interface, use the passphrase to connect to your newly created Nextcloud instance's admin account. There, install all the Nextcloud apps that were installed on the old Nextcloud installation. If you don't, the migration will show them as installed, but they won't work.
+1. Next, take a backup using Nextcloud AIO's built-in backup solution (so that you can easily restore to this state again). Once finished, all containers are automatically stopped and is expected: **don't start the container again at this point!**
+1. Now, with the containers still stopped, we are slowly starting to import your files and database. First, you need to modify the datadirectory that is stored inside the database export:
     1. Find out what the directory of your old Nextcloud installation is by e.g. opening the config.php file and looking at the value `datadirectory`.
     1. Now, create a copy of the database file so that you can simply restore it if you should make a mistake while editing: `cp database-dump.sql database-dump.sql.backup`
     1. Next, open the database export with e.g. nano: `nano database-dump.sql`
@@ -81,7 +81,6 @@ The same applies for the second statement, check with `grep " OWNER TO nextcloud
 1. Next, run `sudo docker run --rm --volume nextcloud_aio_nextcloud_data:/mnt/ncdata:rw alpine chown -R 33:0 /mnt/ncdata/` and `sudo docker run --rm --volume nextcloud_aio_nextcloud_data:/mnt/ncdata:rw alpine chmod -R 750 /mnt/ncdata/` to apply the correct permissions on the datadirectory. (Or if `NEXTCLOUD_DATADIR` was provided, apply `chown -R 33:0` and `chmod -R 750` to the chosen path.)
 1. Edit the Nextcloud AIO config.php file using `sudo docker run -it --rm --volume nextcloud_aio_nextcloud:/var/www/html:rw alpine sh -c "apk add --no-cache nano && nano /var/www/html/config/config.php"` and modify only `passwordsalt`, `secret`, `instanceid` and set it to the old values that you used on your old installation. If you are brave, feel free to modify further values e.g. add your old LDAP config or S3 storage config. (Some things like Mail server config can be added back using Nextcloud's webinterface later on).
 1. When you are done and saved your changes to the file, finally start the containers again and wait until all containers are running.
-1. As last step, install all apps again that were installed before on your old instance by using the webinterface.
 
 Now the whole Nextcloud instance should work again.<br>
 If not, feel free to restore the AIO instance from backup and start at step 8 again.

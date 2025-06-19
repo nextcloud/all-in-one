@@ -24,6 +24,5 @@ See https://github.com/nextcloud/all-in-one#how-to-trust-user-defined-certificat
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true`, the resulting Nextcloud container should have the /dev/dri device mounted into the container. (Only works if a `/dev/dri` device is present on the host)
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_ENABLE_NVIDIA_GPU=true`, the resulting Nextcloud container should have the nvidia gpu device mounted into the container. (Only works if a Nvidia GPU and runtime is installed on the host)
 - [ ] When starting the mastercontainer with `--env NEXTCLOUD_KEEP_DISABLED_APPS=true` it should keep apps in Nextcloud that are disabled in the AIO interface. For example if Collabora is disabled in the AIO interface and you install the richdocuments app in Nextcloud, a restart should not uninstall the richdocuments app in Nextcloud anymore.
-- [ ] When starting the mastercontainer with `--env AIO_COMMUNITY_CONTAINERS="fail2ban"`, it should add the fail2ban container to the container stack and show it in the AIO interface as well as start it, etc.
 
 You can now continue with [070-timezone-change.md](./070-timezone-change.md)

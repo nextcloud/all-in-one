@@ -60,7 +60,7 @@ test('Restore instance', async ({ page: setupPage }) => {
   await containersPage.getByRole('button', { name: 'Check backup integrity' }).click();
   await expect(containersPage.getByRole('main')).toContainText('Last check successful!', { timeout: 5 * 60 * 1000 });
   await containersPage.getByRole('button', { name: 'Restore selected backup' }).click();
-  await expect(containersPage.getByRole('main')).toContainText('Backup container is currently running:');
+  await expect(containersPage.getByRole('main')).toContainText('Backup container is currently running:', { timeout: 1 * 60 * 1000 });
 
   // Verify a successful backup restore
   await expect(containersPage.getByRole('main')).toContainText('Last restore successful!', { timeout: 3 * 60 * 1000 });

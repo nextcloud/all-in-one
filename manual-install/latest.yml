@@ -264,6 +264,7 @@ services:
     cap_add:
       - MKNOD
       - SYS_ADMIN
+      - CHOWN
     cap_drop:
       - NET_RAW
 

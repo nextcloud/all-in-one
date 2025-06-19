@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.3.19-fpm-alpine3.21
+FROM php:8.3.22-fpm-alpine3.21
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=16G
@@ -8,13 +8,10 @@ ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=30.0.8
+ENV NEXTCLOUD_VERSION=31.0.6
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
-
-# Define the commit hash for imagick as a variable
-ARG IMAGICK_COMMIT_HASH=28f27044e435a2b203e32675e942eb8de620ee58
 
 COPY --chmod=775 *.sh /
 COPY --chmod=774 upgrade.exclude /upgrade.exclude
@@ -85,20 +82,7 @@ RUN set -ex; \
     pecl install APCu-5.1.24; \
     pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.3.0; \
     pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.2.0; \
-#    pecl install -o imagick-3.7.0; \
-# Begin workaround ->
-# The master version on the imagick repository is compatible with PHP 8.3. However, the PECL version is not updated yet.
-# As soon as it will get updated, we can switch back to the PECL version, instead of having this workaround.
-    apk add --no-cache --virtual .git-build-deps git \
-    && git clone https://github.com/imagick/imagick.git --depth 1 /tmp/imagick \
-    && cd /tmp/imagick \
-    && git fetch --depth 1 origin ${IMAGICK_COMMIT_HASH} \
-    && git checkout ${IMAGICK_COMMIT_HASH} \
-    && sed -i "s/@PACKAGE_VERSION@/git-${IMAGICK_COMMIT_HASH:0:7}/" php_imagick.h \
-    && phpize && ./configure && make && make install; \
-    apk del .git-build-deps; \
-    cd && rm -r /tmp/imagick; \
-# <- End workaround
+   pecl install -o imagick-3.8.0; \
     \
     docker-php-ext-enable \
         igbinary \
@@ -134,7 +118,10 @@ RUN set -ex; \
         echo 'opcache.jit_buffer_size=8M'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
-    echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
+    { \
+        echo 'apc.enable_cli=1'; \
+        echo 'apc.shm_size=64M'; \
+    } >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
     { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
@@ -225,8 +212,8 @@ RUN set -ex; \
     /var/log/supervisord \
     /var/run/supervisord \
     ; \
-    chown www-data:root -R /var/log/supervisord; \
-    chown www-data:root -R /var/run/supervisord; \
+    chmod 777 -R /var/log/supervisord; \
+    chmod 777 -R /var/run/supervisord; \
     \
     apk add --no-cache \
         bash \
@@ -266,14 +253,12 @@ RUN set -ex; \
 # AIO cloning end # Do not remove or change this line!
     \
     chown www-data:root -R /usr/src && \
-    chown www-data:root -R /usr/local/etc/php/conf.d && \
-    chown www-data:root -R /usr/local/etc/php-fpm.d && \
+    chmod 777 -R /usr/local/etc/php/conf.d && \
+    chmod 777 -R /usr/local/etc/php-fpm.d && \
     chmod -R 777 /tmp; \
-    rm -rf /usr/src/nextcloud/apps/updatenotification; \
     \
     mkdir -p /nc-updater; \
-    chown -R www-data:www-data /nc-updater; \
-    chmod -R 770 /nc-updater
+    chmod -R 777 /nc-updater
 
 # hadolint ignore=DL3002
 USER root
@@ -281,4 +266,5 @@ ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    org.label-schema.vendor="Nextcloud"
