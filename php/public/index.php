@@ -82,6 +82,11 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $dockerController = $container->get(\AIO\Controller\DockerController::class);
     $dockerActionManger->ConnectMasterContainerToNetwork();
     $dockerController->StartDomaincheckContainer();
+
+    // Check if bypass_mastercontainer_update is provided on the URL, a special developer mode to bypass a mastercontainer update and use local image.
+    $params = $request->getQueryParams();
+    $bypass_mastercontainer_update = isset($params['bypass_mastercontainer_update']);
+
     return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->GetDomain(),
         'apache_port' => $configurationManager->GetApachePort(),
@@ -91,7 +96,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_password' => $configurationManager->GetAndGenerateSecret('NEXTCLOUD_PASSWORD'),
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
         'borgbackup_password' => $configurationManager->GetAndGenerateSecret('BORGBACKUP_PASSWORD'),
-        'is_mastercontainer_update_available' => $dockerActionManger->IsMastercontainerUpdateAvailable(),
+        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManger->IsMastercontainerUpdateAvailable() ),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
         'is_backup_container_running' => $dockerActionManger->isBackupContainerRunning(),
         'backup_exit_code' => $dockerActionManger->GetBackupcontainerExitCode(),
