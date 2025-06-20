@@ -240,22 +240,7 @@ readonly class DockerActionManager {
             $envs[] = $this->GetAllNextcloudExecCommands();
         }
         foreach ($envs as $key => $env) {
-            // TODO: This whole block below is a hack and needs to get reworked in order to support multiple substitutions per line by default for all envs
-            if (str_starts_with($env, 'extra_params=')) {
-                $env = str_replace('%COLLABORA_SECCOMP_POLICY%', $this->configurationManager->GetCollaboraSeccompPolicy(), $env);
-                $env = str_replace('%NC_DOMAIN%', $this->configurationManager->GetDomain(), $env);
-                $envs[$key] = $env;
-                continue;
-            }
-
-            // Original implementation
-            $patterns = ['/%(.*)%/'];
-
-            if (preg_match($patterns[0], $env, $out) === 1) {
-                $replacements = array();
-                $replacements[1] = $this->getPlaceholderValue($out[1]);
-                $envs[$key] = preg_replace($patterns, $replacements, $env);
-            }
+            $envs[$key] = $this->replaceEnvPlaceholders($env);
         }
 
         if (count($envs) > 0) {
@@ -479,6 +464,30 @@ readonly class DockerActionManager {
                 error_log($message);
             }
         }
+    }
+
+    // Replaces placeholders in $envValue with their values.
+    // E.g. "%NC_DOMAIN%:%APACHE_PORT" becomes "my.nextcloud.com:11000"
+    private function replaceEnvPlaceholders($envValue) {
+        // $pattern breaks down as:
+        // % - matches a literal percent sign
+        // ([^%]+) - capture group that matches one or more characters that are NOT percent signs
+        // % - matches the closing percent sign
+        //
+        // Assumes literal percent signs are always matched and there is no
+        // escaping.
+        $pattern = '/%([^%]+)%/';
+        $matchCount = preg_match_all($pattern, $envValue, $matches);
+        if ($matchCount > 0) {
+            $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
+            $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
+            $placeholderToPattern = fn($placeholder) => '/' . $placeholder . '/';
+            $placeholderPatterns = array_map($placeholderToPattern, $placeholders); // ["/%PLACEHOLDER1%/", ...]
+            $placeholderValues = array_map([$this, 'getPlaceholderValue'], $placeholderNames); // ["val1", "val2"]
+            $result = preg_replace($placeholderPatterns, $placeholderValues, $envValue);
+            return $result;
+        }
+        return $envValue;
     }
 
     private function getPlaceholderValue($placeholder) {
