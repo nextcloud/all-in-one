@@ -468,7 +468,7 @@ readonly class DockerActionManager {
 
     // Replaces placeholders in $envValue with their values.
     // E.g. "%NC_DOMAIN%:%APACHE_PORT" becomes "my.nextcloud.com:11000"
-    private function replaceEnvPlaceholders($envValue) {
+    private function replaceEnvPlaceholders(string $envValue): string {
         // $pattern breaks down as:
         // % - matches a literal percent sign
         // ([^%]+) - capture group that matches one or more characters that are NOT percent signs
@@ -481,16 +481,17 @@ readonly class DockerActionManager {
         if ($matchCount > 0) {
             $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
             $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
-            $placeholderToPattern = fn($placeholder) => '/' . $placeholder . '/';
+            $placeholderToPattern = fn(string $p): string => '/' . $p . '/';
             $placeholderPatterns = array_map($placeholderToPattern, $placeholders); // ["/%PLACEHOLDER1%/", ...]
             $placeholderValues = array_map([$this, 'getPlaceholderValue'], $placeholderNames); // ["val1", "val2"]
-            $result = preg_replace($placeholderPatterns, $placeholderValues, $envValue);
+            // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
+            $result = (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
             return $result;
         }
         return $envValue;
     }
 
-    private function getPlaceholderValue($placeholder) {
+    private function getPlaceholderValue(string $placeholder) : string {
         return match ($placeholder) {
             'NC_DOMAIN' => $this->configurationManager->GetDomain(),
             'NC_BASE_DN' => $this->configurationManager->GetBaseDN(),
@@ -523,7 +524,7 @@ readonly class DockerActionManager {
             'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->configurationManager->GetTrustedCacertsDir(),
             'ADDITIONAL_DIRECTORIES_BACKUP' => $this->configurationManager->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
             'BORGBACKUP_HOST_LOCATION' => $this->configurationManager->GetBorgBackupHostLocation(),
-            'APACHE_MAX_SIZE' => $this->configurationManager->GetApacheMaxSize(),
+            'APACHE_MAX_SIZE' => (string)($this->configurationManager->GetApacheMaxSize()),
             'COLLABORA_SECCOMP_POLICY' => $this->configurationManager->GetCollaboraSeccompPolicy(),
             'NEXTCLOUD_STARTUP_APPS' => $this->configurationManager->GetNextcloudStartupApps(),
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->configurationManager->GetNextcloudAdditionalApks(),
@@ -539,7 +540,7 @@ readonly class DockerActionManager {
         };
     }
 
-    private function getSecretOrThrow($secretName) {
+    private function getSecretOrThrow(string $secretName): string {
         $secret = $this->configurationManager->GetSecret($secretName);
         if ($secret === "") {
             throw new \Exception("The secret " . $secretName . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
@@ -686,7 +687,7 @@ readonly class DockerActionManager {
             return $channelName;
         }
 
-        $containerName = 'nextcloud-aio-mastercontainer';
+        $containerName = 'nextcls /usr/share/bash-completion/completions/peclloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
             $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true);
