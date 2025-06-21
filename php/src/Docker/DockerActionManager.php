@@ -687,7 +687,7 @@ readonly class DockerActionManager {
             return $channelName;
         }
 
-        $containerName = 'nextcls /usr/share/bash-completion/completions/peclloud-aio-mastercontainer';
+        $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
             $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true);
