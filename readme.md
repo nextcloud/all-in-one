@@ -801,7 +801,7 @@ If you have the borg backup feature enabled, you can copy it over to the new hos
     1. Note the path where the backups are stored and the encryption password
 1. Navigate to the backup folder
 1. Create archive of the backup so it's easier to copy: `tar -czvf borg.tar.gz borg`
-1. Copy the archive over to the new host: `cp borg.tar.gz user@new.host:/mnt`. Make sure to replace `user` with your actual user and `new.host` with the IP or domain of the actual host. You can also use another way to copy the archive.
+1. Copy the archive over to the new host: `scp borg.tar.gz user@new.host:/mnt`. Make sure to replace `user` with your actual user and `new.host` with the IP or domain of the actual host. You can also use another way to copy the archive.
 1. Switch to the new host
 1. Go to the folder you put the backup archive and extract it with `tar -xf borg.tar.gz`
 1. Follow the installation guide to create a new aio instance, but do not start the containers yet (the `docker run` or `docker compose up -d` command)
