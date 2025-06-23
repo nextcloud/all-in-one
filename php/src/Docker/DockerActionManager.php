@@ -485,17 +485,18 @@ readonly class DockerActionManager {
         // escaping.
         $pattern = '/%([^%]+)%/';
         $matchCount = preg_match_all($pattern, $envValue, $matches);
-        if ($matchCount > 0) {
-            $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
-            $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
-            $placeholderToPattern = fn(string $p): string => '/' . $p . '/';
-            $placeholderPatterns = array_map($placeholderToPattern, $placeholders); // ["/%PLACEHOLDER1%/", ...]
-            $placeholderValues = array_map([$this, 'getPlaceholderValue'], $placeholderNames); // ["val1", "val2"]
-            // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
-            $result = (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
-            return $result;
+
+        if ($matchCount === 0) {
+            return $envValue;
         }
-        return $envValue;
+
+        $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
+        $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
+        $placeholderToPattern = fn(string $p): string => '/' . $p . '/';
+        $placeholderPatterns = array_map($placeholderToPattern, $placeholders); // ["/%PLACEHOLDER1%/", ...]
+        $placeholderValues = array_map([$this, 'getPlaceholderValue'], $placeholderNames); // ["val1", "val2"]
+        // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
+        return (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
     }
 
     private function getPlaceholderValue(string $placeholder) : string {
