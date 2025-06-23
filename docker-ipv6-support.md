@@ -5,7 +5,7 @@ First of all upgrade your docker installation to v27.0.1 or higher.
 1. Then edit `/etc/docker/daemon.json` (or `~/.config/docker/daemon.json` in case of docker-rootless), add the below json:
 
 > [!WARNING]
-> This will enable ipv6 for all new docker networks by default!
+> This will enable ipv6 for all new docker networks by default! You can alternatively create the `nextcloud-aio` network with ipv6 support by hand manually via docker network create or via compose.yaml.
 
 ```json
 {
@@ -30,7 +30,7 @@ Then, on Windows and macOS which use Docker Desktop, you need to go into the set
 1. You need to now adjust this json file:
 
 > [!WARNING]
-> This will enable ipv6 for all new docker networks by default!
+> This will enable ipv6 for all new docker networks by default! You can alternatively create the `nextcloud-aio` network with ipv6 support by hand manually via docker network create or via compose.yaml.
 
 ```json
 "default-network-opts": {"bridge":{"com.docker.network.enable_ipv6":"true"}}
