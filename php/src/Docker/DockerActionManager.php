@@ -492,8 +492,7 @@ readonly class DockerActionManager {
 
         $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
         $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
-        $placeholderToPattern = fn(string $p): string => '/' . $p . '/';
-        $placeholderPatterns = array_map($placeholderToPattern, $placeholders); // ["/%PLACEHOLDER1%/", ...]
+        $placeholderPatterns = array_map(static fn(string $p) => '/' . preg_quote($p) . '/', $placeholders); // ["/%PLACEHOLDER1%/", ...]
         $placeholderValues = array_map([$this, 'getPlaceholderValue'], $placeholderNames); // ["val1", "val2"]
         // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
         return (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
