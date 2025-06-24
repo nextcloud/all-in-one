@@ -2,6 +2,13 @@
 
 echo "Daily backup script has started"
 
+# Check if initial configuration has been done, otherwise this script should do nothing.
+CONFIG_FILE=/mnt/docker-aio-config/data/configuration.json
+if ! [ -f "$CONFIG_FILE" ] || ! grep -q "wasStartButtonClicked.*1" "$CONFIG_FILE"; then
+    echo "Initial configuration via AIO interface not done yet. Exiting..."
+    exit 0
+fi
+
 # Daily backup and backup check cannot be run at the same time
 if [ "$DAILY_BACKUP" = 1 ] && [ "$CHECK_BACKUP" = 1 ]; then
     echo "Daily backup and backup check cannot be run at the same time. Exiting..."
