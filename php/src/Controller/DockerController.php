@@ -191,8 +191,9 @@ readonly class DockerController {
         $config['install_latest_major'] = $installLatestMajor;
         $this->configurationManager->WriteConfig($config);
 
+        $pullImage = !isset($request->getParsedBody()['bypass_container_update']);
         // Start container
-        $this->startTopContainer(true);
+        $this->startTopContainer($pullImage);
 
         // Clear apcu cache in order to check if container updates are available
         // Temporarily disabled as it leads much faster to docker rate limits

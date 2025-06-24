@@ -8,6 +8,8 @@ ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
+ARG AIO_GIT_URL="https://github.com/nextcloud-releases/all-in-one.git"
+ARG AIO_GIT_BRANCH="main"
 ENV NEXTCLOUD_VERSION=31.0.7
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
@@ -246,7 +248,7 @@ RUN set -ex; \
     rm -rf /tmp/nextcloud-aio && \
     mkdir -p /tmp/nextcloud-aio && \
     cd /tmp/nextcloud-aio && \
-    git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
+    git clone "$AIO_GIT_URL" --depth 1 --single-branch --branch "$AIO_GIT_BRANCH" .; \
     mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
     cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/; \
     echo "[ -n \"\$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
