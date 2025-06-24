@@ -3,9 +3,9 @@
 echo "Daily backup script has started"
 
 # Check if initial configuration has been done, otherwise this script should do nothing.
-configFile=/mnt/docker-aio-config/data/configuration.json
-if [ ! -f "$configFile" ] || ! grep -q -E '"wasStartButtonClicked"\s*:\s*1\s*,' "$configFile"; then
-    echo "Initial configuration not done yet. Exiting..."
+CONFIG_FILE=/mnt/docker-aio-config/data/configuration.json
+if ! [ -f "$CONFIG_FILE" ] || ! grep -q "wasStartButtonClicked.*1" "$CONFIG_FILE"; then
+    echo "Initial configuration via AIO interface not done yet. Exiting..."
     exit 0
 fi
 
