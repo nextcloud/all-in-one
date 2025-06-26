@@ -81,6 +81,9 @@ Included are:
 | ![image](https://github.com/user-attachments/assets/6ef5d7b5-86f2-402c-bc6c-b633af2ca7dd) | ![image](https://github.com/user-attachments/assets/939d0fdf-436f-433d-82d3-27548263a040) |
 
 ## How to use this?
+>[!WARNING]
+> You should first make sure that you are not using docker installed via snap. You can check this by running `sudo docker info | grep "Docker Root Dir" | grep "/var/snap/docker/"`. If the output should contain the mentioned string `/var/snap/docker/`, you should first uninstall docker snap via `sudo snap remove docker` and then follow the instructions below. ⚠️ Attention: only run the command if this is a clean new docker installation and you are not running any service already using this.
+
 > [!NOTE]
 > The following instructions are meant for installations without a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) already being in place. If you want to run AIO behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else), see the [reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md). Also, the instructions below are especially meant for Linux. For macOS see [this](#how-to-run-aio-on-macos), for Windows see [this](#how-to-run-aio-on-windows) and for Synology see [this](#how-to-run-aio-on-synology-dsm).
 
