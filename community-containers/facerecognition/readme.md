@@ -4,7 +4,8 @@ This container bundles the external model of facerecognition and auto-configures
 ### Notes
 - This container needs imaginary in order to analyze modern file format images. Make sure to enable imaginary in the AIO interface before adding this container.
 - The image analysis is currently set to fixed value of `1G`. See [this](https://github.com/search?q=repo%3Anextcloud%2Fall-in-one+1G+path%3A%2F%5Ecommunity-containers%5C%2Ffacerecognition%5C%2F%2F&type=code)
-- Facerecognition is by default disabled for all users, if you want to enable facerecognition for all users, you can run the following before adding this container:
+- Facerecognition is by default disabled for all users. If you want to enable facerecognition for all users, you can run the following commands before adding this container:<br>
+**Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management. This script below can be run from inside the container-management container via `bash /facerecognition.sh`.
     ```bash
     # Go into the container
     sudo docker exec --user www-data -it nextcloud-aio-nextcloud bash
@@ -22,7 +23,8 @@ This container bundles the external model of facerecognition and auto-configures
     # Exit the container shell
     exit
     ```
-- If facerecognition shall analyze shared files & folders (`sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:app:set facerecognition handle_shared_files --value true`), groupfolders (`sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:app:set facerecognition handle_group_files --value true`) and/or external storages (`sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:app:set facerecognition handle_external_files --value true`) in Nextcloud, you need to enable support for it manually first by running the mentioned commands before adding this container. See https://github.com/matiasdelellis/facerecognition/wiki/Settings#hidden-settings for further notes on each of these settings.
+- If facerecognition shall analyze shared files & folders (`sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:app:set facerecognition handle_shared_files --value true`), groupfolders (`sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:app:set facerecognition handle_group_files --value true`) and/or external storages (`sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:app:set facerecognition handle_external_files --value true`) in Nextcloud, you need to enable support for it manually first by running the mentioned commands before adding this container. See https://github.com/matiasdelellis/facerecognition/wiki/Settings#hidden-settings for further notes on each of these settings.<br>
+**Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
 ### Repository
