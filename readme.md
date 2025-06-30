@@ -1034,10 +1034,12 @@ You can do so by running the `/daily-backup.sh` script that is stored in the mas
 - `AUTOMATIC_UPDATES` if set to `1`, it will automatically stop the containers, update them and start them including the mastercontainer. If the mastercontainer gets updated, this script's execution will stop as soon as the mastercontainer gets stopped. You can then wait until it is started again and run the script with this flag again in order to update all containers correctly afterwards.
 - `DAILY_BACKUP` if set to `1`, it will automatically stop the containers and create a backup. If you want to start them again afterwards, you may have a look at the `START_CONTAINERS` option.
 - `START_CONTAINERS` if set to `1`, it will automatically start the containers without updating them.
-- `STOP_CONTAINERS` if set to `1`, it will automatically stop the containers.
-- `CHECK_BACKUP` if set to `1`, it will start the backup check. This is not allowed to be enabled at the same time like `DAILY_BACKUP`. Please be aware that this option is non-blocking which means that the backup check is not done when the process is finished since it only start the borgbackup container with the correct configuration.
+- `STOP_CONTAINERS` if set to `1`, it will automatically stop the containers, either during a backup or during a check (even though the backup check is non blocking).
+- `CHECK_BACKUP` if set to `1`, it will start the borg backups integrity check. Note that the backup check is non blocking so containers can be kept running while the check lasts. That means you can't pass `DAILY_BACKUP=1` at the same time.
 
-One example for this would be `sudo docker exec -it --env DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script.
+One example to do a backup would be `sudo docker exec -it --env DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script.
+
+Likewise to do a backup check would be `sudo docker exec --env DAILY_BACKUP=0 --env CHECK_BACKUP=1 --env STOP_CONTAINERS=0 nextcloud-aio-mastercontainer /daily-backup.sh`.
 
 > [!NOTE]  
 > None of the option returns error codes. So you need to check for the correct result yourself.
