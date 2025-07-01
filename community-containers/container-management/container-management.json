@@ -1,0 +1,41 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-container-management",
+            "display_name": "Container Management",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management",
+            "image": "ghcr.io/szaimen/aio-container-management",
+            "image_tag": "v1",
+            "internal_port": "5804",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "",
+                    "port_number": "5804",
+                    "protocol": "tcp"
+                }
+            ],
+            "volumes": [
+                {
+                  "source": "%WATCHTOWER_DOCKER_SOCKET_PATH%",
+                  "destination": "/var/run/docker.sock",
+                  "writeable": false
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "SECURE_CONNECTION=1",
+                "WEB_AUTHENTICATION=1",
+                "USER_ID=0",
+                "GROUP_ID=0",
+                "WEB_AUTHENTICATION_USERNAME=container-management",
+                "WEB_AUTHENTICATION_PASSWORD=%CONTAINER_MANAGEMENT_PASSWORD%",
+                "WEB_LISTENING_PORT=5804"
+            ],
+            "secrets": [
+                "CONTAINER_MANAGEMENT_PASSWORD"
+            ],
+            "ui_secret": "CONTAINER_MANAGEMENT_PASSWORD"
+        }
+    ]
+}
