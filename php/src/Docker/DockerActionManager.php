@@ -584,6 +584,9 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Mounts'] = $mounts;
         }
 
+        // All AIO-managed containers should not be updated externally via watchtower but gracefully by AIO's backup and update feature.
+        $requestBody['Labels'] = ["com.centurylinklabs.watchtower.enable" => "false", "org.label-schema.vendor" => "Nextcloud"];
+
         // Containers should have a fixed host name. See https://github.com/nextcloud/all-in-one/discussions/6589
         $requestBody['Hostname'] = $container->GetIdentifier();
 
