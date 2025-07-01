@@ -1033,8 +1033,8 @@ After doing a restore via the AIO interface, you might run into problems due to 
 You can do so by running the `/daily-backup.sh` script that is stored in the mastercontainer. It accepts the following environment variables:
 - `AUTOMATIC_UPDATES` if set to `1`, it will automatically stop the containers, update them and start them including the mastercontainer. If the mastercontainer gets updated, this script's execution will stop as soon as the mastercontainer gets stopped. You can then wait until it is started again and run the script with this flag again in order to update all containers correctly afterwards.
 - `DAILY_BACKUP` if set to `1`, it will automatically stop the containers and create a backup. If you want to start them again afterwards, you may have a look at the `START_CONTAINERS` option.
-- `START_CONTAINERS` if set to `1`, it will automatically start the containers without updating them.
-- `STOP_CONTAINERS` if set to `1`, it will automatically stop the containers, either during a backup or during a check (even though the backup check is non blocking).
+- `STOP_CONTAINERS` if set to `1`, it will automatically stop the containers at the start of the script. Implied by `DAILY_BACKUP=1`.
+- `START_CONTAINERS` if set to `1`, it will automatically start the containers at the end of the script, without updating them. Implied by `DAILY_BACKUP=1`.
 - `CHECK_BACKUP` if set to `1`, it will start the borg backups integrity check. Note that the backup check is non blocking so containers can be kept running while the check lasts. That means you can't pass `DAILY_BACKUP=1` at the same time. The output of the check can be found in the logs of the container `nextcloud-aio-borgbackup`.
 
 One example to do a backup would be `sudo docker exec -it --env DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script.
