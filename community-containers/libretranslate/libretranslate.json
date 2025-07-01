@@ -2,7 +2,7 @@
     "aio_services_v1": [
         {
             "container_name": "nextcloud-aio-libretranslate",
-            "display_name": "LibreTranslate",
+            "display_name": "LibreTranslate (deprecated)",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/libretranslate",
             "image": "ghcr.io/szaimen/aio-libretranslate",
             "image_tag": "v1",
