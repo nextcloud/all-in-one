@@ -584,6 +584,7 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Mounts'] = $mounts;
         }
 
+        // Containers should have a fixed host name. See https://github.com/nextcloud/all-in-one/discussions/6589
         $requestBody['Hostname'] = $container->GetIdentifier();
 
         $url = $this->BuildApiUrl('containers/create?name=' . $container->GetIdentifier());
