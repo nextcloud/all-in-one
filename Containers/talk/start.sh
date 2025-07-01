@@ -95,6 +95,7 @@ backends = backend-1
 allowall = false
 timeout = 10
 connectionsperhost = 8
+skipverify = ${SKIP_CERT_VERIFY}
 
 [backend-1]
 url = https://${NC_DOMAIN}
