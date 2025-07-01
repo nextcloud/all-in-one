@@ -366,4 +366,4 @@ caddy fmt --overwrite /Caddyfile
 chmod 777 /root
 
 # Start supervisord
-/usr/bin/supervisord -c /supervisord.conf
+exec /usr/bin/supervisord -c /supervisord.conf
