@@ -584,6 +584,8 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Mounts'] = $mounts;
         }
 
+        $requestBody['Hostname'] = $container->GetIdentifier();
+
         $url = $this->BuildApiUrl('containers/create?name=' . $container->GetIdentifier());
         try {
             $this->guzzleClient->request(
