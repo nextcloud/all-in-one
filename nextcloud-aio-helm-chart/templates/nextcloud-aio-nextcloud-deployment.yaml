@@ -110,6 +110,12 @@ spec:
               value: "{{ .Values.FULLTEXTSEARCH_ENABLED }}"
             - name: FULLTEXTSEARCH_HOST
               value: nextcloud-aio-fulltextsearch
+            - name: FULLTEXTSEARCH_PORT
+              value: 9200
+            - name: FULLTEXTSEARCH_USER
+              value: elastic
+            - name: FULLTEXTSEARCH_INDEX
+              value: nextcloud-aio
             - name: FULLTEXTSEARCH_PASSWORD
               value: "{{ .Values.FULLTEXTSEARCH_PASSWORD }}"
             - name: IMAGINARY_ENABLED
