@@ -13,6 +13,7 @@ This container bundles Local AI and auto-configures it for you.
 -  To make it work, you first need to browse `https://your-nc-domain.com/settings/admin/ai` and enable or disable specific features for your models in the openAI settings. Afterwards using the Nextcloud Assistant should work.
 - See [this guide](https://github.com/nextcloud/all-in-one/discussions/5430) for how to improve AI task pickup speed
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
+- Note that Nextcloud supports only one server for AI queries, so this container cannot be used at the same time as other AI containers.
 
 ### Repository
 https://github.com/szaimen/aio-local-ai

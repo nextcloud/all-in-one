@@ -26,6 +26,7 @@ http://local-ai.your-nc-domain.com {
 ```
 - See [this guide](https://github.com/nextcloud/all-in-one/discussions/5430) for how to improve AI task pickup speed
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
+- Note that Nextcloud supports only one server for AI queries, so this container cannot be used at the same time as other AI containers.
 
 ### Repository
 https://github.com/docjyJ/aio-local-ai-vulkan
