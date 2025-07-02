@@ -8,6 +8,7 @@ This container bundles Local AI and auto-configures it for you.
 ### Notes
 - Make sure vulkan is enabled in the AIO settings. Run `vulkaninfo` in the terminal to check if it is enabled.
 - Make sure to have enough storage space available. This container alone needs ~7GB storage.
+- Make sure to have enabled DRI device by adding `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true`
 -  To make it work, you first need to browse `https://your-nc-domain.com/settings/admin/ai` and enable or disable specific features for your models in the openAI settings. Afterwards using the Nextcloud Assistant should work.
 - To access the Local AI web interface, you need to set reverse proxy rules for it.
 ```Cadyfile
