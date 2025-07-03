@@ -2,28 +2,13 @@
 > [!WARNING]
 > ARM devices are not supported by this container. It is only for x86_64 devices. (See: https://github.com/mudler/LocalAI/issues/5778)
 
-> [!CAUTION]
-> If the configuration is not correct, it should still work but it will use the CPU only and will not benefit from hardware acceleration.
-
-## Local AI
-This container bundles Local AI and auto-configures it for you.
+## Local AI with Vulkan support
+This container bundles Local AI and auto-configures it for you. It support hardware acceleration with Vulkan.
 
 ### Notes
-- Make sure vulkan is enabled in the AIO settings. Run `vulkaninfo` in the terminal to check if it is enabled.
-- Make sure to have enough storage space available. This container alone needs ~7GB storage.
-- Make sure to have enabled DRI device by adding `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true`, see https://github.com/nextcloud/all-in-one?tab=readme-ov-file#with-open-source-drivers-mesa-for-amd-intel-and-new-drivers-nouveau-for-nvidia.
--  To make it work, you first need to browse `https://your-nc-domain.com/settings/admin/ai` and enable or disable specific features for your models in the openAI settings. Afterwards using the Nextcloud Assistant should work.
-- To access the Local AI web interface, you need to set reverse proxy rules for it.
-```Cadyfile
-http://local-ai.your-nc-domain.com {
-    # Local AI web interface haven't any authentication, so you should protect it
-    basic_auth {
-        # Username "Bob", password "hiccup"
-        Bob $2a$14$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
-    }
-    reverse_proxy nenxtcloud-aio-local-ai-vulkan:8080
-}
-```
+Documentation is available on the container repository. This documentation is regularly updated and is intended to be as simple and detailed as possible. Thanks for all your feedback!
+
+- See https://github.com/docjyJ/aio-local-ai-vulkan#getting-started for getting start with this container.
 - See [this guide](https://github.com/nextcloud/all-in-one/discussions/5430) for how to improve AI task pickup speed
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 - Note that Nextcloud supports only one server for AI queries, so this container cannot be used at the same time as other AI containers.
