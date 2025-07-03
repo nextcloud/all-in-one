@@ -484,8 +484,13 @@ class ConfigurationManager
             }
 
             if (!$isValidPath) {
-                throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'!");
+                throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'! Another option is to use the docker volume name 'nextcloud_aio_backupdir'.");
             }
+
+            if (str_starts_with($location, rtrim($this->GetNextcloudDatadirMount(), '/'))) {
+                throw new InvalidSettingConfigurationException("The path must not be a children of or equal to NEXTCLOUD_DATADIR, which is currently set to " . $this->GetNextcloudDatadirMount());
+            }
+
         } else {
             $this->ValidateBorgRemoteRepo($repo);
         }
