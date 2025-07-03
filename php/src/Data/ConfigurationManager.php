@@ -487,6 +487,8 @@ class ConfigurationManager
                 throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'! Another option is to use the docker volume name 'nextcloud_aio_backupdir'.");
             }
 
+            // Prevent backup to be contained in Nextcloud Datadir as this will delete the backup archive upon restore
+            // See https://github.com/nextcloud/all-in-one/issues/6607
             if (str_starts_with($location . '/', rtrim($this->GetNextcloudDatadirMount(), '/') . '/')) {
                 throw new InvalidSettingConfigurationException("The path must not be a children of or equal to NEXTCLOUD_DATADIR, which is currently set to " . $this->GetNextcloudDatadirMount());
             }
