@@ -6,7 +6,7 @@ FROM docker:28.3.0-cli AS docker
 FROM caddy:2.10.0-alpine AS caddy
 
 # From https://github.com/docker-library/php/blob/master/8.4/alpine3.21/fpm/Dockerfile
-FROM php:8.4.8-fpm-alpine3.21
+FROM php:8.4.10-fpm-alpine3.21
 
 ARG AIO_GIT_URL="https://github.com/nextcloud-releases/all-in-one.git"
 ARG AIO_GIT_BRANCH="main"
