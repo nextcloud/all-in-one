@@ -128,7 +128,9 @@ EOSQL
     fi
 
     # Shut down the database to be able to start it again
-    pg_ctl stop -m fast
+    # The smart mode disallows new connections, then waits for all existing clients to disconnect and any online backup to finish
+    # Wait for 1800s to make sure that a checkpoint is completed successfully
+    pg_ctl stop -m smart -t 1800
 
     # Change database port back to default
     export PGPORT=5432
