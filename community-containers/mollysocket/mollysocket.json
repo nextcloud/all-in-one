@@ -8,7 +8,11 @@
             "image_tag": "1",
             "restart": "unless-stopped",
             "ports": [
-                "8020:8020"
+                { 
+                   "ip_binding": "%APACHE_IP_BINDING%", 
+                   "port_number": "8020", 
+                   "protocol": "tcp" 
+                 }  
             ],
             "volumes": [
                 {
