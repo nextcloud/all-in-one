@@ -25,8 +25,8 @@
             "command": "server",
             "environment": [
                 "TZ=%TIMEZONE%",
-                "MOLLY_DB=\"/data/mollysocket.db\"",
-                "MOLLY_ALLOWED_ENDPOINTS=[\"*\",\"https://push.{$NC_DOMAIN}\"]",
+                "MOLLY_DB=/data/mollysocket.db",
+                "MOLLY_ALLOWED_ENDPOINTS=[\"*\",\"https://mollysocket.%NC_DOMAIN%\"]",
                 "MOLLY_ALLOWED_UUIDS=[\"*\"]",
                 "MOLLY_HOST=0.0.0.0",
                 "MOLLY_PORT=8020",
