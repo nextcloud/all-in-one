@@ -9,8 +9,14 @@
             "internal_port": "8080",
             "restart": "unless-stopped",
             "environment": [
-                "TZ=%TIMEZONE%",
-                "MODELS_PATH=/models"
+                "TZ=%TIMEZONE%"
+            ],
+            "ports": [
+                {
+                  "ip_binding": "%APACHE_IP_BINDING%",
+                  "port_number": "10078",
+                  "protocol": "tcp"
+                }
             ],
             "volumes": [
                 {
@@ -19,10 +25,13 @@
                     "writeable": true
                 },
                 {
-                    "source": "nextcloud_aio_localai_vulkan_images",
-                    "destination": "/tmp/generated/images/",
+                    "source": "nextcloud_aio_localai_vulkan_backends",
+                    "destination": "/backends",
                     "writeable": true
                 }
+            ],
+            "secrets": [
+                "$LOCAL_AI_PASS"
             ],
             "devices": [
                 "/dev/dri"
