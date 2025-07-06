@@ -31,8 +31,9 @@
                 }
             ],
             "secrets": [
-                "$LOCAL_AI_PASS"
+                "LOCAL_AI_PASS"
             ],
+            "ui_secret": "LOCAL_AI_PASS",
             "devices": [
                 "/dev/dri"
             ],
