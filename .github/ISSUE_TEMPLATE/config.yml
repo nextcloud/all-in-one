@@ -5,7 +5,7 @@ contact_links:
       about: Please read the docs first before submitting any report or request!
     - name: ⛑️ Questions and support
       url: https://help.nextcloud.com/tag/aio
-      about: For general questions, support and help
+      about: For questions, support and help
     - name: 💡 Suggest a new feature or discuss one
       url:  https://github.com/nextcloud/all-in-one/discussions/categories/ideas
       about: For new feature requests and discussion of existing ones
