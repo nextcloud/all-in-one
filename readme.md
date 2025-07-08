@@ -1,4 +1,8 @@
 # Nextcloud All-in-One
+
+> [!NOTE]
+> Nextcloud AIO is actively looking for contributors. See [the forum post](https://help.nextcloud.com/t/nextcloud-aio-is-looking-for-contributors/205234).
+
 The official Nextcloud installation method. Nextcloud AIO provides easy deployment and maintenance with most features included in this one Nextcloud instance. 
 
 Included are:
