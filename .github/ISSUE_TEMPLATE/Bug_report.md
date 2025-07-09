@@ -9,6 +9,7 @@ labels: 0. Needs triage
 - Additional documentation is available here: https://github.com/nextcloud/all-in-one/discussions/categories/wiki
 - You should also read through existing questions and their answer here: https://github.com/nextcloud/all-in-one/discussions/categories/questions
 - Additional threads can be found here: https://help.nextcloud.com/tag/aio
+- Existing feature requests are listed here: https://github.com/nextcloud/all-in-one/discussions/categories/ideas
 --->
 
 <!--- Please fill out the whole template below -->
