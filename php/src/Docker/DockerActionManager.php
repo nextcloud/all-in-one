@@ -585,7 +585,8 @@ readonly class DockerActionManager {
         }
 
         // All AIO-managed containers should not be updated externally via watchtower but gracefully by AIO's backup and update feature.
-        $requestBody['Labels'] = ["com.centurylinklabs.watchtower.enable" => "false", "org.label-schema.vendor" => "Nextcloud"];
+        // Also DIUN should not send update notifications. See https://crazymax.dev/diun/providers/docker/#docker-labels 
+        $requestBody['Labels'] = ["com.centurylinklabs.watchtower.enable" => "false", "diun.enable" => "false", "org.label-schema.vendor" => "Nextcloud"];
 
         // Containers should have a fixed host name. See https://github.com/nextcloud/all-in-one/discussions/6589
         $requestBody['Hostname'] = $container->GetIdentifier();
