@@ -240,178 +240,7 @@ readonly class DockerActionManager {
             $envs[] = $this->GetAllNextcloudExecCommands();
         }
         foreach ($envs as $key => $env) {
-            // TODO: This whole block below is a hack and needs to get reworked in order to support multiple substitutions per line by default for all envs
-            if (str_starts_with($env, 'extra_params=')) {
-                $env = str_replace('%COLLABORA_SECCOMP_POLICY%', $this->configurationManager->GetCollaboraSeccompPolicy(), $env);
-                $env = str_replace('%NC_DOMAIN%', $this->configurationManager->GetDomain(), $env);
-                $envs[$key] = $env;
-                continue;
-            }
-
-            // Original implementation
-            $patterns = ['/%(.*)%/'];
-
-            if (preg_match($patterns[0], $env, $out) === 1) {
-                $replacements = array();
-
-                if ($out[1] === 'NC_DOMAIN') {
-                    $replacements[1] = $this->configurationManager->GetDomain();
-                } elseif ($out[1] === 'NC_BASE_DN') {
-                    $replacements[1] = $this->configurationManager->GetBaseDN();
-                } elseif ($out[1] === 'AIO_TOKEN') {
-                    $replacements[1] = $this->configurationManager->GetToken();
-                } elseif ($out[1] === 'BORGBACKUP_REMOTE_REPO') {
-                    $replacements[1] = $this->configurationManager->GetBorgRemoteRepo();
-                } elseif ($out[1] === 'BORGBACKUP_MODE') {
-                    $replacements[1] = $this->configurationManager->GetBackupMode();
-                } elseif ($out[1] === 'AIO_URL') {
-                    $replacements[1] = $this->configurationManager->GetAIOURL();
-                } elseif ($out[1] === 'SELECTED_RESTORE_TIME') {
-                    $replacements[1] = $this->configurationManager->GetSelectedRestoreTime();
-                } elseif ($out[1] === 'RESTORE_EXCLUDE_PREVIEWS') {
-                    $replacements[1] = $this->configurationManager->GetRestoreExcludePreviews();
-                } elseif ($out[1] === 'APACHE_PORT') {
-                    $replacements[1] = $this->configurationManager->GetApachePort();
-                } elseif ($out[1] === 'TALK_PORT') {
-                    $replacements[1] = $this->configurationManager->GetTalkPort();
-                } elseif ($out[1] === 'NEXTCLOUD_MOUNT') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudMount();
-                } elseif ($out[1] === 'BACKUP_RESTORE_PASSWORD') {
-                    $replacements[1] = $this->configurationManager->GetBorgRestorePassword();
-                } elseif ($out[1] === 'CLAMAV_ENABLED') {
-                    if ($this->configurationManager->isClamavEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'TALK_RECORDING_ENABLED') {
-                    if ($this->configurationManager->isTalkRecordingEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'ONLYOFFICE_ENABLED') {
-                    if ($this->configurationManager->isOnlyofficeEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'COLLABORA_ENABLED') {
-                    if ($this->configurationManager->isCollaboraEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'TALK_ENABLED') {
-                    if ($this->configurationManager->isTalkEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'UPDATE_NEXTCLOUD_APPS') {
-                    if ($this->configurationManager->isDailyBackupRunning() && $this->configurationManager->areAutomaticUpdatesEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'TIMEZONE') {
-                    if ($this->configurationManager->GetTimezone() === '') {
-                        $replacements[1] = 'Etc/UTC';
-                    } else {
-                        $replacements[1] = $this->configurationManager->GetTimezone();
-                    }
-                } elseif ($out[1] === 'COLLABORA_DICTIONARIES') {
-                    if ($this->configurationManager->GetCollaboraDictionaries() === '') {
-                        $replacements[1] = 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru';
-                    } else {
-                        $replacements[1] = $this->configurationManager->GetCollaboraDictionaries();
-                    }
-                } elseif ($out[1] === 'IMAGINARY_ENABLED') {
-                    if ($this->configurationManager->isImaginaryEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'FULLTEXTSEARCH_ENABLED') {
-                    if ($this->configurationManager->isFulltextsearchEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'DOCKER_SOCKET_PROXY_ENABLED') {
-                    if ($this->configurationManager->isDockerSocketProxyEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'NEXTCLOUD_UPLOAD_LIMIT') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudUploadLimit();
-                } elseif ($out[1] === 'NEXTCLOUD_MEMORY_LIMIT') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudMemoryLimit();
-                } elseif ($out[1] === 'NEXTCLOUD_MAX_TIME') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudMaxTime();
-                } elseif ($out[1] === 'BORG_RETENTION_POLICY') {
-                    $replacements[1] = $this->configurationManager->GetBorgRetentionPolicy();
-                } elseif ($out[1] === 'FULLTEXTSEARCH_JAVA_OPTIONS') {
-                    $replacements[1] = $this->configurationManager->GetFulltextsearchJavaOptions();
-                } elseif ($out[1] === 'NEXTCLOUD_TRUSTED_CACERTS_DIR') {
-                    $replacements[1] = $this->configurationManager->GetTrustedCacertsDir();
-                } elseif ($out[1] === 'ADDITIONAL_DIRECTORIES_BACKUP') {
-                    if ($this->configurationManager->GetAdditionalBackupDirectoriesString() !== '') {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'BORGBACKUP_HOST_LOCATION') {
-                    $replacements[1] = $this->configurationManager->GetBorgBackupHostLocation();
-                } elseif ($out[1] === 'APACHE_MAX_SIZE') {
-                    $replacements[1] = $this->configurationManager->GetApacheMaxSize();
-                } elseif ($out[1] === 'COLLABORA_SECCOMP_POLICY') {
-                    $replacements[1] = $this->configurationManager->GetCollaboraSeccompPolicy();
-                } elseif ($out[1] === 'NEXTCLOUD_STARTUP_APPS') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudStartupApps();
-                } elseif ($out[1] === 'NEXTCLOUD_ADDITIONAL_APKS') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudAdditionalApks();
-                } elseif ($out[1] === 'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS') {
-                    $replacements[1] = $this->configurationManager->GetNextcloudAdditionalPhpExtensions();
-                } elseif ($out[1] === 'INSTALL_LATEST_MAJOR') {
-                    if ($this->configurationManager->shouldLatestMajorGetInstalled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } elseif ($out[1] === 'REMOVE_DISABLED_APPS') {
-                    if ($this->configurationManager->shouldDisabledAppsGetRemoved()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                    // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
-                } elseif ($out[1] === 'AIO_DATABASE_HOST') {
-                    $replacements[1] = gethostbyname('nextcloud-aio-database');
-                    // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
-                } elseif ($out[1] === 'CADDY_IP_ADDRESS') {
-                    $replacements[1] = '';
-                    $communityContainers = $this->configurationManager->GetEnabledCommunityContainers();
-                    if (in_array('caddy', $communityContainers, true)) {
-                        $replacements[1] = gethostbyname('nextcloud-aio-caddy');
-                    }
-                } elseif ($out[1] === 'WHITEBOARD_ENABLED') {
-                    if ($this->configurationManager->isWhiteboardEnabled()) {
-                        $replacements[1] = 'yes';
-                    } else {
-                        $replacements[1] = '';
-                    }
-                } else {
-                    $secret = $this->configurationManager->GetSecret($out[1]);
-                    if ($secret === "") {
-                        throw new \Exception("The secret " . $out[1] . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
-                    }
-                    $replacements[1] = $secret;
-                }
-
-                $envs[$key] = preg_replace($patterns, $replacements, $env);
-            }
+            $envs[$key] = $this->replaceEnvPlaceholders($env);
         }
 
         if (count($envs) > 0) {
@@ -642,6 +471,88 @@ readonly class DockerActionManager {
                 error_log($message);
             }
         }
+    }
+
+    // Replaces placeholders in $envValue with their values.
+    // E.g. "%NC_DOMAIN%:%APACHE_PORT" becomes "my.nextcloud.com:11000"
+    private function replaceEnvPlaceholders(string $envValue): string {
+        // $pattern breaks down as:
+        // % - matches a literal percent sign
+        // ([^%]+) - capture group that matches one or more characters that are NOT percent signs
+        // % - matches the closing percent sign
+        //
+        // Assumes literal percent signs are always matched and there is no
+        // escaping.
+        $pattern = '/%([^%]+)%/';
+        $matchCount = preg_match_all($pattern, $envValue, $matches);
+
+        if ($matchCount === 0) {
+            return $envValue;
+        }
+
+        $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
+        $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
+        $placeholderPatterns = array_map(static fn(string $p) => '/' . preg_quote($p) . '/', $placeholders); // ["/%PLACEHOLDER1%/", ...]
+        $placeholderValues = array_map($this->getPlaceholderValue(...), $placeholderNames); // ["val1", "val2"]
+        // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
+        return (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
+    }
+
+    private function getPlaceholderValue(string $placeholder) : string {
+        return match ($placeholder) {
+            'NC_DOMAIN' => $this->configurationManager->GetDomain(),
+            'NC_BASE_DN' => $this->configurationManager->GetBaseDN(),
+            'AIO_TOKEN' => $this->configurationManager->GetToken(),
+            'BORGBACKUP_REMOTE_REPO' => $this->configurationManager->GetBorgRemoteRepo(),
+            'BORGBACKUP_MODE' => $this->configurationManager->GetBackupMode(),
+            'AIO_URL' => $this->configurationManager->GetAIOURL(),
+            'SELECTED_RESTORE_TIME' => $this->configurationManager->GetSelectedRestoreTime(),
+            'RESTORE_EXCLUDE_PREVIEWS' => $this->configurationManager->GetRestoreExcludePreviews(),
+            'APACHE_PORT' => $this->configurationManager->GetApachePort(),
+            'TALK_PORT' => $this->configurationManager->GetTalkPort(),
+            'NEXTCLOUD_MOUNT' => $this->configurationManager->GetNextcloudMount(),
+            'BACKUP_RESTORE_PASSWORD' => $this->configurationManager->GetBorgRestorePassword(),
+            'CLAMAV_ENABLED' => $this->configurationManager->isClamavEnabled() ? 'yes' : '',
+            'TALK_RECORDING_ENABLED' => $this->configurationManager->isTalkRecordingEnabled() ? 'yes' : '',
+            'ONLYOFFICE_ENABLED' => $this->configurationManager->isOnlyofficeEnabled() ? 'yes' : '',
+            'COLLABORA_ENABLED' => $this->configurationManager->isCollaboraEnabled() ? 'yes' : '',
+            'TALK_ENABLED' => $this->configurationManager->isTalkEnabled() ? 'yes' : '',
+            'UPDATE_NEXTCLOUD_APPS' => ($this->configurationManager->isDailyBackupRunning() && $this->configurationManager->areAutomaticUpdatesEnabled()) ? 'yes' : '',
+            'TIMEZONE' => $this->configurationManager->GetTimezone() === '' ? 'Etc/UTC' : $this->configurationManager->GetTimezone(),
+            'COLLABORA_DICTIONARIES' => $this->configurationManager->GetCollaboraDictionaries() === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->configurationManager->GetCollaboraDictionaries(),
+            'IMAGINARY_ENABLED' => $this->configurationManager->isImaginaryEnabled() ? 'yes' : '',
+            'FULLTEXTSEARCH_ENABLED' => $this->configurationManager->isFulltextsearchEnabled() ? 'yes' : '',
+            'DOCKER_SOCKET_PROXY_ENABLED' => $this->configurationManager->isDockerSocketProxyEnabled() ? 'yes' : '',
+            'NEXTCLOUD_UPLOAD_LIMIT' => $this->configurationManager->GetNextcloudUploadLimit(),
+            'NEXTCLOUD_MEMORY_LIMIT' => $this->configurationManager->GetNextcloudMemoryLimit(),
+            'NEXTCLOUD_MAX_TIME' => $this->configurationManager->GetNextcloudMaxTime(),
+            'BORG_RETENTION_POLICY' => $this->configurationManager->GetBorgRetentionPolicy(),
+            'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->configurationManager->GetFulltextsearchJavaOptions(),
+            'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->configurationManager->GetTrustedCacertsDir(),
+            'ADDITIONAL_DIRECTORIES_BACKUP' => $this->configurationManager->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
+            'BORGBACKUP_HOST_LOCATION' => $this->configurationManager->GetBorgBackupHostLocation(),
+            'APACHE_MAX_SIZE' => (string)($this->configurationManager->GetApacheMaxSize()),
+            'COLLABORA_SECCOMP_POLICY' => $this->configurationManager->GetCollaboraSeccompPolicy(),
+            'NEXTCLOUD_STARTUP_APPS' => $this->configurationManager->GetNextcloudStartupApps(),
+            'NEXTCLOUD_ADDITIONAL_APKS' => $this->configurationManager->GetNextcloudAdditionalApks(),
+            'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->configurationManager->GetNextcloudAdditionalPhpExtensions(),
+            'INSTALL_LATEST_MAJOR' => $this->configurationManager->shouldLatestMajorGetInstalled() ? 'yes' : '',
+            'REMOVE_DISABLED_APPS' => $this->configurationManager->shouldDisabledAppsGetRemoved() ? 'yes' : '',
+            // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
+            'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
+            // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
+            'CADDY_IP_ADDRESS' => in_array('caddy', $this->configurationManager->GetEnabledCommunityContainers(), true) ? gethostbyname('nextcloud-aio-caddy') : '',
+            'WHITEBOARD_ENABLED' => $this->configurationManager->isWhiteboardEnabled() ? 'yes' : '',
+            default => $this->getSecretOrThrow($placeholder),
+        };
+    }
+
+    private function getSecretOrThrow(string $secretName): string {
+        $secret = $this->configurationManager->GetSecret($secretName);
+        if ($secret === "") {
+            throw new \Exception("The secret " . $secretName . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
+        }
+        return $secret;
     }
 
     private function isContainerUpdateAvailable(string $id): string {
