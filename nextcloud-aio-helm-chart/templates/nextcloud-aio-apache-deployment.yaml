@@ -61,7 +61,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: ghcr.io/nextcloud-releases/aio-apache:20250701_092737
+          image: ghcr.io/nextcloud-releases/aio-apache:20250710_082355
           readinessProbe:
             exec:
               command:
