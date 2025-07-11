@@ -37,6 +37,7 @@ if ! [ -a "/var/run/docker.sock" ]; then
     print_red "Docker socket is not available. Cannot continue."
     echo "Please make sure to mount the docker socket into /var/run/docker.sock inside the container!"
     echo "If you did this by purpose because you don't want the container to have access to the docker socket, see https://github.com/nextcloud/all-in-one/tree/main/manual-install."
+    echo "And https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
     exit 1
 elif ! mountpoint -q "/mnt/docker-aio-config"; then
     print_red "/mnt/docker-aio-config is not a mountpoint. Cannot proceed!"
@@ -274,6 +275,7 @@ if ! curl --no-progress-meter https://ghcr.io/v2/ >/dev/null; then
     echo "Most likely is something blocking access to it."
     echo "You should be able to fix this by following https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html"
     echo "Another solution is using https://github.com/nextcloud/all-in-one/tree/main/manual-install"
+    echo "See https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
     exit 1
 fi
 
@@ -283,6 +285,13 @@ if [ -n "$TZ" ]; then
     echo "The correct timezone can be set in the AIO interface later on!"
     # Disable exit since it seems to be by default set on unraid and we dont want to break these instances
     # exit 1
+fi
+# Check that http proxy or no_proxy variable is not set which AIO does not support
+if [ -n "$HTTP_PROXY" ] || [ -n "$http_proxy" ] || [ -n "$HTTPS_PROXY" ] || [ -n "$https_proxy" ] || [ -n "$NO_PROXY" ] || [ -n "$no_proxy" ]; then
+    print_red "The environmental variable HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy, NO_PROXY or no_proxy has been set which is not supported by AIO."
+    echo "If you need this, then you should use https://github.com/nextcloud/all-in-one/tree/main/manual-install"
+    echo "See https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
+    exit 1
 fi
 if mountpoint -q /etc/localtime; then
     print_red "/etc/localtime has been mounted into the container which is not allowed because AIO only supports running in the default Etc/UTC timezone!"
