@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
 FROM ghcr.io/nicholas-fedor/watchtower:1.11.5 AS watchtower
 
-FROM alpine:3.21.3
+FROM alpine:3.22.1
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
