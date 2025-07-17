@@ -809,7 +809,7 @@ fi
 
 # Fulltextsearch
 if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
-    while ! nc -z "$FULLTEXTSEARCH_HOST" 9200; do
+    while ! nc -z "$FULLTEXTSEARCH_HOST" "$FULLTEXTSEARCH_PORT"; do
         echo "waiting for Fulltextsearch to become available..."
         sleep 5
     done
@@ -835,7 +835,7 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:update files_fulltextsearch
     fi
     php /var/www/html/occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-    php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://elastic:$FULLTEXTSEARCH_PASSWORD@$FULLTEXTSEARCH_HOST:9200\",\"elastic_index\":\"nextcloud-aio\"}"
+    php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$FULLTEXTSEARCH_USER:$FULLTEXTSEARCH_PASSWORD@$FULLTEXTSEARCH_HOST:$FULLTEXTSEARCH_PORT\",\"elastic_index\":\"$FULLTEXTSEARCH_INDEX\"}"
     php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 
     # Do the index
