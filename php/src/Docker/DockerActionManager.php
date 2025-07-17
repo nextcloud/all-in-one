@@ -274,6 +274,8 @@ readonly class DockerActionManager {
                     $replacements[1] = $this->configurationManager->GetApachePort();
                 } elseif ($out[1] === 'TALK_PORT') {
                     $replacements[1] = $this->configurationManager->GetTalkPort();
+                } elseif ($out[1] === 'TURN_DOMAIN') {
+                    $replacements[1] = $this->configurationManager->GetTurnDomain();
                 } elseif ($out[1] === 'NEXTCLOUD_MOUNT') {
                     $replacements[1] = $this->configurationManager->GetNextcloudMount();
                 } elseif ($out[1] === 'BACKUP_RESTORE_PASSWORD') {
@@ -457,6 +459,10 @@ readonly class DockerActionManager {
                     }
                 } else if ($port === '%TALK_PORT%') {
                     $port = $this->configurationManager->GetTalkPort();
+                    // Skip publishing talk port if it is set to the same value like the apache port
+                    if ($port === $this->configurationManager->GetApachePort()) {
+                        continue;
+                    }
                 }
                 $ipBinding = $value->ipBinding;
                 if ($ipBinding === '%APACHE_IP_BINDING%') {
