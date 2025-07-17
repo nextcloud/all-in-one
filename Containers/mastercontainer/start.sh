@@ -47,6 +47,8 @@ elif mountpoint -q /var/www/docker-aio/php/containers.json; then
     print_red "/var/www/docker-aio/php/containers.json is a mountpoint. Cannot proceed!"
     echo "This is a not-supported customization of the mastercontainer!"
     echo "Please remove this bind-mount from the mastercontainer."
+    echo "If you need to customize things, feel free to use https://github.com/nextcloud/all-in-one/tree/main/manual-install"
+    echo "See https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
     exit 1
 elif ! sudo -u www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
