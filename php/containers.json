@@ -795,7 +795,7 @@
         "bootstrap.memory_lock=true",
         "cluster.name=nextcloud-aio",
         "discovery.type=single-node",
-        "logger.org.elasticsearch.discovery=WARN",
+        "logger.level=WARN",
         "http.port=9200",
         "xpack.license.self_generated.type=basic",
         "xpack.security.enabled=false",
