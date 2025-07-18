@@ -371,6 +371,7 @@
                                 <p>
                                 To store backups remotely instead, fill in the
                                 <a target="_blank" href="https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls">remote borg repo url and submit it</a>.
+                                You will be provided with an SSH public key for authorization at the remote afterwards.
                                 </p>
                                 <form method="POST" action="/api/configuration" class="xhr">
                                     <label>Local backup location</label> <input type="text" id="borg_backup_host_location" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
