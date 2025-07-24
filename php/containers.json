@@ -8,9 +8,9 @@
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-talk",
-        "nextcloud-aio-nextcloud",
         "nextcloud-aio-notify-push",
-        "nextcloud-aio-whiteboard"
+        "nextcloud-aio-whiteboard",
+        "nextcloud-aio-nextcloud"
       ],
       "display_name": "Apache",
       "image": "ghcr.io/nextcloud-releases/aio-apache",

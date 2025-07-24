@@ -22,6 +22,7 @@ readonly class DockerController {
     private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
+        // Start all dependencies first and then itself
         foreach($container->GetDependsOn() as $dependency) {
             $this->PerformRecursiveContainerStart($dependency, $pullImage);
         }
@@ -227,13 +228,19 @@ readonly class DockerController {
     private function PerformRecursiveContainerStop(string $id) : void
     {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
+
+        // This is a hack but no better solution was found for the meantime
+        // Stop Collabora first to make sure it force-saves
+        // See https://github.com/nextcloud/richdocuments/issues/3799
+        if ($id === self::TOP_CONTAINER) {
+            $this->PerformRecursiveContainerStop('nextcloud-aio-collabora');
+        }
+
+        // Stop itself first and then all the dependencies
+        $this->dockerActionManager->StopContainer($container);
         foreach($container->GetDependsOn() as $dependency) {
             $this->PerformRecursiveContainerStop($dependency);
         }
-
-        // Disconnecting is not needed. This also allows to start the containers manually via docker-cli
-        //$this->dockerActionManager->DisconnectContainerFromNetwork($container);
-        $this->dockerActionManager->StopContainer($container);
     }
 
     public function StopContainer(Request $request, Response $response, array $args) : Response
