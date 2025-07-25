@@ -10,13 +10,13 @@ services:
       nextcloud-aio-talk:
         condition: service_started
         required: false
-      nextcloud-aio-nextcloud:
-        condition: service_started
-        required: false
       nextcloud-aio-notify-push:
         condition: service_started
         required: false
       nextcloud-aio-whiteboard:
+        condition: service_started
+        required: false
+      nextcloud-aio-nextcloud:
         condition: service_started
         required: false
     image: ghcr.io/nextcloud-releases/aio-apache:latest
