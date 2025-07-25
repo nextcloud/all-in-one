@@ -34,31 +34,30 @@ readonly class DockerController {
             return;
         }
 
-        // Skip database image pull if the last shutdown was not clean
-        if ($id === 'nextcloud-aio-database') {
-            if ($this->dockerActionManager->GetDatabasecontainerExitCode() > 0) {
-                $pullImage = false;
-                error_log('Not pulling the latest database image because the container was not correctly shut down.');
-            }
-        }
-
-        // Check if registry is reachable in order to make sure that we do not try to pull an image if it is down
-        // and try to mitigate issues that are arising due to that
-        if ($pullImage) {
-            if (!$this->dockerActionManager->isRegistryReachable($container)) {
-                $pullImage = false;
-                error_log('Not pulling the ' . $container->GetContainerName() . ' image for the ' . $container->GetIdentifier() . ' container because the registry does not seem to be reachable.');
-            }
-        }
-
         $this->dockerActionManager->DeleteContainer($container);
         $this->dockerActionManager->CreateVolumes($container);
-        if ($pullImage) {
-            $this->dockerActionManager->PullImage($container);
-        }
+        $this->dockerActionManager->PullImage($container, $pullImage);
         $this->dockerActionManager->CreateContainer($container);
         $this->dockerActionManager->StartContainer($container);
         $this->dockerActionManager->ConnectContainerToNetwork($container);
+    }
+
+    private function PerformRecursiveImagePull(string $id) : void {
+        $container = $this->containerDefinitionFetcher->GetContainerById($id);
+
+        // Pull all dependencies first and then itself
+        foreach($container->GetDependsOn() as $dependency) {
+            $this->PerformRecursiveImagePull($dependency);
+        }
+
+        $this->dockerActionManager->PullImage($container, true);
+    }
+
+    public function PullAllContainerImages(): void {
+
+        $id = self::TOP_CONTAINER;
+
+        $this->PerformRecursiveImagePull($id);
     }
 
     public function GetLogs(Request $request, Response $response, array $args) : Response
