@@ -504,6 +504,7 @@ readonly class DockerActionManager {
             'NC_BASE_DN' => $this->configurationManager->GetBaseDN(),
             'AIO_TOKEN' => $this->configurationManager->GetToken(),
             'BORGBACKUP_REMOTE_REPO' => $this->configurationManager->GetBorgRemoteRepo(),
+            'BORGBACKUP_REMOTE_PATH' => $this->configurationManager->GetBorgRemotePath(),
             'BORGBACKUP_MODE' => $this->configurationManager->GetBackupMode(),
             'AIO_URL' => $this->configurationManager->GetAIOURL(),
             'SELECTED_RESTORE_TIME' => $this->configurationManager->GetSelectedRestoreTime(),

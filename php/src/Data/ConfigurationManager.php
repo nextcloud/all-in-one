@@ -459,12 +459,13 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetBorgLocationVars(string $location, string $repo) : void {
+    public function SetBorgLocationVars(string $location, string $repo, string $remotePath = '') : void {
         $this->ValidateBorgLocationVars($location, $repo);
 
         $config = $this->GetConfig();
         $config['borg_backup_host_location'] = $location;
         $config['borg_remote_repo'] = $repo;
+        $config['borg_remote_path'] = $remotePath;
         $this->WriteConfig($config);
     }
 
@@ -519,7 +520,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetBorgRestoreLocationVarsAndPassword(string $location, string $repo, string $password) : void {
+    public function SetBorgRestoreLocationVarsAndPassword(string $location, string $repo, string $password, string $remotePath = '') : void {
         $this->ValidateBorgLocationVars($location, $repo);
 
         if ($password === '') {
@@ -530,6 +531,7 @@ class ConfigurationManager
         $config['borg_backup_host_location'] = $location;
         $config['borg_remote_repo'] = $repo;
         $config['borg_restore_password'] = $password;
+        $config['borg_remote_path'] = $remotePath;
         $config['instance_restore_attempt'] = 1;
         $this->WriteConfig($config);
     }
@@ -630,6 +632,15 @@ class ConfigurationManager
         }
 
         return $config['borg_remote_repo'];
+    }
+
+    public function GetBorgRemotePath() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['borg_remote_path'])) {
+            $config['borg_remote_path'] = '';
+        }
+
+        return $config['borg_remote_path'];
     }
 
     public function GetBorgPublicKey() : string {

@@ -776,8 +776,9 @@ If you want to back up directly to a remote borg repository:
 1. Create your borg repository at the remote. Note down the repository URL for later.
 2. Open the AIO interface
 3. Under backup section, leave the local path blank and fill in the url to your borg repository that you noted down earlier.
-4. Click on `Create backup`, this will create an ssh key pair and fail because the remote doesn't trust this key yet. Copy the public key shown in AIO and add it to your authorized keys on the remote.
-5. Try again to create a backup, this time it should succeed.
+4. (Optional) If your remote borg installation is not in the standard PATH, fill in the "Remote borg path" field with the path to your borg executable (e.g., `borg1` or `/usr/local/bin/borg`).
+5. Click on `Create backup`, this will create an ssh key pair and fail because the remote doesn't trust this key yet. Copy the public key shown in AIO and add it to your authorized keys on the remote.
+6. Try again to create a backup, this time it should succeed.
 
 </details>
 
