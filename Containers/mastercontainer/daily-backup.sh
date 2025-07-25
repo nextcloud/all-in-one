@@ -64,6 +64,12 @@ if [ "$AUTOMATIC_UPDATES" = 1 ]; then
     done
 fi
 
+# Update container images to reduce downtime later on
+if [ "$AUTOMATIC_UPDATES" = 1 ]; then
+    echo "Updating container images..."
+    sudo -u www-data php /var/www/docker-aio/php/src/Cron/PullContainerImages.php
+fi
+
 # Stop containers if required
 # shellcheck disable=SC2235
 if [ "$CHECK_BACKUP" != 1 ] && ([ "$DAILY_BACKUP" != 1 ] || [ "$STOP_CONTAINERS" = 1 ]); then

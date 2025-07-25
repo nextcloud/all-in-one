@@ -450,7 +450,30 @@ readonly class DockerActionManager {
         }
     }
 
-    public function PullImage(Container $container): void {
+    public function PullImage(Container $container, bool $pullImage = true): void {
+
+        // Skip database image pull if the last shutdown was not clean
+        if ($container->GetIdentifier() === 'nextcloud-aio-database') {
+            if ($this->GetDatabasecontainerExitCode() > 0) {
+                $pullImage = false;
+                error_log('Not pulling the latest database image because the container was not correctly shut down.');
+            }
+        }
+
+        // Check if registry is reachable in order to make sure that we do not try to pull an image if it is down
+        // and try to mitigate issues that are arising due to that
+        if ($pullImage) {
+            if (!$this->isRegistryReachable($container)) {
+                $pullImage = false;
+                error_log('Not pulling the ' . $container->GetContainerName() . ' image for the ' . $container->GetIdentifier() . ' container because the registry does not seem to be reachable.');
+            }
+        }
+
+        // Do not continue if $pullImage is false
+        if (!$pullImage) {
+            return;
+        }
+
         $imageName = $this->BuildImageName($container);
         $encodedImageName = urlencode($imageName);
         $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', $encodedImageName));
