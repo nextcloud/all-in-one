@@ -18,6 +18,9 @@ else
 fi
 export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+if [ -n "$BORG_REMOTE_PATH" ]; then
+    export BORG_REMOTE_PATH
+fi
 if [ -n "$BORG_REMOTE_REPO" ]; then
     export BORG_REPO="$BORG_REMOTE_REPO"
 

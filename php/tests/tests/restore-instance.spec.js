@@ -35,6 +35,8 @@ test('Restore instance', async ({ page: setupPage }) => {
   await containersPage.locator('#borg_restore_host_location').fill('/mnt/test/aio-incorrect-path');
   await containersPage.locator('#borg_restore_password').click();
   await containersPage.locator('#borg_restore_password').fill(borgBackupPassword);
+  // Clear remote path field for local backup test
+  await containersPage.locator('input[name="borg_remote_path"]').fill('');
   await containersPage.getByRole('button', { name: 'Submit location and encryption password' }).click()
   await containersPage.getByRole('button', { name: 'Test path and encryption' }).click();
   await expect(containersPage.getByRole('main')).toContainText('Last test failed!', { timeout: 60 * 1000 });
@@ -44,6 +46,8 @@ test('Restore instance', async ({ page: setupPage }) => {
   await containersPage.locator('#borg_restore_host_location').fill(borgBackupLocation);
   await containersPage.locator('#borg_restore_password').click();
   await containersPage.locator('#borg_restore_password').fill('foobar');
+  // Clear remote path field for local backup test
+  await containersPage.locator('input[name="borg_remote_path"]').fill('');
   await containersPage.getByRole('button', { name: 'Submit location and encryption password' }).click()
   await containersPage.getByRole('button', { name: 'Test path and encryption' }).click();
   await expect(containersPage.getByRole('main')).toContainText('Last test failed!', { timeout: 60 * 1000 });
@@ -53,6 +57,8 @@ test('Restore instance', async ({ page: setupPage }) => {
   await containersPage.locator('#borg_restore_host_location').fill(borgBackupLocation);
   await containersPage.locator('#borg_restore_password').click();
   await containersPage.locator('#borg_restore_password').fill(borgBackupPassword);
+  // Clear remote path field for local backup test
+  await containersPage.locator('input[name="borg_remote_path"]').fill('');
   await containersPage.getByRole('button', { name: 'Submit location and encryption password' }).click()
   await containersPage.getByRole('button', { name: 'Test path and encryption' }).click();
 
