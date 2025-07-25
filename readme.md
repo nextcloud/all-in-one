@@ -776,7 +776,14 @@ If you want to back up directly to a remote borg repository:
 1. Create your borg repository at the remote. Note down the repository URL for later.
 2. Open the AIO interface
 3. Under backup section, leave the local path blank and fill in the url to your borg repository that you noted down earlier.
-4. Click on `Create backup`, this will create an ssh key pair and fail because the remote doesn't trust this key yet. Copy the public key shown in AIO and add it to your authorized keys on the remote.
+4. Click on `Create backup`, this will create an ssh key pair and fail because the remote doesn't trust this key yet. Copy the public key shown in AIO and add it to your authorized keys on the remote. 
+
+   Alternatively, if you already have SSH keys for your remote repository, you can bind mount them to the mastercontainer:
+   - Private key: `-v /path/to/your/id_borg:/mnt/docker-aio-config/data/id_borg_mount:ro`
+   - Public key: `-v /path/to/your/id_borg.pub:/mnt/docker-aio-config/data/id_borg_mount.pub:ro`
+   
+   The keys will be automatically copied to the correct location on container start.
+
 5. Try again to create a backup, this time it should succeed.
 
 </details>
