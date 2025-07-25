@@ -331,6 +331,27 @@ chown www-data:www-data -R /mnt/docker-aio-config/session/
 chown www-data:www-data -R /mnt/docker-aio-config/caddy/
 chown root:root -R /mnt/docker-aio-config/certs/
 
+# Handle SSH key propagation for borgbackup
+BORG_KEY_PATH="/mnt/docker-aio-config/data/id_borg"
+BORG_KEY_PUB_PATH="/mnt/docker-aio-config/data/id_borg.pub"
+BORG_KEY_MOUNT_PATH="/mnt/docker-aio-config/data/id_borg_mount"
+BORG_KEY_PUB_MOUNT_PATH="/mnt/docker-aio-config/data/id_borg_mount.pub"
+
+# Check if borg keys don't exist and mounted keys do exist, then copy them
+if [ ! -f "$BORG_KEY_PATH" ] && [ -f "$BORG_KEY_MOUNT_PATH" ]; then
+    print_green "Copying mounted SSH private key for borgbackup..."
+    cp "$BORG_KEY_MOUNT_PATH" "$BORG_KEY_PATH"
+    chmod 600 "$BORG_KEY_PATH"
+    chown www-data:www-data "$BORG_KEY_PATH"
+fi
+
+if [ ! -f "$BORG_KEY_PUB_PATH" ] && [ -f "$BORG_KEY_PUB_MOUNT_PATH" ]; then
+    print_green "Copying mounted SSH public key for borgbackup..."
+    cp "$BORG_KEY_PUB_MOUNT_PATH" "$BORG_KEY_PUB_PATH"
+    chmod 644 "$BORG_KEY_PUB_PATH"
+    chown www-data:www-data "$BORG_KEY_PUB_PATH"
+fi
+
 # Don't allow access to the AIO interface from the Nextcloud container
 # Probably more cosmetic than anything but at least an attempt
 if ! grep -q '# nextcloud-aio-block' /etc/apache2/httpd.conf; then
