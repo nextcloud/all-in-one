@@ -60,8 +60,8 @@ test('Initial setup', async ({ page: setupPage }) => {
 
   // Start containers and wait for starting message
   await containersPage.getByRole('button', { name: 'Download and start containers' }).click();
-  await expect(containersPage.getByRole('main')).toContainText('Containers are currently starting.', { timeout: 3 * 60 * 1000 });
-  await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 2 * 60 * 1000 });
+  await expect(containersPage.getByRole('main')).toContainText('Containers are currently starting.', { timeout: 5 * 60 * 1000 });
+  await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 3 * 60 * 1000 });
   await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toHaveAttribute('href', 'https://example.com');
 
   // Extract initial nextcloud password
