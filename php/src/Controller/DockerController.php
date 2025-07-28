@@ -245,7 +245,7 @@ readonly class DockerController {
             $this->dockerActionManager->StopContainer($container, $forceStopNextcloud);
         }
         foreach($container->GetDependsOn() as $dependency) {
-            $this->PerformRecursiveContainerStop($dependency);
+            $this->PerformRecursiveContainerStop($dependency, $forceStopNextcloud);
         }
     }
 
