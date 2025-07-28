@@ -233,7 +233,7 @@ readonly class DockerController {
         // This is a hack but no better solution was found for the meantime
         // Stop Collabora first to make sure it force-saves
         // See https://github.com/nextcloud/richdocuments/issues/3799
-        if ($id === self::TOP_CONTAINER) {
+        if ($id === self::TOP_CONTAINER && $this->configurationManager->isCollaboraEnabled()) {
             $this->PerformRecursiveContainerStop('nextcloud-aio-collabora');
         }
 
