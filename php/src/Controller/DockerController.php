@@ -83,17 +83,18 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerBackup(Request $request, Response $response, array $args) : Response {
-        $this->startBackup();
+        $forceStopNextcloud = true;
+        $this->startBackup($forceStopNextcloud);
         return $response->withStatus(201)->withHeader('Location', '/');
     }
 
-    public function startBackup() : void {
+    public function startBackup(bool $forceStopNextcloud = false) : void {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'backup';
         $this->configurationManager->WriteConfig($config);
 
         $id = self::TOP_CONTAINER;
-        $this->PerformRecursiveContainerStop($id);
+        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
@@ -125,7 +126,8 @@ readonly class DockerController {
         $this->configurationManager->WriteConfig($config);
 
         $id = self::TOP_CONTAINER;
-        $this->PerformRecursiveContainerStop($id);
+        $forceStopNextcloud = true;
+        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
@@ -224,7 +226,7 @@ readonly class DockerController {
         $this->PerformRecursiveContainerStart($id);
     }
 
-    private function PerformRecursiveContainerStop(string $id) : void
+    private function PerformRecursiveContainerStop(string $id, bool $forceStopNextcloud = false) : void
     {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
@@ -236,7 +238,12 @@ readonly class DockerController {
         }
 
         // Stop itself first and then all the dependencies
-        $this->dockerActionManager->StopContainer($container);
+        if ($id !== 'nextcloud-aio-nextcloud') {
+            $this->dockerActionManager->StopContainer($container);
+        } else {
+            // We want to stop the Nextcloud container after 10s and not wait for the configured stop_grace_period
+            $this->dockerActionManager->StopContainer($container, $forceStopNextcloud);
+        }
         foreach($container->GetDependsOn() as $dependency) {
             $this->PerformRecursiveContainerStop($dependency);
         }
@@ -245,7 +252,8 @@ readonly class DockerController {
     public function StopContainer(Request $request, Response $response, array $args) : Response
     {
         $id = self::TOP_CONTAINER;
-        $this->PerformRecursiveContainerStop($id);
+        $forceStopNextcloud = true;
+        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
 
         return $response->withStatus(201)->withHeader('Location', '/');
     }
