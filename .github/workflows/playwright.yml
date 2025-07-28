@@ -45,7 +45,14 @@ jobs:
           sleep 10
 
       - name: Run Playwright tests for initial setup
-        run: cd php/tests && DEBUG=pw:api npx playwright test tests/initial-setup.spec.js
+        run: |
+          cd php/tests
+          export DEBUG=pw:api
+          if ! npx playwright test tests/initial-setup.spec.js; then
+            docker logs nextcloud-aio-mastercontainer
+            docker logs nextcloud-aio-borgbackup
+            exit 1
+          fi
 
       - name: Start fresh development server
         run: |
@@ -66,7 +73,14 @@ jobs:
           sleep 10
 
       - name: Run Playwright tests for backup restore
-        run: cd php/tests && DEBUG=pw:api npx playwright test tests/restore-instance.spec.js
+        run: |
+          cd php/tests 
+          export DEBUG=pw:api
+          if ! npx playwright test tests/restore-instance.spec.js; then
+            docker logs nextcloud-aio-mastercontainer
+            docker logs nextcloud-aio-borgbackup
+            exit 1
+          fi
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
