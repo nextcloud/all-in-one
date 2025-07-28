@@ -898,8 +898,13 @@ readonly class DockerActionManager {
         }
     }
 
-    public function StopContainer(Container $container): void {
-        $url = $this->BuildApiUrl(sprintf('containers/%s/stop?t=%s', urlencode($container->GetIdentifier()), $container->GetMaxShutdownTime()));
+    public function StopContainer(Container $container, bool $forceStopContainer = false): void {
+        if ($forceStopContainer) {
+            $maxShutDownTime = 10;
+        } else {
+            $maxShutDownTime = $container->GetMaxShutdownTime();
+        }
+        $url = $this->BuildApiUrl(sprintf('containers/%s/stop?t=%s', urlencode($container->GetIdentifier()), $maxShutDownTime));
         try {
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
