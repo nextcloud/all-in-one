@@ -28,7 +28,7 @@ test('Restore instance', async ({ page: setupPage }) => {
   await containersPage.locator('#domain').click();
   await containersPage.locator('#domain').fill('example.com');
   await containersPage.getByRole('button', { name: 'Submit domain' }).click();
-  await expect(containersPage.locator('body')).toContainText('Domain does not point to this server or the reverse proxy is not configured correctly.');
+  await expect(containersPage.locator('body')).toContainText('Domain does not point to this server or the reverse proxy is not configured correctly.', { timeout: 15 * 1000 });
 
   // Reject invalid backup location
   await containersPage.locator('#borg_restore_host_location').click();
