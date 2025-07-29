@@ -578,6 +578,24 @@ else
 fi
 # AIO app end # Do not remove or change this line!
 
+# Allow to add custom certs to Nextcloud's trusted cert store
+if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
+    set -x
+    TRUSTED_CERTIFICATES="$(env | grep NEXTCLOUD_TRUSTED_CERTIFICATES_ | grep -oP '^[A-Z_a-z0-9]+')"
+    mapfile -t TRUSTED_CERTIFICATES <<< "$TRUSTED_CERTIFICATES"
+    CERTIFICATES_ROOT_DIR="/var/www/html/data/certificates"
+    mkdir -p "$CERTIFICATES_ROOT_DIR"
+    for certificate in "${TRUSTED_CERTIFICATES[@]}"; do
+        # shellcheck disable=SC2001
+        CERTIFICATE_NAME="$(echo "$certificate" | sed 's|^NEXTCLOUD_TRUSTED_CERTIFICATES_||')"
+        if ! [ -f "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME" ]; then
+            echo "${!certificate}" > "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
+            php /var/www/html/occ security:certificates:import "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
+        fi
+    done
+    set +x
+fi
+
 # Notify push
 if ! [ -d "/var/www/html/custom_apps/notify_push" ]; then
     php /var/www/html/occ app:install notify_push
