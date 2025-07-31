@@ -49,7 +49,8 @@
         "APACHE_MAX_SIZE=%APACHE_MAX_SIZE%",
         "APACHE_MAX_TIME=%NEXTCLOUD_MAX_TIME%",
         "NOTIFY_PUSH_HOST=nextcloud-aio-notify-push",
-        "WHITEBOARD_HOST=nextcloud-aio-whiteboard"
+        "WHITEBOARD_HOST=nextcloud-aio-whiteboard",
+        "ADDITIONAL_TRUSTED_PROXY=%ADDITIONAL_TRUSTED_PROXY%"
       ],
       "volumes": [
         {
@@ -255,7 +256,8 @@
         "THIS_IS_AIO=true",
         "IMAGINARY_SECRET=%IMAGINARY_SECRET%",
         "WHITEBOARD_SECRET=%WHITEBOARD_SECRET%",
-        "WHITEBOARD_ENABLED=%WHITEBOARD_ENABLED%"
+        "WHITEBOARD_ENABLED=%WHITEBOARD_ENABLED%",
+        "ADDITIONAL_TRUSTED_PROXY=%ADDITIONAL_TRUSTED_PROXY%"
       ],
       "stop_grace_period": 600,
       "restart": "unless-stopped",

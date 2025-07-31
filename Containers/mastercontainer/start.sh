@@ -321,7 +321,7 @@ fi
 mkdir -p /mnt/docker-aio-config/data/
 mkdir -p /mnt/docker-aio-config/session/
 mkdir -p /mnt/docker-aio-config/caddy/
-mkdir -p /mnt/docker-aio-config/certs/ 
+mkdir -p /mnt/docker-aio-config/certs/
 
 # Adjust permissions for all instances
 chmod 770 -R /mnt/docker-aio-config
@@ -378,7 +378,7 @@ rm -f /var/run/apache2/httpd.pid
 # Fix the Caddyfile format
 caddy fmt --overwrite /Caddyfile
 
-# Fix caddy log 
+# Fix caddy log
 chmod 777 /root
 
 # Start supervisord

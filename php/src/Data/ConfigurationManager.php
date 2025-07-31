@@ -1110,4 +1110,12 @@ class ConfigurationManager
             return true;
         }
     }
+
+    public function GetAdditionalTrustedProxy() : string {
+        $additionalTrustedProxy = getenv('ADDITIONAL_TRUSTED_PROXY');
+        if (is_string($additionalTrustedProxy)) {
+            return $additionalTrustedProxy;
+        }
+        return '';
+    }
 }
