@@ -1,6 +1,9 @@
 # syntax=docker/dockerfile:latest
 FROM php:8.3.23-fpm-alpine3.22
 
+ARG AIO_GIT_URL="https://github.com/nextcloud-releases/all-in-one.git"
+ARG AIO_GIT_BRANCH="main"
+
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=16G
 ENV PHP_MAX_TIME=3600
@@ -246,7 +249,7 @@ RUN set -ex; \
     rm -rf /tmp/nextcloud-aio && \
     mkdir -p /tmp/nextcloud-aio && \
     cd /tmp/nextcloud-aio && \
-    git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
+    git clone "$AIO_GIT_URL" --depth 1 --single-branch --branch "$AIO_GIT_BRANCH" .; \
     mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
     cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/; \
     echo "[ -n \"\$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
