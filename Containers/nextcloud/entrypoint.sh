@@ -234,6 +234,7 @@ DATADIR_PERMISSION_CONF
             if [ -z "$POSTGRES_PORT" ]; then
               POSTGRES_PORT=5432
             fi
+            # shellcheck disable=SC2153
             INSTALL_OPTIONS+=(--database "$DATABASE_TYPE" --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST" --database-port "$POSTGRES_PORT")
 
             echo "Starting Nextcloud installation..."

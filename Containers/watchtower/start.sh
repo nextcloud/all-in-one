@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if socket is available and readable
-if ! [ -a "/var/run/docker.sock" ]; then
+if ! [ -e "/var/run/docker.sock" ]; then
     echo "Docker socket is not available. Cannot continue."
     exit 1
 elif ! test -r /var/run/docker.sock; then
