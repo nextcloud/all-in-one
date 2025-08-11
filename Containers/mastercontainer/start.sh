@@ -33,7 +33,7 @@ if [ "$*" != "" ]; then
 fi
 
 # Check if socket is available and readable
-if ! [ -a "/var/run/docker.sock" ]; then
+if ! [ -e "/var/run/docker.sock" ]; then
     print_red "Docker socket is not available. Cannot continue."
     echo "Please make sure to mount the docker socket into /var/run/docker.sock inside the container!"
     echo "If you did this by purpose because you don't want the container to have access to the docker socket, see https://github.com/nextcloud/all-in-one/tree/main/manual-install."
