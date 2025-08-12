@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM ghcr.io/nicholas-fedor/watchtower:1.11.6 AS watchtower
+FROM ghcr.io/nicholas-fedor/watchtower:386-1.7.2 AS watchtower
 
 FROM alpine:3.22.1
 
