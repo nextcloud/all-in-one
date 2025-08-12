@@ -107,7 +107,7 @@ RUN set -ex; \
     } >> /usr/local/etc/php/conf.d/docker-php-ext-igbinary.ini; \
     \
 # set recommended PHP.ini settings
-# see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+# see https://docs.nextcloud.com/server/stable/admin_manual/installation/server_tuning.html#enable-php-opcache and below
     { \
         echo 'opcache.max_accelerated_files=10000'; \
         echo 'opcache.memory_consumption=256'; \
