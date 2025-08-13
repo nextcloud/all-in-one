@@ -828,45 +828,54 @@ fi
 
 # Fulltextsearch
 if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
-    while ! nc -z "$FULLTEXTSEARCH_HOST" "$FULLTEXTSEARCH_PORT"; do
+    count=0
+    while ! nc -z "$FULLTEXTSEARCH_HOST" "$FULLTEXTSEARCH_PORT" && [ "$count" -lt 90 ]; do
         echo "waiting for Fulltextsearch to become available..."
+        count=$((count+5))
         sleep 5
     done
-    if ! [ -d "/var/www/html/custom_apps/fulltextsearch" ]; then
-        php /var/www/html/occ app:install fulltextsearch
-    elif [ "$(php /var/www/html/occ config:app:get fulltextsearch enabled)" != "yes" ]; then
-        php /var/www/html/occ app:enable fulltextsearch
-    elif [ "$SKIP_UPDATE" != 1 ]; then
-        php /var/www/html/occ app:update fulltextsearch
-    fi    
-    if ! [ -d "/var/www/html/custom_apps/fulltextsearch_elasticsearch" ]; then
-        php /var/www/html/occ app:install fulltextsearch_elasticsearch
-    elif [ "$(php /var/www/html/occ config:app:get fulltextsearch_elasticsearch enabled)" != "yes" ]; then
-        php /var/www/html/occ app:enable fulltextsearch_elasticsearch
-    elif [ "$SKIP_UPDATE" != 1 ]; then
-        php /var/www/html/occ app:update fulltextsearch_elasticsearch
-    fi    
-    if ! [ -d "/var/www/html/custom_apps/files_fulltextsearch" ]; then
-        php /var/www/html/occ app:install files_fulltextsearch
-    elif [ "$(php /var/www/html/occ config:app:get files_fulltextsearch enabled)" != "yes" ]; then
-        php /var/www/html/occ app:enable files_fulltextsearch
-    elif [ "$SKIP_UPDATE" != 1 ]; then
-        php /var/www/html/occ app:update files_fulltextsearch
-    fi
-    php /var/www/html/occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-    php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$FULLTEXTSEARCH_USER:$FULLTEXTSEARCH_PASSWORD@$FULLTEXTSEARCH_HOST:$FULLTEXTSEARCH_PORT\",\"elastic_index\":\"$FULLTEXTSEARCH_INDEX\"}"
-    php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
+    if [ "$count" -ge 90 ]; then
+        echo "Fulltextsearch did not start in time. Skipping initialization and disabling fulltextsearch apps."
+        php /var/www/html/occ app:disable fulltextsearch
+        php /var/www/html/occ app:disable fulltextsearch_elasticsearch
+        php /var/www/html/occ app:disable files_fulltextsearch
+    else
+        if ! [ -d "/var/www/html/custom_apps/fulltextsearch" ]; then
+            php /var/www/html/occ app:install fulltextsearch
+        elif [ "$(php /var/www/html/occ config:app:get fulltextsearch enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable fulltextsearch
+        elif [ "$SKIP_UPDATE" != 1 ]; then
+            php /var/www/html/occ app:update fulltextsearch
+        fi    
+        if ! [ -d "/var/www/html/custom_apps/fulltextsearch_elasticsearch" ]; then
+            php /var/www/html/occ app:install fulltextsearch_elasticsearch
+        elif [ "$(php /var/www/html/occ config:app:get fulltextsearch_elasticsearch enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable fulltextsearch_elasticsearch
+        elif [ "$SKIP_UPDATE" != 1 ]; then
+            php /var/www/html/occ app:update fulltextsearch_elasticsearch
+        fi    
+        if ! [ -d "/var/www/html/custom_apps/files_fulltextsearch" ]; then
+            php /var/www/html/occ app:install files_fulltextsearch
+        elif [ "$(php /var/www/html/occ config:app:get files_fulltextsearch enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable files_fulltextsearch
+        elif [ "$SKIP_UPDATE" != 1 ]; then
+            php /var/www/html/occ app:update files_fulltextsearch
+        fi
+        php /var/www/html/occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
+        php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$FULLTEXTSEARCH_USER:$FULLTEXTSEARCH_PASSWORD@$FULLTEXTSEARCH_HOST:$FULLTEXTSEARCH_PORT\",\"elastic_index\":\"$FULLTEXTSEARCH_INDEX\"}"
+        php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 
-    # Do the index
-    if ! [ -f "$NEXTCLOUD_DATA_DIR/fts-index.done" ]; then
-        echo "Waiting 10s before activating FTS..."
-        sleep 10
-        echo "Activating fulltextsearch..."
-        if php /var/www/html/occ fulltextsearch:test && php /var/www/html/occ fulltextsearch:index "{\"errors\": \"reset\"}" --no-readline; then
-            touch "$NEXTCLOUD_DATA_DIR/fts-index.done"
-        else
-            echo "Fulltextsearch failed. Could not index."
-            echo "Feel free to follow https://github.com/nextcloud/all-in-one/discussions/1709 if you want to skip the indexing in the future."
+        # Do the index
+        if ! [ -f "$NEXTCLOUD_DATA_DIR/fts-index.done" ]; then
+            echo "Waiting 10s before activating FTS..."
+            sleep 10
+            echo "Activating fulltextsearch..."
+            if php /var/www/html/occ fulltextsearch:test && php /var/www/html/occ fulltextsearch:index "{\"errors\": \"reset\"}" --no-readline; then
+                touch "$NEXTCLOUD_DATA_DIR/fts-index.done"
+            else
+                echo "Fulltextsearch failed. Could not index."
+                echo "Feel free to follow https://github.com/nextcloud/all-in-one/discussions/1709 if you want to skip the indexing in the future."
+            fi
         fi
     fi
 else
