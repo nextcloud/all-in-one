@@ -10,6 +10,7 @@ jobs:
   run_update_sh:
     name: Run nextcloud-update script
     runs-on: ubuntu-latest
+    if: github.repository == 'nextcloud/all-in-one'
     steps:
     - uses: actions/checkout@v4
     - name: Run nextcloud-update script

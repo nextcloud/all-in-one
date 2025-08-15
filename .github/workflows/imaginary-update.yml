@@ -9,6 +9,7 @@ jobs:
   run_update:
     name: update to latest imaginary commit on master branch
     runs-on: ubuntu-latest
+    if: github.repository == 'nextcloud/all-in-one'
     steps:
     - uses: actions/checkout@v4
     - name: Run imaginary-update

@@ -8,6 +8,7 @@ on:
 jobs:
   update-psalm-baseline:
     runs-on: ubuntu-latest
+    if: github.repository == 'nextcloud/all-in-one'
 
     steps:
       - uses: actions/checkout@v4

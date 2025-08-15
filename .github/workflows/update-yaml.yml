@@ -9,6 +9,7 @@ jobs:
   update-yaml:
     name: update yaml files
     runs-on: ubuntu-latest
+    if: github.repository == 'nextcloud/all-in-one'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

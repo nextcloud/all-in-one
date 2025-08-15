@@ -9,6 +9,7 @@ jobs:
   dependency_updates:
     name: Run dependency update script
     runs-on: ubuntu-latest
+    if: github.repository == 'nextcloud/all-in-one'
     steps:
     - uses: actions/checkout@v4
     - uses: shivammathur/setup-php@20529878ed81ef8e78ddf08b480401e6101a850f # v2

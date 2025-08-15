@@ -9,6 +9,7 @@ jobs:
   update-helm:
     name: update helm chart
     runs-on: ubuntu-latest
+    if: github.repository == 'nextcloud/all-in-one'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
