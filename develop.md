@@ -50,7 +50,7 @@ Simply run `sudo docker exec -it nextcloud-aio-database psql -U oc_nextcloud nex
 
 ## How to locally build and test changes to mastercontainer
 1. Ensure you are on the developer channel per the instructions above.
-1. Use below commands from the project root to build the mastercontainer image:
+1. Use the commands below from the project root to build the mastercontainer image:
 ```
 docker buildx build --file Containers/mastercontainer/Dockerfile --tag ghcr.io/nextcloud-releases/all-in-one:develop --load .
 ```
@@ -59,13 +59,13 @@ docker buildx build --file Containers/mastercontainer/Dockerfile --tag ghcr.io/n
 
 ## How to locally build and test changes to other containers using the bypass_container_update param
 1. Ensure you are on the developer channel per the instructions above.
-1. Use below commands from the project root to build the container image:
+1. Use the commands below from the project root to build the container image:
 ```
 # For the "nextcloud" container
-docker buildx build --file Containers/nextcloud/Dockerfile --tag ghcr.io/nextcloud-releases/nextcloud:develop --load .
+docker buildx build --file Containers/nextcloud/Dockerfile --tag ghcr.io/nextcloud-releases/aio-nextcloud:develop --load .
 
 # For all other containers
-docker buildx build --file Containers/nextcloud/Dockerfile --tag ghcr.io/nextcloud-releases/aio-{container}:develop --load Containers/{container}
+docker buildx build --file Containers/{container}/Dockerfile --tag ghcr.io/nextcloud-releases/aio-{container}:develop --load Containers/{container}
 ```
     - Note that the build-args are only needed for the `apache` and `nextcloud` containers
 1. Stop the containers using the AIO admin interface.
