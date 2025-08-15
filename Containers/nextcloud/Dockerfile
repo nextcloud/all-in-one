@@ -13,11 +13,12 @@ ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
 
-COPY --chmod=775 *.sh /
-COPY --chmod=774 upgrade.exclude /upgrade.exclude
-COPY config/*.php /
-COPY supervisord.conf /supervisord.conf
-COPY root.motd /root.motd
+COPY --chmod=775 Containers/nextcloud/*.sh /
+COPY --chmod=774 Containers/nextcloud/upgrade.exclude /upgrade.exclude
+COPY Containers/nextcloud/config/*.php /
+COPY Containers/nextcloud/supervisord.conf /supervisord.conf
+COPY Containers/nextcloud/root.motd /root.motd
+COPY app /usr/src/nextcloud/apps/nextcloud-aio
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
@@ -242,15 +243,7 @@ RUN set -ex; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 5000/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
-# AIO cloning start # Do not remove or change this line!
-    rm -rf /tmp/nextcloud-aio && \
-    mkdir -p /tmp/nextcloud-aio && \
-    cd /tmp/nextcloud-aio && \
-    git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
-    mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
-    cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/; \
     echo "[ -n \"\$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
-# AIO cloning end # Do not remove or change this line!
     \
     chown www-data:root -R /usr/src && \
     chmod 777 -R /usr/local/etc/php/conf.d && \
