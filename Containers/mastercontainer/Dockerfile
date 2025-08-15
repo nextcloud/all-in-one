@@ -8,15 +8,19 @@ FROM caddy:2.10.0-alpine AS caddy
 # From https://github.com/docker-library/php/blob/master/8.4/alpine3.22/fpm/Dockerfile
 FROM php:8.4.10-fpm-alpine3.22
 
-ARG AIO_GIT_URL="https://github.com/nextcloud-releases/all-in-one.git"
-ARG AIO_GIT_BRANCH="main"
-
 EXPOSE 80
 EXPOSE 8080
 EXPOSE 8443
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
+
+COPY community-containers /var/www/docker-aio/community-containers
+COPY php /var/www/docker-aio/php
+COPY --chmod=775 Containers/mastercontainer/*.sh /
+COPY --chmod=664 Containers/mastercontainer/Caddyfile /Caddyfile
+COPY --chmod=664 Containers/mastercontainer/supervisord.conf /supervisord.conf
+COPY Containers/mastercontainer/mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
 
 WORKDIR /var/www/docker-aio
 
@@ -67,8 +71,6 @@ RUN set -ex; \
     wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer; \
     chmod +x /usr/local/bin/composer; \
     cd /var/www/docker-aio; \
-    git clone "$AIO_GIT_URL" --depth 1 --single-branch --branch "$AIO_GIT_BRANCH" .; \
-    find ./ -maxdepth 1 -mindepth 1 -not -path ./php -not -path ./community-containers -exec rm -r {} \; ; \
     rm -r ./php/tests; \
     chown www-data:www-data -R /var/www/docker-aio; \
     cd php; \
@@ -119,11 +121,6 @@ RUN set -ex; \
     rm -rf /var/www/localhost/cgi-bin/; \
     mkdir /var/log/supervisord; \
     mkdir /var/run/supervisord;
-
-COPY --chmod=775 *.sh /
-COPY --chmod=664 Caddyfile /Caddyfile
-COPY --chmod=664 supervisord.conf /supervisord.conf
-COPY mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
 
 LABEL org.label-schema.vendor="Nextcloud"
 

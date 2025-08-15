@@ -50,22 +50,22 @@ Simply run `sudo docker exec -it nextcloud-aio-database psql -U oc_nextcloud nex
 
 ## How to locally build and test changes to mastercontainer
 1. Ensure you are on the developer channel per the instructions above.
-1. Push changes to your own git fork and branch.
-1. Use below commands to build mastercontainer image for a custom git url and branch:
+1. Use below commands from the project root to build the mastercontainer image:
 ```
-cd Containers/mastercontainer
-docker buildx build -t ghcr.io/nextcloud-releases/all-in-one:develop --build-arg AIO_GIT_URL="https://github.com/my-fork-repo/all-in-one.git" --build-arg AIO_GIT_BRANCH="my-feature-branch" --load .
+docker buildx build --file Containers/mastercontainer/Dockerfile --tag ghcr.io/nextcloud-releases/all-in-one:develop --load .
 ```
 1. Start a container with above built image.
 1. Since the hash of a locally built image doesn't match the latest release mastercontainer, it prompts for a mandatory update. To temporarily bypass the update suffix `?bypass_mastercontainer_update` to the URL. Eg: `https://localhost:8080/containers?bypass_mastercontainer_update`
 
 ## How to locally build and test changes to other containers using the bypass_container_update param
 1. Ensure you are on the developer channel per the instructions above.
-1. Push changes to your own git fork and branch.
-1. Use below commands to build the container image for a custom git url and branch:
+1. Use below commands from the project root to build the container image:
 ```
-cd Containers/{container}
-docker buildx build -t ghcr.io/nextcloud-releases/{container}:develop --build-arg AIO_GIT_URL="https://github.com/my-fork-repo/all-in-one.git" --build-arg AIO_GIT_BRANCH="my-feature-branch" --load .
+# For the "nextcloud" container
+docker buildx build --file Containers/nextcloud/Dockerfile --tag ghcr.io/nextcloud-releases/nextcloud:develop --load .
+
+# For all other containers
+docker buildx build --file Containers/nextcloud/Dockerfile --tag ghcr.io/nextcloud-releases/aio-{container}:develop --load Containers/{container}
 ```
     - Note that the build-args are only needed for the `apache` and `nextcloud` containers
 1. Stop the containers using the AIO admin interface.
