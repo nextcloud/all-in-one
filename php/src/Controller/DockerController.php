@@ -191,7 +191,12 @@ readonly class DockerController {
         $config['install_latest_major'] = $installLatestMajor;
         $this->configurationManager->WriteConfig($config);
 
+        // Do not pull container images in case 'bypass_container_update' is set via url params
+        // Needed for local testing
         $pullImage = !isset($request->getParsedBody()['bypass_container_update']);
+        if ($pullImage === false) {
+            error_log('WARNING: Not pulling container images. Instead, using local ones.');
+        }
         // Start container
         $this->startTopContainer($pullImage);
 
