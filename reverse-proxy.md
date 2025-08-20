@@ -68,7 +68,7 @@ The process to run Nextcloud behind a reverse proxy consists of at least steps 1
 1. **Use this startup command! See [point 2](#2-use-this-startup-command)**
 1. Optional: if the reverse proxy is installed on the same host and in the host network, you should limit the apache container to only listen on localhost. See [point 3](#3-limit-the-access-to-the-apache-container)
 1. **Open the AIO interface. See [point 4](#4-open-the-aio-interface)**
-1. Optional: if the reverse proxy is outside the host network, configure AIO to trust it. See [point 5](#5-optional-configure-aio-for-reverse-proxies-outside-your-lan)
+1. Optional: if the reverse proxy is outside the host network, configure AIO to trust it. See [point 5](#5-optional-configure-aio-for-reverse-proxies-that-connect-to-nextcloud-using-an-ip-address-and-not-localhost-nor-127001)
 1. Optional: get a valid certificate for the AIO interface! See [point 6](#6-optional-get-a-valid-certificate-for-the-aio-interface)
 1. Optional: how to debug things? See [point 7](#7-how-to-debug-things)
 
@@ -1006,7 +1006,7 @@ sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:syst
 ### Collabora WOPI allow list
 If your reverse proxy connects to Nextcloud with an IP address that is different from the one for your domain<sup>*</sup> and you are using the Collabora server then you must also add the IP to the WOPI request allow list via `Administration Settings > Administration > Office > Allow list for WOPI requests`.
 
-<small>*: For example, the reverse proxy has a public globally routable IP and connects to your AIO instance via Tailscale with an IP in the `100.64.0.0/10` range.</small>
+<small>*: For example, the reverse proxy has a public globally routable IP and connects to your AIO instance via Tailscale with an IP in the `100.64.0.0/10` range, or you are using a Cloudflare tunnel ([cloudflare notes](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#notes-on-cloudflare-proxytunnel)).</small>
 
 ### External reverse proxies connecting via VPN (e.g. Tailscale)
 
