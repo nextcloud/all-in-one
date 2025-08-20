@@ -17,8 +17,11 @@ COPY --chmod=775 Containers/nextcloud/*.sh /
 COPY --chmod=774 Containers/nextcloud/upgrade.exclude /upgrade.exclude
 COPY Containers/nextcloud/config/*.php /
 COPY Containers/nextcloud/supervisord.conf /supervisord.conf
-COPY Containers/nextcloud/root.motd /root.motd
+
+# AIO cloning start # Do not remove or change this line!
 COPY app /usr/src/nextcloud/apps/nextcloud-aio
+COPY Containers/nextcloud/root.motd /root.motd
+# AIO cloning end # Do not remove or change this line!
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
@@ -243,7 +246,7 @@ RUN set -ex; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 5000/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
-    echo "[ -n \"\$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
+    echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \
     \
     chown www-data:root -R /usr/src && \
     chmod 777 -R /usr/local/etc/php/conf.d && \
