@@ -842,7 +842,7 @@ readonly class DockerActionManager {
                             'Driver' => 'bridge',
                             'Internal' => false,
                             'Options' => [
-                                'com.docker.network.driver.mtu' => $configurationManager->GetMTUSize(),
+                                'com.docker.network.driver.mtu' => $this->configurationManager->GetMTUSize(),
                             ],
                         ]
                     ]
