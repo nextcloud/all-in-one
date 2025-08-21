@@ -576,6 +576,13 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetMTUSize() : string {
+        $envVariableName = 'MTU_SIZE';
+        $configName = 'MTU_size';
+        $defaultValue = '1500';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */
