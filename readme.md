@@ -409,7 +409,7 @@ You can move the whole docker library and all its files including all Nextcloud 
 
 1. Stop all the containers from the AIO Interface.
 2. Go to your terminal and delete the Collabora container (`docker rm nextcloud-aio-collabora`) AND the Collabora image (`docker image rm nextcloud/aio-collabora`).
-3. You might also want to prune your Docker (`docker system prune`) (no data will be lost).
+3. You might also want to prune your Docker (`docker system prune -a`) (no data will be lost).
 4. Restart your containers from the AIO Interface.
 
 This should solve the problem.
