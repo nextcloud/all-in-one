@@ -138,25 +138,33 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->GetEnabledCommunityContainers(),
         'bypass_container_update' => $bypass_container_update,
+        'aio_interface_path' => $configurationManager->GetAIOInterfacePath(),
     ]);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
     $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Data\ConfigurationManager $configurationManager */
+    $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
     return $view->render($response, 'login.twig', [
         'is_login_allowed' => $dockerActionManger->isLoginAllowed(),
+        'aio_interface_path' => $configurationManager->GetAIOInterfacePath(),
     ]);
 });
 $app->get('/setup', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Data\Setup $setup */
     $setup = $container->get(\AIO\Data\Setup::class);
+    /** @var \AIO\Data\ConfigurationManager $configurationManager */
+    $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
 
     if(!$setup->CanBeInstalled()) {
         return $view->render(
             $response,
-            'already-installed.twig'
+            'already-installed.twig', [
+                'aio_interface_path' => $configurationManager->GetAIOInterfacePath(),
+            ]
         );
     }
 
@@ -165,6 +173,7 @@ $app->get('/setup', function (Request $request, Response $response, array $args)
         'setup.twig',
         [
             'password' => $setup->Setup(),
+            'aio_interface_path' => $configurationManager->GetAIOInterfacePath(),
         ]
     );
 });
@@ -176,19 +185,21 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
 
     /** @var \AIO\Data\Setup $setup */
     $setup = $container->get(\AIO\Data\Setup::class);
+    /** @var \AIO\Data\ConfigurationManager $configurationManager */
+    $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
     if($setup->CanBeInstalled()) {
         return $response
-            ->withHeader('Location', '/setup')
+            ->withHeader('Location', $configurationManager->GetAIOInterfacePath() . '/setup')
             ->withStatus(302);
     }
 
     if($authManager->IsAuthenticated()) {
         return $response
-            ->withHeader('Location', '/containers')
+            ->withHeader('Location', $configurationManager->GetAIOInterfacePath() . '/containers')
             ->withStatus(302);
     } else {
         return $response
-            ->withHeader('Location', '/login')
+            ->withHeader('Location', $configurationManager->GetAIOInterfacePath() . '/login')
             ->withStatus(302);
     }
 });

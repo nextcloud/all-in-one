@@ -27,7 +27,7 @@ readonly class AuthMiddleware {
         if(!in_array($request->getUri()->getPath(), $publicRoutes)) {
             if(!$this->authManager->IsAuthenticated()) {
                 $status = 302;
-                $headers = ['Location' => '/'];
+                $headers = ['Location' => $this->configurationManager->GetAIOInterfacePath() . '/'];
                 $response = new Response($status, $headers);
                 return $response;
             }
