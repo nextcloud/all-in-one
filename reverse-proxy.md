@@ -1003,12 +1003,10 @@ Add the IP it uses connect to AIO to the Nextcloud trusted_proxies like this:
 sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:system:set trusted_proxies 2 --value=ip.address.of.proxy
 ```
 
-Advice: In case you run AIO behind Cloudflare Tunnel, you must add all [Cloudflare IP-Ranges](https://www.cloudflare.com/ips/) to the WOPI allowlist.
-
 ### Collabora WOPI allow list
 If your reverse proxy connects to Nextcloud with an IP address that is different from the one for your domain<sup>*</sup> and you are using the Collabora server then you must also add the IP to the WOPI request allow list via `Administration Settings > Administration > Office > Allow list for WOPI requests`.
 
-<small>*: For example, the reverse proxy has a public globally routable IP and connects to your AIO instance via Tailscale with an IP in the `100.64.0.0/10` range, or you are using a Cloudflare tunnel ([cloudflare notes](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#notes-on-cloudflare-proxytunnel)).</small>
+<small>*: For example, the reverse proxy has a public globally routable IP and connects to your AIO instance via Tailscale with an IP in the `100.64.0.0/10` range, or you are using a Cloudflare tunnel ([cloudflare notes](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#notes-on-cloudflare-proxytunnel): You must add all [Cloudflare IP-Ranges](https://www.cloudflare.com/ips/) to the WOPI allowlist.)</small>
 
 ### External reverse proxies connecting via VPN (e.g. Tailscale)
 
