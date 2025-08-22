@@ -123,7 +123,7 @@
                                     <p>If you only want to install AIO locally without exposing it to the public internet or if you cannot do so, feel free to follow <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/local-instance.md">this documentation</a>.</p>
                                     <p>If you should be using Cloudflare Proxy for your domain, make sure to disable the Proxy feature temporarily as it might block the domain validation attempts.</p>
                                     {% if apache_port != '443' %}
-                                        <p>If you run into issues with your domain being accepted, see <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things">these steps</a> for how to debug things.</p>
+                                        <p>If you run into issues with your domain being accepted, see <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#how-to-debug">these steps</a> for how to debug things.</p>
                                     {% endif %}
                                     <p><strong>Hint:</strong> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.</p>
                                 </details>
@@ -352,6 +352,7 @@
                                     <form method="POST" action="/api/docker/start" class="xhr">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                        <input type="hidden" name="bypass_container_update" value="{{bypass_container_update}}">
                                         <input class="button " type="submit" value="Start and update containers" onclick="return confirm('Start and update containers? You should consider creating a backup first.')" />
                                     </form>
                                 {% endif %}

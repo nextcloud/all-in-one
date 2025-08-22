@@ -42,7 +42,7 @@ ghcr.io/nextcloud-releases/all-in-one:latest
 - `--env APACHE_PORT=11000` This is the port that is published on the host that runs Docker and Nextcloud AIO at which the reverse proxy should point at.
 - `--env APACHE_IP_BINDING=0.0.0.0` This can be modified to allow access to the published port on the host only from certain ip-addresses. [See this documentation](#3-limit-the-access-to-the-apache-container)
 - `--env APACHE_ADDITIONAL_NETWORK=""` This can be used to put the sibling apache container that is created by AIO into a specified network - useful if your reverse proxy runs as a container on the same host. [See this documentation](#adapting-the-sample-web-server-configurations-below)
-- `--env SKIP_DOMAIN_VALIDATION=false` This can be set to `true` if the domain validation does not work and you are sure that you configured everything correctly after you followed [the debug documentation](#6-how-to-debug-things).
+- `--env SKIP_DOMAIN_VALIDATION=false` This can be set to `true` if the domain validation does not work and you are sure that you configured everything correctly after you followed [the debug documentation](#7-how-to-debug-things).
 - `--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config` This means that the files that are created by the mastercontainer will be stored in a docker volume that is called `nextcloud_aio_mastercontainer`. This line is not allowed to be changed, since built-in backups would fail later on.
 - `--volume /var/run/docker.sock:/var/run/docker.sock:ro` The docker socket is mounted into the container which is used for spinning up all the other containers and for further features. It needs to be adjusted on Windows/macOS and on docker rootless. See the applicable documentation on this. If adjusting, don't forget to also set `WATCHTOWER_DOCKER_SOCKET_PATH`! If you dislike this, see https://github.com/nextcloud/all-in-one/tree/main/manual-install.
 - `ghcr.io/nextcloud-releases/all-in-one:latest` This is the docker container image that is used.
@@ -51,7 +51,7 @@ ghcr.io/nextcloud-releases/all-in-one:latest
 </details>
 
 > [!Note] 
-> If you run into troubles, see [the debug section](#6-how-to-debug-things).
+> If you run into troubles, see [the debug section](#7-how-to-debug-things).
 
 ---
 
@@ -68,8 +68,9 @@ The process to run Nextcloud behind a reverse proxy consists of at least steps 1
 1. **Use this startup command! See [point 2](#2-use-this-startup-command)**
 1. Optional: if the reverse proxy is installed on the same host and in the host network, you should limit the apache container to only listen on localhost. See [point 3](#3-limit-the-access-to-the-apache-container)
 1. **Open the AIO interface. See [point 4](#4-open-the-aio-interface)**
-1. Optional: get a valid certificate for the AIO interface! See [point 5](#5-optional-get-a-valid-certificate-for-the-aio-interface)
-1. Optional: how to debug things? See [point 6](#6-how-to-debug-things)
+1. Optional: if the reverse proxy is outside the host network, configure AIO to trust it. See [point 5](#5-optional-configure-aio-for-reverse-proxies-that-connect-to-nextcloud-using-an-ip-address-and-not-localhost-nor-127001)
+1. Optional: get a valid certificate for the AIO interface! See [point 6](#6-optional-get-a-valid-certificate-for-the-aio-interface)
+1. Optional: how to debug things? See [point 7](#7-how-to-debug-things)
 
 ## 1. Configure the reverse proxy
 
@@ -990,7 +991,28 @@ After starting AIO, you should be able to access the AIO Interface via `https://
 ⚠️ **Important:** do always use an ip-address if you access this port and not a domain as HSTS might block access to it later! (It is also expected that this port uses a self-signed certificate due to security concerns which you need to accept in your browser)<br>
 Enter your domain in the AIO interface that you've used in the reverse proxy config and you should be done. Please do not forget to open/forward port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
-## 5. Optional: get a valid certificate for the AIO interface
+## 5. Optional: Configure AIO for reverse proxies that connect to nextcloud using an ip-address and not localhost nor 127.0.0.1
+If your reverse proxy connects to nextcloud using an ip-address and not localhost or 127.0.0.1<sup>*</sup> you must make the following configuration changes
+
+<small>*: The IP address it uses to connect to AIO is not in a private IP range such as these: `127.0.0.1/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,fd00::/8,::1`</small>
+
+### Nextcloud trusted proxies
+Add the IP it uses connect to AIO to the Nextcloud trusted_proxies like this:
+
+```
+sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:system:set trusted_proxies 2 --value=ip.address.of.proxy
+```
+
+### Collabora WOPI allow list
+If your reverse proxy connects to Nextcloud with an IP address that is different from the one for your domain<sup>*</sup> and you are using the Collabora server then you must also add the IP to the WOPI request allow list via `Administration Settings > Administration > Office > Allow list for WOPI requests`.
+
+<small>*: For example, the reverse proxy has a public globally routable IP and connects to your AIO instance via Tailscale with an IP in the `100.64.0.0/10` range, or you are using a Cloudflare tunnel ([cloudflare notes](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#notes-on-cloudflare-proxytunnel): You must add all [Cloudflare IP-Ranges](https://www.cloudflare.com/ips/) to the WOPI allowlist.)</small>
+
+### External reverse proxies connecting via VPN (e.g. Tailscale)
+
+If your reverse proxy is outside your LAN and connecting via VPN such as Tailscale, you may want to set `APACHE_IP_BINDING=AIO.VPN.host.IP` to ensure only traffic coming from the VPN can connect.
+
+## 6. Optional: get a valid certificate for the AIO interface
 
 If you want to also access your AIO interface publicly with a valid certificate, you can add e.g. the following config to your Caddyfile:
 
@@ -1007,7 +1029,9 @@ https://<your-nc-domain>:8443 {
 
 Afterwards should the AIO interface be accessible via `https://ip.address.of.the.host:8443`. You can alternatively change the domain to a different subdomain by using `https://<your-alternative-domain>:443` instead of `https://<your-nc-domain>:8443` in the Caddyfile and use that to access the AIO interface.
 
-## 6. How to debug things?
+## 7. How to debug things?
+<a id="how-to-debug"></a> <!-- for external linking -->
+<a id="6-how-to-debug-things"></a> <!-- For backwards compatibility-->
 
 If something does not work, follow the steps below:
 1. Make sure to exactly follow the whole reverse proxy documentation step-for-step from top to bottom!

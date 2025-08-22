@@ -46,7 +46,9 @@ echo "$CADDYFILE" > /tmp/Caddyfile
 
 # Change the trusted_proxies in case of reverse proxies
 if [ "$APACHE_PORT" != '443' ]; then
-    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies static private_ranges|' /tmp/Caddyfile)"
+    # Here the 100.64.0.0/10 range gets added which is the CGNAT range used by Tailscale nodes
+    # See https://github.com/nextcloud/all-in-one/pull/6703 for reference
+    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies static private_ranges 100.64.0.0/10|' /tmp/Caddyfile)"
 else
     CADDYFILE="$(sed "s|# trusted_proxies placeholder|trusted_proxies static $IPv4_ADDRESS|" /tmp/Caddyfile)"
 fi
