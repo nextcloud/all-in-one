@@ -267,6 +267,8 @@ services:
     cap_add:
       - MKNOD
       - SYS_ADMIN
+      - SYS_CHROOT
+      - FOWNER
       - CHOWN
     cap_drop:
       - NET_RAW
