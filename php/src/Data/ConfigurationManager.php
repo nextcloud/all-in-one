@@ -389,7 +389,7 @@ class ConfigurationManager
                 if ($port === '443') {
                     $notice .= " If you should be using Cloudflare, make sure to disable the Cloudflare Proxy feature as it might block the domain validation. Same for any other firewall or service that blocks unencrypted access on port 443.";
                 } else {
-                    error_log('Please follow https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things in order to debug things!');
+                    error_log('Please follow https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#how-to-debug in order to debug things!');
                 }
                 throw new InvalidSettingConfigurationException($notice);
             }
