@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.version: 1.36.0 (ae2a39403)
+    kompose.version: 1.37.0 (fb0539e64)
   labels:
     io.kompose.service: nextcloud-aio-apache
   name: nextcloud-aio-apache
@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.version: 1.36.0 (ae2a39403)
+        kompose.version: 1.37.0 (fb0539e64)
       labels:
         io.kompose.service: nextcloud-aio-apache
     spec:
@@ -61,7 +61,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: ghcr.io/nextcloud-releases/aio-apache:20250811_115851
+          image: ghcr.io/nextcloud-releases/aio-apache:20250822_112758
           readinessProbe:
             exec:
               command:

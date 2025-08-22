@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.version: 1.36.0 (ae2a39403)
+    kompose.version: 1.37.0 (fb0539e64)
   labels:
     io.kompose.service: nextcloud-aio-collabora
   name: nextcloud-aio-collabora
@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.version: 1.36.0 (ae2a39403)
+        kompose.version: 1.37.0 (fb0539e64)
       labels:
         io.kompose.service: nextcloud-aio-collabora
     spec:
@@ -35,7 +35,7 @@ spec:
               value: --o:ssl.enable=false --o:ssl.termination=true --o:mount_jail_tree=false --o:logging.level=warning --o:logging.level_startup=warning --o:home_mode.enable=true --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
             - name: server_name
               value: "{{ .Values.NC_DOMAIN }}"
-          image: ghcr.io/nextcloud-releases/aio-collabora:20250811_115851
+          image: ghcr.io/nextcloud-releases/aio-collabora:20250822_112758
           readinessProbe:
             exec:
               command:
