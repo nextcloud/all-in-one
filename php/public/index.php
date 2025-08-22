@@ -178,17 +178,17 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
     $setup = $container->get(\AIO\Data\Setup::class);
     if($setup->CanBeInstalled()) {
         return $response
-            ->withHeader('Location', '/setup')
+            ->withHeader('Location', 'setup')
             ->withStatus(302);
     }
 
     if($authManager->IsAuthenticated()) {
         return $response
-            ->withHeader('Location', '/containers')
+            ->withHeader('Location', 'containers')
             ->withStatus(302);
     } else {
         return $response
-            ->withHeader('Location', '/login')
+            ->withHeader('Location', 'login')
             ->withStatus(302);
     }
 });

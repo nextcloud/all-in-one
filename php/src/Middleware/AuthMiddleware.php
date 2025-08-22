@@ -27,7 +27,15 @@ readonly class AuthMiddleware {
         if(!in_array($request->getUri()->getPath(), $publicRoutes)) {
             if(!$this->authManager->IsAuthenticated()) {
                 $status = 302;
-                $headers = ['Location' => '/'];
+                if(count(explode('/', $request->getUri()->getPath())) > 2) {
+                    $location = '..';
+                    for($i = 0; $i < count(explode('/', $request->getUri()->getPath())) - 3; $i++) {
+                        $location = $location . '/..';
+                    }
+                } else {
+                    $location = '.';
+                }
+                $headers = ['Location' => $location];
                 $response = new Response($status, $headers);
                 return $response;
             }
