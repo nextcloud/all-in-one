@@ -8,7 +8,7 @@
 {% endif %}
 <details>
     <summary>Show/Hide available Community Containers</summary>
-    <form id="community-form" method="POST" action="/api/configuration" class="xhr">
+    <form id="community-form" method="POST" action="api/configuration" class="xhr">
         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
         <input type="hidden" name="community-form" value="community-form">
