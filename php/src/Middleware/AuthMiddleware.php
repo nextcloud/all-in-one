@@ -3,6 +3,7 @@
 namespace AIO\Middleware;
 
 use AIO\Auth\AuthManager;
+use AIO\Data\ConfigurationManager;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -10,7 +11,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 readonly class AuthMiddleware {
     public function __construct(
-        private AuthManager $authManager
+        private AuthManager $authManager,
+        private ConfigurationManager $configurationManager
     ) {
     }
 
