@@ -576,6 +576,13 @@ class ConfigurationManager
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
+    public function GetAIOInterfacePath() : string {
+        $envVariableName = 'AIO_INTERFACE_PATH';
+        $configName = 'aio_interface_path';
+        $defaultValue = '';
+        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */
