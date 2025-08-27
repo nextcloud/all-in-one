@@ -278,7 +278,7 @@
                             {# @var containers \AIO\Container\Container[] #}
                             {% for container in containers %}
                                 {% if container.GetDisplayName() != '' %}
-                                    {% include 'components/container-state.twig'  with {'c': container} only %}
+                                    {% include 'components/container-state.twig'  with {'c': container, 'aio_interface_path': aio_interface_path} only %}
                                 {% endif %}
                             {% endfor %}
                         </ul>
