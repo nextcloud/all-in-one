@@ -357,11 +357,11 @@ If you get an error during the domain validation which states that your ip-addre
 ### How to adjust the MTU size of the docker network
 You can adjust the MTU size of the docker network by creating it beforehand with the custom MTU:
 ```
-docker network create --driver bridge --opt "com.docker.network.driver.mtu"="<value>" nextcloud-aio
+docker network create --driver bridge --opt com.docker.network.driver.mtu=1440 nextcloud-aio
 ```
-and then by adding `--network=nextcloud-aio` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`).
+When you open the AIO interface for the first time after you execute the `docker run` command, it will automatically connect to the `aio-nextcloud` network with the custom MTU. Keep in mind that if you previously started the mastercontainer without creating the network with the extra options, you will need to remove the old `aio-nextcloud` network and recreate it with the new configuration.
 
-If you want to use docker compose, you can checkout the comments in the `compose.yaml` file for more details.
+If you want to use docker compose, you can check out the comments in the `compose.yaml` file for more details.
 
 ## Infrastructure
 
