@@ -3,7 +3,7 @@
 FROM docker:28.3.3-cli AS docker
 
 # Caddy is a requirement
-FROM caddy:2.10.0-alpine AS caddy
+FROM caddy:2.10.2-alpine AS caddy
 
 # From https://github.com/docker-library/php/blob/master/8.4/alpine3.22/fpm/Dockerfile
 FROM php:8.4.11-fpm-alpine3.22
