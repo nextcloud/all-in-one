@@ -7,7 +7,9 @@ services:
     volumes:
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed as otherwise the built-in backup solution will not work
       - /var/run/docker.sock:/var/run/docker.sock:ro # May be changed on macOS, Windows or docker rootless. See the applicable documentation. If adjusting, don't forget to also set 'WATCHTOWER_DOCKER_SOCKET_PATH'!
-    network_mode: bridge # add to the same network as docker run would do
+    network_mode: bridge # add to the same network as docker run would do. Comment this line and uncomment the networks section below and the one at the end of the file if you want to define a custom MTU size for the docker network
+    # networks:
+    #   nextcloud-aio
     ports:
       - 80:80 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       - 8080:8080
@@ -35,7 +37,6 @@ services:
       # SKIP_DOMAIN_VALIDATION: false # This should only be set to true if things are correctly configured. See https://github.com/nextcloud/all-in-one?tab=readme-ov-file#how-to-skip-the-domain-validation
       # TALK_PORT: 3478 # This allows to adjust the port that the talk container is using which is exposed on the host. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-talk-port
       # WATCHTOWER_DOCKER_SOCKET_PATH: /var/run/docker.sock # Needs to be specified if the docker socket on the host is not located in the default '/var/run/docker.sock'. Otherwise mastercontainer updates will fail. For macos it needs to be '/var/run/docker.sock'
-      # MTU_SIZE: 1500 # Allows to adjust the MTU size of the docker network. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-mtu-size-of-the-docker-network
     # security_opt: ["label:disable"] # Is needed when using SELinux
 
 #   # Optional: Caddy reverse proxy. See https://github.com/nextcloud/all-in-one/discussions/575
@@ -70,3 +71,10 @@ volumes: # If you want to store the data on a different drive, see https://githu
   # caddy_config:
   # caddy_data:
   # caddy_sites:
+
+# # Adjust the MTU size of the docker network. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-mtu-size-of-the-docker-network
+# networks:
+#   nextcloud-aio:
+#     name: nextcloud-aio
+#     driver_opts:
+#       com.docker.network.driver.mtu: 1440

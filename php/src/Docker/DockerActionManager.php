@@ -841,9 +841,6 @@ readonly class DockerActionManager {
                             'CheckDuplicate' => true,
                             'Driver' => 'bridge',
                             'Internal' => false,
-                            'Options' => [
-                                'com.docker.network.driver.mtu' => $this->configurationManager->GetMTUSize(),
-                            ],
                         ]
                     ]
                 );

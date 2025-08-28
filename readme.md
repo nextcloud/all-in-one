@@ -355,7 +355,15 @@ See https://dev.to/ozorest/fedora-32-how-to-solve-docker-internal-network-issue-
 If you get an error during the domain validation which states that your ip-address is an internal or reserved ip-address, you can fix this by first making sure that your domain indeed has the correct public ip-address that points to the server and then adding `--add-host yourdomain.com:<public-ip-address>` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) which will allow the domain validation to work correctly. And so that you know: even if the `A` record of your domain should change over time, this is no problem since the mastercontainer will not make any attempt to access the chosen domain after the initial domain validation.
 
 ### How to adjust the MTU size of the docker network
-You can adjust the MTU size of the docker network by setting the `MTU_SIZE` environment variable in the `docker-compose.yml` file or by using the `--env MTU_SIZE=<value>` option in the `docker run` command. The default value is `1500`.
+You can adjust the MTU size of the docker network by defining nextcloud's network in the `docker-compose.yml` file by adding the following lines and providing a value for the MTU size:
+```yaml
+networks:
+  nextcloud-aio:
+    name: nextcloud-aio
+    driver_opts:
+      com.docker.network.driver.mtu: <value>
+```
+When doing so, you have to comment the line `network_mode: "bridge"` and uncomment the `networks:` section in the mastercontainer's service definition.
 
 ## Infrastructure
 
