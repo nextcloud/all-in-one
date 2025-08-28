@@ -85,7 +85,7 @@ readonly class DockerController {
     public function StartBackupContainerBackup(Request $request, Response $response, array $args) : Response {
         $forceStopNextcloud = true;
         $this->startBackup($forceStopNextcloud);
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', $this->configurationManager->GetAIOInterfacePath() . '/');
     }
 
     public function startBackup(bool $forceStopNextcloud = false) : void {
@@ -102,7 +102,7 @@ readonly class DockerController {
 
     public function StartBackupContainerCheck(Request $request, Response $response, array $args) : Response {
         $this->checkBackup();
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', $this->configurationManager->GetAIOInterfacePath() . '/');
     }
 
     public function checkBackup() : void {
@@ -132,7 +132,7 @@ readonly class DockerController {
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', $this->configurationManager->GetAIOInterfacePath() . '/');
     }
 
     public function StartBackupContainerCheckRepair(Request $request, Response $response, array $args) : Response {
@@ -148,7 +148,7 @@ readonly class DockerController {
         $config['backup-mode'] = 'check';
         $this->configurationManager->WriteConfig($config);
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', $this->configurationManager->GetAIOInterfacePath() . '/');
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
@@ -163,7 +163,7 @@ readonly class DockerController {
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', $this->configurationManager->GetAIOInterfacePath() . '/');
     }
 
     public function StartContainer(Request $request, Response $response, array $args) : Response
@@ -184,7 +184,7 @@ readonly class DockerController {
 
         $config = $this->configurationManager->GetConfig();
         // set AIO_URL
-        $config['AIO_URL'] = $host . ':' . $port;
+        $config['AIO_URL'] = $host . ':' . $port . $this->configurationManager->GetAIOInterfacePath();
         // set wasStartButtonClicked
         $config['wasStartButtonClicked'] = 1;
         // set install_latest_major
@@ -204,7 +204,7 @@ readonly class DockerController {
         // Temporarily disabled as it leads much faster to docker rate limits
         // apcu_clear_cache();
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', $this->configurationManager->GetAIOInterfacePath() . '/');
     }
 
     public function startTopContainer(bool $pullImage) : void {
@@ -223,7 +223,7 @@ readonly class DockerController {
 
     public function StartWatchtowerContainer(Request $request, Response $response, array $args) : Response {
         $this->startWatchtower();
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', $this->configurationManager->GetAIOInterfacePath() . '/');
     }
 
     public function startWatchtower() : void {
@@ -261,7 +261,7 @@ readonly class DockerController {
         $forceStopNextcloud = true;
         $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', $this->configurationManager->GetAIOInterfacePath() . '/');
     }
 
     public function stopTopContainer() : void {
