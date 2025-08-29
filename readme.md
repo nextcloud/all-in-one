@@ -171,6 +171,7 @@ If your firewall/router has port 80 and 8443 open/forwarded and you point a doma
     - [How to skip the domain validation?](#how-to-skip-the-domain-validation)
     - [How to resolve firewall problems with Fedora Linux, RHEL OS, CentOS, SUSE Linux and others?](#how-to-resolve-firewall-problems-with-fedora-linux-rhel-os-centos-suse-linux-and-others)
     - [What can I do to fix the internal or reserved ip-address error?](#what-can-i-do-to-fix-the-internal-or-reserved-ip-address-error)
+    - [How to adjust the MTU size of the docker network](#how-to-adjust-the-mtu-size-of-the-docker-network)
 - [Infrastructure](#infrastructure)
     - [Which CPU architectures are supported?](#which-cpu-architectures-are-supported)
     - [Disrecommended VPS providers](#disrecommended-vps-providers)
@@ -352,6 +353,15 @@ See https://dev.to/ozorest/fedora-32-how-to-solve-docker-internal-network-issue-
 
 ### What can I do to fix the internal or reserved ip-address error?
 If you get an error during the domain validation which states that your ip-address is an internal or reserved ip-address, you can fix this by first making sure that your domain indeed has the correct public ip-address that points to the server and then adding `--add-host yourdomain.com:<public-ip-address>` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) which will allow the domain validation to work correctly. And so that you know: even if the `A` record of your domain should change over time, this is no problem since the mastercontainer will not make any attempt to access the chosen domain after the initial domain validation.
+
+### How to adjust the MTU size of the docker network
+You can adjust the MTU size of the docker network by creating it beforehand with the custom MTU:
+```
+docker network create --driver bridge --opt com.docker.network.driver.mtu=1440 nextcloud-aio
+```
+When you open the AIO interface for the first time after you execute the `docker run` command, it will automatically connect to the `aio-nextcloud` network with the custom MTU. Keep in mind that if you previously started the mastercontainer without creating the network with the extra options, you will need to remove the old `aio-nextcloud` network and recreate it with the new configuration.
+
+If you want to use docker compose, you can check out the comments in the `compose.yaml` file for more details.
 
 ## Infrastructure
 
