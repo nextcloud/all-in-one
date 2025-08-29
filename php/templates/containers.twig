@@ -352,7 +352,9 @@
                                     <form method="POST" action="/api/docker/start" class="xhr">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                        <input type="hidden" name="bypass_container_update" value="{{bypass_container_update}}">
+                                        {% if bypass_container_update == true %}
+                                            <input type="hidden" name="bypass_container_update" value="{{bypass_container_update}}">
+                                        {% endif %}
                                         <input class="button " type="submit" value="Start and update containers" onclick="return confirm('Start and update containers? You should consider creating a backup first.')" />
                                     </form>
                                 {% endif %}
