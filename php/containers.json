@@ -389,7 +389,7 @@
       "restart": "unless-stopped",
       "nextcloud_exec_commands": [
         "echo 'Activating Collabora config...'",
-        "php /var/www/html/occ richdocuments:activate-config --wopi-url='http://nextcloud-aio-collabora:9980' --callback-url='http://nextcloud-aio-apache:%APACHE_PORT%'"
+        "php /var/www/html/occ richdocuments:activate-config --wopi-url='http://nextcloud-aio-apache:%APACHE_PORT%' --callback-url='http://nextcloud-aio-apache:%APACHE_PORT%'"
       ],
       "profiles": [
         "collabora"
