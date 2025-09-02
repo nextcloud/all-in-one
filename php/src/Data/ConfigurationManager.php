@@ -979,6 +979,13 @@ class ConfigurationManager
         return $config['collabora_additional_options'];
     }
 
+    public function isCollaboraSubscriptionEnabled() : bool {
+        if (str_contains($this->GetAdditionalCollaboraOptions(), '--o:support_key=')) {
+            return true;
+        }
+        return false;
+    }
+
     public function DeleteAdditionalCollaboraOptions() : void {
         $config = $this->GetConfig();
         $config['collabora_additional_options'] = '';
