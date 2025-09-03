@@ -9,7 +9,7 @@ It is possible due to several reasons that you do not want or cannot open Nextcl
 - [5. Buy a certificate and use that](#5-buy-a-certificate-and-use-that)
 
 ## 1. Tailscale
-This is the recommended way. For a reverse proxy example guide for Tailscale, see this guide by @flll: https://github.com/nextcloud/all-in-one/discussions/5439
+This is the recommended way. For a reverse proxy example guide for Tailscale, see this guide by [@Perseus333](https://github.com/Perseus333): https://github.com/nextcloud/all-in-one/discussions/6817
 
 ## 2. The normal way
 The normal way is the following:
