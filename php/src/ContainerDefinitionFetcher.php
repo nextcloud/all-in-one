@@ -67,6 +67,9 @@ readonly class ContainerDefinitionFetcher {
                 if (!$this->configurationManager->isCollaboraEnabled()) {
                     continue;
                 }
+                if ($this->configurationManager->isCollaboraSubscriptionEnabled()) {
+                    $entry['image'] = 'ghcr.io/nextcloud-releases/aio-collabora-online';
+                }
             } elseif ($entry['container_name'] === 'nextcloud-aio-talk') {
                 if (!$this->configurationManager->isTalkEnabled()) {
                     continue;
