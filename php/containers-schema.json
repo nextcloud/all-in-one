@@ -81,7 +81,7 @@
 							"properties": {
 								"ip_binding": {
 									"type": "string",
-									"pattern": "^(%[A-Z_]+%)?$"
+									"pattern": "^((%[A-Z_]+%)|127\\.0\\.0\\.1)?$"
 								},
 								"port_number": {
 									"type": "string",
