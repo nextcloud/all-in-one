@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.3.24-fpm-alpine3.22
+FROM php:8.3.25-fpm-alpine3.22
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=16G
@@ -83,7 +83,7 @@ RUN set -ex; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install -o igbinary-3.2.16; \
-    pecl install APCu-5.1.26; \
+    pecl install APCu-5.1.27; \
     pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.3.0; \
     pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.2.0; \
    pecl install -o imagick-3.8.0; \

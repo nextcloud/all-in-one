@@ -15,6 +15,7 @@
 }
 
 https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
+http://{$APACHE_HOST}:{$APACHE_PORT}, # For Collabora callback
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
     header -Server
     header -X-Powered-By
