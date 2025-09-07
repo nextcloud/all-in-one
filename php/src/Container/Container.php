@@ -17,10 +17,14 @@ readonly class Container {
         private string                        $internalPorts,
         private ContainerVolumes              $volumes,
         private ContainerEnvironmentVariables $containerEnvironmentVariables,
+        /** @var array */
+        private array                         $sharedEnvironment,
         /** @var string[] */
         private array                         $dependsOn,
         /** @var string[] */
         private array                         $secrets,
+        /** @var string[] */
+        private array                         $sharedSecrets,
         private string                        $uiSecret,
         /** @var string[] */
         private array                         $devices,
@@ -82,8 +86,20 @@ readonly class Container {
         return $this->maxShutdownTime;
     }
 
+    public function GetEnvironmentVariables() : ContainerEnvironmentVariables {
+        return $this->containerEnvironmentVariables;
+    }
+
+    public function GetSharedEnvironment() : array {
+        return $this->sharedEnvironment;
+    }
+
     public function GetSecrets() : array {
         return $this->secrets;
+    }
+
+    public function GetSharedSecrets() : array {
+        return $this->sharedSecrets;
     }
 
     public function GetUiSecret() : string {
@@ -147,10 +163,6 @@ readonly class Container {
 
     public function GetNextcloudExecCommands() : array {
         return $this->nextcloudExecCommands;
-    }
-
-    public function GetEnvironmentVariables() : ContainerEnvironmentVariables {
-        return $this->containerEnvironmentVariables;
     }
 
     public function GetAioVariables() : AioVariables {

@@ -57,6 +57,14 @@
 							"minlength": 1
 						}
 					},
+					"shared_environment": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"pattern": "^.*=.*$",
+							"minlength": 1
+						}
+					},
 					"container_name": {
 						"type": "string",
 						"pattern": "^nextcloud-aio-[a-z0-9-]+$"
@@ -139,6 +147,13 @@
 						"type": "integer"
 					},
 					"secrets": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"pattern": "^[A-Z_]+$"
+						}
+					},
+					"shared_secrets": {
 						"type": "array",
 						"items": {
 							"type": "string",

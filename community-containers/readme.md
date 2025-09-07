@@ -11,6 +11,54 @@ Starting with v11 of AIO, the management of Community Containers is done via the
 ## How to add containers?
 Simply submit a PR by creating a new folder in this directory: https://github.com/nextcloud/all-in-one/tree/main/community-containers with the name of your container. It must include a json file with the same name and with correct syntax and a readme.md with additional information. You might get inspired by caddy, fail2ban, local-ai, libretranslate, plex, pi-hole or vaultwarden (subfolders in this directory). For a full-blown example of the json file, see https://github.com/nextcloud/all-in-one/blob/main/php/containers.json. The json-schema that it validates against can be found here: https://github.com/nextcloud/all-in-one/blob/main/php/containers-schema.json.
 
+## Sharing Secrets and Environment Variables with Other Containers
+
+Community containers can share secrets and environment variables with all other AIO containers (including Nextcloud) using `shared_secrets` and `shared_environment`.
+
+### shared_secrets
+Secrets that can be accessed via placeholder replacement (like `%SECRET_NAME%`) in:
+- Your container's `environment` variables
+- Your container's `nextcloud_exec_commands` 
+- Other containers that also define the same secret name
+
+Same like with `secrets` a random secure key is generated and provided via that variable.
+
+```json
+{
+    "shared_secrets": ["MY_API_KEY"]
+}
+```
+
+### shared_environment  
+Environment variables that are automatically added to **ALL** AIO containers. Uses the same format as regular `environment` but gets shared globally.
+
+```json
+{
+    "shared_environment": [
+        "MY_API_KEY=%MY_API_KEY%",
+        "SERVICE_URL=http://nextcloud-aio-myservice:5000",
+        "FEATURE_ENABLED=yes"
+    ]
+}
+```
+
+### Important Considerations
+
+⚠️ **Name Conflicts**: If multiple community containers use the same environment variable name in `shared_environment`, the last processed container wins. Use unique prefixes (e.g., `MYSERVICE_API_KEY` instead of `API_KEY`).
+
+⚠️ **Security**: Only share what's necessary. `shared_environment` variables are visible in ALL containers, so avoid sharing sensitive data unless required.
+
+⚠️ **Dependencies**: If your service URL or configuration is shared via `shared_environment`, other containers might depend on your container being enabled. Document this clearly.
+
+⚠️ **Testing**: Test your container both standalone and with other community containers enabled to ensure no conflicts.
+
+### Best Practices
+
+✅ **Use descriptive, unique names**: `MYSERVICE_API_KEY` instead of `API_KEY`  
+✅ **Document shared variables**: Clearly explain what your container shares in your readme.md  
+✅ **Minimal sharing**: Only use `shared_environment` when other containers need access  
+✅ **Prefix service URLs**: Use your container name in shared URLs (e.g., `MYSERVICE_URL`)
+
 ### Is there a list of ideas for new community containers?
 Yes, see [this list](https://github.com/nextcloud/all-in-one/issues/5251) for already existing ideas for new community containers. Feel free to pick one up and add it to this folder by following the instructions above.
 
@@ -18,3 +66,4 @@ Yes, see [this list](https://github.com/nextcloud/all-in-one/issues/5251) for al
 You can remove containers now via the web interface.
 
 After removing the containers, there might be some data left on your server that you might want to remove. You can get rid of the data by first running `sudo docker rm nextcloud-aio-container1`, (adjust `container1` accordingly) per community-container that you removed. Then run `sudo docker image prune -a` in order to remove all images that are not used anymore. As last step you can get rid of persistent data of these containers that is stored in volumes. You can check if there is some by running `sudo docker volume ls` and look for any volume that matches the ones that you removed. If so, you can remove them with `sudo docker volume rm nextcloud_aio_volume-id` (of course you need to adjust the `volume-id`). **Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management
+

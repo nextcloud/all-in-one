@@ -239,9 +239,19 @@ readonly class ContainerDefinitionFetcher {
                 $internalPort = $entry['internal_port'];
             }
 
+            $sharedEnvironment = [];
+            if (isset($entry['shared_environment'])) {
+                $sharedEnvironment = $entry['shared_environment'];
+            }
+
             $secrets = [];
             if (isset($entry['secrets'])) {
                 $secrets = $entry['secrets'];
+            }
+
+            $sharedSecrets = [];
+            if (isset($entry['shared_secrets'])) {
+                $sharedSecrets = $entry['shared_secrets'];
             }
 
             $uiSecret = '';
@@ -319,8 +329,10 @@ readonly class ContainerDefinitionFetcher {
                 $internalPort,
                 $volumes,
                 $variables,
+                $sharedEnvironment,
                 $dependsOn,
                 $secrets,
+                $sharedSecrets,
                 $uiSecret,
                 $devices,
                 $enableNvidiaGpu,

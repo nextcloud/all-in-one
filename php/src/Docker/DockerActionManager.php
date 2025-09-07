@@ -225,6 +225,11 @@ readonly class DockerActionManager {
             $this->configurationManager->GetAndGenerateSecret($secret);
         }
 
+        // Generate shared secrets for this container
+        foreach ($container->GetSharedSecrets() as $sharedSecret) {
+            $this->configurationManager->GetAndGenerateSecret($sharedSecret);
+        }
+
         $aioVariables = $container->GetAioVariables()->GetVariables();
         foreach ($aioVariables as $variable) {
             $config = $this->configurationManager->GetConfig();
@@ -239,6 +244,13 @@ readonly class DockerActionManager {
         if ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
             $envs[] = $this->GetAllNextcloudExecCommands();
         }
+        
+        // Add shared environment variables from community containers to all containers
+        $sharedEnvironmentVars = $this->getAllSharedEnvironmentVariables();
+        foreach ($sharedEnvironmentVars as $envVar) {
+            $envs[] = $envVar;
+        }
+        
         foreach ($envs as $key => $env) {
             $envs[$key] = $this->replaceEnvPlaceholders($env);
         }
@@ -1023,5 +1035,30 @@ readonly class DockerActionManager {
         } else {
             return $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
         }
+    }
+
+    private function getAllSharedEnvironmentVariables(): array {
+        $sharedEnvironmentVars = [];
+        
+        // Get all enabled community containers
+        $enabledCommunityContainers = $this->configurationManager->GetEnabledCommunityContainers();
+        
+        foreach ($enabledCommunityContainers as $communityContainer) {
+            if ($communityContainer !== '') {
+                try {
+                    $container = $this->containerDefinitionFetcher->GetContainerById('nextcloud-aio-' . $communityContainer);
+                    
+                    // Process shared_environment variables (same format as regular environment)
+                    foreach ($container->GetSharedEnvironment() as $envVar) {
+                        $sharedEnvironmentVars[] = $envVar;
+                    }
+                } catch (\Exception $e) {
+                    // Container might not exist or have issues, continue with others
+                    continue;
+                }
+            }
+        }
+        
+        return $sharedEnvironmentVars;
     }
 }
