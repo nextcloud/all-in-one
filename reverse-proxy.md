@@ -1058,17 +1058,21 @@ If you, at some point, want to remove the reverse proxy, here are some general s
     sudo docker nextcloud-aio-mastercontainer && sudo docker rm nextcloud-aio-mastercontainer  
     ```
 3. Remove the software and configuration file that you used for the reverse proxy (see section 1).
-4. Restore the settings in the main configuration file of Nextcloud AIO.
-    1. Open the main configuration file.
-        ```
-        sudo docker run -it --rm --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config:rw alpine sh -c "apk add --no-cache nano && nano /mnt/docker-aio-config/data/configuration.json"
-        ```
-    2. Reset the settings to their default value.  
-    Reset the Apache port to port 443 and the Apache IP binding to 0.0.0.0.
-        ```
-        "apache_port": "443",
-        "apache_ip_binding": "0.0.0.0",
-        ```
-        Use CTRl+O to save the file and CTRL+X to exit the editor.
-3. Run the default Docker run command to restart the mastercontainer.
+4. Restart de mastercontainer with the following command:
+   ```
+   sudo docker run \
+   --init \
+   --sig-proxy=false \
+   --name nextcloud-aio-mastercontainer \
+   --restart always \
+   --publish 80:80 \
+   --publish 8080:8080 \
+   --publish 8443:8443 \
+   --env APACHE_IP_BINDING=0.0.0.0 \
+   --env APACHE_PORT=443 \   
+   --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+   --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+   ghcr.io/nextcloud-releases/all-in-one:latest
+    ```
+    As you can see, two commands were added: `--env APACHE_IP_BINDING=0.0.0.0` and `--env APACHE_PORT=443`. The first ensures that the Apache container listens on all available network interfaces, while the second configures it to listen on port 443.
 6. Start all containers in the AIO Interface. 
