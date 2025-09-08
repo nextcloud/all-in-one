@@ -213,6 +213,9 @@ readonly class DockerController {
         $config['AIO_TOKEN'] = bin2hex(random_bytes(24));
         $this->configurationManager->WriteConfig($config);
 
+        // Generate all secrets from enabled containers upfront for placeholder substitution
+        $this->generateAllEnabledContainerSecrets();
+
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
 
@@ -276,6 +279,9 @@ readonly class DockerController {
             return;
         }
 
+        // Generate all secrets from enabled containers for placeholder substitution
+        $this->generateAllEnabledContainerSecrets();
+
         $id = 'nextcloud-aio-domaincheck';
 
         $cacheKey = 'domaincheckWasStarted';
@@ -309,5 +315,27 @@ readonly class DockerController {
     {
         $id = 'nextcloud-aio-domaincheck';
         $this->PerformRecursiveContainerStop($id);
+    }
+
+    private function generateAllEnabledContainerSecrets(): void {
+        // Get all enabled containers (both main and community containers)
+        $allContainers = $this->containerDefinitionFetcher->FetchDefinition();
+        $processedSecrets = []; // Track processed secrets to avoid duplicates
+        
+        foreach ($allContainers as $container) {
+            try {
+                // Generate all secrets from this container
+                foreach ($container->GetSecrets() as $secret) {
+                    // Only process each secret once for efficiency
+                    if (!in_array($secret, $processedSecrets, true)) {
+                        $this->configurationManager->GetAndGenerateSecret($secret);
+                        $processedSecrets[] = $secret;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Container might not exist or have issues, continue with others
+                continue;
+            }
+        }
     }
 }

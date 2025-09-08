@@ -221,10 +221,6 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Binds'] = $volumes;
         }
 
-        foreach ($container->GetSecrets() as $secret) {
-            $this->configurationManager->GetAndGenerateSecret($secret);
-        }
-
         $aioVariables = $container->GetAioVariables()->GetVariables();
         foreach ($aioVariables as $variable) {
             $config = $this->configurationManager->GetConfig();
