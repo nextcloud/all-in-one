@@ -220,7 +220,7 @@ svg:not(:has(use)) .fallback-text {
 }
 
 .login > .monospace {
-    font-family: monospace;
+    font-family: monospace, monospace, system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen-Sans, Cantarell, Ubuntu, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     font-size: 17px;
 }
 
