@@ -19,8 +19,6 @@ readonly class Container {
         private ContainerEnvironmentVariables $containerEnvironmentVariables,
         /** @var string[] */
         private array                         $dependsOn,
-        /** @var string[] */
-        private array                         $secrets,
         private string                        $uiSecret,
         /** @var string[] */
         private array                         $devices,
@@ -80,10 +78,6 @@ readonly class Container {
 
     public function GetMaxShutdownTime() : int {
         return $this->maxShutdownTime;
-    }
-
-    public function GetSecrets() : array {
-        return $this->secrets;
     }
 
     public function GetUiSecret() : string {

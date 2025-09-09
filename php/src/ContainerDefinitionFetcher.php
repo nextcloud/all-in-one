@@ -239,9 +239,12 @@ readonly class ContainerDefinitionFetcher {
                 $internalPort = $entry['internal_port'];
             }
 
-            $secrets = [];
             if (isset($entry['secrets'])) {
-                $secrets = $entry['secrets'];
+                // All secrets are registered with the configuration when they 
+                // are discovered so they can be later generated at time-of-use.
+                foreach ($entry['secrets'] as $secret) {
+                    $this->configurationManager->RegisterSecret($secret);
+                }
             }
 
             $uiSecret = '';
@@ -320,7 +323,6 @@ readonly class ContainerDefinitionFetcher {
                 $volumes,
                 $variables,
                 $dependsOn,
-                $secrets,
                 $uiSecret,
                 $devices,
                 $enableNvidiaGpu,

@@ -7,6 +7,8 @@ use AIO\Controller\DockerController;
 
 class ConfigurationManager
 {
+    private array $secrets = [];
+
     public function GetConfig() : array
     {
         if(file_exists(DataConst::GetConfigFile()))
@@ -50,13 +52,15 @@ class ConfigurationManager
         return $config['secrets'][$secretId];
     }
 
-    public function GetSecret(string $secretId) : string {
-        $config = $this->GetConfig();
-        if(!isset($config['secrets'][$secretId])) {
-            $config['secrets'][$secretId] = "";
+    public function GetRegisteredSecret(string $secretId) : string {
+        if ($this->secrets[$secretId]) {
+            return $this->GetAndGenerateSecret($secretId);
         }
+        throw new \Exception("The secret " . $secretId . " was not registered. Please check if it is defined in secrets of containers.json.");
+    }
 
-        return $config['secrets'][$secretId];
+    public function RegisterSecret(string $secretId) : void {
+        $this->secrets[$secretId] = true;
     }
 
     private function DoubleSafeBackupSecret(string $borgBackupPassword) : void {
