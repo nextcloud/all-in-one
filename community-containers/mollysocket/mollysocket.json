@@ -1,0 +1,37 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-mollysocket",
+            "display_name": "MollySocket",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/mollysocket",
+            "image": "ghcr.io/mollyim/mollysocket",
+            "image_tag": "1",
+            "restart": "unless-stopped",
+            "ports": [
+                { 
+                   "ip_binding": "%APACHE_IP_BINDING%", 
+                   "port_number": "8020", 
+                   "protocol": "tcp" 
+                 }  
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_mollysocket",
+                    "destination": "/data",
+                    "writeable": true
+                }
+            ],
+            "working_dir": "/data",
+            "command": "server",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "MOLLY_DB=/data/mollysocket.db",
+                "MOLLY_ALLOWED_ENDPOINTS=[\"*\",\"https://mollysocket.%NC_DOMAIN%\"]",
+                "MOLLY_ALLOWED_UUIDS=[\"*\"]",
+                "MOLLY_HOST=0.0.0.0",
+                "MOLLY_PORT=8020",
+                "RUST_LOG=error"
+            ]
+        }
+    ]
+}
