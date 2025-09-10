@@ -221,10 +221,6 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Binds'] = $volumes;
         }
 
-        foreach ($container->GetSecrets() as $secret) {
-            $this->configurationManager->GetAndGenerateSecret($secret);
-        }
-
         $aioVariables = $container->GetAioVariables()->GetVariables();
         foreach ($aioVariables as $variable) {
             $config = $this->configurationManager->GetConfig();
@@ -566,16 +562,8 @@ readonly class DockerActionManager {
             // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->configurationManager->GetEnabledCommunityContainers(), true) ? gethostbyname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->configurationManager->isWhiteboardEnabled() ? 'yes' : '',
-            default => $this->getSecretOrThrow($placeholder),
+            default => $this->configurationManager->GetRegisteredSecret($placeholder),
         };
-    }
-
-    private function getSecretOrThrow(string $secretName): string {
-        $secret = $this->configurationManager->GetSecret($secretName);
-        if ($secret === "") {
-            throw new \Exception("The secret " . $secretName . " is empty. Cannot substitute its value. Please check if it is defined in secrets of containers.json.");
-        }
-        return $secret;
     }
 
     private function isContainerUpdateAvailable(string $id): string {
