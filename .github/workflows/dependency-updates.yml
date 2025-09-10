@@ -10,7 +10,7 @@ jobs:
     name: Run dependency update script
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: shivammathur/setup-php@ec406be512d7077f68eed36e63f4d91bc006edc4 # v2
       with:
         php-version: 8.4
