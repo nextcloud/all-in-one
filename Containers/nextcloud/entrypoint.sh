@@ -198,7 +198,19 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
         echo "Initializing nextcloud $image_version ..."
         rsync -rlD --delete --exclude-from=/upgrade.exclude "$SOURCE_LOCATION/" /var/www/html/
 
-        for dir in config data custom_apps themes; do
+        # Copy custom_apps from Nextcloud archive
+        if ! directory_empty "$SOURCE_LOCATION/custom_apps"; then
+            set -x
+            for app in "$SOURCE_LOCATION/custom_apps"/*; do
+                app_id="$(basename "$app")"
+                mkdir -p "/var/www/html/custom_apps/$app_id"
+                rsync -rlD --delete --include "/$app_id/" --exclude '/*' "$SOURCE_LOCATION/custom_apps/" /var/www/html/custom_apps/
+            done
+            set +x
+        fi
+
+        # Copy over initial data from Nextcloud archive
+        for dir in config data themes; do
             if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
                 rsync -rlD --include "/$dir/" --exclude '/*' "$SOURCE_LOCATION/" /var/www/html/
             fi
@@ -356,7 +368,7 @@ DATADIR_PERMISSION_CONF
                 read -ra STARTUP_APPS_ARRAY <<< "$STARTUP_APPS"
                 for app in "${STARTUP_APPS_ARRAY[@]}"; do
                     if ! echo "$app" | grep -q '^-'; then 
-                        if [ -z "$(find /var/www/html/apps -type d -maxdepth 1 -mindepth 1 -name "$app" )" ]; then
+                        if [ -z "$(find /var/www/html/apps /var/www/html/custom_apps -type d -maxdepth 1 -mindepth 1 -name "$app" )" ]; then
                             # If not shipped, install and enable the app
                             php /var/www/html/occ app:install "$app"
                         else
