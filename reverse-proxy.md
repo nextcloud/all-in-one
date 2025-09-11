@@ -1062,7 +1062,7 @@ If you, at some point, want to remove the reverse proxy, here are some general s
    --env APACHE_IP_BINDING=0.0.0.0 \
    --env APACHE_PORT=443 \   
     ```
-    Do this before the last line of the run command!  
+    Do this *before* the last line of the run command!  
 
     The first command ensures that the container is listening on all available network interfaces and the second command configures it to listen to port 443.
 6. Restart all other containers in the AIO interface. 
