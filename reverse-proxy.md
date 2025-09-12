@@ -1066,4 +1066,4 @@ If you, at some point, want to remove the reverse proxy, here are some general s
     Do this *before* the last line of the run command!  
 
     *The first command ensures that the Apache container is listening on all available network interfaces and the second command configures it to listen to port 443.*
-6. Restart all other containers in the AIO interface. 
+5. Restart all other containers in the AIO interface. 
