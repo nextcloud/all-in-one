@@ -1053,8 +1053,8 @@ If you, at some point, want to remove the reverse proxy, here are some general s
 1. Stop all running containers in the AIO Interface.
 2. Stop and remove the mastercontainer.
     ```
-    sudo docker ps
-    sudo docker nextcloud-aio-mastercontainer && sudo docker rm nextcloud-aio-mastercontainer  
+    sudo docker stop nextcloud-aio-mastercontainer
+    sudo docker rm nextcloud-aio-mastercontainer  
     ```
 3. Remove the software and configuration file that you used for the reverse proxy (see section 1).
 4. Restart the mastercontainer with the following two options:
