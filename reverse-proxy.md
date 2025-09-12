@@ -1048,6 +1048,7 @@ If something does not work, follow the steps below:
 1. [Enable Hairpin NAT in your router](https://github.com/nextcloud/all-in-one/discussions/5849) or [set up a local DNS server and add a custom dns-record](https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally) that allows the server to reach itself locally
 1. Try to configure everything from scratch - if it still does not work by following https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance.
 1. As last resort, you may disable the domain validation by adding `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command. But only use this if you are completely sure that you've correctly configured everything!
+
 ## 8. Removing the reverse proxy
 If you, at some point, want to remove the reverse proxy, here are some general steps:
 1. Stop all running containers in the AIO Interface.
