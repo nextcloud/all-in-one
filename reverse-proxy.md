@@ -1048,3 +1048,22 @@ If something does not work, follow the steps below:
 1. [Enable Hairpin NAT in your router](https://github.com/nextcloud/all-in-one/discussions/5849) or [set up a local DNS server and add a custom dns-record](https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally) that allows the server to reach itself locally
 1. Try to configure everything from scratch - if it still does not work by following https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance.
 1. As last resort, you may disable the domain validation by adding `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command. But only use this if you are completely sure that you've correctly configured everything!
+
+## 8. Removing the reverse proxy
+If you, at some point, want to remove the reverse proxy, here are some general steps:
+1. Stop all running containers in the AIO Interface.
+2. Stop and remove the mastercontainer.
+    ```
+    sudo docker stop nextcloud-aio-mastercontainer
+    sudo docker rm nextcloud-aio-mastercontainer  
+    ```
+3. Remove the software and configuration file that you used for the reverse proxy (see section 1).
+4. Restart the mastercontainer with the [docker run command from the main readme](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#how-to-use-this) but add the two options:
+   ```
+   --env APACHE_IP_BINDING=0.0.0.0 \
+   --env APACHE_PORT=443 \   
+    ```
+    Do this *before* the last line of the run command!  
+
+    *The first command ensures that the Apache container is listening on all available network interfaces and the second command configures it to listen to port 443.*
+5. Restart all other containers in the AIO interface. 
