@@ -1058,7 +1058,7 @@ If you, at some point, want to remove the reverse proxy, here are some general s
     sudo docker rm nextcloud-aio-mastercontainer  
     ```
 3. Remove the software and configuration file that you used for the reverse proxy (see section 1).
-4. Restart the mastercontainer with the following two options:
+4. Restart the mastercontainer with the [docker run command from the main readme](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#how-to-use-this) but add the two options:
    ```
    --env APACHE_IP_BINDING=0.0.0.0 \
    --env APACHE_PORT=443 \   
