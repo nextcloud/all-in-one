@@ -1,0 +1,35 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-nextcloud-exporter",
+            "display_name": "Prometheus Nextcloud Exporter",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/nextcloud-exporter",
+            "image": "ghcr.io/xperimental/nextcloud-exporter",
+            "image_tag": "0.8.0",
+            "internal_port": "9205",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                  "ip_binding": "127.0.0.1",
+                  "port_number": "9205",
+                  "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "NEXTCLOUD_SERVER=https://%NC_DOMAIN%",
+                "NEXTCLOUD_AUTH_TOKEN=%NEXTCLOUD_EXPORTER_TOKEN%",
+                "NEXTCLOUD_LISTEN_ADDRESS=0.0.0.0:9205",
+                "NEXTCLOUD_TIMEOUT=5s"
+            ],
+            "ui_secret": "NEXTCLOUD_EXPORTER_CADDY_PASSWORD",
+            "secrets": [
+                "NEXTCLOUD_EXPORTER_TOKEN",
+                "NEXTCLOUD_EXPORTER_CADDY_PASSWORD"
+            ],
+            "nextcloud_exec_commands": [
+                "php /var/www/html/occ config:app:set serverinfo token --value %NEXTCLOUD_EXPORTER_TOKEN%"
+            ]
+        }
+    ]
+}

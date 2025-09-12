@@ -23,7 +23,8 @@
             "environment": [
                 "TZ=%TIMEZONE%",
                 "NC_DOMAIN=%NC_DOMAIN%",
-                "APACHE_PORT=%APACHE_PORT%"
+                "APACHE_PORT=%APACHE_PORT%",
+                "NEXTCLOUD_EXPORTER_CADDY_PASSWORD=%NEXTCLOUD_EXPORTER_CADDY_PASSWORD%"
             ],
             "volumes": [
                 {
@@ -36,6 +37,9 @@
                     "destination": "/nextcloud",
                     "writeable": false
                 }
+            ],
+            "secrets": [
+                "NEXTCLOUD_EXPORTER_CADDY_PASSWORD"
             ],
             "aio_variables": [
                 "apache_ip_binding=@INTERNAL",
