@@ -172,6 +172,7 @@ If your firewall/router has port 80 and 8443 open/forwarded and you point a doma
     - [How to resolve firewall problems with Fedora Linux, RHEL OS, CentOS, SUSE Linux and others?](#how-to-resolve-firewall-problems-with-fedora-linux-rhel-os-centos-suse-linux-and-others)
     - [What can I do to fix the internal or reserved ip-address error?](#what-can-i-do-to-fix-the-internal-or-reserved-ip-address-error)
     - [How to adjust the MTU size of the docker network](#how-to-adjust-the-mtu-size-of-the-docker-network)
+    - [How can I access the AIO interface from a subfolder?](#how-can-i-access-the-aio-interface-from-a-subfolder)
 - [Infrastructure](#infrastructure)
     - [Which CPU architectures are supported?](#which-cpu-architectures-are-supported)
     - [Disrecommended VPS providers](#disrecommended-vps-providers)
@@ -362,6 +363,17 @@ docker network create --driver bridge --opt com.docker.network.driver.mtu=1440 n
 When you open the AIO interface for the first time after you execute the `docker run` command, it will automatically connect to the `aio-nextcloud` network with the custom MTU. Keep in mind that if you previously started the mastercontainer without creating the network with the extra options, you will need to remove the old `aio-nextcloud` network and recreate it with the new configuration.
 
 If you want to use docker compose, you can check out the comments in the `compose.yaml` file for more details.
+
+### How can I access the AIO interface from a subfolder
+If you want to access the AIO interface from a subfolder (e.g. `https://somedomain.com/aio`), you need to set the `AIO_INTERFACE_PATH` environment variable to `/nextcloud` in the `docker-compose.yml` file:
+```yaml
+services:
+  nextcloud-aio-mastercontainer:
+    environment:
+      - AIO_INTERFACE_PATH=/aio
+```
+When set, the variable must start with a '/' and must not end with a '/'.
+After that, you can access the AIO interface at `https://somedomain.com/aio`.
 
 ## Infrastructure
 
