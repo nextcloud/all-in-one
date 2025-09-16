@@ -678,6 +678,9 @@ The examples below define the dynamic configuration in YAML files. If you rather
     entryPoints:
       https:
         address: ":443" # Create an entrypoint called "https" that uses port 443
+        transport:
+          respondingTimeouts:
+            readTimeout: 24h # Allows uploads > 100MB; prevents connection reset due to chunking (public upload-only links)
         # If you want to enable HTTP/3 support, uncomment the line below
         # http3: {}
     
@@ -765,9 +768,9 @@ The examples below define the dynamic configuration in YAML files. If you rather
     entryPoints:
       https:
         address: ":443" # Create an entrypoint called "https" that uses port 443
-          transport:
-            respondingTimeouts:
-              readTimeout: 30m # Allows uploads > 100MB; prevents connection reset due to chunking (public upload-only links)
+        transport:
+          respondingTimeouts:
+            readTimeout: 24h # Allows uploads > 100MB; prevents connection reset due to chunking (public upload-only links)
         # If you want to enable HTTP/3 support, uncomment the line below
         # http3: {}
     
