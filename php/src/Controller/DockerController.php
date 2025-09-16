@@ -171,7 +171,7 @@ readonly class DockerController {
         $uri = $request->getUri();
         $host = $uri->getHost();
         $port = $uri->getPort();
-        $path = $request->getParsedBody()['base_path'];
+        $path = $request->getParsedBody()['base_path'] ?? '';
         if ($port === 8000) {
             error_log('The AIO_URL-port was discovered to be 8000 which is not expected. It is now set to 443.');
             $port = 443;
