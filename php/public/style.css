@@ -251,7 +251,7 @@ svg:not(:has(use)) .fallback-text {
     min-width: 100vw;
     position: fixed;
     width: 100vw;
-    background-image: url("img/jenna-kim-the-globe.webp");
+    background-image: url("img/jo-myoung-hee-fluid.webp");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -260,7 +260,7 @@ svg:not(:has(use)) .fallback-text {
 }
 
 html[data-theme="dark"] .wrapper {
-    background-image: url("img/jenna-kim-the-globe-dark.webp");
+    background-image: url("img/jo-myoung-hee-fluid-dark.webp");
 }
 
 form {
