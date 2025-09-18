@@ -1,0 +1,16 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-languagetool",
+            "display_name": "LanguageTool for Collabora",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/languagetool",
+            "image": "erikvl87/languagetool",
+            "image_tag": "latest",
+            "internal_port": "8010",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ]
+        }
+    ]
+}
