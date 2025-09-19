@@ -3,14 +3,14 @@
 {% block body %}
     <div class="login">
         <svg class="nextcloud-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 142 100" width="142" height="100">
-            <use href="/img/nextcloud-logo.svg#logo"></use>
-            <use href="/img/nextcloud-logo.svg#Nextcloud"></use>
+            <use href="img/nextcloud-logo.svg#logo"></use>
+            <use href="img/nextcloud-logo.svg#Nextcloud"></use>
             <text x="10" y="50" fill="var(--color-nextcloud-logo)" class="fallback-text">Nextcloud Logo</text>
         </svg>
         <h1>All-in-One setup</h1>
         <p>The official Nextcloud installation method. Nextcloud All-in-One provides easy deployment and maintenance with most features included in this one Nextcloud instance.</p>
         <p>⚠️ <strong>Please note down the passphrase to access the AIO interface and don't lose it!</strong></p>
         <strong>Passphrase</strong><br/><span id="initial-password" class="monospace">{{ password }}</span><br>
-        <a href="/" class="button" target="_blank">Open Nextcloud AIO login ↗</a>
+        <a href="." class="button" target="_blank">Open Nextcloud AIO login ↗</a>
     </div>
 {% endblock %}
