@@ -16,12 +16,12 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
         'port' => getenv('OBJECTSTORE_S3_PORT') ?: '',
         'storageClass' => getenv('OBJECTSTORE_S3_STORAGE_CLASS') ?: '',
         'objectPrefix' => getenv("OBJECTSTORE_S3_OBJECT_PREFIX") ? getenv("OBJECTSTORE_S3_OBJECT_PREFIX") : "urn:oid:",
-        'autocreate' => (strtolower($autocreate) === 'false' || $autocreate == false) ? false : true,
-        'use_ssl' => (strtolower($use_ssl) === 'false' || $use_ssl == false) ? false : true,
+        'autocreate' => (strtolower($autocreate) === 'false' || $autocreate === false) ? false : true,
+        'use_ssl' => (strtolower($use_ssl) === 'false' || $use_ssl === false) ? false : true,
         // required for some non Amazon S3 implementations
-        'use_path_style' => $use_path == true && strtolower($use_path) !== 'false',
+        'use_path_style' => $use_path === true && strtolower($use_path) !== 'false',
         // required for older protocol versions
-        'legacy_auth' => $use_legacyauth == true && strtolower($use_legacyauth) !== 'false'
+        'legacy_auth' => $use_legacyauth === true && strtolower($use_legacyauth) !== 'false'
       )
     )
   );
