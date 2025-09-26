@@ -4,8 +4,9 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
   $use_path = getenv('OBJECTSTORE_S3_USEPATH_STYLE');
   $use_legacyauth = getenv('OBJECTSTORE_S3_LEGACYAUTH');
   $autocreate = getenv('OBJECTSTORE_S3_AUTOCREATE');
+  $multibucket = getenv('OBJECTSTORE_S3_MULTIBUCKET');
   $CONFIG = array(
-    'objectstore' => array(
+    $multibucket === 'true' ? 'objectstore_multibucket' : 'objectstore' => array(
       'class' => '\OC\Files\ObjectStore\S3',
       'arguments' => array(
         'bucket' => getenv('OBJECTSTORE_S3_BUCKET'),
