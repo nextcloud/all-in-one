@@ -66,8 +66,13 @@ if [ "$POSTGRES_USER" = nextcloud ]; then
     export POSTGRES_USER
 fi
 
+# Postgres root cert
+if [ -f "/nextcloud/data/certificates/POSTGRES" ]; then
+    POSTGRES_CERT="?sslmode=verify-ca&sslrootcert=/nextcloud/data/certificates/POSTGRES"
+fi
+
 # Set sensitive values as env
-export DATABASE_URL="$DATABASE_TYPE://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
+export DATABASE_URL="$DATABASE_TYPE://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB$POSTGRES_CERT"
 export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
 
 # Run it
