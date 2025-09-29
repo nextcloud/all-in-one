@@ -375,6 +375,11 @@ export TZ=Etc/UTC
 # Fix apache startup
 rm -f /var/run/apache2/httpd.pid
 
+# Fix caddy startup
+if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
+    rm -rf /mnt/docker-aio-config/caddy/locks/*
+fi
+
 # Fix the Caddyfile format
 caddy fmt --overwrite /Caddyfile
 
