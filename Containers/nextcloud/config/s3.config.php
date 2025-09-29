@@ -19,9 +19,9 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
         'autocreate' => strtolower($autocreate) !== 'false',
         'use_ssl' => strtolower($use_ssl) !== 'false',
         // required for some non Amazon S3 implementations
-        'use_path_style' => $use_path == true && strtolower($use_path) !== 'false',
+        'use_path_style' => strtolower($use_path) === 'true',
         // required for older protocol versions
-        'legacy_auth' => $use_legacyauth == true && strtolower($use_legacyauth) !== 'false'
+        'legacy_auth' => strtolower($use_legacyauth) === 'true'
       )
     )
   );
@@ -31,4 +31,3 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
     $CONFIG['objectstore']['arguments']['sse_c_key'] = $sse_c_key;
   }
 }
-
