@@ -66,6 +66,11 @@ caddy fmt --overwrite /tmp/Caddyfile
 # Add caddy path
 mkdir -p /mnt/data/caddy/
 
+# Fix caddy startup
+if [ -d "/mnt/data/caddy/locks" ]; then
+    rm -rf /mnt/data/caddy/locks/*
+fi
+
 # Fix apache startup
 rm -f /usr/local/apache2/logs/httpd.pid
 
