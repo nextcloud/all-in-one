@@ -21,6 +21,9 @@
                 "writeable": true
             }
             ],
+            "backup_volumes": [
+                "nextcloud_aio_minio"
+            ],
             "nextcloud_exec_commands": [
                 "php /var/www/html/occ config:system:set objectstore class --value 'OC\\Files\\ObjectStore\\S3'",
                 "php /var/www/html/occ config:system:set objectstore arguments autocreate --value true --type bool",
