@@ -1,0 +1,38 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-minio",
+            "image_tag": "v1",
+            "display_name": "Minio S3 Storage",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/minio",
+            "image": "ghcr.io/szaimen/aio-minio",
+            "internal_port": "9000",
+            "environment": [
+                "MINIO_ROOT_USER=nextcloud",
+                "MINIO_ROOT_PASSWORD=%MINIO_ROOT_PASSWORD%"
+            ],
+            "secrets": [
+                "MINIO_ROOT_PASSWORD"
+            ],
+            "volumes": [
+            {
+                "source": "nextcloud_aio_minio",
+                "destination": "/data",
+                "writeable": true
+            }
+            ],
+            "nextcloud_exec_commands": [
+                "php /var/www/html/occ config:system:set objectstore class --value 'OC\\Files\\ObjectStore\\S3'",
+                "php /var/www/html/occ config:system:set objectstore arguments autocreate --value true --type bool",
+                "php /var/www/html/occ config:system:set objectstore arguments use_path_style --value true --type bool",
+                "php /var/www/html/occ config:system:set objectstore arguments use_ssl --value false --type bool",
+                "php /var/www/html/occ config:system:set objectstore arguments region --value ''",
+                "php /var/www/html/occ config:system:set objectstore arguments bucket --value nextcloud",
+                "php /var/www/html/occ config:system:set objectstore arguments key --value nextcloud",
+                "php /var/www/html/occ config:system:set objectstore arguments secret --value %MINIO_ROOT_PASSWORD%",
+                "php /var/www/html/occ config:system:set objectstore arguments port --value 9000",
+                "php /var/www/html/occ config:system:set objectstore arguments hostname --value nextcloud-aio-minio"
+            ]
+        }
+    ]
+}
