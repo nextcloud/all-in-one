@@ -538,13 +538,13 @@ Also change `<you>@<your-mail-provider-domain>` to a mail address of yours.
 
 </details>
 
-### Nginx-Proxy
+### nginx-proxy (Github Repo)
 
 <details>
 
 <summary>click here to expand</summary>
 
-Unfortunately, it is not possible to configure Nginx-proxy in a way that works because it completely relies on environmental variables of the docker containers itself. Providing these variables does not work as stated above.
+Unfortunately, it is not possible to configure nginx-proxy in a way that works because it completely relies on environmental variables of the docker containers itself. Providing these variables does not work as stated above.
 
 If you really want to use AIO, we recommend you to switch to caddy. It is simply amazing!<br>
 
