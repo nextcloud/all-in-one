@@ -196,6 +196,8 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
         fi
 
         echo "Initializing nextcloud $image_version ..."
+        # TODO: touch rsync file to track what happens so that the container does not continue restarting? (it is not known what happens if it fails here at this step)
+        set -e
         rsync -rlD --delete --exclude-from=/upgrade.exclude "$SOURCE_LOCATION/" /var/www/html/
 
         # Copy custom_apps from Nextcloud archive
@@ -217,6 +219,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
         done
         rsync -rlD --delete --include '/config/' --exclude '/*' --exclude '/config/CAN_INSTALL' --exclude '/config/config.sample.php' --exclude '/config/config.php' "$SOURCE_LOCATION/" /var/www/html/
         rsync -rlD --include '/version.php' --exclude '/*' "$SOURCE_LOCATION/" /var/www/html/
+        set +e
         echo "Initializing finished"
 
         #install
