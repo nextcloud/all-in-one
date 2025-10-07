@@ -538,7 +538,7 @@ Also change `<you>@<your-mail-provider-domain>` to a mail address of yours.
 
 </details>
 
-### nginx-proxy (Github Repo)
+### nginx-proxy ([Github Repo](https://github.com/nginx-proxy/nginx-proxy))
 
 <details>
 
