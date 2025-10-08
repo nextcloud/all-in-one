@@ -1,32 +1,67 @@
-# Nextcloud All-in-One Mastercontainer
+# Nextcloud All-in-One `mastercontainer` Container
 
-This folder contains the OCI/Docker container definition of the mastercontainer, which acts as
-the central orchestration service for the deployment and management of all other containers in
-the Nextcloud All-in-One stack. The mastercontainer is responsible for initial setup, basic
-health checks, coordination of image updates, and hosting
-[the Nextcloud All-in-One management portal and API](https://github.com/nextcloud/all-in-one/tree/main/php)[^app].
+This folder contains the OCI/Docker container definition, along with associated resources and
+configuration files, for building the `mastercontainer` as part of the Nextcloud All-in-One
+project. This container hosts [the Nextcloud All-in-One management portal and API](
+https://github.com/nextcloud/all-in-one/tree/main/php)[^app], and a dedicated PHP environment
+for it (which is completely independent of the Nextcloud Server).
 
-It triggers the initial installation and ensures the smooth operation of the Nextcloud
-All-in-One stack.
+## Overview
+
+The mastercontainer acts as the central orchestration service for the deployment and management
+of all other containers in the Nextcloud All-in-One stack. It hosts:
+
+- A dedicated PHP SAPI/backend (php-fpm) for AIO itself (not Nextcloud Server)
+- An Apache service for accessing the AIO frontend via a cleartext HTTP VirtualHost on
+  8000/tcp as well as a self-signed HTTPS VirtualHost on 8080/tcp
+- A Caddy reverse proxy service for accessing the AIO frontend (optionally) via HTTPS with a
+  valid certificate on 8443/tcp.
+- Miscellaneous support services specific to AIO (backup management, health checks, etc.)
 
 ## Key Responsibilities
 
 - Orchestrates the deployment and lifecycle of all Nextcloud service containers
 - Handles initial setup and container configuration
-- Manages updates and monitors system health
+- Coordinates image updates
+- Monitors general system health
+
+It triggers the initial installation and ensures the smooth operation of the Nextcloud
+All-in-One stack.
+
+## Contents
+
+- **Dockerfile**: Instructions for building the mastercontainer image.
+- **Entrypoint script**: The `start.sh` script is used for container initialization and runtime
+  configuration before starting supervisord.
+- **Nextcloud All-in-One Controller App**: The core AIO orchestrator that handles configuration
+  and settings for the containers.
+- **Supervisor**: The `supervisord.conf` file defines the long-running services hosted within
+  the container (php-fpm, cron, etc.)
 
 ## Usage
 
-This container should be used as the trigger image when deploying the Nextcloud All-in-One stack
-in a Docker or other OCI-compliant container environment. For detailed deployment instructions,
-refer to the main [project documentation](https://github.com/nextcloud/all-in-one).
+This container should be used as the trigger image when deploying the Nextcloud All-in-One
+stack in a Docker or other OCI-compliant container environment. For detailed deployment
+instructions, refer to the [project documentation](
+https://github.com/nextcloud/all-in-one).
 
 ## Related Resources
 
 - [Main Repository](https://github.com/nextcloud/all-in-one)
 - [Documentation](https://github.com/nextcloud/all-in-one#readme)
 
+## Contributing
+
+Contributions are welcome! Please follow the Nextcloud project's guidelines and submit pull
+requests or issues via the main repository.
+
+## License
+
+This folder and its contents are licensed under the
+[GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html), in line with the rest of Nextcloud
+All-in-One.
+
 [^app]: The Nextcloud All-in-One management portal allows users to install, configure, and
 manage their Nextcloud instance and related containers via a secure web interface and API.
-It automates and simplifies the complex tasks of container orchestration, backups, updates,
+It automates and simplifies complex tasks such as container orchestration, backups, updates,
 and service management for users deploying Nextcloud in Docker environments.
