@@ -360,7 +360,7 @@ You can adjust the MTU size of the docker network by creating it beforehand with
 ```
 docker network create --driver bridge --opt com.docker.network.driver.mtu=1440 nextcloud-aio
 ```
-When you open the AIO interface for the first time after you execute the `docker run` command, it will automatically connect to the `aio-nextcloud` network with the custom MTU. Keep in mind that if you previously started the mastercontainer without creating the network with the extra options, you will need to remove the old `aio-nextcloud` network and recreate it with the new configuration.
+When you open the AIO interface for the first time after you execute the `docker run` command, it will automatically connect to the `nextcloud-aio` network with the custom MTU. Keep in mind that if you previously started the mastercontainer without creating the network with the extra options, you will need to remove the old `nextcloud-aio` network and recreate it with the new configuration.
 
 If you want to use docker compose, you can check out the comments in the `compose.yaml` file for more details.
 
