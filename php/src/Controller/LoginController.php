@@ -45,7 +45,7 @@ readonly class LoginController {
     {
         $this->authManager->SetAuthState(false);
         return $response
-            ->withHeader('Location', '.')
+            ->withHeader('Location', '../..')
             ->withStatus(302);
     }
 }
