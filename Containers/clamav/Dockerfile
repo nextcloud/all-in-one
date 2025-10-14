@@ -3,7 +3,7 @@ FROM alpine:3.22.1
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache tzdata clamav supervisor bash; \
+    apk add --no-cache tzdata clamav clamav-milter supervisor bash; \
     mkdir -p /var/lib/clamav /run/clamav /var/log/supervisord /var/run/supervisord; \
     chmod 777 -R /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
     chown -R 100:100 /var/lib/clamav; \
@@ -12,7 +12,11 @@ RUN set -ex; \
     sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize aio-placeholder|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?StreamMaxLength.*|StreamMaxLength aio-placeholder|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?TCPSocket|TCPSocket|g" /etc/clamav/clamd.conf; \
-    sed -i "s|^LocalSocket .*|LocalSocket /tmp/clamd.sock|g" /etc/clamav/clamd.conf
+    sed -i "s|^LocalSocket .*|LocalSocket /tmp/clamd.sock|g" /etc/clamav/clamd.conf; \
+    sed -i "s|Example| |g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?MilterSocket inet:7357|MilterSocket inet:7357|g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?ClamdSocket unix:/run/clamav/clamd.sock|ClamdSocket unix:/tmp/clamd.sock|g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?AddHeader Replace|AddHeader Add|g" /etc/clamav/clamav-milter.conf
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
