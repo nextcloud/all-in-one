@@ -4,8 +4,9 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
   $use_path = getenv('OBJECTSTORE_S3_USEPATH_STYLE');
   $use_legacyauth = getenv('OBJECTSTORE_S3_LEGACYAUTH');
   $autocreate = getenv('OBJECTSTORE_S3_AUTOCREATE');
+  $multibucket = getenv('OBJECTSTORE_S3_MULTIBUCKET');
   $CONFIG = array(
-    'objectstore' => array(
+    $multibucket === 'true' ? 'objectstore_multibucket' : 'objectstore' => array(
       'class' => '\OC\Files\ObjectStore\S3',
       'arguments' => array(
         'bucket' => getenv('OBJECTSTORE_S3_BUCKET'),
@@ -16,12 +17,12 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
         'port' => getenv('OBJECTSTORE_S3_PORT') ?: '',
         'storageClass' => getenv('OBJECTSTORE_S3_STORAGE_CLASS') ?: '',
         'objectPrefix' => getenv("OBJECTSTORE_S3_OBJECT_PREFIX") ? getenv("OBJECTSTORE_S3_OBJECT_PREFIX") : "urn:oid:",
-        'autocreate' => (strtolower($autocreate) === 'false' || $autocreate == false) ? false : true,
-        'use_ssl' => (strtolower($use_ssl) === 'false' || $use_ssl == false) ? false : true,
+        'autocreate' => strtolower($autocreate) !== 'false',
+        'use_ssl' => strtolower($use_ssl) !== 'false',
         // required for some non Amazon S3 implementations
-        'use_path_style' => $use_path == true && strtolower($use_path) !== 'false',
+        'use_path_style' => strtolower($use_path) === 'true',
         // required for older protocol versions
-        'legacy_auth' => $use_legacyauth == true && strtolower($use_legacyauth) !== 'false'
+        'legacy_auth' => strtolower($use_legacyauth) === 'true'
       )
     )
   );
