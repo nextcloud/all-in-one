@@ -59,6 +59,8 @@ extensionvideo = .webm
 
 [recording]
 browser = firefox
+driverPath = /usr/bin/geckodriver
+browserPath = /usr/bin/firefox
 RECORDING_CONF
 
 exec "$@"
