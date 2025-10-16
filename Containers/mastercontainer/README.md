@@ -1,4 +1,4 @@
-# Nextcloud All-in-One `mastercontainer` Container
+# Nextcloud All-in-One `mastercontainer`
 
 This folder contains the OCI/Docker container definition, along with associated resources and
 configuration files, for building the `mastercontainer` as part of the Nextcloud All-in-One
