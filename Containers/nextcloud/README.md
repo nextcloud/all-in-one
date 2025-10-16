@@ -19,7 +19,7 @@ The Nextcloud container provides the core Nextcloud application environment, inc
 
 ## Usage
 
-This container is intended to be used as part of the All-in-One deployment and is not meant to be used on its own. Among other requirements, it needs a web server container (which is provided by AIO in a dedicated Apache container). It is designed to be orchestrated by [the All-in-One mastercontainer](https://github.com/nextcloud/all-in-one/tree/main/Containers/mastercontainer).
+This container is intended to be used as part of the All-in-One deployment and is not meant to be used on its own. Among other requirements, it needs a web server container (which AIO provides in a dedicated Apache container). It is designed to be orchestrated by the [All-in-One mastercontainer](https://github.com/nextcloud/all-in-one/tree/main/Containers/mastercontainer) or used within an [AIO Manual Installation](https://github.com/nextcloud/all-in-one/tree/main/manual-install) or [AIO Helm chart](https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart).
 
 ## Documentation
 
