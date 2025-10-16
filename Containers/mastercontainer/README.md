@@ -2,7 +2,7 @@
 
 This folder contains the OCI/Docker container definition, along with associated resources and
 configuration files, for building the `mastercontainer` as part of the Nextcloud All-in-One
-project. This container hosts [the Nextcloud All-in-One management portal and API](
+project. This container hosts [the Nextcloud AIO interface](
 https://github.com/nextcloud/all-in-one/tree/main/php)[^app], and a dedicated PHP environment
 for it (which is completely independent of the Nextcloud Server).
 
@@ -14,8 +14,12 @@ of all other containers in the Nextcloud All-in-One stack. It hosts:
 - A dedicated PHP SAPI/backend (php-fpm) for AIO itself (not Nextcloud Server)
 - An Apache service for accessing the AIO frontend via a cleartext HTTP VirtualHost on
   8000/tcp as well as a self-signed HTTPS VirtualHost on 8080/tcp
-- A Caddy reverse proxy service for accessing the AIO frontend (optionally) via HTTPS with a
-  valid certificate on 8443/tcp.
+- A Caddy reverse proxy service enabling HTTPS access to the AIO frontend on port 8443/tcp.
+  - This uses a self-signed certificate by default.
+  - The self-signed certificate can be automatically replaced by a Let's Encrypt issued certificate if port 80
+    is open/forwarded and a domain pointer is in place; then, simply open the Nextcloud AIO interface using the
+    domain (`https://your-domain-that-points-to-this-server.tld:8443`). The Let's Encrypt certificate request will
+    use an [ACME HTTP-01](https://letsencrypt.org/docs/challenge-types/#http-01-challenge) challenge.
 - Miscellaneous support services specific to AIO (backup management, health checks, etc.)
 
 ## Key Responsibilities
@@ -33,8 +37,8 @@ All-in-One stack.
 - **Dockerfile**: Instructions for building the mastercontainer image.
 - **Entrypoint script**: The `start.sh` script is used for container initialization and runtime
   configuration before starting supervisord.
-- **Nextcloud All-in-One Controller App**: The core AIO orchestrator that handles configuration
-  and settings for the containers.
+- [**Nextcloud All-in-One Controller App**](https://github.com/nextcloud/all-in-one/tree/main/php): The
+  core AIO orchestrator that handles configuration and settings for the containers.
 - **Supervisor**: The `supervisord.conf` file defines the long-running services hosted within
   the container (php-fpm, cron, etc.)
 
@@ -61,7 +65,7 @@ This folder and its contents are licensed under the
 [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html), in line with the rest of Nextcloud
 All-in-One.
 
-[^app]: The Nextcloud All-in-One management portal allows users to install, configure, and
+[^app]: The Nextcloud All-in-One interface allows users to install, configure, and
 manage their Nextcloud instance and related containers via a secure web interface and API.
 It automates and simplifies complex tasks such as container orchestration, backups, updates,
 and service management for users deploying Nextcloud in Docker environments.
