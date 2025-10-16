@@ -7,6 +7,7 @@ use AIO\Container\ContainerState;
 use AIO\Container\VersionState;
 use AIO\ContainerDefinitionFetcher;
 use AIO\Data\ConfigurationManager;
+use AIO\Data\DataConst;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use http\Env\Response;
@@ -383,9 +384,10 @@ readonly class DockerActionManager {
                     }
                 }
             }
-            // Special things for the talk container which should not be exposed in the containers.json
+
+        // Special things for the talk container which should not be exposed in the containers.json
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-talk') {
-            // This is needed due to a bug in libwebsockets which cannot handle unlimited ulimits
+            // This is needed due to a bug in libwebsockets used in Janus which cannot handle unlimited ulimits
             $requestBody['HostConfig']['Ulimits'] = [["Name" => "nofile", "Hard" => 200000, "Soft" => 200000]];
             // // Special things for the nextcloud container which should not be exposed in the containers.json
             // } elseif ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
@@ -395,11 +397,19 @@ readonly class DockerActionManager {
             //         }
             //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
             //     }
-            // Special things for the caddy community container
+
+        // Special things for the caddy community container
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-caddy') {
             $requestBody['HostConfig']['ExtraHosts'] = ['host.docker.internal:host-gateway'];
-            // Special things for the collabora container which should not be exposed in the containers.json
+
+        // Special things for the collabora container which should not be exposed in the containers.json
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-collabora') {
+            // Load reference seccomp profile for collabora
+            $seccompProfile = file_get_contents(DataConst::GetCollaboraSeccompProfilePath());
+            $seccompProfile = addslashes($seccompProfile);
+            $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile", "no-new-privileges=true", "apparmor=unconfined"];
+
+            // Additional Collabora options
             if ($this->configurationManager->GetAdditionalCollaboraOptions() !== '') {
                 $requestBody['Cmd'] = [$this->configurationManager->GetAdditionalCollaboraOptions()];
             }
