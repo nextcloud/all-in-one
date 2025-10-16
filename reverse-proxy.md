@@ -917,6 +917,72 @@ For a reverse proxy example guide for Tailscale, see this guide by [@Perseus333]
 
 </details>
 
+### Fast Reverse Proxy
+<details>
+	
+<summary>click here to expand</summary>
+
+This is an example FRPC configuration as a .toml file, one of the configuration file types supported by FRP. This assumes that you are already set up communication between your servers using frpc and frps respectively. If your having trouble with that, look at [frp's example usage](https://github.com/fatedier/frp#example-usage). Adjust `<frps server ip>` to match the public IP address of your machine running frps, `<your-nc-domain>` to match your domain and the paths to point to the files of your SSL certificate.
+```toml
+[[proxies]]
+name = "aio_http"
+type = "http"
+localPort = 80
+customDomains = ["<frps server ip>"]
+
+[[proxies]]
+name = "aio_https"
+type = "https"
+localPort = 443
+customDomains = ["<frps server ip>"]
+
+[[proxies]]
+name = "cloud_https2https"
+type = "https"
+customDomains = ["<your-nc-domain>"]
+[proxies.plugin]
+type = "https2https"
+localAddr = "127.0.0.1:443"
+crtPath = "/path/to/crt_file.crt" # You will need to specify the path to the .crt and .key file of your SSL certificate
+keyPath = "/path/to/key_file.key" # For Let's Encrypt certificates, these are typcally going to be located at /etc/letsencrypt/live
+hostHeaderRewrite = "<your-nc-domain>"
+requestHeaders.set.x-from-where = "frp"
+```
+If you run into permission problems for the `/etc/letsencrypt/live` diretory you can work around that using symbolic links.
+
+Since all requests made to the server running frps are routed to port 443 or 80, you will need a second reverse proxy on the machine running frpc. Below is an example of how to achieve this behavior using Nginx:
+Note that this configuration is only implementing the most basic functionality to setup nextcloud using FRP, for the rest of the Nginx config look at the [Nginx section](#nginx-freenginx-openresty-angie).
+
+```
+server {
+    listen 443 ssl;
+
+    server_name "<your-nc-domain>";
+
+    location / {
+        proxy_pass http://localhost:11000;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header X-Forwarded-Scheme $scheme;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header Early-Data $ssl_early_data;
+
+        # Websocket
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+    }
+
+    ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; 
+}
+```
+Adopting this configuration will allow you access your Nextcloud AIO under `http://<frps server ip>` and your Nextcloud under `https://<your-nc-domain>` assuming your firewall is configured correctly and you restarted both frpc and nginx. Any suggestions to improve these configurations are very welcome.
+
+</details>
 
 ### Others
 
