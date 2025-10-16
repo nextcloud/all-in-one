@@ -383,9 +383,10 @@ readonly class DockerActionManager {
                     }
                 }
             }
-            // Special things for the talk container which should not be exposed in the containers.json
+
+        // Special things for the talk container which should not be exposed in the containers.json
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-talk') {
-            // This is needed due to a bug in libwebsockets which cannot handle unlimited ulimits
+            // This is needed due to a bug in libwebsockets used in Janus which cannot handle unlimited ulimits
             $requestBody['HostConfig']['Ulimits'] = [["Name" => "nofile", "Hard" => 200000, "Soft" => 200000]];
             // // Special things for the nextcloud container which should not be exposed in the containers.json
             // } elseif ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
@@ -395,11 +396,21 @@ readonly class DockerActionManager {
             //         }
             //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
             //     }
-            // Special things for the caddy community container
+
+        // Special things for the caddy community container
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-caddy') {
             $requestBody['HostConfig']['ExtraHosts'] = ['host.docker.internal:host-gateway'];
-            // Special things for the collabora container which should not be exposed in the containers.json
+
+        // Special things for the collabora container which should not be exposed in the containers.json
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-collabora') {
+            // Load reference seccomp profile for collabora
+            $seccompProfile = file_get_contents(__DIR__ . '/../cool-seccomp-profile.json');
+            if ($seccompProfile !== false) {
+                $seccompProfile = addslashes($seccompProfile);
+                $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile"];
+            }
+
+            // Additional Collabora options
             if ($this->configurationManager->GetAdditionalCollaboraOptions() !== '') {
                 $requestBody['Cmd'] = [$this->configurationManager->GetAdditionalCollaboraOptions()];
             }
