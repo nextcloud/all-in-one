@@ -1,0 +1,29 @@
+name: collabora-update
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '00 12 * * *'
+
+jobs:
+  collabora-update:
+    name: update collabora
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - name: Run collabora-profile-update
+      run: |
+        rm -f php/cool-seccomp-profile.json
+        wget https://raw.githubusercontent.com/CollaboraOnline/online/refs/heads/master/docker/cool-seccomp-profile.json
+        mv cool-seccomp-profile.json php/
+        
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+      with:
+        commit-message: collabora-seccomp-update automated change
+        signoff: true
+        title: collabora seccomp update
+        body: Automated collabora seccomp profile update
+        labels: dependencies, 3. to review
+        milestone: next
+        branch: collabora-seccomp-update
