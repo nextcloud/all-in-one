@@ -161,7 +161,7 @@ readonly class ConfigurationController {
                 $this->configurationManager->DeleteBorgBackupLocationVars();
             }
 
-            return $response->withStatus(201)->withHeader('Location', '/');
+            return $response->withStatus(201)->withHeader('Location', '.');
         } catch (InvalidSettingConfigurationException $ex) {
             $response->getBody()->write($ex->getMessage());
             return $response->withStatus(422);
