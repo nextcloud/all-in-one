@@ -427,7 +427,8 @@ server {
     client_max_body_size 0;
     client_body_buffer_size 512k;
     # http3_stream_buffer_size 512k; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    proxy_read_timeout 86400s;
+    proxy_read_timeout 300s;
+    proxy_send_timeout 300s;
 
     server_name <your-nc-domain>;
 
