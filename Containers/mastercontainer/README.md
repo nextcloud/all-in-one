@@ -12,8 +12,7 @@ The mastercontainer acts as the central orchestration service for the deployment
 of all other containers in the Nextcloud All-in-One stack. It hosts:
 
 - A dedicated PHP SAPI/backend (php-fpm) for AIO itself (not Nextcloud Server)
-- An Apache service for accessing the AIO frontend via a cleartext HTTP VirtualHost on
-  8000/tcp as well as a self-signed HTTPS VirtualHost on 8080/tcp
+- An Apache service for accessing the AIO interface via a self-signed HTTPS VirtualHost on 8080/tcp
 - A Caddy reverse proxy service enabling HTTPS access to the AIO frontend on port 8443/tcp.
   - This uses a self-signed certificate by default.
   - The self-signed certificate can be automatically replaced by a Let's Encrypt issued certificate if port 80
