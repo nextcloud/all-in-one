@@ -5,7 +5,7 @@
             "display_name": "Prometheus Nextcloud Exporter",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/nextcloud-exporter",
             "image": "ghcr.io/xperimental/nextcloud-exporter",
-            "image_tag": "0.8.0",
+            "image_tag": "0.9.0",
             "internal_port": "9205",
             "restart": "unless-stopped",
             "ports": [
