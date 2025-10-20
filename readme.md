@@ -91,6 +91,7 @@ The steps below are written for Linux. For platform-specific guidance see:
 - macOS: [How to run AIO on macOS](#how-to-run-aio-on-macos)
 - Windows: [How to run AIO on Windows](#how-to-run-aio-on-windows)
 - Synology DSM: [How to run AIO on Synology DSM](#how-to-run-aio-on-synology-dsm)
+- TrueNAS SCALE: [Can I run AIO on TrueNAS SCALE?](#can-i-run-aio-on-truenas-scale)
 
 > [!IMPORTANT]  
 > These instructions assume there is no existing web server or reverse proxy (for example Apache, Nginx, Caddy, or Cloudflare Tunnel) that you intend to place in front of AIO. If you plan to run AIO behind an existing web server or reverse proxy, follow the AIO reverse proxy documentation: [Reverse proxy docs](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
