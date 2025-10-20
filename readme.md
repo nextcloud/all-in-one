@@ -52,7 +52,8 @@ Included are:
 - Possibility included to [pass the needed device for hardware transcoding](https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud) to the Nextcloud container
 - Possibility included to [store all docker related files on a separate drive](https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive)
 - [LDAP can be used as user backend for Nextcloud](https://github.com/nextcloud/all-in-one/tree/main#ldap)
-- Migration from any former Nextcloud installation to AIO is possible. See [this documentation](https://github.com/nextcloud/all-in-one/blob/main/migration.md)
+- Migration from any former Nextcloud installation to AIO is possible. See [this documentation](https://github.com/nextcloud/all-in-one/blob/main/migration.md). 
+- Migration in the other direction (e.g. from AIO to a VM-based installation) is also possible.
 - [Fail2Ban can be added](https://github.com/nextcloud/all-in-one#fail2ban)
 - [phpMyAdmin, Adminer or pgAdmin can be added](https://github.com/nextcloud/all-in-one#phpmyadmin-adminer-or-pgadmin)
 - [Mail server can be added](https://github.com/nextcloud/all-in-one#mail-server)
@@ -359,7 +360,7 @@ You can adjust the MTU size of the docker network by creating it beforehand with
 ```
 docker network create --driver bridge --opt com.docker.network.driver.mtu=1440 nextcloud-aio
 ```
-When you open the AIO interface for the first time after you execute the `docker run` command, it will automatically connect to the `aio-nextcloud` network with the custom MTU. Keep in mind that if you previously started the mastercontainer without creating the network with the extra options, you will need to remove the old `aio-nextcloud` network and recreate it with the new configuration.
+When you open the AIO interface for the first time after you execute the `docker run` command, it will automatically connect to the `nextcloud-aio` network with the custom MTU. Keep in mind that if you previously started the mastercontainer without creating the network with the extra options, you will need to remove the old `nextcloud-aio` network and recreate it with the new configuration.
 
 If you want to use docker compose, you can check out the comments in the `compose.yaml` file for more details.
 
