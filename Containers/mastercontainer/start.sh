@@ -385,6 +385,9 @@ https://your-domain-that-points-to-this-server.tld:8443"
 # Set the timezone to Etc/UTC
 export TZ=Etc/UTC
 
+# Remove unused certs
+rm -vrf /mnt/docker-aio-config/certs
+
 # Fix caddy startup
 if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
     rm -rf /mnt/docker-aio-config/caddy/locks/*
