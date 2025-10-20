@@ -14,8 +14,7 @@ of all other containers in the Nextcloud All-in-One stack. It hosts:
 - A dedicated PHP SAPI/backend (php-fpm) for AIO itself (not Nextcloud Server)
 - An Apache service for accessing the AIO interface via a self-signed HTTPS VirtualHost on 8080/tcp
 - A Caddy reverse proxy service enabling HTTPS access to the AIO frontend on port 8443/tcp.
-  - This uses a self-signed certificate by default.
-  - The self-signed certificate can be automatically replaced by a Let's Encrypt issued certificate if port 80
+  - Caddy will automatically issue a Let's Encrypt issued certificate if port 80 and 8443
     is open/forwarded and a domain pointer is in place; then, simply open the Nextcloud AIO interface using the
     domain (`https://your-domain-that-points-to-this-server.tld:8443`). The Let's Encrypt certificate request will
     use an [ACME HTTP-01](https://letsencrypt.org/docs/challenge-types/#http-01-challenge) challenge.
