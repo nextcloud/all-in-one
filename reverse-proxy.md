@@ -1039,7 +1039,7 @@ If your reverse proxy connects to nextcloud using an ip-address and not localhos
 
 <small>*: The IP address it uses to connect to AIO is not in a private IP range such as these: `127.0.0.1/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,fd00::/8,::1`</small>
 
-### Nextcloud trusted proxies
+#### Nextcloud trusted proxies
 Add the IP it uses connect to AIO to the Nextcloud trusted_proxies like this:
 
 ```
@@ -1051,11 +1051,11 @@ If your reverse proxy connects to Nextcloud with an IP address that is different
 
 <small>*: For example, the reverse proxy has a public globally routable IP and connects to your AIO instance via Tailscale with an IP in the `100.64.0.0/10` range, or you are using a Cloudflare tunnel ([cloudflare notes](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#notes-on-cloudflare-proxytunnel): You must add all [Cloudflare IP-Ranges](https://www.cloudflare.com/ips/) to the WOPI allowlist.)</small>
 
-### External reverse proxies connecting via VPN (e.g. Tailscale)
+#### External reverse proxies connecting via VPN (e.g. Tailscale)
 
 If your reverse proxy is outside your LAN and connecting via VPN such as Tailscale, you may want to set `APACHE_IP_BINDING=AIO.VPN.host.IP` to ensure only traffic coming from the VPN can connect.
 
-## 6. Optional: get a valid certificate for the AIO interface
+### 6. Optional: get a valid certificate for the AIO interface
 
 If you want to also access your AIO interface publicly with a valid certificate, you can add e.g. the following config to your Caddyfile:
 
