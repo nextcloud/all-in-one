@@ -156,7 +156,7 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://github.com/nextcloud-releases/server/releases/download/v${NEXTCLOUD_VERSION}/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
         "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
