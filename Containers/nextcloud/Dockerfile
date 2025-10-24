@@ -8,7 +8,7 @@ ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=31.0.9
+ENV NEXTCLOUD_VERSION=31.0.10
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
@@ -84,7 +84,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install -o igbinary-3.2.16; \
     pecl install APCu-5.1.27; \
-    pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.3.0; \
+    pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.4.0; \
     pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.2.0; \
    pecl install -o imagick-3.8.0; \
     \
@@ -132,7 +132,7 @@ RUN set -ex; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
         echo 'max_execution_time=${PHP_MAX_TIME}'; \
-        echo 'max_input_time=${PHP_MAX_TIME}'; \
+        echo 'max_input_time=-1'; \
         echo 'default_socket_timeout=${PHP_MAX_TIME}'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
@@ -156,7 +156,7 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://github.com/nextcloud-releases/server/releases/download/v${NEXTCLOUD_VERSION}/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
         "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \

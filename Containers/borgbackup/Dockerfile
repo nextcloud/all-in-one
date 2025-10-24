@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM alpine:3.22.1
+FROM alpine:3.22.2
 
 RUN set -ex; \
     \

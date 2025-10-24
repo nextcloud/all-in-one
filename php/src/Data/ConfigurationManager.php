@@ -286,11 +286,6 @@ class ConfigurationManager
             $value = 0;
         }
 
-        // Currently only works on x64. See https://github.com/nextcloud/nextcloud-talk-recording/issues/17
-        if (!$this->isx64Platform()) {
-            $value = 0;
-        }
-
         $config = $this->GetConfig();
         $config['isTalkRecordingEnabled'] = $value;
         $this->WriteConfig($config);

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.25.2-alpine3.22 AS go
+FROM golang:1.25.3-alpine3.22 AS go
 
 ENV IMAGINARY_HASH=1d4e251cfcd58ea66f8361f8721d7b8cc85002a3
 
@@ -14,7 +14,7 @@ RUN set -ex; \
         build-base; \
     go install github.com/h2non/imaginary@"$IMAGINARY_HASH";
 
-FROM alpine:3.22.1
+FROM alpine:3.22.2
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
