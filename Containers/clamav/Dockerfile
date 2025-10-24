@@ -17,6 +17,7 @@ RUN set -ex; \
     sed -i "s|Example| |g" /etc/clamav/clamav-milter.conf; \
     sed -i "s|#\?MilterSocket inet:7357|MilterSocket inet:7357|g" /etc/clamav/clamav-milter.conf; \
     sed -i "s|#\?ClamdSocket unix:/run/clamav/clamd.sock|ClamdSocket unix:/tmp/clamd.sock|g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?OnInfected Quarantine|OnInfected Reject|g" /etc/clamav/clamav-milter.conf; \
     sed -i "s|#\?AddHeader Replace|AddHeader Add|g" /etc/clamav/clamav-milter.conf; \
     sed -i "s|#\?Foreground yes|Foreground yes|g" /etc/clamav/clamav-milter.conf
 
