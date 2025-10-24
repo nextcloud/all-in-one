@@ -199,7 +199,7 @@ if [ "$BORG_MODE" = backup ]; then
     if [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup" ]; then
         BORG_EXCLUDE+=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/")
         BORG_INCLUDE+=(--pattern="+/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup")
-        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextclouds data directory. Excluding the data directory from backup!"
+        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextcloud's data directory. Excluding the data directory from backup!"
     # Exclude preview folder if .noaiobackup file was found
     elif [ -f /nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/.noaiobackup ]; then
         BORG_EXCLUDE+=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/")
@@ -344,7 +344,7 @@ if [ "$BORG_MODE" = restore ]; then
         ADDITIONAL_RSYNC_EXCLUDES=(--exclude "nextcloud_aio_nextcloud_data/**")
         ADDITIONAL_BORG_EXCLUDES=(--exclude "sh:nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/**")
         ADDITIONAL_FIND_EXCLUDES=(-o -regex 'nextcloud_aio_volumes/nextcloud_aio_nextcloud_data\(/.*\)?')
-        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextclouds data directory. Excluding the data directory from restore!"
+        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextcloud's data directory. Excluding the data directory from restore!"
         echo "You might run into problems due to this afterwards as potentially this makes the directory go out of sync with the database."
         echo "You might be able to fix this by running 'occ files:scan --all' and 'occ maintenance:repair' and 'occ files:scan-app-data' after the restore."
         echo "See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands"
