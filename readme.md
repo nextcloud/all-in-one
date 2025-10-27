@@ -1143,3 +1143,11 @@ AIO ships its own update notifications implementation. It checks if container up
 
 ### Huge docker logs
 If you should run into issues with huge docker logs, you can adjust the log size by following https://docs.docker.com/config/containers/logging/local/#usage. However for the included AIO containers, this should usually not be needed because almost all of them have the log level set to warn so they should not produce many logs.
+
+<details>
+
+<summary>Badges</summary>
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/nextcloud/all-in-one)
+
+</details>
