@@ -10,7 +10,6 @@ metadata:
 spec:
   ipFamilyPolicy: PreferDualStack
   type: LoadBalancer
-  externalTrafficPolicy: Local
   ports:
     - name: "{{ .Values.APACHE_PORT }}"
       port: {{ .Values.APACHE_PORT }}
