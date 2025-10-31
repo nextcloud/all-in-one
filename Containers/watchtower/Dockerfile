@@ -1,5 +1,13 @@
 # syntax=docker/dockerfile:latest
-FROM ghcr.io/nicholas-fedor/watchtower:1.12.1 AS watchtower
+FROM golang:1.25.3-alpine3.22 AS go
+
+ENV WATCHTOWER_COMMIT_HASH=v1.12.1
+
+RUN set -ex; \
+    apk upgrade --no-cache -a; \
+    apk add --no-cache \
+        build-base; \
+    go install github.com/nicholas-fedor/watchtower@$WATCHTOWER_COMMIT_HASH;
 
 FROM alpine:3.22.2
 
@@ -7,7 +15,7 @@ RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache bash ca-certificates tzdata
 
-COPY --from=watchtower /watchtower /watchtower
+COPY --from=go /go/bin/watchtower /watchtower
 
 COPY --chmod=775 start.sh /start.sh
 
