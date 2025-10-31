@@ -12,7 +12,6 @@ metadata:
 spec:
   ipFamilyPolicy: PreferDualStack
   type: LoadBalancer
-  externalTrafficPolicy: Local
   ports:
     - name: "{{ .Values.TALK_PORT }}"
       port: {{ .Values.TALK_PORT }}
