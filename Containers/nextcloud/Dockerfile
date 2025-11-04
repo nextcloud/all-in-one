@@ -230,7 +230,6 @@ RUN set -ex; \
         sudo \
         grep \
         nodejs \
-        libreoffice \
         bind-tools \
         imagemagick \
         imagemagick-svg \
