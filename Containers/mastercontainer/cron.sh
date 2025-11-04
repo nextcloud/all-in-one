@@ -60,7 +60,7 @@ while true; do
     fi
 
     # Remove dangling images
-    sudo -u www-data docker image prune --force
+    sudo -u www-data docker image prune --filter "label=org.label-schema.vendor=Nextcloud" --force
 
     # Check for available free space
     sudo -u www-data php /var/www/docker-aio/php/src/Cron/CheckFreeDiskSpace.php
