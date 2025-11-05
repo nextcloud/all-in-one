@@ -38,7 +38,7 @@ readonly class ContainerDefinitionFetcher {
      */
     private function GetDefinition(): array
     {
-        $data = json_decode(file_get_contents(__DIR__ . '/../containers.json'), true);
+        $data = json_decode(file_get_contents(DataConst::GetContainersDefinitionPath()), true);
 
         $additionalContainerNames = [];
         foreach ($this->configurationManager->GetEnabledCommunityContainers() as $communityContainer) {

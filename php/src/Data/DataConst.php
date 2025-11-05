@@ -62,4 +62,8 @@ class DataConst {
     public static function GetCollaboraSeccompProfilePath() : string {
         return realpath(__DIR__ . '/../cool-seccomp-profile.json');
     }
+
+    public static function GetContainersDefinitionPath() : string {
+        return realpath(__DIR__ . '/../containers.json');
+    }
 }
