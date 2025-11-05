@@ -636,7 +636,7 @@ class ConfigurationManager
             return "";
         }
 
-        return trim(file_get_contents(DataConst::GetBackupPublicKey()));
+        return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
     }
 
     public function GetBorgRestorePassword() : string {
@@ -1040,7 +1040,7 @@ class ConfigurationManager
                     apcu_add($filePath, $fileContents);
                 }
             } 
-            $json = is_string($fileContents) ? json_decode($fileContents, true) : false;
+            $json = is_string($fileContents) ? json_decode($fileContents, true, 512, JSON_THROW_ON_ERROR) : false;
             if(is_array($json) && is_array($json['aio_services_v1'])) {
                 foreach ($json['aio_services_v1'] as $service) {
                     $documentation = is_string($service['documentation']) ? $service['documentation'] : '';

@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="6.13.1@1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51">
-  <file src="src/ContainerDefinitionFetcher.php">
-    <PossiblyFalseArgument>
-      <code><![CDATA[file_get_contents($path)]]></code>
-    </PossiblyFalseArgument>
-  </file>
   <file src="src/Controller/DockerController.php">
     <InvalidOperand>
       <code><![CDATA[$port]]></code>
@@ -29,7 +24,6 @@
       <code><![CDATA[$content]]></code>
       <code><![CDATA[$dailyBackupFile]]></code>
       <code><![CDATA[$dailyBackupFile]]></code>
-      <code><![CDATA[file_get_contents(DataConst::GetBackupPublicKey())]]></code>
     </PossiblyFalseArgument>
   </file>
   <file src="src/Docker/DockerActionManager.php">
