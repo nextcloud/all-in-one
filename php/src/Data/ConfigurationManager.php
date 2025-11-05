@@ -13,7 +13,7 @@ class ConfigurationManager
     {
         if(file_exists(DataConst::GetConfigFile()))
         {
-            $configContent = file_get_contents(DataConst::GetConfigFile());
+            $configContent = (string)file_get_contents(DataConst::GetConfigFile());
             return json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
@@ -80,10 +80,7 @@ class ConfigurationManager
             return '';
         }
 
-        $content = file_get_contents(DataConst::GetBackupArchivesList());
-        if ($content === '') {
-            return '';
-        }
+        $content = (string)file_get_contents(DataConst::GetBackupArchivesList());
 
         $lastBackupLines = explode("\n", $content);
         $lastBackupLine = "";
@@ -108,10 +105,7 @@ class ConfigurationManager
             return [];
         }
 
-        $content = file_get_contents(DataConst::GetBackupArchivesList());
-        if ($content === '') {
-            return [];
-        }
+        $content = (string)file_get_contents(DataConst::GetBackupArchivesList());
 
         $backupLines = explode("\n", $content);
         $backupTimes = [];
@@ -795,7 +789,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
             return '';
         }
-        $dailyBackupFile = file_get_contents(DataConst::GetDailyBackupTimeFile());
+        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
         $dailyBackupFileArray = explode("\n", $dailyBackupFile);
         return $dailyBackupFileArray[0];
     }
@@ -804,7 +798,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
             return false;
         }
-        $dailyBackupFile = file_get_contents(DataConst::GetDailyBackupTimeFile());
+        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
         $dailyBackupFileArray = explode("\n", $dailyBackupFile);
         if (isset($dailyBackupFileArray[1]) && $dailyBackupFileArray[1] === 'automaticUpdatesAreNotEnabled') {
             return false;
@@ -855,8 +849,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetAdditionalBackupDirectoriesFile())) {
             return '';
         }
-        $additionalBackupDirectories = file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile());
-        return $additionalBackupDirectories;
+        return (string)file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile());
     }
 
     public function GetAdditionalBackupDirectoriesArray() : array {
