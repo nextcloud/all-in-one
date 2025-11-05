@@ -6,12 +6,6 @@
     </InvalidOperand>
   </file>
   <file src="src/Data/ConfigurationManager.php">
-    <FalsableReturnStatement>
-      <code><![CDATA[$additionalBackupDirectories]]></code>
-    </FalsableReturnStatement>
-    <InvalidFalsableReturnType>
-      <code><![CDATA[string]]></code>
-    </InvalidFalsableReturnType>
     <PossiblyFalseArgument>
       <code><![CDATA[$ch]]></code>
       <code><![CDATA[$ch]]></code>
@@ -19,11 +13,6 @@
       <code><![CDATA[$ch]]></code>
       <code><![CDATA[$ch]]></code>
       <code><![CDATA[$ch]]></code>
-      <code><![CDATA[$configContent]]></code>
-      <code><![CDATA[$content]]></code>
-      <code><![CDATA[$content]]></code>
-      <code><![CDATA[$dailyBackupFile]]></code>
-      <code><![CDATA[$dailyBackupFile]]></code>
     </PossiblyFalseArgument>
   </file>
   <file src="src/Docker/DockerActionManager.php">
