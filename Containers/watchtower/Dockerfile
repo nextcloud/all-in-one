@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
 FROM golang:1.25.3-alpine3.22 AS go
 
-ENV WATCHTOWER_COMMIT_HASH=v1.12.1
+ENV WATCHTOWER_COMMIT_HASH=9130559da17f882f2db4dbc2a3ed0425f41f25e4	 # v1.12.1
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
