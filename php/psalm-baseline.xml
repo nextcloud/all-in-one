@@ -32,22 +32,6 @@
       <code><![CDATA[file_get_contents(DataConst::GetBackupPublicKey())]]></code>
     </PossiblyFalseArgument>
   </file>
-  <file src="src/Data/DataConst.php">
-    <FalsableReturnStatement>
-      <code><![CDATA[realpath(__DIR__ . '/../cool-seccomp-profile.json')]]></code>
-      <code><![CDATA[realpath(__DIR__ . '/../containers.json')]]></code>
-      <code><![CDATA[realpath(__DIR__ . '/../../../community-containers/')]]></code>
-      <code><![CDATA[realpath(__DIR__ . '/../../data/')]]></code>
-      <code><![CDATA[realpath(__DIR__ . '/../../session/')]]></code>
-    </FalsableReturnStatement>
-    <InvalidFalsableReturnType>
-      <code><![CDATA[string]]></code>
-      <code><![CDATA[string]]></code>
-      <code><![CDATA[string]]></code>
-      <code><![CDATA[string]]></code>
-      <code><![CDATA[string]]></code>
-    </InvalidFalsableReturnType>
-  </file>
   <file src="src/Docker/DockerActionManager.php">
     <PossiblyFalseArgument>
       <code><![CDATA[$line]]></code>
