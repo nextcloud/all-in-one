@@ -7,6 +7,7 @@ use AIO\Container\ContainerState;
 use AIO\Container\VersionState;
 use AIO\ContainerDefinitionFetcher;
 use AIO\Data\ConfigurationManager;
+use AIO\Data\DataConst;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use http\Env\Response;
@@ -47,7 +48,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         if ($responseBody['State']['Running'] === true) {
             return ContainerState::Running;
@@ -67,7 +68,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         if ($responseBody['State']['Restarting'] === true) {
             return ContainerState::Restarting;
@@ -383,9 +384,10 @@ readonly class DockerActionManager {
                     }
                 }
             }
-            // Special things for the talk container which should not be exposed in the containers.json
+
+        // Special things for the talk container which should not be exposed in the containers.json
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-talk') {
-            // This is needed due to a bug in libwebsockets which cannot handle unlimited ulimits
+            // This is needed due to a bug in libwebsockets used in Janus which cannot handle unlimited ulimits
             $requestBody['HostConfig']['Ulimits'] = [["Name" => "nofile", "Hard" => 200000, "Soft" => 200000]];
             // // Special things for the nextcloud container which should not be exposed in the containers.json
             // } elseif ($container->GetIdentifier() === 'nextcloud-aio-nextcloud') {
@@ -395,11 +397,19 @@ readonly class DockerActionManager {
             //         }
             //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
             //     }
-            // Special things for the caddy community container
+
+        // Special things for the caddy community container
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-caddy') {
             $requestBody['HostConfig']['ExtraHosts'] = ['host.docker.internal:host-gateway'];
-            // Special things for the collabora container which should not be exposed in the containers.json
+
+        // Special things for the collabora container which should not be exposed in the containers.json
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-collabora') {
+            // Load reference seccomp profile for collabora
+            $seccompProfile = (string)file_get_contents(DataConst::GetCollaboraSeccompProfilePath());
+            $seccompProfile = addslashes($seccompProfile);
+            $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile", "no-new-privileges=true", "apparmor=unconfined"];
+
+            // Additional Collabora options
             if ($this->configurationManager->GetAdditionalCollaboraOptions() !== '') {
                 $requestBody['Cmd'] = [$this->configurationManager->GetAdditionalCollaboraOptions()];
             }
@@ -633,11 +643,11 @@ readonly class DockerActionManager {
     private function GetRepoDigestsOfContainer(string $containerName): ?array {
         try {
             $containerUrl = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
-            $containerOutput = json_decode($this->guzzleClient->get($containerUrl)->getBody()->getContents(), true);
+            $containerOutput = json_decode($this->guzzleClient->get($containerUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $imageName = $containerOutput['Image'];
 
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
-            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true);
+            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['RepoDigests'])) {
                 error_log('RepoDigests is not set of container ' . $containerName);
@@ -681,7 +691,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
-            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true);
+            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $imageNameArray = explode(':', $output['Config']['Image']);
             if (count($imageNameArray) === 2) {
                 $imageName = $imageNameArray[0];
@@ -708,7 +718,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
-            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true);
+            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $tagArray = explode(':', $output['Config']['Image']);
             if (count($tagArray) === 2) {
                 $tag = $tagArray[1];
@@ -772,7 +782,9 @@ readonly class DockerActionManager {
                         ],
                     ]
                 )->getBody()->getContents(),
-                true
+                true,
+                512, 
+                JSON_THROW_ON_ERROR,
             );
 
             $id = $response['Id'];
@@ -914,7 +926,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $exitCode = $responseBody['State']['ExitCode'];
         if (is_int($exitCode)) {
@@ -936,7 +948,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $exitCode = $responseBody['State']['ExitCode'];
         if (is_int($exitCode)) {
@@ -968,7 +980,7 @@ readonly class DockerActionManager {
         $imageName = $imageName . ':' . $this->GetCurrentChannel();
         try {
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
-            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true);
+            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['Created'])) {
                 error_log('Created is not set of image ' . $imageName);

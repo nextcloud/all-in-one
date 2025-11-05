@@ -38,13 +38,13 @@ readonly class ContainerDefinitionFetcher {
      */
     private function GetDefinition(): array
     {
-        $data = json_decode(file_get_contents(__DIR__ . '/../containers.json'), true);
+        $data = json_decode((string)file_get_contents(DataConst::GetContainersDefinitionPath()), true, 512, JSON_THROW_ON_ERROR);
 
         $additionalContainerNames = [];
         foreach ($this->configurationManager->GetEnabledCommunityContainers() as $communityContainer) {
             if ($communityContainer !== '') {
                 $path = DataConst::GetCommunityContainersDirectory() . '/' . $communityContainer . '/' . $communityContainer . '.json';
-                $additionalData = json_decode(file_get_contents($path), true);
+                $additionalData = json_decode((string)file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
                 $data = array_merge_recursive($data, $additionalData);
                 if (isset($additionalData['aio_services_v1'][0]['display_name']) && $additionalData['aio_services_v1'][0]['display_name'] !== '') {
                     // Store container_name of community containers in variable for later
