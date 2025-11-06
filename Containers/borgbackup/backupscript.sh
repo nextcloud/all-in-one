@@ -138,11 +138,6 @@ if [ "$BORG_MODE" = backup ]; then
         NEW_REPOSITORY=1
         if ! borg init --debug --encryption=repokey-blake2; then
             echo "Could not initialize borg repository."
-            if [ -z "$BORG_REMOTE_REPO" ]; then
-                # Originally we checked for presence of the config file instead of calling `borg info`. Likely `borg info`
-                # will error on a partially initialized repo, so this line is probably no longer necessary
-                rm -f "$BORG_BACKUP_DIRECTORY/config"
-            fi
             exit 1
         fi
 
