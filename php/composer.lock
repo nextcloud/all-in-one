@@ -1092,16 +1092,16 @@
         },
         {
             "name": "slim/csrf",
-            "version": "1.5.0",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim-Csrf.git",
-                "reference": "179cbcf40ee1d246d4906aefed42d3e62066974b"
+                "reference": "a476a61e38451e138c400f6b4ca96037f3c2dd39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim-Csrf/zipball/179cbcf40ee1d246d4906aefed42d3e62066974b",
-                "reference": "179cbcf40ee1d246d4906aefed42d3e62066974b",
+                "url": "https://api.github.com/repos/slimphp/Slim-Csrf/zipball/a476a61e38451e138c400f6b4ca96037f3c2dd39",
+                "reference": "a476a61e38451e138c400f6b4ca96037f3c2dd39",
                 "shasum": ""
             },
             "require": {
@@ -1112,8 +1112,6 @@
                 "psr/http-server-middleware": "^1.0"
             },
             "require-dev": {
-                "phpspec/prophecy": "^1.19",
-                "phpspec/prophecy-phpunit": "^2.2",
                 "phpunit/phpunit": "^9.6",
                 "squizlabs/php_codesniffer": "^3.10"
             },
@@ -1144,9 +1142,9 @@
             ],
             "support": {
                 "issues": "https://github.com/slimphp/Slim-Csrf/issues",
-                "source": "https://github.com/slimphp/Slim-Csrf/tree/1.5.0"
+                "source": "https://github.com/slimphp/Slim-Csrf/tree/1.5.1"
             },
-            "time": "2024-06-08T16:37:18+00:00"
+            "time": "2025-11-02T14:58:28+00:00"
         },
         {
             "name": "slim/slim",
