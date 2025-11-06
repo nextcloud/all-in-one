@@ -354,7 +354,7 @@ cat << EOL > /tmp/additional-collabora.config
           {{- end }}
 EOL
 # shellcheck disable=SC1083
-find ./ -name '*collabora-deployment.yaml' -exec sed -i "/IMAGE_PLACEHOLDER/r /tmp/additional-talk.config"  \{} \;
+find ./ -name '*collabora-deployment.yaml' -exec sed -i "/IMAGE_PLACEHOLDER/r /tmp/additional-collabora.config"  \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*collabora-deployment.yaml' -exec sed -i "/IMAGE_PLACEHOLDER/d"  \{} \;
 
