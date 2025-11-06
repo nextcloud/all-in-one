@@ -343,6 +343,21 @@ EOL
 # shellcheck disable=SC1083
 find ./ -name '*talk-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-talk.config"  \{} \;
 
+# Additional collabora config
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml' -exec sed -i "s/image: ghcr.io.*/IMAGE_PLACEHOLDER/"  \{} \;
+cat << EOL > /tmp/additional-collabora.config
+          {{- if contains "--o:support_key=" (join " " (.Values.ADDITIONAL_COLLABORA_OPTIONS | default list)) }}
+          image: ghcr.io/nextcloud-releases/aio-collabora-online:$DOCKER_TAG
+          {{- else }}
+          image: ghcr.io/nextcloud-releases/aio-collabora:$DOCKER_TAG
+          {{- end }}
+EOL
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml' -exec sed -i "/IMAGE_PLACEHOLDER/r /tmp/additional-collabora.config"  \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml' -exec sed -i "/IMAGE_PLACEHOLDER/d"  \{} \;
+
 cat << EOL > templates/nextcloud-aio-networkpolicy.yaml
 {{- if eq .Values.NETWORK_POLICY_ENABLED "yes" }}
 # https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/04-deny-traffic-from-other-namespaces.md
