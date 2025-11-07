@@ -19,7 +19,8 @@ readonly class ConfigurationController {
         try {
             if (isset($request->getParsedBody()['domain'])) {
                 $domain = $request->getParsedBody()['domain'] ?? '';
-                $this->configurationManager->SetDomain($domain);
+                $skipDomainValidation = isset($request->getParsedBody()['skip_domain_validation']);
+                $this->configurationManager->SetDomain($domain, $skipDomainValidation);
             }
 
             if (isset($request->getParsedBody()['current-master-password']) || isset($request->getParsedBody()['new-master-password'])) {

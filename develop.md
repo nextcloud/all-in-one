@@ -67,6 +67,6 @@ docker buildx build --file Containers/nextcloud/Dockerfile --tag ghcr.io/nextclo
 # For all other containers
 docker buildx build --file Containers/{container}/Dockerfile --tag ghcr.io/nextcloud-releases/aio-{container}:develop --load Containers/{container}
 ```
-1. Stop the containers using the AIO admin interface.
-1. Reload the AIO admin interface with the param `bypass_container_update` to avoid overwriting your local changes, e.g. `https://localhost:8080/containers?bypass_container_update`.
+1. Stop the containers using the AIO interface.
+1. Reload the AIO interface with the param `bypass_container_update` to avoid overwriting your local changes, e.g. `https://localhost:8080/containers?bypass_container_update`.
 1. Click "Start and update containers" and test your changes. Containers will not be updated, despite the button text.
