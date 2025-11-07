@@ -112,6 +112,9 @@
                                 <input type="text" id="domain" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                {% if skip_domain_validation == true %}
+                                    <input type="hidden" name="skip_domain_validation" value="{{skip_domain_validation}}">
+                                {% endif %}
                                 <input type="submit" value="Submit domain" />
                             </form>
                             {% if skip_domain_validation == false %}

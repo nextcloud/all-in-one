@@ -288,7 +288,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetDomain(string $domain) : void {
+    public function SetDomain(string $domain, bool $skipDomainValidation) : void {
         // Validate that at least one dot is contained
         if (!str_contains($domain, '.')) {
             throw new InvalidSettingConfigurationException("Domain must contain at least one dot!");
@@ -315,7 +315,7 @@ class ConfigurationManager
         }
 
         // Skip domain validation if opted in to do so
-        if (!$this->shouldDomainValidationBeSkipped()) {
+        if (!$this->shouldDomainValidationBeSkipped($skipDomainValidation)) {
 
             $dnsRecordIP = gethostbyname($domain);
             if ($dnsRecordIP === $domain) {
@@ -898,8 +898,9 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
-    public function shouldDomainValidationBeSkipped() : bool {
-        if (getenv('SKIP_DOMAIN_VALIDATION') === 'true') {
+    public function shouldDomainValidationBeSkipped(bool $skipDomainValidation) : bool {
+        if ($skipDomainValidation || getenv('SKIP_DOMAIN_VALIDATION') === 'true') {
+            error_log('Skipping domain validation');
             return true;
         }
         return false;
