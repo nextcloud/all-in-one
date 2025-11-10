@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Turnstyle
-        uses: softprops/turnstyle@9d692f15fa9f84928799bccac2dba6565e024bdf # v2
+        uses: softprops/turnstyle@2e4451ef94c5969eee533c487092052d4d1a53af # v2
         with:
           continue-after-seconds: 180
         env:
