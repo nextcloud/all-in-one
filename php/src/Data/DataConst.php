@@ -60,10 +60,10 @@ class DataConst {
     }
 
     public static function GetCollaboraSeccompProfilePath() : string {
-        return (string)realpath(__DIR__ . '/../cool-seccomp-profile.json');
+        return (string)realpath(__DIR__ . '/../../cool-seccomp-profile.json');
     }
 
     public static function GetContainersDefinitionPath() : string {
-        return (string)realpath(__DIR__ . '/../containers.json');
+        return (string)realpath(__DIR__ . '/../../containers.json');
     }
 }
