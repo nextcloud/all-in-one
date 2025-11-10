@@ -406,7 +406,7 @@ readonly class DockerActionManager {
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-collabora') {
             // Load reference seccomp profile for collabora
             $seccompProfile = (string)file_get_contents(DataConst::GetCollaboraSeccompProfilePath());
-            $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile", "no-new-privileges=true", "apparmor=unconfined"];
+            $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile"];
 
             // Additional Collabora options
             if ($this->configurationManager->GetAdditionalCollaboraOptions() !== '') {
