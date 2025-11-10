@@ -23,7 +23,7 @@ jobs:
         )"
         watchtower_commit_hash="$(git ls-remote https://github.com/nicholas-fedor/watchtower $watchtower_version | sed 's/refs.*//')"
         sed -i "s|^ENV WATCHTOWER_COMMIT_HASH.*$|ENV WATCHTOWER_COMMIT_HASH=$watchtower_commit_hash|" ./Containers/watchtower/Dockerfile
-        sed -i "s|\$WATCHTOWER_COMMIT_HASH.*$|\$WATCHTOWER_COMMIT_HASH # $watchtower_commit_hash|" ./Containers/watchtower/Dockerfile
+        sed -i "s|\$WATCHTOWER_COMMIT_HASH.*$|\$WATCHTOWER_COMMIT_HASH # $watchtower_version|" ./Containers/watchtower/Dockerfile
         
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
