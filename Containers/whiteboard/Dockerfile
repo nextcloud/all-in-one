@@ -10,10 +10,7 @@ RUN set -ex; \
     if [ -f /usr/lib/chromium/chrome_crashpad_handler ]; then \
         rm -f /usr/lib/chromium/chrome_crashpad_handler.real; \
         mv /usr/lib/chromium/chrome_crashpad_handler /usr/lib/chromium/chrome_crashpad_handler.real; \
-        cat <<'EOF' >/usr/lib/chromium/chrome_crashpad_handler; \
-#!/bin/sh
-exec /usr/lib/chromium/chrome_crashpad_handler.real --no-periodic-tasks --database="${CRASHPAD_DATABASE:-/tmp/chrome-crashpad}" "$@"
-EOF
+        printf '%s\n' '#!/bin/sh' "exec /usr/lib/chromium/chrome_crashpad_handler.real --no-periodic-tasks --database=\"\${CRASHPAD_DATABASE:-/tmp/chrome-crashpad}\" \"\$@\"" >/usr/lib/chromium/chrome_crashpad_handler; \
         chmod +x /usr/lib/chromium/chrome_crashpad_handler; \
     fi
 USER 65534
