@@ -8,11 +8,11 @@ RUN set -ex; \
     chmod 777 -R /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
     chown -R 100:100 /var/lib/clamav; \
     sed -i "s|#\?MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|g" /etc/clamav/clamd.conf; \
-    sed -i "s|#\?MaxScanSize.*|MaxScanSize 2G|g" /etc/clamav/clamd.conf; \
-    sed -i "s|#\?MaxFileSize.*|MaxFileSize 2G|g" /etc/clamav/clamd.conf; \
-    sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize 2G|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?MaxScanSize.*|MaxScanSize 2000M|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?MaxFileSize.*|MaxFileSize 2000M|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize 2000M|g" /etc/clamav/clamd.conf; \
 # StreamMaxLength must be synced with av_stream_max_length inside the Nextcloud files_antivirus plugin
-    sed -i "s|#\?StreamMaxLength.*|StreamMaxLength 2G|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?StreamMaxLength.*|StreamMaxLength 2000M|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?TCPSocket|TCPSocket|g" /etc/clamav/clamd.conf; \
     sed -i "s|^LocalSocket .*|LocalSocket /tmp/clamd.sock|g" /etc/clamav/clamd.conf; \
     sed -i "s|Example| |g" /etc/clamav/clamav-milter.conf; \
