@@ -6,7 +6,16 @@ USER root
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache bash; \
-    chmod 777 -R /tmp
+    chmod 777 -R /tmp; \
+    if [ -f /usr/lib/chromium/chrome_crashpad_handler ]; then \
+        rm -f /usr/lib/chromium/chrome_crashpad_handler.real; \
+        mv /usr/lib/chromium/chrome_crashpad_handler /usr/lib/chromium/chrome_crashpad_handler.real; \
+        cat <<'EOF' >/usr/lib/chromium/chrome_crashpad_handler; \
+#!/bin/sh
+exec /usr/lib/chromium/chrome_crashpad_handler.real --no-periodic-tasks --database="${CRASHPAD_DATABASE:-/tmp/chrome-crashpad}" "$@"
+EOF
+        chmod +x /usr/lib/chromium/chrome_crashpad_handler; \
+    fi
 USER 65534
 
 COPY --chmod=775 start.sh /start.sh
