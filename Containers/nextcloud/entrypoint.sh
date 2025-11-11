@@ -880,7 +880,8 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
         php /var/www/html/occ config:app:set files_antivirus av_mode --value="daemon"
         php /var/www/html/occ config:app:set files_antivirus av_port --value="3310"
         php /var/www/html/occ config:app:set files_antivirus av_host --value="$CLAMAV_HOST"
-        php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="$CLAMAV_MAX_SIZE"
+        # av_stream_max_length must be synced with StreamMaxLength inside clamav
+        php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="2147483648"
         php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="-1"
         php /var/www/html/occ config:app:set files_antivirus av_infected_action --value="only_log"
         if [ -n "$CLAMAV_BLOCKLISTED_DIRECTORIES" ]; then
