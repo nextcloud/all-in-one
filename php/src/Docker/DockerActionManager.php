@@ -13,7 +13,7 @@ use GuzzleHttp\Exception\RequestException;
 use http\Env\Response;
 
 readonly class DockerActionManager {
-    private const string API_VERSION = 'v1.41';
+    private const string API_VERSION = 'v1.44';
     private Client $guzzleClient;
 
     public function __construct(
