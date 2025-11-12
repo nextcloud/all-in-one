@@ -4,8 +4,8 @@ FROM alpine:3.22.2
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache tzdata clamav clamav-milter supervisor bash; \
-    mkdir -p /var/lib/clamav /run/clamav /var/log/supervisord /var/run/supervisord; \
-    chmod 777 -R /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
+    mkdir -p /tmp /var/lib/clamav /run/clamav /var/log/supervisord /var/run/supervisord; \
+    chmod 777 -R /tmp /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
     chown -R 100:100 /var/lib/clamav; \
     sed -i "s|#\?MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?MaxScanSize.*|MaxScanSize 2000M|g" /etc/clamav/clamd.conf; \
