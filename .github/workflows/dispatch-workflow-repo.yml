@@ -1,0 +1,82 @@
+# This workflow needs to be run on demand
+# It will update all workflow templates in a specific repository
+# This workflow is provided via the organization template repository
+#
+# SPDX-FileCopyrightText: 2021-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
+
+name: Update workflows for specific repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'The repository name (without owner prefix, e.g. "server")'
+        required: true
+        type: string
+        default: 'all-in-one'
+      branch:
+        description: 'The branch name to create the PR from (e.g. "main" or "stable32")'
+        required: true
+        type: string
+        default: 'main'
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+
+    name: Update all workflows in ${{ github.event.inputs.repository }}
+
+    steps:
+      - name: Check actor permission
+        uses: skjnldsv/check-actor-permission@69e92a3c4711150929bca9fcf34448c5bf5526e7 # v3.0
+        with:
+          require: admin
+
+      - name: Checkout target repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+          path: target
+          repository: ${{ github.repository_owner }}/${{ github.event.inputs.repository }}
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Checkout source repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+          path: source
+
+      - name: Copy all workflow templates
+        run: |
+          for workflow in ./source/workflow-templates/*.yml; do
+            if [ -f "$workflow" ]; then
+              filename=$(basename "$workflow")
+              target_file="./target/.github/workflows/$filename"
+              
+              # Only copy if the file exists in the target repository
+              if [ -f "$target_file" ]; then
+                echo "Updating existing workflow: $filename"
+                cp "$workflow" "$target_file"
+              else
+                echo "Skipping $filename (does not exist in target repository)"
+              fi
+            fi
+          done
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          body: 'Automated update of all workflow templates from https://github.com/${{ github.repository }}'
+          branch: 'feat/workflow-auto-update-all'
+          commit-message: 'ci: update all workflow templates from organization template repository'
+          committer: Nextcloud bot <bot@nextcloud.com>
+          author: Nextcloud bot <bot@nextcloud.com>
+          path: target
+          signoff: true
+          title: 'ci: update all workflow templates from organization template repository'
+          labels: dependencies
+          token: ${{ secrets.TEMPLATE_WORKFLOW_DISPATCH_PAT }}
