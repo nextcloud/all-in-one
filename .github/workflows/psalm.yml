@@ -2,22 +2,20 @@
 #
 # https://github.com/nextcloud/.github
 # https://docs.github.com/en/actions/learn-github-actions/sharing-workflows-with-your-organization
+#
+# SPDX-FileCopyrightText: 2022-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
 
 name: Static analysis
 
-on:
-  pull_request:
-    paths:
-      - 'php/**'
-  push:
-    branches:
-      - main
-    paths:
-      - 'php/**'
+on: pull_request
 
 concurrency:
   group: psalm-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   static-analysis:
@@ -26,21 +24,39 @@ jobs:
     name: static-psalm-analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4.1.1
-
-      - name: Set up php
-        uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # v2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
-          php-version: 8.4
-          extensions: apcu
+          persist-credentials: false
+
+      - name: Get php version
+        id: versions
+        uses: icewind1991/nextcloud-version-matrix@58becf3b4bb6dc6cef677b15e2fd8e7d48c0908f # v1.3.1
+
+      - name: Check enforcement of minimum PHP version ${{ steps.versions.outputs.php-min }} in psalm.xml
+        run: grep 'phpVersion="${{ steps.versions.outputs.php-min }}' psalm.xml
+
+      - name: Set up php${{ steps.versions.outputs.php-available }}
+        uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # v2.35.5
+        with:
+          php-version: ${{ steps.versions.outputs.php-available }}
+          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, sqlite, pdo_sqlite
           coverage: none
           ini-file: development
+          # Temporary workaround for missing pcntl_* in PHP 8.3
+          ini-values: disable_functions=
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies and run psalm
+      - name: Install dependencies
         run: |
-          set -x
-          cd php
-          composer install
-          composer run psalm
+          composer remove nextcloud/ocp --dev --no-scripts
+          composer i
+
+      - name: Check for vulnerable PHP dependencies
+        run: composer require --dev roave/security-advisories:dev-latest
+
+      - name: Install nextcloud/ocp
+        run: composer require --dev nextcloud/ocp:dev-${{ steps.versions.outputs.branches-max }} --ignore-platform-reqs --with-dependencies
+
+      - name: Run coding standards check
+        run: composer run psalm -- --threads=1 --monochrome --no-progress --output-format=github
