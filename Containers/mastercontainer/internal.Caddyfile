@@ -1,0 +1,29 @@
+{
+	auto_https off
+
+	storage file_system {
+		root /mnt/docker-aio-config/caddy/
+	}
+
+	log {
+		level ERROR
+	}
+
+	servers {
+		protocols h1 h2
+	}
+
+	skip_install_trust
+}
+
+https://:8080 {
+	root * /var/www/docker-aio/php/public
+	encode
+	php_fastcgi unix//run/php.sock
+	file_server
+
+	tls {
+		on_demand
+		issuer internal
+	}
+}
