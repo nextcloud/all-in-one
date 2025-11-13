@@ -948,7 +948,7 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
         fi
         php /var/www/html/occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
         php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$FULLTEXTSEARCH_USER:$FULLTEXTSEARCH_PASSWORD@$FULLTEXTSEARCH_HOST:$FULLTEXTSEARCH_PORT\",\"elastic_index\":\"$FULLTEXTSEARCH_INDEX\"}"
-        php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
+        php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":true,\"files_office\":true}"
 
         # Do the index
         if ! [ -f "$NEXTCLOUD_DATA_DIR/fts-index.done" ]; then
