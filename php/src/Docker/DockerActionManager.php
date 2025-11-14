@@ -860,7 +860,7 @@ readonly class DockerActionManager {
         );
         $jsonPayload = ['Container' => $id];
         if ($alias !== '') {
-            $jsonPayload['EndpointConfig'] = ['Aliases' => [$alias]];
+            $jsonPayload['EndpointConfig'] = ['DNSNames ' => [$alias]];
         }
 
         try {
