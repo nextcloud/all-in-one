@@ -214,6 +214,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [Note on storage options](#note-on-storage-options)
     - [Are there known problems when SELinux is enabled?](#are-there-known-problems-when-selinux-is-enabled)
 - [Customization](#customization)
+    - [How to adjust the internally used docker api version?](#how-to-adjust-the-internally-used-docker-api-version)
     - [How to change the default location of Nextcloud's Datadir?](#how-to-change-the-default-location-of-nextclouds-datadir)
     - [How to store the files/installation on a separate drive?](#how-to-store-the-filesinstallation-on-a-separate-drive)
     - [How to allow the Nextcloud container to access directories on the host?](#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host)
@@ -427,6 +428,9 @@ Yes. If SELinux is enabled, you might need to add the `--security-opt label:disa
 
 ## Customization
 
+### How to adjust the internally used docker api version?
+If you run an outdated or too new docker version, you might run into problems with the by AIO internally used docker api version. To fix this, you can specify the api version manually. You can do so by adding `--env DOCKER_API_VERSION=1.44` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). This variable excepts a string based on the pattern `[0-9].[0-9]+`, so e.g. `1.44`. ⚠️ However please note that only the default api version (unset this variable) is supported and tested by the maintainers of Nextcloud AIO. So use this on your own risk and things might break without warning.
+
 ### How to change the default location of Nextcloud's Datadir?
 > [!WARNING]  
 > Do not set or adjust this value after the initial Nextcloud installation is done! If you still want to do it afterwards, see [this](https://github.com/nextcloud/all-in-one/discussions/890#discussioncomment-3089903) on how to do it.
@@ -591,7 +595,7 @@ Also, you may be interested in adjusting Nextcloud's Datadir to store the files 
 > Almost all commands in this project's documentation use `sudo docker ...`. Since `sudo` is not available on Windows, you simply remove `sudo` from the commands and they should work.  
 
 ### How to run AIO on Synology DSM
-On Synology, there are two things different in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /volume1/docker/docker.sock:/var/run/docker.sock:ro` to run it. You also need to add `--env WATCHTOWER_DOCKER_SOCKET_PATH="/volume1/docker/docker.sock"`to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`). Apart from that it should work and behave the same like on Linux. Obviously the Synology Docker GUI will not work with that so you will need to either use SSH or create a user-defined script task in the task scheduler as the user 'root' in order to run the command.
+On Synology, there are two things different in comparison to Linux: instead of using `--volume /var/run/docker.sock:/var/run/docker.sock:ro`, you need to use `--volume /volume1/docker/docker.sock:/var/run/docker.sock:ro` to run it. You also need to add `--env WATCHTOWER_DOCKER_SOCKET_PATH="/volume1/docker/docker.sock"`to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`). Additionally, you likely need to adjust the internally used api version. See [this documentation](#how-to-adjust-the-internally-used-docker-api-version). Apart from that it should work and behave the same like on Linux. Obviously the Synology Docker GUI will not work with that so you will need to either use SSH or create a user-defined script task in the task scheduler as the user 'root' in order to run the command.
 
 > [!NOTE]  
 > It is possible that the docker socket on your Synology is located in `/var/run/docker.sock` like the default on Linux. Then you can just use the Linux command without having to change anything - you will notice this when you try to start the container and it says that the bind mount failed. E.g. `docker: Error response from daemon: Bind mount failed: '/volume1/docker/docker.sock' does not exists.` 

@@ -26,7 +26,13 @@ readonly class DockerActionManager {
     }
 
     private function BuildApiUrl(string $url): string {
-        return sprintf('http://127.0.0.1/%s/%s', self::API_VERSION, $url);
+        $apiVersion = getenv('DOCKER_API_VERSION');
+        if ($apiVersion === false || empty($apiVersion)) {
+            $apiVersion = self::API_VERSION;
+        } else {
+            $apiVersion = 'v'. $apiVersion;
+        }
+        return sprintf('http://127.0.0.1/%s/%s', $apiVersion, $url);
     }
 
     private function BuildImageName(Container $container): string {
