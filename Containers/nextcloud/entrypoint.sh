@@ -769,33 +769,38 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
         ONLYOFFICE_PORT=443
     fi
 
-    # Wait for OnlyOffice to become available
-    while ! nc -z "$ONLYOFFICE_HOST" "$ONLYOFFICE_PORT"; do
+    count=0
+    while ! nc -z "$ONLYOFFICE_HOST" "$ONLYOFFICE_PORT" && [ "$count" -lt 90 ]; do
         echo "Waiting for OnlyOffice to become available..."
+        count=$((count+5))
         sleep 5
     done
+    if [ "$count" -ge 90 ]; then
+        bash /notify.sh "Onlyoffice did not start in time!" "Skipping initialization and disabling onlyoffice app."
+        php /var/www/html/occ app:disable onlyoffice
+    else
+        # Install or enable OnlyOffice app as needed
+        if ! [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
+            php /var/www/html/occ app:install onlyoffice
+        elif [ "$(php /var/www/html/occ config:app:get onlyoffice enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable onlyoffice
+        elif [ "$SKIP_UPDATE" != 1 ]; then
+            php /var/www/html/occ app:update onlyoffice
+        fi
 
-    # Install or enable OnlyOffice app as needed
-    if ! [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
-        php /var/www/html/occ app:install onlyoffice
-    elif [ "$(php /var/www/html/occ config:app:get onlyoffice enabled)" != "yes" ]; then
-        php /var/www/html/occ app:enable onlyoffice
-    elif [ "$SKIP_UPDATE" != 1 ]; then
-        php /var/www/html/occ app:update onlyoffice
+        # Set OnlyOffice configuration
+        php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
+        php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
+        php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
+
+        # Adjust the OnlyOffice host if using internal pattern
+        if echo "$ONLYOFFICE_HOST" | grep -q "nextcloud-.*-onlyoffice"; then
+            ONLYOFFICE_HOST="$NC_DOMAIN/onlyoffice"
+            export ONLYOFFICE_HOST
+        fi
+
+        php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$ONLYOFFICE_HOST"
     fi
-
-    # Set OnlyOffice configuration
-    php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
-    php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
-    php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
-
-    # Adjust the OnlyOffice host if using internal pattern
-    if echo "$ONLYOFFICE_HOST" | grep -q "nextcloud-.*-onlyoffice"; then
-        ONLYOFFICE_HOST="$NC_DOMAIN/onlyoffice"
-        export ONLYOFFICE_HOST
-    fi
-
-    php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$ONLYOFFICE_HOST"
 else
     # Remove OnlyOffice app if disabled and removal is requested
     if [ "$REMOVE_DISABLED_APPS" = yes ] && \
@@ -867,7 +872,7 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
         sleep 5
     done
     if [ "$count" -ge 90 ]; then
-        echo "ClamAV did not start in time. Skipping initialization and disabling files_antivirus app."
+        bash /notify.sh "ClamAV did not start in time!" "Skipping initialization and disabling files_antivirus app."
         php /var/www/html/occ app:disable files_antivirus
     else
         if ! [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
