@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:29.0.2-cli AS docker
+# Needs to stay on v28 for now until Synology upgrades their docker version to at least v25
+FROM docker:28.5.2-cli AS docker
 
 # Caddy is a requirement
 FROM caddy:2.10.2-alpine AS caddy
