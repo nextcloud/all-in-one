@@ -58,5 +58,3 @@ updates:
       update-types: ["version-update:semver-major"]
     - dependency-name: "elasticsearch"
       update-types: ["version-update:semver-major"]
-    - dependency-name: "docker"
-      update-types: ["version-update:semver-major"]
