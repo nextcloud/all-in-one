@@ -12,6 +12,9 @@ EXPOSE 80
 EXPOSE 8080
 EXPOSE 8443
 
+# Overwrite home variable for subservices
+ENV HOME=/var/www
+
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
 
