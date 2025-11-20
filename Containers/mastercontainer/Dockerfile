@@ -74,8 +74,8 @@ RUN set -ex; \
     rm -r ./php/tests; \
     chown www-data:www-data -R /var/www/docker-aio; \
     cd php; \
-    sudo -u www-data composer install --no-dev; \
-    sudo -u www-data composer clear-cache; \
+    sudo -E -u www-data composer install --no-dev; \
+    sudo -E -u www-data composer clear-cache; \
     cd ..; \
     rm -f /usr/local/bin/composer; \
     chmod -R 770 /var/www/docker-aio; \

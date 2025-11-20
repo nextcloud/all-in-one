@@ -8,7 +8,7 @@ fi
 # Only start container if database is accessible
 # POSTGRES_HOST must be set in the containers env vars and POSTGRES_PORT has a default above
 # shellcheck disable=SC2153
-while ! sudo -u www-data nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
+while ! sudo -E -u www-data nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
     echo "Waiting for database to start..."
     sleep 5
 done
@@ -25,7 +25,7 @@ fi
 # Fix false database connection on old instances
 if [ -f "/var/www/html/config/config.php" ]; then
     sleep 2
-    while ! sudo -u www-data psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB" -c "select now()"; do
+    while ! sudo -E -u www-data psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB" -c "select now()"; do
         echo "Waiting for the database to start..."
         sleep 5
     done
@@ -56,12 +56,12 @@ fi
 set +x
 
 # Check datadir permissions
-sudo -u www-data touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
+sudo -E -u www-data touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
     chown -R www-data:root "$NEXTCLOUD_DATA_DIR"
     chmod 750 -R "$NEXTCLOUD_DATA_DIR"
 fi
-sudo -u www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
+sudo -E -u www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 
 # Install additional dependencies
 if [ -n "$ADDITIONAL_APKS" ]; then
