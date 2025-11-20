@@ -351,7 +351,7 @@ class ConfigurationManager
             if ($connection) {
                 fclose($connection);
             } else {
-                throw new InvalidSettingConfigurationException("The domain is not reachable on Port 443 from within this container. Have you opened port 443/tcp in your router/firewall? If yes is the problem most likely that the router or firewall forbids local access to your domain. You can work around that by setting up a local DNS-server.");
+                throw new InvalidSettingConfigurationException("The domain is not reachable on Port 443 from within this container. Have you opened port 443/tcp in your router/firewall? If yes is the problem most likely that the router or firewall forbids local access to your domain. Or in other words: NAT loopback (Hairpinning) does not seem to work in your network. You can work around that by setting up a local DNS server and utilizing Split-Brain-DNS and configuring the daemon.json file of your docker daemon to use the local DNS server.");
             }
 
             // Get Instance ID
