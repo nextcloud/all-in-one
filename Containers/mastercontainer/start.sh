@@ -76,7 +76,7 @@ elif ! sudo -u www-data test -r /var/run/docker.sock; then
 fi
 
 # Check if api version is supported
-if ! sudo -u www-data docker info &>/dev/null; then
+if ! sudo -u www-data docker info >/dev/null; then
     print_red "Cannot connect to the docker socket. Cannot proceed."
     echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
     echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
