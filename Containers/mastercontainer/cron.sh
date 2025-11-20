@@ -45,29 +45,29 @@ while true; do
 
     # Check for updates and send notification if yes on saturdays
     if [ "$(date +%u)" = 6 ]; then
-        sudo -u www-data php /var/www/docker-aio/php/src/Cron/UpdateNotification.php
+        sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/UpdateNotification.php
     fi
 
     # Check if AIO is outdated
-    sudo -u www-data php /var/www/docker-aio/php/src/Cron/OutdatedNotification.php
+    sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/OutdatedNotification.php
 
     # Remove sessions older than 24h
     find "/mnt/docker-aio-config/session/" -mindepth 1 -mmin +1440 -delete
 
     # Remove nextcloud-aio-domaincheck container
-    if sudo -u www-data docker ps --format "{{.Names}}" --filter "status=exited" | grep -q "^nextcloud-aio-domaincheck$"; then
-        sudo -u www-data docker container remove nextcloud-aio-domaincheck
+    if sudo -E -u www-data docker ps --format "{{.Names}}" --filter "status=exited" | grep -q "^nextcloud-aio-domaincheck$"; then
+        sudo -E -u www-data docker container remove nextcloud-aio-domaincheck
     fi
 
     # Remove dangling images
-    sudo -u www-data docker image prune --filter "label=org.label-schema.vendor=Nextcloud" --force
+    sudo -E -u www-data docker image prune --filter "label=org.label-schema.vendor=Nextcloud" --force
 
     # Check for available free space
-    sudo -u www-data php /var/www/docker-aio/php/src/Cron/CheckFreeDiskSpace.php
+    sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/CheckFreeDiskSpace.php
 
     # Remove mastercontainer from default bridge network
-    if sudo -u www-data docker inspect nextcloud-aio-mastercontainer  --format "{{.NetworkSettings.Networks}}" | grep -q "bridge"; then
-        sudo -u www-data docker network disconnect bridge nextcloud-aio-mastercontainer
+    if sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer  --format "{{.NetworkSettings.Networks}}" | grep -q "bridge"; then
+        sudo -E -u www-data docker network disconnect bridge nextcloud-aio-mastercontainer
     fi
 
     # Wait 60s so that the whole loop will not be executed again
