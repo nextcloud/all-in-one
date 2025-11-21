@@ -44,7 +44,7 @@
             "aio_variables": [
                 "apache_ip_binding=@INTERNAL",
                 "apache_port=11000",
-                "turn_domain=turn.%NC_DOMAIN%",
+                "turn_domain=%NC_DOMAIN%",
                 "talk_port=443"
             ],
             "nextcloud_exec_commands": [
