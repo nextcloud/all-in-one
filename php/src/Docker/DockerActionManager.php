@@ -849,6 +849,7 @@ readonly class DockerActionManager {
                     [
                         'json' => [
                             'Name' => $network,
+                            'CheckDuplicate' => true,
                             'Driver' => 'bridge',
                             'Internal' => false,
                         ]
