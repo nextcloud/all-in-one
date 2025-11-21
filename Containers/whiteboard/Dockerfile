@@ -4,11 +4,9 @@ FROM ghcr.io/nextcloud-releases/whiteboard:v1.4.1
 
 USER root
 RUN set -ex; \
-    apk upgrade --no-cache -a; \
     apk add --no-cache bash; \
     chmod 777 -R /tmp; \
-    if [ -f /usr/lib/chromium/chrome_crashpad_handler ]; then \
-        rm -f /usr/lib/chromium/chrome_crashpad_handler.real; \
+    if [ -f /usr/lib/chromium/chrome_crashpad_handler ] && [ ! -f /usr/lib/chromium/chrome_crashpad_handler.real ]; then \
         mv /usr/lib/chromium/chrome_crashpad_handler /usr/lib/chromium/chrome_crashpad_handler.real; \
         printf '%s\n' '#!/bin/sh' "exec /usr/lib/chromium/chrome_crashpad_handler.real --no-periodic-tasks --database=\"\${CRASHPAD_DATABASE:-/tmp/chrome-crashpad}\" \"\$@\"" >/usr/lib/chromium/chrome_crashpad_handler; \
         chmod +x /usr/lib/chromium/chrome_crashpad_handler; \
