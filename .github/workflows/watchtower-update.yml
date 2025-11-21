@@ -10,7 +10,7 @@ jobs:
     name: update watchtower
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Run watchtower-container-update
       run: |
         # Watchtower
