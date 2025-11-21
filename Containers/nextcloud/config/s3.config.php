@@ -22,7 +22,8 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
         // required for some non Amazon S3 implementations
         'use_path_style' => strtolower($use_path) === 'true',
         // required for older protocol versions
-        'legacy_auth' => strtolower($use_legacyauth) === 'true'
+        'legacy_auth' => strtolower($use_legacyauth) === 'true',
+        'use_nextcloud_bundle' => 1,
       )
     )
   );
