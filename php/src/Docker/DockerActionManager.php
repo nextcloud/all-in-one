@@ -290,8 +290,8 @@ readonly class DockerActionManager {
                     }
                 } else if ($port === '%TALK_PORT%') {
                     $port = $this->configurationManager->GetTalkPort();
-                    // Skip publishing talk port if it is set to 443
-                    if ($port === '443') {
+                    // Skip publishing talk tcp port if it is set to 443
+                    if ($port === '443' && $protocol === 'tcp') {
                         continue;
                     }
                 }

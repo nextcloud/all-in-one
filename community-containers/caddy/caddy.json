@@ -13,11 +13,6 @@
                   "ip_binding": "",
                   "port_number": "443",
                   "protocol": "tcp"
-                },
-                {
-                    "ip_binding": "",
-                    "port_number": "443",
-                    "protocol": "udp"
                 }
             ],
             "environment": [
