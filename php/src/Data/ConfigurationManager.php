@@ -366,6 +366,9 @@ class ConfigurationManager
 
             // Check if response is correct
             $ch = curl_init();
+            if ($ch === false) {
+                throw new InvalidSettingConfigurationException('Could not init curl! Please check the logs!');
+            }
             $testUrl = $protocol . $domain . ':443';
             curl_setopt($ch, CURLOPT_URL, $testUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
