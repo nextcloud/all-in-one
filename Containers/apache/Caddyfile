@@ -7,6 +7,16 @@
 
     servers {
         # trusted_proxies placeholder
+
+        # Enable proxy protocol for caddy
+        listener_wrappers {
+            proxy_protocol {
+                timeout 5s
+                allow private_ranges 100.64.0.0/10
+                fallback_policy skip
+            }
+            tls
+        }
     }
 
     log {
