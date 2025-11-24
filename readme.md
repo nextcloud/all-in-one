@@ -970,7 +970,7 @@ sudo borg compact
 ```
 
 After doing so, make sure to update the backup archives list in the AIO interface!<br>
-You can do so by clicking on the `Check backup integrity` button or `Create backup` button.
+You can do so by clicking on the `Update backup list` button in the `Update backup list` section inside the `Backup and restore` section.
 
 ---
 
