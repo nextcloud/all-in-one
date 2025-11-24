@@ -36,7 +36,7 @@ Requirements:
 - A public IP address that is reachable from the Internet (it does **not** need to be static, but it must not be behind carrier-grade NAT, which some ISPs use to share IP addresses among multiple customers).
 - Port `443/tcp` on that IP must be available for AIO's exclusive use, and it must be opened/forwarded on your internet-facing firewall/router to the AIO host.[^talkPort]
 
-**If AIO's integrated HTTPS support and internal reverse proxy meet your requirements, you do not need to proceed further. Follow the [standard Nextcloud AIO instructions](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#how-to-use-this).**
+**If AIO's integrated HTTPS support and internal reverse proxy meet your requirements, you do not need to proceed further. Follow the [standard Nextcloud AIO instructions](https://github.com/nextcloud/all-in-one#how-to-use-this).**
 
 ### External: Using AIO with an external reverse proxy (e.g., *Caddy, Nginx, Cloudflare Proxy*)
 
@@ -95,7 +95,7 @@ To make your Nextcloud AIO instance accessible from the public Internet (not jus
 | **Tailscale Funnel** | Public Internet | None | Public access through Tailscale |
 
 > [!TIP]
-> Because of how [Cloudflare's Tunnel/Proxy operate](https://github.com/nextcloud/all-in-one/tree/main?tab=readme-ov-file#notes-on-cloudflare-proxytunnel), we recommend using Tailscale with Nextcloud when possible. Tailscale typically offers better performance and fewer trade-offs/limitations for Nextcloud.
+> Because of how [Cloudflare's Tunnel/Proxy operate](https://github.com/nextcloud/all-in-one/tree/main#notes-on-cloudflare-proxytunnel), we recommend using Tailscale with Nextcloud when possible. Tailscale typically offers better performance and fewer trade-offs/limitations for Nextcloud.
 >
 > **For private/personal use**: [Tailscale Serve](https://tailscale.com/kb/1312/serve) is ideal - it keeps your Nextcloud completely private to your tailnet.
 >
@@ -1120,7 +1120,7 @@ sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:syst
 #### Collabora WOPI allow list
 If your reverse proxy connects to Nextcloud with an IP address that is different from the one for your domain<sup>*</sup> and you are using the Collabora server then you must also add the IP to the WOPI request allow list via `Administration Settings > Administration > Office > Allow list for WOPI requests`.
 
-<small>*: For example, the reverse proxy has a public globally routable IP and connects to your AIO instance via Tailscale with an IP in the `100.64.0.0/10` range, or you are using a Cloudflare tunnel ([cloudflare notes](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#notes-on-cloudflare-proxytunnel): You must add all [Cloudflare IP-Ranges](https://www.cloudflare.com/ips/) to the WOPI allowlist.)</small>
+<small>*: For example, the reverse proxy has a public globally routable IP and connects to your AIO instance via Tailscale with an IP in the `100.64.0.0/10` range, or you are using a Cloudflare tunnel ([cloudflare notes](https://github.com/nextcloud/all-in-one#notes-on-cloudflare-proxytunnel): You must add all [Cloudflare IP-Ranges](https://www.cloudflare.com/ips/) to the WOPI allowlist.)</small>
 
 #### External reverse proxies connecting via VPN (e.g. Tailscale)
 
@@ -1174,7 +1174,7 @@ If you, at some point, want to remove the reverse proxy, here are some general s
     sudo docker rm nextcloud-aio-mastercontainer  
     ```
 3. Remove the software and configuration file that you used for the reverse proxy (see section 1).
-4. Restart the mastercontainer with the [docker run command from the main readme](https://github.com/nextcloud/all-in-one?tab=readme-ov-file#how-to-use-this) but add the two options:
+4. Restart the mastercontainer with the [docker run command from the main readme](https://github.com/nextcloud/all-in-one#how-to-use-this) but add the two options:
    ```
    --env APACHE_IP_BINDING=0.0.0.0 \
    --env APACHE_PORT=443 \   
