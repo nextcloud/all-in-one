@@ -209,7 +209,7 @@ class ConfigurationManager
 
     public function SetFulltextsearchEnabledState(int $value) : void {
         // Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
-        if ($this->GetCollaboraSeccompDisabledState() === 'true') {
+        if ($this->isSeccompDisabled()) {
             $value = 0;
         }
 
@@ -757,7 +757,7 @@ class ConfigurationManager
 
     public function GetCollaboraSeccompPolicy() : string {
         $defaultString = '--o:security.seccomp=';
-        if ($this->GetCollaboraSeccompDisabledState() !== 'true') {
+        if ($this->isSeccompDisabled()) {
             return $defaultString . 'true';
         }
         return $defaultString . 'false';
@@ -768,6 +768,13 @@ class ConfigurationManager
         $configName = 'collabora_seccomp_disabled';
         $defaultValue = 'false';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function isSeccompDisabled() : bool {
+        if ($this->GetCollaboraSeccompDisabledState() === 'true') {
+            return true;
+        }
+        return false;
     }
 
     /**
