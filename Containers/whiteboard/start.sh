@@ -6,6 +6,10 @@ while ! nc -z "$REDIS_HOST" 6379; do
     sleep 5
 done
 
+# Create required directories
+mkdir -p /tmp/chromium-runtime
+mkdir -p /tmp/chrome-crashpad
+
 # Set a default for redis db index
 if [ -z "$REDIS_DB_INDEX" ]; then
     REDIS_DB_INDEX=0
