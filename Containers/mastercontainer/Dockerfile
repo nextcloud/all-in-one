@@ -125,7 +125,9 @@ RUN set -ex; \
     mkdir /var/log/supervisord; \
     mkdir /var/run/supervisord;
 
-LABEL org.label-schema.vendor="Nextcloud"
+# hadolint ignore=DL3048
+LABEL org.label-schema.vendor="Nextcloud" \
+    com.docker.compose.project="nextcloud-aio"
 
 # hadolint ignore=DL3002
 USER root
