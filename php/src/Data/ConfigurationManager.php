@@ -757,7 +757,7 @@ class ConfigurationManager
 
     public function GetCollaboraSeccompPolicy() : string {
         $defaultString = '--o:security.seccomp=';
-        if ($this->isSeccompDisabled()) {
+        if (!$this->isSeccompDisabled()) {
             return $defaultString . 'true';
         }
         return $defaultString . 'false';
