@@ -1,20 +1,20 @@
-DATABASE_PASSWORD:           # TODO! This needs to be a unique and good password!
-FULLTEXTSEARCH_PASSWORD:           # TODO! This needs to be a unique and good password!
-IMAGINARY_SECRET:           # TODO! This needs to be a unique and good password!
-NC_DOMAIN: yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.
+POSTGRES_PASSWORD:           # TODO! This needs to be a unique and good password!
+ELASTICSEARCH_PASSWORD:           # TODO! This needs to be a unique and good password!
+IMAGINARY_PASSWORD:           # TODO! This needs to be a unique and good password!
+NEXTCLOUD_DOMAIN: yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.
 NEXTCLOUD_PASSWORD:           # TODO! This is the password of the initially created Nextcloud admin with username admin.
-ONLYOFFICE_SECRET:           # TODO! This needs to be a unique and good password!
-RECORDING_SECRET:           # TODO! This needs to be a unique and good password!
+ONLYOFFICE_PASSWORD:           # TODO! This needs to be a unique and good password!
+TALK_RECORDING_PASSWORD:           # TODO! This needs to be a unique and good password!
 REDIS_PASSWORD:           # TODO! This needs to be a unique and good password!
-SIGNALING_SECRET:           # TODO! This needs to be a unique and good password!
-TALK_INTERNAL_SECRET:           # TODO! This needs to be a unique and good password!
-TIMEZONE: Europe/Berlin          # TODO! This is the timezone that your containers will use.
-TURN_SECRET:           # TODO! This needs to be a unique and good password!
-WHITEBOARD_SECRET:           # TODO! This needs to be a unique and good password!
+TALK_PASSWORD:           # TODO! This needs to be a unique and good password!
+TALK_INTERNAL_PASSWORD:           # TODO! This needs to be a unique and good password!
+CHART_TIMEZONE: Europe/Berlin          # TODO! This is the timezone that your containers will use.
+TALK_TURN_PASSWORD:           # TODO! This needs to be a unique and good password!
+WHITEBOARD_PASSWORD:           # TODO! This needs to be a unique and good password!
 
 CLAMAV_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 COLLABORA_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
-FULLTEXTSEARCH_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
+ELASTICSEARCH_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 IMAGINARY_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 ONLYOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 TALK_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
@@ -23,10 +23,10 @@ WHITEBOARD_ENABLED: "no"          # Setting this to "yes" (with quotes) enables 
 
 APACHE_MAX_SIZE: "17179869184"          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT
 APACHE_PORT: 443          # Changing this to a different value than 443 will allow you to run it behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else).
-ADDITIONAL_COLLABORA_OPTIONS: ['--o:security.seccomp=true']          # You can add additional collabora options here by using the array syntax.
+COLLABORA_ADDITIONAL_OPTIONS: ['--o:security.seccomp=true']          # You can add additional collabora options here by using the array syntax.
 COLLABORA_DICTIONARIES: de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru        # You can change this in order to enable other dictionaries for collabora
-FULLTEXTSEARCH_JAVA_OPTIONS: -Xms512M -Xmx512M          # Allows to adjust the fulltextsearch java options.
-INSTALL_LATEST_MAJOR: no        # Setting this to yes will install the latest Major Nextcloud version upon the first installation
+ELASTICSEARCH_JAVA_OPTIONS: -Xms512M -Xmx512M          # Allows to adjust the elasticsearch java options.
+NEXTCLOUD_INSTALL_LATEST_MAJOR: no        # Setting this to yes will install the latest Major Nextcloud version upon the first installation
 NEXTCLOUD_ADDITIONAL_APKS: imagemagick        # This allows to add additional packages to the Nextcloud container permanently. Default is imagemagick but can be overwritten by modifying this value.
 NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS: imagick        # This allows to add additional php extensions to the Nextcloud container permanently. Default is imagick but can be overwritten by modifying this value.
 NEXTCLOUD_MAX_TIME: 3600          # This allows to change the upload time limit of the Nextcloud container
@@ -34,16 +34,16 @@ NEXTCLOUD_MEMORY_LIMIT: 512M          # This allows to change the PHP memory lim
 NEXTCLOUD_STARTUP_APPS: deck twofactor_totp tasks calendar contacts notes        # Allows to modify the Nextcloud apps that are installed on starting AIO the first time
 NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container
 NEXTCLOUD_UPLOAD_LIMIT: 16G          # This allows to change the upload limit of the Nextcloud container
-REMOVE_DISABLED_APPS: yes        # Setting this to no keep Nextcloud apps that are disabled via their switch and not uninstall them if they should be installed in Nextcloud.
+NEXTCLOUD_REMOVE_DISABLED_APPS: yes        # Setting this to no keep Nextcloud apps that are disabled via their switch and not uninstall them if they should be installed in Nextcloud.
 TALK_PORT: 3478          # This allows to adjust the port that the talk container is using. It should be set to something higher than 1024! Otherwise it might not work!
-UPDATE_NEXTCLOUD_APPS: no          # When setting to yes (with quotes), it will automatically update all installed Nextcloud apps upon container startup on saturdays.
+NEXTCLOUD_UPDATE_APPS: no          # When setting to yes (with quotes), it will automatically update all installed Nextcloud apps upon container startup on saturdays.
 
-STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes. This should be a fast storage like SSD backed storage!
-STORAGE_CLASS_DATA:        # Allows to set a dedicated storage class for the Nextcloud data volume. This can be a bit slower storage than the one above. ⚠️ Warning: only set this for new installations, not existing ones!
+CHART_STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes. This should be a fast storage like SSD backed storage!
+CHART_STORAGE_CLASS_DATA:        # Allows to set a dedicated storage class for the Nextcloud data volume. This can be a bit slower storage than the one above. ⚠️ Warning: only set this for new installations, not existing ones!
 APACHE_STORAGE_SIZE: 1Gi       # You can change the size of the apache volume that default to 1Gi with this value
 CLAMAV_STORAGE_SIZE: 1Gi       # You can change the size of the clamav volume that default to 1Gi with this value
-DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volume that default to 1Gi with this value
-DATABASE_DUMP_STORAGE_SIZE: 1Gi       # You can change the size of the database-dump volume that default to 1Gi with this value
+POSTGRES_STORAGE_SIZE: 1Gi       # You can change the size of the database volume that default to 1Gi with this value
+POSTGRES_DUMP_STORAGE_SIZE: 1Gi       # You can change the size of the database-dump volume that default to 1Gi with this value
 ELASTICSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the elasticsearch volume that default to 1Gi with this value
 NEXTCLOUD_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud volume that default to 1Gi with this value
 NEXTCLOUD_DATA_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud-data volume that default to 1Gi with this value
@@ -52,24 +52,24 @@ ONLYOFFICE_STORAGE_SIZE: 1Gi       # You can change the size of the onlyoffice v
 REDIS_STORAGE_SIZE: 1Gi       # You can change the size of the redis volume that default to 1Gi with this value
 TALK_RECORDING_STORAGE_SIZE: 1Gi       # You can change the size of the talk-recording volume that default to 1Gi with this value
 
-NAMESPACE: default        # By changing this, you can adjust the namespace of the installation which allows to install multiple instances on one kubernetes cluster
-NAMESPACE_DISABLED: "no"        # By setting this to "yes", you can disabled the creation of the namespace so that you can use a pre-created one
-NETWORK_POLICY_ENABLED: "no"        # By setting this to "yes", you can enable a network policy that limits network access to the same namespace. Except the Web server service which is reachable from all endpoints.
-SUBSCRIPTION_KEY:        # This allows to set the Nextcloud Enterprise key via ENV
-SERVERINFO_TOKEN:        # This allows to set the serverinfo app token for monitoring your Nextcloud via the serverinfo app
-APPS_ALLOWLIST:        # This allows to configure allowed apps that will be shown in Nextcloud's Appstore. You need to enter the app-IDs of the apps here and separate them with spaces. E.g. 'files richdocuments'
-ADDITIONAL_TRUSTED_PROXY:        # Allows to add one additional ip-address to Nextcloud's trusted proxies and to the Office WOPI-allowlist automatically. Set it e.g. like this: 'your.public.ip-address'. You can also use an ip-range here.
-ADDITIONAL_TRUSTED_DOMAIN:        # Allows to add one domain to Nextcloud's trusted domains and also generates a certificate automatically for it
+CHART_NAMESPACE: default        # By changing this, you can adjust the namespace of the installation which allows to install multiple instances on one kubernetes cluster
+CHART_NAMESPACE_DISABLED: "no"        # By setting this to "yes", you can disabled the creation of the namespace so that you can use a pre-created one
+CHART_NETWORK_POLICY_ENABLED: "no"        # By setting this to "yes", you can enable a network policy that limits network access to the same namespace. Except the Web server service which is reachable from all endpoints.
+NEXTCLOUD_SUBSCRIPTION_KEY:        # This allows to set the Nextcloud Enterprise key via ENV
+NEXTCLOUD_SERVERINFO_TOKEN:        # This allows to set the serverinfo app token for monitoring your Nextcloud via the serverinfo app
+NEXTCLOUD_APPS_ALLOWLIST:        # This allows to configure allowed apps that will be shown in Nextcloud's Appstore. You need to enter the app-IDs of the apps here and separate them with spaces. E.g. 'files richdocuments'
+NEXTCLOUD_ADDITIONAL_TRUSTED_PROXY:        # Allows to add one additional ip-address to Nextcloud's trusted proxies and to the Office WOPI-allowlist automatically. Set it e.g. like this: 'your.public.ip-address'. You can also use an ip-range here.
+NEXTCLOUD_ADDITIONAL_TRUSTED_DOMAIN:        # Allows to add one domain to Nextcloud's trusted domains and also generates a certificate automatically for it
 NEXTCLOUD_DEFAULT_QUOTA: "10 GB"       # Allows to adjust the default quota that will be taken into account in Nextcloud for new users. Setting it to "unlimited" will set it to unlimited
 NEXTCLOUD_SKELETON_DIRECTORY:        # Allows to adjust the sekeleton dir for Nextcloud. Setting it to "empty" will set the value to an empty string "" which will turn off the setting for new users in Nextcloud.
 NEXTCLOUD_MAINTENANCE_WINDOW:        # Allows to define the maintenance window for Nextcloud. See https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/background_jobs_configuration.html#parameters for possible values
-SMTP_HOST:        # (empty by default): The hostname of the SMTP server.
-SMTP_SECURE:         # (empty by default): Set to 'ssl' to use SSL, or 'tls' to use STARTTLS.
-SMTP_PORT:         # (default: '465' for SSL and '25' for non-secure connections): Optional port for the SMTP connection. Use '587' for an alternative port for STARTTLS.
-SMTP_AUTHTYPE:         # (default: 'LOGIN'): The method used for authentication. Use 'PLAIN' if no authentication or STARTLS is required.
-SMTP_NAME:         # (empty by default): The username for the authentication.
-SMTP_PASSWORD:         # (empty by default): The password for the authentication.
-MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'from' field in the emails sent by Nextcloud.
-MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
+NEXTCLOUD_SMTP_HOST:        # (empty by default): The hostname of the SMTP server.
+NEXTCLOUD_SMTP_SECURE:         # (empty by default): Set to 'ssl' to use SSL, or 'tls' to use STARTTLS.
+NEXTCLOUD_SMTP_PORT:         # (default: '465' for SSL and '25' for non-secure connections): Optional port for the SMTP connection. Use '587' for an alternative port for STARTTLS.
+NEXTCLOUD_SMTP_AUTHTYPE:         # (default: 'LOGIN'): The method used for authentication. Use 'PLAIN' if no authentication or STARTLS is required.
+NEXTCLOUD_SMTP_NAME:         # (empty by default): The username for the authentication.
+NEXTCLOUD_SMTP_PASSWORD:         # (empty by default): The password for the authentication.
+NEXTCLOUD_MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'from' field in the emails sent by Nextcloud.
+NEXTCLOUD_MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
 TALK_MAX_STREAM_BITRATE: "1048576"         # This allows to adjust the max stream bitrate of the talk hpb
 TALK_MAX_SCREEN_BITRATE: "2097152"         # This allows to adjust the max stream bitrate of the talk hpb
