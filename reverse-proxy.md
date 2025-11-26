@@ -1108,7 +1108,7 @@ Enter your domain in the AIO interface that you've used in the reverse proxy con
 ### 5. Optional: Configure AIO for reverse proxies that connect to nextcloud using an ip-address and not localhost nor 127.0.0.1
 If your reverse proxy connects to nextcloud using an ip-address and not localhost or 127.0.0.1<sup>*</sup> you must make the following configuration changes
 
-<small>*: The IP address it uses to connect to AIO is not in a private IP range such as these: `127.0.0.1/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,fd00::/8,::1`</small>
+<small>*: The IP address it uses to connect to AIO is not in a private IP range such as these: `127.0.0.0/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,100.64.0.0/10,fd00::/8,::1/128`</small>
 
 #### Nextcloud trusted proxies
 Add the IP it uses connect to AIO to the Nextcloud trusted_proxies like this:

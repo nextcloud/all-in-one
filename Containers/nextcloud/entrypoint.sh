@@ -741,7 +741,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
         echo "No IPv6 address found for $COLLABORA_HOST."
     fi
     if [ -n "$COLLABORA_ALLOW_LIST" ]; then
-        PRIVATE_IP_RANGES='127.0.0.1/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,fd00::/8,::1'
+        PRIVATE_IP_RANGES='127.0.0.0/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,100.64.0.0/10,fd00::/8,::1/128'
         if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$PRIVATE_IP_RANGES"; then
             COLLABORA_ALLOW_LIST+=",$PRIVATE_IP_RANGES"
         fi
