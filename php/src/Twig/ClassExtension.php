@@ -7,6 +7,7 @@ use Twig\TwigFunction;
 
 class ClassExtension extends TwigExtension
 {
+    #[\Override]
     public function getFunctions() : array
     {
         return array(

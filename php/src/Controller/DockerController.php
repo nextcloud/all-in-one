@@ -185,7 +185,7 @@ readonly class DockerController {
 
         $config = $this->configurationManager->GetConfig();
         // set AIO_URL
-        $config['AIO_URL'] = $host . ':' . $port . $path;
+        $config['AIO_URL'] = $host . ':' . strval($port) . $path;
         // set wasStartButtonClicked
         $config['wasStartButtonClicked'] = 1;
         // set install_latest_major
