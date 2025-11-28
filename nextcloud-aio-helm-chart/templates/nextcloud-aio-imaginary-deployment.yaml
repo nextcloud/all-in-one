@@ -38,7 +38,7 @@ spec:
               value: "{{ .Values.IMAGINARY_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-imaginary:20251031_122139
+          image: ghcr.io/nextcloud-releases/aio-imaginary:20251128_084214
           readinessProbe:
             exec:
               command:

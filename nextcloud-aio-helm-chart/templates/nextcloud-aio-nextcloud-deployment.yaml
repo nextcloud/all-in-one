@@ -38,7 +38,7 @@ spec:
 # AIO settings start # Do not remove or change this line!
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20251031_122139
+          image: ghcr.io/nextcloud-releases/aio-alpine:20251128_084214
           command:
             - chmod
             - "777"
@@ -100,8 +100,6 @@ spec:
               value: "{{ .Values.CLAMAV_ENABLED }}"
             - name: CLAMAV_HOST
               value: nextcloud-aio-clamav
-            - name: CLAMAV_MAX_SIZE
-              value: "{{ .Values.APACHE_MAX_SIZE }}"
             - name: COLLABORA_ENABLED
               value: "{{ .Values.COLLABORA_ENABLED }}"
             - name: COLLABORA_HOST
@@ -188,7 +186,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: ghcr.io/nextcloud-releases/aio-nextcloud:20251031_122139
+          image: ghcr.io/nextcloud-releases/aio-nextcloud:20251128_084214
           {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context
