@@ -794,7 +794,7 @@
       "environment": [
         "TZ=%TIMEZONE%",
         "ES_JAVA_OPTS=%FULLTEXTSEARCH_JAVA_OPTIONS%",
-        "bootstrap.memory_lock=true",
+        "bootstrap.memory_lock=false",
         "cluster.name=nextcloud-aio",
         "discovery.type=single-node",
         "logger.level=WARN",
