@@ -551,6 +551,7 @@ readonly class DockerActionManager {
             'SELECTED_RESTORE_TIME' => $this->configurationManager->GetSelectedRestoreTime(),
             'RESTORE_EXCLUDE_PREVIEWS' => $this->configurationManager->GetRestoreExcludePreviews(),
             'APACHE_PORT' => $this->configurationManager->GetApachePort(),
+            'APACHE_IP_BINDING' => $this->configurationManager->GetApacheIPBinding(),
             'TALK_PORT' => $this->configurationManager->GetTalkPort(),
             'TURN_DOMAIN' => $this->configurationManager->GetTurnDomain(),
             'NEXTCLOUD_MOUNT' => $this->configurationManager->GetNextcloudMount(),

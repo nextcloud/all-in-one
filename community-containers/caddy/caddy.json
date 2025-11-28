@@ -5,7 +5,7 @@
             "display_name": "Caddy with geoblocking",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy",
             "image": "ghcr.io/szaimen/aio-caddy",
-            "image_tag": "v3",
+            "image_tag": "v4",
             "internal_port": "443",
             "restart": "unless-stopped",
             "ports": [
@@ -19,6 +19,7 @@
                 "TZ=%TIMEZONE%",
                 "NC_DOMAIN=%NC_DOMAIN%",
                 "APACHE_PORT=%APACHE_PORT%",
+                "APACHE_IP_BINDING=%APACHE_IP_BINDING%",
                 "NEXTCLOUD_EXPORTER_CADDY_PASSWORD=%NEXTCLOUD_EXPORTER_CADDY_PASSWORD%"
             ],
             "volumes": [
