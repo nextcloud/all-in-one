@@ -68,10 +68,10 @@ fi
 
 # Postgres root cert
 if [ -f "/nextcloud/data/certificates/POSTGRES" ]; then
-    CERT_OPTIONS="?sslmode=verify-ca&sslrootcert=/nextcloud/data/certificates/POSTGRES"
+    CERT_OPTIONS="?sslmode=verify-ca&sslrootcert=/nextcloud/data/certificates/ca-bundle.crt"
 # Mysql root cert
 elif [ -f "/nextcloud/data/certificates/MYSQL" ]; then
-    CERT_OPTIONS="?sslmode=verify-ca&ssl-ca=/nextcloud/data/certificates/MYSQL"
+    CERT_OPTIONS="?sslmode=verify-ca&ssl-ca=/nextcloud/data/certificates/ca-bundle.crt"
 fi
 
 # Set sensitive values as env
