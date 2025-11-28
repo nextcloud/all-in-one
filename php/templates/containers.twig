@@ -548,7 +548,7 @@
                                         {% if borg_remote_repo %}
                                             or the remote repo <strong>{{ borg_remote_repo }}</strong>
                                         {% endif %}
-                                        is wrong, you can reset it by clicking on the button below.
+                                        is wrong or if you want to reset the backup location due to other reasons, you can do so by clicking on the button below.
                                         </p>
                                         <form method="POST" action="api/configuration" class="xhr">
                                             <input type="hidden" name="delete_borg_backup_location_vars" value="yes"/>
