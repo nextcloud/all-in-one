@@ -68,11 +68,14 @@ fi
 
 # Postgres root cert
 if [ -f "/nextcloud/data/certificates/POSTGRES" ]; then
-    POSTGRES_CERT="?sslmode=verify-ca&sslrootcert=/nextcloud/data/certificates/POSTGRES"
+    CERT_OPTIONS="?sslmode=verify-ca&sslrootcert=/nextcloud/data/certificates/POSTGRES"
+# Mysql root cert
+elif [ -f "/nextcloud/data/certificates/MYSQL" ]; then
+    CERT_OPTIONS="?sslmode=verify-ca&ssl-ca=/nextcloud/data/certificates/MYSQL"
 fi
 
 # Set sensitive values as env
-export DATABASE_URL="$DATABASE_TYPE://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB$POSTGRES_CERT"
+export DATABASE_URL="$DATABASE_TYPE://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB$CERT_OPTIONS"
 export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
 
 # Run it
