@@ -75,15 +75,6 @@ elif ! sudo -E -u www-data test -r /var/run/docker.sock; then
     fi
 fi
 
-# Check if api version is supported
-if ! sudo -E -u www-data docker info &>/dev/null; then
-    print_red "Cannot connect to the docker socket. Cannot proceed."
-    echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
-    echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
-    echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
-    exit 1
-fi
-
 # Docker api version check
 API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
 API_VERSION="$(grep -oP 'const string API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP '[0-9]+.[0-9]+' | head -1)"
@@ -113,6 +104,15 @@ else
         echo "LOCAL_API_VERSION_NUMB or API_VERSION_NUMB are not set correctly. Cannot check if the API version is supported."
         sleep 10
     fi
+fi
+
+# Check if api version is supported
+if ! sudo -E -u www-data docker info &>/dev/null; then
+    print_red "Cannot connect to the docker socket. Cannot proceed."
+    echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
+    echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
+    echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
+    exit 1
 fi
 
 # Check Storage drivers
