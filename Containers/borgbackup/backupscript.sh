@@ -612,3 +612,12 @@ if [ "$BORG_MODE" = test ]; then
         fi
     fi
 fi
+
+if [ "$BORG_MODE" = list ]; then
+    echo "Updating backup list..."
+    if ! borg info > /dev/null; then
+        echo "Could not update the backup list."
+        exit 1
+    fi
+    # The update gets done automatically in the wrapper start.sh script.
+fi

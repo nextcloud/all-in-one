@@ -105,9 +105,23 @@ readonly class DockerController {
         return $response->withStatus(201)->withHeader('Location', '.');
     }
 
+    public function StartBackupContainerList(Request $request, Response $response, array $args) : Response {
+        $this->listBackup();
+        return $response->withStatus(201)->withHeader('Location', '.');
+    }
+
     public function checkBackup() : void {
         $config = $this->configurationManager->GetConfig();
         $config['backup-mode'] = 'check';
+        $this->configurationManager->WriteConfig($config);
+
+        $id = 'nextcloud-aio-borgbackup';
+        $this->PerformRecursiveContainerStart($id);
+    }
+
+        private function listBackup() : void {
+        $config = $this->configurationManager->GetConfig();
+        $config['backup-mode'] = 'list';
         $this->configurationManager->WriteConfig($config);
 
         $id = 'nextcloud-aio-borgbackup';

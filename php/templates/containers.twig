@@ -501,6 +501,17 @@
                                                 <input type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
                                             </form>
 
+                                            <h3>Update backup list</h3>
+                                            <details>
+                                                <summary>Click here to reveal this option</summary>
+                                                <p>If you use an external snapshot tool to restore the server that runs AIO, you might run into a problem that the above listed available backups are not up-to-date to restore your server from. You can click the button below to update this list.</p>
+                                                <form method="POST" action="api/docker/backup-list" class="xhr">
+                                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                                    <input type="submit" value="Update backup list" />
+                                                </form>
+                                            </details>
+
                                             <h3>Daily backup and automatic updates</h3>
                                             {% if daily_backup_time == "" %}
                                                 <p>By entering a time below and submitting it, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <strong>04:00</strong> will create backups at 4 am UTC and <strong>16:00</strong> at 4 pm UTC. When creating the backup, containers will be stopped and restarted after the backup is complete.</p>
