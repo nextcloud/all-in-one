@@ -283,6 +283,10 @@ EOF
             if [ -n "$NEXTCLOUD_TRUSTED_CERTIFICATES_POSTGRES" ]; then
                 mkdir /var/www/html/data/certificates
                 echo "$NEXTCLOUD_TRUSTED_CERTIFICATES_POSTGRES" > "/var/www/html/data/certificates/POSTGRES"
+            # Write out mysql root cert
+            elif [ -n "$NEXTCLOUD_TRUSTED_CERTIFICATES_MYSQL" ]; then
+                mkdir /var/www/html/data/certificates
+                echo "$NEXTCLOUD_TRUSTED_CERTIFICATES_MYSQL" > "/var/www/html/data/certificates/MYSQL"
             fi
 
             echo "Installing with $DATABASE_TYPE database"
