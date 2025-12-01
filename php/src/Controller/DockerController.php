@@ -89,9 +89,7 @@ readonly class DockerController {
     }
 
     public function startBackup(bool $forceStopNextcloud = false) : void {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'backup';
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->SetBackupMode('backup');
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
@@ -111,26 +109,22 @@ readonly class DockerController {
     }
 
     public function checkBackup() : void {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'check';
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->SetBackupMode('check');
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
     }
 
         private function listBackup() : void {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'list';
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->SetBackupMode('list');
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
+        $this->configurationManager->SetBackupMode('restore');
         $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'restore';
         $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
         if (isset($request->getParsedBody()['restore-exclude-previews'])) {
             $config['restore-exclude-previews'] = 1;
@@ -150,24 +144,20 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerCheckRepair(Request $request, Response $response, array $args) : Response {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'check-repair';
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->SetBackupMode('check-repair');
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
 
         // Restore to backup check which is needed to make the UI logic work correctly
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'check';
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->SetBackupMode('check');
 
         return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
+        $this->configurationManager->SetBackupMode('test');
         $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'test';
         $config['instance_restore_attempt'] = 0;
         $this->configurationManager->WriteConfig($config);
 
