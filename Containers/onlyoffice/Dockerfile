@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # From https://github.com/ONLYOFFICE/Docker-DocumentServer/blob/master/Dockerfile
-FROM onlyoffice/documentserver:9.1.0.1
+FROM onlyoffice/documentserver:9.2.0.1
 
 # USER root is probably used
 
