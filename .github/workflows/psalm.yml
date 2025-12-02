@@ -56,4 +56,7 @@ jobs:
 
       - name: Check for vulnerable PHP dependencies
         run: |
+          set -x
+          cd php
           composer outdated
+          composer oudated -D
