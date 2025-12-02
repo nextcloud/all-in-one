@@ -159,7 +159,7 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['delete_borg_backup_location_vars'])) {
-                $this->configurationManager->DeleteBorgBackupLocationVars();
+                $this->configurationManager->DeleteBorgBackupLocationItems();
             }
 
             return $response->withStatus(201)->withHeader('Location', '.');
