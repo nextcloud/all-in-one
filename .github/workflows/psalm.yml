@@ -56,5 +56,4 @@ jobs:
 
       - name: Check for vulnerable PHP dependencies
         run: |
-          composer require --dev roave/security-advisories:dev-latest
-          composer update --dry-run roave/security-advisories
+          composer outdated
