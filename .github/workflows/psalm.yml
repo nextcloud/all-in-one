@@ -10,8 +10,6 @@ name: Static analysis
 
 on:
   pull_request:
-    paths:
-      - 'php/**'
   push:
     branches:
       - main
