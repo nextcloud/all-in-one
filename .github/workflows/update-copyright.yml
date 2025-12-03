@@ -8,4 +8,4 @@ jobs:
     name: update copyright
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.0
+      - uses: actions/checkout@v6.0.1
