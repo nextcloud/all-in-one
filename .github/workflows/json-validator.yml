@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6.0.0
+        uses: actions/checkout@v6.0.1
       - name: Validate Json
         run: |
           sudo apt-get update

@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6.0.0
+        uses: actions/checkout@v6.0.1
       - name: update yaml files
         run: |
           sudo bash manual-install/update-yaml.sh
