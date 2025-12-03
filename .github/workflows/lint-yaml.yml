@@ -8,7 +8,10 @@
 
 name: Lint YAML
 
-on: pull_request
+on: 
+  pull_request:
+    paths:
+      - '**.yml'
 
 permissions:
   contents: read
