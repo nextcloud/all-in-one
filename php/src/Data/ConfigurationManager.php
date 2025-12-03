@@ -512,11 +512,19 @@ class ConfigurationManager
         }
     }
 
-    public function DeleteBorgBackupLocationVars() : void {
+    public function DeleteBorgBackupLocationItems() : void {
+        // Delete the variables
         $config = $this->GetConfig();
         $config['borg_backup_host_location'] = '';
         $config['borg_remote_repo'] = '';
         $this->WriteConfig($config);
+
+        // Also delete the borg config file to be able to start over
+        if (file_exists(DataConst::GetBackupKeyFile())) {
+            if (unlink(DataConst::GetBackupKeyFile())) {
+                error_log('borg.config file deleted to be able to start over.');
+            }
+        }
     }
 
     /**
