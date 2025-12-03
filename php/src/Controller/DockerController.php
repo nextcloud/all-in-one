@@ -115,7 +115,7 @@ readonly class DockerController {
         $this->PerformRecursiveContainerStart($id);
     }
 
-        private function listBackup() : void {
+    private function listBackup() : void {
         $this->configurationManager->SetBackupMode('list');
 
         $id = 'nextcloud-aio-borgbackup';
