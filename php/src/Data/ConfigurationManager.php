@@ -426,6 +426,12 @@ class ConfigurationManager
         return $config['backup-mode'];
     }
 
+    public function SetBackupMode(string $mode) : void {
+        $config = $this->GetConfig();
+        $config['backup-mode'] = $mode;
+        $this->WriteConfig($config);
+    }
+
     public function GetSelectedRestoreTime() : string {
         $config = $this->GetConfig();
         if(!isset($config['selected-restore-time'])) {
@@ -665,15 +671,6 @@ class ConfigurationManager
             return true;
         }
         return false;
-    }
-
-    public function GetBorgBackupMode() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['backup-mode'])) {
-            $config['backup-mode'] = '';
-        }
-
-        return $config['backup-mode'];
     }
 
     public function GetNextcloudMount() : string {
