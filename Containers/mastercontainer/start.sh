@@ -75,18 +75,15 @@ elif ! sudo -E -u www-data test -r /var/run/docker.sock; then
     fi
 fi
 
-# Check if api version is supported
-if ! sudo -E -u www-data docker info &>/dev/null; then
-    print_red "Cannot connect to the docker socket. Cannot proceed."
-    echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
-    echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
-    echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
+# Get default docker api version
+API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
+API_VERSION="$(grep -oP 'const string API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP '[0-9]+.[0-9]+' | head -1)"
+if [ -z "$API_VERSION" ]; then
+    print_red "Could not get API_VERSION. Something is wrong!"
     exit 1
 fi
 
-# Docker api version check
-API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
-API_VERSION="$(grep -oP 'const string API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP '[0-9]+.[0-9]+' | head -1)"
+# Check if DOCKER_API_VERSION is set globally
 if [ -n "$DOCKER_API_VERSION" ]; then
     if ! echo "$DOCKER_API_VERSION" | grep -q '^[0-9].[0-9]\+$'; then
         print_red "You've set DOCKER_API_VERSION but not to an allowed value.
@@ -98,21 +95,43 @@ It is set to '$DOCKER_API_VERSION'."
     print_red "Please note that only v$API_VERSION is officially supported and tested by the maintainers of Nextcloud AIO."
     print_red "So you run on your own risk and things might break without warning."
 else
-    # shellcheck disable=SC2001
-    API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
-    LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
-    if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
-        if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
-            print_red "Docker API v$API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
-            echo "Alternatively, set the DOCKER_API_VERSION environmental variable to a compatible version."
-            echo "However please note that only v$API_VERSION is officially supported and tested by the maintainers of Nextcloud AIO."
-            echo "See https://github.com/nextcloud/all-in-one#how-to-adjust-the-internally-used-docker-api-version"
-            exit 1
-        fi
-    else
-        echo "LOCAL_API_VERSION_NUMB or API_VERSION_NUMB are not set correctly. Cannot check if the API version is supported."
-        sleep 10
+    # Export docker api version to use it everywhere
+    export DOCKER_API_VERSION="$API_VERSION"
+fi
+
+# Set a fallback docker api version. Needed for api version check. 
+# The check will not work otherwise on old docker versions
+FALLBACK_DOCKER_API_VERSION="1.41"
+
+# Check if docker info can be used
+if ! sudo -E -u www-data docker info &>/dev/null; then
+    if ! sudo -E -u www-data DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker info &>/dev/null; then
+        print_red "Cannot connect to the docker socket. Cannot proceed."
+        echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
+        echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
+        echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
+        exit 1
     fi
+fi
+
+# Docker api version check
+# shellcheck disable=SC2001
+API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
+LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+if [ -z "$LOCAL_API_VERSION_NUMB" ]; then
+    LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+fi
+if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
+    if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
+        print_red "Docker API v$API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
+        echo "Alternatively, set the DOCKER_API_VERSION environmental variable to a compatible version."
+        echo "However please note that only v$API_VERSION is officially supported and tested by the maintainers of Nextcloud AIO."
+        echo "See https://github.com/nextcloud/all-in-one#how-to-adjust-the-internally-used-docker-api-version"
+        exit 1
+    fi
+else
+    echo "LOCAL_API_VERSION_NUMB or API_VERSION_NUMB are not set correctly. Cannot check if the API version is supported."
+    sleep 10
 fi
 
 # Check Storage drivers
