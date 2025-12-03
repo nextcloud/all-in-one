@@ -11,7 +11,7 @@ For the below to work, it is important that you have a domain that you point ont
     - [ ] Entering the domain that does point to your server e.g. `yourdomain.com` should finally redirect you to the next screen (if you did not configure your domain yet or did not open port 443, it should report that to you)
 - [ ] Now you should see a button `Start containers` and an explanation which points out that clicking on the button will start the containers and that this can take a long time.
 - [ ] Below that you should see a section `Optional addons` which shows a checkbox list with addons that can be enabled or disabled.
-    - [ ] Collabora and Nextcloud Talk should be enabled, the rest disabled
+    - [ ] Collabora, Imaginary, Talk and Whiteboard should be enabled, the rest disabled
     - [ ] Unchecking/Checking any of these should insert a button that allows to save the set config
     - [ ] Checking OnlyOffice and Collabora at the same time should show a warning that this is not supported and should  not saving the new config
     - [ ] Recommended is to uncheck all options now
