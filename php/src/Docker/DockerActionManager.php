@@ -54,7 +54,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $responseBody = json_decode(strval($response->getBody()), true, 512, JSON_THROW_ON_ERROR);
 
         if ($responseBody['State']['Running'] === true) {
             return ContainerState::Running;
@@ -74,7 +74,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $responseBody = json_decode(strval($response->getBody()), true, 512, JSON_THROW_ON_ERROR);
 
         if ($responseBody['State']['Restarting'] === true) {
             return ContainerState::Restarting;
@@ -150,16 +150,16 @@ readonly class DockerActionManager {
                 'containers/%s/logs?stdout=true&stderr=true&timestamps=true',
                 urlencode($id)
             ));
-        $responseBody = (string)$this->guzzleClient->get($url)->getBody();
+        $responseBody = strval($this->guzzleClient->get($url)->getBody());
 
         $response = "";
         $separator = "\r\n";
         $line = strtok($responseBody, $separator);
-        $response = substr((string)$line, 8) . $separator;
+        $response = substr(strval($line), 8) . $separator;
 
         while ($line !== false) {
             $line = strtok($separator);
-            $response .= substr((string)$line, 8) . $separator;
+            $response .= substr(strval($line), 8) . $separator;
         }
 
         return $response;
@@ -417,7 +417,7 @@ readonly class DockerActionManager {
         } elseif ($container->GetIdentifier() === 'nextcloud-aio-collabora') {
             if (!$this->configurationManager->isSeccompDisabled()) {
                 // Load reference seccomp profile for collabora
-                $seccompProfile = (string)file_get_contents(DataConst::GetCollaboraSeccompProfilePath());
+                $seccompProfile = strval(file_get_contents(DataConst::GetCollaboraSeccompProfilePath()));
                 $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile"];
             }
 
@@ -537,7 +537,7 @@ readonly class DockerActionManager {
         $placeholderPatterns = array_map(static fn(string $p) => '/' . preg_quote($p) . '/', $placeholders); // ["/%PLACEHOLDER1%/", ...]
         $placeholderValues = array_map($this->getPlaceholderValue(...), $placeholderNames); // ["val1", "val2"]
         // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
-        return (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
+        return strval(preg_replace($placeholderPatterns, $placeholderValues, $envValue));
     }
 
     private function getPlaceholderValue(string $placeholder) : string {
@@ -575,7 +575,7 @@ readonly class DockerActionManager {
             'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->configurationManager->GetTrustedCacertsDir(),
             'ADDITIONAL_DIRECTORIES_BACKUP' => $this->configurationManager->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
             'BORGBACKUP_HOST_LOCATION' => $this->configurationManager->GetBorgBackupHostLocation(),
-            'APACHE_MAX_SIZE' => (string)($this->configurationManager->GetApacheMaxSize()),
+            'APACHE_MAX_SIZE' => strval($this->configurationManager->GetApacheMaxSize()),
             'COLLABORA_SECCOMP_POLICY' => $this->configurationManager->GetCollaboraSeccompPolicy(),
             'NEXTCLOUD_STARTUP_APPS' => $this->configurationManager->GetNextcloudStartupApps(),
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->configurationManager->GetNextcloudAdditionalApks(),
@@ -941,7 +941,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $responseBody = json_decode(strval($response->getBody()), true, 512, JSON_THROW_ON_ERROR);
 
         $exitCode = $responseBody['State']['ExitCode'];
         if (is_int($exitCode)) {
@@ -963,7 +963,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $responseBody = json_decode(strval($response->getBody()), true, 512, JSON_THROW_ON_ERROR);
 
         $exitCode = $responseBody['State']['ExitCode'];
         if (is_int($exitCode)) {
@@ -1002,7 +1002,7 @@ readonly class DockerActionManager {
                 return null;
             }
 
-            return str_replace('T', ' ', (string)$imageOutput['Created']);
+            return str_replace('T', ' ', strval($imageOutput['Created']));
         } catch (\Exception $e) {
             return null;
         }

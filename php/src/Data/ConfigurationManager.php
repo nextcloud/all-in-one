@@ -13,7 +13,7 @@ class ConfigurationManager
     {
         if(file_exists(DataConst::GetConfigFile()))
         {
-            $configContent = (string)file_get_contents(DataConst::GetConfigFile());
+            $configContent = strval(file_get_contents(DataConst::GetConfigFile()));
             return json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
@@ -80,7 +80,7 @@ class ConfigurationManager
             return '';
         }
 
-        $content = (string)file_get_contents(DataConst::GetBackupArchivesList());
+        $content = strval(file_get_contents(DataConst::GetBackupArchivesList()));
 
         $lastBackupLines = explode("\n", $content);
         $lastBackupLine = "";
@@ -105,7 +105,7 @@ class ConfigurationManager
             return [];
         }
 
-        $content = (string)file_get_contents(DataConst::GetBackupArchivesList());
+        $content = strval(file_get_contents(DataConst::GetBackupArchivesList()));
 
         $backupLines = explode("\n", $content);
         $backupTimes = [];
@@ -374,7 +374,7 @@ class ConfigurationManager
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            $response = (string)curl_exec($ch);
+            $response = strval(curl_exec($ch));
             # Get rid of trailing \n
             $response = str_replace("\n", "", $response);
 
@@ -657,7 +657,7 @@ class ConfigurationManager
             return "";
         }
 
-        return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
+        return trim(strval(file_get_contents(DataConst::GetBackupPublicKey())));
     }
 
     public function GetBorgRestorePassword() : string {
@@ -814,7 +814,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
             return '';
         }
-        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
+        $dailyBackupFile = strval(file_get_contents(DataConst::GetDailyBackupTimeFile()));
         $dailyBackupFileArray = explode("\n", $dailyBackupFile);
         return $dailyBackupFileArray[0];
     }
@@ -823,7 +823,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
             return false;
         }
-        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
+        $dailyBackupFile = strval(file_get_contents(DataConst::GetDailyBackupTimeFile()));
         $dailyBackupFileArray = explode("\n", $dailyBackupFile);
         if (isset($dailyBackupFileArray[1]) && $dailyBackupFileArray[1] === 'automaticUpdatesAreNotEnabled') {
             return false;
@@ -874,7 +874,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetAdditionalBackupDirectoriesFile())) {
             return '';
         }
-        return (string)file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile());
+        return strval(file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile()));
     }
 
     public function GetAdditionalBackupDirectoriesArray() : array {

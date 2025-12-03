@@ -34,7 +34,7 @@ readonly class AuthManager {
                 error_log(DataConst::GetSessionDirectory() . " has only less than 10KB free space. The login might not succeed because of that!");
             }
 
-            file_put_contents(DataConst::GetSessionDateFile(), (string)$dateTime);
+            file_put_contents(DataConst::GetSessionDateFile(), strval($dateTime));
         }
 
         $_SESSION[self::SESSION_KEY] = $isLoggedIn;

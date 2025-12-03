@@ -8,7 +8,7 @@ class DataConst {
             return '/mnt/docker-aio-config/data/';
         }
 
-        return (string)realpath(__DIR__ . '/../../data/');
+        return strval(realpath(__DIR__ . '/../../data/'));
     }
 
     public static function GetSessionDirectory() : string {
@@ -16,7 +16,7 @@ class DataConst {
             return '/mnt/docker-aio-config/session/';
         }
 
-        return (string)realpath(__DIR__ . '/../../session/');
+        return strval(realpath(__DIR__ . '/../../session/'));
     }
 
     public static function GetConfigFile() : string {
@@ -56,14 +56,14 @@ class DataConst {
     }
 
     public static function GetCommunityContainersDirectory() : string {
-        return (string)realpath(__DIR__ . '/../../../community-containers/');
+        return strval(realpath(__DIR__ . '/../../../community-containers/'));
     }
 
     public static function GetCollaboraSeccompProfilePath() : string {
-        return (string)realpath(__DIR__ . '/../../cool-seccomp-profile.json');
+        return strval(realpath(__DIR__ . '/../../cool-seccomp-profile.json'));
     }
 
     public static function GetContainersDefinitionPath() : string {
-        return (string)realpath(__DIR__ . '/../../containers.json');
+        return strval(realpath(__DIR__ . '/../../containers.json'));
     }
 }
