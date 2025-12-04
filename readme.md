@@ -467,7 +467,7 @@ You can move the whole docker library and all its files including all Nextcloud 
 This should solve the problem.
 
 ### How to limit the resource usage of AIO?
-In some cases, you might want to limit the overall resource usage of AIO. You can do so by following [this documentation](https://github.com/nextcloud/all-in-one/discussions/7273).
+In some cases, you might want to limit the overall resource usage of AIO. You can do so by following [this documentation](https://github.com/nextcloud/all-in-one/discussions/7273). Another possibility is to use the [manual installation](./manual-install/).
 
 ### How to allow the Nextcloud container to access directories on the host?
 By default, the Nextcloud container is confined and cannot access directories on the host OS. You might want to change this when you are planning to use local external storage in Nextcloud to store some files outside the data directory and can do so by adding the environmental variable `NEXTCLOUD_MOUNT` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). Allowed values for that variable are strings that start with `/` and are not equal to `/`.
