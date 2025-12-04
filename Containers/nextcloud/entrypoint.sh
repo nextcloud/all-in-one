@@ -20,6 +20,61 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
+create_global_root_cert() {
+    # Only run if env is set
+    if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
+
+        # Enable debug mode
+        set -x
+
+        # Default vars
+        CERTIFICATES_ROOT_DIR="/var/www/html/data/certificates"
+        CERTIFICATE_BUNDLE="/var/www/html/resources/config/ca-bundle.crt"
+        
+        # Retrieve default root cert bundle
+        if ! [ -f "$SOURCE_LOCATION/resources/config/ca-bundle.crt" ]; then
+            echo "Root ca-bundle not found. Only concattening configured NEXTCLOUD_TRUSTED_CERTIFICATES files!"
+            # Recreate cert file
+            rm -f "$CERTIFICATE_BUNDLE"
+            touch "$CERTIFICATE_BUNDLE"
+        else
+            # Write default bundle to the target ca file
+            cat "$SOURCE_LOCATION/resources/config/ca-bundle.crt" > "$CERTIFICATES_ROOT_DIR/ca-bundle.crt"
+        fi
+
+        # Remove old root certs and recreate them with current ones
+        rm -r "$CERTIFICATES_ROOT_DIR"
+        mkdir -p "$CERTIFICATES_ROOT_DIR"
+
+        # Iterate through certs
+        TRUSTED_CERTIFICATES="$(env | grep NEXTCLOUD_TRUSTED_CERTIFICATES_ | grep -oP '^[A-Z_a-z0-9]+')"
+        mapfile -t TRUSTED_CERTIFICATES <<< "$TRUSTED_CERTIFICATES"
+        for certificate in "${TRUSTED_CERTIFICATES[@]}"; do
+
+            # Create new line
+            echo "" >> "$CERTIFICATE_BUNDLE"
+
+            # Check if variable is a simple switch. For example used by postgres and mysql tls connections
+            if [ "${!certificate}" != "yes" ]; then
+                # Write out cert to bundle
+                echo "${!certificate}" >> "$CERTIFICATE_BUNDLE"
+            fi
+
+            # Create file in cer dir
+            if ! [ -f "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME" ]; then
+                touch "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
+            fi
+
+        done
+
+        # Print out bundle one last time
+        cat "$CERTIFICATE_BUNDLE"
+
+        # Disable debug mode
+        set +x
+    fi
+}
+
 # Adjust DATABASE_TYPE to by Nextcloud supported value
 if [ "$DATABASE_TYPE" = postgres ]; then
     export DATABASE_TYPE=pgsql
@@ -289,6 +344,9 @@ EOF
                 echo "$NEXTCLOUD_TRUSTED_CERTIFICATES_MYSQL" > "/var/www/html/data/certificates/MYSQL"
             fi
 
+            # Create global root cert
+            create_global_root_cert
+
             echo "Installing with $DATABASE_TYPE database"
             # Set a default value for POSTGRES_PORT
             if [ -z "$POSTGRES_PORT" ]; then
@@ -458,6 +516,9 @@ EOF
 
             rm "$NEXTCLOUD_DATA_DIR/update.failed"
             bash /notify.sh "Nextcloud update to $image_version successful!" "You may inspect the Nextcloud container logs for more information."
+
+            # Create global root cert
+            create_global_root_cert
 
             php /var/www/html/occ app:update --all
 
@@ -649,23 +710,8 @@ else
 fi
 # AIO app end # Do not remove or change this line!
 
-# Allow to add custom certs to Nextcloud's trusted cert store
-if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
-    set -x
-    TRUSTED_CERTIFICATES="$(env | grep NEXTCLOUD_TRUSTED_CERTIFICATES_ | grep -oP '^[A-Z_a-z0-9]+')"
-    mapfile -t TRUSTED_CERTIFICATES <<< "$TRUSTED_CERTIFICATES"
-    CERTIFICATES_ROOT_DIR="/var/www/html/data/certificates"
-    mkdir -p "$CERTIFICATES_ROOT_DIR"
-    for certificate in "${TRUSTED_CERTIFICATES[@]}"; do
-        # shellcheck disable=SC2001
-        CERTIFICATE_NAME="$(echo "$certificate" | sed 's|^NEXTCLOUD_TRUSTED_CERTIFICATES_||')"
-        if ! [ -f "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME" ]; then
-            echo "${!certificate}" > "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
-            php /var/www/html/occ security:certificates:import "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
-        fi
-    done
-    set +x
-fi
+# Create global root cert
+create_global_root_cert
 
 # Notify push
 if ! [ -d "/var/www/html/custom_apps/notify_push" ]; then
