@@ -6,7 +6,7 @@ You can run the containers that are build for AIO with docker-compose. This come
 - You can run it without a container having access to the docker socket
 - You can modify all values on your own
 - You can run the containers with docker swarm
-- You can run this in environments where access to docker.io is not possible. See [this issue](https://github.com/nextcloud/all-in-one/discussions/5268).
+- You can run this in environments where access to ghcr.io is not possible. See [this issue](https://github.com/nextcloud/all-in-one/discussions/5268).
 
 ### Disadvantages
 - You lose the AIO interface
