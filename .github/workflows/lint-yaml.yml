@@ -36,7 +36,7 @@ jobs:
             line-length: warning
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@f94ec6bedd8674c4426838e6b50417d36b6ab231 # v5.3.1
+        uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
 
       - name: Check GitHub actions
         run: uvx zizmor --min-severity medium .github/workflows/*.yml
