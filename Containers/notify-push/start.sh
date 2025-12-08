@@ -52,6 +52,10 @@ fi
 if [ -z "$REDIS_DB_INDEX" ]; then
     REDIS_DB_INDEX=0
 fi
+# Set a default value for REDIS_PORT
+if [ -z "$REDIS_PORT" ]; then
+    REDIS_PORT=6379
+fi
 # Set a default for db type
 if [ -z "$DATABASE_TYPE" ]; then
     DATABASE_TYPE=postgres
@@ -76,7 +80,7 @@ fi
 
 # Set sensitive values as env
 export DATABASE_URL="$DATABASE_TYPE://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB$CERT_OPTIONS"
-export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
+export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB_INDEX"
 
 # Run it
 /nextcloud/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
