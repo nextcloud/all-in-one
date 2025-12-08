@@ -116,14 +116,14 @@ fi
 
 # Docker api version check
 # shellcheck disable=SC2001
-API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
+API_VERSION_NUMB="$(echo "$DOCKER_API_VERSION" | sed 's/\.//')"
 LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
 if [ -z "$LOCAL_API_VERSION_NUMB" ]; then
     LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
 fi
 if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
     if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
-        print_red "Docker API v$API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
+        print_red "Docker API v$DOCKER_API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
         echo "Alternatively, set the DOCKER_API_VERSION environmental variable to a compatible version."
         echo "However please note that only v$API_VERSION is officially supported and tested by the maintainers of Nextcloud AIO."
         echo "See https://github.com/nextcloud/all-in-one#how-to-adjust-the-internally-used-docker-api-version"
