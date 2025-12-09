@@ -23,8 +23,8 @@ fi
 sudo -E -u www-data touch "/mnt/docker-aio-config/data/daily_backup_running"
 
 # Check if apache is running/stopped, watchtower is stopped and backupcontainer is stopped
-APACHE_PORT="$(docker inspect nextcloud-aio-apache --format "{{.Config.Env}}" | grep -o 'APACHE_PORT=[0-9]\+' | grep -o '[0-9]\+' | head -1)"
-if [ -z "$APACHE_PORT" ]; then
+LOCAL_APACHE_PORT="$(docker inspect nextcloud-aio-apache --format "{{.Config.Env}}" | grep -o 'APACHE_PORT=[0-9]\+' | grep -o '[0-9]\+' | head -1)"
+if [ -z "$LOCAL_APACHE_PORT" ]; then
     echo "APACHE_PORT is not set which is not expected..."
 else
     # Connect mastercontainer to nextcloud-aio network to make sure that nextcloud-aio-apache is reachable
@@ -32,7 +32,7 @@ else
     docker network connect nextcloud-aio nextcloud-aio-mastercontainer &>/dev/null
 
     # Wait for apache to start
-    while docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-apache$" && ! nc -z nextcloud-aio-apache "$APACHE_PORT"; do
+    while docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-apache$" && ! nc -z nextcloud-aio-apache "$LOCAL_APACHE_PORT"; do
         echo "Waiting for apache to become available"
         sleep 30
     done
