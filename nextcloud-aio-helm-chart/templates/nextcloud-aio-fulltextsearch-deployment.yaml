@@ -24,7 +24,7 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20251128_084214
+          image: ghcr.io/nextcloud-releases/aio-alpine:20251210_133359
           command:
             - chmod
             - "777"
@@ -41,7 +41,7 @@ spec:
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
             - name: bootstrap.memory_lock
-              value: "true"
+              value: "false"
             - name: cluster.name
               value: nextcloud-aio
             - name: discovery.type
@@ -54,7 +54,7 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20251128_084214
+          image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20251210_133359
           readinessProbe:
             exec:
               command:
