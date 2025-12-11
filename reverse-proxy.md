@@ -870,6 +870,11 @@ The examples below define the dynamic configuration in YAML files. If you rather
         transport:
           respondingTimeouts:
             readTimeout: 24h # Allows uploads > 100MB; prevents connection reset due to chunking (public upload-only links)
+        http:
+          # Required for Nextcloud to correctly handle encoded URL characters (%2F and %3F in this case) in newer Traefik versions (v3.6.4+).
+          encodedCharacters:  
+            allowEncodedSlash: true
+            allowEncodedQuestionMark: true
         # If you want to enable HTTP/3 support, uncomment the line below
         # http3: {}
     
