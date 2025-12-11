@@ -27,7 +27,7 @@ fi
 
 # Only start container if Redis is accessible
 # shellcheck disable=SC2153
-while ! nc -z "$REDIS_HOST" "6379"; do
+while ! nc -z "$REDIS_HOST" "$REDIS_PORT"; do
     echo "Waiting for Redis to start..."
     sleep 5
 done

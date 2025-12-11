@@ -204,6 +204,7 @@
         "POSTGRES_DB=nextcloud_database",
         "POSTGRES_USER=nextcloud",
         "REDIS_HOST=nextcloud-aio-redis",
+        "REDIS_PORT=6379",
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "APACHE_HOST=nextcloud-aio-apache",
         "APACHE_PORT=%APACHE_PORT%",
@@ -305,6 +306,7 @@
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "TZ=%TIMEZONE%",
         "REDIS_HOST=nextcloud-aio-redis",
+        "REDIS_PORT=6379",
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "POSTGRES_HOST=nextcloud-aio-database",
         "POSTGRES_PORT=5432",
@@ -875,6 +877,7 @@
         "JWT_SECRET_KEY=%WHITEBOARD_SECRET%",
         "STORAGE_STRATEGY=redis",
         "REDIS_HOST=nextcloud-aio-redis",
+        "REDIS_PORT=6379",
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "BACKUP_DIR=/tmp"
       ],
