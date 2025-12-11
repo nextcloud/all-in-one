@@ -251,6 +251,7 @@ RUN set -ex; \
     chmod 777 -R /usr/local/etc/php/conf.d && \
     chmod 777 -R /usr/local/etc/php-fpm.d && \
     chmod -R 777 /tmp; \
+    chmod -R 777 /etc/openldap; \
     \
     mkdir -p /nc-updater; \
     chmod -R 777 /nc-updater

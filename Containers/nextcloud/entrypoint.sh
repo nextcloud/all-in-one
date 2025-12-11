@@ -20,6 +20,79 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
+set_global_ca_bundle_path() {
+    # Only run if env is set
+    if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
+        php /var/www/html/occ config:system:set default_certificates_bundle_path --value="$CERTIFICATE_BUNDLE"
+    fi
+}
+
+# Create cert bundle
+if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
+
+    # Enable debug mode
+    set -x
+
+    # Default vars
+    CERTIFICATES_ROOT_DIR="/var/www/html/data/certificates"
+    CERTIFICATE_BUNDLE="/var/www/html/data/certificates/ca-bundle.crt"
+    
+    # Remove old root certs and recreate them with current ones
+    rm -rf "$CERTIFICATES_ROOT_DIR"
+    mkdir -p "$CERTIFICATES_ROOT_DIR"
+
+    # Retrieve default root cert bundle
+    if ! [ -f "$SOURCE_LOCATION/resources/config/ca-bundle.crt" ]; then
+        echo "Root ca-bundle not found. Only concattening configured NEXTCLOUD_TRUSTED_CERTIFICATES files!"
+        # Recreate cert file
+        touch "$CERTIFICATE_BUNDLE"
+    else
+        # Write default bundle to the target ca file
+        cat "$SOURCE_LOCATION/resources/config/ca-bundle.crt" > "$CERTIFICATE_BUNDLE"
+    fi
+
+    # Iterate through certs
+    TRUSTED_CERTIFICATES="$(env | grep NEXTCLOUD_TRUSTED_CERTIFICATES_ | grep -oP '^[A-Z_a-z0-9]+')"
+    mapfile -t TRUSTED_CERTIFICATES <<< "$TRUSTED_CERTIFICATES"
+    for certificate in "${TRUSTED_CERTIFICATES[@]}"; do
+
+        # Create new line
+        echo "" >> "$CERTIFICATE_BUNDLE"
+
+        # Check if variable is an actual cert
+        if echo "${!certificate}" | grep -q "BEGIN CERTIFICATE" && echo "${!certificate}" | grep -q "END CERTIFICATE"; then
+            # Write out cert to bundle
+            echo "${!certificate}" >> "$CERTIFICATE_BUNDLE"
+        fi
+
+        # Create file in cert dir for extra logic in other places
+        if ! [ -f "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME" ]; then
+            touch "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
+        fi
+
+    done
+
+    # Custom logic for ldap conf
+    if ! grep -q "TLS_" /etc/openldap/ldap.conf; then
+        cat << EOL >> /etc/openldap/ldap.conf
+TLS_CACERT $CERTIFICATE_BUNDLE
+TLS_REQCERT try
+EOL
+    fi
+
+    # Backwards compatibility with older instances
+    if [ -f "/var/www/html/config/postgres.config.php" ]; then
+        sed -i "s|/var/www/html/data/certificates/POSTGRES|/var/www/html/data/certificates/ca-bundle.crt|" /var/www/html/config/postgres.config.php
+        sed -i "s|/var/www/html/data/certificates/MYSQL|/var/www/html/data/certificates/ca-bundle.crt|" /var/www/html/config/postgres.config.php
+    fi
+
+    # Print out bundle one last time
+    cat "$CERTIFICATE_BUNDLE"
+
+    # Disable debug mode
+    set +x
+fi
+
 # Adjust DATABASE_TYPE to by Nextcloud supported value
 if [ "$DATABASE_TYPE" = postgres ]; then
     export DATABASE_TYPE=pgsql
@@ -173,6 +246,8 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 
             run_upgrade_if_needed_due_to_app_update
 
+            set_global_ca_bundle_path
+
             php /var/www/html/occ maintenance:mode --off
 
             echo "Getting and backing up the status of apps for later; this might take a while..."
@@ -279,16 +354,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
     );
 EOF
 
-            # Write out postgres root cert
-            if [ -n "$NEXTCLOUD_TRUSTED_CERTIFICATES_POSTGRES" ]; then
-                mkdir /var/www/html/data/certificates
-                echo "$NEXTCLOUD_TRUSTED_CERTIFICATES_POSTGRES" > "/var/www/html/data/certificates/POSTGRES"
-            # Write out mysql root cert
-            elif [ -n "$NEXTCLOUD_TRUSTED_CERTIFICATES_MYSQL" ]; then
-                mkdir /var/www/html/data/certificates
-                echo "$NEXTCLOUD_TRUSTED_CERTIFICATES_MYSQL" > "/var/www/html/data/certificates/MYSQL"
-            fi
-
             echo "Installing with $DATABASE_TYPE database"
             # Set a default value for POSTGRES_PORT
             if [ -z "$POSTGRES_PORT" ]; then
@@ -315,6 +380,8 @@ EOF
 
             # Try to force generation of appdata dir:
             php /var/www/html/occ maintenance:repair
+
+            set_global_ca_bundle_path
 
             if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
                 max_retries=10
@@ -532,6 +599,8 @@ fi
 
 run_upgrade_if_needed_due_to_app_update
 
+set_global_ca_bundle_path
+
 if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
     # Check if appdata is present
     # If not, something broke (e.g. changing ncdatadir after aio was first started)
@@ -648,24 +717,6 @@ else
     fi
 fi
 # AIO app end # Do not remove or change this line!
-
-# Allow to add custom certs to Nextcloud's trusted cert store
-if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
-    set -x
-    TRUSTED_CERTIFICATES="$(env | grep NEXTCLOUD_TRUSTED_CERTIFICATES_ | grep -oP '^[A-Z_a-z0-9]+')"
-    mapfile -t TRUSTED_CERTIFICATES <<< "$TRUSTED_CERTIFICATES"
-    CERTIFICATES_ROOT_DIR="/var/www/html/data/certificates"
-    mkdir -p "$CERTIFICATES_ROOT_DIR"
-    for certificate in "${TRUSTED_CERTIFICATES[@]}"; do
-        # shellcheck disable=SC2001
-        CERTIFICATE_NAME="$(echo "$certificate" | sed 's|^NEXTCLOUD_TRUSTED_CERTIFICATES_||')"
-        if ! [ -f "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME" ]; then
-            echo "${!certificate}" > "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
-            php /var/www/html/occ security:certificates:import "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
-        fi
-    done
-    set +x
-fi
 
 # Notify push
 if ! [ -d "/var/www/html/custom_apps/notify_push" ]; then
