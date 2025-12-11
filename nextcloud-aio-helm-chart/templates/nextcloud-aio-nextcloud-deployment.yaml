@@ -160,6 +160,8 @@ spec:
               value: nextcloud-aio-redis
             - name: REDIS_HOST_PASSWORD
               value: "{{ .Values.REDIS_PASSWORD }}"
+            - name: REDIS_PORT
+              value: "6379"
             - name: REMOVE_DISABLED_APPS
               value: "{{ .Values.REMOVE_DISABLED_APPS }}"
             - name: SIGNALING_SECRET
