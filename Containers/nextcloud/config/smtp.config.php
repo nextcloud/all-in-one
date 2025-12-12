@@ -18,3 +18,14 @@ if (getenv('SMTP_HOST') && getenv('MAIL_FROM_ADDRESS') && getenv('MAIL_DOMAIN'))
       $CONFIG['mail_smtppassword'] = '';
   }
 }
+
+if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_MAILER')) {
+  $CONFIG = array(
+    'mail_smtpstreamoptions' => array(
+      'ssl' => array(
+        'verify_peer_name' => false,
+        'cafile' => '/var/www/html/data/certificates/ca-bundle.crt',
+      )
+    )
+  );
+}
