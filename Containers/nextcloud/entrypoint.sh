@@ -20,13 +20,6 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
-set_global_ca_bundle_path() {
-    # Only run if env is set
-    if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
-        php /var/www/html/occ config:system:set default_certificates_bundle_path --value="$CERTIFICATE_BUNDLE"
-    fi
-}
-
 # Create cert bundle
 if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
 
@@ -246,8 +239,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
 
             run_upgrade_if_needed_due_to_app_update
 
-            set_global_ca_bundle_path
-
             php /var/www/html/occ maintenance:mode --off
 
             echo "Getting and backing up the status of apps for later; this might take a while..."
@@ -380,8 +371,6 @@ EOF
 
             # Try to force generation of appdata dir:
             php /var/www/html/occ maintenance:repair
-
-            set_global_ca_bundle_path
 
             if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
                 max_retries=10
@@ -598,8 +587,6 @@ else
 fi
 
 run_upgrade_if_needed_due_to_app_update
-
-set_global_ca_bundle_path
 
 if [ -z "$OBJECTSTORE_S3_BUCKET" ] && [ -z "$OBJECTSTORE_SWIFT_URL" ]; then
     # Check if appdata is present
