@@ -698,7 +698,7 @@ class ConfigurationManager
     public function GetNextcloudUploadLimit() : string {
         $envVariableName = 'NEXTCLOUD_UPLOAD_LIMIT';
         $configName = 'nextcloud_upload_limit';
-        $defaultValue = '16G';
+        $defaultValue = '1G';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
 
