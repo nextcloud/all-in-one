@@ -6,9 +6,10 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
   $autocreate = getenv('OBJECTSTORE_S3_AUTOCREATE');
   $multibucket = getenv('OBJECTSTORE_S3_MULTIBUCKET');
   $CONFIG = array(
-    $multibucket === 'true' ? 'objectstore_multibucket' : 'objectstore' => array(
+    'objectstore' => array(
       'class' => '\OC\Files\ObjectStore\S3',
       'arguments' => array(
+        'multibucket' => $multibucket === 'true',
         'bucket' => getenv('OBJECTSTORE_S3_BUCKET'),
         'key' => getenv('OBJECTSTORE_S3_KEY') ?: '',
         'secret' => getenv('OBJECTSTORE_S3_SECRET') ?: '',
