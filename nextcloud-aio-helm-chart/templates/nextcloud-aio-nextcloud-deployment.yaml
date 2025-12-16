@@ -38,7 +38,7 @@ spec:
 # AIO settings start # Do not remove or change this line!
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20251210_13335
+          image: ghcr.io/nextcloud-releases/aio-alpine:20251210_133359
           command:
             - chmod
             - "777"
@@ -114,6 +114,8 @@ spec:
               value: "{{ .Values.FULLTEXTSEARCH_PASSWORD }}"
             - name: FULLTEXTSEARCH_PORT
               value: "9200"
+            - name: FULLTEXTSEARCH_PROTOCOL
+              value: http
             - name: FULLTEXTSEARCH_USER
               value: elastic
             - name: IMAGINARY_ENABLED
@@ -188,7 +190,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: ghcr.io/nextcloud-releases/aio-nextcloud:20251210_13335
+          image: ghcr.io/nextcloud-releases/aio-nextcloud:20251210_133359
           {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context
