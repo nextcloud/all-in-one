@@ -114,6 +114,8 @@ spec:
               value: "{{ .Values.FULLTEXTSEARCH_PASSWORD }}"
             - name: FULLTEXTSEARCH_PORT
               value: "9200"
+            - name: FULLTEXTSEARCH_PROTOCOL
+              value: http
             - name: FULLTEXTSEARCH_USER
               value: elastic
             - name: IMAGINARY_ENABLED
