@@ -1,0 +1,96 @@
+{
+  "aio_services_v1": [
+    {
+      "container_name": "nextcloud-aio-overleaf-redis",
+      "display_name": "Overleaf Redis",
+      "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/overleaf",
+      "image": "redis",
+      "image_tag": "7",
+      "internal_port": "6379",
+      "restart": "unless-stopped",
+      "expose": [
+        "6379"
+      ],
+      "environment": [
+        "TZ=%TIMEZONE%"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_overleaf_redis",
+          "destination": "/data",
+          "writeable": true
+        }
+      ]
+    },
+    {
+      "container_name": "nextcloud-aio-overleaf-mongo",
+      "display_name": "Overleaf MongoDB",
+      "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/overleaf",
+      "image": "mongo",
+      "image_tag": "5",
+      "internal_port": "27017",
+      "restart": "unless-stopped",
+      "expose": [
+        "27017"
+      ],
+      "environment": [
+        "TZ=%TIMEZONE%"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_overleaf_mongo",
+          "destination": "/data/db",
+          "writeable": true
+        }
+      ],
+      "backup_volumes": [
+        "nextcloud_aio_overleaf_mongo"
+      ]
+    },
+    {
+      "container_name": "nextcloud-aio-overleaf",
+      "display_name": "Overleaf",
+      "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/overleaf",
+      "image": "sharelatex/sharelatex",
+      "image_tag": "latest",
+      "internal_port": "80",
+      "restart": "unless-stopped",
+      "depends_on": [
+        "nextcloud-aio-overleaf-mongo",
+        "nextcloud-aio-overleaf-redis"
+      ],
+      "ports": [
+        {
+          "ip_binding": "%APACHE_IP_BINDING%",
+          "port_number": "8050",
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        "TZ=%TIMEZONE%",
+        "SHARELATEX_MONGO_URL=mongodb://nextcloud-aio-overleaf-mongo:27017/sharelatex",
+        "SHARELATEX_REDIS_HOST=nextcloud-aio-overleaf-redis",
+        "SHARELATEX_REDIS_PORT=6379",
+        "SHARELATEX_APP_NAME=Overleaf"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_overleaf",
+          "destination": "/var/lib/sharelatex",
+          "writeable": true
+        }
+      ],
+      "backup_volumes": [
+        "nextcloud_aio_overleaf",
+        "nextcloud_aio_overleaf_mongo"
+      ],
+      "nextcloud_exec_commands": [
+        "echo 'Installing integration_overleaf app...'",
+        "php /var/www/html/occ app:install integration_overleaf",
+        "php /var/www/html/occ app:enable integration_overleaf",
+        "echo 'Configuring integration_overleaf base_url...'",
+        "php /var/www/html/occ config:app:set integration_overleaf base_url --value 'http://%NC_DOMAIN%:8050'"
+      ]
+    }
+  ]
+}
