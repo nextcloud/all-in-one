@@ -86,15 +86,13 @@ fi
 # Install additional php extensions
 if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
     if ! [ -f "/additional-php-extensions-are-installed" ]; then
+        # Allow to disable imagick without having to enable it each time
+        if ! echo "$ADDITIONAL_PHP_EXTENSIONS" | grep -q imagick; then
+            # Remove the ini file as there is no docker-php-ext-disable script available
+            rm /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini
+        fi
         read -ra ADDITIONAL_PHP_EXTENSIONS_ARRAY <<< "$ADDITIONAL_PHP_EXTENSIONS"
         for app in "${ADDITIONAL_PHP_EXTENSIONS_ARRAY[@]}"; do
-            if [ "$app" = imagick ]; then
-                echo "Enabling Imagick..."
-                if ! docker-php-ext-enable imagick >/dev/null; then
-                    echo "Could not install PHP extension imagick!"
-                fi
-                continue
-            fi
             # shellcheck disable=SC2086
             if [ "$PHP_DEPS_ARE_INSTALLED" != 1 ]; then
                 echo "Installing PHP build dependencies..."
