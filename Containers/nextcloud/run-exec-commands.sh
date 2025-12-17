@@ -19,11 +19,6 @@ else
         echo "Activating Collabora config..."
         php /var/www/html/occ richdocuments:activate-config
     fi
-    # OnlyOffice must work also if using manual-install
-    if [ "$ONLYOFFICE_ENABLED" = yes ]; then
-        echo "Activating OnlyOffice config..."
-        php /var/www/html/occ onlyoffice:documentserver --check
-    fi
 fi
 
 signal_handler() {
