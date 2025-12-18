@@ -93,6 +93,7 @@ RUN set -ex; \
         apcu \
         memcached \
         redis \
+        imagick \
     ; \
     rm -r /tmp/pear; \
     \
