@@ -972,6 +972,9 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:disable fulltextsearch_elasticsearch
         php /var/www/html/occ app:disable files_fulltextsearch
     else
+        if [ -z "$FULLTEXTSEARCH_PROTOCOL" ]; then
+            FULLTEXTSEARCH_PROTOCOL="http"
+        fi
         if ! [ -d "/var/www/html/custom_apps/fulltextsearch" ]; then
             php /var/www/html/occ app:install fulltextsearch
         elif [ "$(php /var/www/html/occ config:app:get fulltextsearch enabled)" != "yes" ]; then
@@ -994,7 +997,7 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
             php /var/www/html/occ app:update files_fulltextsearch
         fi
         php /var/www/html/occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-        php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$FULLTEXTSEARCH_USER:$FULLTEXTSEARCH_PASSWORD@$FULLTEXTSEARCH_HOST:$FULLTEXTSEARCH_PORT\",\"elastic_index\":\"$FULLTEXTSEARCH_INDEX\"}"
+        php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"$FULLTEXTSEARCH_PROTOCOL://$FULLTEXTSEARCH_USER:$FULLTEXTSEARCH_PASSWORD@$FULLTEXTSEARCH_HOST:$FULLTEXTSEARCH_PORT\",\"elastic_index\":\"$FULLTEXTSEARCH_INDEX\"}"
         php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":true,\"files_office\":true}"
 
         # Do the index

@@ -165,6 +165,7 @@ services:
       - PHP_MEMORY_LIMIT=${NEXTCLOUD_MEMORY_LIMIT}
       - FULLTEXTSEARCH_ENABLED
       - FULLTEXTSEARCH_HOST=nextcloud-aio-fulltextsearch
+      - FULLTEXTSEARCH_PROTOCOL=http
       - FULLTEXTSEARCH_PORT=9200
       - FULLTEXTSEARCH_USER=elastic
       - FULLTEXTSEARCH_INDEX=nextcloud-aio
