@@ -831,6 +831,7 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
         fi
 
         # Set OnlyOffice configuration
+        php /var/www/html/occ config:system:set onlyoffice editors_check_interval --value="0" --type=integer 
         php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
         php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
         php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
