@@ -723,10 +723,6 @@
         "ONLYOFFICE_SECRET"
       ],
       "restart": "unless-stopped",
-      "nextcloud_exec_commands": [
-        "echo 'Activating OnlyOffice config...'",
-        "php /var/www/html/occ onlyoffice:documentserver --check"
-      ],
       "profiles": [
         "onlyoffice"
       ],
