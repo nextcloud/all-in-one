@@ -11,6 +11,9 @@ if [ -z "$REDIS_DB_INDEX" ]; then
     REDIS_DB_INDEX=0
 fi
 
+# URL-encode password
+REDIS_HOST_PASSWORD="$(jq -rn --arg v "$REDIS_HOST_PASSWORD" '$v|@uri')"
+
 export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB_INDEX"
 
 # Run it

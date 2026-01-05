@@ -4,7 +4,7 @@ FROM ghcr.io/nextcloud-releases/whiteboard:v1.5.0
 
 USER root
 RUN set -ex; \
-    apk add --no-cache bash; \
+    apk add --no-cache bash jq; \
     chmod 777 -R /tmp; \
     if [ -f /usr/lib/chromium/chrome_crashpad_handler ] && [ ! -f /usr/lib/chromium/chrome_crashpad_handler.real ]; then \
         mv /usr/lib/chromium/chrome_crashpad_handler /usr/lib/chromium/chrome_crashpad_handler.real; \

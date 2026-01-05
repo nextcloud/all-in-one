@@ -70,6 +70,10 @@ if [ "$POSTGRES_USER" = nextcloud ]; then
     export POSTGRES_USER
 fi
 
+# URL-encode passwords
+POSTGRES_PASSWORD="$(jq -rn --arg v "$POSTGRES_PASSWORD" '$v|@uri')"
+REDIS_HOST_PASSWORD="$(jq -rn --arg v "$REDIS_HOST_PASSWORD" '$v|@uri')"
+
 # Postgres root cert
 if [ -f "/nextcloud/data/certificates/POSTGRES" ]; then
     CERT_OPTIONS="?sslmode=verify-ca&sslrootcert=/nextcloud/data/certificates/ca-bundle.crt"
