@@ -59,7 +59,7 @@ class ConfigurationManager
         $this->GetConfig();
         if(!isset($this->config['secrets'][$secretId])) {
             $this->config['secrets'][$secretId] = bin2hex(random_bytes(24));
-            $this->save();
+            $this->save(false);
         }
 
         if ($secretId === 'BORGBACKUP_PASSWORD' && !file_exists(DataConst::GetBackupSecretFile())) {
@@ -604,7 +604,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function save() : void {
+    public function save(bool $reload = true) : void {
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
@@ -617,7 +617,9 @@ class ConfigurationManager
         file_put_contents(DataConst::GetConfigFile(), $content);
         // Force reloading the config after it was written. It's not clear to me if keeping the config loaded
         // might cause race conditions, e.g. in case multiple processes write to the file, so better safe than sorry.
-        $this->config = [];
+        if ($reload) {
+            $this->config = [];
+        }
     }
 
     private function GetEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
@@ -636,7 +638,7 @@ class ConfigurationManager
             }
             if ($envVariableOutput !== $config[$configName]) {
                 $this->config[$configName] = $envVariableOutput;
-                $this->save();
+                $this->save(false);
             }
         }
         return $envVariableOutput;
