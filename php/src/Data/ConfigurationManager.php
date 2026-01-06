@@ -467,7 +467,7 @@ class ConfigurationManager
     }
 
     public function setAIOURL(string $url) : void {
-        $this->set('AIO_URL', $host . ':' . (string)$port . $path);
+        $this->set('AIO_URL', $url);
     }
 
     /**
