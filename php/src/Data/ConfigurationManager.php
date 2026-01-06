@@ -9,15 +9,20 @@ class ConfigurationManager
 {
     private array $secrets = [];
 
-    public function GetConfig() : array
+    // Store the config on the instance, so multiple setter methods can change the config without writing the
+    // config file in between those changes.
+    private array $config = [];
+
+    private function GetConfig() : array
     {
-        if(file_exists(DataConst::GetConfigFile()))
+        // Only load the config from disk if it's not present, yet.
+        if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
         {
             $configContent = (string)file_get_contents(DataConst::GetConfigFile());
-            return json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
+            $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
-        return [];
+        return $this->config;
     }
 
     public function GetPassword() : string {
@@ -28,10 +33,14 @@ class ConfigurationManager
         return $this->GetConfig()['AIO_TOKEN'];
     }
 
+    public function setToken(string $token) : void {
+        $this->GetConfig();
+        $this->config['AIO_TOKEN'] = $token;
+    }
+
     public function SetPassword(string $password) : void {
-        $config = $this->GetConfig();
-        $config['password'] = $password;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['password'] = $password;
     }
 
     public function GetAndGenerateSecret(string $secretId) : string {
@@ -39,17 +48,17 @@ class ConfigurationManager
             return '';
         }
 
-        $config = $this->GetConfig();
-        if(!isset($config['secrets'][$secretId])) {
-            $config['secrets'][$secretId] = bin2hex(random_bytes(24));
-            $this->WriteConfig($config);
+        $this->GetConfig();
+        if(!isset($this->config['secrets'][$secretId])) {
+            $this->config['secrets'][$secretId] = bin2hex(random_bytes(24));
+            $this->save();
         }
 
         if ($secretId === 'BORGBACKUP_PASSWORD' && !file_exists(DataConst::GetBackupSecretFile())) {
-            $this->DoubleSafeBackupSecret($config['secrets'][$secretId]);
+            $this->DoubleSafeBackupSecret($this->config['secrets'][$secretId]);
         }
 
-        return $config['secrets'][$secretId];
+        return $this->config['secrets'][$secretId];
     }
 
     public function GetRegisteredSecret(string $secretId) : string {
@@ -130,6 +139,11 @@ class ConfigurationManager
         }
     }
 
+    public function startButtonWasClicked() : void {
+        $this->GetConfig();
+        $this->config['wasStartButtonClicked'] = '1';
+    }
+
     private function isx64Platform() : bool {
         if (php_uname('m') === 'x86_64') {
             return true;
@@ -157,9 +171,8 @@ class ConfigurationManager
     }
 
     public function SetDockerSocketProxyEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isDockerSocketProxyEnabled'] = $value;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['isDockerSocketProxyEnabled'] = $value;
     }
 
     public function isWhiteboardEnabled() : bool {
@@ -172,15 +185,13 @@ class ConfigurationManager
     }
 
     public function SetWhiteboardEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isWhiteboardEnabled'] = $value;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['isWhiteboardEnabled'] = $value;
     }
 
     public function SetClamavEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isClamavEnabled'] = $value;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['isClamavEnabled'] = $value;
     }
 
     public function isImaginaryEnabled() : bool {
@@ -193,9 +204,8 @@ class ConfigurationManager
     }
 
     public function SetImaginaryEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isImaginaryEnabled'] = $value;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['isImaginaryEnabled'] = $value;
     }
 
     public function isFulltextsearchEnabled() : bool {
@@ -213,9 +223,8 @@ class ConfigurationManager
             $value = 0;
         }
 
-        $config = $this->GetConfig();
-        $config['isFulltextsearchEnabled'] = $value;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['isFulltextsearchEnabled'] = $value;
     }
 
     public function isOnlyofficeEnabled() : bool {
@@ -228,9 +237,8 @@ class ConfigurationManager
     }
 
     public function SetOnlyofficeEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isOnlyofficeEnabled'] = $value;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['isOnlyofficeEnabled'] = $value;
     }
 
     public function isCollaboraEnabled() : bool {
@@ -243,9 +251,8 @@ class ConfigurationManager
     }
 
     public function SetCollaboraEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isCollaboraEnabled'] = $value;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['isCollaboraEnabled'] = $value;
     }
 
     public function isTalkEnabled() : bool {
@@ -258,9 +265,8 @@ class ConfigurationManager
     }
 
     public function SetTalkEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isTalkEnabled'] = $value;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['isTalkEnabled'] = $value;
     }
 
     public function isTalkRecordingEnabled() : bool {
@@ -280,9 +286,8 @@ class ConfigurationManager
             $value = 0;
         }
 
-        $config = $this->GetConfig();
-        $config['isTalkRecordingEnabled'] = $value;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['isTalkRecordingEnabled'] = $value;
     }
 
     /**
@@ -392,12 +397,11 @@ class ConfigurationManager
             }
         }
 
+        $this->GetConfig();
         // Write domain
-        $config = $this->GetConfig();
-        $config['domain'] = $domain;
+        $this->config['domain'] = $domain;
         // Reset the borg restore password when setting the domain
-        $config['borg_restore_password'] = '';
-        $this->WriteConfig($config);
+        $this->config['borg_restore_password'] = '';
     }
 
     public function GetDomain() : string {
@@ -427,9 +431,8 @@ class ConfigurationManager
     }
 
     public function SetBackupMode(string $mode) : void {
-        $config = $this->GetConfig();
-        $config['backup-mode'] = $mode;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['backup-mode'] = $mode;
     }
 
     public function GetSelectedRestoreTime() : string {
@@ -441,6 +444,11 @@ class ConfigurationManager
         return $config['selected-restore-time'];
     }
 
+    public function setSelectedRestoreTime(string $time) : void {
+        $this->GetConfig();
+        $this->config['selected-restore-time'] = $time;
+    }
+
     public function GetRestoreExcludePreviews() : string {
         $config = $this->GetConfig();
         if(!isset($config['restore-exclude-previews'])) {
@@ -448,6 +456,11 @@ class ConfigurationManager
         }
 
         return $config['restore-exclude-previews'];
+    }
+
+    public function setRestoreExcludePreviews(mixed $value) : void {
+        $this->GetConfig();
+        $this->config['restore-exclude-previews'] = $value;
     }
 
     public function GetAIOURL() : string {
@@ -459,16 +472,20 @@ class ConfigurationManager
         return $config['AIO_URL'];
     }
 
+    public function setAIOURL(string $url) : void {
+        $this->GetConfig();
+        $this->config['AIO_URL'] = $host . ':' . (string)$port . $path;
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */
     public function SetBorgLocationVars(string $location, string $repo) : void {
         $this->ValidateBorgLocationVars($location, $repo);
 
-        $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = $location;
-        $config['borg_remote_repo'] = $repo;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['borg_backup_host_location'] = $location;
+        $this->config['borg_remote_repo'] = $repo;
     }
 
     private function ValidateBorgLocationVars(string $location, string $repo) : void {
@@ -514,10 +531,9 @@ class ConfigurationManager
 
     public function DeleteBorgBackupLocationItems() : void {
         // Delete the variables
-        $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = '';
-        $config['borg_remote_repo'] = '';
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['borg_backup_host_location'] = '';
+        $this->config['borg_remote_repo'] = '';
 
         // Also delete the borg config file to be able to start over
         if (file_exists(DataConst::GetBackupKeyFile())) {
@@ -537,12 +553,11 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("Please enter the password!");
         }
 
-        $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = $location;
-        $config['borg_remote_repo'] = $repo;
-        $config['borg_restore_password'] = $password;
-        $config['instance_restore_attempt'] = 1;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['borg_backup_host_location'] = $location;
+        $this->config['borg_remote_repo'] = $repo;
+        $this->config['borg_restore_password'] = $password;
+        $this->config['instance_restore_attempt'] = 1;
     }
 
     /**
@@ -599,7 +614,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function WriteConfig(array $config) : void {
+    public function save() : void {
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
@@ -610,6 +625,9 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
         }
         file_put_contents(DataConst::GetConfigFile(), $content);
+        // Force reloading the config after it was written. It's not clear to me if keeping the config loaded
+        // might cause race conditions, e.g. in case multiple processes write to the file, so better safe than sorry.
+        $this->config = [];
     }
 
     private function GetEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
@@ -627,8 +645,8 @@ class ConfigurationManager
                 $config[$configName] = '';
             }
             if ($envVariableOutput !== $config[$configName]) {
-                $config[$configName] = $envVariableOutput;
-                $this->WriteConfig($config);
+                $this->config[$configName] = $envVariableOutput;
+                $this->save();
             }
         }
         return $envVariableOutput;
@@ -679,6 +697,12 @@ class ConfigurationManager
             return true;
         }
         return false;
+    }
+
+    public function setNoInstanceRestoreAttempt() : void
+    {
+        $this->GetConfig();
+        $this->config['instance_restore_attempt'] = 0;
     }
 
     public function GetNextcloudMount() : string {
@@ -870,6 +894,11 @@ class ConfigurationManager
         return $config['install_latest_major'] !== '';
     }
 
+    public function setInstallLatestMajor(mixed $value) : void {
+        $this->GetConfig();
+        $this->config['install_latest_major'] = $value;
+    }
+
     public function GetAdditionalBackupDirectoriesString() : string {
         if (!file_exists(DataConst::GetAdditionalBackupDirectoriesFile())) {
             return '';
@@ -912,15 +941,13 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("The entered timezone does not seem to be a valid timezone!");
         }
 
-        $config = $this->GetConfig();
-        $config['timezone'] = $timezone;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['timezone'] = $timezone;
     }
 
     public function DeleteTimezone() : void {
-        $config = $this->GetConfig();
-        $config['timezone'] = '';
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['timezone'] = '';
     }
 
     public function shouldDomainValidationBeSkipped(bool $skipDomainValidation) : bool {
@@ -959,15 +986,13 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("The entered dictionaries do not seem to be a valid!");
         }
 
-        $config = $this->GetConfig();
-        $config['collabora_dictionaries'] = $CollaboraDictionaries;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['collabora_dictionaries'] = $CollaboraDictionaries;
     }
 
     public function DeleteCollaboraDictionaries() : void {
-        $config = $this->GetConfig();
-        $config['collabora_dictionaries'] = '';
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['collabora_dictionaries'] = '';
     }
 
     /**
@@ -982,9 +1007,8 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("The entered options must start with '--o:'. So the config does not seem to be a valid!");
         }
 
-        $config = $this->GetConfig();
-        $config['collabora_additional_options'] = $additionalCollaboraOptions;
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['collabora_additional_options'] = $additionalCollaboraOptions;
     }
 
     public function GetAdditionalCollaboraOptions() : string {
@@ -1004,9 +1028,8 @@ class ConfigurationManager
     }
 
     public function DeleteAdditionalCollaboraOptions() : void {
-        $config = $this->GetConfig();
-        $config['collabora_additional_options'] = '';
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['collabora_additional_options'] = '';
     }
 
     public function GetApacheAdditionalNetwork() : string {
@@ -1089,9 +1112,8 @@ class ConfigurationManager
     }
 
     public function SetEnabledCommunityContainers(array $enabledCommunityContainers) : void {
-        $config = $this->GetConfig();
-        $config['aio_community_containers'] = implode(' ', $enabledCommunityContainers);
-        $this->WriteConfig($config);
+        $this->GetConfig();
+        $this->config['aio_community_containers'] = implode(' ', $enabledCommunityContainers);
     }
 
     private function GetEnabledDriDevice() : string {
