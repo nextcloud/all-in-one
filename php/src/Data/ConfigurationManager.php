@@ -25,6 +25,16 @@ class ConfigurationManager
         return $this->config;
     }
 
+    /**
+     * A helper for setter methods, and to allow DockerActionManager->CreateContainer() to set dynamic
+     * variables.
+     * This method must be public for the latter purpose.
+     */
+    public function set(string $key, mixed $value) : void {
+        $this->GetConfig();
+        $this->config[$key] = $value;
+    }
+
     public function GetPassword() : string {
         return $this->GetConfig()['password'];
     }
