@@ -9,7 +9,7 @@ class ConfigurationManager
 {
     private array $secrets = [];
 
-    public function GetConfig() : array
+    private function GetConfig() : array
     {
         if(file_exists(DataConst::GetConfigFile()))
         {
@@ -18,6 +18,18 @@ class ConfigurationManager
         }
 
         return [];
+    }
+
+    public function set(string $key, mixed $value) : void {
+        $this->setMultiple([$key => $value]);
+    }
+
+    public function setMultiple(array $keyValuePairs) : void {
+        $config = $this->GetConfig();
+        foreach ($keyValuePairs as $key => $value) {
+            $config[$key] = $value;
+        }
+        $this->WriteConfig($config);
     }
 
     public function GetPassword() : string {
@@ -599,7 +611,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function WriteConfig(array $config) : void {
+    private function WriteConfig(array $config) : void {
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }

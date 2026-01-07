@@ -229,14 +229,13 @@ readonly class DockerActionManager {
         }
 
         $aioVariables = $container->GetAioVariables()->GetVariables();
+        $config = [];
         foreach ($aioVariables as $variable) {
-            $config = $this->configurationManager->GetConfig();
             $variable = $this->replaceEnvPlaceholders($variable);
             $variableArray = explode('=', $variable);
             $config[$variableArray[0]] = $variableArray[1];
-            $this->configurationManager->WriteConfig($config);
-            sleep(1);
         }
+        $this->configurationManager->setMultiple($config);
 
         $envs = $container->GetEnvironmentVariables()->GetVariables();
         // Special thing for the nextcloud container
