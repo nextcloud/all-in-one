@@ -4,3 +4,7 @@ rules:
   dangerous-triggers:
     ignore:
       - build_images.yml
+  unpinned-uses:
+    config:
+      policies:
+        actions/*: ref-pin
