@@ -9,15 +9,19 @@ class ConfigurationManager
 {
     private array $secrets = [];
 
+    private array $config = [];
+
+    private bool $noWrite = false;
+
     public function GetConfig() : array
     {
-        if(file_exists(DataConst::GetConfigFile()))
+        if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
         {
             $configContent = (string)file_get_contents(DataConst::GetConfigFile());
-            return json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
+            $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
-        return [];
+        return $this->config;
     }
 
     public function GetPassword() : string {
@@ -32,6 +36,34 @@ class ConfigurationManager
         $config = $this->GetConfig();
         $config['password'] = $password;
         $this->WriteConfig($config);
+    }
+
+    private function get(string $key, mixed $fallbackValue = null) : mixed {
+        return $this->GetConfig()[$key] ?? $fallbackValue;
+    }
+
+    private function set(string $key, mixed $value) : void {
+        $this->GetConfig();
+        $this->config[$key] = $value;
+        // Only write if this isn't called via setMultiple().
+        if ($this->noWrite !== true) {
+            $this->WriteConfig();
+        }
+    }
+
+    /**
+     * This allows to assign multiple attributes without saving the config to disk in between (as would
+     * calling set() do).
+     */
+    public function setMultiple(\Closure $closure) : void {
+        $this->noWrite = true;
+        try {
+            $this->GetConfig();
+            $closure($this);
+            $this->WriteConfig();
+        } finally {
+            $this->noWrite = false;
+        }
     }
 
     public function GetAndGenerateSecret(string $secretId) : string {
@@ -599,17 +631,25 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function WriteConfig(array $config) : void {
+    public function WriteConfig(?array $config) : void {
+        if ($config) {
+            $this->config = $config;
+        }
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
+        // Shouldn't happen, but as a precaution we won't write an empty config to disk.
+        if ($this->config === []) {
+            return;
+        }
         $df = disk_free_space(DataConst::GetDataDirectory());
-        $content = json_encode($config, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR);
+        $content = json_encode($this->config, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR);
         $size = strlen($content) + 10240;
         if ($df !== false && (int)$df < $size) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
         }
         file_put_contents(DataConst::GetConfigFile(), $content);
+        $this->config = [];
     }
 
     private function GetEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
