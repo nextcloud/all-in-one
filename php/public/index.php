@@ -77,11 +77,11 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $view->addExtension(new \AIO\Twig\ClassExtension());
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
     $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
-    /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
-    $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
+    $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
     /** @var \AIO\Controller\DockerController $dockerController */
     $dockerController = $container->get(\AIO\Controller\DockerController::class);
-    $dockerActionManger->ConnectMasterContainerToNetwork();
+    $dockerActionManager->ConnectMasterContainerToNetwork();
     $dockerController->StartDomaincheckContainer();
 
     // Check if bypass_mastercontainer_update is provided on the URL, a special developer mode to bypass a mastercontainer update and use local image.
@@ -99,17 +99,17 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_password' => $configurationManager->GetAndGenerateSecret('NEXTCLOUD_PASSWORD'),
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
         'borgbackup_password' => $configurationManager->GetAndGenerateSecret('BORGBACKUP_PASSWORD'),
-        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManger->IsMastercontainerUpdateAvailable() ),
+        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
-        'is_backup_container_running' => $dockerActionManger->isBackupContainerRunning(),
-        'backup_exit_code' => $dockerActionManger->GetBackupcontainerExitCode(),
+        'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
+        'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
         'is_instance_restore_attempt' => $configurationManager->isInstanceRestoreAttempt(),
         'borg_backup_mode' => $configurationManager->GetBackupMode(),
         'was_start_button_clicked' => $configurationManager->wasStartButtonClicked(),
-        'has_update_available' => $dockerActionManger->isAnyUpdateAvailable(),
+        'has_update_available' => $dockerActionManager->isAnyUpdateAvailable(),
         'last_backup_time' => $configurationManager->GetLastBackupTime(),
         'backup_times' => $configurationManager->GetBackupTimes(),
-        'current_channel' => $dockerActionManger->GetCurrentChannel(),
+        'current_channel' => $dockerActionManager->GetCurrentChannel(),
         'is_clamav_enabled' => $configurationManager->isClamavEnabled(),
         'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled(),
         'is_collabora_enabled' => $configurationManager->isCollaboraEnabled(),
@@ -144,10 +144,10 @@ $app->get('/containers', function (Request $request, Response $response, array $
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
-    /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
-    $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
+    $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
     return $view->render($response, 'login.twig', [
-        'is_login_allowed' => $dockerActionManger->isLoginAllowed(),
+        'is_login_allowed' => $dockerActionManager->isLoginAllowed(),
     ]);
 });
 $app->get('/setup', function (Request $request, Response $response, array $args) use ($container) {
