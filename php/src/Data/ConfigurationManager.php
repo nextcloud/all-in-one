@@ -9,7 +9,61 @@ class ConfigurationManager
 {
     private array $secrets = [];
 
-    public function GetConfig() : array
+    public string password {
+        get => $this->GetConfig()['password'];
+        set { $this->set(['password' => $value]); }
+    }
+
+    public string aioToken {
+        get => $this->get('AIO_TOKEN');
+        set { $this->set(['AIO_TOKEN' => $value]); }
+    }
+
+    public bool isDockerSocketProxyEnabled {
+        get => $this->get('isDockerSocketProxyEnabled', false);
+        set { $this->set(['isDockerSocketProxyEnabled' => $value]); }
+
+    public bool isWhiteboardEnabled {
+        get => $this->get('isWhiteboardEnabled', true);
+        set { $this->set(['isWhiteboardEnabled' => $value]); }
+    }
+
+    public bool restoreExcludePreviews {
+        get => $this->get('restore-exclude-previews', false);
+        set { $this->set(['restore-exclude-previews' => $value]); }
+    }
+
+    public string selectedRestoreTime {
+        get => $this->get('selected-restore-time', '');
+        set { $this->set(['selected-restore-time' => $value]); }
+    }
+
+    public string backupMode {
+        get => $this->get('backup-mode', '');
+        set { $this->set(['backup-mode' => $value]); }
+    }
+
+    public bool instanceRestoreAttempt {
+        get => $this->get('instance_restore_attempt', false);
+        set { $this->set(['instance_restore_attempt' => $value]); }
+    }
+
+    public string aioUrl {
+        get => $this->get('AIO_URL', '');
+        set { $this->set(['AIO_URL' => $value]); }
+    }
+
+    public bool wasStartButtonClicked {
+        get => $this->get('wasStartButtonClicked', false);
+        set { $this->set(['wasStartButtonClicked' => $value]); }
+    }
+
+    public bool installLatestMajor {
+        get => $this->get('install_latest_major', false);
+        set { $this->set(['install_latest_major' => $value]); }
+    }
+
+    private function GetConfig() : array
     {
         if(file_exists(DataConst::GetConfigFile()))
         {
@@ -20,18 +74,16 @@ class ConfigurationManager
         return [];
     }
 
-    public function GetPassword() : string {
-        return $this->GetConfig()['password'];
-    }
-
-    public function GetToken() : string {
-        return $this->GetConfig()['AIO_TOKEN'];
-    }
-
-    public function SetPassword(string $password) : void {
+    private function set(array $keyValuePairs) {
         $config = $this->GetConfig();
-        $config['password'] = $password;
+        foreach ($keyValuePairs as $key => $value) {
+            $config[$key] = $value;
+        }
         $this->WriteConfig($config);
+    }
+
+    private function get(string $key, mixed $fallbackValue = null) {
+        return $this->GetConfig()[$key] ?? $fallbackValue;
     }
 
     public function GetAndGenerateSecret(string $secretId) : string {
@@ -122,14 +174,6 @@ class ConfigurationManager
         return $backupTimes;
     }
 
-    public function wasStartButtonClicked() : bool {
-        if (isset($this->GetConfig()['wasStartButtonClicked'])) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     private function isx64Platform() : bool {
         if (php_uname('m') === 'x86_64') {
             return true;
@@ -145,36 +189,6 @@ class ConfigurationManager
         } else {
             return false;
         }
-    }
-
-    public function isDockerSocketProxyEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isDockerSocketProxyEnabled']) && $config['isDockerSocketProxyEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetDockerSocketProxyEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isDockerSocketProxyEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isWhiteboardEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isWhiteboardEnabled']) && $config['isWhiteboardEnabled'] === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function SetWhiteboardEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isWhiteboardEnabled'] = $value;
-        $this->WriteConfig($config);
     }
 
     public function SetClamavEnabledState(int $value) : void {
@@ -417,48 +431,6 @@ class ConfigurationManager
         return 'dc=' . implode(',dc=', explode('.', $domain));
     }
 
-    public function GetBackupMode() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['backup-mode'])) {
-            $config['backup-mode'] = '';
-        }
-
-        return $config['backup-mode'];
-    }
-
-    public function SetBackupMode(string $mode) : void {
-        $config = $this->GetConfig();
-        $config['backup-mode'] = $mode;
-        $this->WriteConfig($config);
-    }
-
-    public function GetSelectedRestoreTime() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['selected-restore-time'])) {
-            $config['selected-restore-time'] = '';
-        }
-
-        return $config['selected-restore-time'];
-    }
-
-    public function GetRestoreExcludePreviews() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['restore-exclude-previews'])) {
-            $config['restore-exclude-previews'] = '';
-        }
-
-        return $config['restore-exclude-previews'];
-    }
-
-    public function GetAIOURL() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['AIO_URL'])) {
-            $config['AIO_URL'] = '';
-        }
-
-        return $config['AIO_URL'];
-    }
-
     /**
      * @throws InvalidSettingConfigurationException
      */
@@ -669,18 +641,6 @@ class ConfigurationManager
         return $config['borg_restore_password'];
     }
 
-    public function isInstanceRestoreAttempt() : bool {
-        $config = $this->GetConfig();
-        if(!isset($config['instance_restore_attempt'])) {
-            $config['instance_restore_attempt'] = '';
-        }
-
-        if ($config['instance_restore_attempt'] === 1) {
-            return true;
-        }
-        return false;
-    }
-
     public function GetNextcloudMount() : string {
         $envVariableName = 'NEXTCLOUD_MOUNT';
         $configName = 'nextcloud_mount';
@@ -860,14 +820,6 @@ class ConfigurationManager
         } else {
             file_put_contents(DataConst::GetAdditionalBackupDirectoriesFile(), $validDirectories);
         }
-    }
-
-    public function shouldLatestMajorGetInstalled() : bool {
-        $config = $this->GetConfig();
-        if(!isset($config['install_latest_major'])) {
-            $config['install_latest_major'] = '';
-        }
-        return $config['install_latest_major'] !== '';
     }
 
     public function GetAdditionalBackupDirectoriesString() : string {
