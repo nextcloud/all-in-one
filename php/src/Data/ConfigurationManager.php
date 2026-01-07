@@ -9,56 +9,57 @@ class ConfigurationManager
 {
     private array $secrets = [];
 
-    public string password {
+    public string $password {
         get => $this->GetConfig()['password'];
         set { $this->set(['password' => $value]); }
     }
 
-    public string aioToken {
+    public string $aioToken {
         get => $this->get('AIO_TOKEN');
         set { $this->set(['AIO_TOKEN' => $value]); }
     }
 
-    public bool isDockerSocketProxyEnabled {
+    public bool $isDockerSocketProxyEnabled {
         get => $this->get('isDockerSocketProxyEnabled', false);
         set { $this->set(['isDockerSocketProxyEnabled' => $value]); }
+    }
 
-    public bool isWhiteboardEnabled {
+    public bool $isWhiteboardEnabled {
         get => $this->get('isWhiteboardEnabled', true);
         set { $this->set(['isWhiteboardEnabled' => $value]); }
     }
 
-    public bool restoreExcludePreviews {
+    public bool $restoreExcludePreviews {
         get => $this->get('restore-exclude-previews', false);
         set { $this->set(['restore-exclude-previews' => $value]); }
     }
 
-    public string selectedRestoreTime {
+    public string $selectedRestoreTime {
         get => $this->get('selected-restore-time', '');
         set { $this->set(['selected-restore-time' => $value]); }
     }
 
-    public string backupMode {
+    public string $backupMode {
         get => $this->get('backup-mode', '');
         set { $this->set(['backup-mode' => $value]); }
     }
 
-    public bool instanceRestoreAttempt {
+    public bool $instanceRestoreAttempt {
         get => $this->get('instance_restore_attempt', false);
         set { $this->set(['instance_restore_attempt' => $value]); }
     }
 
-    public string aioUrl {
+    public string $aioUrl {
         get => $this->get('AIO_URL', '');
         set { $this->set(['AIO_URL' => $value]); }
     }
 
-    public bool wasStartButtonClicked {
+    public bool $wasStartButtonClicked {
         get => $this->get('wasStartButtonClicked', false);
         set { $this->set(['wasStartButtonClicked' => $value]); }
     }
 
-    public bool installLatestMajor {
+    public bool $installLatestMajor {
         get => $this->get('install_latest_major', false);
         set { $this->set(['install_latest_major' => $value]); }
     }
