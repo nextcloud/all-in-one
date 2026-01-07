@@ -93,6 +93,10 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
         fi
         read -ra ADDITIONAL_PHP_EXTENSIONS_ARRAY <<< "$ADDITIONAL_PHP_EXTENSIONS"
         for app in "${ADDITIONAL_PHP_EXTENSIONS_ARRAY[@]}"; do
+            if [ "$app" = imagick ]; then
+                # imagick is already enabled by default, so does not need to be enabled anymore.
+                continue
+            fi
             # shellcheck disable=SC2086
             if [ "$PHP_DEPS_ARE_INSTALLED" != 1 ]; then
                 echo "Installing PHP build dependencies..."
