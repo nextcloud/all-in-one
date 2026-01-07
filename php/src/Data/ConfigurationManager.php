@@ -40,12 +40,6 @@ class ConfigurationManager
         return $this->GetConfig()['AIO_TOKEN'];
     }
 
-    public function SetPassword(string $password) : void {
-        $config = $this->GetConfig();
-        $config['password'] = $password;
-        $this->WriteConfig($config);
-    }
-
     public function GetAndGenerateSecret(string $secretId) : string {
         if ($secretId === '') {
             return '';
@@ -168,12 +162,6 @@ class ConfigurationManager
         }
     }
 
-    public function SetDockerSocketProxyEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isDockerSocketProxyEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
     public function isWhiteboardEnabled() : bool {
         $config = $this->GetConfig();
         if (isset($config['isWhiteboardEnabled']) && $config['isWhiteboardEnabled'] === 0) {
@@ -181,12 +169,6 @@ class ConfigurationManager
         } else {
             return true;
         }
-    }
-
-    public function SetWhiteboardEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isWhiteboardEnabled'] = $value;
-        $this->WriteConfig($config);
     }
 
     public function SetClamavEnabledState(int $value) : void {
@@ -202,12 +184,6 @@ class ConfigurationManager
         } else {
             return true;
         }
-    }
-
-    public function SetImaginaryEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isImaginaryEnabled'] = $value;
-        $this->WriteConfig($config);
     }
 
     public function isFulltextsearchEnabled() : bool {
@@ -582,7 +558,7 @@ class ConfigurationManager
         }
 
         // All checks pass so set the password
-        $this->SetPassword($newPassword);
+        $this->set('password', $newPassword);
     }
 
     public function GetApachePort() : string {

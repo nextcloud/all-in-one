@@ -105,9 +105,9 @@ readonly class ConfigurationController {
                     $this->configurationManager->SetTalkRecordingEnabledState(0);
                 }
                 if (isset($request->getParsedBody()['imaginary'])) {
-                    $this->configurationManager->SetImaginaryEnabledState(1);
+                    $this->configurationManager->set('isImaginaryEnabled', 1);
                 } else {
-                    $this->configurationManager->SetImaginaryEnabledState(0);
+                    $this->configurationManager->set('isImaginaryEnabled', 0);
                 }
                 if (isset($request->getParsedBody()['fulltextsearch'])) {
                     $this->configurationManager->SetFulltextsearchEnabledState(1);
@@ -115,14 +115,14 @@ readonly class ConfigurationController {
                     $this->configurationManager->SetFulltextsearchEnabledState(0);
                 }
                 if (isset($request->getParsedBody()['docker-socket-proxy'])) {
-                    $this->configurationManager->SetDockerSocketProxyEnabledState(1);
+                    $this->configurationManager->set('isDockerSocketProxyEnabled', 1);
                 } else {
-                    $this->configurationManager->SetDockerSocketProxyEnabledState(0);
+                    $this->configurationManager->set('isDockerSocketProxyEnabled', 0);
                 }
                 if (isset($request->getParsedBody()['whiteboard'])) {
-                    $this->configurationManager->SetWhiteboardEnabledState(1);
+                    $this->configurationManager->set('isWhiteboardEnabled', 1);
                 } else {
-                    $this->configurationManager->SetWhiteboardEnabledState(0);
+                    $this->configurationManager->set('isWhiteboardEnabled', 0);
                 }
             }
 
