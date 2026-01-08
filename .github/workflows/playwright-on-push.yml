@@ -1,0 +1,123 @@
+name: Playwright Tests on push
+
+on:
+  pull_request:
+    paths:
+      - 'php/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'php/**'
+
+concurrency:
+  group: playwright-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  BASE_URL: https://localhost:8080
+
+jobs:
+  test:
+    timeout-minutes: 60
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6.0.1
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: cd php/tests && npm ci
+
+      - name: Install Playwright Browsers
+        run: cd php/tests && npx playwright install --with-deps chromium
+
+      - name: Set up php 8.4
+        uses: shivammathur/setup-php@7bf05c6b704e0b9bfee22300130a31b5ea68d593 # v2.36.0
+        with:
+          extensions: apcu
+          php-version: 8.4
+          coverage: none
+          ini-file: development
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Adjust some things and fix permissions
+        run: |
+          cd php
+          rm -r ./data
+          rm -r ./session
+          composer install --no-dev
+          composer clear-cache
+          sudo chmod 777 -R ./
+
+      - name: Start fresh development server
+        run: |
+          docker rm --force nextcloud-aio-{mastercontainer,apache,notify-push,nextcloud,redis,database,domaincheck,whiteboard,imaginary,talk,collabora,borgbackup} || true
+          docker volume rm nextcloud_aio_{mastercontainer,apache,database,database_dump,nextcloud,nextcloud_data,redis,backup_cache,elasticsearch} || true
+          docker pull ghcr.io/nextcloud-releases/all-in-one:develop
+          docker run \
+            -d \
+            --init \
+            --name nextcloud-aio-mastercontainer \
+            --restart always \
+            --publish 8080:8080 \
+            --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+            --volume ./php:/var/www/docker-aio/php \
+            --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+            --env SKIP_DOMAIN_VALIDATION=true \
+            --env APACHE_PORT=11000 \
+            ghcr.io/nextcloud-releases/all-in-one:develop
+          echo Waiting for 10 seconds for the development container to start ...
+          sleep 10
+
+      - name: Run Playwright tests for initial setup
+        run: |
+          cd php/tests
+          export DEBUG=pw:api
+          if ! npx playwright test tests/initial-setup.spec.js; then
+            docker logs nextcloud-aio-mastercontainer
+            docker logs nextcloud-aio-borgbackup
+            exit 1
+          fi
+
+      - name: Start fresh development server
+        run: |
+          docker rm --force nextcloud-aio-{mastercontainer,apache,notify-push,nextcloud,redis,database,domaincheck,whiteboard,imaginary,talk,collabora,borgbackup} || true
+          docker volume rm nextcloud_aio_{mastercontainer,apache,database,database_dump,nextcloud,nextcloud_data,redis,backup_cache,elasticsearch} || true
+          docker run \
+            -d \
+            --init \
+            --name nextcloud-aio-mastercontainer \
+            --restart always \
+            --publish 8080:8080 \
+            --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+            --volume ./php:/var/www/docker-aio/php \
+            --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+            --env SKIP_DOMAIN_VALIDATION=false \
+            --env APACHE_PORT=11000 \
+            ghcr.io/nextcloud-releases/all-in-one:develop
+          echo Waiting for 10 seconds for the development container to start ...
+          sleep 10
+
+      - name: Run Playwright tests for backup restore
+        run: |
+          cd php/tests 
+          export DEBUG=pw:api
+          if ! npx playwright test tests/restore-instance.spec.js; then
+            docker logs nextcloud-aio-mastercontainer
+            docker logs nextcloud-aio-borgbackup
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v6
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: php/tests/playwright-report/
+          retention-days: 14
+          overwrite: true
