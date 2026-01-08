@@ -65,14 +65,6 @@ if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
 
     done
 
-    # Custom logic for ldap conf
-    if ! grep -q "TLS_" /etc/openldap/ldap.conf; then
-        cat << EOL >> /etc/openldap/ldap.conf
-TLS_CACERT $CERTIFICATE_BUNDLE
-TLS_REQCERT try
-EOL
-    fi
-
     # Backwards compatibility with older instances
     if [ -f "/var/www/html/config/postgres.config.php" ]; then
         sed -i "s|/var/www/html/data/certificates/POSTGRES|/var/www/html/data/certificates/ca-bundle.crt|" /var/www/html/config/postgres.config.php
