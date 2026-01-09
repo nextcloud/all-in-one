@@ -18,6 +18,7 @@ readonly class Setup {
 
         $password = $this->passwordGenerator->GeneratePassword(8);
         $this->configurationManager->SetPassword($password);
+        $this->configurationManager->save();
         return $password;
     }
 
