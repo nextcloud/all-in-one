@@ -763,6 +763,14 @@ class ConfigurationManager
         return trim($this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue));
     }
 
+    public function GetCollaboraExtraHosts() : string {
+        $envVariableName = 'COLLABORA_EXTRA_HOSTS';
+        $configName = 'collabora_extra_hosts';
+        $defaultValue = '';
+        $value = trim($this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue));
+        return preg_split('/ +/', $value, -1, PREG_SPLIT_NO_EMPTY);
+    }
+
     public function GetCollaboraSeccompPolicy() : string {
         $defaultString = '--o:security.seccomp=';
         if (!$this->isSeccompDisabled()) {
