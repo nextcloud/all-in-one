@@ -9,7 +9,7 @@ class ConfigurationManager
 {
     private array $secrets = [];
 
-    public function GetConfig() : array
+    private function GetConfig() : array
     {
         if(file_exists(DataConst::GetConfigFile()))
         {
@@ -20,18 +20,24 @@ class ConfigurationManager
         return [];
     }
 
+    public function set(string $key, mixed $value) : void {
+        $this->setMultiple([$key => $value]);
+    }
+
+    public function setMultiple(array $keyValuePairs) : void {
+        $config = $this->GetConfig();
+        foreach ($keyValuePairs as $key => $value) {
+            $config[$key] = $value;
+        }
+        $this->WriteConfig($config);
+    }
+
     public function GetPassword() : string {
         return $this->GetConfig()['password'];
     }
 
     public function GetToken() : string {
         return $this->GetConfig()['AIO_TOKEN'];
-    }
-
-    public function SetPassword(string $password) : void {
-        $config = $this->GetConfig();
-        $config['password'] = $password;
-        $this->WriteConfig($config);
     }
 
     public function GetAndGenerateSecret(string $secretId) : string {
@@ -156,12 +162,6 @@ class ConfigurationManager
         }
     }
 
-    public function SetDockerSocketProxyEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isDockerSocketProxyEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
     public function isWhiteboardEnabled() : bool {
         $config = $this->GetConfig();
         if (isset($config['isWhiteboardEnabled']) && $config['isWhiteboardEnabled'] === 0) {
@@ -169,12 +169,6 @@ class ConfigurationManager
         } else {
             return true;
         }
-    }
-
-    public function SetWhiteboardEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isWhiteboardEnabled'] = $value;
-        $this->WriteConfig($config);
     }
 
     public function SetClamavEnabledState(int $value) : void {
@@ -190,12 +184,6 @@ class ConfigurationManager
         } else {
             return true;
         }
-    }
-
-    public function SetImaginaryEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isImaginaryEnabled'] = $value;
-        $this->WriteConfig($config);
     }
 
     public function isFulltextsearchEnabled() : bool {
@@ -570,7 +558,7 @@ class ConfigurationManager
         }
 
         // All checks pass so set the password
-        $this->SetPassword($newPassword);
+        $this->set('password', $newPassword);
     }
 
     public function GetApachePort() : string {
@@ -599,7 +587,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function WriteConfig(array $config) : void {
+    private function WriteConfig(array $config) : void {
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }

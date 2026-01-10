@@ -124,14 +124,14 @@ readonly class DockerController {
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
         $this->configurationManager->SetBackupMode('restore');
-        $config = $this->configurationManager->GetConfig();
+        $config = [];
         $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
         if (isset($request->getParsedBody()['restore-exclude-previews'])) {
             $config['restore-exclude-previews'] = 1;
         } else {
             $config['restore-exclude-previews'] = '';
         }
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->setMultiple($config);
 
         $id = self::TOP_CONTAINER;
         $forceStopNextcloud = true;
@@ -157,9 +157,7 @@ readonly class DockerController {
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
         $this->configurationManager->SetBackupMode('test');
-        $config = $this->configurationManager->GetConfig();
-        $config['instance_restore_attempt'] = 0;
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->set('instance_restore_attempt', 0);
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
@@ -187,14 +185,14 @@ readonly class DockerController {
             $installLatestMajor = "";
         }
 
-        $config = $this->configurationManager->GetConfig();
+        $config = [];
         // set AIO_URL
         $config['AIO_URL'] = $host . ':' . (string)$port . $path;
         // set wasStartButtonClicked
         $config['wasStartButtonClicked'] = 1;
         // set install_latest_major
         $config['install_latest_major'] = $installLatestMajor;
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->setMultiple($config);
 
         // Do not pull container images in case 'bypass_container_update' is set via url params
         // Needed for local testing
@@ -213,10 +211,8 @@ readonly class DockerController {
     }
 
     public function startTopContainer(bool $pullImage) : void {
-        $config = $this->configurationManager->GetConfig();
         // set AIO_TOKEN
-        $config['AIO_TOKEN'] = bin2hex(random_bytes(24));
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->set('AIO_TOKEN', bin2hex(random_bytes(24)));
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
