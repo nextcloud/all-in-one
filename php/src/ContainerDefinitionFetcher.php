@@ -25,7 +25,7 @@ readonly class ContainerDefinitionFetcher {
         $containers = $this->FetchDefinition();
 
         foreach ($containers as $container) {
-            if ($container->GetIdentifier() === $id) {
+            if ($container->identifier === $id) {
                 return $container;
             }
         }

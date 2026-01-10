@@ -23,7 +23,7 @@ readonly class DockerController {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         // Start all dependencies first and then itself
-        foreach($container->GetDependsOn() as $dependency) {
+        foreach($container->dependsOn as $dependency) {
             $this->PerformRecursiveContainerStart($dependency, $pullImage);
         }
 
@@ -46,7 +46,7 @@ readonly class DockerController {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         // Pull all dependencies first and then itself
-        foreach($container->GetDependsOn() as $dependency) {
+        foreach($container->dependsOn as $dependency) {
             $this->PerformRecursiveImagePull($dependency);
         }
 
@@ -255,7 +255,7 @@ readonly class DockerController {
             // We want to stop the Nextcloud container after 10s and not wait for the configured stop_grace_period
             $this->dockerActionManager->StopContainer($container, $forceStopNextcloud);
         }
-        foreach($container->GetDependsOn() as $dependency) {
+        foreach($container->dependsOn as $dependency) {
             $this->PerformRecursiveContainerStop($dependency, $forceStopNextcloud);
         }
     }
