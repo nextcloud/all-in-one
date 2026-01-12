@@ -10,6 +10,7 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
       'class' => '\OC\Files\ObjectStore\S3',
       'arguments' => array(
         'multibucket' => $multibucket === 'true',
+        'num_buckets' => (int)getenv('OBJECTSTORE_S3_NUM_BUCKETS') ?: 64,
         'bucket' => getenv('OBJECTSTORE_S3_BUCKET'),
         'key' => getenv('OBJECTSTORE_S3_KEY') ?: '',
         'secret' => getenv('OBJECTSTORE_S3_SECRET') ?: '',
