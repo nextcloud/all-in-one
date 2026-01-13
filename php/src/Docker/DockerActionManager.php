@@ -376,6 +376,11 @@ readonly class DockerActionManager {
 
         // Special things for the backup container which should not be exposed in the containers.json
         if (str_starts_with($container->GetIdentifier(), 'nextcloud-aio-borgbackup')) {
+            // Disable seccomp policy if seccomp is enabled in the kernel to fix issues like https://github.com/nextcloud/all-in-one/issues/7308
+            if (!$this->configurationManager->isSeccompDisabled()) {
+                $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined", "label:disable", "seccomp:unconfined"];
+            }
+
             // Additional backup directories
             foreach ($this->getAllBackupVolumes() as $additionalBackupVolumes) {
                 if ($additionalBackupVolumes !== '') {
