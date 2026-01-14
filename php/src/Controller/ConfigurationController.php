@@ -76,23 +76,23 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['options-form'])) {
-                if (isset($request->getParsedBody()['collabora']) && isset($request->getParsedBody()['onlyoffice'])) {
-                    throw new InvalidSettingConfigurationException("Collabora and Onlyoffice are not allowed to be enabled at the same time!");
+                $officeSuiteChoice = $request->getParsedBody()['office_suite_choice'] ?? '';
+                
+                if ($officeSuiteChoice === 'collabora') {
+                    $this->configurationManager->SetCollaboraEnabledState(1);
+                    $this->configurationManager->SetOnlyofficeEnabledState(0);
+                } elseif ($officeSuiteChoice === 'onlyoffice') {
+                    $this->configurationManager->SetCollaboraEnabledState(0);
+                    $this->configurationManager->SetOnlyofficeEnabledState(1);
+                } else {
+                    $this->configurationManager->SetCollaboraEnabledState(0);
+                    $this->configurationManager->SetOnlyofficeEnabledState(0);
                 }
+                
                 if (isset($request->getParsedBody()['clamav'])) {
                     $this->configurationManager->SetClamavEnabledState(1);
                 } else {
                     $this->configurationManager->SetClamavEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['onlyoffice'])) {
-                    $this->configurationManager->SetOnlyofficeEnabledState(1);
-                } else {
-                    $this->configurationManager->SetOnlyofficeEnabledState(0);
-                }
-                if (isset($request->getParsedBody()['collabora'])) {
-                    $this->configurationManager->SetCollaboraEnabledState(1);
-                } else {
-                    $this->configurationManager->SetCollaboraEnabledState(0);
                 }
                 if (isset($request->getParsedBody()['talk'])) {
                     $this->configurationManager->SetTalkEnabledState(1);
