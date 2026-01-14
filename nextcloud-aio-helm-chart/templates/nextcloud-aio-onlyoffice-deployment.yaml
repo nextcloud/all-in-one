@@ -24,7 +24,7 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20251218_095503
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260114_114729
           command:
             - chmod
             - "777"
@@ -42,7 +42,7 @@ spec:
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-onlyoffice:20251218_095503
+          image: ghcr.io/nextcloud-releases/aio-onlyoffice:20260114_114729
           readinessProbe:
             exec:
               command:

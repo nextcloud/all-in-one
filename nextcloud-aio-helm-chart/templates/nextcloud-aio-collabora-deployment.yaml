@@ -36,9 +36,9 @@ spec:
             - name: server_name
               value: "{{ .Values.NC_DOMAIN }}"
           {{- if contains "--o:support_key=" (join " " (.Values.ADDITIONAL_COLLABORA_OPTIONS | default list)) }}
-          image: ghcr.io/nextcloud-releases/aio-collabora-online:20251218_095503
+          image: ghcr.io/nextcloud-releases/aio-collabora-online:20260114_114729
           {{- else }}
-          image: ghcr.io/nextcloud-releases/aio-collabora:20251218_095503
+          image: ghcr.io/nextcloud-releases/aio-collabora:20260114_114729
           {{- end }}
           readinessProbe:
             exec:
