@@ -378,7 +378,27 @@ readonly class DockerActionManager {
         if (str_starts_with($container->GetIdentifier(), 'nextcloud-aio-borgbackup')) {
             // Disable seccomp policy if seccomp is enabled in the kernel to fix issues like https://github.com/nextcloud/all-in-one/issues/7308
             if (!$this->configurationManager->isSeccompDisabled()) {
-                $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined", "label:disable", "seccomp:unconfined"];
+                $seccompProfile = '{
+                                    \"defaultAction\": \"SCMP_ACT_ERRNO\",
+                                    \"defaultErrnoRet\": 38,
+                                    \"architectures\": [
+                                        \"SCMP_ARCH_X86_64\",
+                                        \"SCMP_ARCH_X86\",
+                                        \"SCMP_ARCH_X32\",
+                                        \"SCMP_ARCH_AARCH64\",
+                                        \"SCMP_ARCH_ARM\"
+                                    ],
+                                    \"syscalls\": [
+                                        {
+                                        \"names\": [
+                                            \"fchmodat2\"
+                                        ],
+                                        \"action\": \"SCMP_ACT_ERRNO\",
+                                        \"errnoRet\": 38
+                                        }
+                                    ]
+                                  }';
+                $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined", "label:disable", "seccomp=$seccompProfile"];
             }
 
             // Additional backup directories
