@@ -379,22 +379,22 @@ readonly class DockerActionManager {
             // Disable seccomp policy if seccomp is enabled in the kernel to fix issues like https://github.com/nextcloud/all-in-one/issues/7308
             if (!$this->configurationManager->isSeccompDisabled()) {
                 $seccompProfile = '{
-                                    \"defaultAction\": \"SCMP_ACT_ERRNO\",
-                                    \"defaultErrnoRet\": 38,
-                                    \"architectures\": [
-                                        \"SCMP_ARCH_X86_64\",
-                                        \"SCMP_ARCH_X86\",
-                                        \"SCMP_ARCH_X32\",
-                                        \"SCMP_ARCH_AARCH64\",
-                                        \"SCMP_ARCH_ARM\"
+                                    "defaultAction": "SCMP_ACT_ERRNO",
+                                    "defaultErrnoRet": 38,
+                                    "architectures": [
+                                        "SCMP_ARCH_X86_64",
+                                        "SCMP_ARCH_X86",
+                                        "SCMP_ARCH_X32",
+                                        "SCMP_ARCH_AARCH64",
+                                        "SCMP_ARCH_ARM"
                                     ],
-                                    \"syscalls\": [
+                                    "syscalls": [
                                         {
-                                        \"names\": [
-                                            \"fchmodat2\"
+                                        "names": [
+                                            "fchmodat2"
                                         ],
-                                        \"action\": \"SCMP_ACT_ERRNO\",
-                                        \"errnoRet\": 38
+                                        "action": "SCMP_ACT_ERRNO",
+                                        "errnoRet": 38
                                         }
                                     ]
                                   }';
