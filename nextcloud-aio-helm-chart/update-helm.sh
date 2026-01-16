@@ -407,7 +407,7 @@ rm latest.yml
 mv latest.yml.backup latest.yml
 
 # Get version of AIO
-AIO_VERSION="$(grep 'Nextcloud AIO ' ../php/templates/containers.twig | grep -oP '[0-9]+.[0-9]+.[0-9]+')"
+AIO_VERSION="$(grep 'Nextcloud AIO ' ../php/templates/includes/aio-version.twig | grep -oP '[0-9]+.[0-9]+.[0-9]+')"
 sed -i "s|^version:.*|version: $AIO_VERSION|" ../helm-chart/Chart.yaml
 
 # Conversion of sample.conf
