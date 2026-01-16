@@ -564,19 +564,14 @@ Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
-![grafik](https://github.com/user-attachments/assets/c32c8fe8-7417-4f8f-9625-24b95651e630)
+<img width="675" height="695" alt="image" src="https://github.com/user-attachments/assets/196f53f9-ff86-4da2-960e-f7b7a2ceac0c" />
 
-![grafik](https://github.com/user-attachments/assets/f14bba5c-69ce-4514-a2ac-5e5d7fb97792)
+<img width="675" height="355" alt="image" src="https://github.com/user-attachments/assets/8a45a6d8-fbaf-4519-86f7-c7424ed780da" />
 
-<!-- ![grafik](https://github.com/user-attachments/assets/a26c53fd-6cc8-4a6b-a86f-c2f94b70088f) -->
+<img width="675" height="542" alt="image" src="https://github.com/user-attachments/assets/7e880d02-0f4f-459a-a3f6-216bcb1b04ca" />
 
-![grafik](https://github.com/user-attachments/assets/75d7f539-35d1-4a3e-8c51-43123f698893)
+<img width="675" height="570" alt="image" src="https://github.com/user-attachments/assets/2812ecc1-ecf0-44bd-9249-b76b30f8c25e" />
 
-![grafik](https://github.com/user-attachments/assets/e494edb5-8b70-4d45-bc9b-374219230041)
-
-`proxy_set_header Accept-Encoding $http_accept_encoding;`
-
-⚠️ **Please note:** Nextcloud will complain that X-XXS-Protection is set to the wrong value, this is intended by NPMplus. <br>
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 </details>
