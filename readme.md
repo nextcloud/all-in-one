@@ -340,7 +340,7 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 For a reverse proxy example guide for Tailscale, see this guide by [@Perseus333](https://github.com/Perseus333): https://github.com/nextcloud/all-in-one/discussions/6817
 
 ### How to get Nextcloud running using the ACME DNS-challenge?
-You can install AIO in reverse proxy mode where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section). Also see https://github.com/dani-garcia/vaultwarden/wiki/Running-a-private-vaultwarden-instance-with-Let%27s-Encrypt-certs#getting-a-custom-caddy-build for additional docs on this topic.
+You can install AIO behind an external reverse proxy where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section). Also see https://github.com/dani-garcia/vaultwarden/wiki/Running-a-private-vaultwarden-instance-with-Let%27s-Encrypt-certs#getting-a-custom-caddy-build for additional docs on this topic.
 
 ### How to run Nextcloud locally? No domain wanted, or wanting intranet access within your LAN.
 If you do not want to open Nextcloud to the public internet, you may have a look at the following documentation on how to set it up locally: [local-instance.md](./local-instance.md), but keep in mind you're still required to have https working properly.
