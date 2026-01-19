@@ -565,6 +565,7 @@ readonly class DockerActionManager {
             'AIO_URL' => $this->configurationManager->AIO_URL,
             'SELECTED_RESTORE_TIME' => $this->configurationManager->GetSelectedRestoreTime(),
             'RESTORE_EXCLUDE_PREVIEWS' => $this->configurationManager->GetRestoreExcludePreviews(),
+            'SELECTED_RESTORE_TIME' => $this->configurationManager->selectedRestoreTime,
             'APACHE_PORT' => $this->configurationManager->GetApachePort(),
             'APACHE_IP_BINDING' => $this->configurationManager->GetApacheIPBinding(),
             'TALK_PORT' => $this->configurationManager->GetTalkPort(),

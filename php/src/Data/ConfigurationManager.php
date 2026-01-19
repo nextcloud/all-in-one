@@ -23,6 +23,11 @@ class ConfigurationManager
         set { $this->set('password', $value); }
     }
 
+    public string $selectedRestoreTime {
+        get => $this->get('selected-restore-time', '');
+        set { $this->set('selected-restore-time', $value); }
+    }
+
     public string $AIO_URL {
         get => $this->get('AIO_URL', '');
         set { $this->set('AIO_URL', $value); }
@@ -465,15 +470,6 @@ class ConfigurationManager
         $config = $this->GetConfig();
         $config['backup-mode'] = $mode;
         $this->WriteConfig($config);
-    }
-
-    public function GetSelectedRestoreTime() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['selected-restore-time'])) {
-            $config['selected-restore-time'] = '';
-        }
-
-        return $config['selected-restore-time'];
     }
 
     public function GetRestoreExcludePreviews() : string {
