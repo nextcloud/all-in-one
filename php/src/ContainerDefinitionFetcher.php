@@ -83,7 +83,7 @@ readonly class ContainerDefinitionFetcher {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-fulltextsearch') {
-                if (!$this->configurationManager->isFulltextsearchEnabled()) {
+                if (!$this->configurationManager->isFulltextsearchEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-docker-socket-proxy') {
@@ -192,7 +192,7 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-fulltextsearch') {
-                        if (!$this->configurationManager->isFulltextsearchEnabled()) {
+                        if (!$this->configurationManager->isFulltextsearchEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-docker-socket-proxy') {

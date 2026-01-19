@@ -98,6 +98,12 @@ class ConfigurationManager
         set { $this->set('isImaginaryEnabled', $value); }
     }
 
+    public bool $isFulltextsearchEnabled {
+        get => $this->get('isFulltextsearchEnabled', false);
+        // Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
+        set { $this->set('isFulltextsearchEnabled', ($this->isSeccompDisabled() && $value)); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -231,26 +237,6 @@ class ConfigurationManager
         } else {
             return false;
         }
-    }
-
-    public function isFulltextsearchEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isFulltextsearchEnabled']) && $config['isFulltextsearchEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetFulltextsearchEnabledState(int $value) : void {
-        // Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
-        if ($this->isSeccompDisabled()) {
-            $value = 0;
-        }
-
-        $config = $this->GetConfig();
-        $config['isFulltextsearchEnabled'] = $value;
-        $this->WriteConfig($config);
     }
 
     /**

@@ -125,7 +125,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
         'is_backup_section_enabled' => $configurationManager->isBackupSectionEnabled(),
         'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled,
-        'is_fulltextsearch_enabled' => $configurationManager->isFulltextsearchEnabled(),
+        'is_fulltextsearch_enabled' => $configurationManager->isFulltextsearchEnabled,
         'additional_backup_directories' => $configurationManager->GetAdditionalBackupDirectoriesString(),
         'nextcloud_datadir' => $configurationManager->GetNextcloudDatadirMount(),
         'nextcloud_mount' => $configurationManager->GetNextcloudMount(),

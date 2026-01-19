@@ -92,11 +92,7 @@ readonly class ConfigurationController {
                 $this->configurationManager->isTalkEnabled = isset($request->getParsedBody()['talk']);
                 $this->configurationManager->isTalkRecordingEnabled = isset($request->getParsedBody()['talk-recording']);
                 $this->configurationManager->isImaginaryEnabled = isset($request->getParsedBody()['imaginary']);
-                if (isset($request->getParsedBody()['fulltextsearch'])) {
-                    $this->configurationManager->SetFulltextsearchEnabledState(1);
-                } else {
-                    $this->configurationManager->SetFulltextsearchEnabledState(0);
-                }
+                $this->configurationManager->isFulltextsearchEnabled = isset($request->getParsedBody()['fulltextsearch']);
                 $this->configurationManager->isDockerSocketProxyEnabled = isset($request->getParsedBody()['docker-socket-proxy']);
                 $this->configurationManager->isWhiteboardEnabled = isset($request->getParsedBody()['whiteboard']);
             }
