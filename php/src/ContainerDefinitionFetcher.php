@@ -79,7 +79,7 @@ readonly class ContainerDefinitionFetcher {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-imaginary') {
-                if (!$this->configurationManager->isImaginaryEnabled()) {
+                if (!$this->configurationManager->isImaginaryEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-fulltextsearch') {
@@ -188,7 +188,7 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-imaginary') {
-                        if (!$this->configurationManager->isImaginaryEnabled()) {
+                        if (!$this->configurationManager->isImaginaryEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-fulltextsearch') {

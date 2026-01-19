@@ -93,6 +93,11 @@ class ConfigurationManager
         set { $this->set('isTalkRecordingEnabled', $this->isTalkEnabled && $value); }
     }
 
+    public bool $isImaginaryEnabled {
+        get => $this->get('isImaginaryEnabled', true);
+        set { $this->set('isImaginaryEnabled', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -226,21 +231,6 @@ class ConfigurationManager
         } else {
             return false;
         }
-    }
-
-    public function isImaginaryEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isImaginaryEnabled']) && $config['isImaginaryEnabled'] === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function SetImaginaryEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isImaginaryEnabled'] = $value;
-        $this->WriteConfig($config);
     }
 
     public function isFulltextsearchEnabled() : bool {
