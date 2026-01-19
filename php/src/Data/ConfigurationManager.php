@@ -175,7 +175,7 @@ class ConfigurationManager
         set { $this->set('turn_domain', $value); }
     }
 
-    public function GetConfig() : array
+    private function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
         {
@@ -571,10 +571,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function WriteConfig(?array $config) : void {
-        if ($config) {
-            $this->config = $config;
-        }
+    private function WriteConfig() : void {
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
