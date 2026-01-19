@@ -123,9 +123,11 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->backupMode = 'restore';
-        $this->configurationManager->selectedRestoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
-        $this->configurationManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
+        $this->configurationManager->setMultiple(function ($confManager) use ($request) {
+            $confManager->backupMode = 'restore';
+            $confManager->selectedRestoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
+            $confManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
+        });
 
         $id = self::TOP_CONTAINER;
         $forceStopNextcloud = true;
@@ -150,8 +152,10 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->backupMode = 'test';
-        $this->configurationManager->instance_restore_attempt = false;
+        $this->configurationManager->setMultiple(function ($confManager) {
+            $confManager->backupMode = 'test';
+            $confManager->instance_restore_attempt = false;
+        });
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
@@ -173,12 +177,13 @@ readonly class DockerController {
             $port = 443;
         }
 
-        $this->configurationManager->install_latest_major = isset($request->getParsedBody()['install_latest_major']);
-        // set AIO_URL
-        $this->configurationManager->AIO_URL = $host . ':' . (string)$port . $path;
-        // set wasStartButtonClicked
-        $this->configurationManager->wasStartButtonClicked = true;
-
+        $this->configurationManager->setMultiple(function ($confManager) use ($request, $host, $port, $path) {
+            $confManager->install_latest_major = isset($request->getParsedBody()['install_latest_major']);
+            // set AIO_URL
+            $confManager->AIO_URL = $host . ':' . (string)$port . $path;
+            // set wasStartButtonClicked
+            $confManager->wasStartButtonClicked = true;
+        });
         // Do not pull container images in case 'bypass_container_update' is set via url params
         // Needed for local testing
         $pullImage = !isset($request->getParsedBody()['bypass_container_update']);
