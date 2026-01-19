@@ -112,7 +112,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'current_channel' => $dockerActionManager->GetCurrentChannel(),
         'is_clamav_enabled' => $configurationManager->isClamavEnabled,
         'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled,
-        'is_collabora_enabled' => $configurationManager->isCollaboraEnabled(),
+        'is_collabora_enabled' => $configurationManager->isCollaboraEnabled,
         'is_talk_enabled' => $configurationManager->isTalkEnabled(),
         'borg_restore_password' => $configurationManager->GetBorgRestorePassword(),
         'daily_backup_time' => $configurationManager->GetDailyBackupTime(),

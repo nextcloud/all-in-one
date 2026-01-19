@@ -64,7 +64,7 @@ readonly class ContainerDefinitionFetcher {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-collabora') {
-                if (!$this->configurationManager->isCollaboraEnabled()) {
+                if (!$this->configurationManager->isCollaboraEnabled) {
                     continue;
                 }
                 if ($this->configurationManager->isCollaboraSubscriptionEnabled()) {
@@ -176,7 +176,7 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-collabora') {
-                        if (!$this->configurationManager->isCollaboraEnabled()) {
+                        if (!$this->configurationManager->isCollaboraEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-talk') {

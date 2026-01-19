@@ -78,6 +78,11 @@ class ConfigurationManager
         set { $this->set('isOnlyofficeEnabled', $value); }
     }
 
+    public bool $isCollaboraEnabled {
+        get => $this->get('isCollaboraEnabled', true);
+        set { $this->set('isCollaboraEnabled', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -245,21 +250,6 @@ class ConfigurationManager
 
         $config = $this->GetConfig();
         $config['isFulltextsearchEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isCollaboraEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isCollaboraEnabled']) && $config['isCollaboraEnabled'] === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function SetCollaboraEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isCollaboraEnabled'] = $value;
         $this->WriteConfig($config);
     }
 
