@@ -142,6 +142,20 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'bypass_container_update' => $bypass_container_update,
     ]);
 })->setName('profile');
+
+// Server-Sent Events endpoint for container events (container-start)
+$app->get('/events/containers', function (Request $request, Response $response, array $args) use ($container) {
+    // Only allow authenticated sessions to access SSE
+    $authManager = $container->get(\AIO\Auth\AuthManager::class);
+    if (!$authManager->IsAuthenticated()) {
+        return $response->withStatus(401);
+    }
+
+    // Delegate streaming logic to the DockerController
+    $dockerController = $container->get(\AIO\Controller\DockerController::class);
+    return $dockerController->StreamContainerEvents($response);
+});
+
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */

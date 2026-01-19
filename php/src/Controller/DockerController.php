@@ -8,6 +8,7 @@ use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
+use AIO\Data\DataConst;
 
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
@@ -32,6 +33,15 @@ readonly class DockerController {
         if ($container->GetRunningState() === ContainerState::Running) {
             error_log('Not starting ' . $id . ' because it was already started.');
             return;
+        }
+
+        // Emit a container-start event for frontend clients (one JSON line per event)
+        try {
+            $this->pruneEventsFileIfTooLarge();
+            $this->writeEventsToFile(['event' => 'Starting container', 'name' => $id, 'time' => time()]);
+        } catch (\Throwable $e) {
+            // non-fatal, just log
+            error_log('Could not write container-start event: ' . $e->getMessage());
         }
 
         $this->dockerActionManager->DeleteContainer($container);
@@ -261,6 +271,48 @@ readonly class DockerController {
         return $response->withStatus(201)->withHeader('Location', '.');
     }
 
+    public function StreamContainerEvents(Response $response): Response {
+        $eventsFile = \AIO\Data\DataConst::GetContainerEventsFile();
+        if (!file_exists($eventsFile)) {
+            @touch($eventsFile);
+        }
+
+        $body = $response->getBody();
+        $response = $response
+            ->withHeader('Content-Type', 'text/event-stream')
+            ->withHeader('Cache-Control', 'no-cache')
+            ->withHeader('Connection', 'keep-alive');
+
+        $fileHandle = fopen($eventsFile, 'r');
+        if ($fileHandle === false) {
+            $body->write('');
+            return $response;
+        }
+
+        // Start at end of file so only new events are streamed
+        fseek($fileHandle, 0, SEEK_END);
+
+        while (!connection_aborted()) {
+            clearstatcache(false, $eventsFile);
+            $line = fgets($fileHandle);
+            if ($line !== false) {
+                $data = trim($line);
+                // Write SSE event
+                $body->write("event: container-start\n");
+                $body->write("data: $data\n\n");
+                $body->flush();
+                // Small pause to avoid tight loop
+                usleep(100000);
+            } else {
+                // No new data, wait a moment
+                usleep(200000);
+            }
+        }
+
+        fclose($fileHandle);
+        return $response;
+    }
+
     public function stopTopContainer() : void {
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
@@ -306,5 +358,33 @@ readonly class DockerController {
     {
         $id = 'nextcloud-aio-domaincheck';
         $this->PerformRecursiveContainerStop($id);
+    }
+
+    // Write container event to events file and prune old events
+    private function writeEventsToFile(array $payload): void {
+        $eventJson = json_encode($payload);
+
+        // Append new event (atomic via LOCK_EX)
+        file_put_contents($eventsFile, $eventJson . PHP_EOL, FILE_APPEND | LOCK_EX);
+    }
+
+    // Truncate the events file to keep only the last $maxBytes bytes, aligned to a newline boundary.
+    private function pruneEventsFileIfTooLarge(): void {
+        $eventsFile = DataConst::GetContainerEventsFile();
+        $maxBytes = 512 * 1024; // 512 KB
+        $maxLines = 1000; // keep last 1000 events
+
+        if (!file_exists($eventsFile) || filesize($eventsFile) <= $maxBytes) {
+            return;
+        }
+
+        $lines = file($eventsFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($lines !== false) {
+            $total = count($lines);
+            $start = max(0, $total - $maxLines);
+            $keep = array_slice($lines, $start);
+            // rewrite file with kept lines
+            file_put_contents($eventsFile, implode(PHP_EOL, $keep) . PHP_EOL, LOCK_EX);
+        }
     }
 }
