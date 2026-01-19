@@ -113,7 +113,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_clamav_enabled' => $configurationManager->isClamavEnabled,
         'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled,
         'is_collabora_enabled' => $configurationManager->isCollaboraEnabled,
-        'is_talk_enabled' => $configurationManager->isTalkEnabled(),
+        'is_talk_enabled' => $configurationManager->isTalkEnabled,
         'borg_restore_password' => $configurationManager->GetBorgRestorePassword(),
         'daily_backup_time' => $configurationManager->GetDailyBackupTime(),
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),

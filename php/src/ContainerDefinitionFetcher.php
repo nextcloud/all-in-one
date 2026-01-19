@@ -71,7 +71,7 @@ readonly class ContainerDefinitionFetcher {
                     $entry['image'] = 'ghcr.io/nextcloud-releases/aio-collabora-online';
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-talk') {
-                if (!$this->configurationManager->isTalkEnabled()) {
+                if (!$this->configurationManager->isTalkEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-talk-recording') {
@@ -180,7 +180,7 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-talk') {
-                        if (!$this->configurationManager->isTalkEnabled()) {
+                        if (!$this->configurationManager->isTalkEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-talk-recording') {

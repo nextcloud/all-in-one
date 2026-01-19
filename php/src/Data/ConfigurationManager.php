@@ -83,6 +83,11 @@ class ConfigurationManager
         set { $this->set('isCollaboraEnabled', $value); }
     }
 
+    public bool $isTalkEnabled {
+        get => $this->get('isTalkEnabled', true);
+        set { $this->set('isTalkEnabled', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -250,21 +255,6 @@ class ConfigurationManager
 
         $config = $this->GetConfig();
         $config['isFulltextsearchEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isTalkEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isTalkEnabled']) && $config['isTalkEnabled'] === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function SetTalkEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isTalkEnabled'] = $value;
         $this->WriteConfig($config);
     }
 
