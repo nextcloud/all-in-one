@@ -73,6 +73,11 @@ class ConfigurationManager
         set { $this->set('isClamavEnabled', $value); }
     }
 
+    public bool $isOnlyofficeEnabled {
+        get => $this->get('isOnlyofficeEnabled', false);
+        set { $this->set('isOnlyofficeEnabled', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -240,21 +245,6 @@ class ConfigurationManager
 
         $config = $this->GetConfig();
         $config['isFulltextsearchEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isOnlyofficeEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isOnlyofficeEnabled']) && $config['isOnlyofficeEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetOnlyofficeEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isOnlyofficeEnabled'] = $value;
         $this->WriteConfig($config);
     }
 

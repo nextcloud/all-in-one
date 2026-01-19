@@ -80,16 +80,15 @@ readonly class ConfigurationController {
                 
                 if ($officeSuiteChoice === 'collabora') {
                     $this->configurationManager->SetCollaboraEnabledState(1);
-                    $this->configurationManager->SetOnlyofficeEnabledState(0);
+                    $this->configurationManager->isOnlyofficeEnabled = false;
                 } elseif ($officeSuiteChoice === 'onlyoffice') {
                     $this->configurationManager->SetCollaboraEnabledState(0);
-                    $this->configurationManager->SetOnlyofficeEnabledState(1);
+                    $this->configurationManager->isOnlyofficeEnabled = true;
                 } else {
                     $this->configurationManager->SetCollaboraEnabledState(0);
-                    $this->configurationManager->SetOnlyofficeEnabledState(0);
+                    $this->configurationManager->isOnlyofficeEnabled = false;
                 }
                 $this->configurationManager->isClamavEnabled = isset($request->getParsedBody()['clamav']);
-                }
                 if (isset($request->getParsedBody()['talk'])) {
                     $this->configurationManager->SetTalkEnabledState(1);
                 } else {
