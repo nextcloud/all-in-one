@@ -23,6 +23,11 @@ class ConfigurationManager
         set { $this->set('password', $value); }
     }
 
+    public bool $isWhiteboardEnabled {
+        get => $this->get('isWhiteboardEnabled', true);
+        set { $this->set('isWhiteboardEnabled', $value); }
+    }
+
     public bool $restoreExcludePreviews {
         get => $this->get('restore-exclude-previews', false);
         set { $this->set('restore-exclude-previews', $value); }
@@ -204,21 +209,6 @@ class ConfigurationManager
     public function SetDockerSocketProxyEnabledState(int $value) : void {
         $config = $this->GetConfig();
         $config['isDockerSocketProxyEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isWhiteboardEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isWhiteboardEnabled']) && $config['isWhiteboardEnabled'] === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function SetWhiteboardEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isWhiteboardEnabled'] = $value;
         $this->WriteConfig($config);
     }
 

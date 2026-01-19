@@ -601,7 +601,7 @@ readonly class DockerActionManager {
             'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
             // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->configurationManager->GetEnabledCommunityContainers(), true) ? gethostbyname('nextcloud-aio-caddy') : '',
-            'WHITEBOARD_ENABLED' => $this->configurationManager->isWhiteboardEnabled() ? 'yes' : '',
+            'WHITEBOARD_ENABLED' => $this->configurationManager->isWhiteboardEnabled ? 'yes' : '',
             default => $this->configurationManager->GetRegisteredSecret($placeholder),
         };
     }

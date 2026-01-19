@@ -119,11 +119,7 @@ readonly class ConfigurationController {
                 } else {
                     $this->configurationManager->SetDockerSocketProxyEnabledState(0);
                 }
-                if (isset($request->getParsedBody()['whiteboard'])) {
-                    $this->configurationManager->SetWhiteboardEnabledState(1);
-                } else {
-                    $this->configurationManager->SetWhiteboardEnabledState(0);
-                }
+                $this->configurationManager->isWhiteboardEnabled = isset($request->getParsedBody()['whiteboard']);
             }
 
             if (isset($request->getParsedBody()['community-form'])) {

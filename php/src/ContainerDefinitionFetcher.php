@@ -91,7 +91,7 @@ readonly class ContainerDefinitionFetcher {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-whiteboard') {
-                if (!$this->configurationManager->isWhiteboardEnabled()) {
+                if (!$this->configurationManager->isWhiteboardEnabled) {
                     continue;
                 }
             }
@@ -200,7 +200,7 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-whiteboard') {
-                        if (!$this->configurationManager->isWhiteboardEnabled()) {
+                        if (!$this->configurationManager->isWhiteboardEnabled) {
                             continue;
                         }
                     }
