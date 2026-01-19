@@ -90,11 +90,7 @@ readonly class ConfigurationController {
                 }
                 $this->configurationManager->isClamavEnabled = isset($request->getParsedBody()['clamav']);
                 $this->configurationManager->isTalkEnabled = isset($request->getParsedBody()['talk']);
-                if (isset($request->getParsedBody()['talk-recording'])) {
-                    $this->configurationManager->SetTalkRecordingEnabledState(1);
-                } else {
-                    $this->configurationManager->SetTalkRecordingEnabledState(0);
-                }
+                $this->configurationManager->isTalkRecordingEnabled = isset($request->getParsedBody()['talk-recording']);
                 if (isset($request->getParsedBody()['imaginary'])) {
                     $this->configurationManager->SetImaginaryEnabledState(1);
                 } else {

@@ -88,6 +88,11 @@ class ConfigurationManager
         set { $this->set('isTalkEnabled', $value); }
     }
 
+    public bool $isTalkRecordingEnabled {
+        get => $this->isTalkEnabled && $this->get('isTalkRecordingEnabled', false);
+        set { $this->set('isTalkRecordingEnabled', $this->isTalkEnabled && $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -255,28 +260,6 @@ class ConfigurationManager
 
         $config = $this->GetConfig();
         $config['isFulltextsearchEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isTalkRecordingEnabled() : bool {
-        if (!$this->isTalkEnabled()) {
-            return false;
-        }
-        $config = $this->GetConfig();
-        if (isset($config['isTalkRecordingEnabled']) && $config['isTalkRecordingEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetTalkRecordingEnabledState(int $value) : void {
-        if (!$this->isTalkEnabled()) {
-            $value = 0;
-        }
-
-        $config = $this->GetConfig();
-        $config['isTalkRecordingEnabled'] = $value;
         $this->WriteConfig($config);
     }
 

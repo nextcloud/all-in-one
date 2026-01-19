@@ -572,7 +572,7 @@ readonly class DockerActionManager {
             'NEXTCLOUD_MOUNT' => $this->configurationManager->GetNextcloudMount(),
             'BACKUP_RESTORE_PASSWORD' => $this->configurationManager->GetBorgRestorePassword(),
             'CLAMAV_ENABLED' => $this->configurationManager->isClamavEnabled ? 'yes' : '',
-            'TALK_RECORDING_ENABLED' => $this->configurationManager->isTalkRecordingEnabled() ? 'yes' : '',
+            'TALK_RECORDING_ENABLED' => $this->configurationManager->isTalkRecordingEnabled ? 'yes' : '',
             'ONLYOFFICE_ENABLED' => $this->configurationManager->isOnlyofficeEnabled ? 'yes' : '',
             'COLLABORA_ENABLED' => $this->configurationManager->isCollaboraEnabled ? 'yes' : '',
             'TALK_ENABLED' => $this->configurationManager->isTalkEnabled ? 'yes' : '',

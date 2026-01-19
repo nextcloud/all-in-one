@@ -75,7 +75,7 @@ readonly class ContainerDefinitionFetcher {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-talk-recording') {
-                if (!$this->configurationManager->isTalkRecordingEnabled()) {
+                if (!$this->configurationManager->isTalkRecordingEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-imaginary') {
@@ -184,7 +184,7 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-talk-recording') {
-                        if (!$this->configurationManager->isTalkRecordingEnabled()) {
+                        if (!$this->configurationManager->isTalkRecordingEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-imaginary') {
