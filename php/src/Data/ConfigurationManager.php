@@ -18,6 +18,11 @@ class ConfigurationManager
         set { $this->set('AIO_TOKEN', $value); }
     }
 
+    public string $password {
+        get => $this->get('password', '');
+        set { $this->set('password', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -27,16 +32,6 @@ class ConfigurationManager
         }
 
         return $this->config;
-    }
-
-    public function GetPassword() : string {
-        return $this->GetConfig()['password'];
-    }
-
-    public function SetPassword(string $password) : void {
-        $config = $this->GetConfig();
-        $config['password'] = $password;
-        $this->WriteConfig($config);
     }
 
     private function get(string $key, mixed $fallbackValue = null) : mixed {
@@ -586,7 +581,7 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("Please enter your current password.");
         }
 
-        if ($currentPassword !== $this->GetPassword()) {
+        if ($currentPassword !== $this->password) {
             throw new InvalidSettingConfigurationException("The entered current password is not correct.");
         }
 
@@ -603,7 +598,7 @@ class ConfigurationManager
         }
 
         // All checks pass so set the password
-        $this->SetPassword($newPassword);
+        $this->set('password', $newPassword);
     }
 
     public function GetApachePort() : string {

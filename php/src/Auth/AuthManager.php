@@ -15,7 +15,7 @@ readonly class AuthManager {
     }
 
     public function CheckCredentials(string $password) : bool {
-        return hash_equals($this->configurationManager->GetPassword(), $password);
+        return hash_equals($this->configurationManager->password, $password);
     }
 
     public function CheckToken(string $token) : bool {
