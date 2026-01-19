@@ -104,6 +104,11 @@ class ConfigurationManager
         set { $this->set('isFulltextsearchEnabled', ($this->isSeccompDisabled() && $value)); }
     }
 
+    public string $domain {
+        get => $this->get('domain', '');
+        set { $this->SetDomain($value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -241,6 +246,8 @@ class ConfigurationManager
 
     /**
      * @throws InvalidSettingConfigurationException
+     *
+     * We can't turn this into a private validation method because of the second argument.
      */
     public function SetDomain(string $domain, bool $skipDomainValidation) : void {
         // Validate that at least one dot is contained
@@ -346,25 +353,19 @@ class ConfigurationManager
             }
         }
 
-        // Write domain
         $config = $this->GetConfig();
-        $config['domain'] = $domain;
         // Reset the borg restore password when setting the domain
         $config['borg_restore_password'] = '';
         $this->WriteConfig($config);
-    }
-
-    public function GetDomain() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['domain'])) {
-            $config['domain'] = '';
-        }
-
-        return $config['domain'];
+        $this->setMultiple(function ($confManager) use ($domain) {
+            // Write domain
+            // Don't set the domain via the attribute, or we create a loop.
+            $confManager->set('domain', $domain);
+        });
     }
 
     public function GetBaseDN() : string {
-        $domain = $this->GetDomain();
+        $domain = $this->domain;
         if ($domain === "") {
             return "";
         }

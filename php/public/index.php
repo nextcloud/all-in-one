@@ -91,7 +91,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $skip_domain_validation = isset($params['skip_domain_validation']);
 
     return $view->render($response, 'containers.twig', [
-        'domain' => $configurationManager->GetDomain(),
+        'domain' => $configurationManager->domain,
         'apache_port' => $configurationManager->GetApachePort(),
         'borg_backup_host_location' => $configurationManager->GetBorgBackupHostLocation(),
         'borg_remote_repo' => $configurationManager->GetBorgRemoteRepo(),

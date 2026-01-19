@@ -257,7 +257,7 @@ readonly class DockerController {
     public function StartDomaincheckContainer() : void
     {
         # Don't start if domain is already set
-        if ($this->configurationManager->GetDomain() !== '' || $this->configurationManager->wasStartButtonClicked) {
+        if ($this->configurationManager->domain !== '' || $this->configurationManager->wasStartButtonClicked) {
             return;
         }
 
