@@ -654,23 +654,21 @@ class ConfigurationManager
 
     private function GetEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
         $envVariableOutput = getenv($envVariableName);
+        $configValue = $this->get($configName, '');
         if ($envVariableOutput === false) {
-            $config = $this->GetConfig();
-            if (!isset($config[$configName]) || $config[$configName] === '') {
-                $config[$configName] = $defaultValue;
+            if ($configValue === '') {
+                $this->set($configName, $defaultValue);
+                return $defaultValue;
             }
-            return $config[$configName];
+            return $configValue;
         }
-        if(file_exists(DataConst::GetConfigFile())) {
-            $config = $this->GetConfig();
-            if (!isset($config[$configName])) {
-                $config[$configName] = '';
-            }
-            if ($envVariableOutput !== $config[$configName]) {
-                $config[$configName] = $envVariableOutput;
-                $this->WriteConfig($config);
+
+        if (file_exists(DataConst::GetConfigFile())) {
+            if ($envVariableOutput !== $configValue) {
+                $this->set($configName, $envVariableOutput);
             }
         }
+
         return $envVariableOutput;
     }
 
