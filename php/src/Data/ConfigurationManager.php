@@ -697,10 +697,7 @@ class ConfigurationManager
     }
 
     public function isSeccompDisabled() : bool {
-        if ($this->GetCollaboraSeccompDisabledState() === 'true') {
-            return true;
-        }
-        return false;
+        return $this->GetCollaboraSeccompDisabledState() === 'true';
     }
 
     /**
@@ -795,10 +792,7 @@ class ConfigurationManager
     }
 
     public function isDailyBackupRunning() : bool {
-        if (file_exists(DataConst::GetDailyBackupBlockFile())) {
-            return true;
-        }
-        return false;
+        return file_exists(DataConst::GetDailyBackupBlockFile());
     }
 
     /**
@@ -870,10 +864,7 @@ class ConfigurationManager
     }
 
     public function isCollaboraSubscriptionEnabled() : bool {
-        if (str_contains($this->collabora_additional_options, '--o:support_key=')) {
-            return true;
-        }
-        return false;
+        return str_contains($this->collabora_additional_options, '--o:support_key=');
     }
 
     /**
