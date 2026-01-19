@@ -560,7 +560,7 @@ readonly class DockerActionManager {
             'NC_DOMAIN' => $this->configurationManager->GetDomain(),
             'NC_BASE_DN' => $this->configurationManager->GetBaseDN(),
             'AIO_TOKEN' => $this->configurationManager->AIO_TOKEN,
-            'BORGBACKUP_REMOTE_REPO' => $this->configurationManager->GetBorgRemoteRepo(),
+            'BORGBACKUP_REMOTE_REPO' => $this->configurationManager->borg_remote_repo,
             'BORGBACKUP_MODE' => $this->configurationManager->GetBackupMode(),
             'AIO_URL' => $this->configurationManager->AIO_URL,
             'RESTORE_EXCLUDE_PREVIEWS' => $this->configurationManager->restoreExcludePreviews ? '1' : '',

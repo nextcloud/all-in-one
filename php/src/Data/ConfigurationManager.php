@@ -114,6 +114,11 @@ class ConfigurationManager
         set { $this->set('borg_backup_host_location', $value); }
     }
 
+    public string $borg_remote_repo {
+        get => $this->get('borg_remote_repo', '');
+        set { $this->set('borg_remote_repo', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -384,10 +389,10 @@ class ConfigurationManager
         $this->ValidateBorgLocationVars($location, $repo);
 
         $config = $this->GetConfig();
-        $config['borg_remote_repo'] = $repo;
         $this->WriteConfig($config);
-        $this->setMultiple(function ($confManager) use ($location) {
+        $this->setMultiple(function ($confManager) use ($location, $repo) {
             $confManager->borg_backup_host_location = $location;
+            $confManager->borg_remote_repo = $repo;
         });
     }
 
@@ -435,10 +440,10 @@ class ConfigurationManager
     public function DeleteBorgBackupLocationItems() : void {
         // Delete the variables
         $config = $this->GetConfig();
-        $config['borg_remote_repo'] = '';
         $this->WriteConfig($config);
         $this->setMultiple(function ($confManager) {
             $confManager->borg_backup_host_location = '';
+            $confManager->borg_remote_repo = '';
         });
 
         // Also delete the borg config file to be able to start over
@@ -460,12 +465,12 @@ class ConfigurationManager
         }
 
         $config = $this->GetConfig();
-        $config['borg_remote_repo'] = $repo;
         $config['borg_restore_password'] = $password;
         $this->WriteConfig($config);
 
-        $this->setMultiple(function ($confManager) use ($location) {
+        $this->setMultiple(function ($confManager) use ($location, $repo) {
             $confManager->borg_backup_host_location = $location;
+            $confManager->borg_remote_repo = $repo;
             $confManager->instance_restore_attempt = true;
         });
     }
@@ -563,15 +568,6 @@ class ConfigurationManager
         }
 
         return $envVariableOutput;
-    }
-
-    public function GetBorgRemoteRepo() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['borg_remote_repo'])) {
-            $config['borg_remote_repo'] = '';
-        }
-
-        return $config['borg_remote_repo'];
     }
 
     public function GetBorgPublicKey() : string {
