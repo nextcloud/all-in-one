@@ -87,7 +87,7 @@ readonly class ContainerDefinitionFetcher {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-docker-socket-proxy') {
-                if (!$this->configurationManager->isDockerSocketProxyEnabled()) {
+                if (!$this->configurationManager->isDockerSocketProxyEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-whiteboard') {
@@ -196,7 +196,7 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-docker-socket-proxy') {
-                        if (!$this->configurationManager->isDockerSocketProxyEnabled()) {
+                        if (!$this->configurationManager->isDockerSocketProxyEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-whiteboard') {

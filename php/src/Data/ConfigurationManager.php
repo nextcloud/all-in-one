@@ -23,6 +23,11 @@ class ConfigurationManager
         set { $this->set('password', $value); }
     }
 
+    public bool $isDockerSocketProxyEnabled {
+        get => $this->get('isDockerSocketProxyEnabled', false);
+        set { $this->set('isDockerSocketProxyEnabled', $value); }
+    }
+
     public bool $isWhiteboardEnabled {
         get => $this->get('isWhiteboardEnabled', true);
         set { $this->set('isWhiteboardEnabled', $value); }
@@ -200,21 +205,6 @@ class ConfigurationManager
         } else {
             return false;
         }
-    }
-
-    public function isDockerSocketProxyEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isDockerSocketProxyEnabled']) && $config['isDockerSocketProxyEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetDockerSocketProxyEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isDockerSocketProxyEnabled'] = $value;
-        $this->WriteConfig($config);
     }
 
     public function SetClamavEnabledState(int $value) : void {
