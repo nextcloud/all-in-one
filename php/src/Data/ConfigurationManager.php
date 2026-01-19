@@ -148,6 +148,18 @@ class ConfigurationManager
         }
     }
 
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public string $collabora_additional_options {
+        get => $this->get('collabora_additional_options', '');
+        set {
+            // This throws an exception if the validation fails.
+            $this->validateCollaboraAdditionalOptions($value);
+            $this->set('collabora_additional_options', $value);
+        }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -866,7 +878,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetAdditionalCollaboraOptions(string $additionalCollaboraOptions) : void {
+    private function validateCollaboraAdditionalOptions(string $additionalCollaboraOptions) : void {
         if ($additionalCollaboraOptions === "") {
             throw new InvalidSettingConfigurationException("The additional options must not be empty!");
         }
@@ -874,32 +886,20 @@ class ConfigurationManager
         if (!preg_match("#^--o:#", $additionalCollaboraOptions)) {
             throw new InvalidSettingConfigurationException("The entered options must start with '--o:'. So the config does not seem to be a valid!");
         }
-
-        $config = $this->GetConfig();
-        $config['collabora_additional_options'] = $additionalCollaboraOptions;
-        $this->WriteConfig($config);
-    }
-
-    public function GetAdditionalCollaboraOptions() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['collabora_additional_options'])) {
-            $config['collabora_additional_options'] = '';
-        }
-
-        return $config['collabora_additional_options'];
     }
 
     public function isCollaboraSubscriptionEnabled() : bool {
-        if (str_contains($this->GetAdditionalCollaboraOptions(), '--o:support_key=')) {
+        if (str_contains($this->collabora_additional_options, '--o:support_key=')) {
             return true;
         }
         return false;
     }
 
-    public function DeleteAdditionalCollaboraOptions() : void {
-        $config = $this->GetConfig();
-        $config['collabora_additional_options'] = '';
-        $this->WriteConfig($config);
+    /**
+     * Provide an extra method since the corresponding attribute setter prevents setting an empty value.
+     */
+    public function deleteAdditionalCollaboraOptions() : void {
+        $this->set('collabora_additional_options', '');
     }
 
     public function GetApacheAdditionalNetwork() : string {

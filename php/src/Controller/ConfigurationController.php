@@ -121,12 +121,12 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['delete_collabora_additional_options'])) {
-                $this->configurationManager->DeleteAdditionalCollaboraOptions();
+                $this->configurationManager->deleteAdditionalCollaboraOptions();
             }
 
             if (isset($request->getParsedBody()['collabora_additional_options'])) {
                 $additionalCollaboraOptions = $request->getParsedBody()['collabora_additional_options'] ?? '';
-                $this->configurationManager->SetAdditionalCollaboraOptions($additionalCollaboraOptions);
+                $this->configurationManager->collabora_additional_options = $additionalCollaboraOptions;
             }
 
             if (isset($request->getParsedBody()['delete_borg_backup_location_vars'])) {
