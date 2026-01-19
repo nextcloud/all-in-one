@@ -119,6 +119,11 @@ class ConfigurationManager
         set { $this->set('borg_remote_repo', $value); }
     }
 
+    public string $borg_restore_password {
+        get => $this->get('borg_restore_password', '');
+        set { $this->set('borg_restore_password', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -364,13 +369,13 @@ class ConfigurationManager
         }
 
         $config = $this->GetConfig();
-        // Reset the borg restore password when setting the domain
-        $config['borg_restore_password'] = '';
         $this->WriteConfig($config);
         $this->setMultiple(function ($confManager) use ($domain) {
             // Write domain
             // Don't set the domain via the attribute, or we create a loop.
             $confManager->set('domain', $domain);
+            // Reset the borg restore password when setting the domain
+            $confManager->borg_restore_password = '';
         });
     }
 
@@ -465,12 +470,11 @@ class ConfigurationManager
         }
 
         $config = $this->GetConfig();
-        $config['borg_restore_password'] = $password;
         $this->WriteConfig($config);
-
-        $this->setMultiple(function ($confManager) use ($location, $repo) {
+        $this->setMultiple(function ($confManager) use ($location, $repo, $password) {
             $confManager->borg_backup_host_location = $location;
             $confManager->borg_remote_repo = $repo;
+            $confManager->borg_restore_password = $password;
             $confManager->instance_restore_attempt = true;
         });
     }
@@ -576,15 +580,6 @@ class ConfigurationManager
         }
 
         return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
-    }
-
-    public function GetBorgRestorePassword() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['borg_restore_password'])) {
-            $config['borg_restore_password'] = '';
-        }
-
-        return $config['borg_restore_password'];
     }
 
     public function GetNextcloudMount() : string {
