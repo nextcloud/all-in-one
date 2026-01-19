@@ -109,6 +109,11 @@ class ConfigurationManager
         set { $this->SetDomain($value); }
     }
 
+    public string $borg_backup_host_location {
+        get => $this->get('borg_backup_host_location', '');
+        set { $this->set('borg_backup_host_location', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -379,9 +384,11 @@ class ConfigurationManager
         $this->ValidateBorgLocationVars($location, $repo);
 
         $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = $location;
         $config['borg_remote_repo'] = $repo;
         $this->WriteConfig($config);
+        $this->setMultiple(function ($confManager) use ($location) {
+            $confManager->borg_backup_host_location = $location;
+        });
     }
 
     private function ValidateBorgLocationVars(string $location, string $repo) : void {
@@ -428,9 +435,11 @@ class ConfigurationManager
     public function DeleteBorgBackupLocationItems() : void {
         // Delete the variables
         $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = '';
         $config['borg_remote_repo'] = '';
         $this->WriteConfig($config);
+        $this->setMultiple(function ($confManager) {
+            $confManager->borg_backup_host_location = '';
+        });
 
         // Also delete the borg config file to be able to start over
         if (file_exists(DataConst::GetBackupKeyFile())) {
@@ -451,12 +460,12 @@ class ConfigurationManager
         }
 
         $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = $location;
         $config['borg_remote_repo'] = $repo;
         $config['borg_restore_password'] = $password;
         $this->WriteConfig($config);
 
-        $this->setMultiple(function ($confManager) {
+        $this->setMultiple(function ($confManager) use ($location) {
+            $confManager->borg_backup_host_location = $location;
             $confManager->instance_restore_attempt = true;
         });
     }
@@ -554,15 +563,6 @@ class ConfigurationManager
         }
 
         return $envVariableOutput;
-    }
-
-    public function GetBorgBackupHostLocation() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['borg_backup_host_location'])) {
-            $config['borg_backup_host_location'] = '';
-        }
-
-        return $config['borg_backup_host_location'];
     }
 
     public function GetBorgRemoteRepo() : string {

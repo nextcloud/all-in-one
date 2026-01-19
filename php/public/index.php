@@ -93,7 +93,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
     return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->domain,
         'apache_port' => $configurationManager->GetApachePort(),
-        'borg_backup_host_location' => $configurationManager->GetBorgBackupHostLocation(),
+        'borg_backup_host_location' => $configurationManager->borg_backup_host_location,
         'borg_remote_repo' => $configurationManager->GetBorgRemoteRepo(),
         'borg_public_key' => $configurationManager->GetBorgPublicKey(),
         'nextcloud_password' => $configurationManager->GetAndGenerateSecret('NEXTCLOUD_PASSWORD'),
