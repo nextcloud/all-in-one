@@ -23,6 +23,11 @@ class ConfigurationManager
         set { $this->set('password', $value); }
     }
 
+    public string $AIO_URL {
+        get => $this->get('AIO_URL', '');
+        set { $this->set('AIO_URL', $value); }
+    }
+
     public bool $wasStartButtonClicked {
         get => $this->get('wasStartButtonClicked', false);
         set { $this->set('wasStartButtonClicked', $value); }
@@ -473,15 +478,6 @@ class ConfigurationManager
         }
 
         return $config['restore-exclude-previews'];
-    }
-
-    public function GetAIOURL() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['AIO_URL'])) {
-            $config['AIO_URL'] = '';
-        }
-
-        return $config['AIO_URL'];
     }
 
     /**

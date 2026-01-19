@@ -562,7 +562,7 @@ readonly class DockerActionManager {
             'AIO_TOKEN' => $this->configurationManager->AIO_TOKEN,
             'BORGBACKUP_REMOTE_REPO' => $this->configurationManager->GetBorgRemoteRepo(),
             'BORGBACKUP_MODE' => $this->configurationManager->GetBackupMode(),
-            'AIO_URL' => $this->configurationManager->GetAIOURL(),
+            'AIO_URL' => $this->configurationManager->AIO_URL,
             'SELECTED_RESTORE_TIME' => $this->configurationManager->GetSelectedRestoreTime(),
             'RESTORE_EXCLUDE_PREVIEWS' => $this->configurationManager->GetRestoreExcludePreviews(),
             'APACHE_PORT' => $this->configurationManager->GetApachePort(),
