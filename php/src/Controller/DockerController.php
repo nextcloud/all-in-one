@@ -190,11 +190,11 @@ readonly class DockerController {
         $config = $this->configurationManager->GetConfig();
         // set AIO_URL
         $config['AIO_URL'] = $host . ':' . (string)$port . $path;
-        // set wasStartButtonClicked
-        $config['wasStartButtonClicked'] = 1;
         // set install_latest_major
         $config['install_latest_major'] = $installLatestMajor;
         $this->configurationManager->WriteConfig($config);
+        // set wasStartButtonClicked
+        $this->configurationManager->wasStartButtonClicked = true;
 
         // Do not pull container images in case 'bypass_container_update' is set via url params
         // Needed for local testing
@@ -274,7 +274,7 @@ readonly class DockerController {
     public function StartDomaincheckContainer() : void
     {
         # Don't start if domain is already set
-        if ($this->configurationManager->GetDomain() !== '' || $this->configurationManager->wasStartButtonClicked()) {
+        if ($this->configurationManager->GetDomain() !== '' || $this->configurationManager->wasStartButtonClicked) {
             return;
         }
 

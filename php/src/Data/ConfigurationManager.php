@@ -23,6 +23,11 @@ class ConfigurationManager
         set { $this->set('password', $value); }
     }
 
+    public bool $wasStartButtonClicked {
+        get => $this->get('wasStartButtonClicked', false);
+        set { $this->set('wasStartButtonClicked', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -148,14 +153,6 @@ class ConfigurationManager
         $backupTimes = array_reverse($backupTimes);
 
         return $backupTimes;
-    }
-
-    public function wasStartButtonClicked() : bool {
-        if (isset($this->GetConfig()['wasStartButtonClicked'])) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private function isx64Platform() : bool {

@@ -105,7 +105,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
         'is_instance_restore_attempt' => $configurationManager->isInstanceRestoreAttempt(),
         'borg_backup_mode' => $configurationManager->GetBackupMode(),
-        'was_start_button_clicked' => $configurationManager->wasStartButtonClicked(),
+        'was_start_button_clicked' => $configurationManager->wasStartButtonClicked,
         'has_update_available' => $dockerActionManager->isAnyUpdateAvailable(),
         'last_backup_time' => $configurationManager->GetLastBackupTime(),
         'backup_times' => $configurationManager->GetBackupTimes(),
