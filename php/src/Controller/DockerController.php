@@ -124,12 +124,8 @@ readonly class DockerController {
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
         $this->configurationManager->SetBackupMode('restore');
-        if (isset($request->getParsedBody()['restore-exclude-previews'])) {
-            $config['restore-exclude-previews'] = 1;
-        } else {
-            $config['restore-exclude-previews'] = '';
-        }
         $this->configurationManager->selectedRestoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
+        $this->configurationManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
 
         $id = self::TOP_CONTAINER;
         $forceStopNextcloud = true;

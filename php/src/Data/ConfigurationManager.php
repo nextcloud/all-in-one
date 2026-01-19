@@ -23,6 +23,11 @@ class ConfigurationManager
         set { $this->set('password', $value); }
     }
 
+    public bool $restoreExcludePreviews {
+        get => $this->get('restore-exclude-previews', false);
+        set { $this->set('restore-exclude-previews', $value); }
+    }
+
     public string $selectedRestoreTime {
         get => $this->get('selected-restore-time', '');
         set { $this->set('selected-restore-time', $value); }
@@ -470,15 +475,6 @@ class ConfigurationManager
         $config = $this->GetConfig();
         $config['backup-mode'] = $mode;
         $this->WriteConfig($config);
-    }
-
-    public function GetRestoreExcludePreviews() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['restore-exclude-previews'])) {
-            $config['restore-exclude-previews'] = '';
-        }
-
-        return $config['restore-exclude-previews'];
     }
 
     /**
