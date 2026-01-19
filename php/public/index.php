@@ -117,7 +117,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'borg_restore_password' => $configurationManager->borg_restore_password,
         'daily_backup_time' => $configurationManager->GetDailyBackupTime(),
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
-        'timezone' => $configurationManager->GetTimezone(),
+        'timezone' => $configurationManager->timezone,
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
         'talk_port' => $configurationManager->GetTalkPort(),
         'collabora_dictionaries' => $configurationManager->GetCollaboraDictionaries(),

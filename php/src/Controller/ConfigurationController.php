@@ -67,12 +67,12 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['delete_timezone'])) {
-                $this->configurationManager->DeleteTimezone();
+                $this->configurationManager->deleteTimezone();
             }
 
             if (isset($request->getParsedBody()['timezone'])) {
                 $timezone = $request->getParsedBody()['timezone'] ?? '';
-                $this->configurationManager->SetTimezone($timezone);
+                $this->configurationManager->timezone = $timezone;
             }
 
             if (isset($request->getParsedBody()['options-form'])) {

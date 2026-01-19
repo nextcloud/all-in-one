@@ -124,6 +124,18 @@ class ConfigurationManager
         set { $this->set('borg_restore_password', $value); }
     }
 
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public string $timezone {
+        get => $this->get('timezone', '');
+        set {
+            // This throws an exception if the validation fails.
+            $this->validateTimezone($value);
+            $this->set('timezone', $value);
+        }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -784,19 +796,10 @@ class ConfigurationManager
         return false;
     }
 
-    public function GetTimezone() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['timezone'])) {
-            $config['timezone'] = '';
-        }
-
-        return $config['timezone'];
-    }
-
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetTimezone(string $timezone) : void {
+    private function validateTimezone(string $timezone) : void {
         if ($timezone === "") {
             throw new InvalidSettingConfigurationException("The timezone must not be empty!");
         }
@@ -804,16 +807,13 @@ class ConfigurationManager
         if (!preg_match("#^[a-zA-Z0-9_\-\/\+]+$#", $timezone)) {
             throw new InvalidSettingConfigurationException("The entered timezone does not seem to be a valid timezone!");
         }
-
-        $config = $this->GetConfig();
-        $config['timezone'] = $timezone;
-        $this->WriteConfig($config);
     }
 
-    public function DeleteTimezone() : void {
-        $config = $this->GetConfig();
-        $config['timezone'] = '';
-        $this->WriteConfig($config);
+    /**
+     * Provide an extra method since our `timezone` attribute setter prevents setting an empty timezone.
+     */
+    public function deleteTimezone() : void {
+        $this->set('timezone', '');
     }
 
     public function shouldDomainValidationBeSkipped(bool $skipDomainValidation) : bool {
