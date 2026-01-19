@@ -89,7 +89,7 @@ readonly class DockerController {
     }
 
     public function startBackup(bool $forceStopNextcloud = false) : void {
-        $this->configurationManager->SetBackupMode('backup');
+        $this->configurationManager->backupMode = 'backup';
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
@@ -109,21 +109,21 @@ readonly class DockerController {
     }
 
     public function checkBackup() : void {
-        $this->configurationManager->SetBackupMode('check');
+        $this->configurationManager->backupMode = 'check';
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
     }
 
     private function listBackup() : void {
-        $this->configurationManager->SetBackupMode('list');
+        $this->configurationManager->backupMode = 'list';
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->SetBackupMode('restore');
+        $this->configurationManager->backupMode = 'restore';
         $this->configurationManager->selectedRestoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
         $this->configurationManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
 
@@ -138,22 +138,22 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerCheckRepair(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->SetBackupMode('check-repair');
+        $this->configurationManager->backupMode = 'check-repair';
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
 
         // Restore to backup check which is needed to make the UI logic work correctly
-        $this->configurationManager->SetBackupMode('check');
+        $this->configurationManager->backupMode = 'check';
 
         return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->SetBackupMode('test');
         $config = $this->configurationManager->GetConfig();
         $config['instance_restore_attempt'] = 0;
         $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->backupMode = 'test';
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);

@@ -38,6 +38,11 @@ class ConfigurationManager
         set { $this->set('selected-restore-time', $value); }
     }
 
+    public string $backupMode {
+        get => $this->get('backup-mode', '');
+        set { $this->set('backup-mode', $value); }
+    }
+
     public string $AIO_URL {
         get => $this->get('AIO_URL', '');
         set { $this->set('AIO_URL', $value); }
@@ -450,21 +455,6 @@ class ConfigurationManager
             return "";
         }
         return 'dc=' . implode(',dc=', explode('.', $domain));
-    }
-
-    public function GetBackupMode() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['backup-mode'])) {
-            $config['backup-mode'] = '';
-        }
-
-        return $config['backup-mode'];
-    }
-
-    public function SetBackupMode(string $mode) : void {
-        $config = $this->GetConfig();
-        $config['backup-mode'] = $mode;
-        $this->WriteConfig($config);
     }
 
     /**
