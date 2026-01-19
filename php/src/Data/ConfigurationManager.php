@@ -160,6 +160,11 @@ class ConfigurationManager
         }
     }
 
+    public array $aio_community_containers {
+        get => explode(' ', $this->get('aio_community_containers', ''));
+        set { $this->set('aio_community_containers', implode(' ', $value)); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -931,16 +936,6 @@ class ConfigurationManager
         }
     }
 
-    private function GetCommunityContainers() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['aio_community_containers'])) {
-            $config['aio_community_containers'] = '';
-        }
-
-        return $config['aio_community_containers'];
-    }
-
-
     public function listAvailableCommunityContainers() : array {
         $cc = [];
         $dir = scandir(DataConst::GetCommunityContainersDirectory());
@@ -974,17 +969,6 @@ class ConfigurationManager
             }
         }
         return $cc;
-    }
-
-    /** @return list<string> */
-    public function GetEnabledCommunityContainers(): array {
-        return explode(' ', $this->GetCommunityContainers());
-    }
-
-    public function SetEnabledCommunityContainers(array $enabledCommunityContainers) : void {
-        $config = $this->GetConfig();
-        $config['aio_community_containers'] = implode(' ', $enabledCommunityContainers);
-        $this->WriteConfig($config);
     }
 
     private function GetEnabledDriDevice() : string {

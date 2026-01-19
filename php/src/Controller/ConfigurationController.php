@@ -108,7 +108,7 @@ readonly class ConfigurationController {
                         $enabledCC[] = $item;
                     }
                 }
-                $this->configurationManager->SetEnabledCommunityContainers($enabledCC);
+                $this->configurationManager->aio_community_containers = $enabledCC;
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {

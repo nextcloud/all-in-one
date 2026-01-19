@@ -138,7 +138,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled,
         'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled,
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
-        'community_containers_enabled' => $configurationManager->GetEnabledCommunityContainers(),
+        'community_containers_enabled' => $configurationManager->aio_community_containers,
         'bypass_container_update' => $bypass_container_update,
     ]);
 })->setName('profile');
