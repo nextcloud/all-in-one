@@ -56,7 +56,7 @@ readonly class ContainerDefinitionFetcher {
         $containers = [];
         foreach ($data['aio_services_v1'] as $entry) {
             if ($entry['container_name'] === 'nextcloud-aio-clamav') {
-                if (!$this->configurationManager->isClamavEnabled()) {
+                if (!$this->configurationManager->isClamavEnabled) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-onlyoffice') {
@@ -168,7 +168,7 @@ readonly class ContainerDefinitionFetcher {
                 }
                 foreach ($valueDependsOn as $value) {
                     if ($value === 'nextcloud-aio-clamav') {
-                        if (!$this->configurationManager->isClamavEnabled()) {
+                        if (!$this->configurationManager->isClamavEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-onlyoffice') {

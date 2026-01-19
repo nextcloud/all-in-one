@@ -68,6 +68,11 @@ class ConfigurationManager
         set { $this->set('install_latest_major', $value); }
     }
 
+    public bool $isClamavEnabled {
+        get => $this->get('isClamavEnabled', false);
+        set { $this->set('isClamavEnabled', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -201,21 +206,6 @@ class ConfigurationManager
         } else {
             return false;
         }
-    }
-
-    public function isClamavEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isClamavEnabled']) && $config['isClamavEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetClamavEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isClamavEnabled'] = $value;
-        $this->WriteConfig($config);
     }
 
     public function isImaginaryEnabled() : bool {
