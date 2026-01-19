@@ -150,10 +150,8 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
-        $config = $this->configurationManager->GetConfig();
-        $config['instance_restore_attempt'] = 0;
-        $this->configurationManager->WriteConfig($config);
         $this->configurationManager->backupMode = 'test';
+        $this->configurationManager->instance_restore_attempt = false;
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);

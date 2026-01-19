@@ -48,6 +48,11 @@ class ConfigurationManager
         set { $this->set('backup-mode', $value); }
     }
 
+    public bool $instance_restore_attempt {
+        get => $this->get('instance_restore_attempt', false);
+        set { $this->set('instance_restore_attempt', $value); }
+    }
+
     public string $AIO_URL {
         get => $this->get('AIO_URL', '');
         set { $this->set('AIO_URL', $value); }
@@ -529,8 +534,11 @@ class ConfigurationManager
         $config['borg_backup_host_location'] = $location;
         $config['borg_remote_repo'] = $repo;
         $config['borg_restore_password'] = $password;
-        $config['instance_restore_attempt'] = 1;
         $this->WriteConfig($config);
+
+        $this->setMultiple(function ($confManager) {
+            $confManager->instance_restore_attempt = true;
+        });
     }
 
     /**
@@ -661,18 +669,6 @@ class ConfigurationManager
         }
 
         return $config['borg_restore_password'];
-    }
-
-    public function isInstanceRestoreAttempt() : bool {
-        $config = $this->GetConfig();
-        if(!isset($config['instance_restore_attempt'])) {
-            $config['instance_restore_attempt'] = '';
-        }
-
-        if ($config['instance_restore_attempt'] === 1) {
-            return true;
-        }
-        return false;
     }
 
     public function GetNextcloudMount() : string {
