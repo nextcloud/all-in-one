@@ -568,7 +568,7 @@ readonly class DockerActionManager {
             'APACHE_PORT' => $this->configurationManager->GetApachePort(),
             'APACHE_IP_BINDING' => $this->configurationManager->GetApacheIPBinding(),
             'TALK_PORT' => $this->configurationManager->GetTalkPort(),
-            'TURN_DOMAIN' => $this->configurationManager->GetTurnDomain(),
+            'TURN_DOMAIN' => $this->configurationManager->turn_domain,
             'NEXTCLOUD_MOUNT' => $this->configurationManager->GetNextcloudMount(),
             'BACKUP_RESTORE_PASSWORD' => $this->configurationManager->borg_restore_password,
             'CLAMAV_ENABLED' => $this->configurationManager->isClamavEnabled ? 'yes' : '',

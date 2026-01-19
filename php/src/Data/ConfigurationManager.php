@@ -165,6 +165,11 @@ class ConfigurationManager
         set { $this->set('aio_community_containers', implode(' ', $value)); }
     }
 
+    public string $turn_domain {
+        get => $this->get('turn_domain', '');
+        set { $this->set('turn_domain', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -560,15 +565,6 @@ class ConfigurationManager
         $configName = 'talk_port';
         $defaultValue = '3478';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetTurnDomain() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['turn_domain'])) {
-            $config['turn_domain'] = '';
-        }
-
-        return $config['turn_domain'];
     }
 
     /**
