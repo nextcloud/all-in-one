@@ -136,6 +136,18 @@ class ConfigurationManager
         }
     }
 
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public string $collabora_dictionaries {
+        get => $this->get('collabora_dictionaries', '');
+        set {
+            // This throws an exception if the validation fails.
+            $this->validateCollaboraDictionaries($value);
+            $this->set('collabora_dictionaries', $value);
+        }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -831,19 +843,10 @@ class ConfigurationManager
         return 'deck twofactor_totp tasks calendar contacts notes';
     }
 
-    public function GetCollaboraDictionaries() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['collabora_dictionaries'])) {
-            $config['collabora_dictionaries'] = '';
-        }
-
-        return $config['collabora_dictionaries'];
-    }
-
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetCollaboraDictionaries(string $CollaboraDictionaries) : void {
+    private function validateCollaboraDictionaries(string $CollaboraDictionaries) : void {
         if ($CollaboraDictionaries === "") {
             throw new InvalidSettingConfigurationException("The dictionaries must not be empty!");
         }
@@ -851,16 +854,13 @@ class ConfigurationManager
         if (!preg_match("#^[a-zA-Z_ ]+$#", $CollaboraDictionaries)) {
             throw new InvalidSettingConfigurationException("The entered dictionaries do not seem to be a valid!");
         }
-
-        $config = $this->GetConfig();
-        $config['collabora_dictionaries'] = $CollaboraDictionaries;
-        $this->WriteConfig($config);
     }
 
+    /**
+     * Provide an extra method since the corresponding attribute setter prevents setting an empty value.
+     */
     public function DeleteCollaboraDictionaries() : void {
-        $config = $this->GetConfig();
-        $config['collabora_dictionaries'] = '';
-        $this->WriteConfig($config);
+        $this->set('collabora_dictionaries', '');
     }
 
     /**

@@ -120,7 +120,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'timezone' => $configurationManager->timezone,
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
         'talk_port' => $configurationManager->GetTalkPort(),
-        'collabora_dictionaries' => $configurationManager->GetCollaboraDictionaries(),
+        'collabora_dictionaries' => $configurationManager->collabora_dictionaries,
         'collabora_additional_options' => $configurationManager->GetAdditionalCollaboraOptions(),
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
         'is_backup_section_enabled' => $configurationManager->isBackupSectionEnabled(),

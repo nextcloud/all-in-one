@@ -578,7 +578,7 @@ readonly class DockerActionManager {
             'TALK_ENABLED' => $this->configurationManager->isTalkEnabled ? 'yes' : '',
             'UPDATE_NEXTCLOUD_APPS' => ($this->configurationManager->isDailyBackupRunning() && $this->configurationManager->areAutomaticUpdatesEnabled()) ? 'yes' : '',
             'TIMEZONE' => $this->configurationManager->timezone === '' ? 'Etc/UTC' : $this->configurationManager->timezone,
-            'COLLABORA_DICTIONARIES' => $this->configurationManager->GetCollaboraDictionaries() === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->configurationManager->GetCollaboraDictionaries(),
+            'COLLABORA_DICTIONARIES' => $this->configurationManager->collabora_dictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->configurationManager->collabora_dictionaries,
             'IMAGINARY_ENABLED' => $this->configurationManager->isImaginaryEnabled ? 'yes' : '',
             'FULLTEXTSEARCH_ENABLED' => $this->configurationManager->isFulltextsearchEnabled ? 'yes' : '',
             'DOCKER_SOCKET_PROXY_ENABLED' => $this->configurationManager->isDockerSocketProxyEnabled ? 'yes' : '',
