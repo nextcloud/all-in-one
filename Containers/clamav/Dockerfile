@@ -33,5 +33,6 @@ VOLUME /var/lib/clamav
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"
 HEALTHCHECK --start-period=60s --retries=9 CMD /healthcheck.sh
