@@ -181,16 +181,7 @@ readonly class DockerController {
             $port = 443;
         }
 
-        if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = 32;
-        } else {
-            $installLatestMajor = "";
-        }
-
-        $config = $this->configurationManager->GetConfig();
-        // set install_latest_major
-        $config['install_latest_major'] = $installLatestMajor;
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->install_latest_major = isset($request->getParsedBody()['install_latest_major']);
         // set AIO_URL
         $this->configurationManager->AIO_URL = $host . ':' . (string)$port . $path;
         // set wasStartButtonClicked

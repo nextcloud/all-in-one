@@ -33,6 +33,11 @@ class ConfigurationManager
         set { $this->set('wasStartButtonClicked', $value); }
     }
 
+    public bool $install_latest_major {
+        get => $this->get('install_latest_major', false);
+        set { $this->set('install_latest_major', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -887,14 +892,6 @@ class ConfigurationManager
         } else {
             file_put_contents(DataConst::GetAdditionalBackupDirectoriesFile(), $validDirectories);
         }
-    }
-
-    public function shouldLatestMajorGetInstalled() : bool {
-        $config = $this->GetConfig();
-        if(!isset($config['install_latest_major'])) {
-            $config['install_latest_major'] = '';
-        }
-        return $config['install_latest_major'] !== '';
     }
 
     public function GetAdditionalBackupDirectoriesString() : string {

@@ -595,7 +595,7 @@ readonly class DockerActionManager {
             'NEXTCLOUD_STARTUP_APPS' => $this->configurationManager->GetNextcloudStartupApps(),
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->configurationManager->GetNextcloudAdditionalApks(),
             'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->configurationManager->GetNextcloudAdditionalPhpExtensions(),
-            'INSTALL_LATEST_MAJOR' => $this->configurationManager->shouldLatestMajorGetInstalled() ? 'yes' : '',
+            'INSTALL_LATEST_MAJOR' => $this->configurationManager->install_latest_major ? 'yes' : '',
             'REMOVE_DISABLED_APPS' => $this->configurationManager->shouldDisabledAppsGetRemoved() ? 'yes' : '',
             // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
             'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
