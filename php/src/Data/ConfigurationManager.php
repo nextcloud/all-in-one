@@ -13,6 +13,11 @@ class ConfigurationManager
 
     private bool $noWrite = false;
 
+    public string $AIO_TOKEN {
+        get => $this->get('AIO_TOKEN', '');
+        set { $this->set('AIO_TOKEN', $value); }
+    }
+
     public function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -26,10 +31,6 @@ class ConfigurationManager
 
     public function GetPassword() : string {
         return $this->GetConfig()['password'];
-    }
-
-    public function GetToken() : string {
-        return $this->GetConfig()['AIO_TOKEN'];
     }
 
     public function SetPassword(string $password) : void {

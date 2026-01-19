@@ -559,7 +559,7 @@ readonly class DockerActionManager {
         return match ($placeholder) {
             'NC_DOMAIN' => $this->configurationManager->GetDomain(),
             'NC_BASE_DN' => $this->configurationManager->GetBaseDN(),
-            'AIO_TOKEN' => $this->configurationManager->GetToken(),
+            'AIO_TOKEN' => $this->configurationManager->AIO_TOKEN,
             'BORGBACKUP_REMOTE_REPO' => $this->configurationManager->GetBorgRemoteRepo(),
             'BORGBACKUP_MODE' => $this->configurationManager->GetBackupMode(),
             'AIO_URL' => $this->configurationManager->GetAIOURL(),
