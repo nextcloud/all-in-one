@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v6.0.1
 
       - name: Set up php ${{ matrix.php-versions }}
-        uses: shivammathur/setup-php@7bf05c6b704e0b9bfee22300130a31b5ea68d593 # v2
+        uses: shivammathur/setup-php@f89a301251ea3f109745bab3a62be58575f216bf # v2
         with:
           php-version: 8.4
           extensions: apcu
