@@ -91,6 +91,10 @@ readonly class ContainerDefinitionFetcher {
                 if (!$this->configurationManager->isDockerSocketProxyEnabled) {
                     continue;
                 }
+            } elseif ($entry['container_name'] === 'nextcloud-aio-harp') {
+                if (!$this->configurationManager->isHarpEnabled) {
+                    continue;
+                }
             } elseif ($entry['container_name'] === 'nextcloud-aio-whiteboard') {
                 if (!$this->configurationManager->isWhiteboardEnabled) {
                     continue;
@@ -198,6 +202,10 @@ readonly class ContainerDefinitionFetcher {
                         }
                     } elseif ($value === 'nextcloud-aio-docker-socket-proxy') {
                         if (!$this->configurationManager->isDockerSocketProxyEnabled) {
+                            continue;
+                        }
+                    } elseif ($value === 'nextcloud-aio-harp') {
+                        if (!$this->configurationManager->isHarpEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-whiteboard') {

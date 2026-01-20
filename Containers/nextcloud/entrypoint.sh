@@ -1025,13 +1025,13 @@ else
     fi
 fi
 
-# Docker socket proxy
+# Docker socket proxy / HaRP
 # app_api is a shipped app
 if [ -d "/var/www/html/custom_apps/app_api" ]; then
     php /var/www/html/occ app:disable app_api
     rm -r "/var/www/html/custom_apps/app_api"
 fi
-if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
+if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ] || [ "$HARP_ENABLED" = 'yes' ]; then
     if [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable app_api
     fi

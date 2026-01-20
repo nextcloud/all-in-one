@@ -30,6 +30,12 @@ class ConfigurationManager
         set { $this->set('isDockerSocketProxyEnabled', $value); }
     }
 
+    public bool $isHarpEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isHarpEnabled', false);
+        set { $this->set('isHarpEnabled', $value); }
+    }
+
     public bool $isWhiteboardEnabled {
         // Type-cast because old configs could have 1/0 for this key.
         get => (bool) $this->get('isWhiteboardEnabled', true);
@@ -1035,6 +1041,7 @@ class ConfigurationManager
             'IMAGINARY_ENABLED' => $this->isImaginaryEnabled ? 'yes' : '',
             'FULLTEXTSEARCH_ENABLED' => $this->isFulltextsearchEnabled ? 'yes' : '',
             'DOCKER_SOCKET_PROXY_ENABLED' => $this->isDockerSocketProxyEnabled ? 'yes' : '',
+            'HARP_ENABLED' => $this->isHarpEnabled ? 'yes' : '',
             'NEXTCLOUD_UPLOAD_LIMIT' => $this->nextcloudUploadLimit,
             'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloudMemoryLimit,
             'NEXTCLOUD_MAX_TIME' => $this->nextcloudMaxTime,

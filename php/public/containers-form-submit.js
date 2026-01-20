@@ -120,9 +120,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function handleHarpWarning() {
+        if (document.getElementById("harp").checked) {
+            alert('⚠️ Warning! Enabling this container comes with possible Security problems since you are exposing the docker socket and all its privileges to the HaRP container. Enable this only if you are sure what you are doing!');
+        }
+    }
+
     // Initialize event listeners for specific behaviors
     document.getElementById("talk").addEventListener('change', handleTalkVisibility);
     document.getElementById("docker-socket-proxy").addEventListener('change', handleDockerSocketProxyWarning);
+    document.getElementById("harp").addEventListener('change', handleHarpWarning);
 
     // Initialize talk-recording visibility on page load
     handleTalkVisibility();  // Ensure talk-recording is correctly initialized
