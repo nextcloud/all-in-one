@@ -584,7 +584,7 @@ readonly class DockerActionManager {
             'DOCKER_SOCKET_PROXY_ENABLED' => $this->configurationManager->isDockerSocketProxyEnabled ? 'yes' : '',
             'NEXTCLOUD_UPLOAD_LIMIT' => $this->configurationManager->nextcloud_upload_limit,
             'NEXTCLOUD_MEMORY_LIMIT' => $this->configurationManager->nextcloud_memory_limit,
-            'NEXTCLOUD_MAX_TIME' => $this->configurationManager->GetNextcloudMaxTime(),
+            'NEXTCLOUD_MAX_TIME' => $this->configurationManager->nextcloud_max_time,
             'BORG_RETENTION_POLICY' => $this->configurationManager->GetBorgRetentionPolicy(),
             'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->configurationManager->GetFulltextsearchJavaOptions(),
             'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->configurationManager->GetTrustedCacertsDir(),

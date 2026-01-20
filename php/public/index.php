@@ -130,7 +130,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_datadir' => $configurationManager->nextcloud_datadir_mount,
         'nextcloud_mount' => $configurationManager->nextcloud_mount,
         'nextcloud_upload_limit' => $configurationManager->nextcloud_upload_limit,
-        'nextcloud_max_time' => $configurationManager->GetNextcloudMaxTime(),
+        'nextcloud_max_time' => $configurationManager->nextcloud_max_time,
         'nextcloud_memory_limit' => $configurationManager->nextcloud_memory_limit,
         'is_dri_device_enabled' => $configurationManager->isDriDeviceEnabled(),
         'is_nvidia_gpu_enabled' => $configurationManager->isNvidiaGpuEnabled(),

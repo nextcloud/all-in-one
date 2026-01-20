@@ -646,11 +646,9 @@ class ConfigurationManager
         return $uploadLimit * 1024 * 1024 * 1024;
     }
 
-    public function GetNextcloudMaxTime() : string {
-        $envVariableName = 'NEXTCLOUD_MAX_TIME';
-        $configName = 'nextcloud_max_time';
-        $defaultValue = '3600';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    public string $nextcloud_max_time {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MAX_TIME', 'nextcloud_max_time', '3600');
+        set { $this->set('nextcloud_max_time', $value); }
     }
 
     public function GetBorgRetentionPolicy() : string {
