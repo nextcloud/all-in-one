@@ -71,17 +71,17 @@ class ConfigurationManager
             return '';
         }
 
-        $config = $this->GetConfig();
-        if(!isset($config['secrets'][$secretId])) {
-            $config['secrets'][$secretId] = bin2hex(random_bytes(24));
-            $this->WriteConfig($config);
+        $secrets = $this->get('secrets', []);
+        if (!isset($secrets[$secretId])) {
+            $secrets[$secretId] = bin2hex(random_bytes(24));
+            $this->set('secrets', $secrets);
         }
 
         if ($secretId === 'BORGBACKUP_PASSWORD' && !file_exists(DataConst::GetBackupSecretFile())) {
-            $this->DoubleSafeBackupSecret($config['secrets'][$secretId]);
+            $this->DoubleSafeBackupSecret($secrets[$secretId]);
         }
 
-        return $config['secrets'][$secretId];
+        return $secrets[$secretId];
     }
 
     public function GetRegisteredSecret(string $secretId) : string {
