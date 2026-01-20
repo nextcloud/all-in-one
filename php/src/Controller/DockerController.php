@@ -123,7 +123,7 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->setMultiple(function ($confManager) use ($request) {
+        $this->configurationManager->setMultiple(function (ConfigurationManager $confManager) use ($request) {
             $confManager->backupMode = 'restore';
             $confManager->selectedRestoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
             $confManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
@@ -152,7 +152,7 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->setMultiple(function ($confManager) {
+        $this->configurationManager->setMultiple(function (ConfigurationManager $confManager) {
             $confManager->backupMode = 'test';
             $confManager->instance_restore_attempt = false;
         });
@@ -177,7 +177,7 @@ readonly class DockerController {
             $port = 443;
         }
 
-        $this->configurationManager->setMultiple(function ($confManager) use ($request, $host, $port, $path) {
+        $this->configurationManager->setMultiple(function (ConfigurationManager $confManager) use ($request, $host, $port, $path) {
             $confManager->install_latest_major = isset($request->getParsedBody()['install_latest_major']);
             // set AIO_URL
             $confManager->AIO_URL = $host . ':' . (string)$port . $path;
