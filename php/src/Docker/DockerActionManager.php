@@ -297,7 +297,7 @@ readonly class DockerActionManager {
                 }
                 $ipBinding = $value->ipBinding;
                 if ($ipBinding === '%APACHE_IP_BINDING%') {
-                    $ipBinding = $this->configurationManager->GetApacheIPBinding();
+                    $ipBinding = $this->configurationManager->apache_ip_binding;
                     // Do not expose if AIO is in internal network mode
                     if ($ipBinding === '@INTERNAL') {
                         continue;
@@ -566,7 +566,7 @@ readonly class DockerActionManager {
             'RESTORE_EXCLUDE_PREVIEWS' => $this->configurationManager->restoreExcludePreviews ? '1' : '',
             'SELECTED_RESTORE_TIME' => $this->configurationManager->selectedRestoreTime,
             'APACHE_PORT' => $this->configurationManager->GetApachePort(),
-            'APACHE_IP_BINDING' => $this->configurationManager->GetApacheIPBinding(),
+            'APACHE_IP_BINDING' => $this->configurationManager->apache_ip_binding,
             'TALK_PORT' => $this->configurationManager->GetTalkPort(),
             'TURN_DOMAIN' => $this->configurationManager->turn_domain,
             'NEXTCLOUD_MOUNT' => $this->configurationManager->GetNextcloudMount(),

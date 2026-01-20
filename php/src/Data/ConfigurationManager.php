@@ -124,6 +124,11 @@ class ConfigurationManager
         set { $this->set('borg_restore_password', $value); }
     }
 
+    public string $apache_ip_binding {
+        get => $this->GetEnvironmentalVariableOrConfig('APACHE_IP_BINDING', 'apache_ip_binding', '');
+        set { $this->set('apache_ip_binding', $value); }
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */
@@ -906,13 +911,6 @@ class ConfigurationManager
     public function GetApacheAdditionalNetwork() : string {
         $envVariableName = 'APACHE_ADDITIONAL_NETWORK';
         $configName = 'apache_additional_network';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetApacheIPBinding() : string {
-        $envVariableName = 'APACHE_IP_BINDING';
-        $configName = 'apache_ip_binding';
         $defaultValue = '';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
     }
