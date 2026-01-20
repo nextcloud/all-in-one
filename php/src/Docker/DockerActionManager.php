@@ -115,7 +115,7 @@ readonly class DockerActionManager {
         $containerName = $container->identifier;
         $internalPort = $container->internalPorts;
         if ($internalPort === '%APACHE_PORT%') {
-            $internalPort = $this->configurationManager->GetApachePort();
+            $internalPort = $this->configurationManager->apache_port;
         } elseif ($internalPort === '%TALK_PORT%') {
             $internalPort = $this->configurationManager->GetTalkPort();
         }
@@ -261,7 +261,7 @@ readonly class DockerActionManager {
                 $port = $value->port;
                 $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
-                    $port = $this->configurationManager->GetApachePort();
+                    $port = $this->configurationManager->apache_port;
                     // Do not expose udp if AIO is in reverse proxy mode
                     if ($port !== '443' && $protocol === 'udp') {
                         continue;
@@ -283,7 +283,7 @@ readonly class DockerActionManager {
                 $port = $value->port;
                 $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
-                    $port = $this->configurationManager->GetApachePort();
+                    $port = $this->configurationManager->apache_port;
                     // Do not expose udp if AIO is in reverse proxy mode
                     if ($port !== '443' && $protocol === 'udp') {
                         continue;
@@ -565,7 +565,7 @@ readonly class DockerActionManager {
             'AIO_URL' => $this->configurationManager->AIO_URL,
             'RESTORE_EXCLUDE_PREVIEWS' => $this->configurationManager->restoreExcludePreviews ? '1' : '',
             'SELECTED_RESTORE_TIME' => $this->configurationManager->selectedRestoreTime,
-            'APACHE_PORT' => $this->configurationManager->GetApachePort(),
+            'APACHE_PORT' => $this->configurationManager->apache_port,
             'APACHE_IP_BINDING' => $this->configurationManager->apache_ip_binding,
             'TALK_PORT' => $this->configurationManager->GetTalkPort(),
             'TURN_DOMAIN' => $this->configurationManager->turn_domain,

@@ -363,7 +363,7 @@ class ConfigurationManager
             }
 
             // Get the apache port
-            $port = $this->GetApachePort();
+            $port = $this->apache_port;
 
             if (!filter_var($dnsRecordIP, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                 if ($port === '443') {
@@ -558,11 +558,9 @@ class ConfigurationManager
         $this->set('password', $newPassword);
     }
 
-    public function GetApachePort() : string {
-        $envVariableName = 'APACHE_PORT';
-        $configName = 'apache_port';
-        $defaultValue = '443';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    public string $apache_port {
+        get => $this->GetEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
+        set { $this->set('apache_port', $value); }
     }
 
     public function GetTalkPort() : string {
