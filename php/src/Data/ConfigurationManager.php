@@ -473,8 +473,8 @@ class ConfigurationManager
 
             // Prevent backup to be contained in Nextcloud Datadir as this will delete the backup archive upon restore
             // See https://github.com/nextcloud/all-in-one/issues/6607
-            if (str_starts_with($location . '/', rtrim($this->GetNextcloudDatadirMount(), '/') . '/')) {
-                throw new InvalidSettingConfigurationException("The path must not be a children of or equal to NEXTCLOUD_DATADIR, which is currently set to " . $this->GetNextcloudDatadirMount());
+            if (str_starts_with($location . '/', rtrim($this->nextcloud_datadir_mount, '/') . '/')) {
+                throw new InvalidSettingConfigurationException("The path must not be a children of or equal to NEXTCLOUD_DATADIR, which is currently set to " . $this->nextcloud_datadir_mount);
             }
 
         } else {
@@ -625,11 +625,10 @@ class ConfigurationManager
         set { $this->set('nextcloud_mount', $value); }
     }
 
-    public function GetNextcloudDatadirMount() : string {
-        $envVariableName = 'NEXTCLOUD_DATADIR';
-        $configName = 'nextcloud_datadir';
-        $defaultValue = 'nextcloud_aio_nextcloud_data';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+
+    public string $nextcloud_datadir_mount {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_DATADIR', 'nextcloud_datadir', 'nextcloud_aio_nextcloud_data');
+        set { $this->set('nextcloud_datadir_mount', $value); }
     }
 
     public string $nextcloud_upload_limit {
