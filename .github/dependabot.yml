@@ -10,6 +10,8 @@ updates:
   labels:
   - 3. to review
   - dependencies
+  cooldown:
+    default-days: 7
 - package-ecosystem: composer
   directory: "/php/"
   schedule:
