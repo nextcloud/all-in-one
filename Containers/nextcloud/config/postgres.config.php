@@ -10,7 +10,7 @@ if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_POSTGRES')) {
 if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_MYSQL')) {
   $CONFIG = array(
     'dbdriveroptions' => array(
-      'PDO::MYSQL_ATTR_SSL_CA' => '/var/www/html/data/certificates/ca-bundle.crt',
+      PDO::MYSQL_ATTR_SSL_CA => '/var/www/html/data/certificates/ca-bundle.crt',
     ),
   );
 }
