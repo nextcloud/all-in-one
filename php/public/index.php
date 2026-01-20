@@ -25,7 +25,6 @@ const AIO_MAX_EXECUTION_TIME   = '7200';    // (2h) in case of a very slow inter
 const AIO_SESSION_MAX_LIFETIME = '86400';   // (24h)
 const AIO_COOKIE_LIFETIME      = '0';       // Auto logout on browser close
 const AIO_LOG_ERRORS_MAX_LEN   = '0';       // Log whole log messages
-
 const AIO_TWIG_CACHE_PATH      = false;     // e.g., __DIR__ . '/../var/twig-cache'
 const AIO_DISPLAY_ERRORS       = false;
 
@@ -54,6 +53,7 @@ ini_set('session.save_path', $dataConst->GetSessionDirectory());
 $app = AppFactory::create();
 $responseFactory = $app->getResponseFactory();
 
+// Register CSRF middleware (container-only)
 $container->set(Guard::class, function () use ($responseFactory): Guard {
     $guard = new Guard($responseFactory);
     $guard->setPersistentTokenMode(true);
@@ -61,15 +61,20 @@ $container->set(Guard::class, function () use ($responseFactory): Guard {
 });
 
 session_start();
+
+// Activate CSRF middleware for all routes
 $app->add(Guard::class);
 
+// Setup and activate Twig middleware
 $twig = Twig::create(__DIR__ . '/../templates/',
     [ 'cache' => AIO_TWIG_CACHE_PATH ]
 );
 $app->add(TwigMiddleware::create($app, $twig));
 
+// Add CSRF extension to Twig so templates can access CSRF tokens
 $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 
+// Establish and activate authentication middleware for all routes
 $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
 //-------------------------------------------------
