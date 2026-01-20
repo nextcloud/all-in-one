@@ -119,7 +119,7 @@ readonly class ContainerDefinitionFetcher {
                         }
                     }
                     if($value['source'] === '%NEXTCLOUD_MOUNT%') {
-                        $value['source'] = $this->configurationManager->GetNextcloudMount();
+                        $value['source'] = $this->configurationManager->nextcloud_mount;
                         if($value['source'] === '') {
                             continue;
                         }
@@ -140,7 +140,7 @@ readonly class ContainerDefinitionFetcher {
                         }
                     }
                     if ($value['destination'] === '%NEXTCLOUD_MOUNT%') {
-                        $value['destination'] = $this->configurationManager->GetNextcloudMount();
+                        $value['destination'] = $this->configurationManager->nextcloud_mount;
                         if($value['destination'] === '') {
                             continue;
                         }

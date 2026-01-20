@@ -205,7 +205,7 @@ readonly class DockerActionManager {
         foreach ($container->volumes->GetVolumes() as $volume) {
             // // NEXTCLOUD_MOUNT gets added via bind-mount later on
             // if ($container->identifier === 'nextcloud-aio-nextcloud') {
-            //     if ($volume->name === $this->configurationManager->GetNextcloudMount()) {
+            //     if ($volume->name === $this->configurationManager->nextcloud_mount) {
             //         continue;
             //     }
             // }
@@ -408,7 +408,7 @@ readonly class DockerActionManager {
             // // Special things for the nextcloud container which should not be exposed in the containers.json
             // } elseif ($container->identifier === 'nextcloud-aio-nextcloud') {
             //     foreach ($container->volumes->GetVolumes() as $volume) {
-            //         if ($volume->name !== $this->configurationManager->GetNextcloudMount()) {
+            //         if ($volume->name !== $this->configurationManager->nextcloud_mount) {
             //             continue;
             //         }
             //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
@@ -569,7 +569,7 @@ readonly class DockerActionManager {
             'APACHE_IP_BINDING' => $this->configurationManager->apache_ip_binding,
             'TALK_PORT' => $this->configurationManager->talk_port,
             'TURN_DOMAIN' => $this->configurationManager->turn_domain,
-            'NEXTCLOUD_MOUNT' => $this->configurationManager->GetNextcloudMount(),
+            'NEXTCLOUD_MOUNT' => $this->configurationManager->nextcloud_mount,
             'BACKUP_RESTORE_PASSWORD' => $this->configurationManager->borg_restore_password,
             'CLAMAV_ENABLED' => $this->configurationManager->isClamavEnabled ? 'yes' : '',
             'TALK_RECORDING_ENABLED' => $this->configurationManager->isTalkRecordingEnabled ? 'yes' : '',

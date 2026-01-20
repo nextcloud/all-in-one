@@ -620,11 +620,9 @@ class ConfigurationManager
         return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
     }
 
-    public function GetNextcloudMount() : string {
-        $envVariableName = 'NEXTCLOUD_MOUNT';
-        $configName = 'nextcloud_mount';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    public string $nextcloud_mount {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MOUNT', 'nextcloud_mount', '');
+        set { $this->set('nextcloud_mount', $value); }
     }
 
     public function GetNextcloudDatadirMount() : string {
