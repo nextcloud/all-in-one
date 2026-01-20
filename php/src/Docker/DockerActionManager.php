@@ -117,7 +117,7 @@ readonly class DockerActionManager {
         if ($internalPort === '%APACHE_PORT%') {
             $internalPort = $this->configurationManager->apache_port;
         } elseif ($internalPort === '%TALK_PORT%') {
-            $internalPort = $this->configurationManager->GetTalkPort();
+            $internalPort = $this->configurationManager->talk_port;
         }
 
         if ($internalPort !== "" && $internalPort !== 'host') {
@@ -267,7 +267,7 @@ readonly class DockerActionManager {
                         continue;
                     }
                 } else if ($port === '%TALK_PORT%') {
-                    $port = $this->configurationManager->GetTalkPort();
+                    $port = $this->configurationManager->talk_port;
                 }
                 $portWithProtocol = $port . '/' . $protocol;
                 $exposedPorts[$portWithProtocol] = null;
@@ -289,7 +289,7 @@ readonly class DockerActionManager {
                         continue;
                     }
                 } else if ($port === '%TALK_PORT%') {
-                    $port = $this->configurationManager->GetTalkPort();
+                    $port = $this->configurationManager->talk_port;
                     // Skip publishing talk tcp port if it is set to 443
                     if ($port === '443' && $protocol === 'tcp') {
                         continue;
@@ -567,7 +567,7 @@ readonly class DockerActionManager {
             'SELECTED_RESTORE_TIME' => $this->configurationManager->selectedRestoreTime,
             'APACHE_PORT' => $this->configurationManager->apache_port,
             'APACHE_IP_BINDING' => $this->configurationManager->apache_ip_binding,
-            'TALK_PORT' => $this->configurationManager->GetTalkPort(),
+            'TALK_PORT' => $this->configurationManager->talk_port,
             'TURN_DOMAIN' => $this->configurationManager->turn_domain,
             'NEXTCLOUD_MOUNT' => $this->configurationManager->GetNextcloudMount(),
             'BACKUP_RESTORE_PASSWORD' => $this->configurationManager->borg_restore_password,

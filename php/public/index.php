@@ -119,7 +119,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
         'timezone' => $configurationManager->timezone,
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
-        'talk_port' => $configurationManager->GetTalkPort(),
+        'talk_port' => $configurationManager->talk_port,
         'collabora_dictionaries' => $configurationManager->collabora_dictionaries,
         'collabora_additional_options' => $configurationManager->collabora_additional_options,
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),

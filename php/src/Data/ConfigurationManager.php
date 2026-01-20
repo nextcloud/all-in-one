@@ -562,12 +562,10 @@ class ConfigurationManager
         get => $this->GetEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
         set { $this->set('apache_port', $value); }
     }
-
-    public function GetTalkPort() : string {
-        $envVariableName = 'TALK_PORT';
-        $configName = 'talk_port';
-        $defaultValue = '3478';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+        
+    public string $talk_port {
+        get => $this->GetEnvironmentalVariableOrConfig('TALK_PORT', 'talk_port', '3478');
+        set { $this->set('talk_port', $value); }
     }
 
     /**
