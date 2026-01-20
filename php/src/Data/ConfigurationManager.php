@@ -980,4 +980,97 @@ class ConfigurationManager
             return true;
         }
     }
+
+    public function setAioVariables(array $input) : void {
+        if ($input === []) {
+            return;
+        }
+        $this->setMultiple(function($confManager) use ($input) {
+            foreach ($input as $variable) {
+                $keyWithValue = $confManager->replaceEnvPlaceholders($variable);
+                [$key, $value] = explode('=', $keyWithValue, 2);
+                // Set if there's an attribute corresponding to the key.
+                if (isset($key, $confManager->$key)) {
+                    $confManager->$key = $value;
+                }
+            }
+        });
+    }
+
+    //
+    // Replaces placeholders in $envValue with their values.
+    // E.g. "%NC_DOMAIN%:%APACHE_PORT" becomes "my.nextcloud.com:11000"
+    public function replaceEnvPlaceholders(string $envValue): string {
+        // $pattern breaks down as:
+        // % - matches a literal percent sign
+        // ([^%]+) - capture group that matches one or more characters that are NOT percent signs
+        // % - matches the closing percent sign
+        //
+        // Assumes literal percent signs are always matched and there is no
+        // escaping.
+        $pattern = '/%([^%]+)%/';
+        $matchCount = preg_match_all($pattern, $envValue, $matches);
+
+        if ($matchCount === 0) {
+            return $envValue;
+        }
+
+        $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
+        $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
+        $placeholderPatterns = array_map(static fn(string $p) => '/' . preg_quote($p) . '/', $placeholders); // ["/%PLACEHOLDER1%/", ...]
+        $placeholderValues = array_map($this->getPlaceholderValue(...), $placeholderNames); // ["val1", "val2"]
+        // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
+        return (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
+    }
+
+    private function getPlaceholderValue(string $placeholder) : string {
+        return match ($placeholder) {
+            'NC_DOMAIN' => $this->domain,
+            'NC_BASE_DN' => $this->GetBaseDN(),
+            'AIO_TOKEN' => $this->AIO_TOKEN,
+            'BORGBACKUP_REMOTE_REPO' => $this->borg_remote_repo,
+            'BORGBACKUP_MODE' => $this->backupMode,
+            'AIO_URL' => $this->AIO_URL,
+            'SELECTED_RESTORE_TIME' => $this->selectedRestoreTime,
+            'RESTORE_EXCLUDE_PREVIEWS' => $this->restoreExcludePreviews ? '1' : '',
+            'APACHE_PORT' => $this->apache_port,
+            'APACHE_IP_BINDING' => $this->apache_ip_binding,
+            'TALK_PORT' => $this->talk_port,
+            'TURN_DOMAIN' => $this->turn_domain,
+            'NEXTCLOUD_MOUNT' => $this->nextcloud_mount,
+            'BACKUP_RESTORE_PASSWORD' => $this->borg_restore_password,
+            'CLAMAV_ENABLED' => $this->isClamavEnabled ? 'yes' : '',
+            'TALK_RECORDING_ENABLED' => $this->isTalkRecordingEnabled ? 'yes' : '',
+            'ONLYOFFICE_ENABLED' => $this->isOnlyofficeEnabled ? 'yes' : '',
+            'COLLABORA_ENABLED' => $this->isCollaboraEnabled ? 'yes' : '',
+            'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
+            'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? 'yes' : '',
+            'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
+            'COLLABORA_DICTIONARIES' => $this->collabora_dictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->collabora_dictionaries,
+            'IMAGINARY_ENABLED' => $this->isImaginaryEnabled ? 'yes' : '',
+            'FULLTEXTSEARCH_ENABLED' => $this->isFulltextsearchEnabled ? 'yes' : '',
+            'DOCKER_SOCKET_PROXY_ENABLED' => $this->isDockerSocketProxyEnabled ? 'yes' : '',
+            'NEXTCLOUD_UPLOAD_LIMIT' => $this->nextcloud_upload_limit,
+            'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloud_memory_limit,
+            'NEXTCLOUD_MAX_TIME' => $this->nextcloud_max_time,
+            'BORG_RETENTION_POLICY' => $this->GetBorgRetentionPolicy(),
+            'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->GetFulltextsearchJavaOptions(),
+            'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->GetTrustedCacertsDir(),
+            'ADDITIONAL_DIRECTORIES_BACKUP' => $this->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
+            'BORGBACKUP_HOST_LOCATION' => $this->borg_backup_host_location,
+            'APACHE_MAX_SIZE' => (string)($this->GetApacheMaxSize()),
+            'COLLABORA_SECCOMP_POLICY' => $this->GetCollaboraSeccompPolicy(),
+            'NEXTCLOUD_STARTUP_APPS' => $this->GetNextcloudStartupApps(),
+            'NEXTCLOUD_ADDITIONAL_APKS' => $this->GetNextcloudAdditionalApks(),
+            'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->GetNextcloudAdditionalPhpExtensions(),
+            'INSTALL_LATEST_MAJOR' => $this->install_latest_major ? 'yes' : '',
+            'REMOVE_DISABLED_APPS' => $this->shouldDisabledAppsGetRemoved() ? 'yes' : '',
+            // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
+            'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
+            // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
+            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aio_community_containers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
+            'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
+            default => $this->GetRegisteredSecret($placeholder),
+        };
+    }
 }

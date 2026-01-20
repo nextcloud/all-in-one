@@ -228,15 +228,7 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Binds'] = $volumes;
         }
 
-        $aioVariables = $container->aioVariables->GetVariables();
-        foreach ($aioVariables as $variable) {
-            $config = $this->configurationManager->GetConfig();
-            $variable = $this->replaceEnvPlaceholders($variable);
-            $variableArray = explode('=', $variable);
-            $config[$variableArray[0]] = $variableArray[1];
-            $this->configurationManager->WriteConfig($config);
-            sleep(1);
-        }
+        $this->configurationManager->setAioVariables($container->aioVariables->GetVariables());
 
         $envs = $container->containerEnvironmentVariables->GetVariables();
         // Special thing for the nextcloud container
@@ -244,7 +236,7 @@ readonly class DockerActionManager {
             $envs[] = $this->GetAllNextcloudExecCommands();
         }
         foreach ($envs as $key => $env) {
-            $envs[$key] = $this->replaceEnvPlaceholders($env);
+            $envs[$key] = $this->configurationManager->replaceEnvPlaceholders($env);
         }
 
         if (count($envs) > 0) {
@@ -528,82 +520,6 @@ readonly class DockerActionManager {
                 }
             }
         }
-    }
-
-    // Replaces placeholders in $envValue with their values.
-    // E.g. "%NC_DOMAIN%:%APACHE_PORT" becomes "my.nextcloud.com:11000"
-    private function replaceEnvPlaceholders(string $envValue): string {
-        // $pattern breaks down as:
-        // % - matches a literal percent sign
-        // ([^%]+) - capture group that matches one or more characters that are NOT percent signs
-        // % - matches the closing percent sign
-        //
-        // Assumes literal percent signs are always matched and there is no
-        // escaping.
-        $pattern = '/%([^%]+)%/';
-        $matchCount = preg_match_all($pattern, $envValue, $matches);
-
-        if ($matchCount === 0) {
-            return $envValue;
-        }
-
-        $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
-        $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
-        $placeholderPatterns = array_map(static fn(string $p) => '/' . preg_quote($p) . '/', $placeholders); // ["/%PLACEHOLDER1%/", ...]
-        $placeholderValues = array_map($this->getPlaceholderValue(...), $placeholderNames); // ["val1", "val2"]
-        // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
-        return (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
-    }
-
-    private function getPlaceholderValue(string $placeholder) : string {
-        return match ($placeholder) {
-            'NC_DOMAIN' => $this->configurationManager->GetDomain(),
-            'NC_BASE_DN' => $this->configurationManager->GetBaseDN(),
-            'AIO_TOKEN' => $this->configurationManager->AIO_TOKEN,
-            'BORGBACKUP_REMOTE_REPO' => $this->configurationManager->borg_remote_repo,
-            'BORGBACKUP_MODE' => $this->configurationManager->GetBackupMode(),
-            'AIO_URL' => $this->configurationManager->AIO_URL,
-            'RESTORE_EXCLUDE_PREVIEWS' => $this->configurationManager->restoreExcludePreviews ? '1' : '',
-            'SELECTED_RESTORE_TIME' => $this->configurationManager->selectedRestoreTime,
-            'APACHE_PORT' => $this->configurationManager->apache_port,
-            'APACHE_IP_BINDING' => $this->configurationManager->apache_ip_binding,
-            'TALK_PORT' => $this->configurationManager->talk_port,
-            'TURN_DOMAIN' => $this->configurationManager->turn_domain,
-            'NEXTCLOUD_MOUNT' => $this->configurationManager->nextcloud_mount,
-            'BACKUP_RESTORE_PASSWORD' => $this->configurationManager->borg_restore_password,
-            'CLAMAV_ENABLED' => $this->configurationManager->isClamavEnabled ? 'yes' : '',
-            'TALK_RECORDING_ENABLED' => $this->configurationManager->isTalkRecordingEnabled ? 'yes' : '',
-            'ONLYOFFICE_ENABLED' => $this->configurationManager->isOnlyofficeEnabled ? 'yes' : '',
-            'COLLABORA_ENABLED' => $this->configurationManager->isCollaboraEnabled ? 'yes' : '',
-            'TALK_ENABLED' => $this->configurationManager->isTalkEnabled ? 'yes' : '',
-            'UPDATE_NEXTCLOUD_APPS' => ($this->configurationManager->isDailyBackupRunning() && $this->configurationManager->areAutomaticUpdatesEnabled()) ? 'yes' : '',
-            'TIMEZONE' => $this->configurationManager->timezone === '' ? 'Etc/UTC' : $this->configurationManager->timezone,
-            'COLLABORA_DICTIONARIES' => $this->configurationManager->collabora_dictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->configurationManager->collabora_dictionaries,
-            'IMAGINARY_ENABLED' => $this->configurationManager->isImaginaryEnabled ? 'yes' : '',
-            'FULLTEXTSEARCH_ENABLED' => $this->configurationManager->isFulltextsearchEnabled ? 'yes' : '',
-            'DOCKER_SOCKET_PROXY_ENABLED' => $this->configurationManager->isDockerSocketProxyEnabled ? 'yes' : '',
-            'NEXTCLOUD_UPLOAD_LIMIT' => $this->configurationManager->nextcloud_upload_limit,
-            'NEXTCLOUD_MEMORY_LIMIT' => $this->configurationManager->nextcloud_memory_limit,
-            'NEXTCLOUD_MAX_TIME' => $this->configurationManager->nextcloud_max_time,
-            'BORG_RETENTION_POLICY' => $this->configurationManager->GetBorgRetentionPolicy(),
-            'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->configurationManager->GetFulltextsearchJavaOptions(),
-            'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->configurationManager->GetTrustedCacertsDir(),
-            'ADDITIONAL_DIRECTORIES_BACKUP' => $this->configurationManager->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
-            'BORGBACKUP_HOST_LOCATION' => $this->configurationManager->borg_backup_host_location,
-            'APACHE_MAX_SIZE' => (string)($this->configurationManager->GetApacheMaxSize()),
-            'COLLABORA_SECCOMP_POLICY' => $this->configurationManager->GetCollaboraSeccompPolicy(),
-            'NEXTCLOUD_STARTUP_APPS' => $this->configurationManager->GetNextcloudStartupApps(),
-            'NEXTCLOUD_ADDITIONAL_APKS' => $this->configurationManager->GetNextcloudAdditionalApks(),
-            'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->configurationManager->GetNextcloudAdditionalPhpExtensions(),
-            'INSTALL_LATEST_MAJOR' => $this->configurationManager->install_latest_major ? 'yes' : '',
-            'REMOVE_DISABLED_APPS' => $this->configurationManager->shouldDisabledAppsGetRemoved() ? 'yes' : '',
-            // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
-            'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
-            // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
-            'CADDY_IP_ADDRESS' => in_array('caddy', $this->configurationManager->aio_community_containers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
-            'WHITEBOARD_ENABLED' => $this->configurationManager->isWhiteboardEnabled ? 'yes' : '',
-            default => $this->configurationManager->GetRegisteredSecret($placeholder),
-        };
     }
 
     private function isContainerUpdateAvailable(string $id): string {
