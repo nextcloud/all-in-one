@@ -419,8 +419,6 @@ class ConfigurationManager
             }
         }
 
-        $config = $this->GetConfig();
-        $this->WriteConfig($config);
         $this->setMultiple(function ($confManager) use ($domain) {
             // Write domain
             // Don't set the domain via the attribute, or we create a loop.
@@ -443,9 +441,6 @@ class ConfigurationManager
      */
     public function SetBorgLocationVars(string $location, string $repo) : void {
         $this->ValidateBorgLocationVars($location, $repo);
-
-        $config = $this->GetConfig();
-        $this->WriteConfig($config);
         $this->setMultiple(function ($confManager) use ($location, $repo) {
             $confManager->borg_backup_host_location = $location;
             $confManager->borg_remote_repo = $repo;
@@ -495,8 +490,6 @@ class ConfigurationManager
 
     public function DeleteBorgBackupLocationItems() : void {
         // Delete the variables
-        $config = $this->GetConfig();
-        $this->WriteConfig($config);
         $this->setMultiple(function ($confManager) {
             $confManager->borg_backup_host_location = '';
             $confManager->borg_remote_repo = '';
@@ -520,8 +513,6 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("Please enter the password!");
         }
 
-        $config = $this->GetConfig();
-        $this->WriteConfig($config);
         $this->setMultiple(function ($confManager) use ($location, $repo, $password) {
             $confManager->borg_backup_host_location = $location;
             $confManager->borg_remote_repo = $repo;
