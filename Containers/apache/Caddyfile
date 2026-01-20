@@ -58,6 +58,11 @@ http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests, see con
         reverse_proxy {$WHITEBOARD_HOST}:3002
     }
 
+    # HaRP (ExApps)
+    route /exapps/* {
+        reverse_proxy {$HARP_HOST}:8780
+    }
+
     # Nextcloud
     route {
         header Strict-Transport-Security max-age=31536000;
