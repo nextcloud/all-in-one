@@ -635,11 +635,10 @@ class ConfigurationManager
         get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_UPLOAD_LIMIT', 'nextcloud_upload_limit', '16G');
         set { $this->set('nextcloud_upload_limit', $value); }
     }
-    public function GetNextcloudMemoryLimit() : string {
-        $envVariableName = 'NEXTCLOUD_MEMORY_LIMIT';
-        $configName = 'nextcloud_memory_limit';
-        $defaultValue = '512M';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    
+    public string $nextcloud_memory_limit {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MEMORY_LIMIT', 'nextcloud_memory_limit', '512M');
+        set { $this->set('nextcloud_memory_limit', $value); }
     }
 
     public function GetApacheMaxSize() : int {
