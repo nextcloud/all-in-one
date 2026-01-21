@@ -18,4 +18,5 @@ ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD nc -z 127.0.0.1 $APACHE_PORT || exit 1
 LABEL com.centurylinklabs.watchtower.enable="false" \
-    org.label-schema.vendor="Nextcloud"
+    org.label-schema.vendor="Nextcloud" \
+    $APACHE_LABEL

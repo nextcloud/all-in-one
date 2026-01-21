@@ -88,4 +88,5 @@ CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
-    org.label-schema.vendor="Nextcloud"
+    org.label-schema.vendor="Nextcloud" \
+    $APACHE_LABEL
