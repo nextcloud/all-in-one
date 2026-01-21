@@ -37,5 +37,3 @@ labels: 0. Needs triage
 #### Output of `sudo docker ps -a`
 
 #### Other valuable info <!--- (like additional logs, screenshots & Co.) -->
-
-#### A picture of a cute animal <!--- (not mandatory but encouraged) -->
