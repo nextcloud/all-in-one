@@ -978,10 +978,19 @@ class ConfigurationManager
         }
         $this->setMultiple(function(ConfigurationManager $confManager) use ($input) {
             foreach ($input as $variable) {
+                if (!is_string($variable) || !str_contains($variable, '=')) {
+                    error_log("Invalid input: '$variable' is not a string or does not contain an equal sign ('=')");
+                    continue;
+                }
                 $keyWithValue = $confManager->replaceEnvPlaceholders($variable);
-                [$key, $value] = explode('=', $keyWithValue, 2);
-                // Set if there's an attribute corresponding to the key.
-                if (isset($key, $confManager->$key)) {
+                // Pad the result with nulls so psalm is happy (and we don't risk to run into warnings in case
+                // the check for an equal sign from above gets changed).
+                [$key, $value] = explode('=', $keyWithValue, 2) + [null, null];
+                if ($value === null) {
+                    error_log("Invalid input: '$keyWithValue' has no value after the equal sign");
+                } else if (!property_exists($confManager, $key)) {
+                    error_log("Error: '$key' is not a valid configuration key (in '$keyWithValue')");
+                } else {
                     $confManager->$key = $value;
                 }
             }
