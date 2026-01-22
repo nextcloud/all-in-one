@@ -24,5 +24,6 @@ ENTRYPOINT ["/start.sh"]
 USER root
 
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"
 ENV BORG_RETENTION_POLICY="--keep-within=7d --keep-weekly=4 --keep-monthly=6"

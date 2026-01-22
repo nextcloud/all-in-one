@@ -58,4 +58,5 @@ CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.co
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"
