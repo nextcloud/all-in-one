@@ -28,8 +28,7 @@
                 }
             ],
             "environment": [
-                "GLANCES_OPT=-w",
-                "8008:61208"
+                "GLANCES_OPT=-w"
             ],
             "backup_volumes": [
                 "nextcloud_aio_glances"
