@@ -28,7 +28,7 @@
     --border-radius-large: 12px;
     --default-font-size: 13px;
     --checkbox-size: 16px;
-    --max-width: 500px;
+    --max-width: 580px;
     --container-top-margin: 20px;
     --container-bottom-margin: 20px;
     --container-padding: 2px;
@@ -37,9 +37,9 @@
     --main-padding: 50px;
 }
 
-/* Breakpoint calculation: 500px (max-width) + 100px (main-padding * 2) + 200px (additional space) = 800px
+/* Breakpoint calculation: 580px (max-width) + 100px (main-padding * 2) + 200px (additional space) = 880px
 Note: Unfortunately, it's not possible to calculate this dynamically using CSS variables in media queries */
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 880px) {
     :root {
         --container-top-margin: 50px;
         --container-bottom-margin: 0px;
