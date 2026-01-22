@@ -356,6 +356,11 @@ readonly class DockerActionManager {
 
         $requestBody['HostConfig']['Init'] = $container->init;
 
+        $maxShutDownTime = $container->maxShutdownTime;
+        if ($maxShutDownTime > 0) {
+            $requestBody['StopTimeout'] = $maxShutDownTime;
+        }
+
         $capAdds = $container->capAdd;
         if (count($capAdds) > 0) {
             $requestBody['HostConfig']['CapAdd'] = $capAdds;
