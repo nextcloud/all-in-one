@@ -1,0 +1,39 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-glances",
+            "display_name": "Glances",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/glances",
+            "image": "nicolargo/glances",
+            "image_tag": "latest-full",
+            "internal_port": "61208",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                  "ip_binding": "",
+                  "port_number": "61208",
+                  "protocol": "tcp"
+                }
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_glances",
+                    "destination": "/etc/glances",
+                    "writeable": true
+                },
+                {
+                    "source": "/var/run/docker.sock",
+                    "destination": "/var/run/docker.sock",
+                    "writeable": false
+                }
+            ],
+            "environment": [
+                "GLANCES_OPT=-w",
+                "8008:61208"
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_glances"
+            ]
+        }
+    ]
+}
