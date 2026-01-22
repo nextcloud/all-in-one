@@ -894,7 +894,9 @@ if [ -d "/var/www/html/custom_apps/spreed" ]; then
         RECORDING_SERVERS_STRING="{\"servers\":[{\"server\":\"http://$TALK_RECORDING_HOST:1234/\",\"verify\":true}],\"secret\":\"$RECORDING_SECRET\"}"
         php /var/www/html/occ config:app:set spreed recording_servers --value="$RECORDING_SERVERS_STRING"
     else
-        php /var/www/html/occ config:app:delete spreed recording_servers
+        if [ "$REMOVE_DISABLED_APPS" = yes ]; then
+            php /var/www/html/occ config:app:delete spreed recording_servers
+        fi
     fi
 fi
 
