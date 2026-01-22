@@ -503,14 +503,24 @@ readonly class DockerActionManager {
         } catch (\Throwable $e) {
             $imageIsThere = false;
         }
-        try {
-            $this->guzzleClient->post($url);
-        } catch (RequestException $e) {
-            $message = "Could not pull image " . $imageName . ": " . $e->getResponse()?->getBody()->getContents();
-            if ($imageIsThere === false) {
-                throw new \Exception($message);
-            } else {
-                error_log($message);
+
+        $maxRetries = 3;
+        for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+            try {
+                $this->guzzleClient->post($url);
+                break;
+            } catch (RequestException $e) {
+                $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $e->getResponse()?->getBody()->getContents();
+                if ($attempt === $maxRetries) {
+                    if ($imageIsThere === false) {
+                        throw new \Exception($message);
+                    } else {
+                        error_log($message);
+                    }
+                } else {
+                    error_log($message . ' Retrying...');
+                    sleep(1);
+                }
             }
         }
     }
