@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.version: 1.37.0 (fb0539e64)
+    kompose.version: 1.38.0 (a8f5d1cbd)
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.version: 1.37.0 (fb0539e64)
+        kompose.version: 1.38.0 (a8f5d1cbd)
       labels:
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
@@ -38,7 +38,7 @@ spec:
 # AIO settings start # Do not remove or change this line!
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260114_114729
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260122_105751
           command:
             - chmod
             - "777"
@@ -190,7 +190,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: ghcr.io/nextcloud-releases/aio-nextcloud:20260114_114729
+          image: ghcr.io/nextcloud-releases/aio-nextcloud:20260122_105751
           {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context

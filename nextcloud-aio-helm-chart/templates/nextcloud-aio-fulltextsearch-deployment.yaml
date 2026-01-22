@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.version: 1.37.0 (fb0539e64)
+    kompose.version: 1.38.0 (a8f5d1cbd)
   labels:
     io.kompose.service: nextcloud-aio-fulltextsearch
   name: nextcloud-aio-fulltextsearch
@@ -18,13 +18,13 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.version: 1.37.0 (fb0539e64)
+        kompose.version: 1.38.0 (a8f5d1cbd)
       labels:
         io.kompose.service: nextcloud-aio-fulltextsearch
     spec:
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260114_114729
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260122_105751
           command:
             - chmod
             - "777"
@@ -54,7 +54,7 @@ spec:
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20260114_114729
+          image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20260122_105751
           readinessProbe:
             exec:
               command:

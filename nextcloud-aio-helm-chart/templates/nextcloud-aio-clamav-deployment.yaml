@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.version: 1.37.0 (fb0539e64)
+    kompose.version: 1.38.0 (a8f5d1cbd)
   labels:
     io.kompose.service: nextcloud-aio-clamav
   name: nextcloud-aio-clamav
@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.version: 1.37.0 (fb0539e64)
+        kompose.version: 1.38.0 (a8f5d1cbd)
       labels:
         io.kompose.service: nextcloud-aio-clamav
     spec:
@@ -36,7 +36,7 @@ spec:
         {{- end }}
       initContainers:
         - name: init-subpath
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260114_114729
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260122_105751
           command:
             - mkdir
             - "-p"
@@ -59,7 +59,7 @@ spec:
               value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-clamav:20260114_114729
+          image: ghcr.io/nextcloud-releases/aio-clamav:20260122_105751
           readinessProbe:
             exec:
               command:

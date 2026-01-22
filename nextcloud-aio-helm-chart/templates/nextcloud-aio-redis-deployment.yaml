@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.version: 1.37.0 (fb0539e64)
+    kompose.version: 1.38.0 (a8f5d1cbd)
   labels:
     io.kompose.service: nextcloud-aio-redis
   name: nextcloud-aio-redis
@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.version: 1.37.0 (fb0539e64)
+        kompose.version: 1.38.0 (a8f5d1cbd)
       labels:
         io.kompose.service: nextcloud-aio-redis
     spec:
@@ -39,7 +39,7 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-redis:20260114_114729
+          image: ghcr.io/nextcloud-releases/aio-redis:20260122_105751
           readinessProbe:
             exec:
               command:
