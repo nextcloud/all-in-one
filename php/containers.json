@@ -8,9 +8,9 @@
         "nextcloud-aio-onlyoffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-talk",
-        "nextcloud-aio-nextcloud",
         "nextcloud-aio-notify-push",
-        "nextcloud-aio-whiteboard"
+        "nextcloud-aio-whiteboard",
+        "nextcloud-aio-nextcloud"
       ],
       "display_name": "Apache",
       "image": "ghcr.io/nextcloud-releases/aio-apache",
@@ -204,6 +204,7 @@
         "POSTGRES_DB=nextcloud_database",
         "POSTGRES_USER=nextcloud",
         "REDIS_HOST=nextcloud-aio-redis",
+        "REDIS_PORT=6379",
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "APACHE_HOST=nextcloud-aio-apache",
         "APACHE_PORT=%APACHE_PORT%",
@@ -229,13 +230,17 @@
         "UPDATE_NEXTCLOUD_APPS=%UPDATE_NEXTCLOUD_APPS%",
         "TZ=%TIMEZONE%",
         "TALK_PORT=%TALK_PORT%",
+        "TURN_DOMAIN=%TURN_DOMAIN%",
         "IMAGINARY_ENABLED=%IMAGINARY_ENABLED%",
         "IMAGINARY_HOST=nextcloud-aio-imaginary",
-        "CLAMAV_MAX_SIZE=%APACHE_MAX_SIZE%",
         "PHP_UPLOAD_LIMIT=%NEXTCLOUD_UPLOAD_LIMIT%",
         "PHP_MEMORY_LIMIT=%NEXTCLOUD_MEMORY_LIMIT%",
         "FULLTEXTSEARCH_ENABLED=%FULLTEXTSEARCH_ENABLED%",
         "FULLTEXTSEARCH_HOST=nextcloud-aio-fulltextsearch",
+        "FULLTEXTSEARCH_PROTOCOL=http",
+        "FULLTEXTSEARCH_PORT=9200",
+        "FULLTEXTSEARCH_USER=elastic",
+        "FULLTEXTSEARCH_INDEX=nextcloud-aio",
         "PHP_MAX_TIME=%NEXTCLOUD_MAX_TIME%",
         "TRUSTED_CACERTS_DIR=%NEXTCLOUD_TRUSTED_CACERTS_DIR%",
         "STARTUP_APPS=%NEXTCLOUD_STARTUP_APPS%",
@@ -302,6 +307,7 @@
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "TZ=%TIMEZONE%",
         "REDIS_HOST=nextcloud-aio-redis",
+        "REDIS_PORT=6379",
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "POSTGRES_HOST=nextcloud-aio-database",
         "POSTGRES_PORT=5432",
@@ -376,8 +382,8 @@
       ],
       "internal_port": "9980",
       "environment": [
-        "aliasgroup1=https://%NC_DOMAIN%:443",
-        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:mount_jail_tree=false --o:logging.level=warning --o:home_mode.enable=true %COLLABORA_SECCOMP_POLICY% --o:remote_font_config.url=https://%NC_DOMAIN%/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+",
+        "aliasgroup1=https://%NC_DOMAIN%:443,http://nextcloud-aio-apache:23973",
+        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:logging.level=warning --o:logging.level_startup=warning --o:welcome.enable=false %COLLABORA_SECCOMP_POLICY% --o:remote_font_config.url=https://%NC_DOMAIN%/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+",
         "dictionaries=%COLLABORA_DICTIONARIES%",
         "TZ=%TIMEZONE%",
         "server_name=%NC_DOMAIN%",
@@ -386,7 +392,7 @@
       "restart": "unless-stopped",
       "nextcloud_exec_commands": [
         "echo 'Activating Collabora config...'",
-        "php /var/www/html/occ richdocuments:activate-config"
+        "php /var/www/html/occ richdocuments:activate-config --wopi-url='http://nextcloud-aio-apache:23973' --callback-url='http://nextcloud-aio-apache:23973'"
       ],
       "profiles": [
         "collabora"
@@ -394,6 +400,8 @@
       "cap_add": [
         "MKNOD",
         "SYS_ADMIN",
+        "SYS_CHROOT",
+        "FOWNER",
         "CHOWN"
       ],
       "cap_drop": [
@@ -715,10 +723,6 @@
         "ONLYOFFICE_SECRET"
       ],
       "restart": "unless-stopped",
-      "nextcloud_exec_commands": [
-        "echo 'Activating OnlyOffice config...'",
-        "php /var/www/html/occ onlyoffice:documentserver --check"
-      ],
       "profiles": [
         "onlyoffice"
       ],
@@ -789,10 +793,10 @@
       "environment": [
         "TZ=%TIMEZONE%",
         "ES_JAVA_OPTS=%FULLTEXTSEARCH_JAVA_OPTIONS%",
-        "bootstrap.memory_lock=true",
+        "bootstrap.memory_lock=false",
         "cluster.name=nextcloud-aio",
         "discovery.type=single-node",
-        "logger.org.elasticsearch.discovery=WARN",
+        "logger.level=WARN",
         "http.port=9200",
         "xpack.license.self_generated.type=basic",
         "xpack.security.enabled=false",
@@ -870,6 +874,7 @@
         "JWT_SECRET_KEY=%WHITEBOARD_SECRET%",
         "STORAGE_STRATEGY=redis",
         "REDIS_HOST=nextcloud-aio-redis",
+        "REDIS_PORT=6379",
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
         "BACKUP_DIR=/tmp"
       ],

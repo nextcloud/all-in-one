@@ -7,11 +7,13 @@ use AIO\Controller\DockerController;
 
 class ConfigurationManager
 {
+    private array $secrets = [];
+
     public function GetConfig() : array
     {
         if(file_exists(DataConst::GetConfigFile()))
         {
-            $configContent = file_get_contents(DataConst::GetConfigFile());
+            $configContent = (string)file_get_contents(DataConst::GetConfigFile());
             return json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
@@ -50,13 +52,15 @@ class ConfigurationManager
         return $config['secrets'][$secretId];
     }
 
-    public function GetSecret(string $secretId) : string {
-        $config = $this->GetConfig();
-        if(!isset($config['secrets'][$secretId])) {
-            $config['secrets'][$secretId] = "";
+    public function GetRegisteredSecret(string $secretId) : string {
+        if ($this->secrets[$secretId]) {
+            return $this->GetAndGenerateSecret($secretId);
         }
+        throw new \Exception("The secret " . $secretId . " was not registered. Please check if it is defined in secrets of containers.json.");
+    }
 
-        return $config['secrets'][$secretId];
+    public function RegisterSecret(string $secretId) : void {
+        $this->secrets[$secretId] = true;
     }
 
     private function DoubleSafeBackupSecret(string $borgBackupPassword) : void {
@@ -76,10 +80,7 @@ class ConfigurationManager
             return '';
         }
 
-        $content = file_get_contents(DataConst::GetBackupArchivesList());
-        if ($content === '') {
-            return '';
-        }
+        $content = (string)file_get_contents(DataConst::GetBackupArchivesList());
 
         $lastBackupLines = explode("\n", $content);
         $lastBackupLine = "";
@@ -104,10 +105,7 @@ class ConfigurationManager
             return [];
         }
 
-        $content = file_get_contents(DataConst::GetBackupArchivesList());
-        if ($content === '') {
-            return [];
-        }
+        $content = (string)file_get_contents(DataConst::GetBackupArchivesList());
 
         $backupLines = explode("\n", $content);
         $backupTimes = [];
@@ -211,7 +209,7 @@ class ConfigurationManager
 
     public function SetFulltextsearchEnabledState(int $value) : void {
         // Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
-        if ($this->GetCollaboraSeccompDisabledState() === 'true') {
+        if ($this->isSeccompDisabled()) {
             $value = 0;
         }
 
@@ -282,11 +280,6 @@ class ConfigurationManager
             $value = 0;
         }
 
-        // Currently only works on x64. See https://github.com/nextcloud/nextcloud-talk-recording/issues/17
-        if (!$this->isx64Platform()) {
-            $value = 0;
-        }
-
         $config = $this->GetConfig();
         $config['isTalkRecordingEnabled'] = $value;
         $this->WriteConfig($config);
@@ -295,7 +288,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetDomain(string $domain) : void {
+    public function SetDomain(string $domain, bool $skipDomainValidation) : void {
         // Validate that at least one dot is contained
         if (!str_contains($domain, '.')) {
             throw new InvalidSettingConfigurationException("Domain must contain at least one dot!");
@@ -322,8 +315,9 @@ class ConfigurationManager
         }
 
         // Skip domain validation if opted in to do so
-        if (!$this->shouldDomainValidationBeSkipped()) {
-
+        if ($this->shouldDomainValidationBeSkipped($skipDomainValidation)) {
+            error_log('Skipping domain validation');
+        } else {
             $dnsRecordIP = gethostbyname($domain);
             if ($dnsRecordIP === $domain) {
                 $dnsRecordIP = '';
@@ -357,7 +351,7 @@ class ConfigurationManager
             if ($connection) {
                 fclose($connection);
             } else {
-                throw new InvalidSettingConfigurationException("The domain is not reachable on Port 443 from within this container. Have you opened port 443/tcp in your router/firewall? If yes is the problem most likely that the router or firewall forbids local access to your domain. You can work around that by setting up a local DNS-server.");
+                throw new InvalidSettingConfigurationException("The domain is not reachable on Port 443 from within this container. Have you opened port 443/tcp in your router/firewall? If yes is the problem most likely that the router or firewall forbids local access to your domain. Or in other words: NAT loopback (Hairpinning) does not seem to work in your network. You can work around that by setting up a local DNS server and utilizing Split-Brain-DNS and configuring the daemon.json file of your docker daemon to use the local DNS server.");
             }
 
             // Get Instance ID
@@ -372,6 +366,9 @@ class ConfigurationManager
 
             // Check if response is correct
             $ch = curl_init();
+            if ($ch === false) {
+                throw new InvalidSettingConfigurationException('Could not init curl! Please check the logs!');
+            }
             $testUrl = $protocol . $domain . ':443';
             curl_setopt($ch, CURLOPT_URL, $testUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -389,7 +386,7 @@ class ConfigurationManager
                 if ($port === '443') {
                     $notice .= " If you should be using Cloudflare, make sure to disable the Cloudflare Proxy feature as it might block the domain validation. Same for any other firewall or service that blocks unencrypted access on port 443.";
                 } else {
-                    error_log('Please follow https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#6-how-to-debug-things in order to debug things!');
+                    error_log('Please follow https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#how-to-debug in order to debug things!');
                 }
                 throw new InvalidSettingConfigurationException($notice);
             }
@@ -427,6 +424,12 @@ class ConfigurationManager
         }
 
         return $config['backup-mode'];
+    }
+
+    public function SetBackupMode(string $mode) : void {
+        $config = $this->GetConfig();
+        $config['backup-mode'] = $mode;
+        $this->WriteConfig($config);
     }
 
     public function GetSelectedRestoreTime() : string {
@@ -509,11 +512,19 @@ class ConfigurationManager
         }
     }
 
-    public function DeleteBorgBackupLocationVars() : void {
+    public function DeleteBorgBackupLocationItems() : void {
+        // Delete the variables
         $config = $this->GetConfig();
         $config['borg_backup_host_location'] = '';
         $config['borg_remote_repo'] = '';
         $this->WriteConfig($config);
+
+        // Also delete the borg config file to be able to start over
+        if (file_exists(DataConst::GetBackupKeyFile())) {
+            if (unlink(DataConst::GetBackupKeyFile())) {
+                error_log('borg.config file deleted to be able to start over.');
+            }
+        }
     }
 
     /**
@@ -574,6 +585,15 @@ class ConfigurationManager
         $configName = 'talk_port';
         $defaultValue = '3478';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function GetTurnDomain() : string {
+        $config = $this->GetConfig();
+        if(!isset($config['turn_domain'])) {
+            $config['turn_domain'] = '';
+        }
+
+        return $config['turn_domain'];
     }
 
     /**
@@ -637,7 +657,7 @@ class ConfigurationManager
             return "";
         }
 
-        return trim(file_get_contents(DataConst::GetBackupPublicKey()));
+        return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
     }
 
     public function GetBorgRestorePassword() : string {
@@ -659,15 +679,6 @@ class ConfigurationManager
             return true;
         }
         return false;
-    }
-
-    public function GetBorgBackupMode() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['backup-mode'])) {
-            $config['backup-mode'] = '';
-        }
-
-        return $config['backup-mode'];
     }
 
     public function GetNextcloudMount() : string {
@@ -754,7 +765,7 @@ class ConfigurationManager
 
     public function GetCollaboraSeccompPolicy() : string {
         $defaultString = '--o:security.seccomp=';
-        if ($this->GetCollaboraSeccompDisabledState() !== 'true') {
+        if (!$this->isSeccompDisabled()) {
             return $defaultString . 'true';
         }
         return $defaultString . 'false';
@@ -765,6 +776,13 @@ class ConfigurationManager
         $configName = 'collabora_seccomp_disabled';
         $defaultValue = 'false';
         return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    }
+
+    public function isSeccompDisabled() : bool {
+        if ($this->GetCollaboraSeccompDisabledState() === 'true') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -796,7 +814,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
             return '';
         }
-        $dailyBackupFile = file_get_contents(DataConst::GetDailyBackupTimeFile());
+        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
         $dailyBackupFileArray = explode("\n", $dailyBackupFile);
         return $dailyBackupFileArray[0];
     }
@@ -805,7 +823,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
             return false;
         }
-        $dailyBackupFile = file_get_contents(DataConst::GetDailyBackupTimeFile());
+        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
         $dailyBackupFileArray = explode("\n", $dailyBackupFile);
         if (isset($dailyBackupFileArray[1]) && $dailyBackupFileArray[1] === 'automaticUpdatesAreNotEnabled') {
             return false;
@@ -856,8 +874,7 @@ class ConfigurationManager
         if (!file_exists(DataConst::GetAdditionalBackupDirectoriesFile())) {
             return '';
         }
-        $additionalBackupDirectories = file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile());
-        return $additionalBackupDirectories;
+        return (string)file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile());
     }
 
     public function GetAdditionalBackupDirectoriesArray() : array {
@@ -906,8 +923,8 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
-    public function shouldDomainValidationBeSkipped() : bool {
-        if (getenv('SKIP_DOMAIN_VALIDATION') === 'true') {
+    public function shouldDomainValidationBeSkipped(bool $skipDomainValidation) : bool {
+        if ($skipDomainValidation || getenv('SKIP_DOMAIN_VALIDATION') === 'true') {
             return true;
         }
         return false;
@@ -979,6 +996,13 @@ class ConfigurationManager
         return $config['collabora_additional_options'];
     }
 
+    public function isCollaboraSubscriptionEnabled() : bool {
+        if (str_contains($this->GetAdditionalCollaboraOptions(), '--o:support_key=')) {
+            return true;
+        }
+        return false;
+    }
+
     public function DeleteAdditionalCollaboraOptions() : void {
         $config = $this->GetConfig();
         $config['collabora_additional_options'] = '';
@@ -1041,7 +1065,7 @@ class ConfigurationManager
                     apcu_add($filePath, $fileContents);
                 }
             } 
-            $json = is_string($fileContents) ? json_decode($fileContents, true) : false;
+            $json = is_string($fileContents) ? json_decode($fileContents, true, 512, JSON_THROW_ON_ERROR) : false;
             if(is_array($json) && is_array($json['aio_services_v1'])) {
                 foreach ($json['aio_services_v1'] as $service) {
                     $documentation = is_string($service['documentation']) ? $service['documentation'] : '';

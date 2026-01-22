@@ -6,9 +6,10 @@ labels: 0. Needs triage
 
 <!---
 - Before submitting a bug report, please read through the documentation available at https://github.com/nextcloud/all-in-one#faq
-- If you use Cloudflare Tunnel or Cloudflare Proxy, see https://github.com/nextcloud/all-in-one#notes-on-cloudflare-proxytunnel for known issues/limitations and workarounds.
-- For issues with Collabora or Talk, make sure to follow https://github.com/nextcloud/all-in-one/discussions/1358. It may already resolve your issue and makes it easier to help you.
-
+- Additional documentation is available here: https://github.com/nextcloud/all-in-one/discussions/categories/wiki
+- You should also read through existing questions and their answer here: https://github.com/nextcloud/all-in-one/discussions/categories/questions
+- Additional threads can be found here: https://help.nextcloud.com/tag/aio
+- Existing feature requests are listed here: https://github.com/nextcloud/all-in-one/discussions/categories/ideas
 --->
 
 <!--- Please fill out the whole template below -->
@@ -29,4 +30,10 @@ labels: 0. Needs triage
 
 #### Docker run command or docker-compose file that you used
 
-#### Other valuable info <!--- (like logs, screenshots & Co.) -->
+#### Output of `sudo docker logs nextcloud-aio-mastercontainer`
+
+#### Output of `sudo docker inspect nextcloud-aio-mastercontainer`
+
+#### Output of `sudo docker ps -a`
+
+#### Other valuable info <!--- (like additional logs, screenshots & Co.) -->

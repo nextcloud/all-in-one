@@ -31,7 +31,7 @@ readonly class GitHubContainerRegistryManager
                 'https://ghcr.io/token?scope=repository:' . $name . ':pull'
             );
             $body = $authTokenRequest->getBody()->getContents();
-            $decodedBody = json_decode($body, true);
+            $decodedBody = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             if (isset($decodedBody['token'])) {
                 $authToken = $decodedBody['token'];
                 $manifestRequest = $this->guzzleClient->request(

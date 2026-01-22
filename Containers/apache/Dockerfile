@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:latest
-FROM caddy:2.10.0-alpine AS caddy
+FROM caddy:2.10.2-alpine AS caddy
 
 # From https://github.com/docker-library/httpd/blob/master/2.4/alpine/Dockerfile
-FROM httpd:2.4.63-alpine3.21
+FROM httpd:2.4.66-alpine3.23
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
@@ -88,4 +88,5 @@ CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"

@@ -10,7 +10,7 @@ jobs:
     name: update talk
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6.0.1
     - name: Run talk-container-update
       run: |
         # Recording
@@ -45,7 +45,7 @@ jobs:
         sed -i "s|^ARG JANUS_VERSION=.*$|ARG JANUS_VERSION=$janus_version|" ./Containers/talk/Dockerfile
         
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+      uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
       with:
         commit-message: talk-update automated change
         signoff: true

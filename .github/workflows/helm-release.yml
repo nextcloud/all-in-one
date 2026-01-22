@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.1
 
       - name: Turnstyle
-        uses: softprops/turnstyle@807f6009e7cee5c2c9faa41ccef03a8bb24b06ab # v2
+        uses: softprops/turnstyle@e565d2d86403c5d23533937e95980570545e5586 # v2
         with:
           continue-after-seconds: 180
         env:
@@ -32,7 +32,7 @@ jobs:
 
       # See https://github.com/helm/chart-releaser-action/issues/6
       - name: Set up Helm
-        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
         with:
           version: v3.6.3
 

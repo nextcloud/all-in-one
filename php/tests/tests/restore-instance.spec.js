@@ -28,7 +28,7 @@ test('Restore instance', async ({ page: setupPage }) => {
   await containersPage.locator('#domain').click();
   await containersPage.locator('#domain').fill('example.com');
   await containersPage.getByRole('button', { name: 'Submit domain' }).click();
-  await expect(containersPage.locator('body')).toContainText('Domain does not point to this server or the reverse proxy is not configured correctly.');
+  await expect(containersPage.locator('body')).toContainText('Domain does not point to this server or the reverse proxy is not configured correctly.', { timeout: 15 * 1000 });
 
   // Reject invalid backup location
   await containersPage.locator('#borg_restore_host_location').click();
@@ -59,6 +59,10 @@ test('Restore instance', async ({ page: setupPage }) => {
   // Check integrity and restore backup
   await containersPage.getByRole('button', { name: 'Check backup integrity' }).click();
   await expect(containersPage.getByRole('main')).toContainText('Last check successful!', { timeout: 5 * 60 * 1000 });
+  containersPage.once('dialog', dialog => {
+    console.log(`Dialog message: ${dialog.message()}`)
+    dialog.accept()
+  });
   await containersPage.getByRole('button', { name: 'Restore selected backup' }).click();
   await expect(containersPage.getByRole('main')).toContainText('Backup container is currently running:', { timeout: 1 * 60 * 1000 });
 

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.24.4-alpine3.21 AS go
+FROM golang:1.25.6-alpine3.23 AS go
 
-ENV IMAGINARY_HASH=1d4e251cfcd58ea66f8361f8721d7b8cc85002a3
+ENV IMAGINARY_HASH=6a274b488759a896aff02f52afee6e50b5e3a3ee
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -14,7 +14,7 @@ RUN set -ex; \
         build-base; \
     go install github.com/h2non/imaginary@"$IMAGINARY_HASH";
 
-FROM alpine:3.21.3
+FROM alpine:3.23.2
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
@@ -43,4 +43,5 @@ ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"

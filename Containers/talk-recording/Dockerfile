@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.13.5-alpine3.21
+FROM python:3.14.2-alpine3.23
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
-ENV RECORDING_VERSION=v0.1
+ENV RECORDING_VERSION=v0.2.1
 ENV ALLOW_ALL=false
 ENV HPB_PROTOCOL=https
 ENV NC_PROTOCOL=https
@@ -58,4 +58,5 @@ CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.co
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"

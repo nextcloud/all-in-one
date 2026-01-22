@@ -25,7 +25,7 @@ readonly class ContainerDefinitionFetcher {
         $containers = $this->FetchDefinition();
 
         foreach ($containers as $container) {
-            if ($container->GetIdentifier() === $id) {
+            if ($container->identifier === $id) {
                 return $container;
             }
         }
@@ -38,13 +38,13 @@ readonly class ContainerDefinitionFetcher {
      */
     private function GetDefinition(): array
     {
-        $data = json_decode(file_get_contents(__DIR__ . '/../containers.json'), true);
+        $data = json_decode((string)file_get_contents(DataConst::GetContainersDefinitionPath()), true, 512, JSON_THROW_ON_ERROR);
 
         $additionalContainerNames = [];
         foreach ($this->configurationManager->GetEnabledCommunityContainers() as $communityContainer) {
             if ($communityContainer !== '') {
                 $path = DataConst::GetCommunityContainersDirectory() . '/' . $communityContainer . '/' . $communityContainer . '.json';
-                $additionalData = json_decode(file_get_contents($path), true);
+                $additionalData = json_decode((string)file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
                 $data = array_merge_recursive($data, $additionalData);
                 if (isset($additionalData['aio_services_v1'][0]['display_name']) && $additionalData['aio_services_v1'][0]['display_name'] !== '') {
                     // Store container_name of community containers in variable for later
@@ -66,6 +66,9 @@ readonly class ContainerDefinitionFetcher {
             } elseif ($entry['container_name'] === 'nextcloud-aio-collabora') {
                 if (!$this->configurationManager->isCollaboraEnabled()) {
                     continue;
+                }
+                if ($this->configurationManager->isCollaboraSubscriptionEnabled()) {
+                    $entry['image'] = 'ghcr.io/nextcloud-releases/aio-collabora-online';
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-talk') {
                 if (!$this->configurationManager->isTalkEnabled()) {
@@ -239,9 +242,12 @@ readonly class ContainerDefinitionFetcher {
                 $internalPort = $entry['internal_port'];
             }
 
-            $secrets = [];
             if (isset($entry['secrets'])) {
-                $secrets = $entry['secrets'];
+                // All secrets are registered with the configuration when they 
+                // are discovered so they can be later generated at time-of-use.
+                foreach ($entry['secrets'] as $secret) {
+                    $this->configurationManager->RegisterSecret($secret);
+                }
             }
 
             $uiSecret = '';
@@ -320,7 +326,6 @@ readonly class ContainerDefinitionFetcher {
                 $volumes,
                 $variables,
                 $dependsOn,
-                $secrets,
                 $uiSecret,
                 $devices,
                 $enableNvidiaGpu,

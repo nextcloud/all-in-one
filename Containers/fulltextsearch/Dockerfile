@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Probably from here https://github.com/elastic/elasticsearch/blob/main/distribution/docker/src/docker/Dockerfile
-FROM elasticsearch:8.18.2
+FROM elasticsearch:8.19.10
 
 USER root
 
@@ -22,5 +22,6 @@ USER 1000:0
 
 HEALTHCHECK --interval=10s --timeout=5s --start-period=1m --retries=5 CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"
 ENV ES_JAVA_OPTS="-Xms512M -Xmx512M"

@@ -48,7 +48,8 @@
             "environment": [
                 "TZ=%TIMEZONE%",
                 "NC_DOMAIN=%NC_DOMAIN%",
-                "STALWART_USER_PASS=%STALWART_USER_PASS%"
+                "STALWART_USER_PASS=%STALWART_USER_PASS%",
+                "CLAMAV_ENABLED=%CLAMAV_ENABLED%"
             ],
             "secrets": [
                 "STALWART_USER_PASS"

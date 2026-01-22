@@ -33,17 +33,25 @@ if [ "$*" != "" ]; then
 fi
 
 # Check if socket is available and readable
-if ! [ -a "/var/run/docker.sock" ]; then
+if ! [ -e "/var/run/docker.sock" ]; then
     print_red "Docker socket is not available. Cannot continue."
     echo "Please make sure to mount the docker socket into /var/run/docker.sock inside the container!"
     echo "If you did this by purpose because you don't want the container to have access to the docker socket, see https://github.com/nextcloud/all-in-one/tree/main/manual-install."
+    echo "And https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
     exit 1
 elif ! mountpoint -q "/mnt/docker-aio-config"; then
     print_red "/mnt/docker-aio-config is not a mountpoint. Cannot proceed!"
     echo "Please make sure to mount the nextcloud_aio_mastercontainer docker volume into /mnt/docker-aio-config inside the container!"
     echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
     exit 1
-elif ! sudo -u www-data test -r /var/run/docker.sock; then
+elif mountpoint -q /var/www/docker-aio/php/containers.json; then
+    print_red "/var/www/docker-aio/php/containers.json is a mountpoint. Cannot proceed!"
+    echo "This is a not-supported customization of the mastercontainer!"
+    echo "Please remove this bind-mount from the mastercontainer."
+    echo "If you need to customize things, feel free to use https://github.com/nextcloud/all-in-one/tree/main/manual-install"
+    echo "See https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
+    exit 1
+elif ! sudo -E -u www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
     DOCKER_GROUP=$(stat -c '%G' /var/run/docker.sock)
     DOCKER_GROUP_ID=$(stat -c '%g' /var/run/docker.sock)
@@ -61,28 +69,68 @@ elif ! sudo -u www-data test -r /var/run/docker.sock; then
         groupadd -g "$DOCKER_GROUP_ID" docker
         usermod -aG docker www-data
     fi
-    if ! sudo -u www-data test -r /var/run/docker.sock; then
+    if ! sudo -E -u www-data test -r /var/run/docker.sock; then
         print_red "Docker socket is not readable by the www-data user. Cannot continue."
         exit 1
     fi
 fi
 
-# Check if api version is supported
-if ! sudo -u www-data docker info &>/dev/null; then
-    print_red "Cannot connect to the docker socket. Cannot proceed."
-    echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
-    echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
-    echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
-    exit 1
-fi
+# Get default docker api version
 API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
 API_VERSION="$(grep -oP 'const string API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP '[0-9]+.[0-9]+' | head -1)"
+if [ -z "$API_VERSION" ]; then
+    print_red "Could not get API_VERSION. Something is wrong!"
+    exit 1
+fi
+
+# Check if DOCKER_API_VERSION is set globally
+if [ -n "$DOCKER_API_VERSION" ]; then
+    if ! echo "$DOCKER_API_VERSION" | grep -q '^[0-9].[0-9]\+$'; then
+        print_red "You've set DOCKER_API_VERSION but not to an allowed value.
+The string must be a version number like e.g. '1.44'.
+It is set to '$DOCKER_API_VERSION'."
+        exit 1
+    fi
+    print_red "DOCKER_API_VERSION was found to be set to '$DOCKER_API_VERSION'."
+    print_red "Please note that only v$API_VERSION is officially supported and tested by the maintainers of Nextcloud AIO."
+    print_red "So you run on your own risk and things might break without warning."
+else
+    # Export docker api version to use it everywhere
+    export DOCKER_API_VERSION="$API_VERSION"
+fi
+
+# Set a fallback docker api version. Needed for api version check. 
+# The check will not work otherwise on old docker versions
+FALLBACK_DOCKER_API_VERSION="1.41"
+
+# Check if docker info can be used
+if ! sudo -E -u www-data docker info &>/dev/null; then
+    if ! sudo -E -u www-data DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker info &>/dev/null; then
+        print_red "Cannot connect to the docker socket. Cannot proceed."
+        echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
+        echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
+        echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
+        echo "On macOS, see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-macos"
+        echo "Another possibility might be that Docker api v$API_VERSION is not supported by your docker daemon."
+        echo "In that case, you should report this to https://github.com/nextcloud/all-in-one/issues"
+        echo ""
+        exit 1
+    fi
+fi
+
+# Docker api version check
 # shellcheck disable=SC2001
-API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
-LOCAL_API_VERSION_NUMB="$(sudo -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+API_VERSION_NUMB="$(echo "$DOCKER_API_VERSION" | sed 's/\.//')"
+LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+if [ -z "$LOCAL_API_VERSION_NUMB" ]; then
+    LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+fi
 if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
     if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
-        print_red "Docker API v$API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
+        print_red "Docker API v$DOCKER_API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
+        echo "Alternatively, set the DOCKER_API_VERSION environmental variable to a compatible version."
+        echo "However please note that only v$API_VERSION is officially supported and tested by the maintainers of Nextcloud AIO."
+        echo "See https://github.com/nextcloud/all-in-one#how-to-adjust-the-internally-used-docker-api-version"
         exit 1
     fi
 else
@@ -91,7 +139,7 @@ else
 fi
 
 # Check Storage drivers
-STORAGE_DRIVER="$(sudo -u www-data docker info | grep "Storage Driver")"
+STORAGE_DRIVER="$(sudo -E -u www-data docker info | grep "Storage Driver")"
 # Check if vfs is used: https://github.com/nextcloud/all-in-one/discussions/1467
 if echo "$STORAGE_DRIVER" | grep -q vfs; then
     echo "$STORAGE_DRIVER"
@@ -102,23 +150,23 @@ elif echo "$STORAGE_DRIVER" | grep -q fuse-overlayfs; then
 fi
 
 # Check if snap install
-if sudo -u www-data docker info | grep "Docker Root Dir" | grep "/var/snap/docker/"; then
+if sudo -E -u www-data docker info | grep "Docker Root Dir" | grep "/var/snap/docker/"; then
     print_red "Warning: It looks like your installation uses docker installed via snap."
     print_red "This comes with some limitations and is disrecommended by the docker maintainers."
     print_red "See for example https://github.com/nextcloud/all-in-one/discussions/4890#discussioncomment-10386752"
 fi
 
 # Check if startup command was executed correctly
-if ! sudo -u www-data docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-mastercontainer$"; then
+if ! sudo -E -u www-data docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-mastercontainer$"; then
     print_red "It seems like you did not give the mastercontainer the correct name? (The 'nextcloud-aio-mastercontainer' container was not found.)
 Using a different name is not supported since mastercontainer updates will not work in that case!
 If you are on docker swarm and try to run AIO, see https://github.com/nextcloud/all-in-one#can-i-run-this-with-docker-swarm"
     exit 1
-elif ! sudo -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nextcloud_aio_mastercontainer$"; then
+elif ! sudo -E -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nextcloud_aio_mastercontainer$"; then
     print_red "It seems like you did not give the mastercontainer volume the correct name? (The 'nextcloud_aio_mastercontainer' volume was not found.)
 Using a different name is not supported since the built-in backup solution will not work in that case!"
     exit 1
-elif ! sudo -u www-data docker inspect nextcloud-aio-mastercontainer | grep -q "nextcloud_aio_mastercontainer"; then
+elif ! sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer | grep -q "nextcloud_aio_mastercontainer"; then
     print_red "It seems like you did not attach the 'nextcloud_aio_mastercontainer' volume to the mastercontainer?
 This is not supported since the built-in backup solution will not work in that case!"
     exit 1
@@ -269,6 +317,7 @@ if ! curl --no-progress-meter https://ghcr.io/v2/ >/dev/null; then
     echo "Most likely is something blocking access to it."
     echo "You should be able to fix this by following https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html"
     echo "Another solution is using https://github.com/nextcloud/all-in-one/tree/main/manual-install"
+    echo "See https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
     exit 1
 fi
 
@@ -278,6 +327,13 @@ if [ -n "$TZ" ]; then
     echo "The correct timezone can be set in the AIO interface later on!"
     # Disable exit since it seems to be by default set on unraid and we dont want to break these instances
     # exit 1
+fi
+# Check that http proxy or no_proxy variable is not set which AIO does not support
+if [ -n "$HTTP_PROXY" ] || [ -n "$http_proxy" ] || [ -n "$HTTPS_PROXY" ] || [ -n "$https_proxy" ] || [ -n "$NO_PROXY" ] || [ -n "$no_proxy" ]; then
+    print_red "The environmental variable HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy, NO_PROXY or no_proxy has been set which is not supported by AIO."
+    echo "If you need this, then you should use https://github.com/nextcloud/all-in-one/tree/main/manual-install"
+    echo "See https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
+    exit 1
 fi
 if mountpoint -q /etc/localtime; then
     print_red "/etc/localtime has been mounted into the container which is not allowed because AIO only supports running in the default Etc/UTC timezone!"
@@ -358,6 +414,11 @@ export TZ=Etc/UTC
 
 # Fix apache startup
 rm -f /var/run/apache2/httpd.pid
+
+# Fix caddy startup
+if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
+    rm -rf /mnt/docker-aio-config/caddy/locks/*
+fi
 
 # Fix the Caddyfile format
 caddy fmt --overwrite /Caddyfile

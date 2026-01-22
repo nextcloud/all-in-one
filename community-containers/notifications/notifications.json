@@ -1,0 +1,23 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-notifications",
+            "display_name": "Notifications",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/notifications",
+            "image": "ghcr.io/szaimen/aio-notifications",
+            "image_tag": "v1",
+            "internal_port": "10000",
+            "restart": "unless-stopped",
+            "volumes": [
+                {
+                  "source": "%WATCHTOWER_DOCKER_SOCKET_PATH%",
+                  "destination": "/var/run/docker.sock",
+                  "writeable": false
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ]
+        }
+    ]
+}

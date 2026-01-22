@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.11.6-scratch AS nats
-FROM eturnal/eturnal:1.12.1 AS eturnal
-FROM strukturag/nextcloud-spreed-signaling:2.0.3 AS signaling
-FROM alpine:3.21.3 AS janus
+FROM nats:2.12.3-scratch AS nats
+FROM eturnal/eturnal:1.12.2-alpine AS eturnal
+FROM strukturag/nextcloud-spreed-signaling:2.0.4 AS signaling
+FROM alpine:3.23.2 AS janus
 
-ARG JANUS_VERSION=v1.3.1
+ARG JANUS_VERSION=v1.3.3
 WORKDIR /src
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -35,7 +35,7 @@ RUN set -ex; \
     make configs; \
     rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
 
-FROM alpine:3.21.3
+FROM alpine:3.23.2
 ENV ETURNAL_ETC_DIR="/conf"
 ENV SKIP_CERT_VERIFY=false
 COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/local                          /usr/local
@@ -107,4 +107,5 @@ CMD ["supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"

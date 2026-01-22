@@ -1,13 +1,21 @@
 # syntax=docker/dockerfile:latest
-FROM ghcr.io/nicholas-fedor/watchtower:1.11.5 AS watchtower
+FROM golang:1.25.6-alpine3.23 AS go
 
-FROM alpine:3.21.3
+ENV WATCHTOWER_COMMIT_HASH=f522ce27e1fbe4618da54833025a95be62aa838a	
+
+RUN set -ex; \
+    apk upgrade --no-cache -a; \
+    apk add --no-cache \
+        build-base; \
+    go install github.com/nicholas-fedor/watchtower@$WATCHTOWER_COMMIT_HASH # v1.14.0
+
+FROM alpine:3.23.2
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache bash ca-certificates tzdata
 
-COPY --from=watchtower /watchtower /watchtower
+COPY --from=go /go/bin/watchtower /watchtower
 
 COPY --chmod=775 start.sh /start.sh
 
@@ -16,4 +24,5 @@ USER root
 
 ENTRYPOINT ["/start.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"

@@ -27,7 +27,7 @@ cp latest.yml latest.yml.backup
 
 # Additional config
 # shellcheck disable=SC1083
-sed -i -E '/^( *- )(NET_RAW|SYS_NICE|MKNOD|SYS_ADMIN|CHOWN)$/!s/( *- )([A-Z_]+)$/\1\2=${\2}/' latest.yml
+sed -i -E '/^( *- )(NET_RAW|SYS_NICE|MKNOD|SYS_ADMIN|CHOWN|SYS_CHROOT|FOWNER|MAC_OVERRIDE|BLOCK_SUSPEND|AUDIT_READ)$/!s/( *- )([A-Z_]+)$/\1\2=${\2}/' latest.yml
 cp sample.conf /tmp/
 sed -i 's|^|export |' /tmp/sample.conf
 # shellcheck disable=SC1091
@@ -252,7 +252,7 @@ find ./ -name '*talk-service.yaml' -exec grep -v '{{ .Values.TALK.*}}\|protocol:
 # shellcheck disable=SC1083
 find ./ -name '*talk-service.yaml' -exec mv /tmp/talk-service.copy \{} \;
 # shellcheck disable=SC1083
-find ./ -name '*service.yaml' -exec sed -i "/type: LoadBalancer/a\ \ externalTrafficPolicy: Local" \{} \;
+find ./ -name '*apache-service.yaml' -exec sed -i "/type: LoadBalancer/a\ \ externalTrafficPolicy: Local" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*service.yaml' -exec sed -i "/^spec:/a\ \ ipFamilyPolicy: PreferDualStack" \{} \;
 # shellcheck disable=SC1083
@@ -343,6 +343,21 @@ EOL
 # shellcheck disable=SC1083
 find ./ -name '*talk-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-talk.config"  \{} \;
 
+# Additional collabora config
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml' -exec sed -i "s/image: ghcr.io.*/IMAGE_PLACEHOLDER/"  \{} \;
+cat << EOL > /tmp/additional-collabora.config
+          {{- if contains "--o:support_key=" (join " " (.Values.ADDITIONAL_COLLABORA_OPTIONS | default list)) }}
+          image: ghcr.io/nextcloud-releases/aio-collabora-online:$DOCKER_TAG
+          {{- else }}
+          image: ghcr.io/nextcloud-releases/aio-collabora:$DOCKER_TAG
+          {{- end }}
+EOL
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml' -exec sed -i "/IMAGE_PLACEHOLDER/r /tmp/additional-collabora.config"  \{} \;
+# shellcheck disable=SC1083
+find ./ -name '*collabora-deployment.yaml' -exec sed -i "/IMAGE_PLACEHOLDER/d"  \{} \;
+
 cat << EOL > templates/nextcloud-aio-networkpolicy.yaml
 {{- if eq .Values.NETWORK_POLICY_ENABLED "yes" }}
 # https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/04-deny-traffic-from-other-namespaces.md
@@ -392,7 +407,7 @@ rm latest.yml
 mv latest.yml.backup latest.yml
 
 # Get version of AIO
-AIO_VERSION="$(grep 'Nextcloud AIO ' ../php/templates/containers.twig | grep -oP '[0-9]+.[0-9]+.[0-9]+')"
+AIO_VERSION="$(grep 'Nextcloud AIO ' ../php/templates/includes/aio-version.twig | grep -oP '[0-9]+.[0-9]+.[0-9]+')"
 sed -i "s|^version:.*|version: $AIO_VERSION|" ../helm-chart/Chart.yaml
 
 # Conversion of sample.conf
@@ -410,8 +425,8 @@ sed -i 's|17179869184|"17179869184"|' /tmp/sample.conf
 # shellcheck disable=SC2129
 echo "" >> /tmp/sample.conf
 # shellcheck disable=SC2129
-echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes. This should be a fast storage like SSD backed storage!' >> /tmp/sample.conf
-echo 'STORAGE_CLASS_DATA:        # Allows to set a dedicated storage class for the Nextcloud data volume. This can be a bit slower storage than the one above. ⚠️ Warning: only set this for new installations, not existing ones!' >> /tmp/sample.conf
+echo 'STORAGE_CLASS:        # By setting this, you can adjust the storage class for your volumes. This should be a fast storage like SSD backed storage! This storage class must provide RWX and RWO volumes (ReadWriteMany and ReadWriteOnce).' >> /tmp/sample.conf
+echo 'STORAGE_CLASS_DATA:        # Allows to set a dedicated storage class for the Nextcloud data volume. This can be a bit slower storage than the one above. This storage class must provide RWX volumes (ReadWriteMany). ⚠️ Warning: only set this for new installations, not existing ones!' >> /tmp/sample.conf
 for variable in "${VOLUME_VARIABLE[@]}"; do
     echo "$variable: 1Gi       # You can change the size of the $(echo "$variable" | sed 's|_STORAGE_SIZE||;s|_|-|g' | tr '[:upper:]' '[:lower:]') volume that default to 1Gi with this value" >> /tmp/sample.conf
 done

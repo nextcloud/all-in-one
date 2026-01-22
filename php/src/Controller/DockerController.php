@@ -22,7 +22,8 @@ readonly class DockerController {
     private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
-        foreach($container->GetDependsOn() as $dependency) {
+        // Start all dependencies first and then itself
+        foreach($container->dependsOn as $dependency) {
             $this->PerformRecursiveContainerStart($dependency, $pullImage);
         }
 
@@ -33,31 +34,30 @@ readonly class DockerController {
             return;
         }
 
-        // Skip database image pull if the last shutdown was not clean
-        if ($id === 'nextcloud-aio-database') {
-            if ($this->dockerActionManager->GetDatabasecontainerExitCode() > 0) {
-                $pullImage = false;
-                error_log('Not pulling the latest database image because the container was not correctly shut down.');
-            }
-        }
-
-        // Check if registry is reachable in order to make sure that we do not try to pull an image if it is down
-        // and try to mitigate issues that are arising due to that
-        if ($pullImage) {
-            if (!$this->dockerActionManager->isRegistryReachable($container)) {
-                $pullImage = false;
-                error_log('Not pulling the ' . $container->GetContainerName() . ' image for the ' . $container->GetIdentifier() . ' container because the registry does not seem to be reachable.');
-            }
-        }
-
         $this->dockerActionManager->DeleteContainer($container);
         $this->dockerActionManager->CreateVolumes($container);
-        if ($pullImage) {
-            $this->dockerActionManager->PullImage($container);
-        }
+        $this->dockerActionManager->PullImage($container, $pullImage);
         $this->dockerActionManager->CreateContainer($container);
         $this->dockerActionManager->StartContainer($container);
         $this->dockerActionManager->ConnectContainerToNetwork($container);
+    }
+
+    private function PerformRecursiveImagePull(string $id) : void {
+        $container = $this->containerDefinitionFetcher->GetContainerById($id);
+
+        // Pull all dependencies first and then itself
+        foreach($container->dependsOn as $dependency) {
+            $this->PerformRecursiveImagePull($dependency);
+        }
+
+        $this->dockerActionManager->PullImage($container, true);
+    }
+
+    public function PullAllContainerImages(): void {
+
+        $id = self::TOP_CONTAINER;
+
+        $this->PerformRecursiveImagePull($id);
     }
 
     public function GetLogs(Request $request, Response $response, array $args) : Response
@@ -83,17 +83,16 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerBackup(Request $request, Response $response, array $args) : Response {
-        $this->startBackup();
-        return $response->withStatus(201)->withHeader('Location', '/');
+        $forceStopNextcloud = true;
+        $this->startBackup($forceStopNextcloud);
+        return $response->withStatus(201)->withHeader('Location', '.');
     }
 
-    public function startBackup() : void {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'backup';
-        $this->configurationManager->WriteConfig($config);
+    public function startBackup(bool $forceStopNextcloud = false) : void {
+        $this->configurationManager->SetBackupMode('backup');
 
         $id = self::TOP_CONTAINER;
-        $this->PerformRecursiveContainerStop($id);
+        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
@@ -101,21 +100,31 @@ readonly class DockerController {
 
     public function StartBackupContainerCheck(Request $request, Response $response, array $args) : Response {
         $this->checkBackup();
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', '.');
+    }
+
+    public function StartBackupContainerList(Request $request, Response $response, array $args) : Response {
+        $this->listBackup();
+        return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function checkBackup() : void {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'check';
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->SetBackupMode('check');
+
+        $id = 'nextcloud-aio-borgbackup';
+        $this->PerformRecursiveContainerStart($id);
+    }
+
+    private function listBackup() : void {
+        $this->configurationManager->SetBackupMode('list');
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
+        $this->configurationManager->SetBackupMode('restore');
         $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'restore';
         $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
         if (isset($request->getParsedBody()['restore-exclude-previews'])) {
             $config['restore-exclude-previews'] = 1;
@@ -125,33 +134,30 @@ readonly class DockerController {
         $this->configurationManager->WriteConfig($config);
 
         $id = self::TOP_CONTAINER;
-        $this->PerformRecursiveContainerStop($id);
+        $forceStopNextcloud = true;
+        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function StartBackupContainerCheckRepair(Request $request, Response $response, array $args) : Response {
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'check-repair';
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->SetBackupMode('check-repair');
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
 
         // Restore to backup check which is needed to make the UI logic work correctly
-        $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'check';
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->SetBackupMode('check');
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
+        $this->configurationManager->SetBackupMode('test');
         $config = $this->configurationManager->GetConfig();
-        $config['backup-mode'] = 'test';
         $config['instance_restore_attempt'] = 0;
         $this->configurationManager->WriteConfig($config);
 
@@ -161,7 +167,7 @@ readonly class DockerController {
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function StartContainer(Request $request, Response $response, array $args) : Response
@@ -169,34 +175,41 @@ readonly class DockerController {
         $uri = $request->getUri();
         $host = $uri->getHost();
         $port = $uri->getPort();
+        $path = $request->getParsedBody()['base_path'] ?? '';
         if ($port === 8000) {
             error_log('The AIO_URL-port was discovered to be 8000 which is not expected. It is now set to 443.');
             $port = 443;
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = 31;
+            $installLatestMajor = 32;
         } else {
             $installLatestMajor = "";
         }
 
         $config = $this->configurationManager->GetConfig();
         // set AIO_URL
-        $config['AIO_URL'] = $host . ':' . $port;
+        $config['AIO_URL'] = $host . ':' . (string)$port . $path;
         // set wasStartButtonClicked
         $config['wasStartButtonClicked'] = 1;
         // set install_latest_major
         $config['install_latest_major'] = $installLatestMajor;
         $this->configurationManager->WriteConfig($config);
 
+        // Do not pull container images in case 'bypass_container_update' is set via url params
+        // Needed for local testing
+        $pullImage = !isset($request->getParsedBody()['bypass_container_update']);
+        if ($pullImage === false) {
+            error_log('WARNING: Not pulling container images. Instead, using local ones.');
+        }
         // Start container
-        $this->startTopContainer(true);
+        $this->startTopContainer($pullImage);
 
         // Clear apcu cache in order to check if container updates are available
         // Temporarily disabled as it leads much faster to docker rate limits
         // apcu_clear_cache();
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function startTopContainer(bool $pullImage) : void {
@@ -215,7 +228,7 @@ readonly class DockerController {
 
     public function StartWatchtowerContainer(Request $request, Response $response, array $args) : Response {
         $this->startWatchtower();
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function startWatchtower() : void {
@@ -224,24 +237,36 @@ readonly class DockerController {
         $this->PerformRecursiveContainerStart($id);
     }
 
-    private function PerformRecursiveContainerStop(string $id) : void
+    private function PerformRecursiveContainerStop(string $id, bool $forceStopNextcloud = false) : void
     {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
-        foreach($container->GetDependsOn() as $dependency) {
-            $this->PerformRecursiveContainerStop($dependency);
+
+        // This is a hack but no better solution was found for the meantime
+        // Stop Collabora first to make sure it force-saves
+        // See https://github.com/nextcloud/richdocuments/issues/3799
+        if ($id === self::TOP_CONTAINER && $this->configurationManager->isCollaboraEnabled()) {
+            $this->PerformRecursiveContainerStop('nextcloud-aio-collabora');
         }
 
-        // Disconnecting is not needed. This also allows to start the containers manually via docker-cli
-        //$this->dockerActionManager->DisconnectContainerFromNetwork($container);
-        $this->dockerActionManager->StopContainer($container);
+        // Stop itself first and then all the dependencies
+        if ($id !== 'nextcloud-aio-nextcloud') {
+            $this->dockerActionManager->StopContainer($container);
+        } else {
+            // We want to stop the Nextcloud container after 10s and not wait for the configured stop_grace_period
+            $this->dockerActionManager->StopContainer($container, $forceStopNextcloud);
+        }
+        foreach($container->dependsOn as $dependency) {
+            $this->PerformRecursiveContainerStop($dependency, $forceStopNextcloud);
+        }
     }
 
     public function StopContainer(Request $request, Response $response, array $args) : Response
     {
         $id = self::TOP_CONTAINER;
-        $this->PerformRecursiveContainerStop($id);
+        $forceStopNextcloud = true;
+        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
 
-        return $response->withStatus(201)->withHeader('Location', '/');
+        return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function stopTopContainer() : void {

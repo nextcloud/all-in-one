@@ -60,6 +60,7 @@ $app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . 
 $app->post('/api/docker/start', AIO\Controller\DockerController::class . ':StartContainer');
 $app->post('/api/docker/backup', AIO\Controller\DockerController::class . ':StartBackupContainerBackup');
 $app->post('/api/docker/backup-check', AIO\Controller\DockerController::class . ':StartBackupContainerCheck');
+$app->post('/api/docker/backup-list', AIO\Controller\DockerController::class . ':StartBackupContainerList');
 $app->post('/api/docker/backup-check-repair', AIO\Controller\DockerController::class . ':StartBackupContainerCheckRepair');
 $app->post('/api/docker/backup-test', AIO\Controller\DockerController::class . ':StartBackupContainerTest');
 $app->post('/api/docker/restore', AIO\Controller\DockerController::class . ':StartBackupContainerRestore');
@@ -76,16 +77,18 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $view->addExtension(new \AIO\Twig\ClassExtension());
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
     $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
-    /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
-    $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
+    $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
     /** @var \AIO\Controller\DockerController $dockerController */
     $dockerController = $container->get(\AIO\Controller\DockerController::class);
-    $dockerActionManger->ConnectMasterContainerToNetwork();
+    $dockerActionManager->ConnectMasterContainerToNetwork();
     $dockerController->StartDomaincheckContainer();
 
     // Check if bypass_mastercontainer_update is provided on the URL, a special developer mode to bypass a mastercontainer update and use local image.
     $params = $request->getQueryParams();
     $bypass_mastercontainer_update = isset($params['bypass_mastercontainer_update']);
+    $bypass_container_update = isset($params['bypass_container_update']);
+    $skip_domain_validation = isset($params['skip_domain_validation']);
 
     return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->GetDomain(),
@@ -96,17 +99,17 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_password' => $configurationManager->GetAndGenerateSecret('NEXTCLOUD_PASSWORD'),
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
         'borgbackup_password' => $configurationManager->GetAndGenerateSecret('BORGBACKUP_PASSWORD'),
-        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManger->IsMastercontainerUpdateAvailable() ),
+        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
-        'is_backup_container_running' => $dockerActionManger->isBackupContainerRunning(),
-        'backup_exit_code' => $dockerActionManger->GetBackupcontainerExitCode(),
+        'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
+        'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
         'is_instance_restore_attempt' => $configurationManager->isInstanceRestoreAttempt(),
-        'borg_backup_mode' => $configurationManager->GetBorgBackupMode(),
+        'borg_backup_mode' => $configurationManager->GetBackupMode(),
         'was_start_button_clicked' => $configurationManager->wasStartButtonClicked(),
-        'has_update_available' => $dockerActionManger->isAnyUpdateAvailable(),
+        'has_update_available' => $dockerActionManager->isAnyUpdateAvailable(),
         'last_backup_time' => $configurationManager->GetLastBackupTime(),
         'backup_times' => $configurationManager->GetBackupTimes(),
-        'current_channel' => $dockerActionManger->GetCurrentChannel(),
+        'current_channel' => $dockerActionManager->GetCurrentChannel(),
         'is_clamav_enabled' => $configurationManager->isClamavEnabled(),
         'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled(),
         'is_collabora_enabled' => $configurationManager->isCollaboraEnabled(),
@@ -115,7 +118,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'daily_backup_time' => $configurationManager->GetDailyBackupTime(),
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
         'timezone' => $configurationManager->GetTimezone(),
-        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped(),
+        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
         'talk_port' => $configurationManager->GetTalkPort(),
         'collabora_dictionaries' => $configurationManager->GetCollaboraDictionaries(),
         'collabora_additional_options' => $configurationManager->GetAdditionalCollaboraOptions(),
@@ -136,14 +139,15 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled(),
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->GetEnabledCommunityContainers(),
+        'bypass_container_update' => $bypass_container_update,
     ]);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
-    /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
-    $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
+    $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
     return $view->render($response, 'login.twig', [
-        'is_login_allowed' => $dockerActionManger->isLoginAllowed(),
+        'is_login_allowed' => $dockerActionManager->isLoginAllowed(),
     ]);
 });
 $app->get('/setup', function (Request $request, Response $response, array $args) use ($container) {
@@ -176,17 +180,17 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
     $setup = $container->get(\AIO\Data\Setup::class);
     if($setup->CanBeInstalled()) {
         return $response
-            ->withHeader('Location', '/setup')
+            ->withHeader('Location', 'setup')
             ->withStatus(302);
     }
 
     if($authManager->IsAuthenticated()) {
         return $response
-            ->withHeader('Location', '/containers')
+            ->withHeader('Location', 'containers')
             ->withStatus(302);
     } else {
         return $response
-            ->withHeader('Location', '/login')
+            ->withHeader('Location', 'login')
             ->withStatus(302);
     }
 });

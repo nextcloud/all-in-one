@@ -138,11 +138,6 @@ if [ "$BORG_MODE" = backup ]; then
         NEW_REPOSITORY=1
         if ! borg init --debug --encryption=repokey-blake2; then
             echo "Could not initialize borg repository."
-            if [ -z "$BORG_REMOTE_REPO" ]; then
-                # Originally we checked for presence of the config file instead of calling `borg info`. Likely `borg info`
-                # will error on a partially initialized repo, so this line is probably no longer necessary
-                rm -f "$BORG_BACKUP_DIRECTORY/config"
-            fi
             exit 1
         fi
 
@@ -199,7 +194,7 @@ if [ "$BORG_MODE" = backup ]; then
     if [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup" ]; then
         BORG_EXCLUDE+=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/")
         BORG_INCLUDE+=(--pattern="+/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup")
-        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextclouds data directory. Excluding the data directory from backup!"
+        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextcloud's data directory. Excluding the data directory from backup!"
     # Exclude preview folder if .noaiobackup file was found
     elif [ -f /nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/.noaiobackup ]; then
         BORG_EXCLUDE+=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/")
@@ -344,7 +339,7 @@ if [ "$BORG_MODE" = restore ]; then
         ADDITIONAL_RSYNC_EXCLUDES=(--exclude "nextcloud_aio_nextcloud_data/**")
         ADDITIONAL_BORG_EXCLUDES=(--exclude "sh:nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/**")
         ADDITIONAL_FIND_EXCLUDES=(-o -regex 'nextcloud_aio_volumes/nextcloud_aio_nextcloud_data\(/.*\)?')
-        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextclouds data directory. Excluding the data directory from restore!"
+        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextcloud's data directory. Excluding the data directory from restore!"
         echo "You might run into problems due to this afterwards as potentially this makes the directory go out of sync with the database."
         echo "You might be able to fix this by running 'occ files:scan --all' and 'occ maintenance:repair' and 'occ files:scan-app-data' after the restore."
         echo "See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands"
@@ -616,4 +611,13 @@ if [ "$BORG_MODE" = test ]; then
             exit 0
         fi
     fi
+fi
+
+if [ "$BORG_MODE" = list ]; then
+    echo "Updating backup list..."
+    if ! borg info > /dev/null; then
+        echo "Could not update the backup list."
+        exit 1
+    fi
+    # The update gets done automatically in the wrapper start.sh script.
 fi
