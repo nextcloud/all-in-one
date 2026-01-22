@@ -127,6 +127,7 @@ RUN set -ex; \
 
 # hadolint ignore=DL3048
 LABEL org.label-schema.vendor="Nextcloud" \
+    wud.watch="false" \
     com.docker.compose.project="nextcloud-aio"
 
 # hadolint ignore=DL3002
