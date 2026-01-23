@@ -178,7 +178,7 @@ class ConfigurationManager
         }
     }
 
-    public array $aio_community_containers {
+    public array $aioCommunityContainers {
         get => explode(' ', $this->get('aio_community_containers', ''));
         set { $this->set('aio_community_containers', implode(' ', $value)); }
     }
@@ -1092,7 +1092,7 @@ class ConfigurationManager
             // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
             'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
             // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
-            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aio_community_containers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
+            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             default => $this->GetRegisteredSecret($placeholder),
         };

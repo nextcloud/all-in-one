@@ -41,7 +41,7 @@ readonly class ContainerDefinitionFetcher {
         $data = json_decode((string)file_get_contents(DataConst::GetContainersDefinitionPath()), true, 512, JSON_THROW_ON_ERROR);
 
         $additionalContainerNames = [];
-        foreach ($this->configurationManager->aio_community_containers as $communityContainer) {
+        foreach ($this->configurationManager->aioCommunityContainers as $communityContainer) {
             if ($communityContainer !== '') {
                 $path = DataConst::GetCommunityContainersDirectory() . '/' . $communityContainer . '/' . $communityContainer . '.json';
                 $additionalData = json_decode((string)file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
