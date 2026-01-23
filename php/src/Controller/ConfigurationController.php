@@ -117,7 +117,7 @@ readonly class ConfigurationController {
 
             if (isset($request->getParsedBody()['collabora_dictionaries'])) {
                 $collaboraDictionaries = $request->getParsedBody()['collabora_dictionaries'] ?? '';
-                $this->configurationManager->collabora_dictionaries = $collaboraDictionaries;
+                $this->configurationManager->collaboraDictionaries = $collaboraDictionaries;
             }
 
             if (isset($request->getParsedBody()['delete_collabora_additional_options'])) {

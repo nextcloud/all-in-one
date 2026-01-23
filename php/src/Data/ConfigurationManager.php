@@ -157,7 +157,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public string $collabora_dictionaries {
+    public string $collaboraDictionaries {
         get => $this->get('collabora_dictionaries', '');
         set {
             // This throws an exception if the validation fails.
@@ -1070,7 +1070,7 @@ class ConfigurationManager
             'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
             'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? 'yes' : '',
             'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
-            'COLLABORA_DICTIONARIES' => $this->collabora_dictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->collabora_dictionaries,
+            'COLLABORA_DICTIONARIES' => $this->collaboraDictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->collaboraDictionaries,
             'IMAGINARY_ENABLED' => $this->isImaginaryEnabled ? 'yes' : '',
             'FULLTEXTSEARCH_ENABLED' => $this->isFulltextsearchEnabled ? 'yes' : '',
             'DOCKER_SOCKET_PROXY_ENABLED' => $this->isDockerSocketProxyEnabled ? 'yes' : '',
