@@ -92,7 +92,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
 
     return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->domain,
-        'apache_port' => $configurationManager->apache_port,
+        'apache_port' => $configurationManager->apachePort,
         'borg_backup_host_location' => $configurationManager->borgBackupHostLocation,
         'borg_remote_repo' => $configurationManager->borgRemoteRepo,
         'borg_public_key' => $configurationManager->GetBorgPublicKey(),

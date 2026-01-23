@@ -115,7 +115,7 @@ readonly class DockerActionManager {
         $containerName = $container->identifier;
         $internalPort = $container->internalPorts;
         if ($internalPort === '%APACHE_PORT%') {
-            $internalPort = $this->configurationManager->apache_port;
+            $internalPort = $this->configurationManager->apachePort;
         } elseif ($internalPort === '%TALK_PORT%') {
             $internalPort = $this->configurationManager->talk_port;
         }
@@ -253,7 +253,7 @@ readonly class DockerActionManager {
                 $port = $value->port;
                 $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
-                    $port = $this->configurationManager->apache_port;
+                    $port = $this->configurationManager->apachePort;
                     // Do not expose udp if AIO is in reverse proxy mode
                     if ($port !== '443' && $protocol === 'udp') {
                         continue;
@@ -275,7 +275,7 @@ readonly class DockerActionManager {
                 $port = $value->port;
                 $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
-                    $port = $this->configurationManager->apache_port;
+                    $port = $this->configurationManager->apachePort;
                     // Do not expose udp if AIO is in reverse proxy mode
                     if ($port !== '443' && $protocol === 'udp') {
                         continue;
