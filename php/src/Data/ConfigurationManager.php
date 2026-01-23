@@ -193,21 +193,26 @@ class ConfigurationManager
     private function set(string $key, mixed $value) : void {
         $this->GetConfig();
         $this->config[$key] = $value;
-        // Only write if this isn't called via setMultiple().
+        // Only write if this isn't called in between startTransaction() and commitTransaction().
         if ($this->noWrite !== true) {
             $this->WriteConfig();
         }
     }
 
     /**
-     * This allows to assign multiple attributes without saving the config to disk in between (as would
-     * calling set() do).
+     * This allows to assign multiple attributes without saving the config to disk in between. It must be
+     * followed by a call to commitTransaction(), which then writes all changes to disk.
      */
-    public function setMultiple(\Closure $closure) : void {
+    public function startTransaction() : void {
+        $this->GetConfig();
         $this->noWrite = true;
+    }
+
+    /**
+     * This allows to assign multiple attributes without saving the config to disk in between.
+     */
+    public function commitTransaction() : void {
         try {
-            $this->GetConfig();
-            $closure($this);
             $this->WriteConfig();
         } finally {
             $this->noWrite = false;
@@ -419,13 +424,14 @@ class ConfigurationManager
             }
         }
 
-        $this->setMultiple(function (ConfigurationManager $confManager) use ($domain) {
-            // Write domain
-            // Don't set the domain via the attribute, or we create a loop.
-            $confManager->set('domain', $domain);
-            // Reset the borg restore password when setting the domain
-            $confManager->borg_restore_password = '';
-        });
+        $this->startTransaction();
+        // Write domain
+        // Don't set the domain via the attribute, or we create a loop.
+        $this->set('domain', $domain);
+        // Reset the borg restore password when setting the domain
+        $this->borg_restore_password = '';
+        $this->startTransaction();
+        $this->commitTransaction();
     }
 
     public function GetBaseDN() : string {
@@ -441,10 +447,10 @@ class ConfigurationManager
      */
     public function SetBorgLocationVars(string $location, string $repo) : void {
         $this->ValidateBorgLocationVars($location, $repo);
-        $this->setMultiple(function (ConfigurationManager $confManager) use ($location, $repo) {
-            $confManager->borg_backup_host_location = $location;
-            $confManager->borg_remote_repo = $repo;
-        });
+        $this->startTransaction();
+        $this->borg_backup_host_location = $location;
+        $this->borg_remote_repo = $repo;
+        $this->commitTransaction();
     }
 
     private function ValidateBorgLocationVars(string $location, string $repo) : void {
@@ -490,10 +496,10 @@ class ConfigurationManager
 
     public function DeleteBorgBackupLocationItems() : void {
         // Delete the variables
-        $this->setMultiple(function (ConfigurationManager $confManager) {
-            $confManager->borg_backup_host_location = '';
-            $confManager->borg_remote_repo = '';
-        });
+        $this->startTransaction();
+        $this->borg_backup_host_location = '';
+        $this->borg_remote_repo = '';
+        $this->commitTransaction();
 
         // Also delete the borg config file to be able to start over
         if (file_exists(DataConst::GetBackupKeyFile())) {
@@ -513,12 +519,12 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("Please enter the password!");
         }
 
-        $this->setMultiple(function (ConfigurationManager $confManager) use ($location, $repo, $password) {
-            $confManager->borg_backup_host_location = $location;
-            $confManager->borg_remote_repo = $repo;
-            $confManager->borg_restore_password = $password;
-            $confManager->instance_restore_attempt = true;
-        });
+        $this->startTransaction();
+        $this->borg_backup_host_location = $location;
+        $this->borg_remote_repo = $repo;
+        $this->borg_restore_password = $password;
+        $this->instance_restore_attempt = true;
+        $this->commitTransaction();
     }
 
     /**
@@ -976,25 +982,25 @@ class ConfigurationManager
         if ($input === []) {
             return;
         }
-        $this->setMultiple(function(ConfigurationManager $confManager) use ($input) {
-            foreach ($input as $variable) {
-                if (!is_string($variable) || !str_contains($variable, '=')) {
-                    error_log("Invalid input: '$variable' is not a string or does not contain an equal sign ('=')");
-                    continue;
-                }
-                $keyWithValue = $confManager->replaceEnvPlaceholders($variable);
-                // Pad the result with nulls so psalm is happy (and we don't risk to run into warnings in case
-                // the check for an equal sign from above gets changed).
-                [$key, $value] = explode('=', $keyWithValue, 2) + [null, null];
-                if ($value === null) {
-                    error_log("Invalid input: '$keyWithValue' has no value after the equal sign");
-                } else if (!property_exists($confManager, $key)) {
-                    error_log("Error: '$key' is not a valid configuration key (in '$keyWithValue')");
-                } else {
-                    $confManager->$key = $value;
-                }
+        $this->startTransaction();
+        foreach ($input as $variable) {
+            if (!is_string($variable) || !str_contains($variable, '=')) {
+                error_log("Invalid input: '$variable' is not a string or does not contain an equal sign ('=')");
+                continue;
             }
-        });
+            $keyWithValue = $confManager->replaceEnvPlaceholders($variable);
+            // Pad the result with nulls so psalm is happy (and we don't risk to run into warnings in case
+            // the check for an equal sign from above gets changed).
+            [$key, $value] = explode('=', $keyWithValue, 2) + [null, null];
+            if ($value === null) {
+                error_log("Invalid input: '$keyWithValue' has no value after the equal sign");
+            } else if (!property_exists($confManager, $key)) {
+                error_log("Error: '$key' is not a valid configuration key (in '$keyWithValue')");
+            } else {
+                $confManager->$key = $value;
+            }
+        }
+        $this->commitTransaction();
     }
 
     //

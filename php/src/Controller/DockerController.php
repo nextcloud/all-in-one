@@ -123,11 +123,11 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->setMultiple(function (ConfigurationManager $confManager) use ($request) {
-            $confManager->backupMode = 'restore';
-            $confManager->selectedRestoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
-            $confManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
-        });
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->backupMode = 'restore';
+        $this->configurationManager->selectedRestoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
+        $this->configurationManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
+        $this->configurationManager->commitTransaction();
 
         $id = self::TOP_CONTAINER;
         $forceStopNextcloud = true;
@@ -152,10 +152,10 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->setMultiple(function (ConfigurationManager $confManager) {
-            $confManager->backupMode = 'test';
-            $confManager->instance_restore_attempt = false;
-        });
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->backupMode = 'test';
+        $this->configurationManager->instance_restore_attempt = false;
+        $this->configurationManager->commitTransaction();
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
@@ -177,13 +177,14 @@ readonly class DockerController {
             $port = 443;
         }
 
-        $this->configurationManager->setMultiple(function (ConfigurationManager $confManager) use ($request, $host, $port, $path) {
-            $confManager->install_latest_major = isset($request->getParsedBody()['install_latest_major']);
-            // set AIO_URL
-            $confManager->AIO_URL = $host . ':' . (string)$port . $path;
-            // set wasStartButtonClicked
-            $confManager->wasStartButtonClicked = true;
-        });
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->install_latest_major = isset($request->getParsedBody()['install_latest_major']);
+        // set AIO_URL
+        $this->configurationManager->AIO_URL = $host . ':' . (string)$port . $path;
+        // set wasStartButtonClicked
+        $this->configurationManager->wasStartButtonClicked = true;
+        $this->configurationManager->commitTransaction();
+        
         // Do not pull container images in case 'bypass_container_update' is set via url params
         // Needed for local testing
         $pullImage = !isset($request->getParsedBody()['bypass_container_update']);
