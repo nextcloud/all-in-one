@@ -208,7 +208,7 @@ readonly class DockerController {
     }
 
     public function startTopContainer(bool $pullImage) : void {
-        $this->configurationManager->AIO_TOKEN = bin2hex(random_bytes(24));
+        $this->configurationManager->aioToken = bin2hex(random_bytes(24));
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();

@@ -13,7 +13,7 @@ class ConfigurationManager
 
     private bool $noWrite = false;
 
-    public string $AIO_TOKEN {
+    public string $aioToken {
         get => $this->get('AIO_TOKEN', '');
         set { $this->set('AIO_TOKEN', $value); }
     }
@@ -1045,7 +1045,7 @@ class ConfigurationManager
         return match ($placeholder) {
             'NC_DOMAIN' => $this->domain,
             'NC_BASE_DN' => $this->GetBaseDN(),
-            'AIO_TOKEN' => $this->AIO_TOKEN,
+            'AIO_TOKEN' => $this->aioToken,
             'BORGBACKUP_REMOTE_REPO' => $this->borg_remote_repo,
             'BORGBACKUP_MODE' => $this->backupMode,
             'AIO_URL' => $this->AIO_URL,

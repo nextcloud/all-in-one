@@ -19,7 +19,7 @@ readonly class AuthManager {
     }
 
     public function CheckToken(string $token) : bool {
-        return hash_equals($this->configurationManager->AIO_TOKEN, $token);
+        return hash_equals($this->configurationManager->aioToken, $token);
     }
 
     public function SetAuthState(bool $isLoggedIn) : void {
