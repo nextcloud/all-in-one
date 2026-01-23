@@ -154,7 +154,7 @@ readonly class DockerController {
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
         $this->configurationManager->startTransaction();
         $this->configurationManager->backupMode = 'test';
-        $this->configurationManager->instance_restore_attempt = false;
+        $this->configurationManager->instanceRestoreAttempt = false;
         $this->configurationManager->commitTransaction();
 
         $id = self::TOP_CONTAINER;

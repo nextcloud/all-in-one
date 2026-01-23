@@ -51,7 +51,7 @@ class ConfigurationManager
         set { $this->set('backup-mode', $value); }
     }
 
-    public bool $instance_restore_attempt {
+    public bool $instanceRestoreAttempt {
         // Type-cast because old configs could have 1/'' for this key.
         get => (bool) $this->get('instance_restore_attempt', false);
         set { $this->set('instance_restore_attempt', $value); }
@@ -536,7 +536,7 @@ class ConfigurationManager
         $this->borg_backup_host_location = $location;
         $this->borg_remote_repo = $repo;
         $this->borg_restore_password = $password;
-        $this->instance_restore_attempt = true;
+        $this->instanceRestoreAttempt = true;
         $this->commitTransaction();
     }
 
