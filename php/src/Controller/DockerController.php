@@ -178,13 +178,13 @@ readonly class DockerController {
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $install_latest_major = '32';
+            $installLatestMajor = '32';
         } else {
-            $install_latest_major = '';
+            $installLatestMajor = '';
         }
         
         $this->configurationManager->startTransaction();
-        $this->configurationManager->install_latest_major = $install_latest_major;
+        $this->configurationManager->installLatestMajor = $installLatestMajor;
         // set AIO_URL
         $this->configurationManager->aioUrl = $host . ':' . (string)$port . $path;
         // set wasStartButtonClicked
