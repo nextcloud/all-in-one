@@ -652,7 +652,7 @@ class ConfigurationManager
         return $uploadLimit * 1024 * 1024 * 1024;
     }
 
-    public string $nextcloud_max_time {
+    public string $nextcloudMaxTime {
         get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MAX_TIME', 'nextcloud_max_time', '3600');
         set { $this->set('nextcloud_max_time', $value); }
     }
@@ -1076,7 +1076,7 @@ class ConfigurationManager
             'DOCKER_SOCKET_PROXY_ENABLED' => $this->isDockerSocketProxyEnabled ? 'yes' : '',
             'NEXTCLOUD_UPLOAD_LIMIT' => $this->nextcloud_upload_limit,
             'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloud_memory_limit,
-            'NEXTCLOUD_MAX_TIME' => $this->nextcloud_max_time,
+            'NEXTCLOUD_MAX_TIME' => $this->nextcloudMaxTime,
             'BORG_RETENTION_POLICY' => $this->GetBorgRetentionPolicy(),
             'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->GetFulltextsearchJavaOptions(),
             'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->GetTrustedCacertsDir(),
