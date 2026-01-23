@@ -117,7 +117,7 @@ readonly class DockerActionManager {
         if ($internalPort === '%APACHE_PORT%') {
             $internalPort = $this->configurationManager->apachePort;
         } elseif ($internalPort === '%TALK_PORT%') {
-            $internalPort = $this->configurationManager->talk_port;
+            $internalPort = $this->configurationManager->talkPort;
         }
 
         if ($internalPort !== "" && $internalPort !== 'host') {
@@ -259,7 +259,7 @@ readonly class DockerActionManager {
                         continue;
                     }
                 } else if ($port === '%TALK_PORT%') {
-                    $port = $this->configurationManager->talk_port;
+                    $port = $this->configurationManager->talkPort;
                 }
                 $portWithProtocol = $port . '/' . $protocol;
                 $exposedPorts[$portWithProtocol] = null;
@@ -281,7 +281,7 @@ readonly class DockerActionManager {
                         continue;
                     }
                 } else if ($port === '%TALK_PORT%') {
-                    $port = $this->configurationManager->talk_port;
+                    $port = $this->configurationManager->talkPort;
                     // Skip publishing talk tcp port if it is set to 443
                     if ($port === '443' && $protocol === 'tcp') {
                         continue;

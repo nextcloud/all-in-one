@@ -573,7 +573,7 @@ class ConfigurationManager
         set { $this->set('apache_port', $value); }
     }
         
-    public string $talk_port {
+    public string $talkPort {
         get => $this->GetEnvironmentalVariableOrConfig('TALK_PORT', 'talk_port', '3478');
         set { $this->set('talk_port', $value); }
     }
@@ -1059,7 +1059,7 @@ class ConfigurationManager
             'RESTORE_EXCLUDE_PREVIEWS' => $this->restoreExcludePreviews ? '1' : '',
             'APACHE_PORT' => $this->apachePort,
             'APACHE_IP_BINDING' => $this->apacheIpBinding,
-            'TALK_PORT' => $this->talk_port,
+            'TALK_PORT' => $this->talkPort,
             'TURN_DOMAIN' => $this->turnDomain,
             'NEXTCLOUD_MOUNT' => $this->nextcloud_mount,
             'BACKUP_RESTORE_PASSWORD' => $this->borgRestorePassword,
