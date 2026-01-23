@@ -642,7 +642,7 @@ class ConfigurationManager
         set { $this->set('nextcloud_upload_limit', $value); }
     }
     
-    public string $nextcloud_memory_limit {
+    public string $nextcloudMemoryLimit {
         get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MEMORY_LIMIT', 'nextcloud_memory_limit', '512M');
         set { $this->set('nextcloud_memory_limit', $value); }
     }
@@ -1075,7 +1075,7 @@ class ConfigurationManager
             'FULLTEXTSEARCH_ENABLED' => $this->isFulltextsearchEnabled ? 'yes' : '',
             'DOCKER_SOCKET_PROXY_ENABLED' => $this->isDockerSocketProxyEnabled ? 'yes' : '',
             'NEXTCLOUD_UPLOAD_LIMIT' => $this->nextcloudUploadLimit,
-            'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloud_memory_limit,
+            'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloudMemoryLimit,
             'NEXTCLOUD_MAX_TIME' => $this->nextcloudMaxTime,
             'BORG_RETENTION_POLICY' => $this->GetBorgRetentionPolicy(),
             'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->GetFulltextsearchJavaOptions(),
