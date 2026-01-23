@@ -127,7 +127,7 @@ class ConfigurationManager
         set { $this->set('borg_backup_host_location', $value); }
     }
 
-    public string $borg_remote_repo {
+    public string $borgRemoteRepo {
         get => $this->get('borg_remote_repo', '');
         set { $this->set('borg_remote_repo', $value); }
     }
@@ -462,7 +462,7 @@ class ConfigurationManager
         $this->ValidateBorgLocationVars($location, $repo);
         $this->startTransaction();
         $this->borgBackupHostLocation = $location;
-        $this->borg_remote_repo = $repo;
+        $this->borgRemoteRepo = $repo;
         $this->commitTransaction();
     }
 
@@ -511,7 +511,7 @@ class ConfigurationManager
         // Delete the variables
         $this->startTransaction();
         $this->borgBackupHostLocation = '';
-        $this->borg_remote_repo = '';
+        $this->borgRemoteRepo = '';
         $this->commitTransaction();
 
         // Also delete the borg config file to be able to start over
@@ -534,7 +534,7 @@ class ConfigurationManager
 
         $this->startTransaction();
         $this->borgBackupHostLocation = $location;
-        $this->borg_remote_repo = $repo;
+        $this->borgRemoteRepo = $repo;
         $this->borg_restore_password = $password;
         $this->instanceRestoreAttempt = true;
         $this->commitTransaction();
@@ -1046,7 +1046,7 @@ class ConfigurationManager
             'NC_DOMAIN' => $this->domain,
             'NC_BASE_DN' => $this->GetBaseDN(),
             'AIO_TOKEN' => $this->aioToken,
-            'BORGBACKUP_REMOTE_REPO' => $this->borg_remote_repo,
+            'BORGBACKUP_REMOTE_REPO' => $this->borgRemoteRepo,
             'BORGBACKUP_MODE' => $this->backupMode,
             'AIO_URL' => $this->aioUrl,
             'SELECTED_RESTORE_TIME' => $this->selectedRestoreTime,

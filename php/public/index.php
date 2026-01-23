@@ -94,7 +94,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'domain' => $configurationManager->domain,
         'apache_port' => $configurationManager->apache_port,
         'borg_backup_host_location' => $configurationManager->borgBackupHostLocation,
-        'borg_remote_repo' => $configurationManager->borg_remote_repo,
+        'borg_remote_repo' => $configurationManager->borgRemoteRepo,
         'borg_public_key' => $configurationManager->GetBorgPublicKey(),
         'nextcloud_password' => $configurationManager->GetAndGenerateSecret('NEXTCLOUD_PASSWORD'),
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
