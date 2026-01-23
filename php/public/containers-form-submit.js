@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Hide submit button initially
-    const optionsFormSubmit = document.getElementById("options-form-submit");
-    optionsFormSubmit.style.display = 'none';
+    const optionsFormSubmit = document.querySelectorAll(".options-form-submit");
+    optionsFormSubmit.forEach(element => {
+        element.style.display = 'none';
+    });
 
     const communityFormSubmit = document.getElementById("community-form-submit");
     communityFormSubmit.style.display = 'none';
@@ -72,7 +74,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Show or hide submit button based on changes
-        optionsFormSubmit.style.display = hasChanges ? 'block' : 'none';
+        optionsFormSubmit.forEach(element => {
+            element.style.display = hasChanges ? 'block' : 'none';
+        });
     }
 
     // Function to compare current states to initial states

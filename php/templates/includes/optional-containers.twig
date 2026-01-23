@@ -9,22 +9,10 @@
     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
     <input type="hidden" name="options-form" value="options-form">
-    <p>
-        <input
-            type="checkbox"
-            id="clamav"
-            name="clamav"
-            {% if is_clamav_enabled == true %}
-                checked="checked"
-                data-initial-state="true"
-            {% else %}
-                data-initial-state="false"
-            {% endif %}
-        >
-        <label for="clamav">ClamAV (Antivirus backend for Nextcloud, needs ~1GB additional RAM)</label>
-    </p>
     <h3>Office Suite</h3>
-    <p>Choose your preferred office suite. Only one can be enabled at a time.</p>
+    {% if isAnyRunning == false %}
+        <p>Choose your preferred office suite. Only one can be enabled at a time.</p>
+    {% endif %}
     <div class="office-suite-cards">
         <input
             type="radio"
@@ -94,25 +82,42 @@
         </label>
         <input type="hidden" id="onlyoffice" name="onlyoffice" value="" data-initial-state="{% if is_onlyoffice_enabled == true %}true{% else %}false{% endif %}">
     </div>
-    <div class="office-none-card">
+    {% if isAnyRunning == false %}
+        <div class="office-none-card">
+            <input
+                type="radio"
+                id="office-none"
+                name="office_suite_choice"
+                value=""
+                class="office-radio"
+                {% if is_collabora_enabled == false and is_onlyoffice_enabled == false %}
+                    checked="checked"
+                {% endif %}
+            >
+            <label class="office-none-label" for="office-none">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 6px;">
+                    <path d="M2 2L14 14M2 14L14 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Disable office suite
+            </label>
+        </div>
+    {% endif %}
+    <input class="options-form-submit" type="submit" value="Save changes" />
+    <h3>Additional Optional Containers</h3>
+    <p>
         <input
-            type="radio"
-            id="office-none"
-            name="office_suite_choice"
-            value=""
-            class="office-radio"
-            {% if is_collabora_enabled == false and is_onlyoffice_enabled == false %}
+            type="checkbox"
+            id="clamav"
+            name="clamav"
+            {% if is_clamav_enabled == true %}
                 checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
             {% endif %}
         >
-        <label class="office-none-label" for="office-none">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 6px;">
-                <path d="M2 2L14 14M2 14L14 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Disable office suite
-        </label>
-    </div>
-    <h3>Additional Optional Containers</h3>
+        <label for="clamav">ClamAV (Antivirus backend for Nextcloud, needs ~1GB additional RAM)</label>
+    </p>
     <p>
         <input
             type="checkbox"
@@ -203,15 +208,15 @@
         >
         <label for="whiteboard">Whiteboard</label>
     </p>
-    <input id="options-form-submit" type="submit" value="Save changes" />
+    <input class="options-form-submit" type="submit" value="Save changes" />
 </form>
 <p><strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advice and recommendations see <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong></p>
 {% if isAnyRunning == true %}
     <script type="text/javascript" src="disable-clamav.js"></script>
     <script type="text/javascript" src="disable-docker-socket-proxy.js"></script>
     <script type="text/javascript" src="disable-talk.js"></script>
-    <script type="text/javascript" src="disable-collabora.js"></script>
-    <script type="text/javascript" src="disable-onlyoffice.js"></script>
+    <script type="text/javascript" src="disable-collabora.js?v2"></script>
+    <script type="text/javascript" src="disable-onlyoffice.js?v2"></script>
     <script type="text/javascript" src="disable-imaginary.js"></script>
     <script type="text/javascript" src="disable-fulltextsearch.js"></script>
     <script type="text/javascript" src="disable-talk-recording.js"></script>
