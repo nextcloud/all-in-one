@@ -186,7 +186,7 @@ readonly class DockerController {
         $this->configurationManager->startTransaction();
         $this->configurationManager->install_latest_major = $install_latest_major;
         // set AIO_URL
-        $this->configurationManager->AIO_URL = $host . ':' . (string)$port . $path;
+        $this->configurationManager->aioUrl = $host . ':' . (string)$port . $path;
         // set wasStartButtonClicked
         $this->configurationManager->wasStartButtonClicked = true;
         $this->configurationManager->commitTransaction();

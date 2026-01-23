@@ -57,7 +57,7 @@ class ConfigurationManager
         set { $this->set('instance_restore_attempt', $value); }
     }
 
-    public string $AIO_URL {
+    public string $aioUrl {
         get => $this->get('AIO_URL', '');
         set { $this->set('AIO_URL', $value); }
     }
@@ -1048,7 +1048,7 @@ class ConfigurationManager
             'AIO_TOKEN' => $this->aioToken,
             'BORGBACKUP_REMOTE_REPO' => $this->borg_remote_repo,
             'BORGBACKUP_MODE' => $this->backupMode,
-            'AIO_URL' => $this->AIO_URL,
+            'AIO_URL' => $this->aioUrl,
             'SELECTED_RESTORE_TIME' => $this->selectedRestoreTime,
             'RESTORE_EXCLUDE_PREVIEWS' => $this->restoreExcludePreviews ? '1' : '',
             'APACHE_PORT' => $this->apache_port,
