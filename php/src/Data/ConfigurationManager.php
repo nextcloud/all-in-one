@@ -183,7 +183,7 @@ class ConfigurationManager
         set { $this->set('aio_community_containers', implode(' ', $value)); }
     }
 
-    public string $turn_domain {
+    public string $turnDomain {
         get => $this->get('turn_domain', '');
         set { $this->set('turn_domain', $value); }
     }
@@ -1060,7 +1060,7 @@ class ConfigurationManager
             'APACHE_PORT' => $this->apache_port,
             'APACHE_IP_BINDING' => $this->apacheIpBinding,
             'TALK_PORT' => $this->talk_port,
-            'TURN_DOMAIN' => $this->turn_domain,
+            'TURN_DOMAIN' => $this->turnDomain,
             'NEXTCLOUD_MOUNT' => $this->nextcloud_mount,
             'BACKUP_RESTORE_PASSWORD' => $this->borgRestorePassword,
             'CLAMAV_ENABLED' => $this->isClamavEnabled ? 'yes' : '',
