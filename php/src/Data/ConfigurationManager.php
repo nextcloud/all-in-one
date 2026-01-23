@@ -122,7 +122,7 @@ class ConfigurationManager
         set { $this->SetDomain($value); }
     }
 
-    public string $borg_backup_host_location {
+    public string $borgBackupHostLocation {
         get => $this->get('borg_backup_host_location', '');
         set { $this->set('borg_backup_host_location', $value); }
     }
@@ -461,7 +461,7 @@ class ConfigurationManager
     public function SetBorgLocationVars(string $location, string $repo) : void {
         $this->ValidateBorgLocationVars($location, $repo);
         $this->startTransaction();
-        $this->borg_backup_host_location = $location;
+        $this->borgBackupHostLocation = $location;
         $this->borg_remote_repo = $repo;
         $this->commitTransaction();
     }
@@ -510,7 +510,7 @@ class ConfigurationManager
     public function DeleteBorgBackupLocationItems() : void {
         // Delete the variables
         $this->startTransaction();
-        $this->borg_backup_host_location = '';
+        $this->borgBackupHostLocation = '';
         $this->borg_remote_repo = '';
         $this->commitTransaction();
 
@@ -533,7 +533,7 @@ class ConfigurationManager
         }
 
         $this->startTransaction();
-        $this->borg_backup_host_location = $location;
+        $this->borgBackupHostLocation = $location;
         $this->borg_remote_repo = $repo;
         $this->borg_restore_password = $password;
         $this->instanceRestoreAttempt = true;
@@ -1075,7 +1075,7 @@ class ConfigurationManager
             'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->GetFulltextsearchJavaOptions(),
             'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->GetTrustedCacertsDir(),
             'ADDITIONAL_DIRECTORIES_BACKUP' => $this->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
-            'BORGBACKUP_HOST_LOCATION' => $this->borg_backup_host_location,
+            'BORGBACKUP_HOST_LOCATION' => $this->borgBackupHostLocation,
             'APACHE_MAX_SIZE' => (string)($this->GetApacheMaxSize()),
             'COLLABORA_SECCOMP_POLICY' => $this->GetCollaboraSeccompPolicy(),
             'NEXTCLOUD_STARTUP_APPS' => $this->GetNextcloudStartupApps(),

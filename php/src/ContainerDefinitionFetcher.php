@@ -113,7 +113,7 @@ readonly class ContainerDefinitionFetcher {
             if (isset($entry['volumes'])) {
                 foreach ($entry['volumes'] as $value) {
                     if($value['source'] === '%BORGBACKUP_HOST_LOCATION%') {
-                        $value['source'] = $this->configurationManager->borg_backup_host_location;
+                        $value['source'] = $this->configurationManager->borgBackupHostLocation;
                         if($value['source'] === '') {
                             continue;
                         }
