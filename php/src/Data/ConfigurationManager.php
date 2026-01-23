@@ -68,8 +68,9 @@ class ConfigurationManager
         set { $this->set('wasStartButtonClicked', $value); }
     }
 
-    public bool $install_latest_major {
-        get => $this->get('install_latest_major', false);
+    public string $install_latest_major {
+        // Type-cast because old configs could have integers for this key.
+        get => (string) $this->get('install_latest_major', '');
         set { $this->set('install_latest_major', $value); }
     }
 
@@ -1080,7 +1081,7 @@ class ConfigurationManager
             'NEXTCLOUD_STARTUP_APPS' => $this->GetNextcloudStartupApps(),
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->GetNextcloudAdditionalApks(),
             'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->GetNextcloudAdditionalPhpExtensions(),
-            'INSTALL_LATEST_MAJOR' => $this->install_latest_major ? 'yes' : '',
+            'INSTALL_LATEST_MAJOR' => $this->install_latest_major,
             'REMOVE_DISABLED_APPS' => $this->shouldDisabledAppsGetRemoved() ? 'yes' : '',
             // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
             'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
