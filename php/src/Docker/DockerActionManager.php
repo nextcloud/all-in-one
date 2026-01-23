@@ -205,7 +205,7 @@ readonly class DockerActionManager {
         foreach ($container->volumes->GetVolumes() as $volume) {
             // // NEXTCLOUD_MOUNT gets added via bind-mount later on
             // if ($container->identifier === 'nextcloud-aio-nextcloud') {
-            //     if ($volume->name === $this->configurationManager->nextcloud_mount) {
+            //     if ($volume->name === $this->configurationManager->nextcloudMount) {
             //         continue;
             //     }
             // }

@@ -626,7 +626,7 @@ class ConfigurationManager
         return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
     }
 
-    public string $nextcloud_mount {
+    public string $nextcloudMount {
         get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MOUNT', 'nextcloud_mount', '');
         set { $this->set('nextcloud_mount', $value); }
     }
@@ -1061,7 +1061,7 @@ class ConfigurationManager
             'APACHE_IP_BINDING' => $this->apacheIpBinding,
             'TALK_PORT' => $this->talkPort,
             'TURN_DOMAIN' => $this->turnDomain,
-            'NEXTCLOUD_MOUNT' => $this->nextcloud_mount,
+            'NEXTCLOUD_MOUNT' => $this->nextcloudMount,
             'BACKUP_RESTORE_PASSWORD' => $this->borgRestorePassword,
             'CLAMAV_ENABLED' => $this->isClamavEnabled ? 'yes' : '',
             'TALK_RECORDING_ENABLED' => $this->isTalkRecordingEnabled ? 'yes' : '',
