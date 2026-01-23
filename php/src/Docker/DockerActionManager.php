@@ -419,8 +419,8 @@ readonly class DockerActionManager {
             }
 
             // Additional Collabora options
-            if ($this->configurationManager->collabora_additional_options !== '') {
-                $requestBody['Cmd'] = [$this->configurationManager->collabora_additional_options];
+            if ($this->configurationManager->collaboraAdditionalOptions !== '') {
+                $requestBody['Cmd'] = [$this->configurationManager->collaboraAdditionalOptions];
             }
         }
 

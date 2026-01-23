@@ -121,7 +121,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
         'talk_port' => $configurationManager->talk_port,
         'collabora_dictionaries' => $configurationManager->collaboraDictionaries,
-        'collabora_additional_options' => $configurationManager->collabora_additional_options,
+        'collabora_additional_options' => $configurationManager->collaboraAdditionalOptions,
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
         'is_backup_section_enabled' => $configurationManager->isBackupSectionEnabled(),
         'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled,

@@ -126,7 +126,7 @@ readonly class ConfigurationController {
 
             if (isset($request->getParsedBody()['collabora_additional_options'])) {
                 $additionalCollaboraOptions = $request->getParsedBody()['collabora_additional_options'] ?? '';
-                $this->configurationManager->collabora_additional_options = $additionalCollaboraOptions;
+                $this->configurationManager->collaboraAdditionalOptions = $additionalCollaboraOptions;
             }
 
             if (isset($request->getParsedBody()['delete_borg_backup_location_vars'])) {

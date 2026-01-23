@@ -169,7 +169,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public string $collabora_additional_options {
+    public string $collaboraAdditionalOptions {
         get => $this->get('collabora_additional_options', '');
         set {
             // This throws an exception if the validation fails.
@@ -882,7 +882,7 @@ class ConfigurationManager
     }
 
     public function isCollaboraSubscriptionEnabled() : bool {
-        return str_contains($this->collabora_additional_options, '--o:support_key=');
+        return str_contains($this->collaboraAdditionalOptions, '--o:support_key=');
     }
 
     /**
