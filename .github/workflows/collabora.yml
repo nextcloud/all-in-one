@@ -10,7 +10,7 @@ jobs:
     name: update collabora
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6.0.1
+    - uses: actions/checkout@v6.0.2
     - name: Run collabora-profile-update
       run: |
         rm -f php/cool-seccomp-profile.json

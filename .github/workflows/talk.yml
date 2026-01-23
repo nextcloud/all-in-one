@@ -10,7 +10,7 @@ jobs:
     name: update talk
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6.0.1
+    - uses: actions/checkout@v6.0.2
     - name: Run talk-container-update
       run: |
         # Recording

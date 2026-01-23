@@ -2,7 +2,7 @@
     "aio_services_v1": [
         {
             "container_name": "nextcloud-aio-nocodb",
-            "display_name": "NocoDB",
+            "display_name": "NocoDB (deprecated)",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/nocodb",
             "image": "nocodb/nocodb",
             "image_tag": "latest",
