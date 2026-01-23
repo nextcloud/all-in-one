@@ -24,17 +24,20 @@ class ConfigurationManager
     }
 
     public bool $isDockerSocketProxyEnabled {
-        get => $this->get('isDockerSocketProxyEnabled', false);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isDockerSocketProxyEnabled', false);
         set { $this->set('isDockerSocketProxyEnabled', $value); }
     }
 
     public bool $isWhiteboardEnabled {
-        get => $this->get('isWhiteboardEnabled', true);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isWhiteboardEnabled', true);
         set { $this->set('isWhiteboardEnabled', $value); }
     }
 
     public bool $restoreExcludePreviews {
-        get => $this->get('restore-exclude-previews', false);
+        // Type-cast because old configs could have '1'/'' for this key.
+        get => (bool) $this->get('restore-exclude-previews', false);
         set { $this->set('restore-exclude-previews', $value); }
     }
 
@@ -49,7 +52,8 @@ class ConfigurationManager
     }
 
     public bool $instance_restore_attempt {
-        get => $this->get('instance_restore_attempt', false);
+        // Type-cast because old configs could have 1/'' for this key.
+        get => (bool) $this->get('instance_restore_attempt', false);
         set { $this->set('instance_restore_attempt', $value); }
     }
 
@@ -59,7 +63,8 @@ class ConfigurationManager
     }
 
     public bool $wasStartButtonClicked {
-        get => $this->get('wasStartButtonClicked', false);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('wasStartButtonClicked', false);
         set { $this->set('wasStartButtonClicked', $value); }
     }
 
@@ -69,37 +74,44 @@ class ConfigurationManager
     }
 
     public bool $isClamavEnabled {
-        get => $this->get('isClamavEnabled', false);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isClamavEnabled', false);
         set { $this->set('isClamavEnabled', $value); }
     }
 
     public bool $isOnlyofficeEnabled {
-        get => $this->get('isOnlyofficeEnabled', false);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isOnlyofficeEnabled', false);
         set { $this->set('isOnlyofficeEnabled', $value); }
     }
 
     public bool $isCollaboraEnabled {
-        get => $this->get('isCollaboraEnabled', true);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isCollaboraEnabled', true);
         set { $this->set('isCollaboraEnabled', $value); }
     }
 
     public bool $isTalkEnabled {
-        get => $this->get('isTalkEnabled', true);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isTalkEnabled', true);
         set { $this->set('isTalkEnabled', $value); }
     }
 
     public bool $isTalkRecordingEnabled {
-        get => $this->isTalkEnabled && $this->get('isTalkRecordingEnabled', false);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->isTalkEnabled && $this->get('isTalkRecordingEnabled', false);
         set { $this->set('isTalkRecordingEnabled', $this->isTalkEnabled && $value); }
     }
 
     public bool $isImaginaryEnabled {
-        get => $this->get('isImaginaryEnabled', true);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isImaginaryEnabled', true);
         set { $this->set('isImaginaryEnabled', $value); }
     }
 
     public bool $isFulltextsearchEnabled {
-        get => $this->get('isFulltextsearchEnabled', false);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isFulltextsearchEnabled', false);
         // Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
         set { $this->set('isFulltextsearchEnabled', ($this->isSeccompDisabled() && $value)); }
     }
