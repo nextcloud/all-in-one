@@ -124,7 +124,7 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value['source'] === '%NEXTCLOUD_DATADIR%') {
-                        $value['source'] = $this->configurationManager->nextcloud_datadir_mount;
+                        $value['source'] = $this->configurationManager->nextcloudDatadirMount;
                         if ($value['source'] === '') {
                             continue;
                         }
