@@ -989,6 +989,11 @@ class ConfigurationManager
             return true;
         }
     }
+    
+    private function camelize(string $input, string $delimiter = '_') : string {
+        return lcfirst(implode("", array_map('ucfirst', explode($delimiter, strtolower($input)))));
+
+    }
 
     public function setAioVariables(array $input) : void {
         if ($input === []) {
@@ -1004,6 +1009,7 @@ class ConfigurationManager
             // Pad the result with nulls so psalm is happy (and we don't risk to run into warnings in case
             // the check for an equal sign from above gets changed).
             [$key, $value] = explode('=', $keyWithValue, 2) + [null, null];
+            $key = $this->camelize($key);
             if ($value === null) {
                 error_log("Invalid input: '$keyWithValue' has no value after the equal sign");
             } else if (!property_exists($confManager, $key)) {
