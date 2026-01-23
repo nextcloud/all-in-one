@@ -137,7 +137,7 @@ class ConfigurationManager
         set { $this->set('borg_restore_password', $value); }
     }
 
-    public string $apache_ip_binding {
+    public string $apacheIpBinding {
         get => $this->GetEnvironmentalVariableOrConfig('APACHE_IP_BINDING', 'apache_ip_binding', '');
         set { $this->set('apache_ip_binding', $value); }
     }
@@ -1052,7 +1052,7 @@ class ConfigurationManager
             'SELECTED_RESTORE_TIME' => $this->selectedRestoreTime,
             'RESTORE_EXCLUDE_PREVIEWS' => $this->restoreExcludePreviews ? '1' : '',
             'APACHE_PORT' => $this->apache_port,
-            'APACHE_IP_BINDING' => $this->apache_ip_binding,
+            'APACHE_IP_BINDING' => $this->apacheIpBinding,
             'TALK_PORT' => $this->talk_port,
             'TURN_DOMAIN' => $this->turn_domain,
             'NEXTCLOUD_MOUNT' => $this->nextcloud_mount,

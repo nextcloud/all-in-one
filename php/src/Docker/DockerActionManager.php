@@ -289,7 +289,7 @@ readonly class DockerActionManager {
                 }
                 $ipBinding = $value->ipBinding;
                 if ($ipBinding === '%APACHE_IP_BINDING%') {
-                    $ipBinding = $this->configurationManager->apache_ip_binding;
+                    $ipBinding = $this->configurationManager->apacheIpBinding;
                     // Do not expose if AIO is in internal network mode
                     if ($ipBinding === '@INTERNAL') {
                         continue;
