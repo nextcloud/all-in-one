@@ -132,7 +132,7 @@ class ConfigurationManager
         set { $this->set('borg_remote_repo', $value); }
     }
 
-    public string $borg_restore_password {
+    public string $borgRestorePassword {
         get => $this->get('borg_restore_password', '');
         set { $this->set('borg_restore_password', $value); }
     }
@@ -442,7 +442,7 @@ class ConfigurationManager
         // Don't set the domain via the attribute, or we create a loop.
         $this->set('domain', $domain);
         // Reset the borg restore password when setting the domain
-        $this->borg_restore_password = '';
+        $this->borgRestorePassword = '';
         $this->startTransaction();
         $this->commitTransaction();
     }
@@ -535,7 +535,7 @@ class ConfigurationManager
         $this->startTransaction();
         $this->borgBackupHostLocation = $location;
         $this->borgRemoteRepo = $repo;
-        $this->borg_restore_password = $password;
+        $this->borgRestorePassword = $password;
         $this->instanceRestoreAttempt = true;
         $this->commitTransaction();
     }
@@ -1056,7 +1056,7 @@ class ConfigurationManager
             'TALK_PORT' => $this->talk_port,
             'TURN_DOMAIN' => $this->turn_domain,
             'NEXTCLOUD_MOUNT' => $this->nextcloud_mount,
-            'BACKUP_RESTORE_PASSWORD' => $this->borg_restore_password,
+            'BACKUP_RESTORE_PASSWORD' => $this->borgRestorePassword,
             'CLAMAV_ENABLED' => $this->isClamavEnabled ? 'yes' : '',
             'TALK_RECORDING_ENABLED' => $this->isTalkRecordingEnabled ? 'yes' : '',
             'ONLYOFFICE_ENABLED' => $this->isOnlyofficeEnabled ? 'yes' : '',
