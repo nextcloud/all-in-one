@@ -9,8 +9,15 @@ class ConfigurationManager
 {
     private array $secrets = [];
 
-    public function GetConfig() : array
+    private array $config = [];
+
+    private bool $noWrite = false;
+
+    private function GetConfig() : array
     {
+        if (count($this->config) > 0) {
+            return $this->config;
+        }
         if(file_exists(DataConst::GetConfigFile()))
         {
             $configContent = (string)file_get_contents(DataConst::GetConfigFile());
@@ -20,8 +27,27 @@ class ConfigurationManager
         return [];
     }
 
+    public function startTransaction() : void {
+        $this->config = $this->GetConfig();
+        $this->noWrite = true;
+    }
+
+    public function commitTransaction() : void {
+        $this->noWrite = false;
+        if (count($this->config) > 0) {
+            $this->WriteConfig($this->config);
+        }
+        $this->config = [];
+    }
+
     public function GetPassword() : string {
         return $this->GetConfig()['password'];
+    }
+
+    public function SetToken(string $token) : void {
+        $config = $this->GetConfig();
+        $config['AIO_TOKEN'] = $token;
+        $this->WriteConfig($config);
     }
 
     public function GetToken() : string {
@@ -120,6 +146,12 @@ class ConfigurationManager
         $backupTimes = array_reverse($backupTimes);
 
         return $backupTimes;
+    }
+
+    public function SetWasStartButtonClicked(int $value) : void {
+        $config = $this->GetConfig();
+        $config['wasStartButtonClicked'] = $value;
+        $this->WriteConfig($config);
     }
 
     public function wasStartButtonClicked() : bool {
@@ -392,11 +424,16 @@ class ConfigurationManager
             }
         }
 
-        // Write domain
+        $this->startTransaction();
+        $this->setValidDomain($domain);
+        // Reset the borg restore password when setting the domain
+        $this->SetBorgRestorePassword('');
+        $this->commitTransaction();
+    }
+
+    private function setValidDomain(string $domain) : void {
         $config = $this->GetConfig();
         $config['domain'] = $domain;
-        // Reset the borg restore password when setting the domain
-        $config['borg_restore_password'] = '';
         $this->WriteConfig($config);
     }
 
@@ -432,6 +469,12 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function SetRestoreTime(string $restoreTime) : void {
+        $config = $this->GetConfig();
+        $config['selected-restore-time'] = $restoreTime;
+        $this->WriteConfig($config);
+    }
+
     public function GetSelectedRestoreTime() : string {
         $config = $this->GetConfig();
         if(!isset($config['selected-restore-time'])) {
@@ -441,13 +484,19 @@ class ConfigurationManager
         return $config['selected-restore-time'];
     }
 
+    public function SetRestoreExcludePreviews(string $excludePreviews) : void {
+        $config = $this->GetConfig();
+        $config['restore-exclude-previews'] = $excludePreviews;
+        $this->WriteConfig($config);
+    }
+
     public function GetRestoreExcludePreviews() : string {
         $config = $this->GetConfig();
         if(!isset($config['restore-exclude-previews'])) {
             $config['restore-exclude-previews'] = '';
         }
 
-        return $config['restore-exclude-previews'];
+        return (string)$config['restore-exclude-previews'];
     }
 
     public function GetAIOURL() : string {
@@ -459,16 +508,22 @@ class ConfigurationManager
         return $config['AIO_URL'];
     }
 
+    public function SetAIOURL(string $aioURL) : void {
+        $config = $this->GetConfig();
+        $config['AIO_URL'] = $aioURL;
+        $this->WriteConfig($config);
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */
     public function SetBorgLocationVars(string $location, string $repo) : void {
         $this->ValidateBorgLocationVars($location, $repo);
 
-        $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = $location;
-        $config['borg_remote_repo'] = $repo;
-        $this->WriteConfig($config);
+        $this->startTransaction();
+        $this->SetBorgBackupHostLocation($location);
+        $this->SetBorgRemoteRepo($repo);
+        $this->commitTransaction();
     }
 
     private function ValidateBorgLocationVars(string $location, string $repo) : void {
@@ -514,10 +569,10 @@ class ConfigurationManager
 
     public function DeleteBorgBackupLocationItems() : void {
         // Delete the variables
-        $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = '';
-        $config['borg_remote_repo'] = '';
-        $this->WriteConfig($config);
+        $this->startTransaction();
+        $this->SetBorgBackupHostLocation('');
+        $this->SetBorgRemoteRepo('');
+        $this->commitTransaction();
 
         // Also delete the borg config file to be able to start over
         if (file_exists(DataConst::GetBackupKeyFile())) {
@@ -537,12 +592,12 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("Please enter the password!");
         }
 
-        $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = $location;
-        $config['borg_remote_repo'] = $repo;
-        $config['borg_restore_password'] = $password;
-        $config['instance_restore_attempt'] = 1;
-        $this->WriteConfig($config);
+        $this->startTransaction();
+        $this->SetBorgBackupHostLocation($location);
+        $this->SetBorgRemoteRepo($repo);
+        $this->SetBorgRestorePassword($password);
+        $this->SetInstanceRestoreAttempt(1);
+        $this->commitTransaction();
     }
 
     /**
@@ -599,7 +654,11 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function WriteConfig(array $config) : void {
+    private function WriteConfig(array $config) : void {
+        if ($this->noWrite) {
+            $this->config = $config;
+            return;
+        }
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
@@ -634,6 +693,12 @@ class ConfigurationManager
         return $envVariableOutput;
     }
 
+    public function SetBorgBackupHostLocation(string $borgBackupHostLocation) : void {
+        $config = $this->GetConfig();
+        $config['borg_backup_host_location'] = $borgBackupHostLocation;
+        $this->WriteConfig($config);
+    }
+
     public function GetBorgBackupHostLocation() : string {
         $config = $this->GetConfig();
         if(!isset($config['borg_backup_host_location'])) {
@@ -641,6 +706,12 @@ class ConfigurationManager
         }
 
         return $config['borg_backup_host_location'];
+    }
+
+    public function SetBorgRemoteRepo(string $borgRemoteRepo) : void {
+        $config = $this->GetConfig();
+        $config['borg_remote_repo'] = $borgRemoteRepo;
+        $this->WriteConfig($config);
     }
 
     public function GetBorgRemoteRepo() : string {
@@ -660,6 +731,12 @@ class ConfigurationManager
         return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
     }
 
+    public function SetBorgRestorePassword(string $restorePassword) : void {
+        $config = $this->GetConfig();
+        $config['borg_restore_password'] = $restorePassword;
+        $this->WriteConfig($config);
+    }
+
     public function GetBorgRestorePassword() : string {
         $config = $this->GetConfig();
         if(!isset($config['borg_restore_password'])) {
@@ -667,6 +744,12 @@ class ConfigurationManager
         }
 
         return $config['borg_restore_password'];
+    }
+
+    public function SetInstanceRestoreAttempt(int $instanceRestoreAttempt) : void {
+        $config = $this->GetConfig();
+        $config['instance_restore_attempt'] = $instanceRestoreAttempt;
+        $this->WriteConfig($config);
     }
 
     public function isInstanceRestoreAttempt() : bool {
@@ -862,12 +945,25 @@ class ConfigurationManager
         }
     }
 
+    public function setKeyAndValue(string $key, string $value) : void {
+        $config = $this->GetConfig();
+        $config[$key] = $value;
+        $this->WriteConfig($config);
+    }
+
+
+    public function SetInstallLatestMajor(int $latestMajor) : void {
+        $config = $this->GetConfig();
+        $config['install_latest_major'] = $latestMajor;
+        $this->WriteConfig($config);
+    }
+
     public function shouldLatestMajorGetInstalled() : bool {
         $config = $this->GetConfig();
-        if(!isset($config['install_latest_major'])) {
-            $config['install_latest_major'] = '';
+        if(!isset($config['install_latest_major']) || $config['install_latest_major'] === '') {
+            $config['install_latest_major'] = 0;
         }
-        return $config['install_latest_major'] !== '';
+        return $config['install_latest_major'] > 0;
     }
 
     public function GetAdditionalBackupDirectoriesString() : string {

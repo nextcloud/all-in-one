@@ -17,6 +17,8 @@ readonly class ConfigurationController {
 
     public function SetConfig(Request $request, Response $response, array $args): Response {
         try {
+            $this->configurationManager->startTransaction();
+
             if (isset($request->getParsedBody()['domain'])) {
                 $domain = $request->getParsedBody()['domain'] ?? '';
                 $skipDomainValidation = isset($request->getParsedBody()['skip_domain_validation']);
@@ -161,6 +163,8 @@ readonly class ConfigurationController {
             if (isset($request->getParsedBody()['delete_borg_backup_location_vars'])) {
                 $this->configurationManager->DeleteBorgBackupLocationItems();
             }
+
+            $this->configurationManager->commitTransaction();
 
             return $response->withStatus(201)->withHeader('Location', '.');
         } catch (InvalidSettingConfigurationException $ex) {

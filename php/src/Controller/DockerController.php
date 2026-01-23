@@ -123,15 +123,18 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->SetBackupMode('restore');
-        $config = $this->configurationManager->GetConfig();
-        $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
+        $restoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
         if (isset($request->getParsedBody()['restore-exclude-previews'])) {
-            $config['restore-exclude-previews'] = 1;
+            $excludePreviews = '1';
         } else {
-            $config['restore-exclude-previews'] = '';
+            $excludePreviews = '';
         }
-        $this->configurationManager->WriteConfig($config);
+
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->SetBackupMode('restore');
+        $this->configurationManager->SetRestoreTime($restoreTime);
+        $this->configurationManager->SetRestoreExcludePreviews($excludePreviews);
+        $this->configurationManager->commitTransaction();
 
         $id = self::TOP_CONTAINER;
         $forceStopNextcloud = true;
@@ -156,10 +159,10 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
+        $this->configurationManager->startTransaction();
         $this->configurationManager->SetBackupMode('test');
-        $config = $this->configurationManager->GetConfig();
-        $config['instance_restore_attempt'] = 0;
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->SetInstanceRestoreAttempt(0);
+        $this->configurationManager->commitTransaction();
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
@@ -182,19 +185,16 @@ readonly class DockerController {
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = 32;
+            $latestMajor = 32;
         } else {
-            $installLatestMajor = "";
+            $latestMajor = 0;
         }
 
-        $config = $this->configurationManager->GetConfig();
-        // set AIO_URL
-        $config['AIO_URL'] = $host . ':' . (string)$port . $path;
-        // set wasStartButtonClicked
-        $config['wasStartButtonClicked'] = 1;
-        // set install_latest_major
-        $config['install_latest_major'] = $installLatestMajor;
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->SetAIOURL($host . ':' . (string)$port . $path);
+        $this->configurationManager->SetWasStartButtonClicked(1);
+        $this->configurationManager->SetInstallLatestMajor($latestMajor);
+        $this->configurationManager->commitTransaction();
 
         // Do not pull container images in case 'bypass_container_update' is set via url params
         // Needed for local testing
@@ -213,10 +213,8 @@ readonly class DockerController {
     }
 
     public function startTopContainer(bool $pullImage) : void {
-        $config = $this->configurationManager->GetConfig();
-        // set AIO_TOKEN
-        $config['AIO_TOKEN'] = bin2hex(random_bytes(24));
-        $this->configurationManager->WriteConfig($config);
+        $aioToken = bin2hex(random_bytes(24));
+        $this->configurationManager->SetToken($aioToken);
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
