@@ -929,21 +929,11 @@ class ConfigurationManager
         set { $this->set('enable_nvidia_gpu', $value); }
     }
 
-    private function GetKeepDisabledApps() : string {
-        $envVariableName = 'NEXTCLOUD_KEEP_DISABLED_APPS';
-        $configName = 'nextcloud_keep_disabled_apps';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    public bool $nextcloudKeepDisabledApps {
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_KEEP_DISABLED_APPS', 'nextcloud_keep_disabled_apps', ''));
+        set { $this->set('nextcloud_keep_disabled_apps', $value); }
     }
 
-    public function shouldDisabledAppsGetRemoved() : bool {
-        if ($this->GetKeepDisabledApps() === 'true') {
-            return false;
-        } else {
-            return true;
-        }
-    }
-    
     private function camelize(string $input, string $delimiter = '_') : string {
         return lcfirst(implode("", array_map('ucfirst', explode($delimiter, strtolower($input)))));
 
@@ -1042,7 +1032,7 @@ class ConfigurationManager
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->nextcloudAdditionalApks,
             'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->nextcloudAdditionalPhpExtensions,
             'INSTALL_LATEST_MAJOR' => $this->installLatestMajor,
-            'REMOVE_DISABLED_APPS' => $this->shouldDisabledAppsGetRemoved() ? 'yes' : '',
+            'REMOVE_DISABLED_APPS' => $this->nextcloudKeepDisabledApps ? '' : 'yes',
             // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
             'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
             // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
