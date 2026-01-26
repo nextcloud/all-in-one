@@ -114,7 +114,7 @@ class ConfigurationManager
         // Type-cast because old configs could have 1/0 for this key.
         get => (bool) $this->get('isFulltextsearchEnabled', false);
         // Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
-        set { $this->set('isFulltextsearchEnabled', ($this->isSeccompDisabled() && $value)); }
+        set { $this->set('isFulltextsearchEnabled', ($this->collaboraSeccompDisabled && $value)); }
     }
 
     public string $domain {
@@ -689,21 +689,15 @@ class ConfigurationManager
 
     public function GetCollaboraSeccompPolicy() : string {
         $defaultString = '--o:security.seccomp=';
-        if (!$this->isSeccompDisabled()) {
+        if (!$this->collaboraSeccompDisabled) {
             return $defaultString . 'true';
         }
         return $defaultString . 'false';
     }
 
-    private function GetCollaboraSeccompDisabledState() : string {
-        $envVariableName = 'COLLABORA_SECCOMP_DISABLED';
-        $configName = 'collabora_seccomp_disabled';
-        $defaultValue = 'false';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function isSeccompDisabled() : bool {
-        return $this->GetCollaboraSeccompDisabledState() === 'true';
+    public bool $collaboraSeccompDisabled {
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('COLLABORA_SECCOMP_DISABLED', 'collabora_seccomp_disabled', ''));
+        set { $this->set('collabora_seccomp_disabled', $value); }
     }
 
     /**
