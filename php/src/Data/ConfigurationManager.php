@@ -667,11 +667,9 @@ class ConfigurationManager
         set { $this->set('fulltextsearch_java_options', $value); }
     }
 
-    public function GetDockerSocketPath() : string {
-        $envVariableName = 'WATCHTOWER_DOCKER_SOCKET_PATH';
-        $configName = 'docker_socket_path';
-        $defaultValue = '/var/run/docker.sock';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    public string $dockerSocketPath {
+        get => $this->GetEnvironmentalVariableOrConfig('WATCHTOWER_DOCKER_SOCKET_PATH', 'docker_socket_path', '/var/run/docker.sock');
+        set { $this->set('docker_socket_path', $value); }
     }
 
     public function GetTrustedCacertsDir() : string {
