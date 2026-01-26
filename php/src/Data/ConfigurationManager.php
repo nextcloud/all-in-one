@@ -874,11 +874,9 @@ class ConfigurationManager
         $this->set('collabora_additional_options', '');
     }
 
-    public function GetApacheAdditionalNetwork() : string {
-        $envVariableName = 'APACHE_ADDITIONAL_NETWORK';
-        $configName = 'apache_additional_network';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    public string $apacheAdditionalNetwork {
+        get => $this->GetEnvironmentalVariableOrConfig('APACHE_ADDITIONAL_NETWORK', 'apache_additional_network', '');
+        set { $this->set('apache_additional_network', $value); }
     }
 
     private function GetDisableBackupSection() : string {
