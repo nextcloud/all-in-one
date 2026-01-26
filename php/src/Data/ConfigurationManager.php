@@ -879,19 +879,9 @@ class ConfigurationManager
         set { $this->set('apache_additional_network', $value); }
     }
 
-    private function GetDisableBackupSection() : string {
-        $envVariableName = 'AIO_DISABLE_BACKUP_SECTION';
-        $configName = 'disable_backup_section';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function isBackupSectionEnabled() : bool {
-        if ($this->GetDisableBackupSection() === 'true') {
-            return false;
-        } else {
-            return true;
-        }
+    public bool $disableBackupSection {
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('AIO_DISABLE_BACKUP_SECTION', 'disable_backup_section', ''));
+        set { $this->set('disable_backup_section', $value); }
     }
 
     public function listAvailableCommunityContainers() : array {
