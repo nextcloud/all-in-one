@@ -1085,4 +1085,8 @@ class ConfigurationManager
             default => $this->GetRegisteredSecret($placeholder),
         };
     }
+    
+    private function booleanize(mixed $value) : bool {
+        return in_array($value, [true, 'true'], true);
+    }
 }
