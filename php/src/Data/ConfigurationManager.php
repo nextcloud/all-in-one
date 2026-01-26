@@ -188,6 +188,106 @@ class ConfigurationManager
         set { $this->set('turn_domain', $value); }
     }
 
+    public string $apachePort {
+        get => $this->GetEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
+        set { $this->set('apache_port', $value); }
+    }
+
+    public string $talkPort {
+        get => $this->GetEnvironmentalVariableOrConfig('TALK_PORT', 'talk_port', '3478');
+        set { $this->set('talk_port', $value); }
+    }
+
+    public string $nextcloudMount {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MOUNT', 'nextcloud_mount', '');
+        set { $this->set('nextcloud_mount', $value); }
+    }
+
+    public string $nextcloudDatadirMount {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_DATADIR', 'nextcloud_datadir', 'nextcloud_aio_nextcloud_data');
+        set { $this->set('nextcloud_datadir_mount', $value); }
+    }
+
+    public string $nextcloudUploadLimit {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_UPLOAD_LIMIT', 'nextcloud_upload_limit', '16G');
+        set { $this->set('nextcloud_upload_limit', $value); }
+    }
+
+    public string $nextcloudMemoryLimit {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MEMORY_LIMIT', 'nextcloud_memory_limit', '512M');
+        set { $this->set('nextcloud_memory_limit', $value); }
+    }
+
+    public function GetApacheMaxSize() : int {
+        $uploadLimit = (int)rtrim($this->nextcloudUploadLimit, 'G');
+        return $uploadLimit * 1024 * 1024 * 1024;
+    }
+
+    public string $nextcloudMaxTime {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MAX_TIME', 'nextcloud_max_time', '3600');
+        set { $this->set('nextcloud_max_time', $value); }
+    }
+
+    public string $borgRetentionPolicy {
+        get => $this->GetEnvironmentalVariableOrConfig('BORG_RETENTION_POLICY', 'borg_retention_policy', '--keep-within=7d --keep-weekly=4 --keep-monthly=6');
+        set { $this->set('borg_retention_policy', $value); }
+    }
+
+    public string $fulltextsearchJavaOptions {
+        get => $this->GetEnvironmentalVariableOrConfig('FULLTEXTSEARCH_JAVA_OPTIONS', 'fulltextsearch_java_options', '-Xms512M -Xmx512M');
+        set { $this->set('fulltextsearch_java_options', $value); }
+    }
+
+    public string $dockerSocketPath {
+        get => $this->GetEnvironmentalVariableOrConfig('WATCHTOWER_DOCKER_SOCKET_PATH', 'docker_socket_path', '/var/run/docker.sock');
+        set { $this->set('docker_socket_path', $value); }
+    }
+
+    public string $trustedCacertsDir {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_TRUSTED_CACERTS_DIR', 'trusted_cacerts_dir', '');
+        set { $this->set('trusted_cacerts_dir', $value); }
+    }
+
+    public string $nextcloudAdditionalApks {
+        get => trim($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_APKS', 'nextcloud_additional_apks', 'imagemagick'));
+        set { $this->set('nextcloud_addtional_apks', $value); }
+    }
+
+    public string $nextcloudAdditionalPhpExtensions {
+        get => trim($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS', 'nextcloud_additional_php_extensions', 'imagick'));
+        set { $this->set('nextcloud_additional_php_extensions', $value); }
+    }
+
+    public bool $collaboraSeccompDisabled {
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('COLLABORA_SECCOMP_DISABLED', 'collabora_seccomp_disabled', ''));
+        set { $this->set('collabora_seccomp_disabled', $value); }
+    }
+
+    public string $apacheAdditionalNetwork {
+        get => $this->GetEnvironmentalVariableOrConfig('APACHE_ADDITIONAL_NETWORK', 'apache_additional_network', '');
+        set { $this->set('apache_additional_network', $value); }
+    }
+
+    public bool $disableBackupSection {
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('AIO_DISABLE_BACKUP_SECTION', 'disable_backup_section', ''));
+        set { $this->set('disable_backup_section', $value); }
+    }
+
+    public bool $nextcloudEnableDriDevice{
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_DRI_DEVICE', 'nextcloud_enable_dri_device', ''));
+        set { $this->set('nextcloud_enable_dri_device', $value); }
+    }
+
+    public bool $enableNvidiaGpu {
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
+        set { $this->set('enable_nvidia_gpu', $value); }
+    }
+
+    public bool $nextcloudKeepDisabledApps {
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_KEEP_DISABLED_APPS', 'nextcloud_keep_disabled_apps', ''));
+        set { $this->set('nextcloud_keep_disabled_apps', $value); }
+    }
+
     private function GetConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -568,16 +668,6 @@ class ConfigurationManager
         $this->set('password', $newPassword);
     }
 
-    public string $apachePort {
-        get => $this->GetEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
-        set { $this->set('apache_port', $value); }
-    }
-        
-    public string $talkPort {
-        get => $this->GetEnvironmentalVariableOrConfig('TALK_PORT', 'talk_port', '3478');
-        set { $this->set('talk_port', $value); }
-    }
-
     /**
      * @throws InvalidSettingConfigurationException
      */
@@ -626,78 +716,12 @@ class ConfigurationManager
         return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
     }
 
-    public string $nextcloudMount {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MOUNT', 'nextcloud_mount', '');
-        set { $this->set('nextcloud_mount', $value); }
-    }
-
-
-    public string $nextcloudDatadirMount {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_DATADIR', 'nextcloud_datadir', 'nextcloud_aio_nextcloud_data');
-        set { $this->set('nextcloud_datadir_mount', $value); }
-    }
-
-    public string $nextcloudUploadLimit {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_UPLOAD_LIMIT', 'nextcloud_upload_limit', '16G');
-        set { $this->set('nextcloud_upload_limit', $value); }
-    }
-    
-    public string $nextcloudMemoryLimit {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MEMORY_LIMIT', 'nextcloud_memory_limit', '512M');
-        set { $this->set('nextcloud_memory_limit', $value); }
-    }
-
-    public function GetApacheMaxSize() : int {
-        $uploadLimit = (int)rtrim($this->nextcloudUploadLimit, 'G');
-        return $uploadLimit * 1024 * 1024 * 1024;
-    }
-
-    public string $nextcloudMaxTime {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MAX_TIME', 'nextcloud_max_time', '3600');
-        set { $this->set('nextcloud_max_time', $value); }
-    }
-
-    public string $borgRetentionPolicy {
-        get => $this->GetEnvironmentalVariableOrConfig('BORG_RETENTION_POLICY', 'borg_retention_policy', '--keep-within=7d --keep-weekly=4 --keep-monthly=6');
-        set { $this->set('borg_retention_policy', $value); }
-    }
-
-    public string $fulltextsearchJavaOptions {
-        get => $this->GetEnvironmentalVariableOrConfig('FULLTEXTSEARCH_JAVA_OPTIONS', 'fulltextsearch_java_options', '-Xms512M -Xmx512M');
-        set { $this->set('fulltextsearch_java_options', $value); }
-    }
-
-    public string $dockerSocketPath {
-        get => $this->GetEnvironmentalVariableOrConfig('WATCHTOWER_DOCKER_SOCKET_PATH', 'docker_socket_path', '/var/run/docker.sock');
-        set { $this->set('docker_socket_path', $value); }
-    }
-
-    public string $trustedCacertsDir {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_TRUSTED_CACERTS_DIR', 'trusted_cacerts_dir', '');
-        set { $this->set('trusted_cacerts_dir', $value); }
-    }
-
-    public string $nextcloudAdditionalApks {
-        get => trim($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_APKS', 'nextcloud_additional_apks', 'imagemagick'));
-        set { $this->set('nextcloud_addtional_apks', $value); }
-    }
-
-    public string $nextcloudAdditionalPhpExtensions {
-        get => trim($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS', 'nextcloud_additional_php_extensions', 'imagick'));
-        set { $this->set('nextcloud_additional_php_extensions', $value); }
-    }
-
     public function GetCollaboraSeccompPolicy() : string {
         $defaultString = '--o:security.seccomp=';
         if (!$this->collaboraSeccompDisabled) {
             return $defaultString . 'true';
         }
         return $defaultString . 'false';
-    }
-
-    public bool $collaboraSeccompDisabled {
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('COLLABORA_SECCOMP_DISABLED', 'collabora_seccomp_disabled', ''));
-        set { $this->set('collabora_seccomp_disabled', $value); }
     }
 
     /**
@@ -874,16 +898,6 @@ class ConfigurationManager
         $this->set('collabora_additional_options', '');
     }
 
-    public string $apacheAdditionalNetwork {
-        get => $this->GetEnvironmentalVariableOrConfig('APACHE_ADDITIONAL_NETWORK', 'apache_additional_network', '');
-        set { $this->set('apache_additional_network', $value); }
-    }
-
-    public bool $disableBackupSection {
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('AIO_DISABLE_BACKUP_SECTION', 'disable_backup_section', ''));
-        set { $this->set('disable_backup_section', $value); }
-    }
-
     public function listAvailableCommunityContainers() : array {
         $cc = [];
         $dir = scandir(DataConst::GetCommunityContainersDirectory());
@@ -917,21 +931,6 @@ class ConfigurationManager
             }
         }
         return $cc;
-    }
-
-    public bool $nextcloudEnableDriDevice{
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_DRI_DEVICE', 'nextcloud_enable_dri_device', ''));
-        set { $this->set('nextcloud_enable_dri_device', $value); }
-    }
-    
-    public bool $enableNvidiaGpu {
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
-        set { $this->set('enable_nvidia_gpu', $value); }
-    }
-
-    public bool $nextcloudKeepDisabledApps {
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_KEEP_DISABLED_APPS', 'nextcloud_keep_disabled_apps', ''));
-        set { $this->set('nextcloud_keep_disabled_apps', $value); }
     }
 
     private function camelize(string $input, string $delimiter = '_') : string {
