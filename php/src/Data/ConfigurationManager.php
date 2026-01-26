@@ -657,11 +657,9 @@ class ConfigurationManager
         set { $this->set('nextcloud_max_time', $value); }
     }
 
-    public function GetBorgRetentionPolicy() : string {
-        $envVariableName = 'BORG_RETENTION_POLICY';
-        $configName = 'borg_retention_policy';
-        $defaultValue = '--keep-within=7d --keep-weekly=4 --keep-monthly=6';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    public string $borgRetentionPolicy {
+        get => $this->GetEnvironmentalVariableOrConfig('BORG_RETENTION_POLICY', 'borg_retention_policy', '--keep-within=7d --keep-weekly=4 --keep-monthly=6');
+        set { $this->set('borg_retention_policy', $value); }
     }
 
     public function GetFulltextsearchJavaOptions() : string {
@@ -1077,7 +1075,7 @@ class ConfigurationManager
             'NEXTCLOUD_UPLOAD_LIMIT' => $this->nextcloudUploadLimit,
             'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloudMemoryLimit,
             'NEXTCLOUD_MAX_TIME' => $this->nextcloudMaxTime,
-            'BORG_RETENTION_POLICY' => $this->GetBorgRetentionPolicy(),
+            'BORG_RETENTION_POLICY' => $this->borgRetentionPolicy,
             'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->GetFulltextsearchJavaOptions(),
             'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->GetTrustedCacertsDir(),
             'ADDITIONAL_DIRECTORIES_BACKUP' => $this->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
