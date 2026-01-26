@@ -307,7 +307,7 @@ readonly class DockerActionManager {
 
         $devices = [];
         foreach ($container->devices as $device) {
-            if ($device === '/dev/dri' && !$this->configurationManager->isDriDeviceEnabled()) {
+            if ($device === '/dev/dri' && !$this->configurationManager->nextcloudEnableDriDevice) {
                 continue;
             }
             $devices[] = ["PathOnHost" => $device, "PathInContainer" => $device, "CgroupPermissions" => "rwm"];

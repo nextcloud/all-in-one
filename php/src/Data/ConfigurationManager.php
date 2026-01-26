@@ -919,19 +919,9 @@ class ConfigurationManager
         return $cc;
     }
 
-    private function GetEnabledDriDevice() : string {
-        $envVariableName = 'NEXTCLOUD_ENABLE_DRI_DEVICE';
-        $configName = 'nextcloud_enable_dri_device';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function isDriDeviceEnabled() : bool {
-        if ($this->GetEnabledDriDevice() === 'true') {
-            return true;
-        } else {
-            return false;
-        }
+    public bool $nextcloudEnableDriDevice{
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_DRI_DEVICE', 'nextcloud_enable_dri_device', ''));
+        set { $this->set('nextcloud_enable_dri_device', $value); }
     }
 
     private function GetEnabledNvidiaGpu() : string {

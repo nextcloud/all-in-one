@@ -132,7 +132,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_upload_limit' => $configurationManager->nextcloudUploadLimit,
         'nextcloud_max_time' => $configurationManager->nextcloudMaxTime,
         'nextcloud_memory_limit' => $configurationManager->nextcloudMemoryLimit,
-        'is_dri_device_enabled' => $configurationManager->isDriDeviceEnabled(),
+        'is_dri_device_enabled' => $configurationManager->nextcloudEnableDriDevice,
         'is_nvidia_gpu_enabled' => $configurationManager->isNvidiaGpuEnabled(),
         'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled,
         'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled,
