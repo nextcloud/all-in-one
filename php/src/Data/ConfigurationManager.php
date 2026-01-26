@@ -677,11 +677,9 @@ class ConfigurationManager
         set { $this->set('trusted_cacerts_dir', $value); }
     }
 
-    public function GetNextcloudAdditionalApks() : string {
-        $envVariableName = 'NEXTCLOUD_ADDITIONAL_APKS';
-        $configName = 'nextcloud_additional_apks';
-        $defaultValue = 'imagemagick';
-        return trim($this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue));
+    public string $nextcloudAdditionalApks {
+        get => trim($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_APKS', 'nextcloud_additional_apks', 'imagemagick'));
+        set { $this->set('nextcloud_addtional_apks', $value); }
     }
 
     public function GetNextcloudAdditionalPhpExtensions() : string {
@@ -1077,7 +1075,7 @@ class ConfigurationManager
             'APACHE_MAX_SIZE' => (string)($this->GetApacheMaxSize()),
             'COLLABORA_SECCOMP_POLICY' => $this->GetCollaboraSeccompPolicy(),
             'NEXTCLOUD_STARTUP_APPS' => $this->GetNextcloudStartupApps(),
-            'NEXTCLOUD_ADDITIONAL_APKS' => $this->GetNextcloudAdditionalApks(),
+            'NEXTCLOUD_ADDITIONAL_APKS' => $this->nextcloudAdditionalApks,
             'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->GetNextcloudAdditionalPhpExtensions(),
             'INSTALL_LATEST_MAJOR' => $this->installLatestMajor,
             'REMOVE_DISABLED_APPS' => $this->shouldDisabledAppsGetRemoved() ? 'yes' : '',
