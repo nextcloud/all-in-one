@@ -90,6 +90,8 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         sleep 5
     done
 
+# test
+
     # Check if the line we grep for later on is there
     GREP_STRING='Name: oc_appconfig; Type: TABLE; Schema: public; Owner:'
     if ! grep -qa "$GREP_STRING" "$DUMP_FILE"; then
