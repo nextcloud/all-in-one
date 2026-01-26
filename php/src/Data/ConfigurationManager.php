@@ -682,11 +682,9 @@ class ConfigurationManager
         set { $this->set('nextcloud_addtional_apks', $value); }
     }
 
-    public function GetNextcloudAdditionalPhpExtensions() : string {
-        $envVariableName = 'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS';
-        $configName = 'nextcloud_additional_php_extensions';
-        $defaultValue = 'imagick';
-        return trim($this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue));
+    public string $nextcloudAdditionalPhpExtensions {
+        get => trim($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS', 'nextcloud_additional_php_extensions', 'imagick'));
+        set { $this->set('nextcloud_additional_php_extensions', $value); }
     }
 
     public function GetCollaboraSeccompPolicy() : string {
@@ -1076,7 +1074,7 @@ class ConfigurationManager
             'COLLABORA_SECCOMP_POLICY' => $this->GetCollaboraSeccompPolicy(),
             'NEXTCLOUD_STARTUP_APPS' => $this->GetNextcloudStartupApps(),
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->nextcloudAdditionalApks,
-            'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->GetNextcloudAdditionalPhpExtensions(),
+            'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->nextcloudAdditionalPhpExtensions,
             'INSTALL_LATEST_MAJOR' => $this->installLatestMajor,
             'REMOVE_DISABLED_APPS' => $this->shouldDisabledAppsGetRemoved() ? 'yes' : '',
             // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
