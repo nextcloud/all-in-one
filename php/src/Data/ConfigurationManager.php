@@ -662,11 +662,9 @@ class ConfigurationManager
         set { $this->set('borg_retention_policy', $value); }
     }
 
-    public function GetFulltextsearchJavaOptions() : string {
-        $envVariableName = 'FULLTEXTSEARCH_JAVA_OPTIONS';
-        $configName = 'fulltextsearch_java_options';
-        $defaultValue = '-Xms512M -Xmx512M';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    public string $fulltextsearchJavaOptions {
+        get => $this->GetEnvironmentalVariableOrConfig('FULLTEXTSEARCH_JAVA_OPTIONS', 'fulltextsearch_java_options', '-Xms512M -Xmx512M');
+        set { $this->set('fulltextsearch_java_options', $value); }
     }
 
     public function GetDockerSocketPath() : string {
@@ -1076,7 +1074,7 @@ class ConfigurationManager
             'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloudMemoryLimit,
             'NEXTCLOUD_MAX_TIME' => $this->nextcloudMaxTime,
             'BORG_RETENTION_POLICY' => $this->borgRetentionPolicy,
-            'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->GetFulltextsearchJavaOptions(),
+            'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->fulltextsearchJavaOptions,
             'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->GetTrustedCacertsDir(),
             'ADDITIONAL_DIRECTORIES_BACKUP' => $this->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
             'BORGBACKUP_HOST_LOCATION' => $this->borgBackupHostLocation,
