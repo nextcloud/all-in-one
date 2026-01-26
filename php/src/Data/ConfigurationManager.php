@@ -923,16 +923,10 @@ class ConfigurationManager
         get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_DRI_DEVICE', 'nextcloud_enable_dri_device', ''));
         set { $this->set('nextcloud_enable_dri_device', $value); }
     }
-
-    private function GetEnabledNvidiaGpu() : string {
-        $envVariableName = 'NEXTCLOUD_ENABLE_NVIDIA_GPU';
-        $configName = 'enable_nvidia_gpu';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function isNvidiaGpuEnabled() : bool {
-        return $this->GetEnabledNvidiaGpu() === 'true';
+    
+    public bool $enableNvidiaGpu {
+        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
+        set { $this->set('enable_nvidia_gpu', $value); }
     }
 
     private function GetKeepDisabledApps() : string {

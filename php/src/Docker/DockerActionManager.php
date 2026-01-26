@@ -317,7 +317,7 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Devices'] = $devices;
         }
 
-        if ($container->enableNvidiaGpu && $this->configurationManager->isNvidiaGpuEnabled()) {
+        if ($container->enableNvidiaGpu && $this->configurationManager->enableNvidiaGpu) {
             $requestBody['HostConfig']['Runtime'] = 'nvidia';
             $requestBody['HostConfig']['DeviceRequests'] = [
                 [
