@@ -134,7 +134,7 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value['source'] === '%NEXTCLOUD_TRUSTED_CACERTS_DIR%') {
-                        $value['source'] = $this->configurationManager->GetTrustedCacertsDir();
+                        $value['source'] = $this->configurationManager->trustedCacertsDir;
                         if($value['source'] === '') {
                             continue;
                         }

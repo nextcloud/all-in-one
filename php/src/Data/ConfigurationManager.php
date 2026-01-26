@@ -672,11 +672,9 @@ class ConfigurationManager
         set { $this->set('docker_socket_path', $value); }
     }
 
-    public function GetTrustedCacertsDir() : string {
-        $envVariableName = 'NEXTCLOUD_TRUSTED_CACERTS_DIR';
-        $configName = 'trusted_cacerts_dir';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
+    public string $trustedCacertsDir {
+        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_TRUSTED_CACERTS_DIR', 'trusted_cacerts_dir', '');
+        set { $this->set('trusted_cacerts_dir', $value); }
     }
 
     public function GetNextcloudAdditionalApks() : string {
@@ -1073,7 +1071,7 @@ class ConfigurationManager
             'NEXTCLOUD_MAX_TIME' => $this->nextcloudMaxTime,
             'BORG_RETENTION_POLICY' => $this->borgRetentionPolicy,
             'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->fulltextsearchJavaOptions,
-            'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->GetTrustedCacertsDir(),
+            'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->trustedCacertsDir,
             'ADDITIONAL_DIRECTORIES_BACKUP' => $this->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
             'BORGBACKUP_HOST_LOCATION' => $this->borgBackupHostLocation,
             'APACHE_MAX_SIZE' => (string)($this->GetApacheMaxSize()),
