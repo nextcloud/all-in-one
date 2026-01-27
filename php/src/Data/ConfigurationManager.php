@@ -259,7 +259,7 @@ class ConfigurationManager
     }
 
     public bool $collaboraSeccompDisabled {
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('COLLABORA_SECCOMP_DISABLED', 'collabora_seccomp_disabled', ''));
+        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('COLLABORA_SECCOMP_DISABLED', 'collabora_seccomp_disabled', ''));
         set { $this->set('collabora_seccomp_disabled', $value); }
     }
 
@@ -269,22 +269,22 @@ class ConfigurationManager
     }
 
     public bool $disableBackupSection {
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('AIO_DISABLE_BACKUP_SECTION', 'disable_backup_section', ''));
+        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('AIO_DISABLE_BACKUP_SECTION', 'disable_backup_section', ''));
         set { $this->set('disable_backup_section', $value); }
     }
 
     public bool $nextcloudEnableDriDevice{
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_DRI_DEVICE', 'nextcloud_enable_dri_device', ''));
+        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_DRI_DEVICE', 'nextcloud_enable_dri_device', ''));
         set { $this->set('nextcloud_enable_dri_device', $value); }
     }
 
     public bool $enableNvidiaGpu {
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
+        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
         set { $this->set('enable_nvidia_gpu', $value); }
     }
 
     public bool $nextcloudKeepDisabledApps {
-        get => booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_KEEP_DISABLED_APPS', 'nextcloud_keep_disabled_apps', ''));
+        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_KEEP_DISABLED_APPS', 'nextcloud_keep_disabled_apps', ''));
         set { $this->set('nextcloud_keep_disabled_apps', $value); }
     }
 
