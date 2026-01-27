@@ -430,6 +430,10 @@ readonly class DockerActionManager {
             if ($this->configurationManager->GetAdditionalCollaboraOptions() !== '') {
                 $requestBody['Cmd'] = [$this->configurationManager->GetAdditionalCollaboraOptions()];
             }
+
+            if (count($this->configurationManager->GetCollaboraExtraHosts()) > 0) {
+                $requestBody['HostConfig']['ExtraHosts'] = $this->configurationManager->GetCollaboraExtraHosts();
+            }
         }
 
         if (count($mounts) > 0) {

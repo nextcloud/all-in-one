@@ -565,6 +565,10 @@ The Collabora container enables Seccomp by default, which is a security feature 
 ### How to adjust the Fulltextsearch Java options?
 The Fulltextsearch Java options are by default set to `-Xms512M -Xmx512M` which might not be enough on some systems. You can adjust this by adding e.g. `--env FULLTEXTSEARCH_JAVA_OPTIONS="-Xms1024M -Xmx1024M"` to the initial docker run command. If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used.
 
+### How to add additional hosts to Collabora's /etc/hosts?
+You can override DNS for specific hosts within the Collabora container by adding e.g. `--env COLLABORA_EXTRA_HOSTS="foo.example.org=2001:db8::1 bar.example.org=127.0.0.1"` to the initial docker run command. If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used.
+
+
 ## Guides
 
 ### How to run AIO on macOS?
