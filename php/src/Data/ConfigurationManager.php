@@ -954,17 +954,17 @@ class ConfigurationManager
                 error_log("Invalid input: '$variable' is not a string or does not contain an equal sign ('=')");
                 continue;
             }
-            $keyWithValue = $confManager->replaceEnvPlaceholders($variable);
+            $keyWithValue = $this->replaceEnvPlaceholders($variable);
             // Pad the result with nulls so psalm is happy (and we don't risk to run into warnings in case
             // the check for an equal sign from above gets changed).
             [$key, $value] = explode('=', $keyWithValue, 2) + [null, null];
             $key = $this->camelize($key);
             if ($value === null) {
                 error_log("Invalid input: '$keyWithValue' has no value after the equal sign");
-            } else if (!property_exists($confManager, $key)) {
+            } else if (!property_exists($this, $key)) {
                 error_log("Error: '$key' is not a valid configuration key (in '$keyWithValue')");
             } else {
-                $confManager->$key = $value;
+                $this->$key = $value;
             }
         }
         $this->commitTransaction();
