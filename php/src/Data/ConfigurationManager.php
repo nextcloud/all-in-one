@@ -934,6 +934,12 @@ class ConfigurationManager
     }
 
     private function camelize(string $input, string $delimiter = '_') : string {
+        if ($input === '') {
+            throw new InvalidSettingConfigurationException('input cannot be empty!');
+        }
+        if ($delimiter === '') {
+            $delimiter = '_';
+        }
         return lcfirst(implode("", array_map('ucfirst', explode($delimiter, strtolower($input)))));
 
     }
