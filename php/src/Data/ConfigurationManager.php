@@ -1036,7 +1036,7 @@ class ConfigurationManager
             'NEXTCLOUD_STARTUP_APPS' => $this->GetNextcloudStartupApps(),
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->nextcloudAdditionalApks,
             'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->nextcloudAdditionalPhpExtensions,
-            'INSTALL_LATEST_MAJOR' => $this->installLatestMajor,
+            'INSTALL_LATEST_MAJOR' => $this->installLatestMajor ? 'yes' : '',
             'REMOVE_DISABLED_APPS' => $this->nextcloudKeepDisabledApps ? '' : 'yes',
             // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
             'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
