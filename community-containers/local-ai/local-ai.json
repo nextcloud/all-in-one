@@ -6,11 +6,14 @@
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/local-ai",
             "image": "ghcr.io/docjyj/aio-local-ai-vulkan",
             "image_tag": "v0",
-            "internal_port": "8080",
+            "internal_port": "10078",
             "restart": "unless-stopped",
             "environment": [
                 "TZ=%TIMEZONE%",
-                "LOCALAI_API_KEY=%LOCALAI_API_KEY%"
+                "LOCALAI_API_KEY=%LOCALAI_API_KEY%",
+                "LOCALAI_ADDRESS=:10078",
+                "LOCALAI_MODEL_PATH=/models",
+                "LOCALAI_BACKEND_PATH=/backends"
             ],
             "ports": [
                 {
