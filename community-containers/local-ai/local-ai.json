@@ -5,7 +5,7 @@
             "display_name": "Local AI",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/local-ai",
             "image": "ghcr.io/docjyj/aio-local-ai-vulkan",
-            "image_tag": "v0",
+            "image_tag": "v1",
             "internal_port": "10078",
             "restart": "unless-stopped",
             "environment": [
