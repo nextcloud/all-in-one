@@ -574,6 +574,10 @@ input[type="checkbox"]:disabled:not(:checked) + label {
     flex-direction: column;
 }
 
+.office-card-disabled {
+    opacity: 50%;
+}
+
 .office-card:hover {
     border-color: var(--color-primary-element);
     box-shadow: 0 4px 12px rgba(0, 130, 201, 0.15);
