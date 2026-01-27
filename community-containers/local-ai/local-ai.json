@@ -34,7 +34,7 @@
             "secrets": [
                 "LOCALAI_API_KEY"
             ],
-            "ui_secret": "LOCAL_AI_PASS",
+            "ui_secret": "LOCALAI_API_KEY",
             "devices": [
                 "/dev/dri"
             ],
