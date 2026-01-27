@@ -10,7 +10,7 @@
             "restart": "unless-stopped",
             "environment": [
                 "TZ=%TIMEZONE%",
-                "LOCAL_AI_PASS=%LOCAL_AI_PASS%"
+                "LOCALAI_API_KEY=%LOCALAI_API_KEY%"
             ],
             "ports": [
                 {
