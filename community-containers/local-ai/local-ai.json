@@ -32,7 +32,7 @@
                 }
             ],
             "secrets": [
-                "LOCAL_AI_PASS"
+                "LOCALAI_API_KEY"
             ],
             "ui_secret": "LOCAL_AI_PASS",
             "devices": [
