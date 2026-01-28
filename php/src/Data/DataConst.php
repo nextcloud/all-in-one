@@ -66,4 +66,8 @@ class DataConst {
     public static function GetContainersDefinitionPath() : string {
         return (string)realpath(__DIR__ . '/../../containers.json');
     }
+
+    public static function GetContainerEventsFile() : string {
+        return self::GetDataDirectory() . '/container_events.log';
+    }
 }
