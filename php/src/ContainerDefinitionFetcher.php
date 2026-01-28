@@ -246,7 +246,7 @@ readonly class ContainerDefinitionFetcher {
                 // All secrets are registered with the configuration when they 
                 // are discovered so they can be later generated at time-of-use.
                 foreach ($entry['secrets'] as $secret) {
-                    $this->configurationManager->RegisterSecret($secret);
+                    $this->configurationManager->registerSecret($secret);
                 }
             }
 
