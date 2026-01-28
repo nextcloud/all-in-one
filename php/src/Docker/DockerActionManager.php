@@ -420,7 +420,13 @@ readonly class DockerActionManager {
 
             // Additional Collabora options
             if ($this->configurationManager->collaboraAdditionalOptions !== '') {
-                $requestBody['Cmd'] = [$this->configurationManager->collaboraAdditionalOptions];
+                // The regex not not extremely readable, should be the most thorough though.
+                // \s is any whitespace
+                // + means one or more token
+                // (?=<characters>) defines a positive lookahead (requirement but won't remove that character
+                // - the required character after an space
+                $regEx = '/\s+(?=-)/';
+                $requestBody['Cmd'] = preg_split($regEx, $this->configurationManager->collaboraAdditionalOptions);
             }
         }
 
