@@ -400,7 +400,7 @@ readonly class DockerActionManager {
             // // Special things for the nextcloud container which should not be exposed in the containers.json
             // } elseif ($container->identifier === 'nextcloud-aio-nextcloud') {
             //     foreach ($container->volumes->GetVolumes() as $volume) {
-            //         if ($volume->name !== $this->configurationManager->nextcloud_mount) {
+            //         if ($volume->name !== $this->configurationManager->nextcloudMount) {
             //             continue;
             //         }
             //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
