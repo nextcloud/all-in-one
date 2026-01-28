@@ -420,6 +420,14 @@ class ConfigurationManager
         return $backupTimes;
     }
 
+    public function getAioVersion() : string {
+        $path = DataConst::GetAioVersionFile();
+        if ($path !== '' && file_exists($path)) {
+            return trim((string)file_get_contents($path));
+        }
+        return '';
+    }
+
     private function isx64Platform() : bool {
         if (php_uname('m') === 'x86_64') {
             return true;
@@ -1043,6 +1051,7 @@ class ConfigurationManager
             // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
+            'AIO_VERSION' => $this->getAioVersion(),
             default => $this->GetRegisteredSecret($placeholder),
         };
     }
