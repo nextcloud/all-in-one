@@ -182,8 +182,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/latest-${NEXT_MAJOR}.tar.bz2.asc"
             GNUPGHOME="$(mktemp -d)"
             export GNUPGHOME
-            # gpg key from https://nextcloud.com/nextcloud.asc
-            gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A
+            curl -sSL https://nextcloud.com/nextcloud.asc | gpg --import
             gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2
             mkdir -p /usr/src/tmp
             tar -xjf nextcloud.tar.bz2 -C /usr/src/tmp/
