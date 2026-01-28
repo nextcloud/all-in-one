@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     // Collabora
-    let collabora = document.getElementById("collabora");
+    const collabora = document.getElementById("office-collabora");
     collabora.disabled = true;
 });
