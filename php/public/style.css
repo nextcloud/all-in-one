@@ -576,6 +576,7 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 
 .office-card-disabled {
     opacity: 50%;
+    pointer-events: none;
 }
 
 .office-card:hover {
