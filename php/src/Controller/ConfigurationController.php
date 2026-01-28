@@ -119,6 +119,11 @@ readonly class ConfigurationController {
                 } else {
                     $this->configurationManager->SetDockerSocketProxyEnabledState(0);
                 }
+                if (isset($request->getParsedBody()['harp'])) {
+                    $this->configurationManager->SetHarpEnabledState(1);
+                } else {
+                    $this->configurationManager->SetHarpEnabledState(0);
+                }
                 if (isset($request->getParsedBody()['whiteboard'])) {
                     $this->configurationManager->SetWhiteboardEnabledState(1);
                 } else {

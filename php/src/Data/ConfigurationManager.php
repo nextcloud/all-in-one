@@ -162,6 +162,21 @@ class ConfigurationManager
         $this->WriteConfig($config);
     }
 
+    public function isHarpEnabled() : bool {
+        $config = $this->GetConfig();
+        if (isset($config['isHarpEnabled']) && $config['isHarpEnabled'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function SetHarpEnabledState(int $value) : void {
+        $config = $this->GetConfig();
+        $config['isHarpEnabled'] = $value;
+        $this->WriteConfig($config);
+    }
+
     public function isWhiteboardEnabled() : bool {
         $config = $this->GetConfig();
         if (isset($config['isWhiteboardEnabled']) && $config['isWhiteboardEnabled'] === 0) {

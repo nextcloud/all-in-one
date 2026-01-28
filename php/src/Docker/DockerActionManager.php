@@ -582,6 +582,7 @@ readonly class DockerActionManager {
             'IMAGINARY_ENABLED' => $this->configurationManager->isImaginaryEnabled() ? 'yes' : '',
             'FULLTEXTSEARCH_ENABLED' => $this->configurationManager->isFulltextsearchEnabled() ? 'yes' : '',
             'DOCKER_SOCKET_PROXY_ENABLED' => $this->configurationManager->isDockerSocketProxyEnabled() ? 'yes' : '',
+            'HARP_ENABLED' => $this->configurationManager->isHarpEnabled() ? 'yes' : '',
             'NEXTCLOUD_UPLOAD_LIMIT' => $this->configurationManager->GetNextcloudUploadLimit(),
             'NEXTCLOUD_MEMORY_LIMIT' => $this->configurationManager->GetNextcloudMemoryLimit(),
             'NEXTCLOUD_MAX_TIME' => $this->configurationManager->GetNextcloudMaxTime(),
