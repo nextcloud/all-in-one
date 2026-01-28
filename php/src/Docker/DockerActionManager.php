@@ -115,9 +115,9 @@ readonly class DockerActionManager {
         $containerName = $container->identifier;
         $internalPort = $container->internalPorts;
         if ($internalPort === '%APACHE_PORT%') {
-            $internalPort = $this->configurationManager->GetApachePort();
+            $internalPort = $this->configurationManager->apachePort;
         } elseif ($internalPort === '%TALK_PORT%') {
-            $internalPort = $this->configurationManager->GetTalkPort();
+            $internalPort = $this->configurationManager->talkPort;
         }
 
         if ($internalPort !== "" && $internalPort !== 'host') {
@@ -205,7 +205,7 @@ readonly class DockerActionManager {
         foreach ($container->volumes->GetVolumes() as $volume) {
             // // NEXTCLOUD_MOUNT gets added via bind-mount later on
             // if ($container->identifier === 'nextcloud-aio-nextcloud') {
-            //     if ($volume->name === $this->configurationManager->GetNextcloudMount()) {
+            //     if ($volume->name === $this->configurationManager->nextcloudMount) {
             //         continue;
             //     }
             // }
@@ -228,15 +228,7 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Binds'] = $volumes;
         }
 
-        $aioVariables = $container->aioVariables->GetVariables();
-        foreach ($aioVariables as $variable) {
-            $config = $this->configurationManager->GetConfig();
-            $variable = $this->replaceEnvPlaceholders($variable);
-            $variableArray = explode('=', $variable);
-            $config[$variableArray[0]] = $variableArray[1];
-            $this->configurationManager->WriteConfig($config);
-            sleep(1);
-        }
+        $this->configurationManager->setAioVariables($container->aioVariables->GetVariables());
 
         $envs = $container->containerEnvironmentVariables->GetVariables();
         // Special thing for the nextcloud container
@@ -244,7 +236,7 @@ readonly class DockerActionManager {
             $envs[] = $this->GetAllNextcloudExecCommands();
         }
         foreach ($envs as $key => $env) {
-            $envs[$key] = $this->replaceEnvPlaceholders($env);
+            $envs[$key] = $this->configurationManager->replaceEnvPlaceholders($env);
         }
 
         if (count($envs) > 0) {
@@ -261,13 +253,13 @@ readonly class DockerActionManager {
                 $port = $value->port;
                 $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
-                    $port = $this->configurationManager->GetApachePort();
+                    $port = $this->configurationManager->apachePort;
                     // Do not expose udp if AIO is in reverse proxy mode
                     if ($port !== '443' && $protocol === 'udp') {
                         continue;
                     }
                 } else if ($port === '%TALK_PORT%') {
-                    $port = $this->configurationManager->GetTalkPort();
+                    $port = $this->configurationManager->talkPort;
                 }
                 $portWithProtocol = $port . '/' . $protocol;
                 $exposedPorts[$portWithProtocol] = null;
@@ -283,13 +275,13 @@ readonly class DockerActionManager {
                 $port = $value->port;
                 $protocol = $value->protocol;
                 if ($port === '%APACHE_PORT%') {
-                    $port = $this->configurationManager->GetApachePort();
+                    $port = $this->configurationManager->apachePort;
                     // Do not expose udp if AIO is in reverse proxy mode
                     if ($port !== '443' && $protocol === 'udp') {
                         continue;
                     }
                 } else if ($port === '%TALK_PORT%') {
-                    $port = $this->configurationManager->GetTalkPort();
+                    $port = $this->configurationManager->talkPort;
                     // Skip publishing talk tcp port if it is set to 443
                     if ($port === '443' && $protocol === 'tcp') {
                         continue;
@@ -297,7 +289,7 @@ readonly class DockerActionManager {
                 }
                 $ipBinding = $value->ipBinding;
                 if ($ipBinding === '%APACHE_IP_BINDING%') {
-                    $ipBinding = $this->configurationManager->GetApacheIPBinding();
+                    $ipBinding = $this->configurationManager->apacheIpBinding;
                     // Do not expose if AIO is in internal network mode
                     if ($ipBinding === '@INTERNAL') {
                         continue;
@@ -315,7 +307,7 @@ readonly class DockerActionManager {
 
         $devices = [];
         foreach ($container->devices as $device) {
-            if ($device === '/dev/dri' && !$this->configurationManager->isDriDeviceEnabled()) {
+            if ($device === '/dev/dri' && !$this->configurationManager->nextcloudEnableDriDevice) {
                 continue;
             }
             $devices[] = ["PathOnHost" => $device, "PathInContainer" => $device, "CgroupPermissions" => "rwm"];
@@ -325,7 +317,7 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Devices'] = $devices;
         }
 
-        if ($container->enableNvidiaGpu && $this->configurationManager->isNvidiaGpuEnabled()) {
+        if ($container->enableNvidiaGpu && $this->configurationManager->enableNvidiaGpu) {
             $requestBody['HostConfig']['Runtime'] = 'nvidia';
             $requestBody['HostConfig']['DeviceRequests'] = [
                 [
@@ -408,7 +400,7 @@ readonly class DockerActionManager {
             // // Special things for the nextcloud container which should not be exposed in the containers.json
             // } elseif ($container->identifier === 'nextcloud-aio-nextcloud') {
             //     foreach ($container->volumes->GetVolumes() as $volume) {
-            //         if ($volume->name !== $this->configurationManager->GetNextcloudMount()) {
+            //         if ($volume->name !== $this->configurationManager->nextcloudMount) {
             //             continue;
             //         }
             //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
@@ -420,15 +412,15 @@ readonly class DockerActionManager {
 
         // Special things for the collabora container which should not be exposed in the containers.json
         } elseif ($container->identifier === 'nextcloud-aio-collabora') {
-            if (!$this->configurationManager->isSeccompDisabled()) {
+            if (!$this->configurationManager->collaboraSeccompDisabled) {
                 // Load reference seccomp profile for collabora
                 $seccompProfile = (string)file_get_contents(DataConst::GetCollaboraSeccompProfilePath());
                 $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile"];
             }
 
             // Additional Collabora options
-            if ($this->configurationManager->GetAdditionalCollaboraOptions() !== '') {
-                $requestBody['Cmd'] = [$this->configurationManager->GetAdditionalCollaboraOptions()];
+            if ($this->configurationManager->collaboraAdditionalOptions !== '') {
+                $requestBody['Cmd'] = [$this->configurationManager->collaboraAdditionalOptions];
             }
         }
 
@@ -530,82 +522,6 @@ readonly class DockerActionManager {
         }
     }
 
-    // Replaces placeholders in $envValue with their values.
-    // E.g. "%NC_DOMAIN%:%APACHE_PORT" becomes "my.nextcloud.com:11000"
-    private function replaceEnvPlaceholders(string $envValue): string {
-        // $pattern breaks down as:
-        // % - matches a literal percent sign
-        // ([^%]+) - capture group that matches one or more characters that are NOT percent signs
-        // % - matches the closing percent sign
-        //
-        // Assumes literal percent signs are always matched and there is no
-        // escaping.
-        $pattern = '/%([^%]+)%/';
-        $matchCount = preg_match_all($pattern, $envValue, $matches);
-
-        if ($matchCount === 0) {
-            return $envValue;
-        }
-
-        $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
-        $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
-        $placeholderPatterns = array_map(static fn(string $p) => '/' . preg_quote($p) . '/', $placeholders); // ["/%PLACEHOLDER1%/", ...]
-        $placeholderValues = array_map($this->getPlaceholderValue(...), $placeholderNames); // ["val1", "val2"]
-        // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
-        return (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
-    }
-
-    private function getPlaceholderValue(string $placeholder) : string {
-        return match ($placeholder) {
-            'NC_DOMAIN' => $this->configurationManager->GetDomain(),
-            'NC_BASE_DN' => $this->configurationManager->GetBaseDN(),
-            'AIO_TOKEN' => $this->configurationManager->GetToken(),
-            'BORGBACKUP_REMOTE_REPO' => $this->configurationManager->GetBorgRemoteRepo(),
-            'BORGBACKUP_MODE' => $this->configurationManager->GetBackupMode(),
-            'AIO_URL' => $this->configurationManager->GetAIOURL(),
-            'SELECTED_RESTORE_TIME' => $this->configurationManager->GetSelectedRestoreTime(),
-            'RESTORE_EXCLUDE_PREVIEWS' => $this->configurationManager->GetRestoreExcludePreviews(),
-            'APACHE_PORT' => $this->configurationManager->GetApachePort(),
-            'APACHE_IP_BINDING' => $this->configurationManager->GetApacheIPBinding(),
-            'TALK_PORT' => $this->configurationManager->GetTalkPort(),
-            'TURN_DOMAIN' => $this->configurationManager->GetTurnDomain(),
-            'NEXTCLOUD_MOUNT' => $this->configurationManager->GetNextcloudMount(),
-            'BACKUP_RESTORE_PASSWORD' => $this->configurationManager->GetBorgRestorePassword(),
-            'CLAMAV_ENABLED' => $this->configurationManager->isClamavEnabled() ? 'yes' : '',
-            'TALK_RECORDING_ENABLED' => $this->configurationManager->isTalkRecordingEnabled() ? 'yes' : '',
-            'ONLYOFFICE_ENABLED' => $this->configurationManager->isOnlyofficeEnabled() ? 'yes' : '',
-            'COLLABORA_ENABLED' => $this->configurationManager->isCollaboraEnabled() ? 'yes' : '',
-            'TALK_ENABLED' => $this->configurationManager->isTalkEnabled() ? 'yes' : '',
-            'UPDATE_NEXTCLOUD_APPS' => ($this->configurationManager->isDailyBackupRunning() && $this->configurationManager->areAutomaticUpdatesEnabled()) ? 'yes' : '',
-            'TIMEZONE' => $this->configurationManager->GetTimezone() === '' ? 'Etc/UTC' : $this->configurationManager->GetTimezone(),
-            'COLLABORA_DICTIONARIES' => $this->configurationManager->GetCollaboraDictionaries() === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->configurationManager->GetCollaboraDictionaries(),
-            'IMAGINARY_ENABLED' => $this->configurationManager->isImaginaryEnabled() ? 'yes' : '',
-            'FULLTEXTSEARCH_ENABLED' => $this->configurationManager->isFulltextsearchEnabled() ? 'yes' : '',
-            'DOCKER_SOCKET_PROXY_ENABLED' => $this->configurationManager->isDockerSocketProxyEnabled() ? 'yes' : '',
-            'NEXTCLOUD_UPLOAD_LIMIT' => $this->configurationManager->GetNextcloudUploadLimit(),
-            'NEXTCLOUD_MEMORY_LIMIT' => $this->configurationManager->GetNextcloudMemoryLimit(),
-            'NEXTCLOUD_MAX_TIME' => $this->configurationManager->GetNextcloudMaxTime(),
-            'BORG_RETENTION_POLICY' => $this->configurationManager->GetBorgRetentionPolicy(),
-            'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->configurationManager->GetFulltextsearchJavaOptions(),
-            'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->configurationManager->GetTrustedCacertsDir(),
-            'ADDITIONAL_DIRECTORIES_BACKUP' => $this->configurationManager->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
-            'BORGBACKUP_HOST_LOCATION' => $this->configurationManager->GetBorgBackupHostLocation(),
-            'APACHE_MAX_SIZE' => (string)($this->configurationManager->GetApacheMaxSize()),
-            'COLLABORA_SECCOMP_POLICY' => $this->configurationManager->GetCollaboraSeccompPolicy(),
-            'NEXTCLOUD_STARTUP_APPS' => $this->configurationManager->GetNextcloudStartupApps(),
-            'NEXTCLOUD_ADDITIONAL_APKS' => $this->configurationManager->GetNextcloudAdditionalApks(),
-            'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->configurationManager->GetNextcloudAdditionalPhpExtensions(),
-            'INSTALL_LATEST_MAJOR' => $this->configurationManager->shouldLatestMajorGetInstalled() ? 'yes' : '',
-            'REMOVE_DISABLED_APPS' => $this->configurationManager->shouldDisabledAppsGetRemoved() ? 'yes' : '',
-            // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
-            'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
-            // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
-            'CADDY_IP_ADDRESS' => in_array('caddy', $this->configurationManager->GetEnabledCommunityContainers(), true) ? gethostbyname('nextcloud-aio-caddy') : '',
-            'WHITEBOARD_ENABLED' => $this->configurationManager->isWhiteboardEnabled() ? 'yes' : '',
-            default => $this->configurationManager->GetRegisteredSecret($placeholder),
-        };
-    }
-
     private function isContainerUpdateAvailable(string $id): string {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
@@ -621,7 +537,7 @@ readonly class DockerActionManager {
 
     public function isAnyUpdateAvailable(): bool {
         // return early if instance is not installed
-        if (!$this->configurationManager->wasStartButtonClicked()) {
+        if (!$this->configurationManager->wasStartButtonClicked) {
             return false;
         }
         $id = 'nextcloud-aio-apache';
@@ -921,7 +837,7 @@ readonly class DockerActionManager {
         $this->ConnectContainerIdToNetwork($container->identifier, $container->internalPorts, alias: $alias);
 
         if ($container->identifier === 'nextcloud-aio-apache' || $container->identifier === 'nextcloud-aio-domaincheck') {
-            $apacheAdditionalNetwork = $this->configurationManager->GetApacheAdditionalNetwork();
+            $apacheAdditionalNetwork = $this->configurationManager->apacheAdditionalNetwork;
             if ($apacheAdditionalNetwork !== '') {
                 $this->ConnectContainerIdToNetwork($container->identifier, $container->internalPorts, $apacheAdditionalNetwork, false, $alias);
             }
