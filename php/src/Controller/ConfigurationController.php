@@ -20,26 +20,26 @@ readonly class ConfigurationController {
             if (isset($request->getParsedBody()['domain'])) {
                 $domain = $request->getParsedBody()['domain'] ?? '';
                 $skipDomainValidation = isset($request->getParsedBody()['skip_domain_validation']);
-                $this->configurationManager->SetDomain($domain, $skipDomainValidation);
+                $this->configurationManager->setDomain($domain, $skipDomainValidation);
             }
 
             if (isset($request->getParsedBody()['current-master-password']) || isset($request->getParsedBody()['new-master-password'])) {
                 $currentMasterPassword = $request->getParsedBody()['current-master-password'] ?? '';
                 $newMasterPassword = $request->getParsedBody()['new-master-password'] ?? '';
-                $this->configurationManager->ChangeMasterPassword($currentMasterPassword, $newMasterPassword);
+                $this->configurationManager->changeMasterPassword($currentMasterPassword, $newMasterPassword);
             }
 
             if (isset($request->getParsedBody()['borg_backup_host_location']) || isset($request->getParsedBody()['borg_remote_repo'])) {
                 $location = $request->getParsedBody()['borg_backup_host_location'] ?? '';
                 $borgRemoteRepo = $request->getParsedBody()['borg_remote_repo'] ?? '';
-                $this->configurationManager->SetBorgLocationVars($location, $borgRemoteRepo);
+                $this->configurationManager->setBorgLocationVars($location, $borgRemoteRepo);
             }
 
             if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_remote_repo']) || isset($request->getParsedBody()['borg_restore_password'])) {
                 $restoreLocation = $request->getParsedBody()['borg_restore_host_location'] ?? '';
                 $borgRemoteRepo = $request->getParsedBody()['borg_restore_remote_repo'] ?? '';
                 $borgPassword = $request->getParsedBody()['borg_restore_password'] ?? '';
-                $this->configurationManager->SetBorgRestoreLocationVarsAndPassword($restoreLocation, $borgRemoteRepo, $borgPassword);
+                $this->configurationManager->setBorgRestoreLocationVarsAndPassword($restoreLocation, $borgRemoteRepo, $borgPassword);
             }
 
             if (isset($request->getParsedBody()['daily_backup_time'])) {
@@ -54,16 +54,16 @@ readonly class ConfigurationController {
                     $successNotification = false;
                 }
                 $dailyBackupTime = $request->getParsedBody()['daily_backup_time'] ?? '';
-                $this->configurationManager->SetDailyBackupTime($dailyBackupTime, $enableAutomaticUpdates, $successNotification);
+                $this->configurationManager->setDailyBackupTime($dailyBackupTime, $enableAutomaticUpdates, $successNotification);
             }
 
             if (isset($request->getParsedBody()['delete_daily_backup_time'])) {
-                $this->configurationManager->DeleteDailyBackupTime();
+                $this->configurationManager->deleteDailyBackupTime();
             }
 
             if (isset($request->getParsedBody()['additional_backup_directories'])) {
                 $additionalBackupDirectories = $request->getParsedBody()['additional_backup_directories'] ?? '';
-                $this->configurationManager->SetAdditionalBackupDirectories($additionalBackupDirectories);
+                $this->configurationManager->setAdditionalBackupDirectories($additionalBackupDirectories);
             }
 
             if (isset($request->getParsedBody()['delete_timezone'])) {
@@ -112,7 +112,7 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['delete_collabora_dictionaries'])) {
-                $this->configurationManager->DeleteCollaboraDictionaries();
+                $this->configurationManager->deleteCollaboraDictionaries();
             }
 
             if (isset($request->getParsedBody()['collabora_dictionaries'])) {
@@ -130,7 +130,7 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['delete_borg_backup_location_vars'])) {
-                $this->configurationManager->DeleteBorgBackupLocationItems();
+                $this->configurationManager->deleteBorgBackupLocationItems();
             }
 
             return $response->withStatus(201)->withHeader('Location', '.');

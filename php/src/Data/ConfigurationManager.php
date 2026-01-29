@@ -119,7 +119,7 @@ class ConfigurationManager
 
     public string $domain {
         get => $this->get('domain', '');
-        set { $this->SetDomain($value); }
+        set { $this->setDomain($value); }
     }
 
     public string $borgBackupHostLocation {
@@ -138,7 +138,7 @@ class ConfigurationManager
     }
 
     public string $apacheIpBinding {
-        get => $this->GetEnvironmentalVariableOrConfig('APACHE_IP_BINDING', 'apache_ip_binding', '');
+        get => $this->getEnvironmentalVariableOrConfig('APACHE_IP_BINDING', 'apache_ip_binding', '');
         set { $this->set('apache_ip_binding', $value); }
     }
 
@@ -189,106 +189,106 @@ class ConfigurationManager
     }
 
     public string $apachePort {
-        get => $this->GetEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
+        get => $this->getEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
         set { $this->set('apache_port', $value); }
     }
 
     public string $talkPort {
-        get => $this->GetEnvironmentalVariableOrConfig('TALK_PORT', 'talk_port', '3478');
+        get => $this->getEnvironmentalVariableOrConfig('TALK_PORT', 'talk_port', '3478');
         set { $this->set('talk_port', $value); }
     }
 
     public string $nextcloudMount {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MOUNT', 'nextcloud_mount', '');
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_MOUNT', 'nextcloud_mount', '');
         set { $this->set('nextcloud_mount', $value); }
     }
 
     public string $nextcloudDatadirMount {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_DATADIR', 'nextcloud_datadir', 'nextcloud_aio_nextcloud_data');
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_DATADIR', 'nextcloud_datadir', 'nextcloud_aio_nextcloud_data');
         set { $this->set('nextcloud_datadir_mount', $value); }
     }
 
     public string $nextcloudUploadLimit {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_UPLOAD_LIMIT', 'nextcloud_upload_limit', '16G');
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_UPLOAD_LIMIT', 'nextcloud_upload_limit', '16G');
         set { $this->set('nextcloud_upload_limit', $value); }
     }
 
     public string $nextcloudMemoryLimit {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MEMORY_LIMIT', 'nextcloud_memory_limit', '512M');
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_MEMORY_LIMIT', 'nextcloud_memory_limit', '512M');
         set { $this->set('nextcloud_memory_limit', $value); }
     }
 
-    public function GetApacheMaxSize() : int {
+    public function getApacheMaxSize() : int {
         $uploadLimit = (int)rtrim($this->nextcloudUploadLimit, 'G');
         return $uploadLimit * 1024 * 1024 * 1024;
     }
 
     public string $nextcloudMaxTime {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_MAX_TIME', 'nextcloud_max_time', '3600');
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_MAX_TIME', 'nextcloud_max_time', '3600');
         set { $this->set('nextcloud_max_time', $value); }
     }
 
     public string $borgRetentionPolicy {
-        get => $this->GetEnvironmentalVariableOrConfig('BORG_RETENTION_POLICY', 'borg_retention_policy', '--keep-within=7d --keep-weekly=4 --keep-monthly=6');
+        get => $this->getEnvironmentalVariableOrConfig('BORG_RETENTION_POLICY', 'borg_retention_policy', '--keep-within=7d --keep-weekly=4 --keep-monthly=6');
         set { $this->set('borg_retention_policy', $value); }
     }
 
     public string $fulltextsearchJavaOptions {
-        get => $this->GetEnvironmentalVariableOrConfig('FULLTEXTSEARCH_JAVA_OPTIONS', 'fulltextsearch_java_options', '-Xms512M -Xmx512M');
+        get => $this->getEnvironmentalVariableOrConfig('FULLTEXTSEARCH_JAVA_OPTIONS', 'fulltextsearch_java_options', '-Xms512M -Xmx512M');
         set { $this->set('fulltextsearch_java_options', $value); }
     }
 
     public string $dockerSocketPath {
-        get => $this->GetEnvironmentalVariableOrConfig('WATCHTOWER_DOCKER_SOCKET_PATH', 'docker_socket_path', '/var/run/docker.sock');
+        get => $this->getEnvironmentalVariableOrConfig('WATCHTOWER_DOCKER_SOCKET_PATH', 'docker_socket_path', '/var/run/docker.sock');
         set { $this->set('docker_socket_path', $value); }
     }
 
     public string $trustedCacertsDir {
-        get => $this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_TRUSTED_CACERTS_DIR', 'trusted_cacerts_dir', '');
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_TRUSTED_CACERTS_DIR', 'trusted_cacerts_dir', '');
         set { $this->set('trusted_cacerts_dir', $value); }
     }
 
     public string $nextcloudAdditionalApks {
-        get => trim($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_APKS', 'nextcloud_additional_apks', 'imagemagick'));
+        get => trim($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_APKS', 'nextcloud_additional_apks', 'imagemagick'));
         set { $this->set('nextcloud_addtional_apks', $value); }
     }
 
     public string $nextcloudAdditionalPhpExtensions {
-        get => trim($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS', 'nextcloud_additional_php_extensions', 'imagick'));
+        get => trim($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS', 'nextcloud_additional_php_extensions', 'imagick'));
         set { $this->set('nextcloud_additional_php_extensions', $value); }
     }
 
     public bool $collaboraSeccompDisabled {
-        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('COLLABORA_SECCOMP_DISABLED', 'collabora_seccomp_disabled', ''));
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('COLLABORA_SECCOMP_DISABLED', 'collabora_seccomp_disabled', ''));
         set { $this->set('collabora_seccomp_disabled', $value); }
     }
 
     public string $apacheAdditionalNetwork {
-        get => $this->GetEnvironmentalVariableOrConfig('APACHE_ADDITIONAL_NETWORK', 'apache_additional_network', '');
+        get => $this->getEnvironmentalVariableOrConfig('APACHE_ADDITIONAL_NETWORK', 'apache_additional_network', '');
         set { $this->set('apache_additional_network', $value); }
     }
 
     public bool $disableBackupSection {
-        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('AIO_DISABLE_BACKUP_SECTION', 'disable_backup_section', ''));
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('AIO_DISABLE_BACKUP_SECTION', 'disable_backup_section', ''));
         set { $this->set('disable_backup_section', $value); }
     }
 
     public bool $nextcloudEnableDriDevice{
-        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_DRI_DEVICE', 'nextcloud_enable_dri_device', ''));
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_DRI_DEVICE', 'nextcloud_enable_dri_device', ''));
         set { $this->set('nextcloud_enable_dri_device', $value); }
     }
 
     public bool $enableNvidiaGpu {
-        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
         set { $this->set('enable_nvidia_gpu', $value); }
     }
 
     public bool $nextcloudKeepDisabledApps {
-        get => $this->booleanize($this->GetEnvironmentalVariableOrConfig('NEXTCLOUD_KEEP_DISABLED_APPS', 'nextcloud_keep_disabled_apps', ''));
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_KEEP_DISABLED_APPS', 'nextcloud_keep_disabled_apps', ''));
         set { $this->set('nextcloud_keep_disabled_apps', $value); }
     }
 
-    private function GetConfig() : array
+    private function getConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
         {
@@ -300,15 +300,15 @@ class ConfigurationManager
     }
 
     private function get(string $key, mixed $fallbackValue = null) : mixed {
-        return $this->GetConfig()[$key] ?? $fallbackValue;
+        return $this->getConfig()[$key] ?? $fallbackValue;
     }
 
     private function set(string $key, mixed $value) : void {
-        $this->GetConfig();
+        $this->getConfig();
         $this->config[$key] = $value;
         // Only write if this isn't called in between startTransaction() and commitTransaction().
         if ($this->noWrite !== true) {
-            $this->WriteConfig();
+            $this->writeConfig();
         }
     }
 
@@ -317,7 +317,7 @@ class ConfigurationManager
      * followed by a call to commitTransaction(), which then writes all changes to disk.
      */
     public function startTransaction() : void {
-        $this->GetConfig();
+        $this->getConfig();
         $this->noWrite = true;
     }
 
@@ -326,13 +326,13 @@ class ConfigurationManager
      */
     public function commitTransaction() : void {
         try {
-            $this->WriteConfig();
+            $this->writeConfig();
         } finally {
             $this->noWrite = false;
         }
     }
 
-    public function GetAndGenerateSecret(string $secretId) : string {
+    public function getAndGenerateSecret(string $secretId) : string {
         if ($secretId === '') {
             return '';
         }
@@ -344,24 +344,24 @@ class ConfigurationManager
         }
 
         if ($secretId === 'BORGBACKUP_PASSWORD' && !file_exists(DataConst::GetBackupSecretFile())) {
-            $this->DoubleSafeBackupSecret($secrets[$secretId]);
+            $this->doubleSafeBackupSecret($secrets[$secretId]);
         }
 
         return $secrets[$secretId];
     }
 
-    public function GetRegisteredSecret(string $secretId) : string {
+    public function getRegisteredSecret(string $secretId) : string {
         if ($this->secrets[$secretId]) {
-            return $this->GetAndGenerateSecret($secretId);
+            return $this->getAndGenerateSecret($secretId);
         }
         throw new \Exception("The secret " . $secretId . " was not registered. Please check if it is defined in secrets of containers.json.");
     }
 
-    public function RegisterSecret(string $secretId) : void {
+    public function registerSecret(string $secretId) : void {
         $this->secrets[$secretId] = true;
     }
 
-    private function DoubleSafeBackupSecret(string $borgBackupPassword) : void {
+    private function doubleSafeBackupSecret(string $borgBackupPassword) : void {
         file_put_contents(DataConst::GetBackupSecretFile(), $borgBackupPassword);
     }
 
@@ -373,7 +373,7 @@ class ConfigurationManager
         }
     }
 
-    public function GetLastBackupTime() : string {
+    public function getLastBackupTime() : string {
         if (!file_exists(DataConst::GetBackupArchivesList())) {
             return '';
         }
@@ -398,7 +398,7 @@ class ConfigurationManager
         return $lastBackupTime;
     }
 
-    public function GetBackupTimes() : array {
+    public function getBackupTimes() : array {
         if (!file_exists(DataConst::GetBackupArchivesList())) {
             return [];
         }
@@ -441,7 +441,7 @@ class ConfigurationManager
      *
      * We can't turn this into a private validation method because of the second argument.
      */
-    public function SetDomain(string $domain, bool $skipDomainValidation) : void {
+    public function setDomain(string $domain, bool $skipDomainValidation) : void {
         // Validate that at least one dot is contained
         if (!str_contains($domain, '.')) {
             throw new InvalidSettingConfigurationException("Domain must contain at least one dot!");
@@ -508,7 +508,7 @@ class ConfigurationManager
             }
 
             // Get Instance ID
-            $instanceID = $this->GetAndGenerateSecret('INSTANCE_ID');
+            $instanceID = $this->getAndGenerateSecret('INSTANCE_ID');
 
             // set protocol
             if ($port !== '443') {
@@ -555,7 +555,7 @@ class ConfigurationManager
         $this->commitTransaction();
     }
 
-    public function GetBaseDN() : string {
+    public function getBaseDN() : string {
         $domain = $this->domain;
         if ($domain === "") {
             return "";
@@ -566,15 +566,15 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetBorgLocationVars(string $location, string $repo) : void {
-        $this->ValidateBorgLocationVars($location, $repo);
+    public function setBorgLocationVars(string $location, string $repo) : void {
+        $this->validateBorgLocationVars($location, $repo);
         $this->startTransaction();
         $this->borgBackupHostLocation = $location;
         $this->borgRemoteRepo = $repo;
         $this->commitTransaction();
     }
 
-    private function ValidateBorgLocationVars(string $location, string $repo) : void {
+    private function validateBorgLocationVars(string $location, string $repo) : void {
         if ($location === '' && $repo === '') {
             throw new InvalidSettingConfigurationException("Please enter a path or a remote repo url!");
         } elseif ($location !== '' && $repo !== '') {
@@ -600,11 +600,11 @@ class ConfigurationManager
             }
 
         } else {
-            $this->ValidateBorgRemoteRepo($repo);
+            $this->validateBorgRemoteRepo($repo);
         }
     }
 
-    private function ValidateBorgRemoteRepo(string $repo) : void {
+    private function validateBorgRemoteRepo(string $repo) : void {
         $commonMsg = "For valid urls, see the remote examples at https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls";
         if ($repo === "") {
             // Ok, remote repo is optional
@@ -615,7 +615,7 @@ class ConfigurationManager
         }
     }
 
-    public function DeleteBorgBackupLocationItems() : void {
+    public function deleteBorgBackupLocationItems() : void {
         // Delete the variables
         $this->startTransaction();
         $this->borgBackupHostLocation = '';
@@ -633,8 +633,8 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetBorgRestoreLocationVarsAndPassword(string $location, string $repo, string $password) : void {
-        $this->ValidateBorgLocationVars($location, $repo);
+    public function setBorgRestoreLocationVarsAndPassword(string $location, string $repo, string $password) : void {
+        $this->validateBorgLocationVars($location, $repo);
 
         if ($password === '') {
             throw new InvalidSettingConfigurationException("Please enter the password!");
@@ -651,7 +651,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function ChangeMasterPassword(string $currentPassword, string $newPassword) : void {
+    public function changeMasterPassword(string $currentPassword, string $newPassword) : void {
         if ($currentPassword === '') {
             throw new InvalidSettingConfigurationException("Please enter your current password.");
         }
@@ -679,7 +679,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    private function WriteConfig() : void {
+    private function writeConfig() : void {
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
@@ -697,7 +697,7 @@ class ConfigurationManager
         $this->config = [];
     }
 
-    private function GetEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
+    private function getEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
         $envVariableOutput = getenv($envVariableName);
         $configValue = $this->get($configName, '');
         if ($envVariableOutput === false) {
@@ -716,7 +716,7 @@ class ConfigurationManager
         return $envVariableOutput;
     }
 
-    public function GetBorgPublicKey() : string {
+    public function getBorgPublicKey() : string {
         if (!file_exists(DataConst::GetBackupPublicKey())) {
             return "";
         }
@@ -724,7 +724,7 @@ class ConfigurationManager
         return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
     }
 
-    public function GetCollaboraSeccompPolicy() : string {
+    public function getCollaboraSeccompPolicy() : string {
         $defaultString = '--o:security.seccomp=';
         if (!$this->collaboraSeccompDisabled) {
             return $defaultString . 'true';
@@ -735,7 +735,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetDailyBackupTime(string $time, bool $enableAutomaticUpdates, bool $successNotification) : void {
+    public function setDailyBackupTime(string $time, bool $enableAutomaticUpdates, bool $successNotification) : void {
         if ($time === "") {
             throw new InvalidSettingConfigurationException("The daily backup time must not be empty!");
         }
@@ -757,7 +757,7 @@ class ConfigurationManager
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
     }
 
-    public function GetDailyBackupTime() : string {
+    public function getDailyBackupTime() : string {
         if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
             return '';
         }
@@ -779,7 +779,7 @@ class ConfigurationManager
         }
     }
 
-    public function DeleteDailyBackupTime() : void {
+    public function deleteDailyBackupTime() : void {
         if (file_exists(DataConst::GetDailyBackupTimeFile())) {
             unlink(DataConst::GetDailyBackupTimeFile());
         }
@@ -788,7 +788,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetAdditionalBackupDirectories(string $additionalBackupDirectories) : void {
+    public function setAdditionalBackupDirectories(string $additionalBackupDirectories) : void {
         $additionalBackupDirectoriesArray = explode("\n", $additionalBackupDirectories);
         $validDirectories = '';
         foreach($additionalBackupDirectoriesArray as $entry) {
@@ -809,15 +809,15 @@ class ConfigurationManager
         }
     }
 
-    public function GetAdditionalBackupDirectoriesString() : string {
+    public function getAdditionalBackupDirectoriesString() : string {
         if (!file_exists(DataConst::GetAdditionalBackupDirectoriesFile())) {
             return '';
         }
         return (string)file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile());
     }
 
-    public function GetAdditionalBackupDirectoriesArray() : array {
-        $additionalBackupDirectories = $this->GetAdditionalBackupDirectoriesString();
+    public function getAdditionalBackupDirectoriesArray() : array {
+        $additionalBackupDirectories = $this->getAdditionalBackupDirectoriesString();
         $additionalBackupDirectoriesArray = explode("\n", $additionalBackupDirectories);
         $additionalBackupDirectoriesArray = array_unique($additionalBackupDirectoriesArray, SORT_REGULAR);
         return $additionalBackupDirectoriesArray;
@@ -854,7 +854,7 @@ class ConfigurationManager
         return false;
     }
 
-    public function GetNextcloudStartupApps() : string {
+    public function getNextcloudStartupApps() : string {
         $apps = getenv('NEXTCLOUD_STARTUP_APPS');
         if (is_string($apps)) {
             return trim($apps);
@@ -878,7 +878,7 @@ class ConfigurationManager
     /**
      * Provide an extra method since the corresponding attribute setter prevents setting an empty value.
      */
-    public function DeleteCollaboraDictionaries() : void {
+    public function deleteCollaboraDictionaries() : void {
         $this->set('collabora_dictionaries', '');
     }
 
@@ -1007,7 +1007,7 @@ class ConfigurationManager
     private function getPlaceholderValue(string $placeholder) : string {
         return match ($placeholder) {
             'NC_DOMAIN' => $this->domain,
-            'NC_BASE_DN' => $this->GetBaseDN(),
+            'NC_BASE_DN' => $this->getBaseDN(),
             'AIO_TOKEN' => $this->aioToken,
             'BORGBACKUP_REMOTE_REPO' => $this->borgRemoteRepo,
             'BORGBACKUP_MODE' => $this->backupMode,
@@ -1037,11 +1037,11 @@ class ConfigurationManager
             'BORG_RETENTION_POLICY' => $this->borgRetentionPolicy,
             'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->fulltextsearchJavaOptions,
             'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->trustedCacertsDir,
-            'ADDITIONAL_DIRECTORIES_BACKUP' => $this->GetAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
+            'ADDITIONAL_DIRECTORIES_BACKUP' => $this->getAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
             'BORGBACKUP_HOST_LOCATION' => $this->borgBackupHostLocation,
-            'APACHE_MAX_SIZE' => (string)($this->GetApacheMaxSize()),
-            'COLLABORA_SECCOMP_POLICY' => $this->GetCollaboraSeccompPolicy(),
-            'NEXTCLOUD_STARTUP_APPS' => $this->GetNextcloudStartupApps(),
+            'APACHE_MAX_SIZE' => (string)($this->getApacheMaxSize()),
+            'COLLABORA_SECCOMP_POLICY' => $this->getCollaboraSeccompPolicy(),
+            'NEXTCLOUD_STARTUP_APPS' => $this->getNextcloudStartupApps(),
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->nextcloudAdditionalApks,
             'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->nextcloudAdditionalPhpExtensions,
             'INSTALL_LATEST_MAJOR' => $this->installLatestMajor ? 'yes' : '',
@@ -1052,7 +1052,7 @@ class ConfigurationManager
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
-            default => $this->GetRegisteredSecret($placeholder),
+            default => $this->getRegisteredSecret($placeholder),
         };
     }
     
