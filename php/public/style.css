@@ -28,7 +28,7 @@
     --border-radius-large: 12px;
     --default-font-size: 13px;
     --checkbox-size: 16px;
-    --max-width: 500px;
+    --max-width: 580px;
     --container-top-margin: 20px;
     --container-bottom-margin: 20px;
     --container-padding: 2px;
@@ -37,9 +37,9 @@
     --main-padding: 50px;
 }
 
-/* Breakpoint calculation: 500px (max-width) + 100px (main-padding * 2) + 200px (additional space) = 800px
+/* Breakpoint calculation: 580px (max-width) + 100px (main-padding * 2) + 200px (additional space) = 880px
 Note: Unfortunately, it's not possible to calculate this dynamically using CSS variables in media queries */
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 880px) {
     :root {
         --container-top-margin: 50px;
         --container-bottom-margin: 0px;
@@ -548,4 +548,161 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 /* Remove hover effects when not hovering */
 #theme-toggle:not(:hover) #theme-icon {
     opacity: 0.6; /* Slightly transparent */
+}
+/* Office Suite Feature Cards */
+.office-suite-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+    align-items: stretch;
+}
+
+.office-radio {
+    display: none;
+}
+
+.office-card {
+    position: relative;
+    border: 2px solid var(--color-border-maxcontrast);
+    border-radius: var(--border-radius-large);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: var(--color-main-background);
+    display: flex;
+    flex-direction: column;
+}
+
+.office-card-disabled {
+    opacity: 50%;
+    pointer-events: none;
+}
+
+.office-card:hover {
+    border-color: var(--color-primary-element);
+    box-shadow: 0 4px 12px rgba(0, 130, 201, 0.15);
+    transform: translateY(-2px);
+}
+
+#office-collabora:checked + .office-card,
+#office-onlyoffice:checked + .office-card {
+    border-color: var(--color-nextcloud-blue);
+    background: linear-gradient(135deg, rgba(0, 130, 201, 0.08) 0%, rgba(0, 130, 201, 0.02) 100%);
+}
+
+[data-theme="dark"] #office-collabora:checked + .office-card,
+[data-theme="dark"] #office-onlyoffice:checked + .office-card {
+    background: linear-gradient(135deg, rgba(0, 145, 242, 0.15) 0%, rgba(0, 145, 242, 0.03) 100%);
+}
+
+.office-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.office-card h4 {
+    margin: 0;
+    height: 24px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-main-text);
+}
+
+.office-checkmark {
+    flex-shrink: 0;
+    display: none;
+}
+
+#office-collabora:checked + .office-card .office-checkmark,
+#office-onlyoffice:checked + .office-card .office-checkmark {
+    display: block;
+}
+
+.office-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.office-features li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 4px;
+    font-size: var(--default-font-size);
+    line-height: 1.5;
+    color: var(--color-main-text);
+}
+
+.office-features li::before {
+    content: '•';
+    position: absolute;
+    left: 6px;
+    color: var(--color-nextcloud-blue);
+    font-weight: bold;
+}
+
+.office-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.office-learn-more {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 12px;
+    color: var(--color-primary-element);
+    text-decoration: none;
+    font-size: var(--default-font-size);
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.office-learn-more:hover {
+    color: var(--color-primary-element-hover);
+}
+
+.office-learn-more svg {
+    transition: transform 0.2s ease;
+}
+
+.office-learn-more:hover svg {
+    transform: translateX(3px);
+}
+
+.office-none-card {
+    text-align: center;
+    margin: 12px 0 20px 0;
+}
+
+.office-none-label {
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    color: var(--color-primary-element);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+}
+
+.office-none-label:hover {
+    opacity: 1;
+    background-color: var(--color-primary-element-light);
+}
+
+#office-none:checked + .office-none-label {
+    opacity: 1;
+    font-weight: 600;
+}
+
+/* Responsive adjustments for mobile */
+@media only screen and (max-width: 800px) {
+    .office-suite-cards {
+        grid-template-columns: 1fr;
+    }
 }

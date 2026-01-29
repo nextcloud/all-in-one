@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.12.3-scratch AS nats
+FROM nats:2.12.4-scratch AS nats
 FROM eturnal/eturnal:1.12.2-alpine AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:2.0.4 AS signaling
-FROM alpine:3.23.2 AS janus
+FROM alpine:3.23.3 AS janus
 
 ARG JANUS_VERSION=v1.3.3
 WORKDIR /src
@@ -35,7 +35,7 @@ RUN set -ex; \
     make configs; \
     rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
 
-FROM alpine:3.23.2
+FROM alpine:3.23.3
 ENV ETURNAL_ETC_DIR="/conf"
 ENV SKIP_CERT_VERIFY=false
 COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/local                          /usr/local

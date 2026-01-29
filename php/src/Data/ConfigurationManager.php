@@ -9,61 +9,359 @@ class ConfigurationManager
 {
     private array $secrets = [];
 
-    public function GetConfig() : array
+    private array $config = [];
+
+    private bool $noWrite = false;
+
+    public string $aioToken {
+        get => $this->get('AIO_TOKEN', '');
+        set { $this->set('AIO_TOKEN', $value); }
+    }
+
+    public string $password {
+        get => $this->get('password', '');
+        set { $this->set('password', $value); }
+    }
+
+    public bool $isDockerSocketProxyEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isDockerSocketProxyEnabled', false);
+        set { $this->set('isDockerSocketProxyEnabled', $value); }
+    }
+
+    public bool $isWhiteboardEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isWhiteboardEnabled', true);
+        set { $this->set('isWhiteboardEnabled', $value); }
+    }
+
+    public bool $restoreExcludePreviews {
+        // Type-cast because old configs could have '1'/'' for this key.
+        get => (bool) $this->get('restore-exclude-previews', false);
+        set { $this->set('restore-exclude-previews', $value); }
+    }
+
+    public string $selectedRestoreTime {
+        get => $this->get('selected-restore-time', '');
+        set { $this->set('selected-restore-time', $value); }
+    }
+
+    public string $backupMode {
+        get => $this->get('backup-mode', '');
+        set { $this->set('backup-mode', $value); }
+    }
+
+    public bool $instanceRestoreAttempt {
+        // Type-cast because old configs could have 1/'' for this key.
+        get => (bool) $this->get('instance_restore_attempt', false);
+        set { $this->set('instance_restore_attempt', $value); }
+    }
+
+    public string $aioUrl {
+        get => $this->get('AIO_URL', '');
+        set { $this->set('AIO_URL', $value); }
+    }
+
+    public bool $wasStartButtonClicked {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('wasStartButtonClicked', false);
+        set { $this->set('wasStartButtonClicked', $value); }
+    }
+
+    public string $installLatestMajor {
+        // Type-cast because old configs could have integers for this key.
+        get => (string) $this->get('install_latest_major', '');
+        set { $this->set('install_latest_major', $value); }
+    }
+
+    public bool $isClamavEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isClamavEnabled', false);
+        set { $this->set('isClamavEnabled', $value); }
+    }
+
+    public bool $isOnlyofficeEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isOnlyofficeEnabled', false);
+        set { $this->set('isOnlyofficeEnabled', $value); }
+    }
+
+    public bool $isCollaboraEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isCollaboraEnabled', true);
+        set { $this->set('isCollaboraEnabled', $value); }
+    }
+
+    public bool $isTalkEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isTalkEnabled', true);
+        set { $this->set('isTalkEnabled', $value); }
+    }
+
+    public bool $isTalkRecordingEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->isTalkEnabled && $this->get('isTalkRecordingEnabled', false);
+        set { $this->set('isTalkRecordingEnabled', $this->isTalkEnabled && $value); }
+    }
+
+    public bool $isImaginaryEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isImaginaryEnabled', true);
+        set { $this->set('isImaginaryEnabled', $value); }
+    }
+
+    public bool $isFulltextsearchEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isFulltextsearchEnabled', false);
+        // Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
+        set { $this->set('isFulltextsearchEnabled', ($this->collaboraSeccompDisabled && $value)); }
+    }
+
+    public string $domain {
+        get => $this->get('domain', '');
+        set { $this->setDomain($value); }
+    }
+
+    public string $borgBackupHostLocation {
+        get => $this->get('borg_backup_host_location', '');
+        set { $this->set('borg_backup_host_location', $value); }
+    }
+
+    public string $borgRemoteRepo {
+        get => $this->get('borg_remote_repo', '');
+        set { $this->set('borg_remote_repo', $value); }
+    }
+
+    public string $borgRestorePassword {
+        get => $this->get('borg_restore_password', '');
+        set { $this->set('borg_restore_password', $value); }
+    }
+
+    public string $apacheIpBinding {
+        get => $this->getEnvironmentalVariableOrConfig('APACHE_IP_BINDING', 'apache_ip_binding', '');
+        set { $this->set('apache_ip_binding', $value); }
+    }
+
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public string $timezone {
+        get => $this->get('timezone', '');
+        set {
+            // This throws an exception if the validation fails.
+            $this->validateTimezone($value);
+            $this->set('timezone', $value);
+        }
+    }
+
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public string $collaboraDictionaries {
+        get => $this->get('collabora_dictionaries', '');
+        set {
+            // This throws an exception if the validation fails.
+            $this->validateCollaboraDictionaries($value);
+            $this->set('collabora_dictionaries', $value);
+        }
+    }
+
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public string $collaboraAdditionalOptions {
+        get => $this->get('collabora_additional_options', '');
+        set {
+            // This throws an exception if the validation fails.
+            $this->validateCollaboraAdditionalOptions($value);
+            $this->set('collabora_additional_options', $value);
+        }
+    }
+
+    public array $aioCommunityContainers {
+        get => explode(' ', $this->get('aio_community_containers', ''));
+        set { $this->set('aio_community_containers', implode(' ', $value)); }
+    }
+
+    public string $turnDomain {
+        get => $this->get('turn_domain', '');
+        set { $this->set('turn_domain', $value); }
+    }
+
+    public string $apachePort {
+        get => $this->getEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
+        set { $this->set('apache_port', $value); }
+    }
+
+    public string $talkPort {
+        get => $this->getEnvironmentalVariableOrConfig('TALK_PORT', 'talk_port', '3478');
+        set { $this->set('talk_port', $value); }
+    }
+
+    public string $nextcloudMount {
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_MOUNT', 'nextcloud_mount', '');
+        set { $this->set('nextcloud_mount', $value); }
+    }
+
+    public string $nextcloudDatadirMount {
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_DATADIR', 'nextcloud_datadir', 'nextcloud_aio_nextcloud_data');
+        set { $this->set('nextcloud_datadir_mount', $value); }
+    }
+
+    public string $nextcloudUploadLimit {
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_UPLOAD_LIMIT', 'nextcloud_upload_limit', '16G');
+        set { $this->set('nextcloud_upload_limit', $value); }
+    }
+
+    public string $nextcloudMemoryLimit {
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_MEMORY_LIMIT', 'nextcloud_memory_limit', '512M');
+        set { $this->set('nextcloud_memory_limit', $value); }
+    }
+
+    public function getApacheMaxSize() : int {
+        $uploadLimit = (int)rtrim($this->nextcloudUploadLimit, 'G');
+        return $uploadLimit * 1024 * 1024 * 1024;
+    }
+
+    public string $nextcloudMaxTime {
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_MAX_TIME', 'nextcloud_max_time', '3600');
+        set { $this->set('nextcloud_max_time', $value); }
+    }
+
+    public string $borgRetentionPolicy {
+        get => $this->getEnvironmentalVariableOrConfig('BORG_RETENTION_POLICY', 'borg_retention_policy', '--keep-within=7d --keep-weekly=4 --keep-monthly=6');
+        set { $this->set('borg_retention_policy', $value); }
+    }
+
+    public string $fulltextsearchJavaOptions {
+        get => $this->getEnvironmentalVariableOrConfig('FULLTEXTSEARCH_JAVA_OPTIONS', 'fulltextsearch_java_options', '-Xms512M -Xmx512M');
+        set { $this->set('fulltextsearch_java_options', $value); }
+    }
+
+    public string $dockerSocketPath {
+        get => $this->getEnvironmentalVariableOrConfig('WATCHTOWER_DOCKER_SOCKET_PATH', 'docker_socket_path', '/var/run/docker.sock');
+        set { $this->set('docker_socket_path', $value); }
+    }
+
+    public string $trustedCacertsDir {
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_TRUSTED_CACERTS_DIR', 'trusted_cacerts_dir', '');
+        set { $this->set('trusted_cacerts_dir', $value); }
+    }
+
+    public string $nextcloudAdditionalApks {
+        get => trim($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_APKS', 'nextcloud_additional_apks', 'imagemagick'));
+        set { $this->set('nextcloud_addtional_apks', $value); }
+    }
+
+    public string $nextcloudAdditionalPhpExtensions {
+        get => trim($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS', 'nextcloud_additional_php_extensions', 'imagick'));
+        set { $this->set('nextcloud_additional_php_extensions', $value); }
+    }
+
+    public bool $collaboraSeccompDisabled {
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('COLLABORA_SECCOMP_DISABLED', 'collabora_seccomp_disabled', ''));
+        set { $this->set('collabora_seccomp_disabled', $value); }
+    }
+
+    public string $apacheAdditionalNetwork {
+        get => $this->getEnvironmentalVariableOrConfig('APACHE_ADDITIONAL_NETWORK', 'apache_additional_network', '');
+        set { $this->set('apache_additional_network', $value); }
+    }
+
+    public bool $disableBackupSection {
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('AIO_DISABLE_BACKUP_SECTION', 'disable_backup_section', ''));
+        set { $this->set('disable_backup_section', $value); }
+    }
+
+    public bool $nextcloudEnableDriDevice{
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_DRI_DEVICE', 'nextcloud_enable_dri_device', ''));
+        set { $this->set('nextcloud_enable_dri_device', $value); }
+    }
+
+    public bool $enableNvidiaGpu {
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
+        set { $this->set('enable_nvidia_gpu', $value); }
+    }
+
+    public bool $nextcloudKeepDisabledApps {
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_KEEP_DISABLED_APPS', 'nextcloud_keep_disabled_apps', ''));
+        set { $this->set('nextcloud_keep_disabled_apps', $value); }
+    }
+
+    private function getConfig() : array
     {
-        if(file_exists(DataConst::GetConfigFile()))
+        if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
         {
             $configContent = (string)file_get_contents(DataConst::GetConfigFile());
-            return json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
+            $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
-        return [];
+        return $this->config;
     }
 
-    public function GetPassword() : string {
-        return $this->GetConfig()['password'];
+    private function get(string $key, mixed $fallbackValue = null) : mixed {
+        return $this->getConfig()[$key] ?? $fallbackValue;
     }
 
-    public function GetToken() : string {
-        return $this->GetConfig()['AIO_TOKEN'];
+    private function set(string $key, mixed $value) : void {
+        $this->getConfig();
+        $this->config[$key] = $value;
+        // Only write if this isn't called in between startTransaction() and commitTransaction().
+        if ($this->noWrite !== true) {
+            $this->writeConfig();
+        }
     }
 
-    public function SetPassword(string $password) : void {
-        $config = $this->GetConfig();
-        $config['password'] = $password;
-        $this->WriteConfig($config);
+    /**
+     * This allows to assign multiple attributes without saving the config to disk in between. It must be
+     * followed by a call to commitTransaction(), which then writes all changes to disk.
+     */
+    public function startTransaction() : void {
+        $this->getConfig();
+        $this->noWrite = true;
     }
 
-    public function GetAndGenerateSecret(string $secretId) : string {
+    /**
+     * This allows to assign multiple attributes without saving the config to disk in between.
+     */
+    public function commitTransaction() : void {
+        try {
+            $this->writeConfig();
+        } finally {
+            $this->noWrite = false;
+        }
+    }
+
+    public function getAndGenerateSecret(string $secretId) : string {
         if ($secretId === '') {
             return '';
         }
 
-        $config = $this->GetConfig();
-        if(!isset($config['secrets'][$secretId])) {
-            $config['secrets'][$secretId] = bin2hex(random_bytes(24));
-            $this->WriteConfig($config);
+        $secrets = $this->get('secrets', []);
+        if (!isset($secrets[$secretId])) {
+            $secrets[$secretId] = bin2hex(random_bytes(24));
+            $this->set('secrets', $secrets);
         }
 
         if ($secretId === 'BORGBACKUP_PASSWORD' && !file_exists(DataConst::GetBackupSecretFile())) {
-            $this->DoubleSafeBackupSecret($config['secrets'][$secretId]);
+            $this->doubleSafeBackupSecret($secrets[$secretId]);
         }
 
-        return $config['secrets'][$secretId];
+        return $secrets[$secretId];
     }
 
-    public function GetRegisteredSecret(string $secretId) : string {
+    public function getRegisteredSecret(string $secretId) : string {
         if ($this->secrets[$secretId]) {
-            return $this->GetAndGenerateSecret($secretId);
+            return $this->getAndGenerateSecret($secretId);
         }
         throw new \Exception("The secret " . $secretId . " was not registered. Please check if it is defined in secrets of containers.json.");
     }
 
-    public function RegisterSecret(string $secretId) : void {
+    public function registerSecret(string $secretId) : void {
         $this->secrets[$secretId] = true;
     }
 
-    private function DoubleSafeBackupSecret(string $borgBackupPassword) : void {
+    private function doubleSafeBackupSecret(string $borgBackupPassword) : void {
         file_put_contents(DataConst::GetBackupSecretFile(), $borgBackupPassword);
     }
 
@@ -75,7 +373,7 @@ class ConfigurationManager
         }
     }
 
-    public function GetLastBackupTime() : string {
+    public function getLastBackupTime() : string {
         if (!file_exists(DataConst::GetBackupArchivesList())) {
             return '';
         }
@@ -100,7 +398,7 @@ class ConfigurationManager
         return $lastBackupTime;
     }
 
-    public function GetBackupTimes() : array {
+    public function getBackupTimes() : array {
         if (!file_exists(DataConst::GetBackupArchivesList())) {
             return [];
         }
@@ -122,12 +420,12 @@ class ConfigurationManager
         return $backupTimes;
     }
 
-    public function wasStartButtonClicked() : bool {
-        if (isset($this->GetConfig()['wasStartButtonClicked'])) {
-            return true;
-        } else {
-            return false;
+    public function getAioVersion() : string {
+        $path = DataConst::GetAioVersionFile();
+        if ($path !== '' && file_exists($path)) {
+            return trim((string)file_get_contents($path));
         }
+        return '';
     }
 
     private function isx64Platform() : bool {
@@ -138,157 +436,12 @@ class ConfigurationManager
         }
     }
 
-    public function isClamavEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isClamavEnabled']) && $config['isClamavEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function isDockerSocketProxyEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isDockerSocketProxyEnabled']) && $config['isDockerSocketProxyEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetDockerSocketProxyEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isDockerSocketProxyEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isWhiteboardEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isWhiteboardEnabled']) && $config['isWhiteboardEnabled'] === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function SetWhiteboardEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isWhiteboardEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function SetClamavEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isClamavEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isImaginaryEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isImaginaryEnabled']) && $config['isImaginaryEnabled'] === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function SetImaginaryEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isImaginaryEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isFulltextsearchEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isFulltextsearchEnabled']) && $config['isFulltextsearchEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetFulltextsearchEnabledState(int $value) : void {
-        // Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
-        if ($this->isSeccompDisabled()) {
-            $value = 0;
-        }
-
-        $config = $this->GetConfig();
-        $config['isFulltextsearchEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isOnlyofficeEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isOnlyofficeEnabled']) && $config['isOnlyofficeEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetOnlyofficeEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isOnlyofficeEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isCollaboraEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isCollaboraEnabled']) && $config['isCollaboraEnabled'] === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function SetCollaboraEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isCollaboraEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isTalkEnabled() : bool {
-        $config = $this->GetConfig();
-        if (isset($config['isTalkEnabled']) && $config['isTalkEnabled'] === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function SetTalkEnabledState(int $value) : void {
-        $config = $this->GetConfig();
-        $config['isTalkEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
-    public function isTalkRecordingEnabled() : bool {
-        if (!$this->isTalkEnabled()) {
-            return false;
-        }
-        $config = $this->GetConfig();
-        if (isset($config['isTalkRecordingEnabled']) && $config['isTalkRecordingEnabled'] === 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function SetTalkRecordingEnabledState(int $value) : void {
-        if (!$this->isTalkEnabled()) {
-            $value = 0;
-        }
-
-        $config = $this->GetConfig();
-        $config['isTalkRecordingEnabled'] = $value;
-        $this->WriteConfig($config);
-    }
-
     /**
      * @throws InvalidSettingConfigurationException
+     *
+     * We can't turn this into a private validation method because of the second argument.
      */
-    public function SetDomain(string $domain, bool $skipDomainValidation) : void {
+    public function setDomain(string $domain, bool $skipDomainValidation) : void {
         // Validate that at least one dot is contained
         if (!str_contains($domain, '.')) {
             throw new InvalidSettingConfigurationException("Domain must contain at least one dot!");
@@ -336,7 +489,7 @@ class ConfigurationManager
             }
 
             // Get the apache port
-            $port = $this->GetApachePort();
+            $port = $this->apachePort;
 
             if (!filter_var($dnsRecordIP, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                 if ($port === '443') {
@@ -355,7 +508,7 @@ class ConfigurationManager
             }
 
             // Get Instance ID
-            $instanceID = $this->GetAndGenerateSecret('INSTANCE_ID');
+            $instanceID = $this->getAndGenerateSecret('INSTANCE_ID');
 
             // set protocol
             if ($port !== '443') {
@@ -392,86 +545,36 @@ class ConfigurationManager
             }
         }
 
+        $this->startTransaction();
         // Write domain
-        $config = $this->GetConfig();
-        $config['domain'] = $domain;
+        // Don't set the domain via the attribute, or we create a loop.
+        $this->set('domain', $domain);
         // Reset the borg restore password when setting the domain
-        $config['borg_restore_password'] = '';
-        $this->WriteConfig($config);
+        $this->borgRestorePassword = '';
+        $this->startTransaction();
+        $this->commitTransaction();
     }
 
-    public function GetDomain() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['domain'])) {
-            $config['domain'] = '';
-        }
-
-        return $config['domain'];
-    }
-
-    public function GetBaseDN() : string {
-        $domain = $this->GetDomain();
+    public function getBaseDN() : string {
+        $domain = $this->domain;
         if ($domain === "") {
             return "";
         }
         return 'dc=' . implode(',dc=', explode('.', $domain));
     }
 
-    public function GetBackupMode() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['backup-mode'])) {
-            $config['backup-mode'] = '';
-        }
-
-        return $config['backup-mode'];
-    }
-
-    public function SetBackupMode(string $mode) : void {
-        $config = $this->GetConfig();
-        $config['backup-mode'] = $mode;
-        $this->WriteConfig($config);
-    }
-
-    public function GetSelectedRestoreTime() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['selected-restore-time'])) {
-            $config['selected-restore-time'] = '';
-        }
-
-        return $config['selected-restore-time'];
-    }
-
-    public function GetRestoreExcludePreviews() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['restore-exclude-previews'])) {
-            $config['restore-exclude-previews'] = '';
-        }
-
-        return $config['restore-exclude-previews'];
-    }
-
-    public function GetAIOURL() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['AIO_URL'])) {
-            $config['AIO_URL'] = '';
-        }
-
-        return $config['AIO_URL'];
-    }
-
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetBorgLocationVars(string $location, string $repo) : void {
-        $this->ValidateBorgLocationVars($location, $repo);
-
-        $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = $location;
-        $config['borg_remote_repo'] = $repo;
-        $this->WriteConfig($config);
+    public function setBorgLocationVars(string $location, string $repo) : void {
+        $this->validateBorgLocationVars($location, $repo);
+        $this->startTransaction();
+        $this->borgBackupHostLocation = $location;
+        $this->borgRemoteRepo = $repo;
+        $this->commitTransaction();
     }
 
-    private function ValidateBorgLocationVars(string $location, string $repo) : void {
+    private function validateBorgLocationVars(string $location, string $repo) : void {
         if ($location === '' && $repo === '') {
             throw new InvalidSettingConfigurationException("Please enter a path or a remote repo url!");
         } elseif ($location !== '' && $repo !== '') {
@@ -492,16 +595,16 @@ class ConfigurationManager
 
             // Prevent backup to be contained in Nextcloud Datadir as this will delete the backup archive upon restore
             // See https://github.com/nextcloud/all-in-one/issues/6607
-            if (str_starts_with($location . '/', rtrim($this->GetNextcloudDatadirMount(), '/') . '/')) {
-                throw new InvalidSettingConfigurationException("The path must not be a children of or equal to NEXTCLOUD_DATADIR, which is currently set to " . $this->GetNextcloudDatadirMount());
+            if (str_starts_with($location . '/', rtrim($this->nextcloudDatadirMount, '/') . '/')) {
+                throw new InvalidSettingConfigurationException("The path must not be a children of or equal to NEXTCLOUD_DATADIR, which is currently set to " . $this->nextcloudDatadirMount);
             }
 
         } else {
-            $this->ValidateBorgRemoteRepo($repo);
+            $this->validateBorgRemoteRepo($repo);
         }
     }
 
-    private function ValidateBorgRemoteRepo(string $repo) : void {
+    private function validateBorgRemoteRepo(string $repo) : void {
         $commonMsg = "For valid urls, see the remote examples at https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls";
         if ($repo === "") {
             // Ok, remote repo is optional
@@ -512,12 +615,12 @@ class ConfigurationManager
         }
     }
 
-    public function DeleteBorgBackupLocationItems() : void {
+    public function deleteBorgBackupLocationItems() : void {
         // Delete the variables
-        $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = '';
-        $config['borg_remote_repo'] = '';
-        $this->WriteConfig($config);
+        $this->startTransaction();
+        $this->borgBackupHostLocation = '';
+        $this->borgRemoteRepo = '';
+        $this->commitTransaction();
 
         // Also delete the borg config file to be able to start over
         if (file_exists(DataConst::GetBackupKeyFile())) {
@@ -530,30 +633,30 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetBorgRestoreLocationVarsAndPassword(string $location, string $repo, string $password) : void {
-        $this->ValidateBorgLocationVars($location, $repo);
+    public function setBorgRestoreLocationVarsAndPassword(string $location, string $repo, string $password) : void {
+        $this->validateBorgLocationVars($location, $repo);
 
         if ($password === '') {
             throw new InvalidSettingConfigurationException("Please enter the password!");
         }
 
-        $config = $this->GetConfig();
-        $config['borg_backup_host_location'] = $location;
-        $config['borg_remote_repo'] = $repo;
-        $config['borg_restore_password'] = $password;
-        $config['instance_restore_attempt'] = 1;
-        $this->WriteConfig($config);
+        $this->startTransaction();
+        $this->borgBackupHostLocation = $location;
+        $this->borgRemoteRepo = $repo;
+        $this->borgRestorePassword = $password;
+        $this->instanceRestoreAttempt = true;
+        $this->commitTransaction();
     }
 
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function ChangeMasterPassword(string $currentPassword, string $newPassword) : void {
+    public function changeMasterPassword(string $currentPassword, string $newPassword) : void {
         if ($currentPassword === '') {
             throw new InvalidSettingConfigurationException("Please enter your current password.");
         }
 
-        if ($currentPassword !== $this->GetPassword()) {
+        if ($currentPassword !== $this->password) {
             throw new InvalidSettingConfigurationException("The entered current password is not correct.");
         }
 
@@ -570,89 +673,50 @@ class ConfigurationManager
         }
 
         // All checks pass so set the password
-        $this->SetPassword($newPassword);
-    }
-
-    public function GetApachePort() : string {
-        $envVariableName = 'APACHE_PORT';
-        $configName = 'apache_port';
-        $defaultValue = '443';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetTalkPort() : string {
-        $envVariableName = 'TALK_PORT';
-        $configName = 'talk_port';
-        $defaultValue = '3478';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetTurnDomain() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['turn_domain'])) {
-            $config['turn_domain'] = '';
-        }
-
-        return $config['turn_domain'];
+        $this->set('password', $newPassword);
     }
 
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function WriteConfig(array $config) : void {
+    private function writeConfig() : void {
         if(!is_dir(DataConst::GetDataDirectory())) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not exist! Something was set up falsely!");
         }
+        // Shouldn't happen, but as a precaution we won't write an empty config to disk.
+        if ($this->config === []) {
+            return;
+        }
         $df = disk_free_space(DataConst::GetDataDirectory());
-        $content = json_encode($config, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR);
+        $content = json_encode($this->config, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR);
         $size = strlen($content) + 10240;
         if ($df !== false && (int)$df < $size) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
         }
         file_put_contents(DataConst::GetConfigFile(), $content);
+        $this->config = [];
     }
 
-    private function GetEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
+    private function getEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
         $envVariableOutput = getenv($envVariableName);
+        $configValue = $this->get($configName, '');
         if ($envVariableOutput === false) {
-            $config = $this->GetConfig();
-            if (!isset($config[$configName]) || $config[$configName] === '') {
-                $config[$configName] = $defaultValue;
+            if ($configValue === '') {
+                return $defaultValue;
             }
-            return $config[$configName];
+            return $configValue;
         }
-        if(file_exists(DataConst::GetConfigFile())) {
-            $config = $this->GetConfig();
-            if (!isset($config[$configName])) {
-                $config[$configName] = '';
-            }
-            if ($envVariableOutput !== $config[$configName]) {
-                $config[$configName] = $envVariableOutput;
-                $this->WriteConfig($config);
+
+        if (file_exists(DataConst::GetConfigFile())) {
+            if ($envVariableOutput !== $configValue) {
+                $this->set($configName, $envVariableOutput);
             }
         }
+
         return $envVariableOutput;
     }
 
-    public function GetBorgBackupHostLocation() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['borg_backup_host_location'])) {
-            $config['borg_backup_host_location'] = '';
-        }
-
-        return $config['borg_backup_host_location'];
-    }
-
-    public function GetBorgRemoteRepo() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['borg_remote_repo'])) {
-            $config['borg_remote_repo'] = '';
-        }
-
-        return $config['borg_remote_repo'];
-    }
-
-    public function GetBorgPublicKey() : string {
+    public function getBorgPublicKey() : string {
         if (!file_exists(DataConst::GetBackupPublicKey())) {
             return "";
         }
@@ -660,135 +724,18 @@ class ConfigurationManager
         return trim((string)file_get_contents(DataConst::GetBackupPublicKey()));
     }
 
-    public function GetBorgRestorePassword() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['borg_restore_password'])) {
-            $config['borg_restore_password'] = '';
-        }
-
-        return $config['borg_restore_password'];
-    }
-
-    public function isInstanceRestoreAttempt() : bool {
-        $config = $this->GetConfig();
-        if(!isset($config['instance_restore_attempt'])) {
-            $config['instance_restore_attempt'] = '';
-        }
-
-        if ($config['instance_restore_attempt'] === 1) {
-            return true;
-        }
-        return false;
-    }
-
-    public function GetNextcloudMount() : string {
-        $envVariableName = 'NEXTCLOUD_MOUNT';
-        $configName = 'nextcloud_mount';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetNextcloudDatadirMount() : string {
-        $envVariableName = 'NEXTCLOUD_DATADIR';
-        $configName = 'nextcloud_datadir';
-        $defaultValue = 'nextcloud_aio_nextcloud_data';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetNextcloudUploadLimit() : string {
-        $envVariableName = 'NEXTCLOUD_UPLOAD_LIMIT';
-        $configName = 'nextcloud_upload_limit';
-        $defaultValue = '16G';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetNextcloudMemoryLimit() : string {
-        $envVariableName = 'NEXTCLOUD_MEMORY_LIMIT';
-        $configName = 'nextcloud_memory_limit';
-        $defaultValue = '512M';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetApacheMaxSize() : int {
-        $uploadLimit = (int)rtrim($this->GetNextcloudUploadLimit(), 'G');
-        return $uploadLimit * 1024 * 1024 * 1024;
-    }
-
-    public function GetNextcloudMaxTime() : string {
-        $envVariableName = 'NEXTCLOUD_MAX_TIME';
-        $configName = 'nextcloud_max_time';
-        $defaultValue = '3600';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetBorgRetentionPolicy() : string {
-        $envVariableName = 'BORG_RETENTION_POLICY';
-        $configName = 'borg_retention_policy';
-        $defaultValue = '--keep-within=7d --keep-weekly=4 --keep-monthly=6';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetFulltextsearchJavaOptions() : string {
-        $envVariableName = 'FULLTEXTSEARCH_JAVA_OPTIONS';
-        $configName = 'fulltextsearch_java_options';
-        $defaultValue = '-Xms512M -Xmx512M';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetDockerSocketPath() : string {
-        $envVariableName = 'WATCHTOWER_DOCKER_SOCKET_PATH';
-        $configName = 'docker_socket_path';
-        $defaultValue = '/var/run/docker.sock';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetTrustedCacertsDir() : string {
-        $envVariableName = 'NEXTCLOUD_TRUSTED_CACERTS_DIR';
-        $configName = 'trusted_cacerts_dir';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetNextcloudAdditionalApks() : string {
-        $envVariableName = 'NEXTCLOUD_ADDITIONAL_APKS';
-        $configName = 'nextcloud_additional_apks';
-        $defaultValue = 'imagemagick';
-        return trim($this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue));
-    }
-
-    public function GetNextcloudAdditionalPhpExtensions() : string {
-        $envVariableName = 'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS';
-        $configName = 'nextcloud_additional_php_extensions';
-        $defaultValue = 'imagick';
-        return trim($this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue));
-    }
-
-    public function GetCollaboraSeccompPolicy() : string {
+    public function getCollaboraSeccompPolicy() : string {
         $defaultString = '--o:security.seccomp=';
-        if (!$this->isSeccompDisabled()) {
+        if (!$this->collaboraSeccompDisabled) {
             return $defaultString . 'true';
         }
         return $defaultString . 'false';
     }
 
-    private function GetCollaboraSeccompDisabledState() : string {
-        $envVariableName = 'COLLABORA_SECCOMP_DISABLED';
-        $configName = 'collabora_seccomp_disabled';
-        $defaultValue = 'false';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function isSeccompDisabled() : bool {
-        if ($this->GetCollaboraSeccompDisabledState() === 'true') {
-            return true;
-        }
-        return false;
-    }
-
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetDailyBackupTime(string $time, bool $enableAutomaticUpdates, bool $successNotification) : void {
+    public function setDailyBackupTime(string $time, bool $enableAutomaticUpdates, bool $successNotification) : void {
         if ($time === "") {
             throw new InvalidSettingConfigurationException("The daily backup time must not be empty!");
         }
@@ -810,7 +757,7 @@ class ConfigurationManager
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
     }
 
-    public function GetDailyBackupTime() : string {
+    public function getDailyBackupTime() : string {
         if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
             return '';
         }
@@ -832,7 +779,7 @@ class ConfigurationManager
         }
     }
 
-    public function DeleteDailyBackupTime() : void {
+    public function deleteDailyBackupTime() : void {
         if (file_exists(DataConst::GetDailyBackupTimeFile())) {
             unlink(DataConst::GetDailyBackupTimeFile());
         }
@@ -841,7 +788,7 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetAdditionalBackupDirectories(string $additionalBackupDirectories) : void {
+    public function setAdditionalBackupDirectories(string $additionalBackupDirectories) : void {
         $additionalBackupDirectoriesArray = explode("\n", $additionalBackupDirectories);
         $validDirectories = '';
         foreach($additionalBackupDirectoriesArray as $entry) {
@@ -862,48 +809,28 @@ class ConfigurationManager
         }
     }
 
-    public function shouldLatestMajorGetInstalled() : bool {
-        $config = $this->GetConfig();
-        if(!isset($config['install_latest_major'])) {
-            $config['install_latest_major'] = '';
-        }
-        return $config['install_latest_major'] !== '';
-    }
-
-    public function GetAdditionalBackupDirectoriesString() : string {
+    public function getAdditionalBackupDirectoriesString() : string {
         if (!file_exists(DataConst::GetAdditionalBackupDirectoriesFile())) {
             return '';
         }
         return (string)file_get_contents(DataConst::GetAdditionalBackupDirectoriesFile());
     }
 
-    public function GetAdditionalBackupDirectoriesArray() : array {
-        $additionalBackupDirectories = $this->GetAdditionalBackupDirectoriesString();
+    public function getAdditionalBackupDirectoriesArray() : array {
+        $additionalBackupDirectories = $this->getAdditionalBackupDirectoriesString();
         $additionalBackupDirectoriesArray = explode("\n", $additionalBackupDirectories);
         $additionalBackupDirectoriesArray = array_unique($additionalBackupDirectoriesArray, SORT_REGULAR);
         return $additionalBackupDirectoriesArray;
     }
 
     public function isDailyBackupRunning() : bool {
-        if (file_exists(DataConst::GetDailyBackupBlockFile())) {
-            return true;
-        }
-        return false;
-    }
-
-    public function GetTimezone() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['timezone'])) {
-            $config['timezone'] = '';
-        }
-
-        return $config['timezone'];
+        return file_exists(DataConst::GetDailyBackupBlockFile());
     }
 
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetTimezone(string $timezone) : void {
+    private function validateTimezone(string $timezone) : void {
         if ($timezone === "") {
             throw new InvalidSettingConfigurationException("The timezone must not be empty!");
         }
@@ -911,16 +838,13 @@ class ConfigurationManager
         if (!preg_match("#^[a-zA-Z0-9_\-\/\+]+$#", $timezone)) {
             throw new InvalidSettingConfigurationException("The entered timezone does not seem to be a valid timezone!");
         }
-
-        $config = $this->GetConfig();
-        $config['timezone'] = $timezone;
-        $this->WriteConfig($config);
     }
 
-    public function DeleteTimezone() : void {
-        $config = $this->GetConfig();
-        $config['timezone'] = '';
-        $this->WriteConfig($config);
+    /**
+     * Provide an extra method since our `timezone` attribute setter prevents setting an empty timezone.
+     */
+    public function deleteTimezone() : void {
+        $this->set('timezone', '');
     }
 
     public function shouldDomainValidationBeSkipped(bool $skipDomainValidation) : bool {
@@ -930,7 +854,7 @@ class ConfigurationManager
         return false;
     }
 
-    public function GetNextcloudStartupApps() : string {
+    public function getNextcloudStartupApps() : string {
         $apps = getenv('NEXTCLOUD_STARTUP_APPS');
         if (is_string($apps)) {
             return trim($apps);
@@ -938,19 +862,10 @@ class ConfigurationManager
         return 'deck twofactor_totp tasks calendar contacts notes';
     }
 
-    public function GetCollaboraDictionaries() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['collabora_dictionaries'])) {
-            $config['collabora_dictionaries'] = '';
-        }
-
-        return $config['collabora_dictionaries'];
-    }
-
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetCollaboraDictionaries(string $CollaboraDictionaries) : void {
+    private function validateCollaboraDictionaries(string $CollaboraDictionaries) : void {
         if ($CollaboraDictionaries === "") {
             throw new InvalidSettingConfigurationException("The dictionaries must not be empty!");
         }
@@ -958,22 +873,19 @@ class ConfigurationManager
         if (!preg_match("#^[a-zA-Z_ ]+$#", $CollaboraDictionaries)) {
             throw new InvalidSettingConfigurationException("The entered dictionaries do not seem to be a valid!");
         }
-
-        $config = $this->GetConfig();
-        $config['collabora_dictionaries'] = $CollaboraDictionaries;
-        $this->WriteConfig($config);
     }
 
-    public function DeleteCollaboraDictionaries() : void {
-        $config = $this->GetConfig();
-        $config['collabora_dictionaries'] = '';
-        $this->WriteConfig($config);
+    /**
+     * Provide an extra method since the corresponding attribute setter prevents setting an empty value.
+     */
+    public function deleteCollaboraDictionaries() : void {
+        $this->set('collabora_dictionaries', '');
     }
 
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function SetAdditionalCollaboraOptions(string $additionalCollaboraOptions) : void {
+    private function validateCollaboraAdditionalOptions(string $additionalCollaboraOptions) : void {
         if ($additionalCollaboraOptions === "") {
             throw new InvalidSettingConfigurationException("The additional options must not be empty!");
         }
@@ -981,72 +893,18 @@ class ConfigurationManager
         if (!preg_match("#^--o:#", $additionalCollaboraOptions)) {
             throw new InvalidSettingConfigurationException("The entered options must start with '--o:'. So the config does not seem to be a valid!");
         }
-
-        $config = $this->GetConfig();
-        $config['collabora_additional_options'] = $additionalCollaboraOptions;
-        $this->WriteConfig($config);
-    }
-
-    public function GetAdditionalCollaboraOptions() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['collabora_additional_options'])) {
-            $config['collabora_additional_options'] = '';
-        }
-
-        return $config['collabora_additional_options'];
     }
 
     public function isCollaboraSubscriptionEnabled() : bool {
-        if (str_contains($this->GetAdditionalCollaboraOptions(), '--o:support_key=')) {
-            return true;
-        }
-        return false;
+        return str_contains($this->collaboraAdditionalOptions, '--o:support_key=');
     }
 
-    public function DeleteAdditionalCollaboraOptions() : void {
-        $config = $this->GetConfig();
-        $config['collabora_additional_options'] = '';
-        $this->WriteConfig($config);
+    /**
+     * Provide an extra method since the corresponding attribute setter prevents setting an empty value.
+     */
+    public function deleteAdditionalCollaboraOptions() : void {
+        $this->set('collabora_additional_options', '');
     }
-
-    public function GetApacheAdditionalNetwork() : string {
-        $envVariableName = 'APACHE_ADDITIONAL_NETWORK';
-        $configName = 'apache_additional_network';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function GetApacheIPBinding() : string {
-        $envVariableName = 'APACHE_IP_BINDING';
-        $configName = 'apache_ip_binding';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    private function GetDisableBackupSection() : string {
-        $envVariableName = 'AIO_DISABLE_BACKUP_SECTION';
-        $configName = 'disable_backup_section';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function isBackupSectionEnabled() : bool {
-        if ($this->GetDisableBackupSection() === 'true') {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private function GetCommunityContainers() : string {
-        $config = $this->GetConfig();
-        if(!isset($config['aio_community_containers'])) {
-            $config['aio_community_containers'] = '';
-        }
-
-        return $config['aio_community_containers'];
-    }
-
 
     public function listAvailableCommunityContainers() : array {
         $cc = [];
@@ -1083,55 +941,122 @@ class ConfigurationManager
         return $cc;
     }
 
-    /** @return list<string> */
-    public function GetEnabledCommunityContainers(): array {
-        return explode(' ', $this->GetCommunityContainers());
-    }
-
-    public function SetEnabledCommunityContainers(array $enabledCommunityContainers) : void {
-        $config = $this->GetConfig();
-        $config['aio_community_containers'] = implode(' ', $enabledCommunityContainers);
-        $this->WriteConfig($config);
-    }
-
-    private function GetEnabledDriDevice() : string {
-        $envVariableName = 'NEXTCLOUD_ENABLE_DRI_DEVICE';
-        $configName = 'nextcloud_enable_dri_device';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function isDriDeviceEnabled() : bool {
-        if ($this->GetEnabledDriDevice() === 'true') {
-            return true;
-        } else {
-            return false;
+    private function camelize(string $input, string $delimiter = '_') : string {
+        if ($input === '') {
+            throw new InvalidSettingConfigurationException('input cannot be empty!');
         }
-    }
-
-    private function GetEnabledNvidiaGpu() : string {
-        $envVariableName = 'NEXTCLOUD_ENABLE_NVIDIA_GPU';
-        $configName = 'enable_nvidia_gpu';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function isNvidiaGpuEnabled() : bool {
-        return $this->GetEnabledNvidiaGpu() === 'true';
-    }
-
-    private function GetKeepDisabledApps() : string {
-        $envVariableName = 'NEXTCLOUD_KEEP_DISABLED_APPS';
-        $configName = 'nextcloud_keep_disabled_apps';
-        $defaultValue = '';
-        return $this->GetEnvironmentalVariableOrConfig($envVariableName, $configName, $defaultValue);
-    }
-
-    public function shouldDisabledAppsGetRemoved() : bool {
-        if ($this->GetKeepDisabledApps() === 'true') {
-            return false;
-        } else {
-            return true;
+        if ($delimiter === '') {
+            $delimiter = '_';
         }
+        return lcfirst(implode("", array_map('ucfirst', explode($delimiter, strtolower($input)))));
+
+    }
+
+    public function setAioVariables(array $input) : void {
+        if ($input === []) {
+            return;
+        }
+        $this->startTransaction();
+        foreach ($input as $variable) {
+            if (!is_string($variable) || !str_contains($variable, '=')) {
+                error_log("Invalid input: '$variable' is not a string or does not contain an equal sign ('=')");
+                continue;
+            }
+            $keyWithValue = $this->replaceEnvPlaceholders($variable);
+            // Pad the result with nulls so psalm is happy (and we don't risk to run into warnings in case
+            // the check for an equal sign from above gets changed).
+            [$key, $value] = explode('=', $keyWithValue, 2) + [null, null];
+            $key = $this->camelize($key);
+            if ($value === null) {
+                error_log("Invalid input: '$keyWithValue' has no value after the equal sign");
+            } else if (!property_exists($this, $key)) {
+                error_log("Error: '$key' is not a valid configuration key (in '$keyWithValue')");
+            } else {
+                $this->$key = $value;
+            }
+        }
+        $this->commitTransaction();
+    }
+
+    //
+    // Replaces placeholders in $envValue with their values.
+    // E.g. "%NC_DOMAIN%:%APACHE_PORT" becomes "my.nextcloud.com:11000"
+    public function replaceEnvPlaceholders(string $envValue): string {
+        // $pattern breaks down as:
+        // % - matches a literal percent sign
+        // ([^%]+) - capture group that matches one or more characters that are NOT percent signs
+        // % - matches the closing percent sign
+        //
+        // Assumes literal percent signs are always matched and there is no
+        // escaping.
+        $pattern = '/%([^%]+)%/';
+        $matchCount = preg_match_all($pattern, $envValue, $matches);
+
+        if ($matchCount === 0) {
+            return $envValue;
+        }
+
+        $placeholders = $matches[0]; // ["%PLACEHOLDER1%", "%PLACEHOLDER2%", ...]
+        $placeholderNames = $matches[1]; // ["PLACEHOLDER1", "PLACEHOLDER2", ...]
+        $placeholderPatterns = array_map(static fn(string $p) => '/' . preg_quote($p) . '/', $placeholders); // ["/%PLACEHOLDER1%/", ...]
+        $placeholderValues = array_map($this->getPlaceholderValue(...), $placeholderNames); // ["val1", "val2"]
+        // Guaranteed to be non-null because we found the placeholders in the preg_match_all.
+        return (string) preg_replace($placeholderPatterns, $placeholderValues, $envValue);
+    }
+
+    private function getPlaceholderValue(string $placeholder) : string {
+        return match ($placeholder) {
+            'NC_DOMAIN' => $this->domain,
+            'NC_BASE_DN' => $this->getBaseDN(),
+            'AIO_TOKEN' => $this->aioToken,
+            'BORGBACKUP_REMOTE_REPO' => $this->borgRemoteRepo,
+            'BORGBACKUP_MODE' => $this->backupMode,
+            'AIO_URL' => $this->aioUrl,
+            'SELECTED_RESTORE_TIME' => $this->selectedRestoreTime,
+            'RESTORE_EXCLUDE_PREVIEWS' => $this->restoreExcludePreviews ? '1' : '',
+            'APACHE_PORT' => $this->apachePort,
+            'APACHE_IP_BINDING' => $this->apacheIpBinding,
+            'TALK_PORT' => $this->talkPort,
+            'TURN_DOMAIN' => $this->turnDomain,
+            'NEXTCLOUD_MOUNT' => $this->nextcloudMount,
+            'BACKUP_RESTORE_PASSWORD' => $this->borgRestorePassword,
+            'CLAMAV_ENABLED' => $this->isClamavEnabled ? 'yes' : '',
+            'TALK_RECORDING_ENABLED' => $this->isTalkRecordingEnabled ? 'yes' : '',
+            'ONLYOFFICE_ENABLED' => $this->isOnlyofficeEnabled ? 'yes' : '',
+            'COLLABORA_ENABLED' => $this->isCollaboraEnabled ? 'yes' : '',
+            'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
+            'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? 'yes' : '',
+            'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
+            'COLLABORA_DICTIONARIES' => $this->collaboraDictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->collaboraDictionaries,
+            'IMAGINARY_ENABLED' => $this->isImaginaryEnabled ? 'yes' : '',
+            'FULLTEXTSEARCH_ENABLED' => $this->isFulltextsearchEnabled ? 'yes' : '',
+            'DOCKER_SOCKET_PROXY_ENABLED' => $this->isDockerSocketProxyEnabled ? 'yes' : '',
+            'NEXTCLOUD_UPLOAD_LIMIT' => $this->nextcloudUploadLimit,
+            'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloudMemoryLimit,
+            'NEXTCLOUD_MAX_TIME' => $this->nextcloudMaxTime,
+            'BORG_RETENTION_POLICY' => $this->borgRetentionPolicy,
+            'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->fulltextsearchJavaOptions,
+            'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->trustedCacertsDir,
+            'ADDITIONAL_DIRECTORIES_BACKUP' => $this->getAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
+            'BORGBACKUP_HOST_LOCATION' => $this->borgBackupHostLocation,
+            'APACHE_MAX_SIZE' => (string)($this->getApacheMaxSize()),
+            'COLLABORA_SECCOMP_POLICY' => $this->getCollaboraSeccompPolicy(),
+            'NEXTCLOUD_STARTUP_APPS' => $this->getNextcloudStartupApps(),
+            'NEXTCLOUD_ADDITIONAL_APKS' => $this->nextcloudAdditionalApks,
+            'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->nextcloudAdditionalPhpExtensions,
+            'INSTALL_LATEST_MAJOR' => $this->installLatestMajor ? 'yes' : '',
+            'REMOVE_DISABLED_APPS' => $this->nextcloudKeepDisabledApps ? '' : 'yes',
+            // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
+            'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
+            // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
+            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
+            'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
+            'AIO_VERSION' => $this->getAioVersion(),
+            default => $this->getRegisteredSecret($placeholder),
+        };
+    }
+    
+    private function booleanize(mixed $value) : bool {
+        return in_array($value, [true, 'true'], true);
     }
 }

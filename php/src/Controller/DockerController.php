@@ -89,7 +89,7 @@ readonly class DockerController {
     }
 
     public function startBackup(bool $forceStopNextcloud = false) : void {
-        $this->configurationManager->SetBackupMode('backup');
+        $this->configurationManager->backupMode = 'backup';
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
@@ -109,29 +109,25 @@ readonly class DockerController {
     }
 
     public function checkBackup() : void {
-        $this->configurationManager->SetBackupMode('check');
+        $this->configurationManager->backupMode = 'check';
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
     }
 
     private function listBackup() : void {
-        $this->configurationManager->SetBackupMode('list');
+        $this->configurationManager->backupMode = 'list';
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
     }
 
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->SetBackupMode('restore');
-        $config = $this->configurationManager->GetConfig();
-        $config['selected-restore-time'] = $request->getParsedBody()['selected_restore_time'] ?? '';
-        if (isset($request->getParsedBody()['restore-exclude-previews'])) {
-            $config['restore-exclude-previews'] = 1;
-        } else {
-            $config['restore-exclude-previews'] = '';
-        }
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->backupMode = 'restore';
+        $this->configurationManager->selectedRestoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
+        $this->configurationManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
+        $this->configurationManager->commitTransaction();
 
         $id = self::TOP_CONTAINER;
         $forceStopNextcloud = true;
@@ -144,22 +140,22 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerCheckRepair(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->SetBackupMode('check-repair');
+        $this->configurationManager->backupMode = 'check-repair';
 
         $id = 'nextcloud-aio-borgbackup';
         $this->PerformRecursiveContainerStart($id);
 
         // Restore to backup check which is needed to make the UI logic work correctly
-        $this->configurationManager->SetBackupMode('check');
+        $this->configurationManager->backupMode = 'check';
 
         return $response->withStatus(201)->withHeader('Location', '.');
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->SetBackupMode('test');
-        $config = $this->configurationManager->GetConfig();
-        $config['instance_restore_attempt'] = 0;
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->backupMode = 'test';
+        $this->configurationManager->instanceRestoreAttempt = false;
+        $this->configurationManager->commitTransaction();
 
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
@@ -182,20 +178,19 @@ readonly class DockerController {
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = 32;
+            $installLatestMajor = '32';
         } else {
-            $installLatestMajor = "";
+            $installLatestMajor = '';
         }
-
-        $config = $this->configurationManager->GetConfig();
+        
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->installLatestMajor = $installLatestMajor;
         // set AIO_URL
-        $config['AIO_URL'] = $host . ':' . (string)$port . $path;
+        $this->configurationManager->aioUrl = $host . ':' . (string)$port . $path;
         // set wasStartButtonClicked
-        $config['wasStartButtonClicked'] = 1;
-        // set install_latest_major
-        $config['install_latest_major'] = $installLatestMajor;
-        $this->configurationManager->WriteConfig($config);
-
+        $this->configurationManager->wasStartButtonClicked = true;
+        $this->configurationManager->commitTransaction();
+        
         // Do not pull container images in case 'bypass_container_update' is set via url params
         // Needed for local testing
         $pullImage = !isset($request->getParsedBody()['bypass_container_update']);
@@ -213,10 +208,7 @@ readonly class DockerController {
     }
 
     public function startTopContainer(bool $pullImage) : void {
-        $config = $this->configurationManager->GetConfig();
-        // set AIO_TOKEN
-        $config['AIO_TOKEN'] = bin2hex(random_bytes(24));
-        $this->configurationManager->WriteConfig($config);
+        $this->configurationManager->aioToken = bin2hex(random_bytes(24));
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
@@ -244,7 +236,7 @@ readonly class DockerController {
         // This is a hack but no better solution was found for the meantime
         // Stop Collabora first to make sure it force-saves
         // See https://github.com/nextcloud/richdocuments/issues/3799
-        if ($id === self::TOP_CONTAINER && $this->configurationManager->isCollaboraEnabled()) {
+        if ($id === self::TOP_CONTAINER && $this->configurationManager->isCollaboraEnabled) {
             $this->PerformRecursiveContainerStop('nextcloud-aio-collabora');
         }
 
@@ -277,7 +269,7 @@ readonly class DockerController {
     public function StartDomaincheckContainer() : void
     {
         # Don't start if domain is already set
-        if ($this->configurationManager->GetDomain() !== '' || $this->configurationManager->wasStartButtonClicked()) {
+        if ($this->configurationManager->domain !== '' || $this->configurationManager->wasStartButtonClicked) {
             return;
         }
 
