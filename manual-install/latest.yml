@@ -148,6 +148,7 @@ services:
       - TURN_SECRET
       - SIGNALING_SECRET
       - ONLYOFFICE_SECRET
+      - NC_AIO_VERSION=v${AIO_VERSION}
       - NEXTCLOUD_MOUNT
       - CLAMAV_ENABLED
       - CLAMAV_HOST=nextcloud-aio-clamav
