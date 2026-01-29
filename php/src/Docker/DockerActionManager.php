@@ -383,7 +383,7 @@ readonly class DockerActionManager {
             // Make volumes read only in case of borgbackup container. The viewer makes them writeable
             $isReadOnly = $container->identifier === 'nextcloud-aio-borgbackup';
 
-            foreach ($this->configurationManager->GetAdditionalBackupDirectoriesArray() as $additionalBackupDirectories) {
+            foreach ($this->configurationManager->getAdditionalBackupDirectoriesArray() as $additionalBackupDirectories) {
                 if ($additionalBackupDirectories !== '') {
                     if (!str_starts_with($additionalBackupDirectories, '/')) {
                         $mounts[] = ["Type" => "volume", "Source" => $additionalBackupDirectories, "Target" => "/docker_volumes/" . $additionalBackupDirectories, "ReadOnly" => $isReadOnly];
@@ -946,7 +946,7 @@ readonly class DockerActionManager {
     }
 
     public function GetAndGenerateSecretWrapper(string $secretId): string {
-        return $this->configurationManager->GetAndGenerateSecret($secretId);
+        return $this->configurationManager->getAndGenerateSecret($secretId);
     }
 
     public function isNextcloudImageOutdated(): bool {
