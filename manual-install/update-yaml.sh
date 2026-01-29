@@ -47,6 +47,7 @@ sed -i '/AIO_URL/d' containers.yml
 sed -i '/DOCKER_SOCKET_PROXY_ENABLED/d' containers.yml
 sed -i '/ADDITIONAL_TRUSTED_PROXY/d' containers.yml
 sed -i '/TURN_DOMAIN/d' containers.yml
+sed -i '/NC_AIO_VERSION/d' containers.yml
 
 TCP="$(grep -oP '[%A-Z0-9_]+/tcp' containers.yml | sort -u)"
 mapfile -t TCP <<< "$TCP"
