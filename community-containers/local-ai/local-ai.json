@@ -4,42 +4,59 @@
             "container_name": "nextcloud-aio-local-ai",
             "display_name": "Local AI",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/local-ai",
-            "image": "ghcr.io/szaimen/aio-local-ai",
-            "image_tag": "v2",
-            "internal_port": "8080",
+            "image": "ghcr.io/docjyj/aio-local-ai-vulkan",
+            "image_tag": "v1",
+            "internal_port": "10078",
             "restart": "unless-stopped",
             "environment": [
                 "TZ=%TIMEZONE%",
-                "MODELS_PATH=/models"
+                "LOCALAI_API_KEY=%LOCALAI_API_KEY%",
+                "LOCALAI_ADDRESS=:10078",
+                "LOCALAI_CONFIG_DIR=/configuration",
+                "LOCALAI_MODEL_PATH=/models",
+                "LOCALAI_BACKEND_PATH=/backends"
+            ],
+            "ports": [
+                {
+                  "ip_binding": "%APACHE_IP_BINDING%",
+                  "port_number": "10078",
+                  "protocol": "tcp"
+                }
             ],
             "volumes": [
+                {
+                  "source": "nextcloud_aio_localai_configuration",
+                  "destination": "/configuration",
+                  "writeable": true
+                },
                 {
                     "source": "nextcloud_aio_localai_models",
                     "destination": "/models",
                     "writeable": true
                 },
                 {
-                    "source": "nextcloud_aio_localai_images",
-                    "destination": "/tmp/generated/images/",
+                    "source": "nextcloud_aio_localai_backends",
+                    "destination": "/backends",
                     "writeable": true
-                },
-                {
-                    "source": "%NEXTCLOUD_DATADIR%",
-                    "destination": "/nextcloud",
-                    "writeable": false
                 }
             ],
-            "enable_nvidia_gpu": false,
+            "secrets": [
+                "LOCALAI_API_KEY"
+            ],
+            "ui_secret": "LOCALAI_API_KEY",
+            "devices": [
+                "/dev/dri"
+            ],
             "nextcloud_exec_commands": [
-                "mkdir '/mnt/ncdata/admin/files/nextcloud-aio-local-ai'",
-                "touch '/mnt/ncdata/admin/files/nextcloud-aio-local-ai/models.yaml'",
-                "echo 'Scanning nextcloud-aio-local-ai folder for admin user...'",
-                "php /var/www/html/occ files:scan --path='/admin/files/nextcloud-aio-local-ai'",
                 "php /var/www/html/occ app:install integration_openai",
                 "php /var/www/html/occ app:enable integration_openai",
                 "php /var/www/html/occ config:app:set integration_openai url --value http://nextcloud-aio-local-ai:8080",
+                "php /var/www/html/occ config:app:set integration_openai api_key --value %LOCALAI_API_KEY%",
                 "php /var/www/html/occ app:install assistant",
                 "php /var/www/html/occ app:enable assistant"
+            ],
+            "backup_volumes": [
+              "nextcloud_aio_localai_configuration"
             ]
         }
     ]
