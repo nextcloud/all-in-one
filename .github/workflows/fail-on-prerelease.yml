@@ -1,4 +1,4 @@
-name: Fail on prerelease
+name: Block if prerelease is present
 
 on:
   pull_request:
