@@ -1,0 +1,50 @@
+name: Block if prerelease is present
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-latest-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check latest published release isn't a prerelease"
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
+        with:
+          script: |
+            const tags = await github.rest.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 1
+            });
+
+            if (!tags.data || tags.data.length === 0) {
+              core.info('No tags found for this repository; skipping prerelease check.');
+              return;
+            }
+
+            const latestTag = tags.data[0].name;
+            core.info(`Latest tag found: ${latestTag}`);
+
+            try {
+              const { data } = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: latestTag
+              });
+
+              if (data.prerelease) {
+                core.setFailed(`Release for tag ${latestTag} (${data.tag_name}) is a prerelease. Blocking merges to main as we need to wait for the prerelease to become stable.`);
+              } else {
+                core.info(`Release for tag ${latestTag} (${data.tag_name}) is not a prerelease.`);
+              }
+
+            } catch (err) {
+              if (err.status === 404) {
+                core.info(`No release found for tag ${latestTag}; skipping prerelease check.`);
+              } else {
+                throw err;
+              }
+            }
