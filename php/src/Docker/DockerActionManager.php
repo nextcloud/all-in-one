@@ -843,7 +843,7 @@ readonly class DockerActionManager {
         $this->ConnectContainerIdToNetwork($container->identifier, $container->internalPorts, alias: $alias);
 
         if ($container->identifier === 'nextcloud-aio-apache' || $container->identifier === 'nextcloud-aio-domaincheck') {
-            $apacheAdditionalNetwork = $this->configurationManager->apacheAdditionalNetwork;
+            $apacheAdditionalNetwork = $this->configurationManager->getApacheAdditionalNetwork();
             if ($apacheAdditionalNetwork !== '') {
                 $this->ConnectContainerIdToNetwork($container->identifier, $container->internalPorts, $apacheAdditionalNetwork, false, $alias);
             }

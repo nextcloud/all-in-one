@@ -263,11 +263,6 @@ class ConfigurationManager
         set { $this->set('collabora_seccomp_disabled', $value); }
     }
 
-    public string $apacheAdditionalNetwork {
-        get => $this->getEnvironmentalVariableOrConfig('APACHE_ADDITIONAL_NETWORK', 'apache_additional_network', '');
-        set { $this->set('apache_additional_network', $value); }
-    }
-
     public bool $disableBackupSection {
         get => $this->booleanize($this->getEnvironmentalVariableOrConfig('AIO_DISABLE_BACKUP_SECTION', 'disable_backup_section', ''));
         set { $this->set('disable_backup_section', $value); }
@@ -852,6 +847,14 @@ class ConfigurationManager
             return true;
         }
         return false;
+    }
+
+    public function getApacheAdditionalNetwork() : string {
+        $network = getenv('APACHE_ADDITIONAL_NETWORK');
+        if (is_string($network)) {
+            return trim($network);
+        }
+        return '';
     }
 
     public function getNextcloudStartupApps() : string {
