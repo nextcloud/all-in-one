@@ -29,3 +29,5 @@ if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_MAILER')) {
     )
   );
 }
+
+# test
