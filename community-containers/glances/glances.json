@@ -22,7 +22,7 @@
                     "writeable": true
                 },
                 {
-                    "source": "/var/run/docker.sock",
+                    "source": "%WATCHTOWER_DOCKER_SOCKET_PATH%",
                     "destination": "/var/run/docker.sock",
                     "writeable": false
                 }
