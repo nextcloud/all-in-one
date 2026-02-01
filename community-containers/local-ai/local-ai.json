@@ -50,7 +50,7 @@
             "nextcloud_exec_commands": [
                 "php /var/www/html/occ app:install integration_openai",
                 "php /var/www/html/occ app:enable integration_openai",
-                "php /var/www/html/occ config:app:set integration_openai url --value http://nextcloud-aio-local-ai:8080",
+                "php /var/www/html/occ config:app:set integration_openai url --value http://nextcloud-aio-local-ai:10078",
                 "php /var/www/html/occ config:app:set integration_openai api_key --value %LOCALAI_API_KEY%",
                 "php /var/www/html/occ app:install assistant",
                 "php /var/www/html/occ app:enable assistant"
