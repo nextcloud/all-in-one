@@ -17,6 +17,7 @@ readonly class ConfigurationController {
 
     public function SetConfig(Request $request, Response $response, array $args): Response {
         try {
+            $this->configurationManager->startTransaction();
             if (isset($request->getParsedBody()['domain'])) {
                 $domain = $request->getParsedBody()['domain'] ?? '';
                 $skipDomainValidation = isset($request->getParsedBody()['skip_domain_validation']);
@@ -137,6 +138,8 @@ readonly class ConfigurationController {
         } catch (InvalidSettingConfigurationException $ex) {
             $response->getBody()->write($ex->getMessage());
             return $response->withStatus(422);
+        } finally {
+            $this->configurationManager->commitTransaction();
         }
     }
 }
