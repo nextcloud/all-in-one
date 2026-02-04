@@ -341,10 +341,10 @@ class ConfigurationManager
         }
 
         if ($secretId === 'BORGBACKUP_PASSWORD' && !file_exists(DataConst::GetBackupSecretFile())) {
-            $this->doubleSafeBackupSecret($secrets[$secretId]);
+            $this->doubleSafeBackupSecret((string)$secrets[$secretId]);
         }
 
-        return $secrets[$secretId];
+        return (string)$secrets[$secretId];
     }
 
     public function getRegisteredSecret(string $secretId) : string {
@@ -704,7 +704,7 @@ class ConfigurationManager
             if ($configValue === '') {
                 return $defaultValue;
             }
-            return $configValue;
+            return (string) $configValue;
         }
 
         if (file_exists(DataConst::GetConfigFile())) {

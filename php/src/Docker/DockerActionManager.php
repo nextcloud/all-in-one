@@ -57,7 +57,7 @@ readonly class DockerActionManager {
         /** @var array */
         $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-        if ($responseBody['State']['Running'] === true) {
+        if ($responseBody['State']['Running'] ?? false === true) {
             return ContainerState::Running;
         } else {
             return ContainerState::Stopped;
@@ -78,7 +78,7 @@ readonly class DockerActionManager {
         /** @var array */
         $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-        if ($responseBody['State']['Restarting'] === true) {
+        if ($responseBody['State']['Restarting'] ?? false === true) {
             return ContainerState::Restarting;
         } else {
             return ContainerState::NotRestarting;
@@ -656,11 +656,11 @@ readonly class DockerActionManager {
         try {
             /** @var array */
             $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
-            $imageNameArray = explode(':', $output['Config']['Image']);
+            $imageNameArray = explode(':', (string) $output['Config']['Image']);
             if (count($imageNameArray) === 2) {
                 $imageName = $imageNameArray[0];
             } else {
-                error_log("No tag was found when getting the current channel. You probably did not follow the documentation correctly. Changing the imageName to the default " . $output['Config']['Image']);
+                error_log("No tag was found when getting the current channel. You probably did not follow the documentation correctly. Changing the imageName to the default " . (string) $output['Config']['Image']);
                 $imageName = (string) $output['Config']['Image'];
             }
             apcu_add($cacheKey, $imageName);
@@ -685,7 +685,7 @@ readonly class DockerActionManager {
         try {
             /** @var array */
             $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
-            $tagArray = explode(':', $output['Config']['Image']);
+            $tagArray = explode(':', (string) $output['Config']['Image']);
             if (count($tagArray) === 2) {
                 $tag = $tagArray[1];
             } else {
@@ -898,7 +898,7 @@ readonly class DockerActionManager {
         $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         /** @var null|int */
-        $exitCode = $responseBody['State']['ExitCode'];
+        $exitCode = $responseBody['State']['ExitCode'] ?? null;
         if (is_int($exitCode)) {
             return $exitCode;
         } else {
@@ -922,7 +922,7 @@ readonly class DockerActionManager {
         $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         /** @var null|int */
-        $exitCode = $responseBody['State']['ExitCode'];
+        $exitCode = $responseBody['State']['ExitCode'] ?? null;
         if (is_int($exitCode)) {
             return $exitCode;
         } else {
