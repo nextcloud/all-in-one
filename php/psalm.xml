@@ -6,6 +6,7 @@
 	errorBaseline="psalm-baseline.xml"
 	findUnusedBaselineEntry="true"
 	findUnusedCode="false"
+	errorLevel="2"
 >
 	<projectFiles>
 		<directory name="templates"/>
