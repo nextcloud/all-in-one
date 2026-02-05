@@ -5,9 +5,12 @@ namespace AIO\Container;
 use AIO\Data\ConfigurationManager;
 use AIO\Docker\DockerActionManager;
 use AIO\ContainerDefinitionFetcher;
+use AIO\Data\ContainerEventsLog;
 use JsonException;
 
 readonly class Container {
+    protected ContainerEventsLog $eventsLog;
+
     public function __construct(
         public string                        $identifier,
         public string                        $displayName,
@@ -39,6 +42,7 @@ readonly class Container {
         public string                        $documentation,
         private DockerActionManager           $dockerActionManager
     ) {
+        $this->eventsLog = new ContainerEventsLog();
     }
 
     public function GetUiSecret() : string {
@@ -65,5 +69,9 @@ readonly class Container {
 
     public function GetStartingState() : ContainerState {
         return $this->dockerActionManager->GetContainerStartingState($this);
+    }
+
+    public function logEvent(string $message) : void {
+        $this->eventsLog->add($this->identifier, $message);
     }
 }

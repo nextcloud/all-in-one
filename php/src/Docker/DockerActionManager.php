@@ -8,6 +8,7 @@ use AIO\Container\VersionState;
 use AIO\ContainerDefinitionFetcher;
 use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
+use AIO\Data\ContainerEventsLog;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use http\Env\Response;
@@ -167,6 +168,7 @@ readonly class DockerActionManager {
 
     public function StartContainer(Container $container): void {
         $url = $this->BuildApiUrl(sprintf('containers/%s/start', urlencode($container->identifier)));
+        $container->logEvent('Starting container');
         try {
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
@@ -201,6 +203,7 @@ readonly class DockerActionManager {
     }
 
     public function CreateContainer(Container $container): void {
+        $container->logEvent('Creating container');
         $volumes = [];
         foreach ($container->volumes->GetVolumes() as $volume) {
             // // NEXTCLOUD_MOUNT gets added via bind-mount later on
@@ -501,12 +504,14 @@ readonly class DockerActionManager {
             $imageIsThere = false;
         }
 
+        $container->logEvent('Pulling image');
         $maxRetries = 3;
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
                 $this->guzzleClient->post($url);
+                $container->logEvent('Finished pulling image');
                 break;
-            } catch (RequestException $e) {
+            } catch (\Throwable $e) {
                 $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $e->getResponse()?->getBody()->getContents();
                 if ($attempt === $maxRetries) {
                     if ($imageIsThere === false) {
@@ -514,6 +519,7 @@ readonly class DockerActionManager {
                     } else {
                         error_log($message);
                     }
+                    $container->logEvent('Pulling image failed, please review the output of the "nextcloud-aio-mastercontainer" container');
                 } else {
                     error_log($message . ' Retrying...');
                     sleep(1);
@@ -829,6 +835,7 @@ readonly class DockerActionManager {
     }
 
     public function ConnectContainerToNetwork(Container $container): void {
+        $container->logEvent('Connecting container to network');
         // Add a secondary alias for domaincheck container, to keep it as similar to actual apache controller as possible.
         // If a reverse-proxy is relying on container name as hostname this allows it to operate as usual and still validate the domain
         // The domaincheck container and apache container are never supposed to be active at the same time because they use the same APACHE_PORT anyway, so this doesn't add any new constraints.
@@ -851,6 +858,7 @@ readonly class DockerActionManager {
             $maxShutDownTime = $container->maxShutdownTime;
         }
         $url = $this->BuildApiUrl(sprintf('containers/%s/stop?t=%s', urlencode($container->identifier), $maxShutDownTime));
+        $container->logEvent('Stopping container');
         try {
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {

@@ -1,6 +1,6 @@
 {# @var c \App\Containers\Container #}
 <li>
-  <span>
+  <span class="container-elem" data-container-id="{{ c.identifier }}">
     {% if c.GetStartingState().value == 'starting' %}
       <span class="status running"></span>
       {{ c.displayName }}
@@ -14,6 +14,7 @@
       {{ c.displayName }}
       (<a href="api/docker/logs?id={{ c.identifier }}" target="_blank">Stopped</a>)
     {% endif %}
+    <span class="events-log"></span>
     {% if c.documentation != '' %}
       (<a target="_blank" href="{{ c.documentation }}">docs</a>)
     {% endif %}

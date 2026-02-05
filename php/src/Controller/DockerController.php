@@ -50,6 +50,7 @@ readonly class DockerController {
         $this->dockerActionManager->CreateContainer($container);
         $this->dockerActionManager->StartContainer($container);
         $this->dockerActionManager->ConnectContainerToNetwork($container);
+        $container->logEvent('Container is running');
     }
 
     private function PerformRecursiveImagePull(string $id) : void {

@@ -70,6 +70,7 @@ $app->post('/api/auth/login', AIO\Controller\LoginController::class . ':TryLogin
 $app->get('/api/auth/getlogin', AIO\Controller\LoginController::class . ':GetTryLogin');
 $app->post('/api/auth/logout', AIO\Controller\LoginController::class . ':Logout');
 $app->post('/api/configuration', \AIO\Controller\ConfigurationController::class . ':SetConfig');
+$app->get('/api/events/containers', \AIO\Controller\ContainerEventsController::class . ':GetEventsLog');
 
 // Views
 $app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {

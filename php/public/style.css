@@ -158,6 +158,12 @@ div.toast.error {
     border-left-color: var(--color-error);
 }
 
+.events-log {
+    font-size: smaller;
+    font-family: monospace;
+    color: #444;
+}
+
 .status {
     display: inline-block;
     height: var(--checkbox-size);
@@ -469,6 +475,37 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 
 #overlay.loading {
     display: block;
+}
+
+#overlay #overlay-log.visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 500ms ease-in;
+}
+
+#overlay #overlay-log {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: calc(50% + 120px);
+    width: 20%;
+    margin: 0 40%;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+    border-radius: 5px;
+}
+
+#overlay #overlay-log div {
+    margin-bottom: 0.3rem;
+}
+
+#overlay #overlay-log div:last-child {
+    margin-bottom: 0;
+}
+
+#overlay #overlay-log div span:first-child {
+    margin-right: 0.3rem;
 }
 
 .loader {

@@ -46,6 +46,7 @@ function showPassword(id) {
 
   function enableSpinner() {
     document.getElementById('overlay').classList.add('loading');
+    window.containerEventsLogClient.fetchAndShow({ forceReloading: true });
   }
 
   function disableSpinner() {
