@@ -364,6 +364,7 @@ readonly class DockerController {
     private function writeEventsToFile(array $payload): void {
         $eventJson = json_encode($payload);
 
+        $eventsFile = DataConst::GetContainerEventsFile();
         // Append new event (atomic via LOCK_EX)
         file_put_contents($eventsFile, $eventJson . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
