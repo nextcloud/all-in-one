@@ -20,7 +20,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+/** @var \DI\Container */
 $container = \AIO\DependencyInjection::GetContainer();
+/** @var \AIO\Data\DataConst */
 $dataConst = $container->get(\AIO\Data\DataConst::class);
 ini_set('session.save_path', $dataConst->GetSessionDirectory());
 

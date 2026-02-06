@@ -18,6 +18,7 @@ readonly class GitHubContainerRegistryManager
     {
         $cacheKey = 'ghcr-manifest-' . $name . $tag;
 
+        /** @psalm-var mixed $cachedVersion */
         $cachedVersion = apcu_fetch($cacheKey);
         if ($cachedVersion !== false && is_string($cachedVersion)) {
             return $cachedVersion;
@@ -31,9 +32,10 @@ readonly class GitHubContainerRegistryManager
                 'https://ghcr.io/token?scope=repository:' . $name . ':pull'
             );
             $body = $authTokenRequest->getBody()->getContents();
+            /** @var array */
             $decodedBody = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             if (isset($decodedBody['token'])) {
-                $authToken = $decodedBody['token'];
+                $authToken = (string) $decodedBody['token'];
                 $manifestRequest = $this->guzzleClient->request(
                     'HEAD',
                     'https://ghcr.io/v2/' . $name . '/manifests/' . $tag,
