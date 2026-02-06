@@ -114,7 +114,6 @@ readonly class ConfigurationController {
                 $cc = $this->configurationManager->listAvailableCommunityContainers();
                 $enabledCC = [];
                 /**
-                 * @psalm-suppress PossiblyNullIterator
                  * @psalm-var string $item
                  */
                 foreach ($request->getParsedBody() as $item) {

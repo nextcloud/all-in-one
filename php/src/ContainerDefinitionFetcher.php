@@ -108,9 +108,9 @@ readonly class ContainerDefinitionFetcher {
                 foreach ($entry['ports'] as $value) {
                     $ports->AddPort(
                         new ContainerPort(
-                            $value['port_number'],
-                            $value['ip_binding'],
-                            $value['protocol']
+                            (string) $value['port_number'],
+                            (string) $value['ip_binding'],
+                            (string) $value['protocol']
                         )
                     );
                 }
@@ -155,9 +155,9 @@ readonly class ContainerDefinitionFetcher {
                     }
                     $volumes->AddVolume(
                         new ContainerVolume(
-                            $value['source'],
-                            $value['destination'],
-                            $value['writeable']
+                            (string) $value['source'],
+                            (string) $value['destination'],
+                            (bool) $value['writeable']
                         )
                     );
                 }
@@ -335,9 +335,9 @@ readonly class ContainerDefinitionFetcher {
             }
 
             $containers[] = new Container(
-                $entry['container_name'],
+                (string) $entry['container_name'],
                 $displayName,
-                $entry['image'],
+                (string) $entry['image'],
                 $restartPolicy,
                 $maxShutdownTime,
                 $ports,

@@ -1,2 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="6.14.3@d0b040a91f280f071c1abcb1b77ce3822058725a"/>
+<files psalm-version="6.14.3@d0b040a91f280f071c1abcb1b77ce3822058725a">
+  <file src="public/index.php">
+    <MixedArgument>
+      <code><![CDATA[$container->get(Guard::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Auth\AuthManager::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Data\ConfigurationManager::class)]]></code>
+    </MixedArgument>
+  </file>
+  <file src="src/ContainerDefinitionFetcher.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$backupVolumes]]></code>
+      <code><![CDATA[$capAdd]]></code>
+      <code><![CDATA[$devices]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Controller/ConfigurationController.php">
+    <PossiblyNullIterator>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyNullIterator>
+  </file>
+  <file src="src/DependencyInjection.php">
+    <MixedArgument>
+      <code><![CDATA[$container->get(DockerHubManager::class)]]></code>
+      <code><![CDATA[$container->get(GitHubContainerRegistryManager::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Auth\PasswordGenerator::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\ContainerDefinitionFetcher::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Data\ConfigurationManager::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Data\ConfigurationManager::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Data\ConfigurationManager::class)]]></code>
+    </MixedArgument>
+  </file>
+  <file src="src/Docker/DockerActionManager.php">
+    <MixedOperand>
+      <code><![CDATA[$output['Config']['Image']]]></code>
+    </MixedOperand>
+  </file>
+</files>
