@@ -1,2 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="6.14.3@d0b040a91f280f071c1abcb1b77ce3822058725a"/>
+<files psalm-version="6.14.3@d0b040a91f280f071c1abcb1b77ce3822058725a">
+  <file src="public/index.php">
+    <MixedArgument>
+      <code><![CDATA[$container->get(Guard::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Auth\AuthManager::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Data\ConfigurationManager::class)]]></code>
+    </MixedArgument>
+  </file>
+  <file src="src/Auth/PasswordGenerator.php">
+    <MixedOperand>
+      <code><![CDATA[$this->words[random_int(0, 7775)]]]></code>
+    </MixedOperand>
+  </file>
+  <file src="src/ContainerDefinitionFetcher.php">
+    <MixedArgument>
+      <code><![CDATA[$entry['container_name']]]></code>
+      <code><![CDATA[$entry['image']]]></code>
+      <code><![CDATA[$this->container->get(DockerActionManager::class)]]></code>
+      <code><![CDATA[$value['destination']]]></code>
+      <code><![CDATA[$value['ip_binding']]]></code>
+      <code><![CDATA[$value['port_number']]]></code>
+      <code><![CDATA[$value['protocol']]]></code>
+      <code><![CDATA[$value['source']]]></code>
+      <code><![CDATA[$value['writeable']]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$backupVolumes]]></code>
+      <code><![CDATA[$capAdd]]></code>
+      <code><![CDATA[$devices]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Controller/ConfigurationController.php">
+    <PossiblyNullIterator>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyNullIterator>
+  </file>
+  <file src="src/Data/ConfigurationManager.php">
+    <MixedArgument>
+      <code><![CDATA[$secrets[$secretId]]]></code>
+    </MixedArgument>
+    <MixedReturnStatement>
+      <code><![CDATA[$configValue]]></code>
+      <code><![CDATA[$secrets[$secretId]]]></code>
+      <code><![CDATA[$secrets[$secretId]]]></code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/DependencyInjection.php">
+    <MixedArgument>
+      <code><![CDATA[$container->get(DockerHubManager::class)]]></code>
+      <code><![CDATA[$container->get(GitHubContainerRegistryManager::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Auth\PasswordGenerator::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\ContainerDefinitionFetcher::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Data\ConfigurationManager::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Data\ConfigurationManager::class)]]></code>
+      <code><![CDATA[$container->get(\AIO\Data\ConfigurationManager::class)]]></code>
+    </MixedArgument>
+  </file>
+  <file src="src/Docker/DockerActionManager.php">
+    <MixedArgument>
+      <code><![CDATA[$output['Config']['Image']]]></code>
+      <code><![CDATA[$output['Config']['Image']]]></code>
+    </MixedArgument>
+    <MixedArrayAccess>
+      <code><![CDATA[$output['Config']['Image']]]></code>
+      <code><![CDATA[$output['Config']['Image']]]></code>
+      <code><![CDATA[$output['Config']['Image']]]></code>
+      <code><![CDATA[$output['Config']['Image']]]></code>
+      <code><![CDATA[$responseBody['State']['ExitCode']]]></code>
+      <code><![CDATA[$responseBody['State']['ExitCode']]]></code>
+      <code><![CDATA[$responseBody['State']['Restarting']]]></code>
+      <code><![CDATA[$responseBody['State']['Running']]]></code>
+    </MixedArrayAccess>
+    <MixedOperand>
+      <code><![CDATA[$output['Config']['Image']]]></code>
+    </MixedOperand>
+  </file>
+</files>
