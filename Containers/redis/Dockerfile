@@ -10,6 +10,7 @@ RUN set -ex; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    apk --no-cache del openssl; \
     \
 # Get rid of unused binaries
     rm -f /usr/local/bin/gosu;

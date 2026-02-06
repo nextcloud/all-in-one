@@ -79,7 +79,8 @@ RUN set -ex; \
     chmod 777 -R /usr/local/apache2/logs; \
     rm -rf /usr/local/apache2/cgi-bin/; \
     \
-    echo "root:$(openssl rand -base64 12)" | chpasswd
+    echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    apk --no-cache del openssl
 
 USER 33
 
