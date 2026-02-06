@@ -1,6 +1,10 @@
 <?php
+declare(strict_types=1);
 
-$domain = $_GET['domain'] ?? '';
+$domain = '';
+if (isset($_GET['domain']) && is_string($_GET['domain'])) {
+    $domain = $_GET['domain'];
+}
 
 if (!str_contains($domain, '.')) { 
     http_response_code(400); 
