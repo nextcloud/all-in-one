@@ -57,7 +57,7 @@ spec:
               value: "6379"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-notify-push:20260122_105751
+          image: ghcr.io/nextcloud-releases/aio-notify-push:20260211_141900
           readinessProbe:
             exec:
               command:
