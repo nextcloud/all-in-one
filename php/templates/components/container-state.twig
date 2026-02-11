@@ -18,7 +18,7 @@
       (<a target="_blank" href="{{ c.documentation }}">docs</a>)
     {% endif %}
     {% if c.GetUpdateState().value == 'different' %}
-      <span style="color: #ff6b00; font-weight: bold;">⚠️ Update available</span>
+      <span class="container-update-warning">⚠️ Update available</span>
     {% endif %}
   </span>
   {% if c.GetUiSecret() != '' %}
