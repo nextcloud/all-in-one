@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:latest
 FROM nats:2.12.4-scratch AS nats
 FROM eturnal/eturnal:1.12.2-alpine AS eturnal
-FROM strukturag/nextcloud-spreed-signaling:2.0.4 AS signaling
+FROM strukturag/nextcloud-spreed-signaling:2.1.0 AS signaling
 FROM alpine:3.23.3 AS janus
 
 ARG JANUS_VERSION=v1.4.0
