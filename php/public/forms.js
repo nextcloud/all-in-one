@@ -76,7 +76,6 @@ function showPassword(id) {
 
   function initForms() {
     const forms = document.querySelectorAll('form.xhr')
-    console.info("Making " + forms.length + " form(s) use XHR.");
     for (const form of forms) {
       initForm(form);
     }
