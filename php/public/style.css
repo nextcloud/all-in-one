@@ -11,6 +11,7 @@
     --color-error-text: #c20505;
     --color-success: #46ba61;
     --color-running: #ffd000;
+    --color-warning: #ff6b00;
     --color-primary-element: #00679e;
     --color-primary-element-hover: #005a8a;
     --color-primary-element-text: #ffffff;
@@ -175,7 +176,7 @@ span.running {
 }
 
 .container-update-warning {
-    color: #ff6b00;
+    color: var(--color-warning);
     font-weight: bold;
 }
 
