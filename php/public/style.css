@@ -480,7 +480,7 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 #overlay #overlay-log.visible {
     visibility: visible;
     opacity: 1;
-    transition: opacity 500ms ease-in;
+    transition: opacity 1s ease-in;
 }
 
 #overlay #overlay-log {
@@ -489,11 +489,12 @@ input[type="checkbox"]:disabled:not(:checked) + label {
     position: absolute;
     top: calc(50% + 120px);
     width: 20%;
-    margin: 0 40%;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 2rem;
-    border-radius: 5px;
+    height: 5rem;
+    margin: 0 39%;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    border: solid thin rgb(192, 192, 192);
+    background-color: rgba(128, 128, 128);
 }
 
 #overlay #overlay-log div {

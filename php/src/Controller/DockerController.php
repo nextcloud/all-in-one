@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
+use Slim\Psr7\NonBufferedBody;
 
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
@@ -20,12 +21,12 @@ readonly class DockerController {
     ) {
     }
 
-    private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
+    private function PerformRecursiveContainerStart(string $id, bool $pullImage = true, ?NonBufferedBody $body = null) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         // Start all dependencies first and then itself
         foreach($container->dependsOn as $dependency) {
-            $this->PerformRecursiveContainerStart($dependency, $pullImage);
+            $this->PerformRecursiveContainerStart($dependency, $pullImage, $body);
         }
 
         // Don't start if container is already running
@@ -35,22 +36,18 @@ readonly class DockerController {
             return;
         }
 
-        // Emit a container-start event for frontend clients (one JSON line per event)
-        try {
-            $this->pruneEventsFileIfTooLarge();
-            $this->writeEventsToFile(['event' => 'Starting container', 'name' => $id, 'time' => time()]);
-        } catch (\Throwable $e) {
-            // non-fatal, just log
-            error_log('Could not write container-start event: ' . $e->getMessage());
-        }
-
         $this->dockerActionManager->DeleteContainer($container);
         $this->dockerActionManager->CreateVolumes($container);
+        if ($body) {
+            $body->write("<div>{$container->displayName}: Pulling image</div>");
+        }
         $this->dockerActionManager->PullImage($container, $pullImage);
+        if ($body) {
+            $body->write("<div>{$container->displayName}: Starting container</div>");
+        }
         $this->dockerActionManager->CreateContainer($container);
         $this->dockerActionManager->StartContainer($container);
         $this->dockerActionManager->ConnectContainerToNetwork($container);
-        $container->logEvent('Container is running');
     }
 
     private function PerformRecursiveImagePull(string $id) : void {
@@ -208,17 +205,29 @@ readonly class DockerController {
         if ($pullImage === false) {
             error_log('WARNING: Not pulling container images. Instead, using local ones.');
         }
+        
+        $nonbufResp = $response
+            ->withBody(new NonBufferedBody())
+            ->withHeader('Content-Type', 'text/html; charset=utf-8')
+            ->withHeader('X-Accel-Buffering', 'no')
+            ->withHeader('Cache-Control', 'no-cache');
+        // Text written into this body is immediately sent to the client, without waiting for later content.
+        $body = $nonbufResp->getBody();
+        
+        $body->write("<!DOCTYPE html><html lang='en'><head><style>body { color: white; }</style><script>const observer = new MutationObserver((records) => records[0].addedNodes[0].scrollIntoView()); observer.observe(document, {childList: true, subtree: true});</script></head><body>");
+        
         // Start container
-        $this->startTopContainer($pullImage);
+        $this->startTopContainer($pullImage, $body);
 
         // Clear apcu cache in order to check if container updates are available
         // Temporarily disabled as it leads much faster to docker rate limits
         // apcu_clear_cache();
 
-        return $response->withStatus(201)->withHeader('Location', '.');
+        $body->write("</body></html>");
+        return $nonbufResp;
     }
 
-    public function startTopContainer(bool $pullImage) : void {
+    public function startTopContainer(bool $pullImage, ?NonBufferedBody $body = null) : void {
         $this->configurationManager->aioToken = bin2hex(random_bytes(24));
 
         // Stop domaincheck since apache would not be able to start otherwise
@@ -226,7 +235,7 @@ readonly class DockerController {
 
         $id = self::TOP_CONTAINER;
 
-        $this->PerformRecursiveContainerStart($id, $pullImage);
+        $this->PerformRecursiveContainerStart($id, $pullImage, $body);
     }
 
     public function StartWatchtowerContainer(Request $request, Response $response, array $args) : Response {

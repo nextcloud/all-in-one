@@ -80,6 +80,17 @@ function showPassword(id) {
     for (const form of forms) {
       initForm(form);
     }
+    const overlayLogForms = document.querySelectorAll('form[target="overlay-log"]')
+    for (const form of overlayLogForms) {
+        form.onsubmit = function() {
+            enableSpinner();
+            document.getElementById('overlay-log')?.classList.add('visible');
+            // Reload the page after the response was fully loaded into the iframe.
+            document.querySelector('iframe[name="overlay-log"]').addEventListener('load', () => {
+                location.reload();
+            });
+        };
+    }
   }
 
   if (document.readyState === 'loading') {
