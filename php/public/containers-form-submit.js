@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Don't run if the expected form isn't present.
+    if (document.getElementById('options-form') === null) {
+        return;
+    }
+
     // Hide submit button initially
     const optionsFormSubmit = document.querySelectorAll(".options-form-submit");
     optionsFormSubmit.forEach(element => {
