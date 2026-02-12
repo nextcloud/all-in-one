@@ -114,7 +114,7 @@ class ConfigurationManager
         // Type-cast because old configs could have 1/0 for this key.
         get => (bool) $this->get('isFulltextsearchEnabled', false);
         // Elasticsearch does not work on kernels without seccomp anymore. See https://github.com/nextcloud/all-in-one/discussions/5768
-        set { $this->set('isFulltextsearchEnabled', ($this->collaboraSeccompDisabled && $value)); }
+        set { $this->set('isFulltextsearchEnabled', (!$this->collaboraSeccompDisabled && $value)); }
     }
 
     public string $domain {
