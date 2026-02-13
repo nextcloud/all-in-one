@@ -166,7 +166,7 @@ elif ! sudo -E -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nex
     print_red "It seems like you did not give the mastercontainer volume the correct name? (The 'nextcloud_aio_mastercontainer' volume was not found.)
 Using a different name is not supported since the built-in backup solution will not work in that case!"
     exit 1
-elif ! sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer --format '{{.Mounts}}' | grep -q " nextcloud_aio_mastercontainer "; then
+elif ! sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer | grep -q "nextcloud_aio_mastercontainer"; then
     print_red "It seems like you did not attach the 'nextcloud_aio_mastercontainer' volume to the mastercontainer?
 This is not supported since the built-in backup solution will not work in that case!"
     exit 1
