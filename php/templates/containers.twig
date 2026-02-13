@@ -37,7 +37,8 @@
             {% set isBackupOrRestoreRunning = false %}
             {% set isApacheStarting = false %}
             {# Setting newMajorVersion to '' will hide corresponding options/elements, can be set to an integer like 26 in order to show corresponding elements. If set, also increase installLatestMajor in https://github.com/nextcloud/all-in-one/blob/main/php/src/Controller/DockerController.php #}
-            {% set newMajorVersionString = '' %}
+            {% set newMajorVersionString = '26 Winter' %}
+            {% set oldMajorVersionString = '25 Autumn' %}
 
             {% if is_backup_container_running == true %}
                 {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}
@@ -297,7 +298,7 @@
                                 {% if newMajorVersionString != '' and isAnyRunning == true and isApacheStarting != true %}
                                     <details>
                                     <summary>Note about <strong>Nextcloud Hub {{ newMajorVersionString }}</strong></summary>
-                                        <p>If you haven't upgraded to Nextcloud Hub {{ newMajorVersionString }} yet and want to do that now, feel free to follow <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/6865">this documentation</a></strong></p>
+                                        <p>If you haven't upgraded to Nextcloud Hub {{ newMajorVersionString }} yet and want to do that now, feel free to follow <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/7523">this documentation</a></strong></p>
                                     </details>
                                 {% endif %}
                             {% endif %}
@@ -343,7 +344,7 @@
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input id="base_path" type="hidden" name="base_path" value="">
                                         {% if newMajorVersionString != '' %}
-                                            <input type="checkbox" id="install_latest_major" name="install_latest_major"><label for="install_latest_major">Install Nextcloud Hub {{ newMajorVersionString }} (if unchecked, Nextcloud Hub 10 will get installed)</label><br>
+                                            <input type="checkbox" id="install_latest_major" name="install_latest_major"><label for="install_latest_major">Install Nextcloud Hub {{ newMajorVersionString }} (if unchecked, Nextcloud Hub {{ oldMajorVersionString }} will get installed)</label><br>
                                         {% endif %}
                                         <input type="submit" value="Download and start containers" />
                                     </form>
