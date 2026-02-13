@@ -17,6 +17,9 @@
     {% if c.documentation != '' %}
       (<a target="_blank" href="{{ c.documentation }}">docs</a>)
     {% endif %}
+    {% if c.GetUpdateState().value == 'different' %}
+      ⚠️&nbsp;Update&nbsp;available
+    {% endif %}
   </span>
   {% if c.GetUiSecret() != '' %}
     <details>
