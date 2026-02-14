@@ -15,3 +15,35 @@
 | `INTERNAL_SECRET` | The internal secret | *true* | n/a |
 | `TALK_RELAY_MIN_PORT` | The minimum udp port range | *false* | 49152 |
 | `TALK_RELAY_MAX_PORT` | The maximum udp port range | *false* | 65535 |
+
+## Using systemd quadlets
+
+`aio-talk` can be launched as a systemd quadlet:
+
+```
+[Unit]
+Description=Nextcloud High Performance Server
+After=local-fs.target
+
+[Service]
+Restart=on-abnormal
+
+[Container]
+ContainerName=nextcloud-aio-talk
+Image=ghcr.io/nextcloud-releases/aio-talk:latest
+Environment=NC_DOMAIN=your.nextcloud.domain
+Environment=TALK_HOST=your.nextcloud.hpb.domain
+Environment=TALK_PORT=3478
+PublishPort=8081:8081
+PublishPort=8443:8443
+PublishPort=3478:3478
+PublishPort=3478:3478/udp
+Environment=TZ=Europe/Lisbon
+# Probably safer to use a EnvironmentFile=/some/path but...
+Environment=TURN_SECRET=PASTE_YOUR_TURN_SECRET_HERE
+Environment=SIGNALING_SECRET=PASTE_YOUR_SIGNALING_SECRET_HERE
+Environment=INTERNAL_SECRET=PASTE_YOUR_INTERNAL_SECRET_HERE
+
+[Install]
+WantedBy=multi-user.target default.target
+```
