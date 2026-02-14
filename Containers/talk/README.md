@@ -1,6 +1,7 @@
 ## Variables
 
-| **Name** | **Description** | **Required** | **Default** |
+| Name | Description | Required | Default |
+| ---- | ----------- | -------- | ------- |
 | `NC_DOMAIN` | Your Nextcloud domain | *true* | n/a |
 | `TALK_HOST` | Your talk host domain | *true* | n/a |
 | `TALK_PORT` | Your talk host's STUN port | *true* | n/a |
