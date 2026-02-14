@@ -72,6 +72,9 @@ TURN_CONF
 fi
 
 cat << TURN_CONF >> "/conf/eturnal.yml"
+  relay_min_port: ${TALK_RELAY_MIN_PORT:-49152}
+  relay_max_port: ${TALK_RELAY_MAX_PORT:-65535}
+
   log_dir: stdout
   log_level: warning
   secret: "$TURN_SECRET"
