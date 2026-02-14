@@ -18,6 +18,16 @@ elif [ -z "$INTERNAL_SECRET" ]; then
     exit 1
 fi
 
+if ! [ -z "$TALK_TLS_PORT" ] ; then
+     if [ -z "$TALK_TLS_CRT" ]; then
+         echo "You need to provide the certificate file path with TALK_TLS_CRT."
+         exit 1
+     elif [ -z "$TALK_TLS_KEY" ]; then
+         echo "You need to provide the certificate key file path with TALK_TLS_KEY."
+         exit 1
+     fi
+fi
+
 set -x
 IPv4_ADDRESS_TALK_RELAY="$(hostname -i | grep -oP '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
 # shellcheck disable=SC2153
@@ -49,6 +59,19 @@ eturnal:
     - ip: "$IP_BINDING"
       port: $TALK_PORT
       transport: tcp
+TURN_CONF
+
+if ! [ -z "$TALK_TLS_PORT" ] ; then
+cat << TURN_CONF >> "/conf/eturnal.yml"
+    - ip: "$IP_BINDING"
+      port: $TALK_TLS_PORT
+      transport: tls
+  tls_crt_file: $TALK_TLS_CRT
+  tls_key_file: $TALK_TLS_KEY
+TURN_CONF
+fi
+
+cat << TURN_CONF >> "/conf/eturnal.yml"
   log_dir: stdout
   log_level: warning
   secret: "$TURN_SECRET"
