@@ -11,6 +11,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use DI\Container;
 use Slim\Csrf\Guard;
 use Slim\Factory\AppFactory;
+use Slim\Routing\RouteCollectorProxy;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -72,24 +73,40 @@ $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 // Auth Middleware
 $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
-// API
-$app->post('/api/docker/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
-$app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
-$app->post('/api/docker/start', AIO\Controller\DockerController::class . ':StartContainer');
-$app->post('/api/docker/backup', AIO\Controller\DockerController::class . ':StartBackupContainerBackup');
-$app->post('/api/docker/backup-check', AIO\Controller\DockerController::class . ':StartBackupContainerCheck');
-$app->post('/api/docker/backup-list', AIO\Controller\DockerController::class . ':StartBackupContainerList');
-$app->post('/api/docker/backup-check-repair', AIO\Controller\DockerController::class . ':StartBackupContainerCheckRepair');
-$app->post('/api/docker/backup-test', AIO\Controller\DockerController::class . ':StartBackupContainerTest');
-$app->post('/api/docker/restore', AIO\Controller\DockerController::class . ':StartBackupContainerRestore');
-$app->post('/api/docker/stop', AIO\Controller\DockerController::class . ':StopContainer');
-$app->get('/api/docker/logs', AIO\Controller\DockerController::class . ':GetLogs');
-$app->post('/api/auth/login', AIO\Controller\LoginController::class . ':TryLogin');
-$app->get('/api/auth/getlogin', AIO\Controller\LoginController::class . ':GetTryLogin');
-$app->post('/api/auth/logout', AIO\Controller\LoginController::class . ':Logout');
-$app->post('/api/configuration', \AIO\Controller\ConfigurationController::class . ':SetConfig');
+//-------------------------------------------------
+// API Routes
+//-------------------------------------------------
+$app->group('/api/docker', function (RouteCollectorProxy $group): void {
+    // Docker Container management
+    $group->post('/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
+    $group->get('/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
+    $group->post('/start', AIO\Controller\DockerController::class . ':StartContainer');
+    $group->post('/stop', AIO\Controller\DockerController::class . ':StopContainer');
+    $group->get('/logs', AIO\Controller\DockerController::class . ':GetLogs');
+    // Backups
+    $group->post('/backup', AIO\Controller\DockerController::class . ':StartBackupContainerBackup');
+    $group->post('/backup-check', AIO\Controller\DockerController::class . ':StartBackupContainerCheck');
+    $group->post('/backup-list', AIO\Controller\DockerController::class . ':StartBackupContainerList');
+    $group->post('/backup-check-repair', AIO\Controller\DockerController::class . ':StartBackupContainerCheckRepair');
+    $group->post('/backup-test', AIO\Controller\DockerController::class . ':StartBackupContainerTest');
+    $group->post('/restore', AIO\Controller\DockerController::class . ':StartBackupContainerRestore');
+});
 
-// Views
+// Auth-related
+$app->group('/api/auth', function (RouteCollectorProxy $group): void {
+    $group->post('/login', AIO\Controller\LoginController::class . ':TryLogin');
+    $group->get('/getlogin', AIO\Controller\LoginController::class . ':GetTryLogin');
+    $group->post('/logout', AIO\Controller\LoginController::class . ':Logout');
+});
+
+// Configuration endpoints
+$app->post('/api/configuration', AIO\Controller\ConfigurationController::class . ':SetConfig');
+
+//-------------------------------------------------
+// Views Routes
+//-------------------------------------------------
+
+// Containers
 $app->get('/containers', function (Request $request, Response $response, array $args) use ($container): Response {
     $view = Twig::fromRequest($request);
     $view->addExtension(new \AIO\Twig\ClassExtension());
