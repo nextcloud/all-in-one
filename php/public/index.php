@@ -35,8 +35,7 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 $responseFactory = $app->getResponseFactory();
 
-// Register Middleware On Container
-$container->set(Guard::class, function () use ($responseFactory) {
+$container->set(Guard::class, function () use ($responseFactory): Guard {
     $guard = new Guard($responseFactory);
     $guard->setPersistentTokenMode(true);
     return $guard;
@@ -72,7 +71,7 @@ $app->post('/api/auth/logout', AIO\Controller\LoginController::class . ':Logout'
 $app->post('/api/configuration', \AIO\Controller\ConfigurationController::class . ':SetConfig');
 
 // Views
-$app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {
+$app->get('/containers', function (Request $request, Response $response, array $args) use ($container): Response {
     $view = Twig::fromRequest($request);
     $view->addExtension(new \AIO\Twig\ClassExtension());
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
@@ -143,6 +142,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
     ]);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
+$app->get('/login', function (Request $request, Response $response, array $args) use ($container): Response {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
     $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
@@ -150,7 +150,9 @@ $app->get('/login', function (Request $request, Response $response, array $args)
         'is_login_allowed' => $dockerActionManager->isLoginAllowed(),
     ]);
 });
-$app->get('/setup', function (Request $request, Response $response, array $args) use ($container) {
+
+// Setup
+$app->get('/setup', function (Request $request, Response $response, array $args) use ($container): Response {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Data\Setup $setup */
     $setup = $container->get(\AIO\Data\Setup::class);
@@ -171,8 +173,10 @@ $app->get('/setup', function (Request $request, Response $response, array $args)
     );
 });
 
-// Auth Redirector
-$app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $response, array $args) use ($container) {
+//-------------------------------------------------
+// Root Redirector
+//-------------------------------------------------
+$app->get('/', function (Request $request, Response $response, array $args) use ($container): Response {
     /** @var \AIO\Auth\AuthManager $authManager */
     $authManager = $container->get(\AIO\Auth\AuthManager::class);
 
