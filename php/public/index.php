@@ -189,8 +189,9 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
         'bypass_container_update' => $bypass_container_update,
     ]);
-})->setName('profile');
-$app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
+});
+
+// Login
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container): Response {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
