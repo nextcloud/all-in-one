@@ -41,11 +41,19 @@ ContainerName=nextcloud-aio-talk
 Image=ghcr.io/nextcloud-releases/aio-talk:latest
 Environment=NC_DOMAIN=your.nextcloud.domain
 Environment=TALK_HOST=your.nextcloud.hpb.domain
-Environment=TALK_PORT=3478
 PublishPort=8081:8081
-PublishPort=8443:8443
+# PublishPort=8443:8443
+# Volume=/path/to/certificate.crt:/etc/nginx/ssl/server.crt:Z
+# Volume=/path/to/certificate.key:/etc/nginx/ssl/server.key:Z
+# Environment=TALK_HTTPS_CRT=/etc/nginx/ssl/server.crt
+# Environment=TALK_HTTPS_KEY=/etc/nginx/ssl/server.key
 PublishPort=3478:3478
 PublishPort=3478:3478/udp
+# PublishPort=5349:5349
+# Volume=/path/to/certificate.crt:/etc/eturnal/tls/crt.pem:Z
+# Volume=/path/to/certificate.key:/etc/eturnal/tls/key.pem:Z
+# Environment=TALK_TLS_CRT=/etc/nginx/ssl/server.crt
+# Environment=TALK_TLS_KEY=/etc/nginx/ssl/server.key
 Environment=TZ=Europe/Lisbon
 # Probably safer to use a EnvironmentFile=/some/path but...
 Environment=TURN_SECRET=PASTE_YOUR_TURN_SECRET_HERE
