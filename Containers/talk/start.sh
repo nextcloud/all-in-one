@@ -1,11 +1,11 @@
 #!/bin/bash
 
+STUN_PORT=${TALK_PORT:-3478}
+STUN_TLS_PORT=${TALK_TLS_PORT:-5349}
+
 # Variables
 if [ -z "$NC_DOMAIN" ]; then
     echo "You need to provide the NC_DOMAIN."
-    exit 1
-elif [ -z "$TALK_PORT" ]; then
-    echo "You need to provide the TALK_PORT."
     exit 1
 elif [ -z "$TURN_SECRET" ]; then
     echo "You need to provide the TURN_SECRET."
@@ -16,16 +16,6 @@ elif [ -z "$SIGNALING_SECRET" ]; then
 elif [ -z "$INTERNAL_SECRET" ]; then
     echo "You need to provide the INTERNAL_SECRET."
     exit 1
-fi
-
-if ! [ -z "$TALK_TLS_PORT" ] ; then
-     if [ -z "$TALK_TLS_CRT" ]; then
-         echo "You need to provide the certificate file path with TALK_TLS_CRT."
-         exit 1
-     elif [ -z "$TALK_TLS_KEY" ]; then
-         echo "You need to provide the certificate key file path with TALK_TLS_KEY."
-         exit 1
-     fi
 fi
 
 set -x
@@ -54,17 +44,17 @@ cat << TURN_CONF > "/conf/eturnal.yml"
 eturnal:
   listen:
     - ip: "$IP_BINDING"
-      port: $TALK_PORT
+      port: $STUN_PORT
       transport: udp
     - ip: "$IP_BINDING"
-      port: $TALK_PORT
+      port: $STUN_PORT
       transport: tcp
 TURN_CONF
 
-if ! [ -z "$TALK_TLS_PORT" ] ; then
+if ! [ -z "$TALK_TLS_CRT" ] && ! [ -z "$TALK_TLS_KEY" ] ; then
 cat << TURN_CONF >> "/conf/eturnal.yml"
     - ip: "$IP_BINDING"
-      port: $TALK_TLS_PORT
+      port: $STUN_TLS_PORT
       transport: tls
   tls_crt_file: $TALK_TLS_CRT
   tls_key_file: $TALK_TLS_KEY
