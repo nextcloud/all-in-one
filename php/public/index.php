@@ -1,14 +1,12 @@
 <?php
 declare(strict_types=1);
 
-// increase memory limit to 2GB
-ini_set('memory_limit', '2048M');
+/**
+ * Entry point/Bootstrapper for the Nextcloud All-in-One Web UI & API.
+ * Initializes DI container, configures PHP, registers routes & middleware.
+ */
 
-// set max execution time to 2h just in case of a very slow internet connection
-ini_set('max_execution_time', '7200');
-
-// Log whole log messages
-ini_set('log_errors_max_len', '0');
+require __DIR__ . '/../vendor/autoload.php';
 
 use DI\Container;
 use Slim\Csrf\Guard;
@@ -18,20 +16,40 @@ use Slim\Views\TwigMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-require __DIR__ . '/../vendor/autoload.php';
+//-------------------------------------------------
+// Configuration Constants
+//-------------------------------------------------
+const AIO_MEMORY_LIMIT         = '2048M';
+const AIO_MAX_EXECUTION_TIME   = '7200';    // (2h) in case of a very slow internet connection
+const AIO_SESSION_MAX_LIFETIME = '86400';   // (24h)
+const AIO_COOKIE_LIFETIME      = '0';       // Auto logout on browser close
+const AIO_LOG_ERRORS_MAX_LEN   = '0';       // Log whole log messages
 
+const AIO_TWIG_CACHE_PATH      = false;     // e.g., __DIR__ . '/../var/twig-cache'
+const AIO_DISPLAY_ERRORS       = false;
+
+//-------------------------------------------------
+// PHP Settings
+//-------------------------------------------------
+ini_set('memory_limit',            AIO_MEMORY_LIMIT);
+ini_set('max_execution_time',      AIO_MAX_EXECUTION_TIME);
+ini_set('session.cookie_lifetime', AIO_COOKIE_LIFETIME);
+ini_set('session.gc_maxlifetime',  AIO_SESSION_MAX_LIFETIME);
+ini_set('log_errors_max_len',      AIO_LOG_ERRORS_MAX_LEN);
+
+//-------------------------------------------------
+// Dependency Injection
+//-------------------------------------------------
 $container = \AIO\DependencyInjection::GetContainer();
+AppFactory::setContainer($container);
+
+// Session directory depends on application config:
 $dataConst = $container->get(\AIO\Data\DataConst::class);
 ini_set('session.save_path', $dataConst->GetSessionDirectory());
 
-// Auto logout on browser close
-ini_set('session.cookie_lifetime', '0');
-
-# Keep session for 24h max
-ini_set('session.gc_maxlifetime', '86400');
-
-// Create app
-AppFactory::setContainer($container);
+//-------------------------------------------------
+// Application Creation and Core Middleware
+//-------------------------------------------------
 $app = AppFactory::create();
 $responseFactory = $app->getResponseFactory();
 
@@ -45,8 +63,9 @@ $container->set(Guard::class, function () use ($responseFactory): Guard {
 session_start();
 $app->add(Guard::class);
 
-// Create Twig
-$twig = Twig::create(__DIR__ . '/../templates/', ['cache' => false]);
+$twig = Twig::create(__DIR__ . '/../templates/',
+    [ 'cache' => AIO_TWIG_CACHE_PATH ]
+);
 $app->add(TwigMiddleware::create($app, $twig));
 $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 
@@ -199,6 +218,13 @@ $app->get('/', function (Request $request, Response $response, array $args) use 
     }
 });
 
-$errorMiddleware = $app->addErrorMiddleware(false, true, true);
+//-------------------------------------------------
+// Error Middleware
+//-------------------------------------------------
+
+// TODO: Figure out why the default plain text renderer is being used by logging
+// TODO: Change logging to not generate stack traces for 404s
+// TODO: Change logging to log the path
+$errorMiddleware = $app->addErrorMiddleware(AIO_DISPLAY_ERRORS, true, true);
 
 $app->run();
