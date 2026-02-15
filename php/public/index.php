@@ -110,70 +110,83 @@ $app->post('/api/configuration', AIO\Controller\ConfigurationController::class .
 $app->get('/containers', function (Request $request, Response $response, array $args) use ($container): Response {
     $view = Twig::fromRequest($request);
     $view->addExtension(new \AIO\Twig\ClassExtension());
+
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
     $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
     $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
     /** @var \AIO\Controller\DockerController $dockerController */
     $dockerController = $container->get(\AIO\Controller\DockerController::class);
+
+    // Ensure master container is attached to the required Docker network
     $dockerActionManager->ConnectMasterContainerToNetwork();
+    // Ensure the domaincheck container is started for domain configuration validation
     $dockerController->StartDomaincheckContainer();
 
-    // Check if bypass_mastercontainer_update is provided on the URL, a special developer mode to bypass a mastercontainer update and use local image.
+    // URL parameters    
     $params = $request->getQueryParams();
-    $bypass_mastercontainer_update = isset($params['bypass_mastercontainer_update']);
-    $bypass_container_update = isset($params['bypass_container_update']);
-    $skip_domain_validation = isset($params['skip_domain_validation']);
+    $bypassMastercontainerUpdate = isset($params['bypass_mastercontainer_update']);
+    $bypassContainerUpdate = isset($params['bypass_container_update']);
+    $skipDomainValidation = isset($params['skip_domain_validation']);
 
     return $view->render($response, 'containers.twig', [
+        // ---- Basic Settings ----
         'domain' => $configurationManager->domain,
+        'timezone' => $configurationManager->timezone,
+        'current_channel' => $dockerActionManager->GetCurrentChannel(),
         'apache_port' => $configurationManager->apachePort,
+        'talk_port' => $configurationManager->talkPort,
+        // ---- Container Management ----
+        'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
+        'was_start_button_clicked' => $configurationManager->wasStartButtonClicked,
+        'has_update_available' => $dockerActionManager->isAnyUpdateAvailable(),
+        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
+        'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
+        // ---- Nextcloud Settings ----
+        'nextcloud_password' => $configurationManager->getAndGenerateSecret('NEXTCLOUD_PASSWORD'),
+        'nextcloud_datadir' => $configurationManager->nextcloudDatadirMount,
+        'nextcloud_mount' => $configurationManager->nextcloudMount,
+        // ---- PHP Configuration ----
+        'nextcloud_upload_limit' => $configurationManager->nextcloudUploadLimit,
+        'nextcloud_max_time' => $configurationManager->nextcloudMaxTime,
+        'nextcloud_memory_limit' => $configurationManager->nextcloudMemoryLimit,
+        // ---- Optional Component Toggles ----
+        'is_clamav_enabled' => $configurationManager->isClamavEnabled,
+        'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled,
+        'is_collabora_enabled' => $configurationManager->isCollaboraEnabled,
+        'is_talk_enabled' => $configurationManager->isTalkEnabled,
+        'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled,
+        'is_fulltextsearch_enabled' => $configurationManager->isFulltextsearchEnabled,
+        'is_dri_device_enabled' => $configurationManager->nextcloudEnableDriDevice,
+        'is_nvidia_gpu_enabled' => $configurationManager->enableNvidiaGpu,
+        'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled,
+	'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled,
+        'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled,
+        'is_backup_section_enabled' => !$configurationManager->disableBackupSection,
+        // ---- Collabora Component ----
+        'collabora_dictionaries' => $configurationManager->collaboraDictionaries,
+        'collabora_additional_options' => $configurationManager->collaboraAdditionalOptions,
+        // ---- Backup Component ----
         'borg_backup_host_location' => $configurationManager->borgBackupHostLocation,
         'borg_remote_repo' => $configurationManager->borgRemoteRepo,
         'borg_public_key' => $configurationManager->getBorgPublicKey(),
-        'nextcloud_password' => $configurationManager->getAndGenerateSecret('NEXTCLOUD_PASSWORD'),
-        'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
         'borgbackup_password' => $configurationManager->getAndGenerateSecret('BORGBACKUP_PASSWORD'),
-        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
         'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
         'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
         'is_instance_restore_attempt' => $configurationManager->instanceRestoreAttempt,
         'borg_backup_mode' => $configurationManager->backupMode,
-        'was_start_button_clicked' => $configurationManager->wasStartButtonClicked,
-        'has_update_available' => $dockerActionManager->isAnyUpdateAvailable(),
         'last_backup_time' => $configurationManager->getLastBackupTime(),
         'backup_times' => $configurationManager->getBackupTimes(),
-        'current_channel' => $dockerActionManager->GetCurrentChannel(),
-        'is_clamav_enabled' => $configurationManager->isClamavEnabled,
-        'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled,
-        'is_collabora_enabled' => $configurationManager->isCollaboraEnabled,
-        'is_talk_enabled' => $configurationManager->isTalkEnabled,
         'borg_restore_password' => $configurationManager->borgRestorePassword,
         'daily_backup_time' => $configurationManager->getDailyBackupTime(),
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
-        'timezone' => $configurationManager->timezone,
-        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
-        'talk_port' => $configurationManager->talkPort,
-        'collabora_dictionaries' => $configurationManager->collaboraDictionaries,
-        'collabora_additional_options' => $configurationManager->collaboraAdditionalOptions,
-        'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
-        'is_backup_section_enabled' => !$configurationManager->disableBackupSection,
-        'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled,
-        'is_fulltextsearch_enabled' => $configurationManager->isFulltextsearchEnabled,
         'additional_backup_directories' => $configurationManager->getAdditionalBackupDirectoriesString(),
-        'nextcloud_datadir' => $configurationManager->nextcloudDatadirMount,
-        'nextcloud_mount' => $configurationManager->nextcloudMount,
-        'nextcloud_upload_limit' => $configurationManager->nextcloudUploadLimit,
-        'nextcloud_max_time' => $configurationManager->nextcloudMaxTime,
-        'nextcloud_memory_limit' => $configurationManager->nextcloudMemoryLimit,
-        'is_dri_device_enabled' => $configurationManager->nextcloudEnableDriDevice,
-        'is_nvidia_gpu_enabled' => $configurationManager->enableNvidiaGpu,
-        'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled,
-        'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled,
-        'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled,
+        // ---- Community Containers ----
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->aioCommunityContainers,
+        // ---- Admin Overrides ----
+        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
         'bypass_container_update' => $bypass_container_update,
     ]);
 })->setName('profile');
