@@ -893,9 +893,6 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ],
-      "backup_volumes": [
-        "nextcloud_aio_harp"
       ]
     },
     {
