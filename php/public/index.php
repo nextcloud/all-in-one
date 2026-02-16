@@ -21,21 +21,21 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 // Configuration Constants
 //-------------------------------------------------
 const AIO_MEMORY_LIMIT         = '2048M';
-const AIO_MAX_EXECUTION_TIME   = '7200';    // (2h) in case of a very slow internet connection
-const AIO_SESSION_MAX_LIFETIME = '86400';   // (24h)
-const AIO_COOKIE_LIFETIME      = '0';       // Auto logout on browser close
-const AIO_LOG_ERRORS_MAX_LEN   = '0';       // Log whole log messages
+const AIO_MAX_EXECUTION_TIME   = '7200';    // (2h) Supports slow networks and long operations
+const AIO_COOKIE_LIFETIME      = '0';       // Session cookie expires with browser close
+const AIO_SESSION_MAX_LIFETIME = '86400';   // (24h) Maximum admin session length
+const AIO_LOG_ERRORS_MAX_LEN   = '0';       // Log full-length errors for troubleshooting
 const AIO_TWIG_CACHE_PATH      = false;     // e.g., __DIR__ . '/../var/twig-cache'
-const AIO_DISPLAY_ERRORS       = false;
+const AIO_DISPLAY_ERRORS       = false;	    // Do not directly expose errors to site visitors
 
 //-------------------------------------------------
 // PHP Settings
 //-------------------------------------------------
 ini_set('memory_limit',            AIO_MEMORY_LIMIT);
-ini_set('max_execution_time',      AIO_MAX_EXECUTION_TIME);
-ini_set('session.cookie_lifetime', AIO_COOKIE_LIFETIME);
-ini_set('session.gc_maxlifetime',  AIO_SESSION_MAX_LIFETIME);
-ini_set('log_errors_max_len',      AIO_LOG_ERRORS_MAX_LEN);
+ini_set('max_execution_time',      AIO_MAX_EXECUTION_TIME); // Prevent timeouts on slow networks
+ini_set('session.cookie_lifetime', AIO_COOKIE_LIFETIME); // Auto-logout on browser close
+ini_set('session.gc_maxlifetime',  AIO_SESSION_MAX_LIFETIME); // 24h session duration
+ini_set('log_errors_max_len',      AIO_LOG_ERRORS_MAX_LEN); // Full error logs
 
 //-------------------------------------------------
 // Dependency Injection
@@ -43,7 +43,7 @@ ini_set('log_errors_max_len',      AIO_LOG_ERRORS_MAX_LEN);
 $container = \AIO\DependencyInjection::GetContainer();
 AppFactory::setContainer($container);
 
-// Session directory depends on application config:
+// Session directory depends on application config
 $dataConst = $container->get(\AIO\Data\DataConst::class);
 ini_set('session.save_path', $dataConst->GetSessionDirectory());
 
@@ -164,7 +164,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_dri_device_enabled' => $configurationManager->nextcloudEnableDriDevice,
         'is_nvidia_gpu_enabled' => $configurationManager->enableNvidiaGpu,
         'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled,
-	'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled,
+        'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled,
         'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled,
         'is_backup_section_enabled' => !$configurationManager->disableBackupSection,
         // ---- Collabora Component ----
