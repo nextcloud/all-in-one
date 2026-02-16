@@ -144,7 +144,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
         'was_start_button_clicked' => $configurationManager->wasStartButtonClicked,
         'has_update_available' => $dockerActionManager->isAnyUpdateAvailable(),
-        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
+        'is_mastercontainer_update_available' => ( $bypassMastercontainerUpdate ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
         // ---- Nextcloud Settings ----
         'nextcloud_password' => $configurationManager->getAndGenerateSecret('NEXTCLOUD_PASSWORD'),
@@ -190,8 +190,8 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->aioCommunityContainers,
         // ---- Admin Overrides ----
-        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
-        'bypass_container_update' => $bypass_container_update,
+        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skipDomainValidation),
+        'bypass_container_update' => $bypassContainerUpdate,
     ]);
 });
 
