@@ -7,7 +7,9 @@ The official Nextcloud installation method. Nextcloud AIO provides easy deployme
 
 Included are:
 - Nextcloud
-- High performance backend for Nextcloud Files
+- High performance backend for Nextcloud Files (Client Push)
+- Redis & APCU for performant caching
+- PostgreSQL as database
 - Nextcloud Office (optional)
 - High performance backend for Nextcloud Talk and TURN-server (optional)
 - Nextcloud Talk Recording-server (optional)
