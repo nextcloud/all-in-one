@@ -830,7 +830,7 @@
     {
       "container_name": "nextcloud-aio-docker-socket-proxy",
       "image_tag": "%AIO_CHANNEL%",
-      "display_name": "Docker Socket Proxy",
+      "display_name": "Docker Socket Proxy (deprecated)",
       "image": "ghcr.io/nextcloud-releases/aio-docker-socket-proxy",
       "init": true,
       "internal_port": "2375",
