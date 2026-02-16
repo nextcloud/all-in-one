@@ -669,8 +669,12 @@ php /var/www/html/occ config:system:set documentation_url.server_logs --value="h
 php /var/www/html/occ config:system:set htaccess.RewriteBase --value="/"
 php /var/www/html/occ maintenance:update:htaccess
 
-# Revert dbpersistent setting to check if it fixes too many db connections
-php /var/www/html/occ config:system:set dbpersistent --value=false --type=bool
+# Handle db persistent settings
+if [ "$NEXTCLOUD_PERSIST_DATABASE_CONNECTIONS" = "yes" ]; then
+    php /var/www/html/occ config:system:set dbpersistent --value=true --type=bool
+else
+    php /var/www/html/occ config:system:set dbpersistent --value=false --type=bool
+fi
 
 if [ "$DISABLE_BRUTEFORCE_PROTECTION" = yes ]; then
     php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=false
