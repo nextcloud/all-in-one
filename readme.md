@@ -205,6 +205,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [Are other ports than the default 443 for Nextcloud supported?](#are-other-ports-than-the-default-443-for-nextcloud-supported)
     - [Can I run Nextcloud in a subdirectory on my domain?](#can-i-run-nextcloud-in-a-subdirectory-on-my-domain)
     - [How can I access Nextcloud locally?](#how-can-i-access-nextcloud-locally)
+    - [How to overwrite the local DNS resolution for some domains or add extra hosts to the containers?](#how-to-overwrite-the-local-dns-resolution-for-some-domains-or-add-extra-hosts-to-the-containers)
     - [How to skip the domain validation?](#how-to-skip-the-domain-validation)
     - [How to resolve firewall problems with Fedora Linux, RHEL OS, CentOS, SUSE Linux and others?](#how-to-resolve-firewall-problems-with-fedora-linux-rhel-os-centos-suse-linux-and-others)
     - [What can I do to fix the internal or reserved ip-address error?](#what-can-i-do-to-fix-the-internal-or-reserved-ip-address-error)
@@ -376,6 +377,12 @@ Now that this is out of the way, the recommended way how to access Nextcloud loc
 - https://howchoo.com/pi/pi-hole-setup together with https://web.archive.org/web/20221203223505/https://docs.callitkarma.me/posts/PiHole-Local-DNS/
 - https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html
 Apart from that there is now a community container that can be added to the AIO stack: https://github.com/nextcloud/all-in-one/tree/main/community-containers/pi-hole
+
+### How to overwrite the local DNS resolution for some domains or add extra hosts to the containers?
+
+For some use cases, you might need to overwrite the local DNS resolution of some domains inside the containers. On Linux, you can do so either by using a local DNS server as described in the section above and add a local DNS entry into the dns server and make your containers use that DNS server.
+
+On Linux, depending on your network and docker configuration, it might also work to simply edit the `/etc/hosts` file. Add your custom entry like `172.18.0.1 mail.example.com` as additional line to the file and restart docker which should automatically push the entry to all docker containers.
 
 ### How to skip the domain validation?
 If you are completely sure that you've configured everything correctly and are not able to pass the domain validation, you may skip the domain validation by adding `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used).
