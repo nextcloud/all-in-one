@@ -124,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function handleHarpWarning() {
         if (document.getElementById("harp").checked) {
             alert('⚠️ Warning! Enabling this container comes with possible Security problems since you are exposing the docker socket and all its privileges to the HaRP container. Enable this only if you are sure what you are doing!');
+            document.getElementById("docker-socket-proxy").checked = false
         }
     }
 

@@ -31,8 +31,7 @@ class ConfigurationManager
     }
 
     public bool $isHarpEnabled {
-        // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->get('isHarpEnabled', false);
+        get => $this->get('isHarpEnabled', false);
         set { $this->set('isHarpEnabled', $value); }
     }
 
