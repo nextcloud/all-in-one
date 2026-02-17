@@ -22,6 +22,7 @@ readonly class LoginController {
             $response->getBody()->write("The login is blocked since Nextcloud is running.");
             return $response->withHeader('Location', '.')->withStatus(422);
         }
+        /** @var string */
         $password = $request->getParsedBody()['password'] ?? '';
         if($this->authManager->CheckCredentials($password)) {
             $this->authManager->SetAuthState(true);
@@ -33,6 +34,7 @@ readonly class LoginController {
     }
 
     public function GetTryLogin(Request $request, Response $response, array $args) : Response {
+        /** @var string */
         $token = $request->getQueryParams()['token'] ?? '';
         if($this->authManager->CheckToken($token)) {
             $this->authManager->SetAuthState(true);

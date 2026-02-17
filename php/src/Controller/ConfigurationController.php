@@ -20,26 +20,34 @@ readonly class ConfigurationController {
         try {
             $this->configurationManager->startTransaction();
             if (isset($request->getParsedBody()['domain'])) {
+                /** @var string */
                 $domain = $request->getParsedBody()['domain'] ?? '';
                 $skipDomainValidation = isset($request->getParsedBody()['skip_domain_validation']);
                 $this->configurationManager->setDomain($domain, $skipDomainValidation);
             }
 
             if (isset($request->getParsedBody()['current-master-password']) || isset($request->getParsedBody()['new-master-password'])) {
+                /** @var string */
                 $currentMasterPassword = $request->getParsedBody()['current-master-password'] ?? '';
+                /** @var string */
                 $newMasterPassword = $request->getParsedBody()['new-master-password'] ?? '';
                 $this->configurationManager->changeMasterPassword($currentMasterPassword, $newMasterPassword);
             }
 
             if (isset($request->getParsedBody()['borg_backup_host_location']) || isset($request->getParsedBody()['borg_remote_repo'])) {
+                /** @var string */
                 $location = $request->getParsedBody()['borg_backup_host_location'] ?? '';
+                /** @var string */
                 $borgRemoteRepo = $request->getParsedBody()['borg_remote_repo'] ?? '';
                 $this->configurationManager->setBorgLocationVars($location, $borgRemoteRepo);
             }
 
             if (isset($request->getParsedBody()['borg_restore_host_location']) || isset($request->getParsedBody()['borg_restore_remote_repo']) || isset($request->getParsedBody()['borg_restore_password'])) {
+                /** @var string */
                 $restoreLocation = $request->getParsedBody()['borg_restore_host_location'] ?? '';
+                /** @var string */
                 $borgRemoteRepo = $request->getParsedBody()['borg_restore_remote_repo'] ?? '';
+                /** @var string */
                 $borgPassword = $request->getParsedBody()['borg_restore_password'] ?? '';
                 $this->configurationManager->setBorgRestoreLocationVarsAndPassword($restoreLocation, $borgRemoteRepo, $borgPassword);
             }
@@ -55,6 +63,7 @@ readonly class ConfigurationController {
                 } else {
                     $successNotification = false;
                 }
+                /** @var string */
                 $dailyBackupTime = $request->getParsedBody()['daily_backup_time'] ?? '';
                 $this->configurationManager->setDailyBackupTime($dailyBackupTime, $enableAutomaticUpdates, $successNotification);
             }
@@ -64,6 +73,7 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['additional_backup_directories'])) {
+                /** @var string */
                 $additionalBackupDirectories = $request->getParsedBody()['additional_backup_directories'] ?? '';
                 $this->configurationManager->setAdditionalBackupDirectories($additionalBackupDirectories);
             }
@@ -73,11 +83,13 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['timezone'])) {
+                /** @var string */
                 $timezone = $request->getParsedBody()['timezone'] ?? '';
                 $this->configurationManager->timezone = $timezone;
             }
 
             if (isset($request->getParsedBody()['options-form'])) {
+                /** @var string */
                 $officeSuiteChoice = $request->getParsedBody()['office_suite_choice'] ?? '';
                 
                 if ($officeSuiteChoice === 'collabora') {
@@ -104,6 +116,7 @@ readonly class ConfigurationController {
                 $enabledCC = [];
                 /**
                  * @psalm-suppress PossiblyNullIterator
+                 * @psalm-var string $item
                  */
                 foreach ($request->getParsedBody() as $item) {
                     if (array_key_exists($item , $cc)) {
@@ -118,6 +131,7 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['collabora_dictionaries'])) {
+                /** @var string */
                 $collaboraDictionaries = $request->getParsedBody()['collabora_dictionaries'] ?? '';
                 $this->configurationManager->collaboraDictionaries = $collaboraDictionaries;
             }
@@ -127,6 +141,7 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['collabora_additional_options'])) {
+                /** @var string */
                 $additionalCollaboraOptions = $request->getParsedBody()['collabora_additional_options'] ?? '';
                 $this->configurationManager->collaboraAdditionalOptions = $additionalCollaboraOptions;
             }

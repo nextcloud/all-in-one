@@ -289,6 +289,7 @@ class ConfigurationManager
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
         {
             $configContent = (string)file_get_contents(DataConst::GetConfigFile());
+            /** @var array */
             $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
@@ -333,6 +334,7 @@ class ConfigurationManager
             return '';
         }
 
+        /** @var array */
         $secrets = $this->get('secrets', []);
         if (!isset($secrets[$secretId])) {
             $secrets[$secretId] = bin2hex(random_bytes(24));
@@ -467,15 +469,17 @@ class ConfigurationManager
         if ($this->shouldDomainValidationBeSkipped($skipDomainValidation)) {
             error_log('Skipping domain validation');
         } else {
+            /** @var string */
             $dnsRecordIP = gethostbyname($domain);
             if ($dnsRecordIP === $domain) {
                 $dnsRecordIP = '';
             }
 
             if (empty($dnsRecordIP)) {
+                /** @var array */
                 $record = dns_get_record($domain, DNS_AAAA);
                 if (isset($record[0]['ipv6']) && !empty($record[0]['ipv6'])) {
-                    $dnsRecordIP = $record[0]['ipv6'];
+                    $dnsRecordIP = (string) $record[0]['ipv6'];
                 }
             }
 
@@ -695,6 +699,7 @@ class ConfigurationManager
 
     private function getEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
         $envVariableOutput = getenv($envVariableName);
+        /** @var mixed */
         $configValue = $this->get($configName, '');
         if ($envVariableOutput === false) {
             if ($configValue === '') {
@@ -920,6 +925,7 @@ class ConfigurationManager
         $dir = array_diff($dir, array('..', '.', 'readme.md'));
         foreach ($dir as $id) {
             $filePath = DataConst::GetCommunityContainersDirectory() . '/' . $id . '/' . $id . '.json';
+            /** @psalm-var mixed $fileContents */
             $fileContents = apcu_fetch($filePath);
             if (!is_string($fileContents)) {
                 $fileContents = file_get_contents($filePath);
@@ -927,8 +933,11 @@ class ConfigurationManager
                     apcu_add($filePath, $fileContents);
                 }
             } 
+
+            /** @psalm-var array $json */
             $json = is_string($fileContents) ? json_decode($fileContents, true, 512, JSON_THROW_ON_ERROR) : false;
-            if(is_array($json) && is_array($json['aio_services_v1'])) {
+            if(isset($json['aio_services_v1']) && is_array($json['aio_services_v1'])) {
+                /** @psalm-var array $service */
                 foreach ($json['aio_services_v1'] as $service) {
                     $documentation = is_string($service['documentation']) ? $service['documentation'] : '';
                     if (is_string($service['display_name'])) {
@@ -961,8 +970,9 @@ class ConfigurationManager
             return;
         }
         $this->startTransaction();
+        /** @psalm-var string $variable */
         foreach ($input as $variable) {
-            if (!is_string($variable) || !str_contains($variable, '=')) {
+            if (!str_contains($variable, '=')) {
                 error_log("Invalid input: '$variable' is not a string or does not contain an equal sign ('=')");
                 continue;
             }

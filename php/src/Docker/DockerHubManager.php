@@ -18,6 +18,7 @@ readonly class DockerHubManager {
     public function GetLatestDigestOfTag(string $name, string $tag) : ?string {
         $cacheKey = 'dockerhub-manifest-' . $name . $tag;
 
+        /** @psalm-var mixed $cachedVersion */
         $cachedVersion = apcu_fetch($cacheKey);
         if($cachedVersion !== false && is_string($cachedVersion)) {
             return $cachedVersion;
@@ -31,9 +32,10 @@ readonly class DockerHubManager {
                 'https://auth.docker.io/token?service=registry.docker.io&scope=repository:' . $name . ':pull'
             );
             $body = $authTokenRequest->getBody()->getContents();
+            /** @var array */
             $decodedBody = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             if(isset($decodedBody['token'])) {
-                $authToken = $decodedBody['token'];
+                $authToken = (string) $decodedBody['token'];
                 $manifestRequest = $this->guzzleClient->request(
                     'HEAD',
                     'https://registry-1.docker.io/v2/'.$name.'/manifests/' . $tag,

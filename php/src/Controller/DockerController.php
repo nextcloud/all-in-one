@@ -126,6 +126,7 @@ readonly class DockerController {
     public function StartBackupContainerRestore(Request $request, Response $response, array $args) : Response {
         $this->configurationManager->startTransaction();
         $this->configurationManager->backupMode = 'restore';
+        /** @var string */
         $this->configurationManager->selectedRestoreTime = $request->getParsedBody()['selected_restore_time'] ?? '';
         $this->configurationManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
         $this->configurationManager->commitTransaction();
@@ -172,6 +173,7 @@ readonly class DockerController {
         $uri = $request->getUri();
         $host = $uri->getHost();
         $port = $uri->getPort();
+        /** @var string */
         $path = $request->getParsedBody()['base_path'] ?? '';
         if ($port === 8000) {
             error_log('The AIO_URL-port was discovered to be 8000 which is not expected. It is now set to 443.');
@@ -285,6 +287,7 @@ readonly class DockerController {
             return;
         // Don't start if domaincheck is already running
         } elseif ($domaincheckContainer->GetRunningState() === ContainerState::Running) {
+            /** @psalm-var mixed $domaincheckWasStarted */
             $domaincheckWasStarted = apcu_fetch($cacheKey);
             // Start domaincheck again when 10 minutes are over by not returning here
             if($domaincheckWasStarted !== false && is_string($domaincheckWasStarted)) {

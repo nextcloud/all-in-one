@@ -23,8 +23,10 @@ readonly class ContainerDefinitionFetcher {
 
     public function GetContainerById(string $id): Container
     {
+        /** @var array */
         $containers = $this->FetchDefinition();
 
+        /** @psalm-var \AIO\Container\Container $container */
         foreach ($containers as $container) {
             if ($container->identifier === $id) {
                 return $container;
@@ -39,22 +41,26 @@ readonly class ContainerDefinitionFetcher {
      */
     private function GetDefinition(): array
     {
+        /** @psalm-var array $data */
         $data = json_decode((string)file_get_contents(DataConst::GetContainersDefinitionPath()), true, 512, JSON_THROW_ON_ERROR);
 
         $additionalContainerNames = [];
+        /** @psalm-var string $communityContainer */
         foreach ($this->configurationManager->aioCommunityContainers as $communityContainer) {
             if ($communityContainer !== '') {
                 $path = DataConst::GetCommunityContainersDirectory() . '/' . $communityContainer . '/' . $communityContainer . '.json';
+                /** @psalm-var array $additionalData */
                 $additionalData = json_decode((string)file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
                 $data = array_merge_recursive($data, $additionalData);
                 if (isset($additionalData['aio_services_v1'][0]['display_name']) && $additionalData['aio_services_v1'][0]['display_name'] !== '') {
                     // Store container_name of community containers in variable for later
-                    $additionalContainerNames[] = $additionalData['aio_services_v1'][0]['container_name'];
+                    $additionalContainerNames[] = (string) $additionalData['aio_services_v1'][0]['container_name'];
                 }
             }
         }
 
         $containers = [];
+        /** @psalm-var array $entry */
         foreach ($data['aio_services_v1'] as $entry) {
             if ($entry['container_name'] === 'nextcloud-aio-clamav') {
                 if (!$this->configurationManager->isClamavEnabled) {
@@ -99,6 +105,7 @@ readonly class ContainerDefinitionFetcher {
 
             $ports = new ContainerPorts();
             if (isset($entry['ports'])) {
+                /** @psalm-var array $value */
                 foreach ($entry['ports'] as $value) {
                     $ports->AddPort(
                         new ContainerPort(
@@ -112,6 +119,7 @@ readonly class ContainerDefinitionFetcher {
 
             $volumes = new ContainerVolumes();
             if (isset($entry['volumes'])) {
+                /** @psalm-var array $value */
                 foreach ($entry['volumes'] as $value) {
                     if($value['source'] === '%BORGBACKUP_HOST_LOCATION%') {
                         $value['source'] = $this->configurationManager->borgBackupHostLocation;
@@ -158,15 +166,18 @@ readonly class ContainerDefinitionFetcher {
 
             $dependsOn = [];
             if (isset($entry['depends_on'])) {
+                /** @var array */
                 $valueDependsOn = $entry['depends_on'];
                 if ($entry['container_name'] === 'nextcloud-aio-apache') {
                     // Add community containers first and default ones last so that aio_variables works correctly
                     $valueDependsOnTemp = [];
+                    /** @psalm-var string $containerName */
                     foreach ($additionalContainerNames as $containerName) {
                         $valueDependsOnTemp[] = $containerName;
                     }
                     $valueDependsOn = array_merge_recursive($valueDependsOnTemp, $valueDependsOn);
                 }
+                /** @psalm-var string $value */
                 foreach ($valueDependsOn as $value) {
                     if ($value === 'nextcloud-aio-clamav') {
                         if (!$this->configurationManager->isClamavEnabled) {
@@ -211,6 +222,7 @@ readonly class ContainerDefinitionFetcher {
 
             $variables = new ContainerEnvironmentVariables();
             if (isset($entry['environment'])) {
+                /** @psalm-var string $value */
                 foreach ($entry['environment'] as $value) {
                     $variables->AddVariable($value);
                 }
@@ -218,6 +230,7 @@ readonly class ContainerDefinitionFetcher {
 
             $aioVariables = new AioVariables();
             if (isset($entry['aio_variables'])) {
+                /** @psalm-var string $value */
                 foreach ($entry['aio_variables'] as $value) {
                     $aioVariables->AddVariable($value);
                 }
@@ -225,27 +238,28 @@ readonly class ContainerDefinitionFetcher {
 
             $displayName = '';
             if (isset($entry['display_name'])) {
-                $displayName = $entry['display_name'];
+                $displayName = (string) $entry['display_name'];
             }
 
             $restartPolicy = '';
             if (isset($entry['restart'])) {
-                $restartPolicy = $entry['restart'];
+                $restartPolicy = (string) $entry['restart'];
             }
 
             $maxShutdownTime = 10;
             if (isset($entry['stop_grace_period'])) {
-                $maxShutdownTime = $entry['stop_grace_period'];
+                $maxShutdownTime = (int) $entry['stop_grace_period'];
             }
 
             $internalPort = '';
             if (isset($entry['internal_port'])) {
-                $internalPort = $entry['internal_port'];
+                $internalPort = (string) $entry['internal_port'];
             }
 
             if (isset($entry['secrets'])) {
                 // All secrets are registered with the configuration when they 
                 // are discovered so they can be later generated at time-of-use.
+                /** @psalm-var string $secret */
                 foreach ($entry['secrets'] as $secret) {
                     $this->configurationManager->registerSecret($secret);
                 }
@@ -253,67 +267,72 @@ readonly class ContainerDefinitionFetcher {
 
             $uiSecret = '';
             if (isset($entry['ui_secret'])) {
-                $uiSecret = $entry['ui_secret'];
+                $uiSecret = (string) $entry['ui_secret'];
             }
 
             $devices = [];
             if (isset($entry['devices'])) {
+                /** @var array */
                 $devices = $entry['devices'];
             }
 
             $enableNvidiaGpu = false;
             if (isset($entry['enable_nvidia_gpu'])) {
-                $enableNvidiaGpu = $entry['enable_nvidia_gpu'];
+                $enableNvidiaGpu = (bool) $entry['enable_nvidia_gpu'];
             }
 
             $capAdd = [];
             if (isset($entry['cap_add'])) {
+                /** @var array */
                 $capAdd = $entry['cap_add'];
             }
 
             $shmSize = -1;
             if (isset($entry['shm_size'])) {
-                $shmSize = $entry['shm_size'];
+                $shmSize = (int) $entry['shm_size'];
             }
 
             $apparmorUnconfined = false;
             if (isset($entry['apparmor_unconfined'])) {
-                $apparmorUnconfined = $entry['apparmor_unconfined'];
+                $apparmorUnconfined = (bool) $entry['apparmor_unconfined'];
             }
 
             $backupVolumes = [];
             if (isset($entry['backup_volumes'])) {
+                /** @var array */
                 $backupVolumes = $entry['backup_volumes'];
             }
 
             $nextcloudExecCommands = [];
             if (isset($entry['nextcloud_exec_commands'])) {
+                /** @var array */
                 $nextcloudExecCommands = $entry['nextcloud_exec_commands'];
             }
 
             $readOnlyRootFs = false;
             if (isset($entry['read_only'])) {
-                $readOnlyRootFs = $entry['read_only'];
+                $readOnlyRootFs = (bool) $entry['read_only'];
             }
 
             $tmpfs = [];
             if (isset($entry['tmpfs'])) {
+                /** @var array */
                 $tmpfs = $entry['tmpfs'];
             }
 
             $init = true;
             if (isset($entry['init'])) {
-                $init = $entry['init'];
+                $init = (bool) $entry['init'];
             }
 
             $imageTag = '%AIO_CHANNEL%';
             if (isset($entry['image_tag'])) {
-                $imageTag = $entry['image_tag'];
+                $imageTag = (string) $entry['image_tag'];
             }
 
             $documentation = '';
             if (isset($entry['documentation'])) {
-                $documentation = $entry['documentation'];
+                $documentation = (string) $entry['documentation'];
             }
 
             $containers[] = new Container(

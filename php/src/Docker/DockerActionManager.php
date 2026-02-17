@@ -55,6 +55,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
+        /** @var array */
         $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         if ($responseBody['State']['Running'] === true) {
@@ -75,6 +76,7 @@ readonly class DockerActionManager {
             throw $e;
         }
 
+        /** @var array */
         $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         if ($responseBody['State']['Restarting'] === true) {
@@ -99,6 +101,7 @@ readonly class DockerActionManager {
             return VersionState::Equal;
         }
 
+        /** @psalm-var string $runningDigest */
         foreach ($runningDigests as $runningDigest) {
             if ($runningDigest === $remoteDigest) {
                 return VersionState::Equal;
@@ -335,6 +338,7 @@ readonly class DockerActionManager {
         }
 
         $tmpfs = [];
+        /** @psalm-var string $tmp */
         foreach ($container->tmpfs as $tmp) {
             $mode = "";
             if (str_contains($tmp, ':')) {
@@ -375,6 +379,7 @@ readonly class DockerActionManager {
         // Special things for the backup container which should not be exposed in the containers.json
         if (str_starts_with($container->identifier, 'nextcloud-aio-borgbackup')) {
             // Additional backup directories
+            /** @psalm-var string $additionalBackupVolumes */
             foreach ($this->getAllBackupVolumes() as $additionalBackupVolumes) {
                 if ($additionalBackupVolumes !== '') {
                     $mounts[] = ["Type" => "volume", "Source" => $additionalBackupVolumes, "Target" => "/nextcloud_aio_volumes/" . $additionalBackupVolumes, "ReadOnly" => false];
@@ -384,6 +389,7 @@ readonly class DockerActionManager {
             // Make volumes read only in case of borgbackup container. The viewer makes them writeable
             $isReadOnly = $container->identifier === 'nextcloud-aio-borgbackup';
 
+            /** @psalm-var string $additionalBackupDirectories */
             foreach ($this->configurationManager->getAdditionalBackupDirectoriesArray() as $additionalBackupDirectories) {
                 if ($additionalBackupDirectories !== '') {
                     if (!str_starts_with($additionalBackupDirectories, '/')) {
@@ -579,6 +585,7 @@ readonly class DockerActionManager {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         $nextcloudExecCommands = '';
+        /** @psalm-var string $execCommand */
         foreach ($container->nextcloudExecCommands as $execCommand) {
             $nextcloudExecCommands .= $execCommand . PHP_EOL;
         }
@@ -596,10 +603,12 @@ readonly class DockerActionManager {
     private function GetRepoDigestsOfContainer(string $containerName): ?array {
         try {
             $containerUrl = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
+            /** @var array */
             $containerOutput = json_decode($this->guzzleClient->get($containerUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
-            $imageName = $containerOutput['Image'];
+            $imageName = (string) $containerOutput['Image'];
 
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
+            /** @var array */
             $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['RepoDigests'])) {
@@ -614,6 +623,7 @@ readonly class DockerActionManager {
 
             $repoDigestArray = [];
             $oneDigestGiven = false;
+            /** @psalm-var string $repoDigest */
             foreach ($imageOutput['RepoDigests'] as $repoDigest) {
                 $digestPosition = strpos($repoDigest, '@');
                 if ($digestPosition === false) {
@@ -636,6 +646,7 @@ readonly class DockerActionManager {
 
     private function GetCurrentImageName(): string {
         $cacheKey = 'aio-image-name';
+        /** @psalm-var mixed $imageName */
         $imageName = apcu_fetch($cacheKey);
         if ($imageName !== false && is_string($imageName)) {
             return $imageName;
@@ -644,13 +655,14 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
+            /** @var array */
             $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $imageNameArray = explode(':', $output['Config']['Image']);
             if (count($imageNameArray) === 2) {
                 $imageName = $imageNameArray[0];
             } else {
                 error_log("No tag was found when getting the current channel. You probably did not follow the documentation correctly. Changing the imageName to the default " . $output['Config']['Image']);
-                $imageName = $output['Config']['Image'];
+                $imageName = (string) $output['Config']['Image'];
             }
             apcu_add($cacheKey, $imageName);
             return $imageName;
@@ -663,6 +675,7 @@ readonly class DockerActionManager {
 
     public function GetCurrentChannel(): string {
         $cacheKey = 'aio-ChannelName';
+        /** @psalm-var mixed $channelName */
         $channelName = apcu_fetch($cacheKey);
         if ($channelName !== false && is_string($channelName)) {
             return $channelName;
@@ -671,6 +684,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
+            /** @var array */
             $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $tagArray = explode(':', $output['Config']['Image']);
             if (count($tagArray) === 2) {
@@ -703,6 +717,7 @@ readonly class DockerActionManager {
             return false;
         }
 
+        /** @psalm-var string $runningDigest */
         foreach ($runningDigests as $runningDigest) {
             if ($remoteDigest === $runningDigest) {
                 return false;
@@ -718,6 +733,7 @@ readonly class DockerActionManager {
 
             // schedule the exec
             $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
+            /** @var array */
             $response = json_decode(
                 $this->guzzleClient->request(
                     'POST',
@@ -740,7 +756,7 @@ readonly class DockerActionManager {
                 JSON_THROW_ON_ERROR,
             );
 
-            $id = $response['Id'];
+            $id = (string) $response['Id'];
 
             // start the exec
             $url = $this->BuildApiUrl(sprintf('exec/%s/start', $id));
@@ -879,8 +895,10 @@ readonly class DockerActionManager {
             throw $e;
         }
 
+        /** @var array */
         $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
+        /** @var null|int */
         $exitCode = $responseBody['State']['ExitCode'];
         if (is_int($exitCode)) {
             return $exitCode;
@@ -901,8 +919,10 @@ readonly class DockerActionManager {
             throw $e;
         }
 
+        /** @var array */
         $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
+        /** @var null|int */
         $exitCode = $responseBody['State']['ExitCode'];
         if (is_int($exitCode)) {
             return $exitCode;
@@ -933,6 +953,7 @@ readonly class DockerActionManager {
         $imageName = $imageName . ':' . $this->GetCurrentChannel();
         try {
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
+            /** @var array */
             $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['Created'])) {
