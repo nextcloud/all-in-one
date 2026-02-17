@@ -6,8 +6,7 @@ function toggleTheme() {
     localStorage.setItem('theme', newTheme);
 
     // Change the icon based on the current theme
-    const themeIcon = document.getElementById('theme-icon');
-    themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙'; // Switch between moon and sun icons
+    setThemeIcon(newTheme);
 }
 
 function setThemeToDOM(value) {
@@ -16,16 +15,13 @@ function setThemeToDOM(value) {
     documents.forEach((doc) => doc.documentElement.setAttribute('data-theme', value));
 }
 
-// Function to immediately apply saved theme without icon update
-function applySavedThemeImmediately() {
-    // Default to light theme
-    setThemeToDOM(localStorage.getItem('theme') ?? '');
+function getSavedTheme() {
+    return localStorage.getItem('theme') ?? '';
 }
 
 // Function to apply theme-icon update
-function setThemeIcon() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
+function setThemeIcon(theme) {
+    if (theme === 'dark') {
         document.getElementById('theme-icon').textContent = '☀️'; // Sun icon for dark mode
     } else {
         document.getElementById('theme-icon').textContent = '🌙'; // Moon icon for light mode
@@ -33,7 +29,7 @@ function setThemeIcon() {
 }
 
 // Immediately apply the saved theme to avoid flickering
-applySavedThemeImmediately();
+setThemeToDOM(getSavedTheme());
 
 // Apply theme when the page loads
-document.addEventListener('DOMContentLoaded', setThemeIcon);
+document.addEventListener('DOMContentLoaded', () => setThemeIcon(getSavedTheme()));
