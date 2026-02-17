@@ -335,7 +335,7 @@ readonly class DockerController {
         <!DOCTYPE html>
         <html lang="en" class="overlay-iframe">
             <head>
-                <link rel="stylesheet" href="../../style.css?v7" media="all" />
+                <link rel="stylesheet" href="../../style.css?v8" media="all" />
                 <script>
                     const observer = new MutationObserver((records) => {
                         const node = records[0]?.addedNodes[0];
