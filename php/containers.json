@@ -13,7 +13,7 @@
         "nextcloud-aio-harp",
         "nextcloud-aio-nextcloud"
       ],
-      "display_name": "Apache",
+      "display_name": "Apache & Caddy",
       "image": "ghcr.io/nextcloud-releases/aio-apache",
       "user": "33",
       "init": true,
@@ -85,7 +85,7 @@
     {
       "container_name": "nextcloud-aio-database",
       "image_tag": "%AIO_CHANNEL%",
-      "display_name": "Database",
+      "display_name": "PostgreSQL",
       "image": "ghcr.io/nextcloud-releases/aio-postgresql",
       "user": "999",
       "init": true,
@@ -281,7 +281,7 @@
     {
       "container_name": "nextcloud-aio-notify-push",
       "image_tag": "%AIO_CHANNEL%",
-      "display_name": "Notify Push",
+      "display_name": "Client Push",
       "image": "ghcr.io/nextcloud-releases/aio-notify-push",
       "user": "33",
       "init": true,
@@ -372,7 +372,7 @@
       "container_name": "nextcloud-aio-collabora",
       "image_tag": "%AIO_CHANNEL%",
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
-      "display_name": "Collabora",
+      "display_name": "Nextcloud Office",
       "image": "ghcr.io/nextcloud-releases/aio-collabora",
       "init": true,
       "healthcheck": {
@@ -418,7 +418,7 @@
       "container_name": "nextcloud-aio-talk",
       "image_tag": "%AIO_CHANNEL%",
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
-      "display_name": "Talk",
+      "display_name": "Nextcloud Talk",
       "image": "ghcr.io/nextcloud-releases/aio-talk",
       "user": "1000",
       "init": true,
@@ -480,7 +480,7 @@
     {
       "container_name": "nextcloud-aio-talk-recording",
       "image_tag": "%AIO_CHANNEL%",
-      "display_name": "Talk Recording",
+      "display_name": "Nextcloud Talk Recording",
       "image": "ghcr.io/nextcloud-releases/aio-talk-recording",
       "user": "122",
       "init": true,
@@ -897,7 +897,7 @@
     {
       "container_name": "nextcloud-aio-whiteboard",
       "image_tag": "%AIO_CHANNEL%",
-      "display_name": "Whiteboard",
+      "display_name": "Nextcloud Whiteboard",
       "image": "ghcr.io/nextcloud-releases/aio-whiteboard",
       "user": "65534",
       "init": true,
