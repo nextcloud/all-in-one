@@ -2,13 +2,13 @@
     "aio_services_v1": [
         {
             "container_name": "nextcloud-aio-jellyseerr",
-            "display_name": "Jellyseerr",
+            "display_name": "Seerr",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr",
-            "image": "fallenbagel/jellyseerr",
+            "image": "ghcr.io/seerr-team/seerr",
             "image_tag": "latest",
             "internal_port": "5055",
             "restart": "unless-stopped",
-            "init": false,
+            "init": true,
             "ports": [
                 {
                     "ip_binding": "%APACHE_IP_BINDING%",
