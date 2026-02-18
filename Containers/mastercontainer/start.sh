@@ -162,7 +162,7 @@ if ! sudo -E -u www-data docker ps --format "{{.Names}}" | grep -q "^nextcloud-a
 Using a different name is not supported since mastercontainer updates will not work in that case!
 If you are on docker swarm and try to run AIO, see https://github.com/nextcloud/all-in-one#can-i-run-this-with-docker-swarm"
     exit 1
-elif ! sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer --format "{{.Config.Image}}" | grep -q '@'; then
+elif sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer --format "{{.Config.Image}}" | grep -q '@'; then
     print_red "It seems like you used a hash for the mastercontainer image tag. This is not supported!"
     exit 1
 elif ! sudo -E -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nextcloud_aio_mastercontainer$"; then
