@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace AIO\Controller;
 
+use AIO\Container\Container;
 use AIO\Container\ContainerState;
 use AIO\ContainerDefinitionFetcher;
 use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
+use Slim\Psr7\NonBufferedBody;
 
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
@@ -20,12 +22,12 @@ readonly class DockerController {
     ) {
     }
 
-    private function PerformRecursiveContainerStart(string $id, bool $pullImage = true) : void {
+    private function PerformRecursiveContainerStart(string $id, bool $pullImage = true, ?\Closure $addToStreamingResponseBody = null) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         // Start all dependencies first and then itself
         foreach($container->dependsOn as $dependency) {
-            $this->PerformRecursiveContainerStart($dependency, $pullImage);
+            $this->PerformRecursiveContainerStart($dependency, $pullImage, $addToStreamingResponseBody);
         }
 
         // Don't start if container is already running
@@ -37,9 +39,9 @@ readonly class DockerController {
 
         $this->dockerActionManager->DeleteContainer($container);
         $this->dockerActionManager->CreateVolumes($container);
-        $this->dockerActionManager->PullImage($container, $pullImage);
+        $this->dockerActionManager->PullImage($container, $pullImage, $addToStreamingResponseBody);
         $this->dockerActionManager->CreateContainer($container);
-        $this->dockerActionManager->StartContainer($container);
+        $this->dockerActionManager->StartContainer($container, $addToStreamingResponseBody);
         $this->dockerActionManager->ConnectContainerToNetwork($container);
     }
 
@@ -198,17 +200,37 @@ readonly class DockerController {
         if ($pullImage === false) {
             error_log('WARNING: Not pulling container images. Instead, using local ones.');
         }
+        
+        $nonbufResp = $response
+            ->withBody(new NonBufferedBody())
+            ->withHeader('Content-Type', 'text/html; charset=utf-8')
+            ->withHeader('X-Accel-Buffering', 'no')
+            ->withHeader('Cache-Control', 'no-cache');
+            
+        // Text written into this body is immediately sent to the client, without waiting for later content.
+        $streamingResponseBody = $nonbufResp->getBody();
+        
+        $streamingResponseBody->write($this->getStreamingResponseHtmlStart());
+        
+        // Create a closure to pass around to the code, which should to the logging (because it e.g. decides
+        // if it'll actually pull an image), but which should not need to know anything about the
+        // wanted markup or formatting.
+        $addToStreamingResponseBody = function (Container $container, string $message) use ($streamingResponseBody) : void {
+            $streamingResponseBody->write("<div>{$container->displayName}: {$message}</div>");
+        };
+        
         // Start container
-        $this->startTopContainer($pullImage);
+        $this->startTopContainer($pullImage, $addToStreamingResponseBody);
 
         // Clear apcu cache in order to check if container updates are available
         // Temporarily disabled as it leads much faster to docker rate limits
         // apcu_clear_cache();
 
-        return $response->withStatus(201)->withHeader('Location', '.');
+        $streamingResponseBody->write($this->getStreamingResponseHtmlEnd());
+        return $nonbufResp;
     }
 
-    public function startTopContainer(bool $pullImage) : void {
+    public function startTopContainer(bool $pullImage, ?\Closure $addToStreamingResponseBody = null) : void {
         $this->configurationManager->aioToken = bin2hex(random_bytes(24));
 
         // Stop domaincheck since apache would not be able to start otherwise
@@ -216,7 +238,7 @@ readonly class DockerController {
 
         $id = self::TOP_CONTAINER;
 
-        $this->PerformRecursiveContainerStart($id, $pullImage);
+        $this->PerformRecursiveContainerStart($id, $pullImage, $addToStreamingResponseBody);
     }
 
     public function StartWatchtowerContainer(Request $request, Response $response, array $args) : Response {
@@ -307,5 +329,32 @@ readonly class DockerController {
     {
         $id = 'nextcloud-aio-domaincheck';
         $this->PerformRecursiveContainerStop($id);
+    }
+
+    private function getStreamingResponseHtmlStart() : string {
+        return <<<END
+        <!DOCTYPE html>
+        <html lang="en" class="overlay-iframe">
+            <head>
+                <link rel="stylesheet" href="../../style.css?v8" media="all" />
+                <script>
+                    const observer = new MutationObserver((records) => {
+                        const node = records[0]?.addedNodes[0];
+                        // Text nodes also appear here but can't be scrolled to, so we have to check for the
+                        // function being present.
+                        if (node && typeof(node.scrollIntoView) === 'function') {
+                            node.scrollIntoView();
+                        }
+                    });
+                    observer.observe(document, {childList: true, subtree: true});
+                </script>
+            </head>
+            <body>
+            
+        END;
+    }
+    
+    private function getStreamingResponseHtmlEnd() : string {
+        return "\n  </body>\n</html>";
     }
 }

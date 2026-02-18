@@ -27,7 +27,7 @@
             <script type="text/javascript" src="timezone.js"></script>
 
             {# js for optional containers and additional containers forms #}
-            <script type="text/javascript" src="containers-form-submit.js?v5"></script>
+            <script type="text/javascript" src="containers-form-submit.js?v6"></script>
 
             {% set hasBackupLocation = borg_backup_host_location or borg_remote_repo %}
             {% set isAnyRunning = false %}
@@ -339,7 +339,7 @@
                                 </form>
                             {% else %}
                                 {% if was_start_button_clicked == false %}
-                                    <form method="POST" action="api/docker/start" class="xhr">
+                                    <form method="POST" action="api/docker/start" target="overlay-log">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input id="base_path" type="hidden" name="base_path" value="">
@@ -356,7 +356,7 @@
                                         <input type="submit" value="Start containers" />
                                     </form>
                                 {% else %}
-                                    <form method="POST" action="api/docker/start" class="xhr">
+                                    <form method="POST" action="api/docker/start" target="overlay-log">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input id="base_path" type="hidden" name="base_path" value="">

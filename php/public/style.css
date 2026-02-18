@@ -468,7 +468,29 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 }
 
 #overlay.loading {
-    display: block;
+    display: grid;
+    justify-items: center;
+    row-gap: 2rem;
+}
+
+#overlay #overlay-log.visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 1s ease-in;
+}
+
+#overlay #overlay-log {
+    visibility: hidden;
+    opacity: 0;
+    align-self: start;
+    width: 20%;
+    height: 7rem;
+    border-radius: var(--border-radius-large);
+    border: solid thin rgb(192, 192, 192);
+}
+
+.overlay-iframe {
+    padding: 1rem;
 }
 
 .loader {
@@ -479,9 +501,7 @@ input[type="checkbox"]:disabled:not(:checked) + label {
     height: 120px;
     -webkit-animation: spin 2s linear infinite; /* Safari */
     animation: spin 2s linear infinite;
-    position: absolute;
-    top: calc(50% - 60px);
-    left: calc(50% - 60px);
+    align-self: end;
 }
 
 /* Safari */
