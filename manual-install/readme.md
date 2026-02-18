@@ -12,7 +12,7 @@ You can run the containers that are build for AIO with docker-compose. This come
 - You lose the AIO interface
 - You lose update notifications and automatic updates
 - You lose all AIO backup and restore features
-- You lose the built-in [Docker Socket Proxy container](https://github.com/nextcloud/docker-socket-proxy#readme) (needed for [Nextcloud App API](https://github.com/nextcloud/app_api#nextcloud-appapi))
+- You lose the built-in [Docker Socket Proxy container](https://github.com/nextcloud/docker-socket-proxy#readme) and [HaRP container](https://github.com/nextcloud/HaRP) (needed for [Nextcloud App API](https://github.com/nextcloud/app_api#nextcloud-appapi))
 - You lose all community containers: https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers
 - **You need to know what you are doing, especially when modifying the compose.yaml file**
 - For updating, you need to strictly follow the at the bottom described update routine

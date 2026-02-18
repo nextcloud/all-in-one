@@ -196,7 +196,21 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="docker-socket-proxy">Docker Socket Proxy (needed for <a target="_blank" href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>)</label>
+        <label for="docker-socket-proxy">Docker Socket Proxy (needed for <a target="_blank" href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>) ⚠️ The docker socket proxy container is deprecated. Please use the HaRP (High-availability Reverse Proxy for Nextcloud ExApps) instead!</label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
+            id="harp"
+            name="harp"
+            {% if is_harp_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="harp">HaRP (<a target="_blank" href="https://github.com/nextcloud/HaRP">High-availability Reverse Proxy</a> for Nextcloud ExApps)</label>
     </p>
     <p>
         <input
@@ -218,6 +232,7 @@
 {% if isAnyRunning == true %}
     <script type="text/javascript" src="disable-clamav.js"></script>
     <script type="text/javascript" src="disable-docker-socket-proxy.js"></script>
+    <script type="text/javascript" src="disable-harp.js"></script>
     <script type="text/javascript" src="disable-talk.js"></script>
     <script type="text/javascript" src="disable-collabora.js?v2"></script>
     <script type="text/javascript" src="disable-onlyoffice.js?v2"></script>

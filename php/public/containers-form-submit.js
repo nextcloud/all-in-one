@@ -121,13 +121,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleDockerSocketProxyWarning() {
         if (document.getElementById("docker-socket-proxy").checked) {
-            alert('⚠️ Warning! Enabling this container comes with possible Security problems since you are exposing the docker socket and all its privileges to the Nextcloud container. Enable this only if you are sure what you are doing!');
+            alert('⚠️ The docker socket proxy container is deprecated. Please use the HaRP (High-availability Reverse Proxy for Nextcloud ExApps) instead!');
+            document.getElementById("docker-socket-proxy").checked = false
+        }
+    }
+
+    function handleHarpWarning() {
+        if (document.getElementById("harp").checked) {
+            alert('⚠️ Warning! Enabling this container comes with possible Security problems since you are exposing the docker socket and all its privileges to the HaRP container. Enable this only if you are sure what you are doing!');
+            document.getElementById("docker-socket-proxy").checked = false
         }
     }
 
     // Initialize event listeners for specific behaviors
     document.getElementById("talk").addEventListener('change', handleTalkVisibility);
     document.getElementById("docker-socket-proxy").addEventListener('change', handleDockerSocketProxyWarning);
+    document.getElementById("harp").addEventListener('change', handleHarpWarning);
 
     // Initialize talk-recording visibility on page load
     handleTalkVisibility();  // Ensure talk-recording is correctly initialized

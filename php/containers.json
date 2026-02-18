@@ -10,6 +10,7 @@
         "nextcloud-aio-talk",
         "nextcloud-aio-notify-push",
         "nextcloud-aio-whiteboard",
+        "nextcloud-aio-harp",
         "nextcloud-aio-nextcloud"
       ],
       "display_name": "Apache",
@@ -49,7 +50,8 @@
         "APACHE_MAX_SIZE=%APACHE_MAX_SIZE%",
         "APACHE_MAX_TIME=%NEXTCLOUD_MAX_TIME%",
         "NOTIFY_PUSH_HOST=nextcloud-aio-notify-push",
-        "WHITEBOARD_HOST=nextcloud-aio-whiteboard"
+        "WHITEBOARD_HOST=nextcloud-aio-whiteboard",
+        "HARP_HOST=nextcloud-aio-harp"
       ],
       "volumes": [
         {
@@ -172,7 +174,8 @@
         "SIGNALING_SECRET",
         "FULLTEXTSEARCH_PASSWORD",
         "IMAGINARY_SECRET",
-        "WHITEBOARD_SECRET"
+        "WHITEBOARD_SECRET",
+        "HP_SHARED_KEY"
       ],
       "volumes": [
         {
@@ -258,7 +261,9 @@
         "THIS_IS_AIO=true",
         "IMAGINARY_SECRET=%IMAGINARY_SECRET%",
         "WHITEBOARD_SECRET=%WHITEBOARD_SECRET%",
-        "WHITEBOARD_ENABLED=%WHITEBOARD_ENABLED%"
+        "WHITEBOARD_ENABLED=%WHITEBOARD_ENABLED%",
+        "HARP_ENABLED=%HARP_ENABLED%",
+        "HP_SHARED_KEY=%HP_SHARED_KEY%"
       ],
       "stop_grace_period": 600,
       "restart": "unless-stopped",
@@ -824,7 +829,7 @@
     {
       "container_name": "nextcloud-aio-docker-socket-proxy",
       "image_tag": "%AIO_CHANNEL%",
-      "display_name": "Docker Socket Proxy",
+      "display_name": "Docker Socket Proxy (deprecated)",
       "image": "ghcr.io/nextcloud-releases/aio-docker-socket-proxy",
       "init": true,
       "internal_port": "2375",
@@ -842,6 +847,48 @@
       "read_only": true,
       "tmpfs": [
         "/tmp"
+      ],
+      "cap_drop": [
+        "NET_RAW"
+      ]
+    },
+    {
+      "container_name": "nextcloud-aio-harp",
+      "image_tag": "release",
+      "display_name": "HaRP",
+      "image": "ghcr.io/nextcloud/nextcloud-appapi-harp",
+      "init": true,
+      "internal_port": "8780",
+      "expose": [
+        "8780"
+      ],
+      "environment": [
+        "HP_SHARED_KEY=%HP_SHARED_KEY%",
+        "NC_INSTANCE_URL=https://%NC_DOMAIN%",
+        "HP_LOG_LEVEL=warning",
+        "HP_FRP_DISABLE_TLS=true",
+        "TZ=%TIMEZONE%"
+      ],
+      "secrets": [
+        "HP_SHARED_KEY"
+      ],
+      "volumes": [
+        {
+          "source": "%WATCHTOWER_DOCKER_SOCKET_PATH%",
+          "destination": "/var/run/docker.sock",
+          "writeable": false
+        },
+        {
+          "source": "nextcloud_aio_harp",
+          "destination": "/certs",
+          "writeable": true
+        }
+      ],
+      "restart": "unless-stopped",
+      "read_only": true,
+      "tmpfs": [
+        "/tmp",
+        "/run/harp"
       ],
       "cap_drop": [
         "NET_RAW"
