@@ -654,8 +654,8 @@ readonly class DockerActionManager {
             if (count($imageNameArray) === 2) {
                 $imageName = $imageNameArray[0];
             } else {
-                error_log("No tag was found when getting the current channel. You probably did not follow the documentation correctly. Changing the imageName to the default " . $output['Config']['Image']);
-                $imageName = $output['Config']['Image'];
+                error_log("Unexpected image name was found when getting the current image name of the mastercontainer. You probably did not follow the documentation correctly. Changing the image name to the default 'ghcr.io/nextcloud-releases/all-in-one'.");
+                $imageName = 'ghcr.io/nextcloud-releases/all-in-one';
             }
             apcu_add($cacheKey, $imageName);
             return $imageName;
