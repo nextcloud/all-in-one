@@ -220,6 +220,7 @@ https://your-domain-that-points-to-this-server.tld:8443
 - [Customization](#customization)
     - [How to adjust the internally used docker api version?](#how-to-adjust-the-internally-used-docker-api-version)
     - [How to change the default location of Nextcloud's Datadir?](#how-to-change-the-default-location-of-nextclouds-datadir)
+    - [How to configure custom UID/GID?](#how-to-configure-custom-uidgid)
     - [How to store the files/installation on a separate drive?](#how-to-store-the-filesinstallation-on-a-separate-drive)
     - [How to limit the resource usage of AIO?](#how-to-limit-the-resource-usage-of-aio)
     - [How to allow the Nextcloud container to access directories on the host?](#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host)
@@ -463,6 +464,18 @@ You can configure the Nextcloud container to use a specific directory on your ho
     -o o="bind"
     ```
     In this example, it would mount `E:\your\data\path` into the volume so for a different location you need to adjust `/host_mnt/e/your/data/path` accordingly.
+
+### How to configure custom UID/GID?
+There are two ways to configure custom UIDs or GIDs that will be used inside the installation. 
+
+The first and recommended solution is to use Nextcloud's external storage app and use its functionality to add a connection into Nextcloud. See https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/external_storage_configuration_gui.html
+
+Another solution if you really need to use host mounts is to use a bind mount to map custom permissions to the directory. You can do so by editing the `/etc/fstab` file on your Linux server and create an entry like the following to the file:
+```
+/source/path  /target/path/where/the/source/directory/will/be/mounted/on/the/server  fuse.bindfs  force-user=33,force-group=33,allow_other  0  0
+```
+
+You can then use `--env NEXTCLOUD_DATADIR="/target/path/where/the/source/directory/will/be/mounted/on/the/server"` as described in the section above.
 
 ### How to store the files/installation on a separate drive?
 You can move the whole docker library and all its files including all Nextcloud AIO files and folders to a separate drive by first mounting the drive in the host OS (NTFS is not supported and ext4 is recommended as FS) and then following this tutorial: https://www.guguweb.com/2019/02/07/how-to-move-docker-data-directory-to-another-location-on-ubuntu/<br>
