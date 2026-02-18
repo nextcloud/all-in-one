@@ -385,7 +385,7 @@ Apart from that there is now a community container that can be added to the AIO 
 
 For some use cases, you might need to overwrite the local DNS resolution of some domains inside the containers. On Linux, you can do so either by using a local DNS server as described in the section above and add a local DNS entry into the dns server and make your containers use that DNS server.
 
-On Linux, depending on your network and docker configuration, it might also work to simply edit the `/etc/hosts` file. Add your custom entry like `172.18.0.1 mail.example.com` as additional line to the file and restart docker which should automatically push the entry to all docker containers.
+Another solution on Linux, depending on your network and docker configuration, it might also work to simply edit the `/etc/hosts` file. Add your custom entry like `172.18.0.1 mail.example.com` as additional line to the file and restart docker which should automatically push the entry to all docker containers.
 
 ### How to skip the domain validation?
 If you are completely sure that you've configured everything correctly and are not able to pass the domain validation, you may skip the domain validation by adding `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used).
