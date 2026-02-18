@@ -36,11 +36,11 @@ jobs:
       - name: Install Playwright Browsers
         run: cd php/tests && npx playwright install --with-deps chromium
 
-      - name: Set up php 8.4
+      - name: Set up php 8.5
         uses: shivammathur/setup-php@7bf05c6b704e0b9bfee22300130a31b5ea68d593 # v2.36.0
         with:
           extensions: apcu
-          php-version: 8.4
+          php-version: 8.5
           coverage: none
           ini-file: development
         env:
