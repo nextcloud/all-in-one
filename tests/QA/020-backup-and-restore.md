@@ -1,6 +1,6 @@
 # Backup and restore
 
-- [ ] Expanding all backup options in the Backup and restore sectioin should reveal a Backup information section, Backup creation section, Backup check section, Backup restore section and a Daily backup section.
+- [ ] Expanding all backup options in the Backup and restore sectioin should reveal a Backup information section, Backup creation section, Backup check section, Backup restore section and a Daily backup section as well as a additional backup location section
 - [ ] The backup restore section should list all available backup archives and list them from most recent to least recent.
 - [ ] Clicking on either option of Create backup, Check backup integrity or Restore selected backup should run the corresponding action and report after a while in the last check, backup or restore was successful.
 - [ ] Daily backup creatio should allow to enter a time in 24h format e.g. `04:00` should be accepted, `24:00` or `dfjlk` not.
