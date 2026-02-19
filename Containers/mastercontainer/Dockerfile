@@ -5,8 +5,8 @@ FROM docker:29.2.1-cli AS docker
 # Caddy is a requirement
 FROM caddy:2.10.2-alpine AS caddy
 
-# From https://github.com/docker-library/php/blob/master/8.4/alpine3.23/fpm/Dockerfile
-FROM php:8.4.18-fpm-alpine3.23
+# From https://github.com/docker-library/php/blob/master/8.5/alpine3.23/fpm/Dockerfile
+FROM php:8.5.3-fpm-alpine3.23
 
 EXPOSE 80
 EXPOSE 8080
