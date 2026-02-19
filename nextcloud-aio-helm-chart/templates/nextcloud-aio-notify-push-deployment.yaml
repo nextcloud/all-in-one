@@ -35,26 +35,8 @@ spec:
         {{- end }}
       containers:
         - env:
-            - name: NC_DOMAIN
-              value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
               value: nextcloud-aio-nextcloud
-            - name: POSTGRES_DB
-              value: nextcloud_database
-            - name: POSTGRES_HOST
-              value: nextcloud-aio-database
-            - name: POSTGRES_PASSWORD
-              value: "{{ .Values.DATABASE_PASSWORD }}"
-            - name: POSTGRES_PORT
-              value: "5432"
-            - name: POSTGRES_USER
-              value: nextcloud
-            - name: REDIS_HOST
-              value: nextcloud-aio-redis
-            - name: REDIS_HOST_PASSWORD
-              value: "{{ .Values.REDIS_PASSWORD }}"
-            - name: REDIS_PORT
-              value: "6379"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
           image: ghcr.io/nextcloud-releases/aio-notify-push:20260218_123804
@@ -86,7 +68,7 @@ spec:
               drop: ["NET_RAW"]
               {{- end }}
           volumeMounts:
-            - mountPath: /nextcloud
+            - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
               readOnly: true
       volumes:
