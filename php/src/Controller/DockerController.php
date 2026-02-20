@@ -11,6 +11,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
 use Slim\Psr7\NonBufferedBody;
+use Slim\Views\Twig;
 
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
@@ -76,13 +77,8 @@ readonly class DockerController {
             $logs = 'Container not found.';
         }
 
-        $body = $response->getBody();
-        $body->write($logs);
-
-        return $response
-            ->withStatus(200)
-            ->withHeader('Content-Type', 'text/plain; charset=utf-8')
-            ->withHeader('Content-Disposition', 'inline');
+        $view = Twig::fromRequest($request);
+        return $view->render($response, 'log.twig', ['logContent' => $logs]);
     }
 
     public function StartBackupContainerBackup(Request $request, Response $response, array $args) : Response {
