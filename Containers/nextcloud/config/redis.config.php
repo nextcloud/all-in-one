@@ -1,5 +1,5 @@
 <?php
-if (getenv('REDIS_MODE' !== 'rediscluster')) {
+if (getenv('REDIS_MODE') !== 'rediscluster') {
   $CONFIG = array(
     'memcache.distributed' => '\OC\Memcache\Redis',
     'memcache.locking' => '\OC\Memcache\Redis',
