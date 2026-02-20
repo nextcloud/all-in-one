@@ -198,4 +198,13 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
 
 $errorMiddleware = $app->addErrorMiddleware(false, true, true);
 
+// Set a custom Not Found handler, which doesn't pollute the app output with 404 errors.
+$errorMiddleware->setErrorHandler(
+    \Slim\Exception\HttpNotFoundException::class,
+    function (Request $request, Throwable $exception, bool $displayErrorDetails) use ($app) {
+        $response = $app->getResponseFactory()->createResponse();
+        $response->getBody()->write('Not Found');
+        return $response->withStatus(404);
+    });
+
 $app->run();
