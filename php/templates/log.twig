@@ -1,0 +1,32 @@
+<html lang="en">
+    <head>
+        <style>
+            button {
+                position: fixed;
+                top: 1rem;
+                right: 1rem;
+                font-size: 1.3rem;
+            }
+        </style>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                // Give the browser a short moment to render all text and calculate the scrollHeight, to avoid
+                // problems with scrolling to the bottom.
+                setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);
+                const reloadTimer = setTimeout(() =>  location.reload(), 10000);
+                const button = document.querySelector('button');
+                document.querySelector('button').addEventListener('click', (event) => {
+                    event.preventDefault();
+                    clearTimeout(reloadTimer);
+                    button.disabled = true;
+                    button.textContent = 'Reloading was disabled';
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <button>Disable auto-reloading</button>
+        <pre>{{ logContent }}</pre>
+        <div id="bottom"></div>
+    </body>
+</html>
