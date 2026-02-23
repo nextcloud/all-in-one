@@ -13,13 +13,26 @@
                 // Give the browser a short moment to render all text and calculate the scrollHeight, to avoid
                 // problems with scrolling to the bottom.
                 setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);
-                const reloadTimer = setTimeout(() =>  location.reload(), 10000);
+                // Reload after a short while if the window is visible to the user. 
+                const reloadTimer = setTimeout(() =>  {
+                    if (document.visibilityState === 'visible') {
+                        location.reload()
+                    }
+                }, 5000);
+                // Provide a button that allows to disable the reloads.
                 const button = document.querySelector('button');
                 document.querySelector('button').addEventListener('click', (event) => {
                     event.preventDefault();
                     clearTimeout(reloadTimer);
                     button.disabled = true;
                     button.textContent = 'Reloading was disabled';
+                });
+                // Reload immediately if the window gets visible to the user again (unless the
+                // no-reload-button had been clicked).
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible' && button.disabled !== true) {
+                        location.reload();
+                    }
                 });
             });
         </script>
