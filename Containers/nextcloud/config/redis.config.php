@@ -3,11 +3,15 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
   $CONFIG = array(
     'memcache.distributed' => '\OC\Memcache\Redis',
     'memcache.locking' => '\OC\Memcache\Redis',
-    'redis' => array(
-      'host' => getenv('REDIS_HOST'),
-      'password' => (string) getenv('REDIS_HOST_PASSWORD'),
-    ),
   );
+
+  if (getenv('REDIS_HOST')) {
+    $CONFIG['redis']['host'] = (string) getenv('REDIS_HOST');
+  }
+
+  if (getenv('REDIS_HOST_PASSWORD')) {
+    $CONFIG['redis']['password'] = (string) getenv('REDIS_HOST_PASSWORD');
+  }
 
   if (getenv('REDIS_PORT')) {
     $CONFIG['redis']['port'] = (int) getenv('REDIS_PORT');
@@ -25,7 +29,6 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
     'memcache.distributed' => '\OC\Memcache\Redis',
     'memcache.locking' => '\OC\Memcache\Redis',
     'redis.cluster' => array(
-      'password' => (string) getenv('REDIS_HOST_PASSWORD'),
       'timeout' => 0.0,
       'read_timeout' => 0.0,
       'failover_mode' => \RedisCluster::FAILOVER_ERROR,
@@ -42,6 +45,10 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
       ))),
     ),
   );
+
+  if (getenv('REDIS_HOST_PASSWORD')) {
+    $CONFIG['redis.cluster']['password'] = (string) getenv('REDIS_HOST_PASSWORD');
+  }
 
   if (getenv('REDIS_USER_AUTH')) {
     $CONFIG['redis.cluster']['user'] = str_replace("&auth[]=", "", getenv('REDIS_USER_AUTH'));
