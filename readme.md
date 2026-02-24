@@ -1117,18 +1117,23 @@ Afterwards apply the correct permissions with `sudo chown root:root /root/backup
 1. Add the following new line to the crontab if not already present: `0 20 * * 7 /root/backup-script.sh` which will run the script at 20:00 on Sundays each week. 
 1. save and close the crontab (when using nano are the shortcuts for this `Ctrl + o` -> `Enter` and close the editor with `Ctrl + x`).
 
-### How to exclude Nextcloud's data directory or the preview folder from backup?
-In order to speed up the backups and to keep the backup archives small, you might want to exclude Nextcloud's data directory or its preview folder from backup. 
+### How to exclude directories from backup?
+In order to speed up the backups and to keep the backup archives small, you might want to exclude certain directories from backup (e.g. Nextcloud's data directory or the preview folder).
 
 > [!WARNING]
-> However please note that you will run into problems if the database and the data directory or preview folder get out of sync. **So please only read further, if you have an additional external backup of the data directory!** See [this guide](#how-to-enable-automatic-updates-without-creating-a-backup-beforehand) for example.
+> Please note that you will run into problems if the database and excluded directories get out of sync. **So please only read further, if you have an additional external backup of those directories!** See [this guide](#how-to-enable-automatic-updates-without-creating-a-backup-beforehand) for example.
 
 > [!TIP]
 > A better option is to use the external storage app inside Nextcloud as the data connected via the external storage app is not backed up by AIO's backup solution. See [this documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/external_storage_configuration_gui.html) on how to configure the app.
 
-If you still want to proceed, you can exclude the data directory by simply creating a `.noaiobackup` file in the root directory of the specified `NEXTCLOUD_DATADIR` target. The same logic is implemented for the preview folder that is located inside the data directory, inside the `appdata_*/preview` folder. So simply create a `.noaiobackup` file in there if you want to exclude the preview folder.
+If you still want to proceed, you can exclude **any directory** from backup by creating a `.noaiobackup` file inside it. For example:
+- To exclude the entire data directory: create `.noaiobackup` in the root of your `NEXTCLOUD_DATADIR`
+- To exclude the preview folder: create `.noaiobackup` in `appdata_*/preview` inside the data directory
+- To exclude any other directory: create `.noaiobackup` in that directory
 
-After doing a restore via the AIO interface, you might run into problems due to the data directory and database being out of sync. You might be able to fix this by running `occ files:scan --all` and `occ maintenance:repair` and `occ files:scan-app-data`. See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands. If only the preview folder is excluded, the command `occ files:scan-app-data preview` should be used.
+The `.noaiobackup` marker file itself is kept in the backup, so during restore, directories that were excluded from backup will automatically be skipped (preserving your local data in those directories).
+
+After doing a restore via the AIO interface, you might run into problems due to excluded directories and the database being out of sync. You might be able to fix this by running `occ files:scan --all` and `occ maintenance:repair` and `occ files:scan-app-data`. See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands. If only the preview folder is excluded, the command `occ files:scan-app-data preview` should be used.
 
 ### How to stop/start/update containers or trigger the daily backup from a script externally?
 > [!WARNING]  

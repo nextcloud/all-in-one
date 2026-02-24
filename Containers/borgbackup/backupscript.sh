@@ -191,19 +191,17 @@ if [ "$BORG_MODE" = backup ]; then
 
     # Exclude the nextcloud log and audit log for GDPR reasons
     BORG_EXCLUDE=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/nextcloud.log*" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/data/audit.log" --exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/lost+found")
-    BORG_INCLUDE=()
 
-    # Exclude datadir if .noaiobackup file was found
-    # shellcheck disable=SC2144
-    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup" ]; then
-        BORG_EXCLUDE+=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/")
-        BORG_INCLUDE+=(--pattern="+/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup")
-        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextcloud's data directory. Excluding the data directory from backup!"
-    # Exclude preview folder if .noaiobackup file was found
-    elif [ -f /nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/.noaiobackup ]; then
-        BORG_EXCLUDE+=(--exclude "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/")
-        BORG_INCLUDE+=(--pattern="+/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/.noaiobackup")
-        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in the preview directory. Excluding the preview directory from backup!"
+    # Exclude any directory containing .noaiobackup marker (marker itself is kept in backup)
+    BORG_EXCLUDE+=(--exclude-if-present=.noaiobackup --keep-exclude-tags)
+
+    # Log which directories will be excluded due to .noaiobackup markers
+    NOAIOBACKUP_MARKERS=$(find /nextcloud_aio_volumes -name ".noaiobackup" -type f 2>/dev/null)
+    if [ -n "$NOAIOBACKUP_MARKERS" ]; then
+        echo "The following directories will be excluded from backup due to .noaiobackup markers:"
+        echo "$NOAIOBACKUP_MARKERS" | while read -r marker; do
+            echo "  - $(dirname "$marker")"
+        done
     fi
 
     # Make sure that there is always a borg.config file before creating a new backup
@@ -216,7 +214,7 @@ if [ "$BORG_MODE" = backup ]; then
     # Create the backup
     echo "Starting the backup..."
     get_start_time
-    if ! borg create "${BORG_OPTS[@]}" "${BORG_INCLUDE[@]}" "${BORG_EXCLUDE[@]}" "::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/" --exclude-from /borg_excludes; then
+    if ! borg create "${BORG_OPTS[@]}" "${BORG_EXCLUDE[@]}" "::$CURRENT_DATE-nextcloud-aio" "/nextcloud_aio_volumes/" --exclude-from /borg_excludes; then
         echo "Deleting the failed backup archive..."
         borg delete --stats "::$CURRENT_DATE-nextcloud-aio"
         echo "Backup failed!"
@@ -333,27 +331,17 @@ if [ "$BORG_MODE" = restore ]; then
     fi
     echo "Restoring '$SELECTED_ARCHIVE'..."
 
+    # Initialize exclude arrays - will be populated dynamically based on .noaiobackup markers in backup
     ADDITIONAL_RSYNC_EXCLUDES=()
     ADDITIONAL_BORG_EXCLUDES=()
     ADDITIONAL_FIND_EXCLUDES=()
-    # Exclude datadir if .noaiobackup file was found
-    # shellcheck disable=SC2144
-    if [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/.noaiobackup" ]; then
-        # Keep these 3 in sync. Beware, the pattern syntax and the paths differ
-        ADDITIONAL_RSYNC_EXCLUDES=(--exclude "nextcloud_aio_nextcloud_data/**")
-        ADDITIONAL_BORG_EXCLUDES=(--exclude "sh:nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/**")
-        ADDITIONAL_FIND_EXCLUDES=(-o -regex 'nextcloud_aio_volumes/nextcloud_aio_nextcloud_data\(/.*\)?')
-        echo "⚠️⚠️⚠️ '.noaiobackup' file was found in Nextcloud's data directory. Excluding the data directory from restore!"
-        echo "You might run into problems due to this afterwards as potentially this makes the directory go out of sync with the database."
-        echo "You might be able to fix this by running 'occ files:scan --all' and 'occ maintenance:repair' and 'occ files:scan-app-data' after the restore."
-        echo "See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands"
-    # Exclude previews from restore if selected to speed up process or exclude preview folder if .noaiobackup file was found
-    elif [ -n "$RESTORE_EXCLUDE_PREVIEWS" ] || [ -f /nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/.noaiobackup ]; then
-        # Keep these 3 in sync. Beware, the pattern syntax and the paths differ
-        ADDITIONAL_RSYNC_EXCLUDES=(--exclude "nextcloud_aio_nextcloud_data/appdata_*/preview/**")
-        ADDITIONAL_BORG_EXCLUDES=(--exclude "sh:nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/**")
-        ADDITIONAL_FIND_EXCLUDES=(-o -regex 'nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_[^/]*/preview\(/.*\)?')
-        echo "⚠️⚠️⚠️ Excluding previews from restore!"
+
+    # Handle RESTORE_EXCLUDE_PREVIEWS env var (excludes previews even without .noaiobackup marker)
+    if [ -n "$RESTORE_EXCLUDE_PREVIEWS" ]; then
+        ADDITIONAL_RSYNC_EXCLUDES+=(--exclude "nextcloud_aio_nextcloud_data/appdata_*/preview/**")
+        ADDITIONAL_BORG_EXCLUDES+=(--exclude "sh:nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_*/preview/**")
+        ADDITIONAL_FIND_EXCLUDES+=(-o -regex 'nextcloud_aio_volumes/nextcloud_aio_nextcloud_data/appdata_[^/]*/preview\(/.*\)?')
+        echo "RESTORE_EXCLUDE_PREVIEWS is set. Excluding previews from restore!"
         echo "You might run into problems due to this afterwards as potentially this makes the directory go out of sync with the database."
         echo "You might be able to fix this by running 'occ files:scan-app-data preview' after the restore."
         echo "See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands"
@@ -390,10 +378,26 @@ if [ "$BORG_MODE" = restore ]; then
             exit 1
         fi
 
-        # Restore everything except the configuration file
-        #
-        # These exclude patterns need to be kept in sync with the borg_excludes file and the find excludes in this file,
-        # which use a different syntax (patterns appear in 3 places in total)
+        # Find .noaiobackup markers in the BACKUP and build exclude list dynamically
+        NOAIOBACKUP_FOUND=0
+        while IFS= read -r marker; do
+            if [ -n "$marker" ]; then
+                NOAIOBACKUP_FOUND=1
+                # Get relative path from nextcloud_aio_volumes
+                rel_dir="${marker#/tmp/borg/nextcloud_aio_volumes/}"
+                rel_dir="$(dirname "$rel_dir")"
+                ADDITIONAL_RSYNC_EXCLUDES+=(--exclude "${rel_dir}/**")
+                echo "Excluding '$rel_dir' from restore due to .noaiobackup marker in backup"
+            fi
+        done < <(find /tmp/borg/nextcloud_aio_volumes -name ".noaiobackup" -type f 2>/dev/null)
+
+        if [ "$NOAIOBACKUP_FOUND" = 1 ]; then
+            echo "You might run into problems due to excluded directories as potentially this makes the directory go out of sync with the database."
+            echo "You might be able to fix this by running 'occ files:scan --all' and 'occ maintenance:repair' and 'occ files:scan-app-data' after the restore."
+            echo "See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands"
+        fi
+
+        # Restore everything except the configuration file and excluded directories
         if ! rsync --stats --archive --human-readable -vv --delete \
         --exclude "nextcloud_aio_apache/caddy/**" \
         --exclude "nextcloud_aio_mastercontainer/caddy/**" \
@@ -431,6 +435,27 @@ if [ "$BORG_MODE" = restore ]; then
         # then we do still need to delete local files which are not present in the archive.
         #
         # Older backups may still contain files we've since excluded, so we have to exclude on extract as well.
+
+        # Find .noaiobackup markers in the archive and build exclude lists dynamically
+        NOAIOBACKUP_FOUND=0
+        while IFS= read -r marker; do
+            if [ -n "$marker" ]; then
+                NOAIOBACKUP_FOUND=1
+                dir="$(dirname "$marker")"
+                ADDITIONAL_BORG_EXCLUDES+=(--exclude "sh:${dir}/**")
+                # Escape special regex chars and build pattern for recursive matching
+                escaped_dir=$(printf '%s' "$dir" | sed 's/[[\.*^$()+?{|]/\\&/g')
+                ADDITIONAL_FIND_EXCLUDES+=(-o -regex "${escaped_dir}\\(/.*\\)?")
+                echo "Excluding '$dir' from restore due to .noaiobackup marker in backup"
+            fi
+        done < <(borg list "::$SELECTED_ARCHIVE" --short | grep '\.noaiobackup$')
+
+        if [ "$NOAIOBACKUP_FOUND" = 1 ]; then
+            echo "You might run into problems due to excluded directories as potentially this makes the directory go out of sync with the database."
+            echo "You might be able to fix this by running 'occ files:scan --all' and 'occ maintenance:repair' and 'occ files:scan-app-data' after the restore."
+            echo "See https://github.com/nextcloud/all-in-one#how-to-run-occ-commands"
+        fi
+
         cd /  # borg extract has no destination arg and extracts to CWD
         if ! borg extract "::$SELECTED_ARCHIVE" --progress --exclude-from /borg_excludes "${ADDITIONAL_BORG_EXCLUDES[@]}" --pattern '+nextcloud_aio_volumes/**'
         then
