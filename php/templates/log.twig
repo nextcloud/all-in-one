@@ -26,7 +26,7 @@
                 }, 5000);
                 // Provide a button that allows to disable the reloads.
                 const button = document.querySelector('button');
-                document.querySelector('button').addEventListener('click', (event) => {
+                button?.addEventListener('click', (event) => {
                     event.preventDefault();
                     clearTimeout(reloadTimer);
                     button.disabled = true;
@@ -35,7 +35,7 @@
                 // Reload immediately if the window gets visible to the user again (unless the
                 // no-reload-button had been clicked).
                 document.addEventListener('visibilitychange', () => {
-                    if (document.visibilityState === 'visible' && button.disabled !== true) {
+                    if (document.visibilityState === 'visible' && button?.disabled !== true) {
                         location.reload();
                     }
                 });
