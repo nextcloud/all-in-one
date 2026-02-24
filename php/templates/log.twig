@@ -1,45 +1,59 @@
 <html lang="en">
     <head>
+        <link rel="stylesheet" href="style.css">
         <style>
-            button {
+            body {
+                padding: 1rem;
+            }
+            #floating-box {
                 position: fixed;
                 top: 1rem;
                 right: 1rem;
-                font-size: 1.3rem;
+                width: 20rem;
+                display: flex;
+                justify-content: end;
+                align-items: center;
+            }
+            #autoloading-box {
+                display: grid;
+                gap: 0.5rem;
+                font-size: large;
+                border: solid thin gray;
+                background-color: #f9f9f9;
+                width: 10rem;
+                padding: 0.5rem 1rem;
+                margin: 0 0 0 1rem;
+            }
+            .loader {
+                opacity: 1;
+                width: 40px;
+                height: 40px;
+                align-self: inherit;
+            }
+            @starting-style {
+              .loader {
+                opacity: 0;
+              }
+            }
+            .loader.hidden {
+                display: none;
+                opacity: 0;
+                transition: opacity 1s, display 1s allow-discrete;
             }
         </style>
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                // Give the browser a short moment to render all text and calculate the scrollHeight, to avoid
-                // problems with scrolling to the bottom.
-                setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);
-                // Reload after a short while if the window is visible to the user. 
-                const reloadTimer = setTimeout(() =>  {
-                    if (document.visibilityState === 'visible') {
-                        location.reload()
-                    }
-                }, 5000);
-                // Provide a button that allows to disable the reloads.
-                const button = document.querySelector('button');
-                document.querySelector('button').addEventListener('click', (event) => {
-                    event.preventDefault();
-                    clearTimeout(reloadTimer);
-                    button.disabled = true;
-                    button.textContent = 'Reloading was disabled';
-                });
-                // Reload immediately if the window gets visible to the user again (unless the
-                // no-reload-button had been clicked).
-                document.addEventListener('visibilitychange', () => {
-                    if (document.visibilityState === 'visible' && button.disabled !== true) {
-                        location.reload();
-                    }
-                });
-            });
-        </script>
+        <script src="log-view.js"></script>
     </head>
-    <body>
-        <button>Disable auto-reloading</button>
+    <body data-container-id="{{ id }}">
+        <div id="floating-box">
+            <div class="loader"></div>
+            <div id="autoloading-box">
+                <div>
+                    Automatic loading of new log data is
+                    <span id="autoloading-status">enabled</span>.
+                </div>
+                <button id="autoloading-control">Disable</button>
+            </div>
+        </div>
         <pre>{{ logContent }}</pre>
-        <div id="bottom"></div>
     </body>
 </html>

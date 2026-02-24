@@ -4,15 +4,15 @@
     {% if c.GetStartingState().value == 'starting' %}
       <span class="status running"></span>
       {{ c.displayName }}
-      (<a href="api/docker/logs?id={{ c.identifier }}" target="_blank">Starting</a>)
+      (<a href="log?id={{ c.identifier }}" target="_blank">Starting</a>)
     {% elseif c.GetRunningState().value == 'running' %}
       <span class="status success"></span>
       {{ c.displayName }}
-      (<a href="api/docker/logs?id={{ c.identifier }}" target="_blank">Running</a>)
+      (<a href="log?id={{ c.identifier }}" target="_blank">Running</a>)
     {% else %}
       <span class="status error"></span>
       {{ c.displayName }}
-      (<a href="api/docker/logs?id={{ c.identifier }}" target="_blank">Stopped</a>)
+      (<a href="log?id={{ c.identifier }}" target="_blank">Stopped</a>)
     {% endif %}
     {% if c.documentation != '' %}
       (<a target="_blank" href="{{ c.documentation }}">docs</a>)
