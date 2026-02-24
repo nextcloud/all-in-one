@@ -121,8 +121,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleDockerSocketProxyWarning() {
         if (document.getElementById("docker-socket-proxy").checked) {
-            alert('⚠️ The docker socket proxy container is deprecated. Please use the HaRP (High-availability Reverse Proxy for Nextcloud ExApps) instead!');
-            document.getElementById("docker-socket-proxy").checked = false
+            // TODO: remove the line below and uncomment the lines further down once https://github.com/nextcloud/app_api/pull/800 is included
+            alert('⚠️ Warning! Enabling this container comes with possible Security problems since you are exposing the docker socket and all its privileges to the Nextcloud container. Enable this only if you are sure what you are doing!');
+            // alert('⚠️ The docker socket proxy container is deprecated. Please use the HaRP (High-availability Reverse Proxy for Nextcloud ExApps) instead!');
+            // document.getElementById("docker-socket-proxy").checked = false
         }
     }
 
