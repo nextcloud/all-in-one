@@ -11,6 +11,7 @@ ini_set('max_execution_time', '7200');
 ini_set('log_errors_max_len', '0');
 
 use DI\Container;
+use DI\NotFoundException;
 use Slim\Csrf\Guard;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
@@ -170,6 +171,15 @@ $app->get('/setup', function (Request $request, Response $response, array $args)
             'password' => $setup->Setup(),
         ]
     );
+});
+$app->get('/log', function (Request $request, Response $response, array $args) use ($container) {
+    $params = $request->getQueryParams();
+    $id = $params['id'] ?? '';
+    if (!str_starts_with($id, 'nextcloud-aio-')) {
+        throw new DI\NotFoundException();
+    }
+    $view = Twig::fromRequest($request);
+    return $view->render($response, 'log.twig', ['id' => $id]);
 });
 
 // Auth Redirector

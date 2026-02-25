@@ -145,11 +145,12 @@ readonly class DockerActionManager {
         }
     }
 
-    public function GetLogs(string $id): string {
+    public function GetLogs(string $id, string $since = ''): string {
         $url = $this->BuildApiUrl(
             sprintf(
-                'containers/%s/logs?stdout=true&stderr=true&timestamps=true',
-                urlencode($id)
+                'containers/%s/logs?stdout=true&stderr=true&timestamps=true&since=%s',
+                urlencode($id),
+                $since
             ));
         $responseBody = (string)$this->guzzleClient->get($url)->getBody();
 

@@ -11,7 +11,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
 use Slim\Psr7\NonBufferedBody;
-use Slim\Views\Twig;
 
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
@@ -72,13 +71,19 @@ readonly class DockerController {
             $id = $requestParams['id'];
         }
         if (str_starts_with($id, 'nextcloud-aio-')) {
-            $logs = $this->dockerActionManager->GetLogs($id);
+            $since = $this->getTimestampForDockerLogsApiSince($requestParams['since'] ?? '');
+            $logs = $this->dockerActionManager->GetLogs($id, $since);
         } else {
             $logs = 'Container not found.';
         }
 
-        $view = Twig::fromRequest($request);
-        return $view->render($response, 'log.twig', ['logContent' => $logs]);
+        $body = $response->getBody();
+        $body->write($logs);
+
+        return $response
+            ->withStatus(200)
+            ->withHeader('Content-Type', 'text/plain; charset=utf-8')
+            ->withHeader('Content-Disposition', 'inline');
     }
 
     public function StartBackupContainerBackup(Request $request, Response $response, array $args) : Response {
@@ -352,5 +357,39 @@ readonly class DockerController {
     
     private function getStreamingResponseHtmlEnd() : string {
         return "\n  </body>\n</html>";
+    }
+
+    private function getTimestampForDockerLogsApiSince(string $input) : string
+    {
+        if ($input === '') {
+            return '';
+        }
+
+        // We expect an RFC3339Nano string with Timezone UTC here, as docker will put out.
+        // Unfortunately PHP doesn't support this format with nanoseconds, so we have to help
+        // ourselves a little bit.
+        // First we split off the nanoseconds.
+        preg_match('/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})\.(\d{9}).*/', $input, $match);
+        if (count($match) !== 3) {
+            // The input doesn't match our expectations, it might be manipulated, we ignore it.
+            return '';
+        }
+
+        $datetime = \DateTimeImmutable::createFromFormat("Y-m-d\\TH:i:s", $match[1]);
+        $nanoseconds = $match[2];
+
+        if ($datetime === false) {
+            // Input was not parseable, it might be manipulated, we ignore it.
+            return '';
+        }
+
+        // Format the datetime as unix timestamp.
+        $timestamp = $datetime->format('U');
+
+        // Increase the nanoseconds by 1, so we don't get the line with exactly the original datetime again.
+        $nanoseconds = strval(intval($nanoseconds) + 1);
+
+        // Now append the nanoseconds to the timestamp-string.
+        return "{$timestamp}.{$nanoseconds}";
     }
 }
