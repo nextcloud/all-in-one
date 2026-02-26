@@ -138,7 +138,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize event listeners for specific behaviors
     document.getElementById("talk").addEventListener('change', handleTalkVisibility);
     document.getElementById("docker-socket-proxy").addEventListener('change', handleDockerSocketProxyWarning);
-    document.getElementById("harp").addEventListener('change', handleHarpWarning);
+    if (document.getElementById("harp")) {
+        document.getElementById("harp").addEventListener('change', handleHarpWarning);
+    }
 
     // Initialize talk-recording visibility on page load
     handleTalkVisibility();  // Ensure talk-recording is correctly initialized
