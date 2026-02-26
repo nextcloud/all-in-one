@@ -349,7 +349,7 @@
                                         <input type="submit" value="Download and start containers" />
                                     </form>
                                 {% elseif has_update_available == false %}
-                                    <form method="POST" action="api/docker/start" class="xhr">
+                                    <form method="POST" action="api/docker/start" target="overlay-log">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input id="base_path" type="hidden" name="base_path" value="">
