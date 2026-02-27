@@ -203,7 +203,7 @@ readonly class DockerController {
         }
         
         // Get streaming response start and closure
-        $nonbufResp = $this->getStreamingResponseStart($response);
+        $nonbufResp = $this->startStreamingResponse($response);
         $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
         
         // Start container
@@ -214,7 +214,7 @@ readonly class DockerController {
         // apcu_clear_cache();
 
         // End streaming response
-        $this->endStreamingResponse($nonbufResp);
+        $this->finalizeStreamingResponse($nonbufResp);
         return $nonbufResp;
     }
 
@@ -231,13 +231,13 @@ readonly class DockerController {
 
     public function StartWatchtowerContainer(Request $request, Response $response, array $args) : Response {
         // Get streaming response start and closure
-        $nonbufResp = $this->getStreamingResponseStart($response);
+        $nonbufResp = $this->startStreamingResponse($response);
         $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
 
         $this->startWatchtower($addToStreamingResponseBody);
 
         // End streaming response
-        $this->endStreamingResponse($nonbufResp);
+        $this->finalizeStreamingResponse($nonbufResp);
         return $nonbufResp;
     }
 
@@ -349,7 +349,7 @@ readonly class DockerController {
         END;
     }
 
-    private function getStreamingResponseStart(Response $response) : Response {
+    private function startStreamingResponse(Response $response) : Response {
         $nonbufResp = $response
             ->withBody(new NonBufferedBody())
             ->withHeader('Content-Type', 'text/html; charset=utf-8')
@@ -375,7 +375,7 @@ readonly class DockerController {
         return $addToStreamingResponseBody;
     }
 
-    private function endStreamingResponse(Response $nonbufResp) : void {
+    private function finalizeStreamingResponse(Response $nonbufResp) : void {
         $nonbufResp->getBody()->write($this->getStreamingResponseHtmlEnd());
     }
 
