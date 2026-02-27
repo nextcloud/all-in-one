@@ -264,7 +264,7 @@
                             {% else %}
                                 <p>It seems at least one container was not able to start correctly and is currently restarting.</p>
                                 <p>To break this endless loop, you can stop the containers below and investigate the issue in the container logs before starting the containers again.</p>
-                                <form method="POST" action="api/docker/stop" class="xhr">
+                                <form method="POST" action="api/docker/stop" target="overlay-log">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <input type="submit" value="Stop containers" />
@@ -317,7 +317,7 @@
                                     <p>You can find all changes <a target="_blank" href="https://github.com/nextcloud-releases/all-in-one/commits/main"><strong>here</strong></a></p>
                                 {% endif %}
                             {% endif %}
-                            <form method="POST" action="api/docker/stop" class="xhr">
+                            <form method="POST" action="api/docker/stop" target="overlay-log">
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input type="submit" value="Stop containers" />
