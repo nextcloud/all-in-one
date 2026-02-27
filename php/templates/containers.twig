@@ -161,7 +161,7 @@
                                         <p><span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="log?id=nextcloud-aio-borgbackup" target="_blank">Logs</a>)</p>
                                         {% if borg_backup_mode == 'test' %}
                                             <p>Feel free to check the integrity of the backup archive below before starting the restore process in order to make ensure that the restore will work. This can take a long time though depending on the size of the backup archive and is thus not required.</p>
-                                            <form method="POST" action="api/docker/backup-check" class="xhr">
+                                            <form method="POST" action="api/docker/backup-check" target="overlay-log">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <input type="submit" value="Check backup integrity"/>
@@ -484,7 +484,7 @@
 
                                             <h3>Backup check</h3>
                                             <p>Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact. It shouldn't be needed in most situations.</p>
-                                            <form method="POST" action="api/docker/backup-check" class="xhr">
+                                            <form method="POST" action="api/docker/backup-check" target="overlay-log">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <input type="submit" value="Check backup integrity" onclick="return confirm('Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.')" />
