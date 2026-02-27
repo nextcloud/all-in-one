@@ -285,6 +285,11 @@ readonly class DockerController {
         return $response->withStatus(201)->withHeader('Location', '.');
     }
 
+    public function SystemPrune(Request $request, Response $response, array $args) : Response {
+        $this->dockerActionManager->SystemPrune();
+        return $response->withStatus(201)->withHeader('Location', '.');
+    }
+
     public function stopTopContainer() : void {
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);
