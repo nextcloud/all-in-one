@@ -582,6 +582,18 @@
 
                         {% if is_backup_container_running == false %}
                             {% if isApacheStarting == false %}
+                                {% if isAnyRunning == true %}
+                                    <h2>Docker System Prune</h2>
+                                    <details>
+                                        <summary>Click here to reveal a button to prune the docker system.</summary>
+                                        <p>By clicking the button below you can run "docker system prune -a". This will remove unused images, containers, networks, volumes and build cache. It will not delete data of running containers.</p>
+                                        <form method="POST" action="api/docker/prune" target="overlay-log">
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input type="submit" value="Prune docker system" data-confirm="Run docker system prune -a? This will remove unused images, containers, networks, volumes and build cache. It will not delete data of running containers. Continue?" />
+                                        </form>
+                                    </details>
+                                {% endif %}
                                 <h2>AIO passphrase change</h2>
                                 <details>
                                     <summary>Click here to change your AIO passphrase</summary>
