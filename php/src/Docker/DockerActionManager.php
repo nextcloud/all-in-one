@@ -984,7 +984,7 @@ readonly class DockerActionManager {
         }
     }
 
-    public function SystemPrune(): void {
+    public function SystemPrune(): array {
         $endpoints = [
             // Remove stopped containers
             'containers/prune',
@@ -998,6 +998,7 @@ readonly class DockerActionManager {
             'build/prune',
         ];
 
+        $results = [];
         foreach ($endpoints as $endpoint) {
             // Special-case images prune to include the dangling filter as requested
             if ($endpoint === 'images/prune') {
@@ -1008,11 +1009,21 @@ readonly class DockerActionManager {
             }
 
             try {
-                $this->guzzleClient->post($url);
+                $resp = $this->guzzleClient->post($url);
+                $body = (string)$resp->getBody();
+                $json = null;
+                try {
+                    $json = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+                } catch (\Throwable $e) {
+                    // Non-JSON body, keep raw
+                    $json = $body;
+                }
+                $results[$endpoint] = $json;
             } catch (RequestException $e) {
                 error_log(sprintf('Docker prune (%s) failed: %s', $endpoint, $e->getMessage()));
+                $results[$endpoint] = ['error' => $e->getMessage()];
                 // continue with next prune step
             }
         }
+        return $results;
     }
-}
