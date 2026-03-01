@@ -1,11 +1,11 @@
 #!/bin/bash
 
+STUN_PORT=${TALK_PORT:-3478}
+STUN_TLS_PORT=${TALK_TLS_PORT:-5349}
+
 # Variables
 if [ -z "$NC_DOMAIN" ]; then
     echo "You need to provide the NC_DOMAIN."
-    exit 1
-elif [ -z "$TALK_PORT" ]; then
-    echo "You need to provide the TALK_PORT."
     exit 1
 elif [ -z "$TURN_SECRET" ]; then
     echo "You need to provide the TURN_SECRET."
@@ -44,11 +44,27 @@ cat << TURN_CONF > "/conf/eturnal.yml"
 eturnal:
   listen:
     - ip: "$IP_BINDING"
-      port: $TALK_PORT
+      port: $STUN_PORT
       transport: udp
     - ip: "$IP_BINDING"
-      port: $TALK_PORT
+      port: $STUN_PORT
       transport: tcp
+TURN_CONF
+
+if ! [ -z "$TALK_TLS_CRT" ] && ! [ -z "$TALK_TLS_KEY" ] ; then
+cat << TURN_CONF >> "/conf/eturnal.yml"
+    - ip: "$IP_BINDING"
+      port: $STUN_TLS_PORT
+      transport: tls
+  tls_crt_file: $TALK_TLS_CRT
+  tls_key_file: $TALK_TLS_KEY
+TURN_CONF
+fi
+
+cat << TURN_CONF >> "/conf/eturnal.yml"
+  relay_min_port: ${TALK_RELAY_MIN_PORT:-49152}
+  relay_max_port: ${TALK_RELAY_MAX_PORT:-65535}
+
   log_dir: stdout
   log_level: warning
   secret: "$TURN_SECRET"
@@ -76,9 +92,36 @@ if [ -z "$TALK_MAX_SCREEN_BITRATE" ]; then
 fi
 
 # Signling
+
+SIGNALING_PORT=${TALK_HTTP_PORT:-8081}
+SIGNALING_READ_TIMEOUT=${TALK_HTTP_READ_TIMEOUT:-15}
+SIGNALING_WRITE_TIMEOUT=${TALK_HTTP_WRITE_TIMEOUT:-30}
+SIGNALING_TLS_PORT=${TALK_HTTPS_PORT:-8443}
+SIGNALING_HTTPS_READ_TIMEOUT=${TALK_HTTPS_READ_TIMEOUT:-15}
+SIGNALING_HTTPS_WRITE_TIMEOUT=${TALK_HTTPS_WRITE_TIMEOUT:-30}
+
+
 cat << SIGNALING_CONF > "/conf/signaling.conf"
 [http]
-listen = 0.0.0.0:8081
+listen = 0.0.0.0:$SIGNALING_PORT
+readtimeout = $SIGNALING_HTTP_READ_TIMEOUT
+writetimeout = $SIGNALING_HTTP_WRITE_TIMEOUT
+
+SIGNALING_CONF
+
+if ! [ -z "$TALK_HTTPS_CRT" ] && ! [ -z "$TALK_HTTPS_KEY" ] ; then
+cat << SIGNALING_CONF >> "/conf/signaling.conf"
+[https]
+listen = 0.0.0.0:$SIGNALING_TLS_PORT
+certificate = $TALK_HTTPS_CRT
+key = $TALK_HTTPS_KEY
+readtimeout = $SIGNALING_HTTPS_READ_TIMEOUT
+writetimeout = $SIGNALING_HTTPS_WRITE_TIMEOUT
+
+SIGNALING_CONF
+fi
+
+cat << SIGNALING_CONF >> "/conf/signaling.conf"
 
 [app]
 debug = false
