@@ -634,7 +634,7 @@ Additionally, you might need to create a custom user script to start all sibling
 sleep 120
 
 # Execute the actual command
-docker exec --env START_CONTAINERS=1 nextcloud-aio-mastercontainer /daily-backup.sh`
+docker exec --env START_CONTAINERS=1 nextcloud-aio-mastercontainer /daily-backup.sh
 ```
 
 Apart from that, the installation of AIO should work like on "normal" Linux. So refer to the Linux instructions for installation.
