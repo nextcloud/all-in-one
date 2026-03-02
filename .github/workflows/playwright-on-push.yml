@@ -37,7 +37,7 @@ jobs:
         run: cd php/tests && npx playwright install --with-deps chromium
 
       - name: Set up php 8.5
-        uses: shivammathur/setup-php@7bf05c6b704e0b9bfee22300130a31b5ea68d593 # v2.36.0
+        uses: shivammathur/setup-php@a8ca9e37836d29afa058cd27a9af90af01b2e31b # v2.36.0
         with:
           extensions: apcu
           php-version: 8.5
