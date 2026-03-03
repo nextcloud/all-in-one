@@ -17,6 +17,9 @@
 }
 
 https://:8080 {
+	@denied remote_host nextcloud-aio-nextcloud
+	abort @denied
+
 	root * /var/www/docker-aio/php/public
 	encode
 	php_fastcgi unix//run/php.sock
