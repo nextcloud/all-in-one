@@ -45,6 +45,7 @@ services:
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
       - NOTIFY_PUSH_HOST=nextcloud-aio-notify-push
       - WHITEBOARD_HOST=nextcloud-aio-whiteboard
+      - HARP_HOST=nextcloud-aio-harp
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
@@ -202,19 +203,10 @@ services:
     expose:
       - "7867"
     volumes:
-      - nextcloud_aio_nextcloud:/nextcloud:ro
+      - nextcloud_aio_nextcloud:/var/www/html:ro
     environment:
-      - NC_DOMAIN
       - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
       - TZ=${TIMEZONE}
-      - REDIS_HOST=nextcloud-aio-redis
-      - REDIS_PORT=6379
-      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
-      - POSTGRES_HOST=nextcloud-aio-database
-      - POSTGRES_PORT=5432
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=nextcloud_database
-      - POSTGRES_USER=nextcloud
     restart: unless-stopped
     read_only: true
     cap_drop:
