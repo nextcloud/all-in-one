@@ -4,7 +4,9 @@ FROM docker:29.2.1-cli AS docker
 
 # Caddy is a requirement
 FROM caddy:2.11.1-builder-alpine AS caddy
-RUN xcaddy build --with github.com/muety/caddy-remote-host
+RUN set -ex; \
+    xcaddy build --with github.com/muety/caddy-remote-host; \
+    /usr/bin/caddy list-modules
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.23/fpm/Dockerfile
 FROM php:8.5.3-fpm-alpine3.23
