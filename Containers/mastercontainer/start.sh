@@ -388,6 +388,9 @@ export TZ=Etc/UTC
 # Remove unused certs
 rm -vrf /mnt/docker-aio-config/certs
 
+# Remove the php socket as safeguard
+rm -vf /run/php.sock
+
 # Fix caddy startup
 if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
     rm -rf /mnt/docker-aio-config/caddy/locks/*
