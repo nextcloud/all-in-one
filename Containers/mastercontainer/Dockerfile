@@ -66,7 +66,7 @@ RUN set -ex; \
     sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 80/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
-    grep -q 'listen =' /usr/local/etc/php-fpm.d/docker.conf; \
+    grep -q '^listen =' /usr/local/etc/php-fpm.d/docker.conf; \
     sed -i 's|listen =.*|listen = /run/php.sock|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
     apk add --no-cache git; \
