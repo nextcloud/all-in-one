@@ -2,10 +2,12 @@
 # Docker CLI is a requirement
 FROM docker:29.2.1-cli AS docker
 
+ARG CADDY_REMOTE_HOST_HASH=b21775afa730ffb52a24ddff310c8a6d1fd37276
+
 # Caddy is a requirement
 FROM caddy:2.11.1-builder-alpine AS caddy
 RUN set -ex; \
-    xcaddy build --with github.com/muety/caddy-remote-host; \
+    xcaddy build --with github.com/muety/caddy-remote-host@"$CADDY_REMOTE_HOST_HASH"; \
     /usr/bin/caddy list-modules
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.23/fpm/Dockerfile
