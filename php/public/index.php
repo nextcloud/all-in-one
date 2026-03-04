@@ -23,13 +23,6 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $container = \AIO\DependencyInjection::GetContainer();
 $dataConst = $container->get(\AIO\Data\DataConst::class);
-ini_set('session.save_path', $dataConst->GetSessionDirectory());
-
-// Auto logout on browser close
-ini_set('session.cookie_lifetime', '0');
-
-# Keep session for 24h max
-ini_set('session.gc_maxlifetime', '86400');
 
 // Create app
 AppFactory::setContainer($container);
@@ -44,7 +37,16 @@ $container->set(Guard::class, function () use ($responseFactory) {
 });
 
 // Register Middleware To Be Executed On All Routes
-session_start();
+session_start([
+    "save_path" => $dataConst->GetSessionDirectory(),
+    "gc_maxlifetime" => 86400,
+    "gc_probability" => 1,
+    "gc_divisor" => 1,
+    "use_strict_mode" => true,
+    "cookie_secure" => true,
+    "cookie_httponly" => true,
+    "cookie_samesite" => "Strict",
+]);
 $app->add(Guard::class);
 
 // Create Twig
