@@ -1,4 +1,6 @@
 {
+	admin off
+
 	# auto_https will create redirects for https://{host}:8443 instead of https://{host}
 	# https redirects are added manually in the http://:80 block
 	auto_https disable_redirects
