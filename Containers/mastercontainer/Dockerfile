@@ -68,6 +68,7 @@ RUN set -ex; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     grep -q '^listen =' /usr/local/etc/php-fpm.d/docker.conf; \
     sed -i 's|listen =.*|listen = /run/php.sock|' /usr/local/etc/php-fpm.d/docker.conf; \
+    echo "listen.owner = www-data" | tee -a /usr/local/etc/php-fpm.d/docker.conf; \
     \
     apk add --no-cache git; \
     curl https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; \
