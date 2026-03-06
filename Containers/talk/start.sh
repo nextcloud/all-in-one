@@ -28,7 +28,6 @@ if mountpoint -q /usr/local/share/ca-certificates; then
     for cert in /usr/local/share/ca-certificates/*; do
         if [ -f "$cert" ]; then
             cat "$cert" >> /tmp/ca-certificates.crt
-            echo "  Added: $(basename "$cert")"
         fi
     done
     export SSL_CERT_FILE=/tmp/ca-certificates.crt
