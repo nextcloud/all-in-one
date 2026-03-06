@@ -103,8 +103,15 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerCheck(Request $request, Response $response, array $args) : Response {
-        $this->checkBackup();
-        return $response->withStatus(201)->withHeader('Location', '.');
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
+
+        $this->checkBackup($addToStreamingResponseBody);
+
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
     }
 
     public function StartBackupContainerList(Request $request, Response $response, array $args) : Response {
@@ -112,11 +119,11 @@ readonly class DockerController {
         return $response->withStatus(201)->withHeader('Location', '.');
     }
 
-    public function checkBackup() : void {
+    public function checkBackup(?\Closure $addToStreamingResponseBody = null) : void {
         $this->configurationManager->backupMode = 'check';
 
         $id = 'nextcloud-aio-borgbackup';
-        $this->PerformRecursiveContainerStart($id);
+        $this->PerformRecursiveContainerStart($id, true, $addToStreamingResponseBody);
     }
 
     private function listBackup() : void {
