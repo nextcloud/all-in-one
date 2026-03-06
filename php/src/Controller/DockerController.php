@@ -247,7 +247,7 @@ readonly class DockerController {
         $this->PerformRecursiveContainerStart($id, true, $addToStreamingResponseBody);
     }
 
-    private function PerformRecursiveContainerStop(string $id, bool $forceStopNextcloud = false) : void
+    private function PerformRecursiveContainerStop(string $id, bool $forceStopNextcloud = false, ?\Closure $addToStreamingResponseBody = null) : void
     {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
@@ -255,7 +255,11 @@ readonly class DockerController {
         // Stop Collabora first to make sure it force-saves
         // See https://github.com/nextcloud/richdocuments/issues/3799
         if ($id === self::TOP_CONTAINER && $this->configurationManager->isCollaboraEnabled) {
-            $this->PerformRecursiveContainerStop('nextcloud-aio-collabora');
+            $this->PerformRecursiveContainerStop('nextcloud-aio-collabora', false, $addToStreamingResponseBody);
+        }
+
+        if ($addToStreamingResponseBody !== null) {
+            $addToStreamingResponseBody($container, "Stopping container");
         }
 
         // Stop itself first and then all the dependencies
@@ -266,17 +270,23 @@ readonly class DockerController {
             $this->dockerActionManager->StopContainer($container, $forceStopNextcloud);
         }
         foreach($container->dependsOn as $dependency) {
-            $this->PerformRecursiveContainerStop($dependency, $forceStopNextcloud);
+            $this->PerformRecursiveContainerStop($dependency, $forceStopNextcloud, $addToStreamingResponseBody);
         }
     }
 
     public function StopContainer(Request $request, Response $response, array $args) : Response
     {
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
+
         $id = self::TOP_CONTAINER;
         $forceStopNextcloud = true;
-        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
+        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud, $addToStreamingResponseBody);
 
-        return $response->withStatus(201)->withHeader('Location', '.');
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
     }
 
     public function stopTopContainer() : void {
