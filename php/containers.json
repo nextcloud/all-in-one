@@ -437,6 +437,13 @@
         "8081"
       ],
       "internal_port": "%TALK_PORT%",
+      "volumes": [
+        {
+          "source": "%NEXTCLOUD_TRUSTED_CACERTS_DIR%",
+          "destination": "/usr/local/share/ca-certificates",
+          "writeable": false
+        }
+      ],
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
         "TALK_HOST=nextcloud-aio-talk",
