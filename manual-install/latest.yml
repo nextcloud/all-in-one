@@ -283,6 +283,8 @@ services:
       - ${TALK_PORT}:${TALK_PORT}/udp
     expose:
       - "8081"
+    volumes:
+      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     environment:
       - NC_DOMAIN
       - TALK_HOST=nextcloud-aio-talk
