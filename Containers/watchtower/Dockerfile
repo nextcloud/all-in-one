@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.26.0-alpine3.23 AS go
+FROM golang:1.26.1-alpine3.23 AS go
 
 ENV WATCHTOWER_COMMIT_HASH=943098a670cb78a620af6499fb94b3ee2c940cf0	
 
