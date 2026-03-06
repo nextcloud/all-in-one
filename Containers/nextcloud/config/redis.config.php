@@ -24,6 +24,10 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
   if (getenv('REDIS_USER_AUTH')) {
     $CONFIG['redis']['user'] = str_replace("&auth[]=", "", getenv('REDIS_USER_AUTH'));
   }
+
+  if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_REDIS')) {
+    $CONFIG['redis']['ssl_context']['cafile'] = '/var/www/html/data/certificates/ca-bundle.crt';
+  }
 } else {
   $CONFIG = array(
     'memcache.distributed' => '\OC\Memcache\Redis',
@@ -52,5 +56,9 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
 
   if (getenv('REDIS_USER_AUTH')) {
     $CONFIG['redis.cluster']['user'] = str_replace("&auth[]=", "", getenv('REDIS_USER_AUTH'));
+  }
+
+  if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_REDIS')) {
+    $CONFIG['redis.cluster']['ssl_context']['cafile'] = '/var/www/html/data/certificates/ca-bundle.crt';
   }
 }
