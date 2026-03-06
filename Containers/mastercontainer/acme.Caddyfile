@@ -11,6 +11,7 @@
 
 	log {
 		level ERROR
+		exclude http.matchers.remote_host
 	}
 
 	servers {
