@@ -70,7 +70,8 @@ RUN set -ex; \
         libwebsockets \
         \
         shadow \
-        grep; \
+        grep \
+        util-linux-misc; \
     useradd --system -u 1000 eturnal; \
     apk del --no-cache \
         shadow; \

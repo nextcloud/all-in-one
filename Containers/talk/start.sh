@@ -21,16 +21,18 @@ fi
 # Trust additional CA certificates, if the user provided NEXTCLOUD_TRUSTED_CACERTS_DIR
 # The container is read-only, so we build a custom bundle in /tmp (tmpfs) and
 # point Go's TLS stack to it via SSL_CERT_FILE.
-if [ -n "$(find /usr/local/share/ca-certificates -name '*.crt' -type f 2>/dev/null)" ]; then
+if mountpoint -q /usr/local/share/ca-certificates; then
     echo "Trusting additional CA certificates..."
+    set -x
     cp /etc/ssl/certs/ca-certificates.crt /tmp/ca-certificates.crt
-    for cert in /usr/local/share/ca-certificates/*.crt; do
+    for cert in /usr/local/share/ca-certificates/*; do
         if [ -f "$cert" ]; then
             cat "$cert" >> /tmp/ca-certificates.crt
             echo "  Added: $(basename "$cert")"
         fi
     done
     export SSL_CERT_FILE=/tmp/ca-certificates.crt
+    set +x
 fi
 
 set -x
