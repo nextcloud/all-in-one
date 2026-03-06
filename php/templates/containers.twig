@@ -90,7 +90,7 @@
                     {% elseif is_mastercontainer_update_available == true %}
                         <h2>Mastercontainer update</h2>
                         <p>⚠️ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.</p>
-                        <form method="POST" action="api/docker/watchtower" class="xhr">
+                        <form method="POST" action="api/docker/watchtower" target="overlay-log">
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                             <input type="submit" value="Update mastercontainer" />
@@ -332,7 +332,7 @@
                             {% endif %}
                             {% if is_mastercontainer_update_available == true %}
                                 <p>⚠️ A mastercontainer update is available. Please click on the button below to update it.</p>
-                                <form method="POST" action="api/docker/watchtower" class="xhr">
+                                <form method="POST" action="api/docker/watchtower" target="overlay-log">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <input type="submit" value="Update mastercontainer" />
