@@ -49,6 +49,8 @@
                 "TZ=%TIMEZONE%",
                 "NC_DOMAIN=%NC_DOMAIN%",
                 "STALWART_USER_PASS=%STALWART_USER_PASS%",
+                "LLDAP_LDAP_USER_PASS=%LLDAP_LDAP_USER_PASS%",
+                "LLDAP_LDAP_BASE_DN=%NC_BASE_DN%",
                 "CLAMAV_ENABLED=%CLAMAV_ENABLED%"
             ],
             "secrets": [
