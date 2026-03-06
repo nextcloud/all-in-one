@@ -2,8 +2,13 @@
 # Docker CLI is a requirement
 FROM docker:29.3.0-cli AS docker
 
+ARG CADDY_REMOTE_HOST_HASH=b21775afa730ffb52a24ddff310c8a6d1fd37276
+
 # Caddy is a requirement
-FROM caddy:2.11.1-alpine AS caddy
+FROM caddy:2.11.1-builder-alpine AS caddy
+RUN set -ex; \
+    xcaddy build --with github.com/muety/caddy-remote-host@"$CADDY_REMOTE_HOST_HASH"; \
+    /usr/bin/caddy list-modules
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.23/fpm/Dockerfile
 FROM php:8.5.3-fpm-alpine3.23
@@ -21,9 +26,8 @@ COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
 COPY community-containers /var/www/docker-aio/community-containers
 COPY php /var/www/docker-aio/php
 COPY --chmod=775 Containers/mastercontainer/*.sh /
-COPY --chmod=664 Containers/mastercontainer/Caddyfile /Caddyfile
+COPY --chmod=664 Containers/mastercontainer/*.Caddyfile /
 COPY --chmod=664 Containers/mastercontainer/supervisord.conf /supervisord.conf
-COPY Containers/mastercontainer/mastercontainer.conf /etc/apache2/sites-available/mastercontainer.conf
 
 WORKDIR /var/www/docker-aio
 
@@ -37,13 +41,8 @@ RUN set -ex; \
     apk add --no-cache \
         util-linux-misc \
         ca-certificates \
-        wget \
         bash \
-        apache2 \
-        apache2-proxy \
-        apache2-ssl \
         supervisor \
-        openssl \
         sudo \
         netcat-openbsd \
         curl \
@@ -67,11 +66,12 @@ RUN set -ex; \
     sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 80/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
-    grep -q ';listen.allowed_clients' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's|;listen.allowed_clients.*|listen.allowed_clients = 127.0.0.1,::1|' /usr/local/etc/php-fpm.d/www.conf; \
+    grep -q '^listen =' /usr/local/etc/php-fpm.d/docker.conf; \
+    sed -i 's|listen =.*|listen = /run/php.sock|' /usr/local/etc/php-fpm.d/docker.conf; \
+    echo "listen.owner = www-data" | tee -a /usr/local/etc/php-fpm.d/docker.conf; \
     \
     apk add --no-cache git; \
-    wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer; \
+    curl https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; \
     chmod +x /usr/local/bin/composer; \
     cd /var/www/docker-aio; \
     rm -r ./php/tests; \
@@ -86,42 +86,6 @@ RUN set -ex; \
     rm -r php/data; \
     rm -r php/session; \
     \
-    mkdir -p /etc/apache2/certs; \
-    cd /etc/apache2/certs; \
-    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=DE/ST=BE/L=Local/O=Dev/CN=nextcloud.local" -keyout /etc/apache2/certs/ssl.key -out /etc/apache2/certs/ssl.crt; \
-    \
-    sed -i \
-            -e '/^Listen /d' \
-            -e 's/^LogLevel .*/LogLevel error/' \
-            -e 's|^ErrorLog .*|ErrorLog /proc/self/fd/2|' \
-            -e 's/User apache/User www-data/g' \
-            -e 's/Group apache/Group www-data/g' \
-            -e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_headers.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_env.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_mime.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_dir.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
-            -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
-            -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
-            -e 's/\(ScriptAlias \)/#\1/' \
-        /etc/apache2/httpd.conf; \
-        mkdir -p /etc/apache2/logs; \
-        rm /etc/apache2/conf.d/ssl.conf; \
-        echo "ServerName localhost" | tee -a /etc/apache2/httpd.conf; \
-        grep -q '^LoadModule lbmethod_heartbeat_module' /etc/apache2/conf.d/proxy.conf; \
-        sed -i 's|^LoadModule lbmethod_heartbeat_module.*|#LoadModule lbmethod_heartbeat_module|' /etc/apache2/conf.d/proxy.conf; \
-        echo "SSLSessionCache nonenotnull" | tee -a /etc/apache2/httpd.conf; \
-        echo "LoadModule ssl_module modules/mod_ssl.so" | tee -a /etc/apache2/httpd.conf; \
-        echo "LoadModule socache_shmcb_module modules/mod_socache_shmcb.so" | tee -a /etc/apache2/httpd.conf; \
-        echo "Include /etc/apache2/sites-available/mastercontainer.conf" | tee -a /etc/apache2/httpd.conf; \
-    \
-    rm -f /etc/apache2/conf.d/default.conf \
-          /etc/apache2/conf.d/userdir.conf \
-          /etc/apache2/conf.d/info.conf; \
-    \
-    rm -rf /var/www/localhost/cgi-bin/; \
     mkdir /var/log/supervisord; \
     mkdir /var/run/supervisord;
 
