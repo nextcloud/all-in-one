@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Turnstyle
-        uses: softprops/turnstyle@v2
+        uses: softprops/turnstyle@e565d2d86403c5d23533937e95980570545e5586 # v2
         with:
           continue-after-seconds: 180
         env:
@@ -32,7 +32,7 @@ jobs:
 
       # See https://github.com/helm/chart-releaser-action/issues/6
       - name: Set up Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
         with:
           version: v3.6.3
 
@@ -41,7 +41,7 @@ jobs:
           helm lint ./nextcloud-aio-helm-chart
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
+        uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
         with:
           mark_as_latest: false
           charts_dir: .

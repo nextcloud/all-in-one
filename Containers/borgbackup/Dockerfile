@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM alpine:3.20.3
+FROM alpine:3.23.3
 
 RUN set -ex; \
     \
@@ -11,15 +11,19 @@ RUN set -ex; \
         rsync \
         fuse \
         py3-llfuse \
-        jq
+        jq \
+        openssh-client
 
 VOLUME /root
 
 COPY --chmod=770 *.sh /
+COPY borg_excludes /
 
 ENTRYPOINT ["/start.sh"]
 # hadolint ignore=DL3002
 USER root
 
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
+    org.label-schema.vendor="Nextcloud"
 ENV BORG_RETENTION_POLICY="--keep-within=7d --keep-weekly=4 --keep-monthly=6"

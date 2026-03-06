@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace AIO\Auth;
 
@@ -6,20 +7,20 @@ use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
 use \DateTime;
 
-class AuthManager {
+readonly class AuthManager {
     private const string SESSION_KEY = 'aio_authenticated';
-    private ConfigurationManager $configurationManager;
 
-    public function __construct(ConfigurationManager $configurationManager) {
-        $this->configurationManager = $configurationManager;
+    public function __construct(
+        private ConfigurationManager $configurationManager
+    ) {
     }
 
     public function CheckCredentials(string $password) : bool {
-        return hash_equals($this->configurationManager->GetPassword(), $password);
+        return hash_equals($this->configurationManager->password, $password);
     }
 
     public function CheckToken(string $token) : bool {
-        return hash_equals($this->configurationManager->GetToken(), $token);
+        return hash_equals($this->configurationManager->aioToken, $token);
     }
 
     public function SetAuthState(bool $isLoggedIn) : void {

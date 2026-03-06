@@ -11,7 +11,7 @@ jobs:
     name: Run nextcloud-update script
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - name: Run nextcloud-update script
       run: |
         # Inspired by https://github.com/nextcloud/docker/blob/master/update.sh
@@ -51,7 +51,7 @@ jobs:
         
         # Imagick
         imagick_version="$(
-          git ls-remote --tags https://github.com/Imagick/imagick.git \
+          git ls-remote --tags https://github.com/imagick/imagick.git \
             | cut -d/ -f3 \
             | grep -viE '[a-z]' \
             | tr -d '^{}' \
@@ -79,7 +79,7 @@ jobs:
         fi
 
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v7
+      uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v7
       with:
         commit-message: nextcloud-update automated change
         signoff: true

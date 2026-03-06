@@ -1,12 +1,22 @@
 <html>
     <head>
         <title>AIO</title>
-        <link rel="stylesheet" href="/style.css?v2" media="all" />
-        <link rel="icon" href="/img/favicon.png">
-        <script type="text/javascript" src="forms.js"></script>
+        <link rel="stylesheet" href="style.css?v8" media="all" />
+        <link rel="icon" href="img/favicon.png">
+        <script type="text/javascript" src="forms.js?v1"></script>
+        <script type="text/javascript" src="toggle-dark-mode.js?v1"></script>
     </head>
 
     <body>
+        <div class="wrapper">
             {% block body %}{% endblock %}
+        </div>
+        <div id="overlay">
+            <div class="loader"></div>
+            <iframe name="overlay-log" id="overlay-log"></iframe>
+        </div>
+        <button id="theme-toggle" onclick="toggleTheme()">
+            <span id="theme-icon"></span>
+        </button>
     </body>
 </html>

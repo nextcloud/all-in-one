@@ -8,12 +8,12 @@ on:
 jobs:
   dependency_updates:
     name: Run dependency update script
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: shivammathur/setup-php@v2
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: shivammathur/setup-php@7bf05c6b704e0b9bfee22300130a31b5ea68d593 # v2
       with:
-        php-version: 8.3
+        php-version: 8.5
         extensions: apcu
     - name: Run dependency update script
       run: |
@@ -44,7 +44,7 @@ jobs:
         )"
         sed -i "s|pecl install APCu.*\;|pecl install APCu-$apcu_version\;|" ./Containers/mastercontainer/Dockerfile
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v7
+      uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v7
       with:
         commit-message: php dependency updates
         signoff: true

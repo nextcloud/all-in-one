@@ -15,6 +15,7 @@
 }
 
 https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
+http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests, see containers.json
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
     header -Server
     header -X-Powered-By
@@ -40,7 +41,7 @@ https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
     route /onlyoffice/* {
         uri strip_prefix /onlyoffice
         reverse_proxy {$ONLYOFFICE_HOST}:80 {
-            header_up X-Forwarded-Host {http.request.host}/onlyoffice
+            header_up X-Forwarded-Host {http.request.hostport}/onlyoffice
             header_up X-Forwarded-Proto https
         }
     }
@@ -55,6 +56,11 @@ https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
     route /whiteboard/* {
         uri strip_prefix /whiteboard
         reverse_proxy {$WHITEBOARD_HOST}:3002
+    }
+
+    # HaRP (ExApps)
+    route /exapps/* {
+        reverse_proxy {$HARP_HOST}:8780
     }
 
     # Nextcloud

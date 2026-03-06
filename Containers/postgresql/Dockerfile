@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
-# From https://github.com/docker-library/postgres/blob/master/16/alpine3.20/Dockerfile
-FROM postgres:16.4-alpine
+# From https://github.com/docker-library/postgres/blob/master/17/alpine3.23/Dockerfile
+FROM postgres:17.8-alpine
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
@@ -39,8 +39,10 @@ RUN set -ex; \
 
 VOLUME /mnt/data
 
-USER postgres
+USER 999
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
+    org.label-schema.vendor="Nextcloud"

@@ -1,21 +1,19 @@
 <?php
+declare(strict_types=1);
 
 namespace AIO\Twig;
 
 use Slim\Csrf\Guard;
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
 
-class CsrfExtension extends \Twig\Extension\AbstractExtension implements \Twig\Extension\GlobalsInterface
-{
-    /**
-     * @var Guard
-     */
-    protected Guard $csrf;
-
-    public function __construct(Guard $csrf)
-    {
-        $this->csrf = $csrf;
+class CsrfExtension extends AbstractExtension implements GlobalsInterface {
+    public function __construct(
+        protected Guard $csrf
+    ) {
     }
 
+    #[\Override]
     public function getGlobals() : array
     {
         // CSRF token name and value

@@ -1,11 +1,13 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.12.7-alpine3.20
+FROM python:3.14.3-alpine3.23
 
 COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
-ENV RECORDING_VERSION=v0.1
+ENV RECORDING_VERSION=v0.2.1
 ENV ALLOW_ALL=false
 ENV HPB_PROTOCOL=https
+ENV NC_PROTOCOL=https
 ENV SKIP_VERIFY=false
 ENV HPB_PATH=/standalone-signaling/
 
@@ -28,7 +30,7 @@ RUN set -ex; \
         build-base \
         linux-headers \
         geckodriver; \
-    useradd -d /tmp --system recording; \
+    useradd -d /tmp --system recording -u 122; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     git clone --recursive https://github.com/nextcloud/nextcloud-talk-recording --depth=1 --single-branch --branch "$RECORDING_VERSION" /src; \
@@ -48,10 +50,13 @@ RUN set -ex; \
         build-base \
         linux-headers;
 
+VOLUME /tmp
 WORKDIR /tmp
-USER recording
+USER 122
 ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.conf"]
 
-HEALTHCHECK CMD nc -z 127.0.0.1 1234 || exit 1
-LABEL com.centurylinklabs.watchtower.enable="false"
+HEALTHCHECK CMD /healthcheck.sh
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
+    org.label-schema.vendor="Nextcloud"

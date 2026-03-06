@@ -1,23 +1,27 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.2.24-fpm-alpine3.20
+FROM php:8.3.30-fpm-alpine3.23
 
 ENV PHP_MEMORY_LIMIT=512M
-ENV PHP_UPLOAD_LIMIT=10G
+ENV PHP_UPLOAD_LIMIT=16G
 ENV PHP_MAX_TIME=3600
 ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=29.0.7
+ENV NEXTCLOUD_VERSION=32.0.6
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
 
-COPY --chmod=775 *.sh /
-COPY --chmod=774 upgrade.exclude /upgrade.exclude
-COPY config/*.php /
-COPY supervisord.conf /supervisord.conf
-COPY root.motd /root.motd
+COPY --chmod=775 Containers/nextcloud/*.sh /
+COPY --chmod=774 Containers/nextcloud/upgrade.exclude /upgrade.exclude
+COPY Containers/nextcloud/config/*.php /
+COPY Containers/nextcloud/supervisord.conf /supervisord.conf
+
+# AIO cloning start # Do not remove or change this line!
+COPY app /usr/src/nextcloud/apps/nextcloud-aio
+COPY Containers/nextcloud/root.motd /root.motd
+# AIO cloning end # Do not remove or change this line!
 
 VOLUME /mnt/ncdata
 VOLUME /var/www/html
@@ -78,17 +82,18 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install igbinary-3.2.16; \
-    pecl install APCu-5.1.24; \
-    pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.2.0; \
-    pecl install -D 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.0.2; \
-    pecl install imagick-3.7.0; \
+    pecl install -o igbinary-3.2.16; \
+    pecl install APCu-5.1.28; \
+    pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.4.0; \
+    pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.3.0; \
+   pecl install -o imagick-3.8.1; \
     \
     docker-php-ext-enable \
         igbinary \
         apcu \
         memcached \
         redis \
+        imagick \
     ; \
     rm -r /tmp/pear; \
     \
@@ -107,8 +112,9 @@ RUN set -ex; \
     } >> /usr/local/etc/php/conf.d/docker-php-ext-igbinary.ini; \
     \
 # set recommended PHP.ini settings
-# see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+# see https://docs.nextcloud.com/server/stable/admin_manual/installation/server_tuning.html#enable-php-opcache and below
     { \
+        echo 'opcache.max_accelerated_files=10000'; \
         echo 'opcache.memory_consumption=256'; \
         echo 'opcache.interned_strings_buffer=64'; \
         echo 'opcache.save_comments=1'; \
@@ -117,23 +123,27 @@ RUN set -ex; \
         echo 'opcache.jit_buffer_size=8M'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
-    echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
+    { \
+        echo 'apc.enable_cli=1'; \
+        echo 'apc.shm_size=64M'; \
+    } >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
     { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
         echo 'max_execution_time=${PHP_MAX_TIME}'; \
-        echo 'max_input_time=${PHP_MAX_TIME}'; \
-        echo 'default_socket_timeout=600'; \
+        echo 'max_input_time=-1'; \
+        echo 'default_socket_timeout=${PHP_MAX_TIME}'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
     { \
         echo 'session.save_handler = redis'; \
-        echo 'session.save_path = "tcp://${REDIS_HOST}:6379/${REDIS_DB_INDEX}?auth=${REDIS_HOST_PASSWORD}"'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:${REDIS_PORT}?database=${REDIS_DB_INDEX}${REDIS_USER_AUTH}&auth[]=${REDIS_HOST_PASSWORD}"'; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
         echo 'redis.session.lock_wait_time = 10000'; \
+        echo 'session.gc_maxlifetime = 86400'; \
     } > /usr/local/etc/php/conf.d/redis-session.ini; \
     \
     mkdir -p /var/www/data; \
@@ -147,7 +157,7 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://github.com/nextcloud-releases/server/releases/download/v${NEXTCLOUD_VERSION}/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
         "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
@@ -207,8 +217,8 @@ RUN set -ex; \
     /var/log/supervisord \
     /var/run/supervisord \
     ; \
-    chown www-data:root -R /var/log/supervisord; \
-    chown www-data:root -R /var/run/supervisord; \
+    chmod 777 -R /var/log/supervisord; \
+    chmod 777 -R /var/run/supervisord; \
     \
     apk add --no-cache \
         bash \
@@ -236,33 +246,23 @@ RUN set -ex; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 5000/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
-# AIO cloning start # Do not remove or change this line!
-    rm -rf /tmp/nextcloud-aio && \
-    mkdir -p /tmp/nextcloud-aio && \
-    cd /tmp/nextcloud-aio && \
-    git clone https://github.com/nextcloud-releases/all-in-one.git --depth 1 .; \
-    mkdir -p /usr/src/nextcloud/apps/nextcloud-aio; \
-    cp -r ./app/* /usr/src/nextcloud/apps/nextcloud-aio/; \
-    echo "[ -n \"\$TERM\" ] && cat /root.motd" >> /root/.bashrc; \
-# AIO cloning end # Do not remove or change this line!
+    echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \
     \
     chown www-data:root -R /usr/src && \
-    chown www-data:root -R /usr/local/etc/php/conf.d && \
-    chown www-data:root -R /usr/local/etc/php-fpm.d && \
+    chmod 777 -R /usr/local/etc/php/conf.d && \
+    chmod 777 -R /usr/local/etc/php-fpm.d && \
     chmod -R 777 /tmp; \
-    rm -rf /usr/src/nextcloud/apps/updatenotification; \
+    chmod -R 777 /etc/openldap; \
     \
     mkdir -p /nc-updater; \
-    chown -R www-data:www-data /nc-updater; \
-    chmod -R 770 /nc-updater; \
-    \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd
+    chmod -R 777 /nc-updater
 
 # hadolint ignore=DL3002
 USER root
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK --start-period=60s CMD sudo -E -u www-data bash /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+HEALTHCHECK CMD /healthcheck.sh
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
+    org.label-schema.vendor="Nextcloud"

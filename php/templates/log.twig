@@ -1,0 +1,59 @@
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <style>
+            body {
+                padding: 1rem;
+            }
+            #floating-box {
+                position: fixed;
+                top: 1rem;
+                right: 1rem;
+                width: 20rem;
+                display: flex;
+                justify-content: end;
+                align-items: center;
+            }
+            #autoloading-box {
+                display: grid;
+                gap: 0.5rem;
+                font-size: large;
+                border: solid thin gray;
+                background-color: #f9f9f9;
+                width: 10rem;
+                padding: 0.5rem 1rem;
+                margin: 0 0 0 1rem;
+            }
+            .loader {
+                opacity: 1;
+                width: 40px;
+                height: 40px;
+                align-self: inherit;
+            }
+            @starting-style {
+              .loader {
+                opacity: 0;
+              }
+            }
+            .loader.hidden {
+                display: none;
+                opacity: 0;
+                transition: opacity 1s, display 1s allow-discrete;
+            }
+        </style>
+        <script src="log-view.js"></script>
+    </head>
+    <body data-container-id="{{ id }}">
+        <div id="floating-box">
+            <div class="loader"></div>
+            <div id="autoloading-box">
+                <div>
+                    Automatic loading of new log data is
+                    <span id="autoloading-status">enabled</span>.
+                </div>
+                <button id="autoloading-control">Disable</button>
+            </div>
+        </div>
+        <pre>{{ logContent }}</pre>
+    </body>
+</html>

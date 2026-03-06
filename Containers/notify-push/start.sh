@@ -1,13 +1,7 @@
 #!/bin/bash
 
 if [ -z "$NEXTCLOUD_HOST" ]; then
-    echo "NEXTCLOUD_HOST need to be provided. Exiting!"
-    exit 1
-elif [ -z "$POSTGRES_HOST" ]; then
-    echo "POSTGRES_HOST need to be provided. Exiting!"
-    exit 1
-elif [ -z "$REDIS_HOST" ]; then
-    echo "REDIS_HOST need to be provided. Exiting!"
+    echo "NEXTCLOUD_HOST needs to be provided. Exiting!"
     exit 1
 fi
 
@@ -28,7 +22,7 @@ elif [ "$CPU_ARCH" != "x86_64" ]; then
 fi
 
 # Add warning
-if ! [ -f /nextcloud/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; then
+if ! [ -f /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; then
     echo "The notify_push binary was not found."
     echo "Most likely is DNS resolution not working correctly."
     echo "You can try to fix this by configuring a DNS server globally in dockers daemon.json."
@@ -44,23 +38,9 @@ fi
 
 echo "notify-push was started"
 
-# Set a default value for POSTGRES_PORT
-if [ -z "$POSTGRES_PORT" ]; then
-    POSTGRES_PORT=5432
-fi
-# Set a default for redis db index
-if [ -z "$REDIS_DB_INDEX" ]; then
-    REDIS_DB_INDEX=0
-fi
-
-# Set sensitive values as env
-export DATABASE_URL="postgres://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
-export REDIS_URL="redis://:$REDIS_HOST_PASSWORD@$REDIS_HOST/$REDIS_DB_INDEX"
-
 # Run it
-/nextcloud/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
-    --database-prefix="oc_" \
-    --nextcloud-url "https://$NC_DOMAIN" \
-    --port 7867
+/var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
+    --port 7867 \
+    /var/www/html/config/config.php
 
 exec "$@"

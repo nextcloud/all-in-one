@@ -30,14 +30,23 @@ if [ -n "$IPv4_ADDRESS_TALK" ] && [ "$IPv4_ADDRESS_TALK_RELAY" = "$IPv4_ADDRESS_
     IPv4_ADDRESS_TALK=""
 fi
 
+set -x
+IP_BINDING="::"
+if grep -q "1" /sys/module/ipv6/parameters/disable \
+|| grep -q "1" /proc/sys/net/ipv6/conf/all/disable_ipv6 \
+|| grep -q "1" /proc/sys/net/ipv6/conf/default/disable_ipv6; then
+    IP_BINDING="0.0.0.0"
+fi
+set +x
+
 # Turn
 cat << TURN_CONF > "/conf/eturnal.yml"
 eturnal:
   listen:
-    - ip: "::"
+    - ip: "$IP_BINDING"
       port: $TALK_PORT
       transport: udp
-    - ip: "::"
+    - ip: "$IP_BINDING"
       port: $TALK_PORT
       transport: tcp
   log_dir: stdout
@@ -86,9 +95,10 @@ backends = backend-1
 allowall = false
 timeout = 10
 connectionsperhost = 8
+skipverify = ${SKIP_CERT_VERIFY}
 
 [backend-1]
-url = https://${NC_DOMAIN}
+urls = https://${NC_DOMAIN}
 secret = ${SIGNALING_SECRET}
 maxstreambitrate = ${TALK_MAX_STREAM_BITRATE}
 maxscreenbitrate = ${TALK_MAX_SCREEN_BITRATE}

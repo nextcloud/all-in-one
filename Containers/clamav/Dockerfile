@@ -1,26 +1,38 @@
 # syntax=docker/dockerfile:latest
-# Probably from this file: https://github.com/Cisco-Talos/clamav-docker/blob/main/clamav/1.3/alpine/Dockerfile
-FROM clamav/clamav:1.4.1-5
-
-COPY clamav.conf /clamav.conf
-COPY --chmod=775 start.script /start.script
+FROM alpine:3.23.3
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache tzdata bash; \
-    mkdir -p /var/run/clamav /run/lock; \
-    chown -R clamav:clamav /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock; \
-    chmod 777 -R /var/run/clamav /run/clamav /var/log/clamav /var/lock /run/lock /tmp; \
-    sed -i "/^set -eu/r /start.script" /init-unprivileged; \
-    rm /start.script; \
-    grep -q 'clamd --foreground &' /init-unprivileged; \
-    sed -i "s|clamd --foreground \&|clamd --foreground --config-file /tmp/clamd.conf \&|" /init-unprivileged; \
-    cat /init-unprivileged
+    apk add --no-cache tzdata clamav clamav-milter supervisor bash; \
+    mkdir -p /tmp /var/lib/clamav /run/clamav /var/log/supervisord /var/run/supervisord; \
+    chmod 777 -R /tmp /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
+    chown -R 100:100 /var/lib/clamav; \
+    sed -i "s|#\?MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?MaxScanSize.*|MaxScanSize 2000M|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?MaxFileSize.*|MaxFileSize 2000M|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize 2000M|g" /etc/clamav/clamd.conf; \
+# StreamMaxLength must be synced with av_stream_max_length inside the Nextcloud files_antivirus plugin
+    sed -i "s|#\?StreamMaxLength.*|StreamMaxLength 2000M|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?TCPSocket|TCPSocket|g" /etc/clamav/clamd.conf; \
+    sed -i "s|^LocalSocket .*|LocalSocket /tmp/clamd.sock|g" /etc/clamav/clamd.conf; \
+    sed -i "s|Example| |g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?MilterSocket inet:7357|MilterSocket inet:7357|g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?ClamdSocket unix:/run/clamav/clamd.sock|ClamdSocket unix:/tmp/clamd.sock|g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?OnInfected Quarantine|OnInfected Reject|g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?AddHeader Replace|AddHeader Add|g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?Foreground yes|Foreground yes|g" /etc/clamav/clamav-milter.conf
 
+COPY --chmod=775 start.sh /start.sh
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
+COPY --chmod=664 supervisord.conf /supervisord.conf
+
+USER 100
+RUN set -ex; \
+    freshclam --foreground --stdout
 VOLUME /var/lib/clamav
-
-USER clamav
-
-LABEL com.centurylinklabs.watchtower.enable="false"
-
-ENTRYPOINT ["/init-unprivileged"]
+ENTRYPOINT ["/start.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
+    org.label-schema.vendor="Nextcloud"
+HEALTHCHECK --start-period=60s --retries=9 CMD /healthcheck.sh

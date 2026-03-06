@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Probably from here https://github.com/elastic/elasticsearch/blob/main/distribution/docker/src/docker/Dockerfile
-FROM elasticsearch:8.15.2
+FROM elasticsearch:8.19.11
 
 USER root
 
@@ -14,10 +14,14 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         tzdata \
     ; \
-    rm -rf /var/lib/apt/lists/*; \
-    elasticsearch-plugin install --batch ingest-attachment
+    rm -rf /var/lib/apt/lists/*;
+
+COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 USER 1000:0
 
-HEALTHCHECK CMD nc -z 127.0.0.1 9200 || exit 1
-LABEL com.centurylinklabs.watchtower.enable="false"
+HEALTHCHECK --interval=10s --timeout=5s --start-period=1m --retries=5 CMD /healthcheck.sh
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
+    org.label-schema.vendor="Nextcloud"
+ENV ES_JAVA_OPTS="-Xms512M -Xmx512M"

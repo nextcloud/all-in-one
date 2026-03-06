@@ -15,7 +15,7 @@
 					"image": {
 						"type": "string",
 						"minLength": 1,
-						"pattern": "^[a-z0-9/-]+$"
+						"pattern": "^(ghcr.io/)?[a-z0-9/-]+$"
 					},
 					"expose": {
 						"type": "array",
@@ -47,7 +47,7 @@
 					},
 					"display_name": {
 						"type": "string",
-						"pattern": "^[A-Za-z 0-9-]+$"
+						"pattern": "^[()A-Za-z &0-9-]+$"
 					},
 					"environment": {
 						"type": "array",
@@ -68,6 +68,10 @@
 					"stop_grace_period": {
 						"type": "integer"
 					},
+					"user": {
+						"type": "string",
+						"pattern": "^[0-9]{1,6}$"
+					},
 					"ports": {
 						"type": "array",
 						"items": {
@@ -77,7 +81,7 @@
 							"properties": {
 								"ip_binding": {
 									"type": "string",
-									"pattern": "^(%[A-Z_]+%)?$"
+									"pattern": "^((%[A-Z_]+%)|127\\.0\\.0\\.1)?$"
 								},
 								"port_number": {
 									"type": "string",
@@ -87,6 +91,36 @@
 									"type": "string",
 									"pattern": "^(tcp|udp)$"
 								}
+							}
+						}
+					},
+					"healthcheck": {
+						"type": "object",
+						"additionalProperties": false,
+						"minProperties": 6,
+						"properties": {
+							"interval": {
+								"type": "string",
+								"pattern": "^[0-9]+s$"
+							},
+							"timeout": {
+								"type": "string",
+								"pattern": "^[0-9]+s$"
+							},
+							"retries": {
+								"type": "integer"
+							},
+							"start_period": {
+								"type": "string",
+								"pattern": "^[0-9]+s$"
+							},
+							"start_interval": {
+								"type": "string",
+								"pattern": "^[0-9]+s$"
+							},
+							"test": {
+								"type": "string",
+								"pattern": "^.*$"
 							}
 						}
 					},
@@ -111,6 +145,10 @@
 							"pattern": "^[A-Z_]+$"
 						}
 					},
+					"ui_secret": {
+						"type": "string",
+						"pattern": "^[A-Z_]+$"
+					},
 					"image_tag": {
 						"type": "string",
 						"pattern": "^([a-z0-9.-]+|%AIO_CHANNEL%)$"
@@ -125,6 +163,9 @@
 							"type": "string",
 							"pattern": "^/dev/[a-z]+$"
 						}
+					},
+					"enable_nvidia_gpu": {
+						"type": "boolean"
 					},
 					"apparmor_unconfined": {
 						"type": "boolean"
@@ -148,13 +189,6 @@
 						"items": {
 							"type": "string",
 							"pattern": "^[a-z-]+$"
-						}
-					},
-					"networks": {
-						"type": "array",
-						"items": {
-							"type": "string",
-							"pattern": "^nextcloud-aio$"
 						}
 					},
 					"read_only": {
@@ -183,7 +217,7 @@
 								},
 								"source": {
 									"type": "string",
-									"pattern": "^((nextcloud_aio_[a-z_]+)|(%[A-Z_]+%))$"
+									"pattern": "^((nextcloud_aio_[a-z_]+)|(%[A-Z_]+%)|(/dev)|(/run/udev))$"
 								},
 								"writeable": {
 									"type": "boolean"

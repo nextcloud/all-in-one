@@ -99,7 +99,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     fi
 
     # Get the Owner
-    DB_OWNER="$(grep -a "$GREP_STRING" "$DUMP_FILE" | head -1 | grep -oP 'Owner:.*$' | sed 's|Owner:||;s| ||g')"
+    DB_OWNER="$(grep -a "$GREP_STRING" "$DUMP_FILE" | head -1 | grep -oP 'Owner:.*$' | sed 's|Owner:||;s|[[:space:]]||g')"
     if [ "$DB_OWNER" = "$POSTGRES_USER" ]; then
         echo "Unfortunately was the found database owner of the dump file the same as the POSTGRES_USER $POSTGRES_USER"
         echo "It is not possible to import a database dump from this database owner."
@@ -128,7 +128,9 @@ EOSQL
     fi
 
     # Shut down the database to be able to start it again
-    pg_ctl stop -m fast
+    # The smart mode disallows new connections, then waits for all existing clients to disconnect and any online backup to finish
+    # Wait for 1800s to make sure that a checkpoint is completed successfully
+    pg_ctl stop -m smart -t 1800
 
     # Change database port back to default
     export PGPORT=5432

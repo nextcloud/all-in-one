@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Wait 15s for domain to be reachable
-sleep 15
+# Wait until the apache container is ready
+while ! nc -z "$APACHE_HOST" "$APACHE_PORT"; do
+    echo "Waiting for $APACHE_HOST to become available..."
+    sleep 15
+done
 
 if [ -n "$NEXTCLOUD_EXEC_COMMANDS" ]; then
     echo "#!/bin/bash" > /tmp/nextcloud-exec-commands
@@ -16,11 +19,13 @@ else
         echo "Activating Collabora config..."
         php /var/www/html/occ richdocuments:activate-config
     fi
-    # OnlyOffice must work also if using manual-install
-    if [ "$ONLYOFFICE_ENABLED" = yes ]; then
-        echo "Activating OnlyOffice config..."
-        php /var/www/html/occ onlyoffice:documentserver --check
-    fi
 fi
 
-sleep inf
+signal_handler() {
+    exit 0
+}
+
+trap signal_handler SIGINT SIGTERM
+
+sleep inf &
+wait $!

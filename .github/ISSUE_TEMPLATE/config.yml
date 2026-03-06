@@ -1,14 +1,14 @@
 blank_issues_enabled: false
 contact_links:
+    - name: 📘 Documentation on Nextcloud AIO
+      url: https://github.com/nextcloud/all-in-one#faq
+      about: Please read the docs first before submitting any report or request!
+    - name: ⛑️ Questions and support
+      url: https://help.nextcloud.com/tag/aio
+      about: For questions, support and help
     - name: 💡 Suggest a new feature or discuss one
       url:  https://github.com/nextcloud/all-in-one/discussions/categories/ideas
       about: For new feature requests and discussion of existing ones
-    - name: ❓ Questions on AIO
-      url: https://github.com/nextcloud/all-in-one/discussions/categories/questions
-      about: For questions regarding AIO
-    - name: ⛑️ Community Support and Help
-      url: https://help.nextcloud.com/tag/aio
-      about: For other types of questions
     - name: 💼 Nextcloud Enterprise
       url: https://portal.nextcloud.com/
       about: If you are a Nextcloud Enterprise customer, or need Professional support, so it can be resolved directly by our dedicated engineers more quickly

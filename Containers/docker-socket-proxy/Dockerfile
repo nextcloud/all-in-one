@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM haproxy:3.0.5-alpine
+FROM haproxy:3.3.4-alpine
 
 # hadolint ignore=DL3002
 USER root
@@ -18,4 +18,6 @@ COPY --chmod=664 haproxy.cfg /haproxy.cfg
 
 ENTRYPOINT ["/start.sh"]
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
+    org.label-schema.vendor="Nextcloud"

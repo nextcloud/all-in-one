@@ -2,8 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-    kompose.version: 1.34.0 (cbf2835db)
+    kompose.version: 1.38.0 (a8f5d1cbd)
   labels:
     io.kompose.service: nextcloud-aio-nextcloud
   name: nextcloud-aio-nextcloud
@@ -18,25 +17,28 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -c -f latest.yml --namespace "{{ .Values.NAMESPACE }}"
-        kompose.version: 1.34.0 (cbf2835db)
+        kompose.version: 1.38.0 (a8f5d1cbd)
       labels:
         io.kompose.service: nextcloud-aio-nextcloud
     spec:
+      {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
+      securityContext:
+        # The items below only work in pod context
+        fsGroup: 33
+        fsGroupChangePolicy: "OnRootMismatch"
+        # The items below work in both contexts
+        runAsUser: 33
+        runAsGroup: 33
+        runAsNonRoot: true
+        {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
+      {{- end }} # AIO-config - do not change this comment!
+# AIO settings start # Do not remove or change this line!
       initContainers:
-        - name: "delete-lost-found"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
-          command:
-            - rm
-            - "-rf"
-            - "/nextcloud-aio-nextcloud/lost+found"
-          volumeMounts:
-            - name: nextcloud-aio-nextcloud-trusted-cacerts
-              mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
-            - name: nextcloud-aio-nextcloud
-              mountPath: /nextcloud-aio-nextcloud
         - name: init-volumes
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.ALPINE_IMAGE_ORG }}alpine"
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260218_123804
           command:
             - chmod
             - "777"
@@ -47,6 +49,7 @@ spec:
               mountPath: /nextcloud-aio-nextcloud-trusted-cacerts
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
+# AIO settings end # Do not remove or change this line!
       containers:
         - env:
             - name: SMTP_HOST
@@ -77,6 +80,8 @@ spec:
               value: "{{ .Values.SERVERINFO_TOKEN }}"
             - name: NEXTCLOUD_DEFAULT_QUOTA
               value: "{{ .Values.NEXTCLOUD_DEFAULT_QUOTA }}"
+            - name: NEXTCLOUD_SKELETON_DIRECTORY
+              value: "{{ .Values.NEXTCLOUD_SKELETON_DIRECTORY }}"
             - name: NEXTCLOUD_MAINTENANCE_WINDOW
               value: "{{ .Values.NEXTCLOUD_MAINTENANCE_WINDOW }}"
             - name: ADDITIONAL_APKS
@@ -87,14 +92,14 @@ spec:
               value: "{{ .Values.NEXTCLOUD_PASSWORD }}"
             - name: ADMIN_USER
               value: admin
+            - name: APACHE_HOST
+              value: nextcloud-aio-apache
             - name: APACHE_PORT
               value: "{{ .Values.APACHE_PORT }}"
             - name: CLAMAV_ENABLED
               value: "{{ .Values.CLAMAV_ENABLED }}"
             - name: CLAMAV_HOST
               value: nextcloud-aio-clamav
-            - name: CLAMAV_MAX_SIZE
-              value: "{{ .Values.APACHE_MAX_SIZE }}"
             - name: COLLABORA_ENABLED
               value: "{{ .Values.COLLABORA_ENABLED }}"
             - name: COLLABORA_HOST
@@ -103,8 +108,16 @@ spec:
               value: "{{ .Values.FULLTEXTSEARCH_ENABLED }}"
             - name: FULLTEXTSEARCH_HOST
               value: nextcloud-aio-fulltextsearch
+            - name: FULLTEXTSEARCH_INDEX
+              value: nextcloud-aio
             - name: FULLTEXTSEARCH_PASSWORD
               value: "{{ .Values.FULLTEXTSEARCH_PASSWORD }}"
+            - name: FULLTEXTSEARCH_PORT
+              value: "9200"
+            - name: FULLTEXTSEARCH_PROTOCOL
+              value: http
+            - name: FULLTEXTSEARCH_USER
+              value: elastic
             - name: IMAGINARY_ENABLED
               value: "{{ .Values.IMAGINARY_ENABLED }}"
             - name: IMAGINARY_HOST
@@ -117,6 +130,8 @@ spec:
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_DATA_DIR
               value: /mnt/ncdata
+            - name: NEXTCLOUD_HOST
+              value: nextcloud-aio-nextcloud
             - name: ONLYOFFICE_ENABLED
               value: "{{ .Values.ONLYOFFICE_ENABLED }}"
             - name: ONLYOFFICE_HOST
@@ -147,6 +162,8 @@ spec:
               value: nextcloud-aio-redis
             - name: REDIS_HOST_PASSWORD
               value: "{{ .Values.REDIS_PASSWORD }}"
+            - name: REDIS_PORT
+              value: "6379"
             - name: REMOVE_DISABLED_APPS
               value: "{{ .Values.REMOVE_DISABLED_APPS }}"
             - name: SIGNALING_SECRET
@@ -173,17 +190,38 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: "{{ .Values.IMAGE_MIRROR_PREFIX }}{{ .Values.NEXTCLOUD_IMAGE_ORG }}/aio-nextcloud:20240925_080419"
+          image: ghcr.io/nextcloud-releases/aio-nextcloud:20260218_123804
+          {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
+          securityContext:
+            # The items below only work in container context
+            allowPrivilegeEscalation: false
+            capabilities:
+              {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }}
+              drop: ["ALL"]
+              {{- else }}
+              drop: ["NET_RAW"]
+              {{- end }}
+          {{- end }} # AIO-config - do not change this comment!
+          readinessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 30
           name: nextcloud-aio-nextcloud
           ports:
             - containerPort: 9000
               protocol: TCP
             - containerPort: 9001
               protocol: TCP
-          securityContext:
-            capabilities:
-              drop:
-                - NET_RAW
           volumeMounts:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud

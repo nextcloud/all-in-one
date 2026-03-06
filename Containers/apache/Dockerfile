@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:latest
-FROM caddy:2.8.4-alpine AS caddy
+FROM caddy:2.11.1-alpine AS caddy
 
 # From https://github.com/docker-library/httpd/blob/master/2.4/alpine/Dockerfile
-FROM httpd:2.4.62-alpine3.20
+FROM httpd:2.4.66-alpine3.23
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
@@ -79,12 +79,15 @@ RUN set -ex; \
     chmod 777 -R /usr/local/apache2/logs; \
     rm -rf /usr/local/apache2/cgi-bin/; \
     \
-    echo "root:$(openssl rand -base64 12)" | chpasswd
+    echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    apk --no-cache del openssl
 
-USER www-data
+USER 33
 
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
-LABEL com.centurylinklabs.watchtower.enable="false"
+LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
+    org.label-schema.vendor="Nextcloud"

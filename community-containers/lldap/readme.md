@@ -3,7 +3,7 @@ This container bundles LLDAP server and auto-configures your Nextcloud instance 
 
 ### Notes
 - In order to access your LLDAP web interface outside the local network, you have to set up your own reverse proxy. You can set up a reverse proxy following [these instructions](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) OR use the [Caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container that will automatically configure `ldap.$NC_DOMAIN` to redirect to your Lldap. You need to point the reverse proxy at port 17170 of this server.
-- After adding and starting the container, you can log in to the lldap web interface by using the username `admin` and the password that you can retrieve via `sudo docker inspect nextcloud-aio-lldap | grep LLDAP_JWT_SECRET`.
+- After adding and starting the container, you can log in to the lldap web interface by using the username `admin` and the secret that you can see next to the container in the AIO interface.
 - To configure Nextcloud, you can use the generic configuration proposed below.
 - For advanced configurations, see how to configure a client with lldap https://github.com/lldap/lldap#client-configuration
 - Also, see how Nextcloud's LDAP application works https://docs.nextcloud.com/server/latest/admin_manual/configuration_user/user_auth_ldap.html
@@ -18,12 +18,10 @@ Functionality with this configuration:
 
 > For simplicity, this configuration is done via the command line (don't worry, it's very simple).
 
-First, you need to retrieve the LLDAP admin password, this will be used later on. Which you need to type in or copy and paste:
-```bash
-sudo docker inspect nextcloud-aio-lldap | grep LLDAP_LDAP_USER_PASS
-```
+First, you need to retrieve the LLDAP admin password that you can see next to the container in the AIO interface. There you can configure smtp first and then invite users via mail.
 
-Now go into the Nextcloud container:
+Now go into the Nextcloud container:<br>
+**Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management. This script below can be run from inside the container-management container via `bash /lldap.sh`.
 ```bash
 sudo docker exec --user www-data -it nextcloud-aio-nextcloud bash
 ```
