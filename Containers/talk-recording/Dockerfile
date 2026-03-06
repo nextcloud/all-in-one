@@ -20,6 +20,9 @@ RUN set -ex; \
         xvfb \
         ffmpeg \
         firefox \
+        font-noto-all \
+        font-noto-cjk \
+        font-noto-cjk-extra \
         bind-tools \
         netcat-openbsd \
         git \
