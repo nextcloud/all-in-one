@@ -140,14 +140,20 @@ readonly class DockerController {
         $this->configurationManager->restoreExcludePreviews = isset($request->getParsedBody()['restore-exclude-previews']);
         $this->configurationManager->commitTransaction();
 
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
+
         $id = self::TOP_CONTAINER;
         $forceStopNextcloud = true;
-        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
+        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud, $addToStreamingResponseBody);
 
         $id = 'nextcloud-aio-borgbackup';
-        $this->PerformRecursiveContainerStart($id);
+        $this->PerformRecursiveContainerStart($id, true, $addToStreamingResponseBody);
 
-        return $response->withStatus(201)->withHeader('Location', '.');
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
     }
 
     public function StartBackupContainerCheckRepair(Request $request, Response $response, array $args) : Response {

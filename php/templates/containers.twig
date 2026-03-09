@@ -169,7 +169,7 @@
                                         {% endif %}
                                         <p>Choose the backup that you want to restore and click on the button below to restore the selected backup. This will restore the whole AIO instance. Please note that the current AIO passphrase will be kept and the previous AIO passphrase will not be restored from backup!</p>
                                         <p><strong>Important:</strong> If the backup that you want to restore contained any <a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">community container</a>, you need to restore the same backup a second time after this attempt so that the community container data is also correctly restored.</p>
-                                        <form method="POST" action="api/docker/restore" class="xhr" id="restore_selection">
+                                        <form method="POST" action="api/docker/restore" target="overlay-log" id="restore_selection">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                             <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
@@ -492,7 +492,7 @@
 
                                             <h3>Backup restore</h3>
                                             <p>Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the chosen backup so you should consider creating a backup first. You can run an integrity check before restoring your files but this shouldn't be needed in most situations. Please note that this will not restore additionally chosen backup directories! The restore process should be pretty fast as rsync, which only transfers changed files, is used to restore the chosen backup.</p>
-                                            <form method="POST" action="api/docker/restore" class="xhr" id="restore_selection">
+                                            <form method="POST" action="api/docker/restore" target="overlay-log" id="restore_selection">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
