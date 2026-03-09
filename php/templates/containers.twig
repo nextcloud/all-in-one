@@ -150,7 +150,7 @@
                                             <details>
                                                 <summary>Reveal repair option</summary>
                                                 <p>Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)</p>
-                                                <form method="POST" action="api/docker/backup-check-repair" class="xhr">
+                                                <form method="POST" action="api/docker/backup-check-repair" target="overlay-log">
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                     <input type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/>
@@ -407,7 +407,7 @@
                                             <details>
                                                 <summary>Reveal repair option</summary>
                                                 <p>Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)</p>
-                                                <form method="POST" action="api/docker/backup-check-repair" class="xhr">
+                                                <form method="POST" action="api/docker/backup-check-repair" target="overlay-log">
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                     <input type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/>
