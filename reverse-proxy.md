@@ -1107,7 +1107,7 @@ After starting AIO, you should be able to access the AIO Interface via `https://
 Enter your domain in the AIO interface that you've used in the reverse proxy config and you should be done. Please do not forget to open/forward port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
 ### 5. Optional: Configure AIO for reverse proxies that connect to nextcloud not using localhost nor 127.0.0.1
-If your reverse proxy connects to nextcloud not using localhost or 127.0.0.1, you must add said IP as trusted proxy in the env file. 
+If your reverse proxy connects to nextcloud not using localhost or 127.0.0.1, you must add said IP as trusted proxy to the installation. See the step below:
 
 Add the IP it uses connect to AIO to the Nextcloud trusted_proxies like this:
 
