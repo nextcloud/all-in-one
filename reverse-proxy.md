@@ -1131,6 +1131,7 @@ If you want to also access your AIO interface publicly with a valid certificate,
 ```
 https://<your-nc-domain>:8443 {
     reverse_proxy https://localhost:8080 {
+        header_up Host {host}
         transport http {
             tls_insecure_skip_verify
         }
