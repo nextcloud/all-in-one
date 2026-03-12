@@ -351,8 +351,8 @@ readonly class ContainerDefinitionFetcher {
                 $imageTag,
                 $aioVariables,
                 $documentation,
-                $this->container->get(DockerActionManager::class),
-                $hideFromList
+                $hideFromList,
+                $this->container->get(DockerActionManager::class)
             );
         }
 

@@ -38,8 +38,8 @@ readonly class Container {
         public string                        $imageTag,
         public AioVariables                  $aioVariables,
         public string                        $documentation,
-        private DockerActionManager           $dockerActionManager,
-        public bool                          $hideFromList
+        public bool                          $hideFromList,
+        private DockerActionManager           $dockerActionManager
     ) {
     }
 
