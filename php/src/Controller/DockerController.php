@@ -168,13 +168,19 @@ readonly class DockerController {
         $this->configurationManager->instanceRestoreAttempt = false;
         $this->configurationManager->commitTransaction();
 
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
+
         $id = self::TOP_CONTAINER;
-        $this->PerformRecursiveContainerStop($id);
+        $this->PerformRecursiveContainerStop($id, true, $addToStreamingResponseBody);
 
         $id = 'nextcloud-aio-borgbackup';
-        $this->PerformRecursiveContainerStart($id);
+        $this->PerformRecursiveContainerStart($id, true, $addToStreamingResponseBody);
 
-        return $response->withStatus(201)->withHeader('Location', '.');
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
     }
 
     public function StartContainer(Request $request, Response $response, array $args) : Response

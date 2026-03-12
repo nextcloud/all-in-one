@@ -215,7 +215,7 @@
                             {% endif %}
                         {% else %}
                             <p><strong>Everything set!</strong> Click on the button below to test the path and encryption password:</p>
-                            <form method="POST" action="api/docker/backup-test" class="xhr">
+                            <form method="POST" action="api/docker/backup-test" target="overlay-log">
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input type="submit" value="Test path and encryption password"/>
