@@ -119,7 +119,7 @@ readonly class DockerController {
         $nonbufResp = $this->startStreamingResponse($response);
         $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
 
-        $this->listBackup();
+        $this->listBackup($addToStreamingResponseBody);
 
         // End streaming response
         $this->finalizeStreamingResponse($nonbufResp);
