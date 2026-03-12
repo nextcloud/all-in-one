@@ -324,6 +324,8 @@ readonly class ContainerDefinitionFetcher {
                 $documentation = $entry['documentation'];
             }
 
+            $hideFromList = $entry['hide_from_list'] ?? false;
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -349,7 +351,8 @@ readonly class ContainerDefinitionFetcher {
                 $imageTag,
                 $aioVariables,
                 $documentation,
-                $this->container->get(DockerActionManager::class)
+                $this->container->get(DockerActionManager::class),
+                $hideFromList
             );
         }
 

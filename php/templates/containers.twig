@@ -47,10 +47,10 @@
             {% endif %}
 
             {% for container in containers %}
-                {% if container.displayName != '' and container.GetRunningState().value == 'running' %}
+                {% if container.hideFromList != true and container.GetRunningState().value == 'running' %}
                     {% set isAnyRunning = true %}
                 {% endif %}
-                {% if container.displayName != '' and container.GetRestartingState().value == 'restarting' %}
+                {% if container.hideFromList != true and container.GetRestartingState().value == 'restarting' %}
                     {% set isAnyRestarting = true %}
                 {% endif %}
                 {% if container.identifier == 'nextcloud-aio-watchtower' and container.GetRunningState().value == 'running' %}
@@ -282,7 +282,7 @@
                         <ul>
                             {# @var containers \AIO\Container\Container[] #}
                             {% for container in containers %}
-                                {% if container.displayName != '' %}
+                                {% if container.hideFromList != true %}
                                     {% include 'components/container-state.twig'  with {'c': container} only %}
                                 {% endif %}
                             {% endfor %}

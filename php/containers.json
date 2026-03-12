@@ -530,6 +530,8 @@
     },
     {
       "container_name": "nextcloud-aio-borgbackup",
+      "display_name": "Borgbackup",
+      "hide_from_list": true,
       "image_tag": "%AIO_CHANNEL%",
       "image": "ghcr.io/nextcloud-releases/aio-borgbackup",
       "init": true,
@@ -598,6 +600,8 @@
     },
     {
       "container_name": "nextcloud-aio-watchtower",
+      "display_name": "Watchtower",
+      "hide_from_list": true,
       "image_tag": "%AIO_CHANNEL%",
       "image": "ghcr.io/nextcloud-releases/aio-watchtower",
       "init": true,
@@ -618,6 +622,8 @@
     },
     {
       "container_name": "nextcloud-aio-domaincheck",
+      "display_name": "Domaincheck",
+      "hide_from_list": true,
       "image_tag": "%AIO_CHANNEL%",
       "image": "ghcr.io/nextcloud-releases/aio-domaincheck",
       "init": true,
