@@ -153,13 +153,19 @@ readonly class DockerController {
     public function StartBackupContainerCheckRepair(Request $request, Response $response, array $args) : Response {
         $this->configurationManager->backupMode = 'check-repair';
 
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
+
         $id = 'nextcloud-aio-borgbackup';
-        $this->PerformRecursiveContainerStart($id);
+        $this->PerformRecursiveContainerStart($id, true, $addToStreamingResponseBody);
 
         // Restore to backup check which is needed to make the UI logic work correctly
         $this->configurationManager->backupMode = 'check';
 
-        return $response->withStatus(201)->withHeader('Location', '.');
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
     }
 
     public function StartBackupContainerTest(Request $request, Response $response, array $args) : Response {
