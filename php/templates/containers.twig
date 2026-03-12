@@ -507,7 +507,7 @@
                                             <details>
                                                 <summary>Click here to reveal this option</summary>
                                                 <p>If you use an external snapshot tool to restore the server that runs AIO, you might run into a problem that the above listed available backups are not up-to-date to restore your server from. You can click the button below to update this list.</p>
-                                                <form method="POST" action="api/docker/backup-list" class="xhr">
+                                                <form method="POST" action="api/docker/backup-list" target="overlay-log">
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                     <input type="submit" value="Update backup list" />
