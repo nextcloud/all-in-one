@@ -48,10 +48,10 @@
             {% endif %}
 
             {% for container in containers %}
-                {% if container.displayName != '' and container.GetRunningState().value == 'running' %}
+                {% if container.hideFromList != true and container.GetRunningState().value == 'running' %}
                     {% set isAnyRunning = true %}
                 {% endif %}
-                {% if container.displayName != '' and container.GetRestartingState().value == 'restarting' %}
+                {% if container.hideFromList != true and container.GetRestartingState().value == 'restarting' %}
                     {% set isAnyRestarting = true %}
                 {% endif %}
                 {% if container.identifier == 'nextcloud-aio-watchtower' and container.GetRunningState().value == 'running' %}
@@ -91,7 +91,7 @@
                     {% elseif is_mastercontainer_update_available == true %}
                         <h2>Mastercontainer update</h2>
                         <p>⚠️ A mastercontainer update is available. Please click on the button below to update it. Afterwards, you will be able to proceed with the setup.</p>
-                        <form method="POST" action="api/docker/watchtower" class="xhr">
+                        <form method="POST" action="api/docker/watchtower" target="overlay-log">
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                             <input type="submit" value="Update mastercontainer" />
@@ -151,7 +151,7 @@
                                             <details>
                                                 <summary>Reveal repair option</summary>
                                                 <p>Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)</p>
-                                                <form method="POST" action="api/docker/backup-check-repair" class="xhr">
+                                                <form method="POST" action="api/docker/backup-check-repair" target="overlay-log">
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                     <input type="submit" value="Check and repair backup integrity" data-confirm='Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.'/>
@@ -162,7 +162,7 @@
                                         <p><span class="status success"></span> Last {{ borg_backup_mode }} successful! (<a href="log?id=nextcloud-aio-borgbackup" target="_blank">Logs</a>)</p>
                                         {% if borg_backup_mode == 'test' %}
                                             <p>Feel free to check the integrity of the backup archive below before starting the restore process in order to make ensure that the restore will work. This can take a long time though depending on the size of the backup archive and is thus not required.</p>
-                                            <form method="POST" action="api/docker/backup-check" class="xhr">
+                                            <form method="POST" action="api/docker/backup-check" target="overlay-log">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <input type="submit" value="Check backup integrity"/>
@@ -170,7 +170,7 @@
                                         {% endif %}
                                         <p>Choose the backup that you want to restore and click on the button below to restore the selected backup. This will restore the whole AIO instance. Please note that the current AIO passphrase will be kept and the previous AIO passphrase will not be restored from backup!</p>
                                         <p><strong>Important:</strong> If the backup that you want to restore contained any <a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers">community container</a>, you need to restore the same backup a second time after this attempt so that the community container data is also correctly restored.</p>
-                                        <form method="POST" action="api/docker/restore" class="xhr" id="restore_selection">
+                                        <form method="POST" action="api/docker/restore" target="overlay-log" id="restore_selection">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                             <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
@@ -216,7 +216,7 @@
                             {% endif %}
                         {% else %}
                             <p><strong>Everything set!</strong> Click on the button below to test the path and encryption password:</p>
-                            <form method="POST" action="api/docker/backup-test" class="xhr">
+                            <form method="POST" action="api/docker/backup-test" target="overlay-log">
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input type="submit" value="Test path and encryption password"/>
@@ -265,7 +265,7 @@
                             {% else %}
                                 <p>It seems at least one container was not able to start correctly and is currently restarting.</p>
                                 <p>To break this endless loop, you can stop the containers below and investigate the issue in the container logs before starting the containers again.</p>
-                                <form method="POST" action="api/docker/stop" class="xhr">
+                                <form method="POST" action="api/docker/stop" target="overlay-log">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <input type="submit" value="Stop containers" />
@@ -283,7 +283,7 @@
                         <ul>
                             {# @var containers \AIO\Container\Container[] #}
                             {% for container in containers %}
-                                {% if container.displayName != '' %}
+                                {% if container.hideFromList != true %}
                                     {% include 'components/container-state.twig'  with {'c': container} only %}
                                 {% endif %}
                             {% endfor %}
@@ -318,7 +318,7 @@
                                     <p>You can find all changes <a target="_blank" href="https://github.com/nextcloud-releases/all-in-one/commits/main"><strong>here</strong></a></p>
                                 {% endif %}
                             {% endif %}
-                            <form method="POST" action="api/docker/stop" class="xhr">
+                            <form method="POST" action="api/docker/stop" target="overlay-log">
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input type="submit" value="Stop containers" />
@@ -333,7 +333,7 @@
                             {% endif %}
                             {% if is_mastercontainer_update_available == true %}
                                 <p>⚠️ A mastercontainer update is available. Please click on the button below to update it.</p>
-                                <form method="POST" action="api/docker/watchtower" class="xhr">
+                                <form method="POST" action="api/docker/watchtower" target="overlay-log">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                     <input type="submit" value="Update mastercontainer" />
@@ -408,7 +408,7 @@
                                             <details>
                                                 <summary>Reveal repair option</summary>
                                                 <p>Below is the option to repair the integrity of your backup. <strong>Please note:</strong> Please only use this after you have read the documentation above! (It will run the command 'borg check --repair' for you.)</p>
-                                                <form method="POST" action="api/docker/backup-check-repair" class="xhr">
+                                                <form method="POST" action="api/docker/backup-check-repair" target="overlay-log">
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                     <input type="submit" value="Check and repair backup integrity" data-confirm='Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.'/>
@@ -485,7 +485,7 @@
 
                                             <h3>Backup check</h3>
                                             <p>Click on the button below to perform a backup integrity check. This is an option that verifies that your backup is intact. It shouldn't be needed in most situations.</p>
-                                            <form method="POST" action="api/docker/backup-check" class="xhr">
+                                            <form method="POST" action="api/docker/backup-check" target="overlay-log">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <input type="submit" value="Check backup integrity" data-confirm='Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.' />
@@ -493,7 +493,7 @@
 
                                             <h3>Backup restore</h3>
                                             <p>Choose the backup that you want to restore and click on the button below to restore the selected backup. This will overwrite all your files with the chosen backup so you should consider creating a backup first. You can run an integrity check before restoring your files but this shouldn't be needed in most situations. Please note that this will not restore additionally chosen backup directories! The restore process should be pretty fast as rsync, which only transfers changed files, is used to restore the chosen backup.</p>
-                                            <form method="POST" action="api/docker/restore" class="xhr" id="restore_selection">
+                                            <form method="POST" action="api/docker/restore" target="overlay-log" id="restore_selection">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                 <select id="selected_restore_time" name="selected_restore_time" form="restore_selection">
@@ -508,7 +508,7 @@
                                             <details>
                                                 <summary>Click here to reveal this option</summary>
                                                 <p>If you use an external snapshot tool to restore the server that runs AIO, you might run into a problem that the above listed available backups are not up-to-date to restore your server from. You can click the button below to update this list.</p>
-                                                <form method="POST" action="api/docker/backup-list" class="xhr">
+                                                <form method="POST" action="api/docker/backup-list" target="overlay-log">
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                     <input type="submit" value="Update backup list" />

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.12.4-scratch AS nats
+FROM nats:2.12.5-scratch AS nats
 FROM eturnal/eturnal:1.12.2-alpine AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:2.1.0 AS signaling
 FROM alpine:3.23.3 AS janus
@@ -70,7 +70,8 @@ RUN set -ex; \
         libwebsockets \
         \
         shadow \
-        grep; \
+        grep \
+        util-linux-misc; \
     useradd --system -u 1000 eturnal; \
     apk del --no-cache \
         shadow; \

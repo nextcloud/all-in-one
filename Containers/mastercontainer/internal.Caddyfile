@@ -7,6 +7,9 @@
 
 	log {
 		level ERROR
+		# We need to exclude the remote-host plugin from logging as it would spam the logs
+		# See https://github.com/nextcloud/all-in-one/pull/7006#issuecomment-4003238239 
+		exclude http.matchers.remote_host
 	}
 
 	servers {

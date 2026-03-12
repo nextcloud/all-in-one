@@ -483,8 +483,8 @@ input[type="checkbox"]:disabled:not(:checked) + label {
     visibility: hidden;
     opacity: 0;
     align-self: start;
-    width: 20%;
-    height: 7rem;
+    width: 300px;
+    height: 200px;
     border-radius: var(--border-radius-large);
     border: solid thin rgb(192, 192, 192);
 }
