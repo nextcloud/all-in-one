@@ -32,4 +32,7 @@ function setThemeIcon(theme) {
 setThemeToDOM(getSavedTheme());
 
 // Apply theme when the page loads
-document.addEventListener('DOMContentLoaded', () => setThemeIcon(getSavedTheme()));
+document.addEventListener('DOMContentLoaded', () => {
+    setThemeIcon(getSavedTheme())
+    document.querySelector('button#theme-toggle')?.addEventListener('click', () => toggleTheme());
+});
