@@ -21,15 +21,20 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$container = \AIO\DependencyInjection::GetContainer();
-$dataConst = $container->get(\AIO\Data\DataConst::class);
-ini_set('session.save_path', $dataConst->GetSessionDirectory());
+// Configure and start the session before building the DI container so that
+// TranslationManager (instantiated inside the container) can read
+// $_SESSION['aio_user_language'] from the very first request.
+ini_set('session.save_path', \AIO\Data\DataConst::GetSessionDirectory());
 
 // Auto logout on browser close
 ini_set('session.cookie_lifetime', '0');
 
 # Keep session for 24h max
 ini_set('session.gc_maxlifetime', '86400');
+
+session_start();
+
+$container = \AIO\DependencyInjection::GetContainer();
 
 // Create app
 AppFactory::setContainer($container);
@@ -44,7 +49,6 @@ $container->set(Guard::class, function () use ($responseFactory) {
 });
 
 // Register Middleware To Be Executed On All Routes
-session_start();
 $app->add(Guard::class);
 
 // Create Twig
