@@ -472,7 +472,7 @@
                                     {% if isApacheStarting != true %}
                                         <h3>Backup creation</h3>
                                         <p>Clicking on the button below will create a backup.</p>
-                                        <form method="POST" action="api/docker/backup" class="xhr">
+                                        <form method="POST" action="api/docker/backup" target="overlay-log">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                             <input type="submit" value="Create backup" onclick="return confirm('Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.')" />
