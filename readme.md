@@ -221,6 +221,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [How to adjust the internally used docker api version?](#how-to-adjust-the-internally-used-docker-api-version)
     - [How to change the default location of Nextcloud's Datadir?](#how-to-change-the-default-location-of-nextclouds-datadir)
     - [How to configure custom UID/GID?](#how-to-configure-custom-uidgid)
+    - [How to move the appdata folder from the datadir to an ssd to improve the performance?](#how-to-move-the-appdata-folder-from-the-datadir-to-an-ssd-to-improve-the-performance)
     - [How to store the files/installation on a separate drive?](#how-to-store-the-filesinstallation-on-a-separate-drive)
     - [How to limit the resource usage of AIO?](#how-to-limit-the-resource-usage-of-aio)
     - [How to allow the Nextcloud container to access directories on the host?](#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host)
@@ -475,7 +476,26 @@ Another solution if you really need to use host mounts is to use a bind mount to
 /source/path  /target/path/where/the/source/directory/will/be/mounted/on/the/server  fuse.bindfs  force-user=33,force-group=33,allow_other  0  0
 ```
 
-You can then use `--env NEXTCLOUD_DATADIR="/target/path/where/the/source/directory/will/be/mounted/on/the/server"` as described in the section above.
+Then use `sudo mount -a` to mount it directly.
+
+You can afterwards use `--env NEXTCLOUD_DATADIR="/target/path/where/the/source/directory/will/be/mounted/on/the/server"` as described in the section above.
+
+### How to move the appdata folder from the datadir to an ssd to improve the performance?
+If the datadir in your setup is configured to be placed on an HDD or network FS like SMB or NFS, you can follow the steps below to change the location of the appdata folder to be located on an SSD in order to improve the performance of the setup.
+
+> [!NOTE]  
+> The following steps only work if you already configured and used NEXTCLOUD_DATADIR as mentioned [two sections above](#how-to-change-the-default-location-of-nextclouds-datadir). 
+> In this example here, we assume that you used `NEXTCLOUD_DATADIR="/target/path/`.
+
+After the initial installation is done and all datadir files of Nextcloud are stored inside the configured `/target/path` directory, you will also see an `appdata_*` folder in there that stores app-related data. You can now move that folder to a faster SSD if the target dir is not already positioned on an SSD by first using `rsync` to sync the files a location on an SSD. Afterwards rename the appdata folder in the datadir to something like `appdata_*-backup`. Afterwards add the following line to `/etc/fstab`:
+```
+/source/path/on/ssd  /target/path/<appdata-path>  fuse.bindfs  force-user=33,force-group=33,allow_other  0  0
+```
+Do not forget to adjust `<appdata-path>` to the correct `appdata_*` name that your installation initially created automatically.
+
+Then use `sudo mount -a` to mount it directly.
+
+Afterwards things should be speed up.
 
 ### How to store the files/installation on a separate drive?
 You can move the whole docker library and all its files including all Nextcloud AIO files and folders to a separate drive by first mounting the drive in the host OS (NTFS is not supported and ext4 is recommended as FS) and then following this tutorial: https://www.guguweb.com/2019/02/07/how-to-move-docker-data-directory-to-another-location-on-ubuntu/<br>
@@ -748,7 +768,10 @@ password=<password>
 ```
 (Of course you need to modify `<smb/cifs username>` and `<password>` for your specific case.)
 
-Now you can use `/mnt/storagebox` as Nextcloud's datadir like described in the section above this one.
+Now you can use `/mnt/storagebox` as Nextcloud's datadir like described in the section [here](#how-to-change-the-default-location-of-nextclouds-datadir).
+
+> [!NOTE]  
+> You also might want to move the appdata dir after the installation is done to improve the performance. See [this section](#how-to-move-the-appdata-folder-from-the-datadir-to-an-ssd-to-improve-the-performance)
 
 ### Can I run this with Docker swarm?
 Yes. For that to work, you need to use and follow the [manual-install documentation](./manual-install/).
