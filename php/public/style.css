@@ -375,9 +375,38 @@ header {
     z-index: 1000;
 }
 
-header > form {
+.header-controls {
     margin-left: auto;
     margin-right: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-controls > form {
+    margin: 0;
+}
+
+.language-switcher {
+    height: 34px;
+    padding: 0 8px;
+    font-size: var(--default-font-size);
+    font-family: inherit;
+    color: var(--color-main-text);
+    background-color: var(--color-main-background);
+    border: var(--border) solid var(--color-main-border);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    outline: none;
+}
+
+.language-switcher:hover {
+    border-width: var(--border-hover);
+    border-color: var(--color-main-border-hover);
+}
+
+.language-switcher:focus {
+    outline: 2px solid var(--color-main-border);
 }
 
 /* Standard styling for enabled checkboxes */

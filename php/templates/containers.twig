@@ -8,11 +8,21 @@
         <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 142 71" width="62" height="50">
             <use href="img/nextcloud-logo.svg#logo"></use>
         </svg>
-        <form method="POST" action="api/auth/logout">
-            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input type="submit" value="Log out" />
-        </form>
+        <div class="header-controls">
+            {% if supportedLanguages|length > 1 %}
+            <select id="language-switcher" class="language-switcher" data-current="{{ currentLanguage }}" aria-label="Select language">
+                {% for lang in supportedLanguages %}
+                <option value="{{ lang }}"{% if lang == currentLanguage %} selected{% endif %}>{{ lang }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+            <form method="POST" action="api/auth/logout">
+                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                <input type="submit" value="Log out" />
+            </form>
+        </div>
+        <script type="text/javascript" src="language-switcher.js"></script>
     </header>
 
     <div class="container">

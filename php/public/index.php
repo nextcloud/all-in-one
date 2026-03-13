@@ -51,11 +51,13 @@ $app->add(Guard::class);
 $twig = Twig::create(__DIR__ . '/../templates/', ['cache' => false]);
 $app->add(TwigMiddleware::create($app, $twig));
 $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
+$twig->addExtension(new \AIO\Twig\TranslationExtension($container->get(\AIO\Translation\TranslationManager::class)));
 
 // Auth Middleware
 $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
 // API
+$app->post('/api/language', AIO\Controller\LanguageController::class . ':SetLanguage');
 $app->post('/api/docker/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
 $app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
 $app->post('/api/docker/start', AIO\Controller\DockerController::class . ':StartContainer');

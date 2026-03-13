@@ -6,6 +6,7 @@ namespace AIO;
 use AIO\Docker\DockerHubManager;
 use DI\Container;
 use AIO\Docker\GitHubContainerRegistryManager;
+use AIO\Translation\TranslationManager;
 
 class DependencyInjection
 {
@@ -49,6 +50,10 @@ class DependencyInjection
                 $container->get(\AIO\Auth\PasswordGenerator::class),
                 $container->get(\AIO\Data\ConfigurationManager::class)
             )
+        );
+        $container->set(
+            TranslationManager::class,
+            new TranslationManager()
         );
 
         return $container;
