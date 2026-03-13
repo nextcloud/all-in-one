@@ -507,6 +507,63 @@ server {
 
     server_name <your-nc-domain>;
 
+    # Static files for Collabora Online
+    location ^~ /browser {
+        proxy_pass http://127.0.0.1:11000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        # WOPI discovery URL
+        location ^~ /hosting/discovery {
+        proxy_pass http://127.0.0.1:11000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Main websocket channel (COOLWSD)
+    location ^~ /cool {
+        proxy_pass http://127.0.0.1:11000;
+        proxy_set_header Host $host;
+        proxy_read_timeout 3600s;
+
+        # WebSocket settings
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade"; # Use literal "upgrade"
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Admin Console websocket channel
+    location ^~ /cool/adminws {
+        proxy_pass http://127.0.0.1:11000;
+        proxy_set_header Host $host;
+        proxy_read_timeout 3600s;
+
+        # WebSocket settings
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade"; # Use literal "upgrade"
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Download endpoint (if needed, sometimes handled by /cool)
+    location ^~ /download {
+        proxy_pass http://127.0.0.1:11000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
     location / {
         proxy_pass http://127.0.0.1:11000$request_uri; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
