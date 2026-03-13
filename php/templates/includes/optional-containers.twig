@@ -1,17 +1,17 @@
-<h2>Optional containers</h2>
-<p>In this section you can enable or disable optional containers.</p>
+<h2>{{ t('Optional containers') }}</h2>
+<p>{{ t('In this section you can enable or disable optional containers.') }}</p>
 {% if isAnyRunning == true %}
-    <p><strong>Please note:</strong> You can enable or disable the options below only when your containers are stopped.</p>
+    <p><strong>{{ t('Please note:') }}</strong> {{ t('You can enable or disable the options below only when your containers are stopped.') }}</p>
 {% else %}
-    <p><strong>Please note:</strong> Make sure to save your changes by clicking <strong>Save changes</strong> below the list of optional containers. The changes will not be auto-saved.</p>
+    <p><strong>{{ t('Please note:') }}</strong> {{ t('Make sure to save your changes by clicking') }} <strong>{{ t('Save changes') }}</strong> {{ t('below the list of optional containers. The changes will not be auto-saved.') }}</p>
 {% endif %}
 <form id="options-form" method="POST" action="api/configuration" class="xhr">
     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
     <input type="hidden" name="options-form" value="options-form">
-    <h3>Office Suite</h3>
+    <h3>{{ t('Office Suite') }}</h3>
     {% if isAnyRunning == false %}
-        <p>Choose your preferred office suite. Only one can be enabled at a time.</p>
+        <p>{{ t('Choose your preferred office suite. Only one can be enabled at a time.') }}</p>
     {% endif %}
     <div class="office-suite-cards">
         <input
@@ -26,23 +26,23 @@
         >
         <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-collabora">
             <div class="office-card-header">
-                <h4>Nextcloud Office</h4>
+                <h4>{{ t('Nextcloud Office') }}</h4>
                 <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
                     <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
             <ul class="office-features">
-                <li>Best Nextcloud integration</li>
-                <li>Open source</li>
-                <li>Good performance</li>
-                <li>Best security: documents never leave your server</li>
-                <li>Best ODF compatibility</li>
-                <li>Best support for legacy files</li>
+                <li>{{ t('Best Nextcloud integration') }}</li>
+                <li>{{ t('Open source') }}</li>
+                <li>{{ t('Good performance') }}</li>
+                <li>{{ t('Best security: documents never leave your server') }}</li>
+                <li>{{ t('Best ODF compatibility') }}</li>
+                <li>{{ t('Best support for legacy files') }}</li>
             </ul>
             {% if isAnyRunning == false %}
                 <a href="https://www.collaboraoffice.com/code/" target="_blank" class="office-learn-more" onclick="event.stopPropagation();">
-                    Learn more
+                    {{ t('Learn more') }}
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-left: 4px;">
                         <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -62,22 +62,22 @@
         >
         <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-onlyoffice">
             <div class="office-card-header">
-                <h4>OnlyOffice</h4>
+                <h4>{{ t('OnlyOffice') }}</h4>
                 <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
                     <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
             <ul class="office-features">
-                <li>Good Nextcloud integration</li>
-                <li>Open core</li>
-                <li>Best performance</li>
-                <li>Best Microsoft compatibility</li>
-                <li>Limited ODF compatibility</li>
+                <li>{{ t('Good Nextcloud integration') }}</li>
+                <li>{{ t('Open core') }}</li>
+                <li>{{ t('Best performance') }}</li>
+                <li>{{ t('Best Microsoft compatibility') }}</li>
+                <li>{{ t('Limited ODF compatibility') }}</li>
             </ul>
             {% if isAnyRunning == false %}
                 <a href="https://www.onlyoffice.com/" target="_blank" class="office-learn-more" onclick="event.stopPropagation();">
-                    Learn more
+                    {{ t('Learn more') }}
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-left: 4px;">
                         <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -102,12 +102,12 @@
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 6px;">
                     <path d="M2 2L14 14M2 14L14 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-                Disable office suite
+                {{ t('Disable office suite') }}
             </label>
         </div>
     {% endif %}
-    <input class="options-form-submit" type="submit" value="Save changes" />
-    <h3>Additional Optional Containers</h3>
+    <input class="options-form-submit" type="submit" value="{{ t('Save changes') }}" />
+    <h3>{{ t('Additional Optional Containers') }}</h3>
     <p>
         <input
             type="checkbox"
@@ -120,7 +120,7 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="clamav">ClamAV (Antivirus backend for Nextcloud, needs ~1GB additional RAM)</label>
+        <label for="clamav">{{ t('ClamAV (Antivirus backend for Nextcloud, needs ~1GB additional RAM)') }}</label>
     </p>
     <p>
         <input
@@ -135,9 +135,9 @@
             {% endif %}
         >
         <label for="fulltextsearch">
-            Fulltextsearch (needs ~1GB additional RAM, <a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/5768">does not work on Kernels without Seccomp</a>)
+            {{ t('Fulltextsearch (needs ~1GB additional RAM,') }} <a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/5768">{{ t('does not work on Kernels without Seccomp') }}</a>)
             {% if is_fulltextsearch_enabled == false %}
-                . <strong>Please note:</strong> the initial indexing can take a long time during which Nextcloud will be unavailable
+                . <strong>{{ t('Please note:') }}</strong> {{ t('the initial indexing can take a long time during which Nextcloud will be unavailable') }}
             {% endif %}
         </label>
     </p>
@@ -153,7 +153,7 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="imaginary">Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently <a target="_blank" href="https://github.com/nextcloud/server/issues/34262">incompatible with server-side-encryption</a>)</label>
+        <label for="imaginary">{{ t('Imaginary (for previews of heic, heif, illustrator, pdf, svg, tiff and webp. Imaginary is currently') }} <a target="_blank" href="https://github.com/nextcloud/server/issues/34262">{{ t('incompatible with server-side-encryption') }}</a>)</label>
     </p>
     <p>
         <input
@@ -167,7 +167,7 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="talk">Nextcloud Talk (needs ports {{ talk_port }}/TCP and {{ talk_port }}/UDP open/forwarded in your firewall/router)</label>
+        <label for="talk">{{ t('Nextcloud Talk (needs ports') }} {{ talk_port }}/TCP {{ t('and') }} {{ talk_port }}/UDP {{ t('open/forwarded in your firewall/router)') }}</label>
     </p>
     <p>
         <input
@@ -181,7 +181,7 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="talk-recording">Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM and ~2 additional vCPUs)</label>
+        <label for="talk-recording">{{ t('Nextcloud Talk Recording-server (needs Nextcloud Talk being enabled and ~1GB additional RAM and ~2 additional vCPUs)') }}</label>
     </p>
 
     <p>
@@ -196,7 +196,7 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="docker-socket-proxy">Docker Socket Proxy (needed for <a target="_blank" href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">Nextcloud App API</a>) ⚠️ The docker socket proxy container is deprecated. Please use the HaRP (High-availability Reverse Proxy for Nextcloud ExApps) instead!</label>
+        <label for="docker-socket-proxy">{{ t('Docker Socket Proxy (needed for') }} <a target="_blank" href="https://github.com/cloud-py-api/app_api#nextcloud-appapi">{{ t('Nextcloud App API') }}</a>) ⚠️ {{ t('The docker socket proxy container is deprecated. Please use the HaRP (High-availability Reverse Proxy for Nextcloud ExApps) instead!') }}</label>
     </p>
 {#
     <p>
@@ -226,11 +226,11 @@
                 data-initial-state="false"
             {% endif %}
         >
-        <label for="whiteboard">Whiteboard</label>
+        <label for="whiteboard">{{ t('Whiteboard') }}</label>
     </p>
-    <input class="options-form-submit" type="submit" value="Save changes" />
+    <input class="options-form-submit" type="submit" value="{{ t('Save changes') }}" />
 </form>
-<p><strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advice and recommendations see <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong></p>
+<p><strong>{{ t('Minimal system requirements:') }}</strong> {{ t('When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV, Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advice and recommendations see') }} <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/1335">{{ t('this documentation') }}</a></strong></p>
 {% if isAnyRunning == true %}
     <script type="text/javascript" src="disable-clamav.js"></script>
     <script type="text/javascript" src="disable-docker-socket-proxy.js"></script>
@@ -245,46 +245,46 @@
 {% endif %}
 
 {% if is_collabora_enabled == true and isAnyRunning == false and was_start_button_clicked == true %}
-    <h3>Nextcloud Office dictionaries</h3>
+    <h3>{{ t('Nextcloud Office dictionaries') }}</h3>
 
     {% if collabora_dictionaries == "" %}
-        <p>In order to get the correct dictionaries in Nextcloud Office, you may configure the dictionaries below:</p>
+        <p>{{ t('In order to get the correct dictionaries in Nextcloud Office, you may configure the dictionaries below:') }}</p>
         <form method="POST" action="api/configuration" class="xhr">
             <input type="text" name="collabora_dictionaries" placeholder="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru" />
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input type="submit" value="Submit Nextcloud Office dictionaries" />
+            <input type="submit" value="{{ t('Submit Nextcloud Office dictionaries') }}" />
         </form>
-        <p>You need to make sure that the dictionaries that you enter are valid. An example is <strong>de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru</strong>.</p>
+        <p>{{ t('You need to make sure that the dictionaries that you enter are valid. An example is') }} <strong>de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru</strong>.</p>
     {% else %}
-        <p>The dictionaries for Nextcloud Office are currently set to <strong>{{ collabora_dictionaries }}</strong>. You can reset them again by clicking on the button below.</p>
+        <p>{{ t('The dictionaries for Nextcloud Office are currently set to') }} <strong>{{ collabora_dictionaries }}</strong>. {{ t('You can reset them again by clicking on the button below.') }}</p>
         <form method="POST" action="api/configuration" class="xhr">
             <input type="hidden" name="delete_collabora_dictionaries" value="yes"/>
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input type="submit" value="Reset Nextcloud Office dictionaries" />
+            <input type="submit" value="{{ t('Reset Nextcloud Office dictionaries') }}" />
         </form>
     {% endif %}
 
-    <h3>Additional Nextcloud Office options</h3>
+    <h3>{{ t('Additional Nextcloud Office options') }}</h3>
 
     {% if collabora_additional_options == "" %}
-        <p>You can configure additional options for Nextcloud Office below.</p>
-        <p>(This can be used for configuring the net.content_security_policy and more. Make sure to submit the value!)</p>
+        <p>{{ t('You can configure additional options for Nextcloud Office below.') }}</p>
+        <p>({{ t('This can be used for configuring the net.content_security_policy and more. Make sure to submit the value!') }})</p>
         <form method="POST" action="api/configuration" class="xhr">
             <input type="text" name="collabora_additional_options" />
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input type="submit" value="Submit additional Nextcloud Office options" />
+            <input type="submit" value="{{ t('Submit additional Nextcloud Office options') }}" />
         </form>
-        <p>You need to make sure that the options that you enter are valid. An example is <strong>--o:net.content_security_policy=frame-ancestors *.example.com:*;</strong>.</p>
+        <p>{{ t('You need to make sure that the options that you enter are valid. An example is') }} <strong>--o:net.content_security_policy=frame-ancestors *.example.com:*;</strong>.</p>
     {% else %}
-        <p>The additioinal options for Nextcloud Office are currently set to <strong>{{ collabora_additional_options }}</strong>. You can reset them again by clicking on the button below.</p>
+        <p>{{ t('The additional options for Nextcloud Office are currently set to') }} <strong>{{ collabora_additional_options }}</strong>. {{ t('You can reset them again by clicking on the button below.') }}</p>
         <form method="POST" action="api/configuration" class="xhr">
             <input type="hidden" name="delete_collabora_additional_options" value="yes"/>
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input type="submit" value="Reset additional Nextcloud Office options" />
+            <input type="submit" value="{{ t('Reset additional Nextcloud Office options') }}" />
         </form>
     {% endif %}
 {% endif %}

@@ -4,26 +4,26 @@
     {% if c.GetStartingState().value == 'starting' %}
       <span class="status running"></span>
       {{ c.displayName }}
-      (<a href="log?id={{ c.identifier }}" target="_blank">Starting</a>)
+      (<a href="log?id={{ c.identifier }}" target="_blank">{{ t('Starting') }}</a>)
     {% elseif c.GetRunningState().value == 'running' %}
       <span class="status success"></span>
       {{ c.displayName }}
-      (<a href="log?id={{ c.identifier }}" target="_blank">Running</a>)
+      (<a href="log?id={{ c.identifier }}" target="_blank">{{ t('Running') }}</a>)
     {% else %}
       <span class="status error"></span>
       {{ c.displayName }}
-      (<a href="log?id={{ c.identifier }}" target="_blank">Stopped</a>)
+      (<a href="log?id={{ c.identifier }}" target="_blank">{{ t('Stopped') }}</a>)
     {% endif %}
     {% if c.documentation != '' %}
-      (<a target="_blank" href="{{ c.documentation }}">docs</a>)
+      (<a target="_blank" href="{{ c.documentation }}">{{ t('docs') }}</a>)
     {% endif %}
     {% if c.GetUpdateState().value == 'different' %}
-      ⚠️&nbsp;Update&nbsp;available
+      ⚠️&nbsp;{{ t('Update') }}&nbsp;{{ t('available') }}
     {% endif %}
   </span>
   {% if c.GetUiSecret() != '' %}
     <details>
-      <summary>Show password for {{ c.displayName }}</summary>
+      <summary>{{ t('Show password for') }} {{ c.displayName }}</summary>
       <input type="text" value="{{ c.GetUiSecret() }}" readonly>
     </details>
   {% endif %}
