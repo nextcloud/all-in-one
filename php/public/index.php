@@ -38,14 +38,14 @@ $container->set(Guard::class, function () use ($responseFactory) {
 
 // Register Middleware To Be Executed On All Routes
 session_start([
-    "save_path" => $dataConst->GetSessionDirectory(),
-    "gc_maxlifetime" => 86400,
-    "gc_probability" => 1,
-    "gc_divisor" => 1,
-    "use_strict_mode" => true,
-    "cookie_secure" => true,
-    "cookie_httponly" => true,
-    "cookie_samesite" => "Strict",
+    "save_path" => $dataConst->GetSessionDirectory(), // where to save the session files
+    "gc_maxlifetime" => 86400, // delete sessions after 24 hours ... // https://www.php.net/manual/en/session.configuration.php#ini.session.gc-maxlifetime
+    "gc_probability" => 1, // ... to ... // https://www.php.net/manual/en/session.configuration.php#ini.session.gc-probability
+    "gc_divisor" => 1, // 100% // https://www.php.net/manual/en/session.configuration.php#ini.session.gc-divisor
+    "use_strict_mode" => true, // only allow initialized session IDs // https://www.php.net/manual/en/session.configuration.php#ini.session.use-strict-mode
+    "cookie_secure" => true, // only send cookies over https (not http) // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#secure
+    "cookie_httponly" => true, // block the cookie from being read with js in the browser, will still be send for fetch request triggered by js // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly
+    "cookie_samesite" => "Strict", // only send the cookie with requests triggered by AIO itself // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value
 ]);
 $app->add(Guard::class);
 
