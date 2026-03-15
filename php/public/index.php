@@ -11,6 +11,7 @@ ini_set('max_execution_time', '7200');
 ini_set('log_errors_max_len', '0');
 
 use DI\Container;
+use DI\NotFoundException;
 use Slim\Csrf\Guard;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
@@ -136,6 +137,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_nvidia_gpu_enabled' => $configurationManager->enableNvidiaGpu,
         'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled,
         'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled,
+        'is_harp_enabled' => $configurationManager->isHarpEnabled,
         'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled,
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->aioCommunityContainers,
@@ -170,6 +172,15 @@ $app->get('/setup', function (Request $request, Response $response, array $args)
         ]
     );
 });
+$app->get('/log', function (Request $request, Response $response, array $args) use ($container) {
+    $params = $request->getQueryParams();
+    $id = $params['id'] ?? '';
+    if (!str_starts_with($id, 'nextcloud-aio-')) {
+        throw new DI\NotFoundException();
+    }
+    $view = Twig::fromRequest($request);
+    return $view->render($response, 'log.twig', ['id' => $id]);
+});
 
 // Auth Redirector
 $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $response, array $args) use ($container) {
@@ -196,5 +207,14 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
 });
 
 $errorMiddleware = $app->addErrorMiddleware(false, true, true);
+
+// Set a custom Not Found handler, which doesn't pollute the app output with 404 errors.
+$errorMiddleware->setErrorHandler(
+    \Slim\Exception\HttpNotFoundException::class,
+    function (Request $request, Throwable $exception, bool $displayErrorDetails) use ($app) {
+        $response = $app->getResponseFactory()->createResponse();
+        $response->getBody()->write('Not Found');
+        return $response->withStatus(404);
+    });
 
 $app->run();

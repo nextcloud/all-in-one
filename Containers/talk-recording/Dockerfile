@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.14.2-alpine3.23
+FROM python:3.14.3-alpine3.23
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
@@ -20,6 +20,9 @@ RUN set -ex; \
         xvfb \
         ffmpeg \
         firefox \
+        font-noto-all \
+        font-noto-cjk \
+        font-noto-cjk-extra \
         bind-tools \
         netcat-openbsd \
         git \

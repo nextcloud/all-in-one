@@ -77,6 +77,10 @@ if [ "$BORG_MODE" = backup ]; then
     if ! [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json" ]; then
         echo "configuration.json not present. Cannot perform the backup!"
         exit 1
+    elif ! grep -q '"domain"' "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json" \
+    || ! grep -q '"wasStartButtonClicked"' "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json"; then
+        echo "It seems like the configuration.json setup was not done correctly. Something is wrong! (Most likely the provided configuration.json is invalid)"
+        exit 1
     elif ! [ -f "/nextcloud_aio_volumes/nextcloud_aio_nextcloud/config/config.php" ]; then
         echo "config.php is missing. Cannot perform backup!"
         exit 1
@@ -513,6 +517,10 @@ if [ "$BORG_MODE" = restore ]; then
     fi
 
     if [ "$RESTORE_FAILED" = 1 ]; then
+        exit 1
+    elif ! grep -q '"domain"' "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json" \
+    || ! grep -q '"wasStartButtonClicked"' "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/configuration.json"; then
+        echo "It seems like the restore of the configuration.json was not done correctly. Something is wrong! (Most likely is the restore archive already incorrect)!"
         exit 1
     fi
 

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # From https://github.com/redis/docker-library-redis/blob/release/8.2/alpine/Dockerfile
-FROM redis:8.2.3-alpine
+FROM redis:8.6.1-alpine
 
 COPY --chmod=775 start.sh /start.sh
 
@@ -10,6 +10,7 @@ RUN set -ex; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    apk --no-cache del openssl; \
     \
 # Get rid of unused binaries
     rm -f /usr/local/bin/gosu;

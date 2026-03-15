@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: shivammathur/setup-php@7bf05c6b704e0b9bfee22300130a31b5ea68d593 # v2
       with:
-        php-version: 8.4
+        php-version: 8.5
         extensions: apcu
     - name: Run dependency update script
       run: |
@@ -43,9 +43,19 @@ jobs:
             | tail -1
         )"
         sed -i "s|pecl install APCu.*\;|pecl install APCu-$apcu_version\;|" ./Containers/mastercontainer/Dockerfile
+
+        # CADDY_REMOTE_HOST_HASH
+        CADDY_REMOTE_HOST_HASH="$(
+          git ls-remote https://github.com/muety/caddy-remote-host master \
+            | cut -f1 \
+            | tail -1
+        )"
+        sed -i "s|^ARG CADDY_REMOTE_HOST_HASH.*$|ARG CADDY_REMOTE_HOST_HASH=$CADDY_REMOTE_HOST_HASH|" ./Containers/mastercontainer/Dockerfile
+
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v7
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: php dependency updates
         signoff: true
         title: PHP dependency updates

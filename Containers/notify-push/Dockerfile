@@ -11,7 +11,6 @@ RUN set -ex; \
         netcat-openbsd \
         tzdata \
         bash \
-        jq \
         openssl; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \

@@ -27,6 +27,8 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "next
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-borgbackup"))')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-docker-socket-proxy"))')"
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= if contains(["nextcloud-aio-docker-socket-proxy"]) then del(.[index("nextcloud-aio-docker-socket-proxy")]) else . end else . end')"
+OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "nextcloud-aio-harp"))')"
+OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= if contains(["nextcloud-aio-harp"]) then del(.[index("nextcloud-aio-harp")]) else . end else . end')"
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= map({ (.): { "condition": "service_started", "required": false } }) else . end' | jq '.services[] |= if has("depends_on") then .depends_on |= reduce .[] as $item ({}; . + $item) else . end')"
 
 sudo snap install yq
@@ -45,6 +47,8 @@ sed -i 's|- ip_binding: |- |' containers.yml
 sed -i '/AIO_TOKEN/d' containers.yml
 sed -i '/AIO_URL/d' containers.yml
 sed -i '/DOCKER_SOCKET_PROXY_ENABLED/d' containers.yml
+sed -i '/HARP_ENABLED/d' containers.yml
+sed -i '/HP_SHARED_KEY/d' containers.yml
 sed -i '/ADDITIONAL_TRUSTED_PROXY/d' containers.yml
 sed -i '/TURN_DOMAIN/d' containers.yml
 sed -i '/NC_AIO_VERSION/d' containers.yml

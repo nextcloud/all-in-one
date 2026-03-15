@@ -1,0 +1,35 @@
+{
+	admin off
+
+	storage file_system {
+		root /mnt/docker-aio-config/caddy/
+	}
+
+	log {
+		level ERROR
+		# We need to exclude the remote-host plugin from logging as it would spam the logs
+		# See https://github.com/nextcloud/all-in-one/pull/7006#issuecomment-4003238239 
+		exclude http.matchers.remote_host
+	}
+
+	servers {
+		protocols h1 h2
+	}
+
+	skip_install_trust
+}
+
+https://:8080 {
+	@denied remote_host nextcloud-aio-nextcloud
+	abort @denied
+
+	root * /var/www/docker-aio/php/public
+	encode
+	php_fastcgi unix//run/php.sock
+	file_server
+
+	tls {
+		on_demand
+		issuer internal
+	}
+}

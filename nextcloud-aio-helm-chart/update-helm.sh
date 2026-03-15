@@ -407,7 +407,7 @@ rm latest.yml
 mv latest.yml.backup latest.yml
 
 # Get version of AIO
-AIO_VERSION="$(grep 'Nextcloud AIO ' ../php/templates/includes/aio-version.twig | grep -oP '[0-9]+.[0-9]+.[0-9]+')"
+AIO_VERSION="$(grep -oP '[0-9]+.[0-9]+.[0-9]+' ../php/templates/includes/aio-version.twig)"
 sed -i "s|^version:.*|version: $AIO_VERSION|" ../helm-chart/Chart.yaml
 
 # Conversion of sample.conf
@@ -418,8 +418,9 @@ sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
 sed -i '/^APACHE_IP_BINDING/d' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
-sed -i '/_ENABLED.*/s/ yes / "yes" /' /tmp/sample.conf
-sed -i '/_ENABLED.*/s/ no / "no" /' /tmp/sample.conf
+sed -i 's/ yes / "yes" /' /tmp/sample.conf
+sed -i 's/ no / "no" /' /tmp/sample.conf
+sed -i 's/"no" authentication/no authentication/' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
 sed -i 's|17179869184|"17179869184"|' /tmp/sample.conf
 # shellcheck disable=SC2129

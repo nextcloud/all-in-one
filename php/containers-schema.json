@@ -47,7 +47,10 @@
 					},
 					"display_name": {
 						"type": "string",
-						"pattern": "^[()A-Za-z 0-9-]+$"
+						"pattern": "^[()A-Za-z &0-9-]+$"
+					},
+					"hide_from_list": {
+						"type": "boolean"
 					},
 					"environment": {
 						"type": "array",

@@ -47,6 +47,8 @@ spec:
               value: "{{ .Values.APACHE_PORT }}"
             - name: COLLABORA_HOST
               value: nextcloud-aio-collabora
+            - name: HARP_HOST
+              value: nextcloud-aio-harp
             - name: NC_DOMAIN
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
@@ -61,7 +63,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: ghcr.io/nextcloud-releases/aio-apache:20260122_105751
+          image: ghcr.io/nextcloud-releases/aio-apache:20260306_081319
           readinessProbe:
             exec:
               command:

@@ -34,4 +34,14 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
   if ($sse_c_key) {
     $CONFIG['objectstore']['arguments']['sse_c_key'] = $sse_c_key;
   }
+
+  $requestChecksumValidation = getenv('OBJECTSTORE_S3_REQUEST_CHECKSUM_VALIDATION');
+  if ($requestChecksumValidation) {
+    $CONFIG['objectstore']['arguments']['request_checksum_calculation'] = $requestChecksumValidation;
+  }
+
+  $responseChecksumValidation = getenv('OBJECTSTORE_S3_RESPONSE_CHECKSUM_VALIDATION');
+  if ($responseChecksumValidation) {
+    $CONFIG['objectstore']['arguments']['response_checksum_validation'] = $responseChecksumValidation;
+  }
 }

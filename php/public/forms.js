@@ -70,14 +70,23 @@ function showPassword(id) {
     }
 
     form.onsubmit = submit;
-    console.info(form);
   }
 
   function initForms() {
     const forms = document.querySelectorAll('form.xhr')
-    console.info("Making " + forms.length + " form(s) use XHR.");
     for (const form of forms) {
       initForm(form);
+    }
+    const overlayLogForms = document.querySelectorAll('form[target="overlay-log"]')
+    for (const form of overlayLogForms) {
+        form.onsubmit = function() {
+            enableSpinner();
+            document.getElementById('overlay-log')?.classList.add('visible');
+            // Reload the page after the response was fully loaded into the iframe.
+            document.querySelector('iframe[name="overlay-log"]').addEventListener('load', () => {
+                location.reload();
+            });
+        };
     }
   }
 

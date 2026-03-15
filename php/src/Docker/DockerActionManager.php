@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace AIO\Docker;
 
@@ -144,11 +145,12 @@ readonly class DockerActionManager {
         }
     }
 
-    public function GetLogs(string $id): string {
+    public function GetLogs(string $id, string $since = ''): string {
         $url = $this->BuildApiUrl(
             sprintf(
-                'containers/%s/logs?stdout=true&stderr=true&timestamps=true',
-                urlencode($id)
+                'containers/%s/logs?stdout=true&stderr=true&timestamps=true&since=%s',
+                urlencode($id),
+                $since
             ));
         $responseBody = (string)$this->guzzleClient->get($url)->getBody();
 
@@ -165,9 +167,12 @@ readonly class DockerActionManager {
         return $response;
     }
 
-    public function StartContainer(Container $container): void {
+    public function StartContainer(Container $container, ?\Closure $addToStreamingResponseBody = null): void {
         $url = $this->BuildApiUrl(sprintf('containers/%s/start', urlencode($container->identifier)));
         try {
+            if ($addToStreamingResponseBody !== null) {
+                $addToStreamingResponseBody($container, "Starting container");
+            }
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
             throw new \Exception("Could not start container " . $container->identifier . ": " . $e->getResponse()?->getBody()->getContents());
@@ -472,8 +477,7 @@ readonly class DockerActionManager {
         }
     }
 
-    public function PullImage(Container $container, bool $pullImage = true): void {
-
+    public function PullImage(Container $container, bool $pullImage = true, ?\Closure $addToStreamingResponseBody = null): void {
         // Skip database image pull if the last shutdown was not clean
         if ($container->identifier === 'nextcloud-aio-database') {
             if ($this->GetDatabasecontainerExitCode() > 0) {
@@ -501,6 +505,9 @@ readonly class DockerActionManager {
         $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', $encodedImageName));
         $imageIsThere = true;
         try {
+            if ($addToStreamingResponseBody) {
+                $addToStreamingResponseBody($container, "Pulling image");
+            }
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $encodedImageName));
             $this->guzzleClient->get($imageUrl)->getBody()->getContents();
         } catch (\Throwable $e) {
@@ -648,8 +655,8 @@ readonly class DockerActionManager {
             if (count($imageNameArray) === 2) {
                 $imageName = $imageNameArray[0];
             } else {
-                error_log("No tag was found when getting the current channel. You probably did not follow the documentation correctly. Changing the imageName to the default " . $output['Config']['Image']);
-                $imageName = $output['Config']['Image'];
+                error_log("Unexpected image name was found when getting the current image name of the mastercontainer. You probably did not follow the documentation correctly. Changing the image name to the default 'ghcr.io/nextcloud-releases/all-in-one'.");
+                $imageName = 'ghcr.io/nextcloud-releases/all-in-one';
             }
             apcu_add($cacheKey, $imageName);
             return $imageName;

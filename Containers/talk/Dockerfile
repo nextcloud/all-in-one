@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.12.4-scratch AS nats
+FROM nats:2.12.5-scratch AS nats
 FROM eturnal/eturnal:1.12.2-alpine AS eturnal
-FROM strukturag/nextcloud-spreed-signaling:2.0.4 AS signaling
+FROM strukturag/nextcloud-spreed-signaling:2.1.1 AS signaling
 FROM alpine:3.23.3 AS janus
 
-ARG JANUS_VERSION=v1.3.3
+ARG JANUS_VERSION=v1.4.0
 WORKDIR /src
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -70,7 +70,8 @@ RUN set -ex; \
         libwebsockets \
         \
         shadow \
-        grep; \
+        grep \
+        util-linux-misc; \
     useradd --system -u 1000 eturnal; \
     apk del --no-cache \
         shadow; \
