@@ -37,7 +37,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up php
-        uses: shivammathur/setup-php@7bf05c6b704e0b9bfee22300130a31b5ea68d593 # v2.36.0
+        uses: shivammathur/setup-php@93cb3149d228516dfca679606c5060ee44f46437 # v2.36.0
         with:
           php-version: 8.5
           extensions: apcu
