@@ -395,7 +395,6 @@
         "collabora"
       ],
       "cap_add": [
-        "MKNOD",
         "SYS_ADMIN",
         "SYS_CHROOT",
         "FOWNER",
