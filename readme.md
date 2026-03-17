@@ -476,7 +476,7 @@ Another solution if you really need to use host mounts is to use a bind mount to
 /source/path  /target/path/where/the/source/directory/will/be/mounted/on/the/server  fuse.bindfs  force-user=33,force-group=33,allow_other  0  0
 ```
 
-Then use `sudo mount -a` to mount it directly.
+Then use `sudo mount /target/path/where/the/source/directory/will/be/mounted/on/the/server` to mount it directly.
 
 You can afterwards use `--env NEXTCLOUD_DATADIR="/target/path/where/the/source/directory/will/be/mounted/on/the/server"` as described in the section above.
 
@@ -493,7 +493,7 @@ After the initial installation is done and all datadir files of Nextcloud are st
 ```
 Do not forget to adjust `<appdata-path>` to the correct `appdata_*` name that your installation initially created automatically.
 
-Then use `sudo mount -a` to mount it directly.
+Then use `sudo mount /target/path/<appdata-path>` to mount it directly.
 
 Afterwards things should be speed up.
 
