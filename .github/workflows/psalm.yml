@@ -43,6 +43,7 @@ jobs:
           extensions: apcu
           coverage: none
           ini-file: development
+          jit: false
           # Temporary workaround for missing pcntl_* in PHP 8.3
           ini-values: disable_functions=
         env:
