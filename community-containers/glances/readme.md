@@ -1,6 +1,8 @@
 ## Glances
 This container starts Glances, a web-based info-board, and auto-configures it for you.
-SECURITY WARNING! This container mounts the docker-socket from the host-system.
+
+> [!CAUTION]
+> This container mounts the docker-socket from the host-system.
 
 ### Notes
 - After adding and starting the container, you can directly visit http://ip.address.of.server:61208/ and access your new Glances instance!
