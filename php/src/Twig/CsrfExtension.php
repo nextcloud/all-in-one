@@ -13,6 +13,10 @@ class CsrfExtension extends AbstractExtension implements GlobalsInterface {
     ) {
     }
 
+    /**
+     * @psalm-suppress InvalidAttribute
+     * See https://github.com/vimeo/psalm/issues/11723
+     */
     #[\Override]
     public function getGlobals() : array
     {
