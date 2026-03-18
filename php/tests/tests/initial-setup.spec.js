@@ -18,6 +18,7 @@ test('Initial setup', async ({ page: setupPage }) => {
   await containersPage.waitForURL('./containers');
 
   // Reject IP addresses
+  await expect(containersPage.locator('#domain')).toBeVisible({ timeout: 1 * 60 * 1000 });
   await containersPage.locator('#domain').click();
   await containersPage.locator('#domain').fill('1.1.1.1');
   await containersPage.getByRole('button', { name: 'Submit domain' }).click();

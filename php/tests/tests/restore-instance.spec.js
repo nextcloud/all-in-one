@@ -25,6 +25,7 @@ test('Restore instance', async ({ page: setupPage }) => {
   await containersPage.waitForURL('./containers');
 
   // Reject example.com (requires enabled domain validation)
+  await expect(containersPage.locator('#domain')).toBeVisible({ timeout: 1 * 60 * 1000 });
   await containersPage.locator('#domain').click();
   await containersPage.locator('#domain').fill('example.com');
   await containersPage.getByRole('button', { name: 'Submit domain' }).click();
