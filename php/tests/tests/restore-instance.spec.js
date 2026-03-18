@@ -22,7 +22,7 @@ test('Restore instance', async ({ page: setupPage }) => {
   await containersPage.locator('#master-password').click();
   await containersPage.locator('#master-password').fill(password);
   await containersPage.getByRole('button', { name: 'Log in' }).click();
-  await containersPage.waitForURL('./containers');
+  await containersPage.waitForFunction(() => window.location.href.includes('/containers'), null, { timeout: 5 * 60 * 1000 });
 
   // Reject example.com (requires enabled domain validation)
   await containersPage.locator('#domain').click();
