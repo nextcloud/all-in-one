@@ -15,6 +15,7 @@ test('Initial setup', async ({ page: setupPage }) => {
   await containersPage.locator('#master-password').click();
   await containersPage.locator('#master-password').fill(password);
   await containersPage.getByRole('button', { name: 'Log in' }).click();
+  await containersPage.waitForFunction(() => window.location.href.includes('/containers'));
   await containersPage.waitForURL('./containers', { waitUntil: 'load' });
 
   // Reject IP addresses
