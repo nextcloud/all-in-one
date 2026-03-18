@@ -21,3 +21,4 @@ if (!str_contains($domain, '.')) {
     // error_log($domain . ' was accepted as valid domain.');
     http_response_code(200);
 }
+//test
