@@ -403,6 +403,7 @@ readonly class DockerController {
             ->withBody(new NonBufferedBody())
             ->withHeader('Content-Type', 'text/html; charset=utf-8')
             ->withHeader('X-Accel-Buffering', 'no')
+            ->withHeader('Content-Length', '-1')
             ->withHeader('Cache-Control', 'no-cache');
             
         // Text written into this body is immediately sent to the client, without waiting for later content.
