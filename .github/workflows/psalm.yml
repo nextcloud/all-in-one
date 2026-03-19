@@ -43,10 +43,6 @@ jobs:
           extensions: apcu
           coverage: none
           ini-file: development
-          jit: false
-          ini_values: |
-            opcache.jit=0
-            opcache.jit_buffer_size=0
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
