@@ -28,6 +28,7 @@
 
             {# js for optional containers and additional containers forms #}
             <script type="text/javascript" src="containers-form-submit.js?v6"></script>
+            <script type="text/javascript" src="click-handlers.js?v1"></script>
 
             {% set hasBackupLocation = borg_backup_host_location or borg_remote_repo %}
             {% set isAnyRunning = false %}
@@ -153,7 +154,7 @@
                                                 <form method="POST" action="api/docker/backup-check-repair" target="overlay-log">
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                    <input type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/>
+                                                    <input type="submit" value="Check and repair backup integrity" data-confirm='Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.'/>
                                                 </form>
                                             </details>
                                         {% endif %}
@@ -178,7 +179,7 @@
                                                 {% endfor %}
                                             </select><br>
                                             <input type="checkbox" id="restore-exclude-previews" name="restore-exclude-previews"><label for="restore-exclude-previews">Exclude previews from restore which will speed up the restore process but will trigger a scan of the preview folder as soon as the Nextcloud container starts the next time</label><br>
-                                            <input type="submit" value="Restore selected backup" onclick="return confirm('⚠️ Important: If the backup that you want to restore contained any community container, you need to restore the same backup a second time after this attempt so that the community container data is also correctly restored.')"/>
+                                            <input type="submit" value="Restore selected backup" data-confirm='⚠️ Important: If the backup that you want to restore contained any community container, you need to restore the same backup a second time after this attempt so that the community container data is also correctly restored.'/>
                                         </form>
                                     {% endif %}
                                 {% elseif borg_backup_mode == 'restore' %}
@@ -363,7 +364,7 @@
                                         {% if bypass_container_update == true %}
                                             <input type="hidden" name="bypass_container_update" value="{{bypass_container_update}}">
                                         {% endif %}
-                                        <input class="button " type="submit" value="Start and update containers" onclick="return confirm('Start and update containers? You should consider creating a backup first.')" />
+                                        <input class="button " type="submit" value="Start and update containers" data-confirm='Start and update containers? You should consider creating a backup first.' />
                                     </form>
                                 {% endif %}
                             {% endif %}
@@ -410,7 +411,7 @@
                                                 <form method="POST" action="api/docker/backup-check-repair" target="overlay-log">
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                    <input type="submit" value="Check and repair backup integrity" onclick="return confirm('Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.')"/>
+                                                    <input type="submit" value="Check and repair backup integrity" data-confirm='Check and repair backup integrity? Are you sure that you want to check and repair the backup integrity? This should only be done after reading the mentioned documentation.'/>
                                                 </form>
                                             </details>
                                         {% endif %}
@@ -475,7 +476,7 @@
                                         <form method="POST" action="api/docker/backup" target="overlay-log">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input type="submit" value="Create backup" onclick="return confirm('Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.')" />
+                                            <input type="submit" value="Create backup" data-confirm='Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.' />
                                         </form>
 
                                         {% if has_backup_run_once == true %}
@@ -487,7 +488,7 @@
                                             <form method="POST" action="api/docker/backup-check" target="overlay-log">
                                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input type="submit" value="Check backup integrity" onclick="return confirm('Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.')" />
+                                                <input type="submit" value="Check backup integrity" data-confirm='Check backup integrity? Are you sure that you want to check the backup? This can take a long time depending on the size of your backup.' />
                                             </form>
 
                                             <h3>Backup restore</h3>
@@ -500,7 +501,7 @@
                                                         <option value="{{ restore_time }}">{{ restore_time }} UTC</option>
                                                     {% endfor %}
                                                 </select>
-                                                <input type="submit" value="Restore selected backup" onclick="return confirm('Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.')" />
+                                                <input type="submit" value="Restore selected backup" data-confirm='Restore the selected backup? Are you sure that you want to restore the selected backup? This will stop all running containers and restore the selected backup. It is recommended to create a backup first. You might also want to check the backup integrity.' />
                                             </form>
 
                                             <h3>Update backup list</h3>
@@ -567,7 +568,7 @@
                                             <input type="hidden" name="delete_borg_backup_location_vars" value="yes"/>
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input type="submit" value="Reset backup location" onclick="return confirm('Are you sure that you want to reset the backup location?')" />
+                                            <input type="submit" value="Reset backup location" data-confirm='Are you sure that you want to reset the backup location?' />
                                         </form>
                                     {% endif %}
                                     {% if has_backup_run_once == true %}
@@ -613,7 +614,7 @@
                                     <input type="text" id="timezone" name="timezone" placeholder="Europe/Berlin" />
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                    <input type="submit" value="Submit timezone" onclick="return confirm('Are you sure that this is a valid timezone? Please double check by following the wikipedia article and checking the correct column. If the timezone is not valid, it will break the startup since the database will not be correctly initialized and you will end up in a startup loop.')" />
+                                    <input type="submit" value="Submit timezone" data-confirm='Are you sure that this is a valid timezone? Please double check by following the wikipedia article and checking the correct column. If the timezone is not valid, it will break the startup since the database will not be correctly initialized and you will end up in a startup loop.' />
                                 </form>
                                 <p>You need to make sure that the timezone that you enter is valid. An example is <strong>Europe/Berlin</strong>. You can get valid values by looking at the 'TZ identifier' column of this list: <a target="_blank" href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List"><strong>click here</strong></a>. The default is <strong>Etc/UTC</strong> if nothing is entered.</p>
                             {% else %}
