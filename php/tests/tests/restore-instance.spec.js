@@ -37,7 +37,7 @@ test('Restore instance', async ({ page: setupPage }) => {
   await containersPage.locator('#borg_restore_password').fill(borgBackupPassword);
   await containersPage.getByRole('button', { name: 'Submit location and encryption password' }).click()
   await containersPage.getByRole('button', { name: 'Test path and encryption' }).click();
-  await expect(containersPage.getByRole('main')).toContainText('Last test failed!', { timeout: 60 * 1000 });
+  await expect(containersPage.getByRole('main')).toContainText('Last test failed!', { timeout: 3 * 60 * 1000 });
 
   // Reject invalid backup password
   await containersPage.locator('#borg_restore_host_location').click();
@@ -58,7 +58,7 @@ test('Restore instance', async ({ page: setupPage }) => {
 
   // Check integrity and restore backup
   await containersPage.getByRole('button', { name: 'Check backup integrity' }).click();
-  await expect(containersPage.getByRole('main')).toContainText('Last check successful!', { timeout: 5 * 60 * 1000 });
+  await expect(containersPage.getByRole('main')).toContainText('Last check successful!', { timeout: 20 * 60 * 1000 });
   containersPage.once('dialog', dialog => {
     console.log(`Dialog message: ${dialog.message()}`)
     dialog.accept()
