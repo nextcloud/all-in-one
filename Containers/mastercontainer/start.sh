@@ -175,6 +175,22 @@ This is not supported since the built-in backup solution will not work in that c
     exit 1
 fi
 
+# Create docker network
+if ! sudo -E -u www-data docker network ls --format '{{.Name}}' | grep -q '^nextcloud-aio$'; then
+    if ! sudo -E -u www-data docker network create nextcloud-aio --driver bridge >/dev/null; then
+        print_red "Could not create the nextcloud-aio network. Exiting."
+        exit 1
+    fi
+fi
+
+# Add mastercontainer to nextcloud-aio network
+if ! sudo -E -u www-data docker network inspect nextcloud-aio --format '{{ range .Containers }}{{ .Name }} {{ end }}' | grep -q ' nextcloud-aio-mastercontainer '; then
+    if ! sudo -E -u www-data docker network connect nextcloud-aio nextcloud-aio-mastercontainer >/dev/null; then
+        print_red "Could not attach the nextcloud-aio network to the mastercontainer. Exiting."
+        exit 1
+    fi
+fi
+
 # Check for other options
 if [ -n "$NEXTCLOUD_DATADIR" ]; then
     if [ "$NEXTCLOUD_DATADIR" = "nextcloud_aio_nextcloud_datadir" ]; then
