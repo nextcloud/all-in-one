@@ -101,8 +101,8 @@ jobs:
             --env SKIP_DOMAIN_VALIDATION=false \
             --env APACHE_PORT=11000 \
             ghcr.io/nextcloud-releases/all-in-one:beta
-          echo Waiting for 10 seconds for the development container to start ...
-          sleep 10
+          echo Waiting for 15 seconds for the development container to start ...
+          sleep 15
 
       - name: Run Playwright tests for backup restore
         run: |
