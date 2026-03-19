@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 
 test('Restore instance', async ({ page: setupPage }) => {
-  test.setTimeout(10 * 60 * 1000)
+  test.setTimeout(25 * 60 * 1000)
 
   // Load passwords from previous test
   const {

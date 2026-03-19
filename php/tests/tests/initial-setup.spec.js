@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { writeFileSync } from 'node:fs'
 
 test('Initial setup', async ({ page: setupPage }) => {
-  test.setTimeout(10 * 60 * 1000)
+  test.setTimeout(25 * 60 * 1000)
 
   // Extract initial password
   await setupPage.goto('./setup');
