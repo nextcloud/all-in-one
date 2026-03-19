@@ -81,6 +81,7 @@ jobs:
           export DEBUG=pw:api
           if ! npx playwright test tests/initial-setup.spec.js; then
             docker logs nextcloud-aio-mastercontainer
+            docker network inspect nextcloud-aio
             docker logs nextcloud-aio-borgbackup
             exit 1
           fi
