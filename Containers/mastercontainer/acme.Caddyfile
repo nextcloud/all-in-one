@@ -32,7 +32,10 @@ http://:80 {
 }
 
 https://:8443 {
-	@denied remote_host nextcloud-aio-nextcloud
+	@denied {
+		path /api/auth/login /api/auth/getlogin
+		remote_host nextcloud-aio-nextcloud
+	}
 	abort @denied
 
 	root * /var/www/docker-aio/php/public
