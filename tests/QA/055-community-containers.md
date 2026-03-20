@@ -1,6 +1,6 @@
 # Community Containers
 
-- [ ] Below the Optional Addons section there should be a Community Containers section
+- [ ] At the very bottom of the page, there should be a Community Containers section
 - [ ] The section should show a details element that allows to reveal the list of available community containers
 - [ ] When containers are running, the checkboxes should be disabled and a notice should inform the user that changes can only be made when containers are stopped
 - [ ] When containers are stopped, checkboxes should be enabled

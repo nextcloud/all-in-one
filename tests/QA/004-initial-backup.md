@@ -5,6 +5,12 @@
     - [ ] Enter `/mnt/` or  `/media/` or `/host_mnt/` or `/var/backups/` should send an error as well
     - [ ] Accepted should be `/mnt/backup`, `/media/backup`, `/host_mnt/c/backup` and `/var/backups`.
     - [ ] The side should now reload
+- [ ] In the Backup restore section you should now see a Backup information section with important info like the encryption password, the backup location and more.
+- [ ] Also you should see a Backup creation section that contains a `Create backup` button.
+- [ ] Clicking on the `Create backup` button should open a window prompt that allows to cancel the operation.
+- [ ] Canceling should return to the website, confirming should reveal the big spinner again which should block the website again.
+- [ ] After a while you should see the information that Backup container is currently running
+- [ ] Below the Containers section you should see the option to `Start containers` again.
 - [ ] another option are remote backups via SSH using borgbackup. The remote borg repo URL must contain both `@` and `:`. The process works as follows:
     1. You enter a remote borg repo URL (e.g. `ssh://user@host:port/path/to/repo` or `user@host:/path/to/repo`).
     2. On the first connection attempt, a SSH key pair is generated automatically and the public key is displayed.
@@ -20,12 +26,6 @@
     - [ ] After the first failed backup attempt with a remote repo, the SSH public key for borg should be shown so it can be authorized on the remote server
     - [ ] After authorizing the server on the remote, scroll down and click on `Create backup` again to create another backup. This time it should succeed.
 - [ ] The initial Nextcloud credentials on top of the page that are visible when the containers are running should now be hidden in a details tag
-- [ ] In the Backup restore section you should now see a Backup information section with important info like the encryption password, the backup location and more.
-- [ ] Also you should see a Backup creation section that contains a `Create backup` button.
-- [ ] Clicking on the `Create backup` button should open a window prompt that allows to cancel the operation.
-- [ ] Canceling should return to the website, confirming should reveal the big spinner again which should block the website again.
-- [ ] After a while you should see the information that Backup container is currently running
-- [ ] Below the Containers section you should see the option to `Start containers` again.
 - [ ] After a while and a few automatic reloads (as long as the side is focused), you should be redirected to the usual page and seen in the Backup and restore section that the last backup was successful.
 - [ ] Below that you should see a details tag that allows to reveal all backup options
 

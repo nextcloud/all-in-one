@@ -14,4 +14,4 @@
     - [ ] It should show below the Optional Addons section a section where you can change the dictionaries for collabora. `de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru` should be a valid setting. E.g. `de.De` not. If already set, it should show a button that allows to remove the setting again.
     - [ ] Also, you should see an input field that allows to enter additional collabora options. E.g. `net.content_security_policy=false` should not be accepted, but `--o:net.content_security_policy="frame-ancestors *.example.com:*;"` should.
 
-You can now continue with [055-community-containers.md](./055-community-containers.md) and then [060-environmental-variables.md](./060-environmental-variables.md)
+You can now continue with [055-community-containers.md](./055-community-containers.md)
