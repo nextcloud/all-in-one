@@ -11,9 +11,9 @@ services:
     network_mode: bridge # This adds the container to the same network as docker run would do. Comment this line and uncomment the line below and the networks section at the end of the file if you want to define a custom MTU size for the docker network
     # networks: ["nextcloud-aio"]
     ports:
-      - 80:80 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
-      - 8080:8080 # This is the AIO interface, served via https and self-signed certificate. See https://github.com/nextcloud/all-in-one#explanation-of-used-ports
-      - 8443:8443 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      - "80:80" # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      - "8080:8080" # This is the AIO interface, served via https and self-signed certificate. See https://github.com/nextcloud/all-in-one#explanation-of-used-ports
+      - "8443:8443" # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
     # security_opt: ["label:disable"] # Is needed when using SELinux. See https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled
     # environment: # Is needed when using any of the options below
       # AIO_DISABLE_BACKUP_SECTION: false # Setting this to true allows to hide the backup section in the AIO interface. See https://github.com/nextcloud/all-in-one#how-to-disable-the-backup-section

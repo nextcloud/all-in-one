@@ -1,0 +1,52 @@
+{
+	admin off
+
+	# auto_https will create redirects for https://{host}:8443 instead of https://{host}
+	# https redirects are added manually in the http://:80 block
+	auto_https disable_redirects
+
+	storage file_system {
+		root /mnt/docker-aio-config/caddy/
+	}
+
+	log {
+		level ERROR
+		# We need to exclude the remote-host plugin from logging as it would spam the logs
+		# See https://github.com/nextcloud/all-in-one/pull/7006#issuecomment-4003238239 
+		exclude http.matchers.remote_host
+	}
+
+	servers {
+		# Only h1 is allowed as we prevent `ERR_NETWORK_CHANGED` from happening
+		protocols h1
+	}
+
+	on_demand_tls {
+		ask http://127.0.0.1:9876/
+	}
+
+	skip_install_trust
+}
+
+http://:80 {
+	redir https://{host}{uri} permanent
+}
+
+https://:8443 {
+	@denied {
+		path /api/auth/login /api/auth/getlogin
+		remote_host nextcloud-aio-nextcloud
+	}
+	abort @denied
+
+	root * /var/www/docker-aio/php/public
+	php_fastcgi unix//run/php.sock
+	file_server
+
+	tls {
+		on_demand
+		issuer acme {
+			disable_tlsalpn_challenge
+		}
+	}
+}

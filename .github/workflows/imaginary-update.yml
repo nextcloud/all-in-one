@@ -24,6 +24,7 @@ jobs:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v7
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: imaginary-update automated change
         signoff: true
         title: Imaginary update
