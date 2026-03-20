@@ -837,7 +837,6 @@ readonly class DockerActionManager {
 
     public function ConnectMasterContainerToNetwork(): void {
         $this->ConnectContainerIdToNetwork('nextcloud-aio-mastercontainer', '');
-        // Don't disconnect here since it slows down the initial login by a lot. Is getting done during cron.sh instead.
         // $this->DisconnectContainerFromBridgeNetwork('nextcloud-aio-mastercontainer');
     }
 
