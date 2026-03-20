@@ -10,7 +10,6 @@
 - [ ] Clicking on the `Create backup` button should open a window prompt that allows to cancel the operation.
 - [ ] Canceling should return to the website, confirming should reveal the big spinner again which should block the website again.
 - [ ] After a while you should see the information that Backup container is currently running
-- [ ] Below the Containers section you should see the option to `Start containers` again.
 - [ ] another option are remote backups via SSH using borgbackup. The remote borg repo URL must contain both `@` and `:`. The process works as follows:
     1. You enter a remote borg repo URL (e.g. `ssh://user@host:port/path/to/repo` or `user@host:/path/to/repo`).
     2. On the first connection attempt, a SSH key pair is generated automatically and the public key is displayed.
