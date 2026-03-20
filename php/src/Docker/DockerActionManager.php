@@ -837,7 +837,7 @@ readonly class DockerActionManager {
 
     public function ConnectMasterContainerToNetwork(): void {
         $this->ConnectContainerIdToNetwork('nextcloud-aio-mastercontainer', '');
-        // $this->DisconnectContainerFromBridgeNetwork('nextcloud-aio-mastercontainer');
+        $this->DisconnectContainerFromBridgeNetwork('nextcloud-aio-mastercontainer');
     }
 
     public function ConnectContainerToNetwork(Container $container): void {
