@@ -27,7 +27,6 @@ https://:8080 {
 	abort @denied
 
 	root * /var/www/docker-aio/php/public
-	encode
 	php_fastcgi unix//run/php.sock
 	file_server
 
