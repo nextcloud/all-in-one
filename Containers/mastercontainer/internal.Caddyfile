@@ -13,6 +13,7 @@
 	}
 
 	servers {
+		# Only h1 is allowed as we prevent `ERR_NETWORK_CHANGED` from happening
 		protocols h1
 	}
 
