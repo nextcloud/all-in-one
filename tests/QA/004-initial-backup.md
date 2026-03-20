@@ -16,7 +16,9 @@
     - [ ] Accepted should be `ssh://user@host:22/path/to/repo` or `user@host:/path/to/repo`
     - [ ] Both a local backup location and a remote repo URL should not be accepted at the same time
     - [ ] The page should now reload
+    - [ ] Now click on `Create backup`
     - [ ] After the first failed backup attempt with a remote repo, the SSH public key for borg should be shown so it can be authorized on the remote server
+    - [ ] After authorizing the server on the remote, scroll down and click on `Create backup` again to create another backup. This time it should succeed.
 - [ ] The initial Nextcloud credentials on top of the page that are visible when the containers are running should now be hidden in a details tag
 - [ ] In the Backup restore section you should now see a Backup information section with important info like the encryption password, the backup location and more.
 - [ ] Also you should see a Backup creation section that contains a `Create backup` button.
