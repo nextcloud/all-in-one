@@ -984,22 +984,20 @@ readonly class DockerActionManager {
         }
     }
 
-    public function SystemPrune(): array {
-        $endpoints = [
-            // Remove stopped containers
-            'containers/prune',
-            // Remove unused images
-            'images/prune',
-            // Remove unused volumes
-            'volumes/prune',
-            // Remove unused networks
-            'networks/prune',
-            // Prune build cache
-            'build/prune',
+    public function SystemPrune(?\Closure $addToStreamingResponseBody = null): void {
+        $steps = [
+            'containers/prune' => 'Pruning stopped containers...',
+            'images/prune'     => 'Pruning unused images...',
+            'volumes/prune'    => 'Pruning unused volumes...',
+            'networks/prune'   => 'Pruning unused networks...',
+            'build/prune'      => 'Pruning build cache...',
         ];
 
-        $results = [];
-        foreach ($endpoints as $endpoint) {
+        foreach ($steps as $endpoint => $label) {
+            if ($addToStreamingResponseBody !== null) {
+                $addToStreamingResponseBody($label);
+            }
+
             // Special-case images prune to include the dangling filter as requested
             if ($endpoint === 'images/prune') {
                 $filters = json_encode(['dangling' => ['false']]);
@@ -1009,21 +1007,17 @@ readonly class DockerActionManager {
             }
 
             try {
-                $resp = $this->guzzleClient->post($url);
-                $body = (string)$resp->getBody();
-                $json = null;
-                try {
-                    $json = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-                } catch (\Throwable $e) {
-                    // Non-JSON body, keep raw
-                    $json = $body;
-                }
-                $results[$endpoint] = $json;
+                $this->guzzleClient->post($url);
             } catch (RequestException $e) {
                 error_log(sprintf('Docker prune (%s) failed: %s', $endpoint, $e->getMessage()));
-                $results[$endpoint] = ['error' => $e->getMessage()];
+                if ($addToStreamingResponseBody !== null) {
+                    $addToStreamingResponseBody(sprintf('Warning: %s failed: %s', $endpoint, $e->getMessage()));
+                }
                 // continue with next prune step
             }
         }
-        return $results;
+
+        if ($addToStreamingResponseBody !== null) {
+            $addToStreamingResponseBody('Docker system prune done.');
+        }
     }

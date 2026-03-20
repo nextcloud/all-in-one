@@ -286,12 +286,23 @@ readonly class DockerController {
     }
 
     public function SystemPrune(Request $request, Response $response, array $args) : Response {
-        $results = $this->dockerActionManager->SystemPrune();
-        $body = $response->getBody();
-        $body->write(json_encode($results));
-        return $response
-            ->withStatus(200)
-            ->withHeader('Content-Type', 'application/json; charset=utf-8');
+        $nonbufResp = $response
+            ->withBody(new NonBufferedBody())
+            ->withHeader('Content-Type', 'text/html; charset=utf-8')
+            ->withHeader('X-Accel-Buffering', 'no')
+            ->withHeader('Cache-Control', 'no-cache');
+
+        $streamingResponseBody = $nonbufResp->getBody();
+        $streamingResponseBody->write($this->getStreamingResponseHtmlStart());
+
+        $addToStreamingResponseBody = function (string $message) use ($streamingResponseBody) : void {
+            $streamingResponseBody->write("<div>{$message}</div>");
+        };
+
+        $this->dockerActionManager->SystemPrune($addToStreamingResponseBody);
+
+        $streamingResponseBody->write($this->getStreamingResponseHtmlEnd());
+        return $nonbufResp;
     }
 
     public function stopTopContainer() : void {
