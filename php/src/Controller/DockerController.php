@@ -202,16 +202,7 @@ readonly class DockerController {
             error_log('WARNING: Not pulling container images. Instead, using local ones.');
         }
         
-        $nonbufResp = $response
-            ->withBody(new NonBufferedBody())
-            ->withHeader('Content-Type', 'text/html; charset=utf-8')
-            ->withHeader('X-Accel-Buffering', 'no')
-            ->withHeader('Cache-Control', 'no-cache');
-            
-        // Text written into this body is immediately sent to the client, without waiting for later content.
-        $streamingResponseBody = $nonbufResp->getBody();
-        
-        $streamingResponseBody->write($this->getStreamingResponseHtmlStart());
+        [$nonbufResp, $streamingResponseBody] = $this->startStreamingResponse($response);
         
         // Create a closure to pass around to the code, which should to the logging (because it e.g. decides
         // if it'll actually pull an image), but which should not need to know anything about the
@@ -286,14 +277,7 @@ readonly class DockerController {
     }
 
     public function SystemPrune(Request $request, Response $response, array $args) : Response {
-        $nonbufResp = $response
-            ->withBody(new NonBufferedBody())
-            ->withHeader('Content-Type', 'text/html; charset=utf-8')
-            ->withHeader('X-Accel-Buffering', 'no')
-            ->withHeader('Cache-Control', 'no-cache');
-
-        $streamingResponseBody = $nonbufResp->getBody();
-        $streamingResponseBody->write($this->getStreamingResponseHtmlStart());
+        [$nonbufResp, $streamingResponseBody] = $this->startStreamingResponse($response);
 
         $addToStreamingResponseBody = function (string $message) use ($streamingResponseBody) : void {
             $streamingResponseBody->write("<div>{$message}</div>");
@@ -350,6 +334,20 @@ readonly class DockerController {
     {
         $id = 'nextcloud-aio-domaincheck';
         $this->PerformRecursiveContainerStop($id);
+    }
+
+    private function startStreamingResponse(Response $response) : array {
+        $nonbufResp = $response
+            ->withBody(new NonBufferedBody())
+            ->withHeader('Content-Type', 'text/html; charset=utf-8')
+            ->withHeader('X-Accel-Buffering', 'no')
+            ->withHeader('Cache-Control', 'no-cache');
+
+        // Text written into this body is immediately sent to the client, without waiting for later content.
+        $streamingResponseBody = $nonbufResp->getBody();
+        $streamingResponseBody->write($this->getStreamingResponseHtmlStart());
+
+        return [$nonbufResp, $streamingResponseBody];
     }
 
     private function getStreamingResponseHtmlStart() : string {
