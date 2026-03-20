@@ -17,7 +17,8 @@
 	}
 
 	servers {
-		protocols h1 h2 h2c
+		# Only h1 is allowed as we prevent `ERR_NETWORK_CHANGED` from happening
+		protocols h1
 	}
 
 	on_demand_tls {
@@ -39,7 +40,6 @@ https://:8443 {
 	abort @denied
 
 	root * /var/www/docker-aio/php/public
-	encode
 	php_fastcgi unix//run/php.sock
 	file_server
 

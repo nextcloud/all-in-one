@@ -13,7 +13,8 @@
 	}
 
 	servers {
-		protocols h1 h2
+		# Only h1 is allowed as we prevent `ERR_NETWORK_CHANGED` from happening
+		protocols h1
 	}
 
 	skip_install_trust
@@ -27,7 +28,6 @@ https://:8080 {
 	abort @denied
 
 	root * /var/www/docker-aio/php/public
-	encode
 	php_fastcgi unix//run/php.sock
 	file_server
 
