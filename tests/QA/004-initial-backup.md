@@ -1,15 +1,16 @@
 # Initial backup
 
 - [ ] In the Backup and restore section, you should now see two input boxes where for one you should type in the path where the backup should get created and some explanation below or the other type in a remote ssh location
+- [ ] First, check a local backup:
     - [ ] Enter `/` which should send an error
     - [ ] Enter `/mnt/` or  `/media/` or `/host_mnt/` or `/var/backups/` should send an error as well
     - [ ] Accepted should be `/mnt/backup`, `/media/backup`, `/host_mnt/c/backup` and `/var/backups`.
     - [ ] The side should now reload
-- [ ] In the Backup restore section you should now see a Backup information section with important info like the encryption password, the backup location and more.
-- [ ] Also you should see a Backup creation section that contains a `Create backup` button.
-- [ ] Clicking on the `Create backup` button should open a window prompt that allows to cancel the operation.
-- [ ] Canceling should return to the website, confirming should reveal the big spinner again which should block the website again.
-- [ ] After a while you should see the information that Backup container is currently running
+    - [ ] In the Backup restore section you should now see a Backup information section with important info like the encryption password, the backup location and more.
+    - [ ] Also you should see a Backup creation section that contains a `Create backup` button.
+    - [ ] Clicking on the `Create backup` button should open a window prompt that allows to cancel the operation.
+    - [ ] Canceling should return to the website, confirming should reveal the big spinner again which should block the website again.
+    - [ ] After a while you should see the information that Backup container is currently running
 - [ ] another option are remote backups via SSH using borgbackup. The remote borg repo URL must contain both `@` and `:`. The process works as follows:
     1. You enter a remote borg repo URL (e.g. `ssh://user@host:port/path/to/repo` or `user@host:/path/to/repo`).
     2. On the first connection attempt, a SSH key pair is generated automatically and the public key is displayed.
