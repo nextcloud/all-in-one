@@ -322,11 +322,6 @@
                                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                 <input type="submit" value="Stop containers" />
                             </form>
-                            <form method="POST" action="api/docker/prune" class="xhr">
-                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                <input type="submit" value="Run docker system prune" onclick="return confirm('Run docker system prune? This will remove unused images, containers and volumes. Continue?')" />
-                            </form>
                         {% endif %}
                     {% else %}
                         {% if isBackupOrRestoreRunning == true %}
@@ -374,6 +369,13 @@
                                         <input class="button " type="submit" value="Start and update containers" onclick="return confirm('Start and update containers? You should consider creating a backup first.')" />
                                     </form>
                                 {% endif %}
+                            {% endif %}
+                            {% if was_start_button_clicked == true %}
+                                <form method="POST" action="api/docker/prune" target="overlay-log">
+                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                    <input type="submit" value="Run docker system prune" onclick="return confirm('Run docker system prune? This will remove unused images, containers and volumes. Continue?')" />
+                                </form>
                             {% endif %}
                         {% endif %}
                     {% endif %}

@@ -329,12 +329,19 @@ readonly class DockerController {
     }
 
     public function SystemPrune(Request $request, Response $response, array $args) : Response {
-        $results = $this->dockerActionManager->SystemPrune();
-        $body = $response->getBody();
-        $body->write(json_encode($results));
-        return $response
-            ->withStatus(200)
-            ->withHeader('Content-Type', 'application/json; charset=utf-8');
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+
+        $body = $nonbufResp->getBody();
+        $addToStreamingResponseBody = function (string $message) use ($body) : void {
+            $body->write("<div>$message</div>");
+        };
+
+        $this->dockerActionManager->SystemPrune($addToStreamingResponseBody);
+
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
     }
 
     public function stopTopContainer() : void {
