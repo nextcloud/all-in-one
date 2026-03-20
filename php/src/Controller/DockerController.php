@@ -328,6 +328,22 @@ readonly class DockerController {
         return $nonbufResp;
     }
 
+    public function SystemPrune(Request $request, Response $response, array $args) : Response {
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+
+        $body = $nonbufResp->getBody();
+        $addToStreamingResponseBody = function (string $message) use ($body) : void {
+            $body->write("<div>$message</div>");
+        };
+
+        $this->dockerActionManager->SystemPrune($addToStreamingResponseBody);
+
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
+    }
+
     public function stopTopContainer() : void {
         $id = self::TOP_CONTAINER;
         $this->PerformRecursiveContainerStop($id);

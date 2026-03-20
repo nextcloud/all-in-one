@@ -983,4 +983,50 @@ readonly class DockerActionManager {
             return $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
         }
     }
+
+    public function SystemPrune(?\Closure $addToStreamingResponseBody = null): void {
+        $endpoints = [
+            // Remove stopped containers
+            'containers/prune',
+            // Remove unused images
+            'images/prune',
+            // Remove unused volumes
+            'volumes/prune',
+            // Remove unused networks
+            'networks/prune',
+            // Prune build cache
+            'build/prune',
+        ];
+
+        foreach ($endpoints as $endpoint) {
+            // Special-case images prune to include the dangling filter as requested
+            if ($endpoint === 'images/prune') {
+                $filters = json_encode(['dangling' => ['false']]);
+                $url = $this->BuildApiUrl($endpoint . '?filters=' . urlencode($filters));
+            } else {
+                $url = $this->BuildApiUrl($endpoint);
+            }
+
+            if ($addToStreamingResponseBody !== null) {
+                $addToStreamingResponseBody("Running $endpoint...");
+            }
+
+            try {
+                $resp = $this->guzzleClient->post($url);
+                if ($addToStreamingResponseBody !== null) {
+                    $addToStreamingResponseBody((string)$resp->getBody());
+                }
+            } catch (RequestException $e) {
+                error_log(sprintf('Docker prune (%s) failed: %s', $endpoint, $e->getMessage()));
+                if ($addToStreamingResponseBody !== null) {
+                    $addToStreamingResponseBody('Error: ' . $e->getMessage());
+                }
+                // continue with next prune step
+            }
+        }
+
+        if ($addToStreamingResponseBody !== null) {
+            $addToStreamingResponseBody("Docker system prune completed.");
+        }
+    }
 }
