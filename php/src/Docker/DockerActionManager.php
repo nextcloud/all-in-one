@@ -1012,9 +1012,15 @@ readonly class DockerActionManager {
             }
 
             try {
-                $this->guzzleClient->post($url);
+                $resp = $this->guzzleClient->post($url);
+                if ($addToStreamingResponseBody !== null) {
+                    $addToStreamingResponseBody((string)$resp->getBody());
+                }
             } catch (RequestException $e) {
                 error_log(sprintf('Docker prune (%s) failed: %s', $endpoint, $e->getMessage()));
+                if ($addToStreamingResponseBody !== null) {
+                    $addToStreamingResponseBody('Error: ' . $e->getMessage());
+                }
                 // continue with next prune step
             }
         }
