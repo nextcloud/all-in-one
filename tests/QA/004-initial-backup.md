@@ -5,10 +5,18 @@
     - [ ] Enter `/mnt/` or  `/media/` or `/host_mnt/` or `/var/backups/` should send an error as well
     - [ ] Accepted should be `/mnt/backup`, `/media/backup`, `/host_mnt/c/backup` and `/var/backups`.
     - [ ] The side should now reload
-- [ ] another option are remote backups
-    - [ ] Enter `/` which should send an error
-    - [ ] ...
-    - [ ] The side should now reload
+- [ ] another option are remote backups via SSH using borgbackup. The remote borg repo URL must contain both `@` and `:`. The process works as follows:
+    1. You enter a remote borg repo URL (e.g. `ssh://user@host:port/path/to/repo` or `user@host:/path/to/repo`).
+    2. On the first connection attempt, a SSH key pair is generated automatically and the public key is displayed.
+    3. You add the public key to the `~/.ssh/authorized_keys` file on the remote server so that AIO can connect to it.
+    4. Once authorized, AIO can create and restore backups on the remote server.
+    - [ ] Enter `user` (no `@` and no `:`) which should send an error
+    - [ ] Enter `user@host` (no `:`) which should send an error
+    - [ ] Enter `userhost:/path` (no `@`) which should send an error
+    - [ ] Accepted should be `ssh://user@host:22/path/to/repo` or `user@host:/path/to/repo`
+    - [ ] Both a local backup location and a remote repo URL should not be accepted at the same time
+    - [ ] The page should now reload
+    - [ ] After the first failed backup attempt with a remote repo, the SSH public key for borg should be shown so it can be authorized on the remote server
 - [ ] The initial Nextcloud credentials on top of the page that are visible when the containers are running should now be hidden in a details tag
 - [ ] In the Backup restore section you should now see a Backup information section with important info like the encryption password, the backup location and more.
 - [ ] Also you should see a Backup creation section that contains a `Create backup` button.
