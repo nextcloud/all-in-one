@@ -1,150 +1,204 @@
 <?php
 declare(strict_types=1);
 
-// increase memory limit to 2GB
-ini_set('memory_limit', '2048M');
+/**
+ * Entry point/Bootstrapper for the Nextcloud All-in-One Web UI & API.
+ * Initializes DI container, configures PHP, registers routes & middleware.
+ */
 
-// set max execution time to 2h just in case of a very slow internet connection
-ini_set('max_execution_time', '7200');
-
-// Log whole log messages
-ini_set('log_errors_max_len', '0');
+require __DIR__ . '/../vendor/autoload.php';
 
 use DI\Container;
 use DI\NotFoundException;
 use Slim\Csrf\Guard;
 use Slim\Factory\AppFactory;
+use Slim\Routing\RouteCollectorProxy;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-require __DIR__ . '/../vendor/autoload.php';
+//-------------------------------------------------
+// Configuration Constants
+//-------------------------------------------------
+const AIO_MEMORY_LIMIT         = '2048M';
+const AIO_MAX_EXECUTION_TIME   = '7200';    // (2h) Supports slow networks and long operations
+const AIO_COOKIE_LIFETIME      = '0';       // Session cookie expires with browser close
+const AIO_SESSION_MAX_LIFETIME = '86400';   // (24h) Maximum admin session length
+const AIO_LOG_ERRORS_MAX_LEN   = '0';       // Log full-length errors for troubleshooting
+const AIO_TWIG_CACHE_PATH      = false;     // e.g., __DIR__ . '/../var/twig-cache'
+const AIO_DISPLAY_ERRORS       = false;	    // Do not directly expose errors to site visitors
 
+//-------------------------------------------------
+// PHP Settings
+//-------------------------------------------------
+ini_set('memory_limit',            AIO_MEMORY_LIMIT);
+ini_set('max_execution_time',      AIO_MAX_EXECUTION_TIME); // Prevent timeouts on slow networks
+ini_set('session.cookie_lifetime', AIO_COOKIE_LIFETIME); // Auto-logout on browser close
+ini_set('session.gc_maxlifetime',  AIO_SESSION_MAX_LIFETIME); // 24h session duration
+ini_set('log_errors_max_len',      AIO_LOG_ERRORS_MAX_LEN); // Full error logs
+
+//-------------------------------------------------
+// Dependency Injection
+//-------------------------------------------------
 $container = \AIO\DependencyInjection::GetContainer();
+AppFactory::setContainer($container);
+
+// Session directory depends on application config
 $dataConst = $container->get(\AIO\Data\DataConst::class);
 ini_set('session.save_path', $dataConst->GetSessionDirectory());
 
-// Auto logout on browser close
-ini_set('session.cookie_lifetime', '0');
-
-# Keep session for 24h max
-ini_set('session.gc_maxlifetime', '86400');
-
-// Create app
-AppFactory::setContainer($container);
+//-------------------------------------------------
+// Application Creation and Core Middleware
+//-------------------------------------------------
 $app = AppFactory::create();
 $responseFactory = $app->getResponseFactory();
 
-// Register Middleware On Container
-$container->set(Guard::class, function () use ($responseFactory) {
+// Register CSRF middleware (container-only)
+$container->set(Guard::class, function () use ($responseFactory): Guard {
     $guard = new Guard($responseFactory);
     $guard->setPersistentTokenMode(true);
     return $guard;
 });
 
-// Register Middleware To Be Executed On All Routes
 session_start();
+
+// Activate CSRF middleware for all routes
 $app->add(Guard::class);
 
-// Create Twig
-$twig = Twig::create(__DIR__ . '/../templates/', ['cache' => false]);
+// Setup and activate Twig middleware
+$twig = Twig::create(__DIR__ . '/../templates/',
+    [ 'cache' => AIO_TWIG_CACHE_PATH ]
+);
 $app->add(TwigMiddleware::create($app, $twig));
+
+// Add CSRF extension to Twig so templates can access CSRF tokens
 $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 
-// Auth Middleware
+// Establish and activate authentication middleware for all routes
 $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
-// API
-$app->post('/api/docker/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
-$app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
-$app->post('/api/docker/start', AIO\Controller\DockerController::class . ':StartContainer');
-$app->post('/api/docker/backup', AIO\Controller\DockerController::class . ':StartBackupContainerBackup');
-$app->post('/api/docker/backup-check', AIO\Controller\DockerController::class . ':StartBackupContainerCheck');
-$app->post('/api/docker/backup-list', AIO\Controller\DockerController::class . ':StartBackupContainerList');
-$app->post('/api/docker/backup-check-repair', AIO\Controller\DockerController::class . ':StartBackupContainerCheckRepair');
-$app->post('/api/docker/backup-test', AIO\Controller\DockerController::class . ':StartBackupContainerTest');
-$app->post('/api/docker/restore', AIO\Controller\DockerController::class . ':StartBackupContainerRestore');
-$app->post('/api/docker/stop', AIO\Controller\DockerController::class . ':StopContainer');
-$app->get('/api/docker/logs', AIO\Controller\DockerController::class . ':GetLogs');
-$app->post('/api/auth/login', AIO\Controller\LoginController::class . ':TryLogin');
-$app->get('/api/auth/getlogin', AIO\Controller\LoginController::class . ':GetTryLogin');
-$app->post('/api/auth/logout', AIO\Controller\LoginController::class . ':Logout');
-$app->post('/api/configuration', \AIO\Controller\ConfigurationController::class . ':SetConfig');
+//-------------------------------------------------
+// API Routes
+//-------------------------------------------------
+$app->group('/api/docker', function (RouteCollectorProxy $group): void {
+    // Docker Container management
+    $group->post('/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
+    $group->get('/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
+    $group->post('/start', AIO\Controller\DockerController::class . ':StartContainer');
+    $group->post('/stop', AIO\Controller\DockerController::class . ':StopContainer');
+    $group->get('/logs', AIO\Controller\DockerController::class . ':GetLogs');
+    // Backups
+    $group->post('/backup', AIO\Controller\DockerController::class . ':StartBackupContainerBackup');
+    $group->post('/backup-check', AIO\Controller\DockerController::class . ':StartBackupContainerCheck');
+    $group->post('/backup-list', AIO\Controller\DockerController::class . ':StartBackupContainerList');
+    $group->post('/backup-check-repair', AIO\Controller\DockerController::class . ':StartBackupContainerCheckRepair');
+    $group->post('/backup-test', AIO\Controller\DockerController::class . ':StartBackupContainerTest');
+    $group->post('/restore', AIO\Controller\DockerController::class . ':StartBackupContainerRestore');
+});
 
-// Views
-$app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {
+// Auth-related
+$app->group('/api/auth', function (RouteCollectorProxy $group): void {
+    $group->post('/login', AIO\Controller\LoginController::class . ':TryLogin');
+    $group->get('/getlogin', AIO\Controller\LoginController::class . ':GetTryLogin');
+    $group->post('/logout', AIO\Controller\LoginController::class . ':Logout');
+});
+
+// Configuration endpoints
+$app->post('/api/configuration', AIO\Controller\ConfigurationController::class . ':SetConfig');
+
+//-------------------------------------------------
+// Views Routes
+//-------------------------------------------------
+
+// Containers
+$app->get('/containers', function (Request $request, Response $response, array $args) use ($container): Response {
     $view = Twig::fromRequest($request);
     $view->addExtension(new \AIO\Twig\ClassExtension());
+
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
     $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
     $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
     /** @var \AIO\Controller\DockerController $dockerController */
     $dockerController = $container->get(\AIO\Controller\DockerController::class);
+
+    // Ensure master container is attached to the required Docker network
     $dockerActionManager->ConnectMasterContainerToNetwork();
+    // Ensure the domaincheck container is started for domain configuration validation
     $dockerController->StartDomaincheckContainer();
 
-    // Check if bypass_mastercontainer_update is provided on the URL, a special developer mode to bypass a mastercontainer update and use local image.
+    // URL parameters    
     $params = $request->getQueryParams();
-    $bypass_mastercontainer_update = isset($params['bypass_mastercontainer_update']);
-    $bypass_container_update = isset($params['bypass_container_update']);
-    $skip_domain_validation = isset($params['skip_domain_validation']);
+    $bypassMastercontainerUpdate = isset($params['bypass_mastercontainer_update']);
+    $bypassContainerUpdate = isset($params['bypass_container_update']);
+    $skipDomainValidation = isset($params['skip_domain_validation']);
 
     return $view->render($response, 'containers.twig', [
+        // ---- Basic Settings ----
         'domain' => $configurationManager->domain,
+        'timezone' => $configurationManager->timezone,
+        'current_channel' => $dockerActionManager->GetCurrentChannel(),
         'apache_port' => $configurationManager->apachePort,
-        'borg_backup_host_location' => $configurationManager->borgBackupHostLocation,
-        'borg_remote_repo' => $configurationManager->borgRemoteRepo,
-        'borg_public_key' => $configurationManager->getBorgPublicKey(),
-        'nextcloud_password' => $configurationManager->getAndGenerateSecret('NEXTCLOUD_PASSWORD'),
+        'talk_port' => $configurationManager->talkPort,
+        // ---- Container Management ----
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
-        'borgbackup_password' => $configurationManager->getAndGenerateSecret('BORGBACKUP_PASSWORD'),
-        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
-        'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
-        'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
-        'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
-        'is_instance_restore_attempt' => $configurationManager->instanceRestoreAttempt,
-        'borg_backup_mode' => $configurationManager->backupMode,
         'was_start_button_clicked' => $configurationManager->wasStartButtonClicked,
         'has_update_available' => $dockerActionManager->isAnyUpdateAvailable(),
-        'last_backup_time' => $configurationManager->getLastBackupTime(),
-        'backup_times' => $configurationManager->getBackupTimes(),
-        'current_channel' => $dockerActionManager->GetCurrentChannel(),
+        'is_mastercontainer_update_available' => ( $bypassMastercontainerUpdate ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
+        'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
+        // ---- Nextcloud Settings ----
+        'nextcloud_password' => $configurationManager->getAndGenerateSecret('NEXTCLOUD_PASSWORD'),
+        'nextcloud_datadir' => $configurationManager->nextcloudDatadirMount,
+        'nextcloud_mount' => $configurationManager->nextcloudMount,
+        // ---- PHP Configuration ----
+        'nextcloud_upload_limit' => $configurationManager->nextcloudUploadLimit,
+        'nextcloud_max_time' => $configurationManager->nextcloudMaxTime,
+        'nextcloud_memory_limit' => $configurationManager->nextcloudMemoryLimit,
+        // ---- Optional Component Toggles ----
         'is_clamav_enabled' => $configurationManager->isClamavEnabled,
         'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled,
         'is_collabora_enabled' => $configurationManager->isCollaboraEnabled,
         'is_talk_enabled' => $configurationManager->isTalkEnabled,
-        'borg_restore_password' => $configurationManager->borgRestorePassword,
-        'daily_backup_time' => $configurationManager->getDailyBackupTime(),
-        'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
-        'timezone' => $configurationManager->timezone,
-        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
-        'talk_port' => $configurationManager->talkPort,
-        'collabora_dictionaries' => $configurationManager->collaboraDictionaries,
-        'collabora_additional_options' => $configurationManager->collaboraAdditionalOptions,
-        'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
-        'is_backup_section_enabled' => !$configurationManager->disableBackupSection,
         'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled,
         'is_fulltextsearch_enabled' => $configurationManager->isFulltextsearchEnabled,
-        'additional_backup_directories' => $configurationManager->getAdditionalBackupDirectoriesString(),
-        'nextcloud_datadir' => $configurationManager->nextcloudDatadirMount,
-        'nextcloud_mount' => $configurationManager->nextcloudMount,
-        'nextcloud_upload_limit' => $configurationManager->nextcloudUploadLimit,
-        'nextcloud_max_time' => $configurationManager->nextcloudMaxTime,
-        'nextcloud_memory_limit' => $configurationManager->nextcloudMemoryLimit,
         'is_dri_device_enabled' => $configurationManager->nextcloudEnableDriDevice,
         'is_nvidia_gpu_enabled' => $configurationManager->enableNvidiaGpu,
         'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled,
         'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled,
         'is_harp_enabled' => $configurationManager->isHarpEnabled,
         'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled,
+        'is_backup_section_enabled' => !$configurationManager->disableBackupSection,
+        // ---- Collabora Component ----
+        'collabora_dictionaries' => $configurationManager->collaboraDictionaries,
+        'collabora_additional_options' => $configurationManager->collaboraAdditionalOptions,
+        // ---- Backup Component ----
+        'borg_backup_host_location' => $configurationManager->borgBackupHostLocation,
+        'borg_remote_repo' => $configurationManager->borgRemoteRepo,
+        'borg_public_key' => $configurationManager->getBorgPublicKey(),
+        'borgbackup_password' => $configurationManager->getAndGenerateSecret('BORGBACKUP_PASSWORD'),
+        'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
+        'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
+        'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
+        'is_instance_restore_attempt' => $configurationManager->instanceRestoreAttempt,
+        'borg_backup_mode' => $configurationManager->backupMode,
+        'last_backup_time' => $configurationManager->getLastBackupTime(),
+        'backup_times' => $configurationManager->getBackupTimes(),
+        'borg_restore_password' => $configurationManager->borgRestorePassword,
+        'daily_backup_time' => $configurationManager->getDailyBackupTime(),
+        'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
+        'additional_backup_directories' => $configurationManager->getAdditionalBackupDirectoriesString(),
+        // ---- Community Containers ----
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->aioCommunityContainers,
-        'bypass_container_update' => $bypass_container_update,
+        // ---- Admin Overrides ----
+        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skipDomainValidation),
+        'bypass_container_update' => $bypassContainerUpdate,
     ]);
-})->setName('profile');
-$app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
+});
+
+// Login
+$app->get('/login', function (Request $request, Response $response, array $args) use ($container): Response {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
     $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
@@ -152,25 +206,19 @@ $app->get('/login', function (Request $request, Response $response, array $args)
         'is_login_allowed' => $dockerActionManager->isLoginAllowed(),
     ]);
 });
-$app->get('/setup', function (Request $request, Response $response, array $args) use ($container) {
+
+// Setup
+$app->get('/setup', function (Request $request, Response $response, array $args) use ($container): Response {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Data\Setup $setup */
     $setup = $container->get(\AIO\Data\Setup::class);
 
-    if(!$setup->CanBeInstalled()) {
-        return $view->render(
-            $response,
-            'already-installed.twig'
-        );
+    if (!$setup->CanBeInstalled()) {
+        return $view->render($response, 'already-installed.twig');
     }
-
-    return $view->render(
-        $response,
-        'setup.twig',
-        [
+    return $view->render($response, 'setup.twig', [
             'password' => $setup->Setup(),
-        ]
-    );
+    ]);
 });
 $app->get('/log', function (Request $request, Response $response, array $args) use ($container) {
     $params = $request->getQueryParams();
@@ -182,31 +230,32 @@ $app->get('/log', function (Request $request, Response $response, array $args) u
     return $view->render($response, 'log.twig', ['id' => $id]);
 });
 
-// Auth Redirector
-$app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $response, array $args) use ($container) {
+//-------------------------------------------------
+// Root Redirector
+//-------------------------------------------------
+$app->get('/', function (Request $request, Response $response, array $args) use ($container): Response {
     /** @var \AIO\Auth\AuthManager $authManager */
     $authManager = $container->get(\AIO\Auth\AuthManager::class);
-
     /** @var \AIO\Data\Setup $setup */
     $setup = $container->get(\AIO\Data\Setup::class);
-    if($setup->CanBeInstalled()) {
-        return $response
-            ->withHeader('Location', 'setup')
-            ->withStatus(302);
-    }
 
-    if($authManager->IsAuthenticated()) {
-        return $response
-            ->withHeader('Location', 'containers')
-            ->withStatus(302);
-    } else {
-        return $response
-            ->withHeader('Location', 'login')
-            ->withStatus(302);
+    if ($setup->CanBeInstalled()) {
+        return $response->withHeader('Location', 'setup')->withStatus(302);
     }
+    if ($authManager->IsAuthenticated()) {
+        return $response->withHeader('Location', 'containers')->withStatus(302);
+    }
+    return $response->withHeader('Location', 'login')->withStatus(302);
 });
 
-$errorMiddleware = $app->addErrorMiddleware(false, true, true);
+//-------------------------------------------------
+// Error Middleware
+//-------------------------------------------------
+
+// TODO: Figure out why the default plain text renderer is being used by logging
+// TODO: Change logging to not generate stack traces for 404s
+// TODO: Change logging to log the path
+$errorMiddleware = $app->addErrorMiddleware(AIO_DISPLAY_ERRORS, true, true);
 
 // Set a custom Not Found handler, which doesn't pollute the app output with 404 errors.
 $errorMiddleware->setErrorHandler(
