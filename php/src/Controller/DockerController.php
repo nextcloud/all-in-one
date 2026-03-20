@@ -202,13 +202,13 @@ readonly class DockerController {
             error_log('WARNING: Not pulling container images. Instead, using local ones.');
         }
         
-        [$nonbufResp, $streamingResponseBody] = $this->startStreamingResponse($response);
+        $nonbufResp = $this->startStreamingResponse($response);
         
         // Create a closure to pass around to the code, which should to the logging (because it e.g. decides
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
-        $addToStreamingResponseBody = function (Container $container, string $message) use ($streamingResponseBody) : void {
-            $streamingResponseBody->write("<div>{$container->displayName}: {$message}</div>");
+        $addToStreamingResponseBody = function (Container $container, string $message) use ($nonbufResp) : void {
+            $nonbufResp->getBody()->write("<div>{$container->displayName}: {$message}</div>");
         };
         
         // Start container
@@ -218,7 +218,7 @@ readonly class DockerController {
         // Temporarily disabled as it leads much faster to docker rate limits
         // apcu_clear_cache();
 
-        $streamingResponseBody->write($this->getStreamingResponseHtmlEnd());
+        $this->finalizeStreamingResponse($nonbufResp);
         return $nonbufResp;
     }
 
@@ -277,15 +277,15 @@ readonly class DockerController {
     }
 
     public function SystemPrune(Request $request, Response $response, array $args) : Response {
-        [$nonbufResp, $streamingResponseBody] = $this->startStreamingResponse($response);
+        $nonbufResp = $this->startStreamingResponse($response);
 
-        $addToStreamingResponseBody = function (string $message) use ($streamingResponseBody) : void {
-            $streamingResponseBody->write("<div>{$message}</div>");
+        $addToStreamingResponseBody = function (string $message) use ($nonbufResp) : void {
+            $nonbufResp->getBody()->write("<div>{$message}</div>");
         };
 
         $this->dockerActionManager->SystemPrune($addToStreamingResponseBody);
 
-        $streamingResponseBody->write($this->getStreamingResponseHtmlEnd());
+        $this->finalizeStreamingResponse($nonbufResp);
         return $nonbufResp;
     }
 
@@ -336,7 +336,7 @@ readonly class DockerController {
         $this->PerformRecursiveContainerStop($id);
     }
 
-    private function startStreamingResponse(Response $response) : array {
+    private function startStreamingResponse(Response $response) : Response {
         $nonbufResp = $response
             ->withBody(new NonBufferedBody())
             ->withHeader('Content-Type', 'text/html; charset=utf-8')
@@ -347,7 +347,11 @@ readonly class DockerController {
         $streamingResponseBody = $nonbufResp->getBody();
         $streamingResponseBody->write($this->getStreamingResponseHtmlStart());
 
-        return [$nonbufResp, $streamingResponseBody];
+        return $nonbufResp;
+    }
+
+    private function finalizeStreamingResponse(Response $nonbufResp) : void {
+        $nonbufResp->getBody()->write($this->getStreamingResponseHtmlEnd());
     }
 
     private function getStreamingResponseHtmlStart() : string {
