@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
-# From https://github.com/docker-library/redis/blob/master/7.2/alpine/Dockerfile
-FROM redis:7.2.11-alpine
+# From https://github.com/redis/docker-library-redis/blob/release/8.2/alpine/Dockerfile
+FROM redis:8.6.1-alpine
 
 COPY --chmod=775 start.sh /start.sh
 
@@ -10,6 +10,7 @@ RUN set -ex; \
     \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    apk --no-cache del openssl; \
     \
 # Get rid of unused binaries
     rm -f /usr/local/bin/gosu;
@@ -21,4 +22,5 @@ ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"

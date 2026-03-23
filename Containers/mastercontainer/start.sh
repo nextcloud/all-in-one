@@ -51,7 +51,7 @@ elif mountpoint -q /var/www/docker-aio/php/containers.json; then
     echo "If you need to customize things, feel free to use https://github.com/nextcloud/all-in-one/tree/main/manual-install"
     echo "See https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
     exit 1
-elif ! sudo -u www-data test -r /var/run/docker.sock; then
+elif ! sudo -E -u www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
     DOCKER_GROUP=$(stat -c '%G' /var/run/docker.sock)
     DOCKER_GROUP_ID=$(stat -c '%g' /var/run/docker.sock)
@@ -69,28 +69,68 @@ elif ! sudo -u www-data test -r /var/run/docker.sock; then
         groupadd -g "$DOCKER_GROUP_ID" docker
         usermod -aG docker www-data
     fi
-    if ! sudo -u www-data test -r /var/run/docker.sock; then
+    if ! sudo -E -u www-data test -r /var/run/docker.sock; then
         print_red "Docker socket is not readable by the www-data user. Cannot continue."
         exit 1
     fi
 fi
 
-# Check if api version is supported
-if ! sudo -u www-data docker info &>/dev/null; then
-    print_red "Cannot connect to the docker socket. Cannot proceed."
-    echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
-    echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
-    echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
-    exit 1
-fi
+# Get default docker api version
 API_VERSION_FILE="$(find ./ -name DockerActionManager.php | head -1)"
 API_VERSION="$(grep -oP 'const string API_VERSION.*\;' "$API_VERSION_FILE" | grep -oP '[0-9]+.[0-9]+' | head -1)"
+if [ -z "$API_VERSION" ]; then
+    print_red "Could not get API_VERSION. Something is wrong!"
+    exit 1
+fi
+
+# Check if DOCKER_API_VERSION is set globally
+if [ -n "$DOCKER_API_VERSION" ]; then
+    if ! echo "$DOCKER_API_VERSION" | grep -q '^[0-9].[0-9]\+$'; then
+        print_red "You've set DOCKER_API_VERSION but not to an allowed value.
+The string must be a version number like e.g. '1.44'.
+It is set to '$DOCKER_API_VERSION'."
+        exit 1
+    fi
+    print_red "DOCKER_API_VERSION was found to be set to '$DOCKER_API_VERSION'."
+    print_red "Please note that only v$API_VERSION is officially supported and tested by the maintainers of Nextcloud AIO."
+    print_red "So you run on your own risk and things might break without warning."
+else
+    # Export docker api version to use it everywhere
+    export DOCKER_API_VERSION="$API_VERSION"
+fi
+
+# Set a fallback docker api version. Needed for api version check. 
+# The check will not work otherwise on old docker versions
+FALLBACK_DOCKER_API_VERSION="1.41"
+
+# Check if docker info can be used
+if ! sudo -E -u www-data docker info &>/dev/null; then
+    if ! sudo -E -u www-data DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker info &>/dev/null; then
+        print_red "Cannot connect to the docker socket. Cannot proceed."
+        echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
+        echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
+        echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
+        echo "On macOS, see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-macos"
+        echo "Another possibility might be that Docker api v$API_VERSION is not supported by your docker daemon."
+        echo "In that case, you should report this to https://github.com/nextcloud/all-in-one/issues"
+        echo ""
+        exit 1
+    fi
+fi
+
+# Docker api version check
 # shellcheck disable=SC2001
-API_VERSION_NUMB="$(echo "$API_VERSION" | sed 's/\.//')"
-LOCAL_API_VERSION_NUMB="$(sudo -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+API_VERSION_NUMB="$(echo "$DOCKER_API_VERSION" | sed 's/\.//')"
+LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+if [ -z "$LOCAL_API_VERSION_NUMB" ]; then
+    LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+fi
 if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
     if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
-        print_red "Docker API v$API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
+        print_red "Docker API v$DOCKER_API_VERSION is not supported by your docker engine. Cannot proceed. Please upgrade your docker engine if you want to run Nextcloud AIO!"
+        echo "Alternatively, set the DOCKER_API_VERSION environmental variable to a compatible version."
+        echo "However please note that only v$API_VERSION is officially supported and tested by the maintainers of Nextcloud AIO."
+        echo "See https://github.com/nextcloud/all-in-one#how-to-adjust-the-internally-used-docker-api-version"
         exit 1
     fi
 else
@@ -99,7 +139,7 @@ else
 fi
 
 # Check Storage drivers
-STORAGE_DRIVER="$(sudo -u www-data docker info | grep "Storage Driver")"
+STORAGE_DRIVER="$(sudo -E -u www-data docker info | grep "Storage Driver")"
 # Check if vfs is used: https://github.com/nextcloud/all-in-one/discussions/1467
 if echo "$STORAGE_DRIVER" | grep -q vfs; then
     echo "$STORAGE_DRIVER"
@@ -110,23 +150,26 @@ elif echo "$STORAGE_DRIVER" | grep -q fuse-overlayfs; then
 fi
 
 # Check if snap install
-if sudo -u www-data docker info | grep "Docker Root Dir" | grep "/var/snap/docker/"; then
+if sudo -E -u www-data docker info | grep "Docker Root Dir" | grep "/var/snap/docker/"; then
     print_red "Warning: It looks like your installation uses docker installed via snap."
     print_red "This comes with some limitations and is disrecommended by the docker maintainers."
     print_red "See for example https://github.com/nextcloud/all-in-one/discussions/4890#discussioncomment-10386752"
 fi
 
 # Check if startup command was executed correctly
-if ! sudo -u www-data docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-mastercontainer$"; then
+if ! sudo -E -u www-data docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-mastercontainer$"; then
     print_red "It seems like you did not give the mastercontainer the correct name? (The 'nextcloud-aio-mastercontainer' container was not found.)
 Using a different name is not supported since mastercontainer updates will not work in that case!
 If you are on docker swarm and try to run AIO, see https://github.com/nextcloud/all-in-one#can-i-run-this-with-docker-swarm"
     exit 1
-elif ! sudo -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nextcloud_aio_mastercontainer$"; then
+elif sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer --format "{{.Config.Image}}" | grep -q '@'; then
+    print_red "It seems like you used a hash for the mastercontainer image tag. This is not supported!"
+    exit 1
+elif ! sudo -E -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nextcloud_aio_mastercontainer$"; then
     print_red "It seems like you did not give the mastercontainer volume the correct name? (The 'nextcloud_aio_mastercontainer' volume was not found.)
 Using a different name is not supported since the built-in backup solution will not work in that case!"
     exit 1
-elif ! sudo -u www-data docker inspect nextcloud-aio-mastercontainer | grep -q "nextcloud_aio_mastercontainer"; then
+elif ! sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer | grep -q "nextcloud_aio_mastercontainer"; then
     print_red "It seems like you did not attach the 'nextcloud_aio_mastercontainer' volume to the mastercontainer?
 This is not supported since the built-in backup solution will not work in that case!"
     exit 1
@@ -321,7 +364,6 @@ fi
 mkdir -p /mnt/docker-aio-config/data/
 mkdir -p /mnt/docker-aio-config/session/
 mkdir -p /mnt/docker-aio-config/caddy/
-mkdir -p /mnt/docker-aio-config/certs/ 
 
 # Adjust permissions for all instances
 chmod 770 -R /mnt/docker-aio-config
@@ -329,37 +371,6 @@ chmod 777 /mnt/docker-aio-config
 chown www-data:www-data -R /mnt/docker-aio-config/data/
 chown www-data:www-data -R /mnt/docker-aio-config/session/
 chown www-data:www-data -R /mnt/docker-aio-config/caddy/
-chown root:root -R /mnt/docker-aio-config/certs/
-
-# Don't allow access to the AIO interface from the Nextcloud container
-# Probably more cosmetic than anything but at least an attempt
-if ! grep -q '# nextcloud-aio-block' /etc/apache2/httpd.conf; then
-    cat << APACHE_CONF >> /etc/apache2/httpd.conf
-# nextcloud-aio-block-start
-<Location />
-order allow,deny
-deny from nextcloud-aio-nextcloud.nextcloud-aio
-allow from all
-</Location>
-# nextcloud-aio-block-end
-APACHE_CONF
-fi
-
-# Adjust certs
-GENERATED_CERTS="/mnt/docker-aio-config/certs"
-TMP_CERTS="/etc/apache2/certs"
-mkdir -p "$GENERATED_CERTS"
-cd "$GENERATED_CERTS" || exit 1
-if ! [ -f ./ssl.crt ] && ! [ -f ./ssl.key ]; then
-    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=DE/ST=BE/L=Local/O=Dev/CN=nextcloud.local" -keyout ./ssl.key -out ./ssl.crt
-fi
-if [ -f ./ssl.crt ] && [ -f ./ssl.key ]; then
-    cd "$TMP_CERTS" || exit 1
-    rm ./ssl.crt
-    rm ./ssl.key
-    cp "$GENERATED_CERTS/ssl.crt" ./
-    cp "$GENERATED_CERTS/ssl.key" ./
-fi
 
 print_green "Initial startup of Nextcloud All-in-One complete!
 You should be able to open the Nextcloud AIO Interface now on port 8080 of this server!
@@ -372,8 +383,11 @@ https://your-domain-that-points-to-this-server.tld:8443"
 # Set the timezone to Etc/UTC
 export TZ=Etc/UTC
 
-# Fix apache startup
-rm -f /var/run/apache2/httpd.pid
+# Remove unused certs
+rm -vrf /mnt/docker-aio-config/certs
+
+# Remove the php socket as safeguard
+rm -vf /run/php.sock
 
 # Fix caddy startup
 if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
@@ -381,7 +395,8 @@ if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
 fi
 
 # Fix the Caddyfile format
-caddy fmt --overwrite /Caddyfile
+caddy fmt --overwrite /acme.Caddyfile
+caddy fmt --overwrite /internal.Caddyfile
 
 # Fix caddy log 
 chmod 777 /root

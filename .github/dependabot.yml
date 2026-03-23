@@ -10,6 +10,8 @@ updates:
   labels:
   - 3. to review
   - dependencies
+  cooldown:
+    default-days: 7
 - package-ecosystem: composer
   directory: "/php/"
   schedule:
@@ -55,6 +57,6 @@ updates:
     - dependency-name: "postgres"
       update-types: ["version-update:semver-major"]
     - dependency-name: "redis"
-      update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      update-types: ["version-update:semver-major"]
     - dependency-name: "elasticsearch"
       update-types: ["version-update:semver-major"]

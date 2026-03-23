@@ -22,10 +22,11 @@ The normal way is the following:
 **Hint:** You may have a look at [this video](https://youtu.be/zk-y2wVkY4c) for a more complete but possibly outdated example.
 
 ## 3. Use the ACME DNS-challenge
-You can alternatively use the ACME DNS-challenge to get a valid certificate for Nextcloud. Here is described how to set it up: https://github.com/nextcloud/all-in-one#how-to-get-nextcloud-running-using-the-acme-dns-challenge
+You can alternatively use the ACME DNS-challenge to get a valid certificate for Nextcloud. Here is described how to set it up using an external caddy reverse proxy: https://github.com/nextcloud/all-in-one#how-to-get-nextcloud-running-using-the-acme-dns-challenge
 
 ## 4. Use Cloudflare
 If you do not have any control over the network, you may think about using Cloudflare Tunnel to get a valid certificate for your Nextcloud. However it will be opened to the public internet then. See https://github.com/nextcloud/all-in-one#how-to-run-nextcloud-behind-a-cloudflare-tunnel how to set this up.
 
 ## 5. Buy a certificate and use that
 If none of the above ways work for you, you may simply buy a certificate from an issuer for your domain. You then download the certificate onto your server, configure AIO in [reverse proxy mode](./reverse-proxy.md) and use the certificate for your domain in your reverse proxy config.
+

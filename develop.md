@@ -33,6 +33,7 @@ There is a testing-VM available for the maintainer of AIO that allows for some f
 Additionally, there are now E2E tests available that can be run via https://github.com/nextcloud/all-in-one/actions/workflows/playwright.yml
 
 ## How to promote builds from develop to beta
+1. Verify that GitHub Services are running correctly: https://www.githubstatus.com/
 1. Verify that no job is running here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml
 2. Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/promote-to-beta.yml, click on `Run workflow`.
 
@@ -67,6 +68,6 @@ docker buildx build --file Containers/nextcloud/Dockerfile --tag ghcr.io/nextclo
 # For all other containers
 docker buildx build --file Containers/{container}/Dockerfile --tag ghcr.io/nextcloud-releases/aio-{container}:develop --load Containers/{container}
 ```
-1. Stop the containers using the AIO admin interface.
-1. Reload the AIO admin interface with the param `bypass_container_update` to avoid overwriting your local changes, e.g. `https://localhost:8080/containers?bypass_container_update`.
+1. Stop the containers using the AIO interface.
+1. Reload the AIO interface with the param `bypass_container_update` to avoid overwriting your local changes, e.g. `https://localhost:8080/containers?bypass_container_update`.
 1. Click "Start and update containers" and test your changes. Containers will not be updated, despite the button text.

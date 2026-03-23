@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.3.26-fpm-alpine3.22
+FROM php:8.3.30-fpm-alpine3.23
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=16G
@@ -8,7 +8,7 @@ ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=31.0.9
+ENV NEXTCLOUD_VERSION=32.0.6
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
@@ -83,16 +83,17 @@ RUN set -ex; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install -o igbinary-3.2.16; \
-    pecl install APCu-5.1.27; \
+    pecl install APCu-5.1.28; \
     pecl install -D 'enable-memcached-igbinary="yes"' memcached-3.4.0; \
-    pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.2.0; \
-   pecl install -o imagick-3.8.0; \
+    pecl install -oD 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis-6.3.0; \
+   pecl install -o imagick-3.8.1; \
     \
     docker-php-ext-enable \
         igbinary \
         apcu \
         memcached \
         redis \
+        imagick \
     ; \
     rm -r /tmp/pear; \
     \
@@ -138,7 +139,7 @@ RUN set -ex; \
     \
     { \
         echo 'session.save_handler = redis'; \
-        echo 'session.save_path = "tcp://${REDIS_HOST}:6379?database=${REDIS_DB_INDEX}${REDIS_USER_AUTH}&auth[]=${REDIS_HOST_PASSWORD}"'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:${REDIS_PORT}?database=${REDIS_DB_INDEX}${REDIS_USER_AUTH}&auth[]=${REDIS_HOST_PASSWORD}"'; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
         echo 'redis.session.lock_wait_time = 10000'; \
@@ -156,7 +157,7 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://github.com/nextcloud-releases/server/releases/download/v${NEXTCLOUD_VERSION}/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
         "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
@@ -230,7 +231,6 @@ RUN set -ex; \
         sudo \
         grep \
         nodejs \
-        libreoffice \
         bind-tools \
         imagemagick \
         imagemagick-svg \
@@ -252,6 +252,7 @@ RUN set -ex; \
     chmod 777 -R /usr/local/etc/php/conf.d && \
     chmod 777 -R /usr/local/etc/php-fpm.d && \
     chmod -R 777 /tmp; \
+    chmod -R 777 /etc/openldap; \
     \
     mkdir -p /nc-updater; \
     chmod -R 777 /nc-updater
@@ -263,4 +264,5 @@ CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
+    wud.watch="false" \
     org.label-schema.vendor="Nextcloud"

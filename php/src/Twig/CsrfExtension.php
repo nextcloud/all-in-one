@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace AIO\Twig;
 
@@ -12,6 +13,7 @@ class CsrfExtension extends AbstractExtension implements GlobalsInterface {
     ) {
     }
 
+    #[\Override]
     public function getGlobals() : array
     {
         // CSRF token name and value

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace AIO\Docker;
 
@@ -30,7 +31,7 @@ readonly class DockerHubManager {
                 'https://auth.docker.io/token?service=registry.docker.io&scope=repository:' . $name . ':pull'
             );
             $body = $authTokenRequest->getBody()->getContents();
-            $decodedBody = json_decode($body, true);
+            $decodedBody = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             if(isset($decodedBody['token'])) {
                 $authToken = $decodedBody['token'];
                 $manifestRequest = $this->guzzleClient->request(

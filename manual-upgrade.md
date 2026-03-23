@@ -108,7 +108,7 @@ However, if you are unsure check the ghcr.io (https://github.com/nextcloud-relea
 
 Once you see no more activities in the logs or a message like ```NOTICE: ready to handle connections```, we've done it!
 
-#### Now you can handle everything through the AIO admin interface and stop and restart the containers normally.
+#### Now you can handle everything through the AIO interface and stop and restart the containers normally.
 
 ---
 

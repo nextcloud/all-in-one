@@ -32,8 +32,8 @@ else
 fi
 
 # Validate BORG_MODE
-if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != restore ] && [ "$BORG_MODE" != check ] && [ "$BORG_MODE" != "check-repair" ] && [ "$BORG_MODE" != test ]; then
-    echo "No correct BORG_MODE mode applied. Valid are 'backup', 'check', 'restore' and 'test'."
+if [ "$BORG_MODE" != backup ] && [ "$BORG_MODE" != restore ] && [ "$BORG_MODE" != check ] && [ "$BORG_MODE" != "check-repair" ] && [ "$BORG_MODE" != "test" ] && [ "$BORG_MODE" != "list" ]; then
+    echo "No correct BORG_MODE mode applied. Valid are 'backup', 'check', 'restore', 'test' and 'list'."
     exit 1
 fi
 

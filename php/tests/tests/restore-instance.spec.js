@@ -74,7 +74,7 @@ test('Restore instance', async ({ page: setupPage }) => {
     dialog.accept()
   });
   await containersPage.getByRole('button', { name: 'Start and update containers' }).click();
-  await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 5 * 60 * 1000 });
+  await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 8 * 60 * 1000 });
   await expect(containersPage.getByRole('main')).toContainText(initialNextcloudPassword);
 
   // Verify that containers are all stopped

@@ -1,7 +1,7 @@
 # Nextcloud AIO Helm-chart
 
 > [!NOTE]
-> For an enterprise-ready and scalable deployment method based on Helm Charts (also available for Podman), please [contact Nextcloud GmbH](https://nextcloud.com/enterprise/).
+> For an enterprise-ready and scalable deployment method based on Helm Charts (also available for Podman and OpenShift), please [contact Nextcloud GmbH](https://nextcloud.com/enterprise/).
 
 > [!IMPORTANT]
 > This Helm-Chart is not intended to be used with Ingress as it handles TLS itself via the built-in apache container and exposes a Loadbalancer port itself on the Cluster. See the [apache service](https://github.com/nextcloud/all-in-one/blob/main/nextcloud-aio-helm-chart/templates/nextcloud-aio-apache-service.yaml). However if the Cluster is used behind NAT, you can adjust `APACHE_PORT` to a different one than 443 and do the TLS offloading on an external Reverse Proxy that forwards the traffic to the configured port via http. If you really need the Ingress feature, please [contact Nextcloud GmbH](https://nextcloud.com/enterprise/) as we offer an enterprise-ready and scalable deployment method based on Helm Charts that also allows Ingress to be used.

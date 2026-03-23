@@ -20,5 +20,10 @@
 	</extraFiles>
 	<issueHandlers>
   		<ClassMustBeFinal errorLevel="suppress" />
+        <MissingConstructor>
+            <errorLevel type="suppress">
+                <file name="src/Data/ConfigurationManager.php" />  <!-- We're using property hooks with virtual properties in that file, which Psalm wrongly complains about. See <https://github.com/vimeo/psalm/issues/11435>.  -->
+            </errorLevel>
+        </MissingConstructor>
 	</issueHandlers>
 </psalm>

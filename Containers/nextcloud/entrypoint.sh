@@ -20,6 +20,64 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
+# Create cert bundle
+if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
+
+    # Enable debug mode
+    set -x
+
+    # Default vars
+    CERTIFICATES_ROOT_DIR="/var/www/html/data/certificates"
+    CERTIFICATE_BUNDLE="/var/www/html/data/certificates/ca-bundle.crt"
+    
+    # Remove old root certs and recreate them with current ones
+    rm -rf "$CERTIFICATES_ROOT_DIR"
+    mkdir -p "$CERTIFICATES_ROOT_DIR"
+
+    # Retrieve default root cert bundle
+    if ! [ -f "$SOURCE_LOCATION/resources/config/ca-bundle.crt" ]; then
+        echo "Root ca-bundle not found. Only concattening configured NEXTCLOUD_TRUSTED_CERTIFICATES files!"
+        # Recreate cert file
+        touch "$CERTIFICATE_BUNDLE"
+    else
+        # Write default bundle to the target ca file
+        cat "$SOURCE_LOCATION/resources/config/ca-bundle.crt" > "$CERTIFICATE_BUNDLE"
+    fi
+
+    # Iterate through certs
+    TRUSTED_CERTIFICATES="$(env | grep NEXTCLOUD_TRUSTED_CERTIFICATES_ | grep -oP '^[A-Z_a-z0-9]+')"
+    mapfile -t TRUSTED_CERTIFICATES <<< "$TRUSTED_CERTIFICATES"
+    for certificate in "${TRUSTED_CERTIFICATES[@]}"; do
+
+        # Create new line
+        echo "" >> "$CERTIFICATE_BUNDLE"
+
+        # Check if variable is an actual cert
+        if echo "${!certificate}" | grep -q "BEGIN CERTIFICATE" && echo "${!certificate}" | grep -q "END CERTIFICATE"; then
+            # Write out cert to bundle
+            echo "${!certificate}" >> "$CERTIFICATE_BUNDLE"
+        fi
+
+        # Create file in cert dir for extra logic in other places
+        if ! [ -f "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME" ]; then
+            touch "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
+        fi
+
+    done
+
+    # Backwards compatibility with older instances
+    if [ -f "/var/www/html/config/postgres.config.php" ]; then
+        sed -i "s|/var/www/html/data/certificates/POSTGRES|/var/www/html/data/certificates/ca-bundle.crt|" /var/www/html/config/postgres.config.php
+        sed -i "s|/var/www/html/data/certificates/MYSQL|/var/www/html/data/certificates/ca-bundle.crt|" /var/www/html/config/postgres.config.php
+    fi
+
+    # Print out bundle one last time
+    cat "$CERTIFICATE_BUNDLE"
+
+    # Disable debug mode
+    set +x
+fi
+
 # Adjust DATABASE_TYPE to by Nextcloud supported value
 if [ "$DATABASE_TYPE" = postgres ]; then
     export DATABASE_TYPE=pgsql
@@ -27,7 +85,7 @@ fi
 
 # Only start container if Redis is accessible
 # shellcheck disable=SC2153
-while ! nc -z "$REDIS_HOST" "6379"; do
+while ! nc -z "$REDIS_HOST" "$REDIS_PORT"; do
     echo "Waiting for Redis to start..."
     sleep 5
 done
@@ -124,8 +182,11 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/latest-${NEXT_MAJOR}.tar.bz2.asc"
             GNUPGHOME="$(mktemp -d)"
             export GNUPGHOME
-            # gpg key from https://nextcloud.com/nextcloud.asc
-            gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A
+            if ! gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; then
+                if ! gpg --batch --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 28806A878AE423A28372792ED75899B9A724937A; then
+                    curl -sSL https://nextcloud.com/nextcloud.asc | gpg --import
+                fi
+            fi
             gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2
             mkdir -p /usr/src/tmp
             tar -xjf nextcloud.tar.bz2 -C /usr/src/tmp/
@@ -278,12 +339,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
         'check_data_directory_permissions' => false
     );
 EOF
-
-            # Write out postgres root cert
-            if [ -n "$NEXTCLOUD_TRUSTED_CERTIFICATES_POSTGRES" ]; then
-                mkdir /var/www/html/data/certificates
-                echo "$NEXTCLOUD_TRUSTED_CERTIFICATES_POSTGRES" > "/var/www/html/data/certificates/POSTGRES"
-            fi
 
             echo "Installing with $DATABASE_TYPE database"
             # Set a default value for POSTGRES_PORT
@@ -614,8 +669,12 @@ php /var/www/html/occ config:system:set documentation_url.server_logs --value="h
 php /var/www/html/occ config:system:set htaccess.RewriteBase --value="/"
 php /var/www/html/occ maintenance:update:htaccess
 
-# Revert dbpersistent setting to check if it fixes too many db connections
-php /var/www/html/occ config:system:set dbpersistent --value=false --type=bool
+# Handle db persistent settings
+if [ "$NEXTCLOUD_PERSIST_DATABASE_CONNECTIONS" = "yes" ]; then
+    php /var/www/html/occ config:system:set dbpersistent --value=true --type=bool
+else
+    php /var/www/html/occ config:system:set dbpersistent --value=false --type=bool
+fi
 
 if [ "$DISABLE_BRUTEFORCE_PROTECTION" = yes ]; then
     php /var/www/html/occ config:system:set auth.bruteforce.protection.enabled --type=bool --value=false
@@ -644,24 +703,6 @@ else
     fi
 fi
 # AIO app end # Do not remove or change this line!
-
-# Allow to add custom certs to Nextcloud's trusted cert store
-if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
-    set -x
-    TRUSTED_CERTIFICATES="$(env | grep NEXTCLOUD_TRUSTED_CERTIFICATES_ | grep -oP '^[A-Z_a-z0-9]+')"
-    mapfile -t TRUSTED_CERTIFICATES <<< "$TRUSTED_CERTIFICATES"
-    CERTIFICATES_ROOT_DIR="/var/www/html/data/certificates"
-    mkdir -p "$CERTIFICATES_ROOT_DIR"
-    for certificate in "${TRUSTED_CERTIFICATES[@]}"; do
-        # shellcheck disable=SC2001
-        CERTIFICATE_NAME="$(echo "$certificate" | sed 's|^NEXTCLOUD_TRUSTED_CERTIFICATES_||')"
-        if ! [ -f "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME" ]; then
-            echo "${!certificate}" > "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
-            php /var/www/html/occ security:certificates:import "$CERTIFICATES_ROOT_DIR/$CERTIFICATE_NAME"
-        fi
-    done
-    set +x
-fi
 
 # Notify push
 if ! [ -d "/var/www/html/custom_apps/notify_push" ]; then
@@ -741,7 +782,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
         echo "No IPv6 address found for $COLLABORA_HOST."
     fi
     if [ -n "$COLLABORA_ALLOW_LIST" ]; then
-        PRIVATE_IP_RANGES='127.0.0.1/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,fd00::/8,::1'
+        PRIVATE_IP_RANGES='127.0.0.0/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,100.64.0.0/10,fd00::/8,::1/128'
         if ! echo "$COLLABORA_ALLOW_LIST" | grep -q "$PRIVATE_IP_RANGES"; then
             COLLABORA_ALLOW_LIST+=",$PRIVATE_IP_RANGES"
         fi
@@ -769,33 +810,39 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
         ONLYOFFICE_PORT=443
     fi
 
-    # Wait for OnlyOffice to become available
-    while ! nc -z "$ONLYOFFICE_HOST" "$ONLYOFFICE_PORT"; do
+    count=0
+    while ! nc -z "$ONLYOFFICE_HOST" "$ONLYOFFICE_PORT" && [ "$count" -lt 90 ]; do
         echo "Waiting for OnlyOffice to become available..."
+        count=$((count+5))
         sleep 5
     done
+    if [ "$count" -ge 90 ]; then
+        bash /notify.sh "Onlyoffice did not start in time!" "Skipping initialization and disabling onlyoffice app."
+        php /var/www/html/occ app:disable onlyoffice
+    else
+        # Install or enable OnlyOffice app as needed
+        if ! [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
+            php /var/www/html/occ app:install onlyoffice
+        elif [ "$(php /var/www/html/occ config:app:get onlyoffice enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable onlyoffice
+        elif [ "$SKIP_UPDATE" != 1 ]; then
+            php /var/www/html/occ app:update onlyoffice
+        fi
 
-    # Install or enable OnlyOffice app as needed
-    if ! [ -d "/var/www/html/custom_apps/onlyoffice" ]; then
-        php /var/www/html/occ app:install onlyoffice
-    elif [ "$(php /var/www/html/occ config:app:get onlyoffice enabled)" != "yes" ]; then
-        php /var/www/html/occ app:enable onlyoffice
-    elif [ "$SKIP_UPDATE" != 1 ]; then
-        php /var/www/html/occ app:update onlyoffice
+        # Set OnlyOffice configuration
+        php /var/www/html/occ config:system:set onlyoffice editors_check_interval --value="0" --type=integer 
+        php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
+        php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
+        php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
+
+        # Adjust the OnlyOffice host if using internal pattern
+        if echo "$ONLYOFFICE_HOST" | grep -q "nextcloud-.*-onlyoffice"; then
+            ONLYOFFICE_HOST="$NC_DOMAIN/onlyoffice"
+            export ONLYOFFICE_HOST
+        fi
+
+        php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$ONLYOFFICE_HOST"
     fi
-
-    # Set OnlyOffice configuration
-    php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
-    php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
-    php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
-
-    # Adjust the OnlyOffice host if using internal pattern
-    if echo "$ONLYOFFICE_HOST" | grep -q "nextcloud-.*-onlyoffice"; then
-        ONLYOFFICE_HOST="$NC_DOMAIN/onlyoffice"
-        export ONLYOFFICE_HOST
-    fi
-
-    php /var/www/html/occ config:app:set onlyoffice DocumentServerUrl --value="https://$ONLYOFFICE_HOST"
 else
     # Remove OnlyOffice app if disabled and removal is requested
     if [ "$REMOVE_DISABLED_APPS" = yes ] && \
@@ -854,7 +901,9 @@ if [ -d "/var/www/html/custom_apps/spreed" ]; then
         RECORDING_SERVERS_STRING="{\"servers\":[{\"server\":\"http://$TALK_RECORDING_HOST:1234/\",\"verify\":true}],\"secret\":\"$RECORDING_SECRET\"}"
         php /var/www/html/occ config:app:set spreed recording_servers --value="$RECORDING_SERVERS_STRING"
     else
-        php /var/www/html/occ config:app:delete spreed recording_servers
+        if [ "$REMOVE_DISABLED_APPS" = yes ]; then
+            php /var/www/html/occ config:app:delete spreed recording_servers
+        fi
     fi
 fi
 
@@ -867,7 +916,7 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
         sleep 5
     done
     if [ "$count" -ge 90 ]; then
-        echo "ClamAV did not start in time. Skipping initialization and disabling files_antivirus app."
+        bash /notify.sh "ClamAV did not start in time!" "Skipping initialization and disabling files_antivirus app."
         php /var/www/html/occ app:disable files_antivirus
     else
         if ! [ -d "/var/www/html/custom_apps/files_antivirus" ]; then
@@ -880,8 +929,9 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
         php /var/www/html/occ config:app:set files_antivirus av_mode --value="daemon"
         php /var/www/html/occ config:app:set files_antivirus av_port --value="3310"
         php /var/www/html/occ config:app:set files_antivirus av_host --value="$CLAMAV_HOST"
-        php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="$CLAMAV_MAX_SIZE"
-        php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="$CLAMAV_MAX_SIZE"
+        # av_stream_max_length must be synced with StreamMaxLength inside clamav
+        php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="2147483648"
+        php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="-1"
         php /var/www/html/occ config:app:set files_antivirus av_infected_action --value="only_log"
         if [ -n "$CLAMAV_BLOCKLISTED_DIRECTORIES" ]; then
             php /var/www/html/occ config:app:set files_antivirus av_blocklisted_directories --value="$CLAMAV_BLOCKLISTED_DIRECTORIES"
@@ -924,6 +974,9 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:disable fulltextsearch_elasticsearch
         php /var/www/html/occ app:disable files_fulltextsearch
     else
+        if [ -z "$FULLTEXTSEARCH_PROTOCOL" ]; then
+            FULLTEXTSEARCH_PROTOCOL="http"
+        fi
         if ! [ -d "/var/www/html/custom_apps/fulltextsearch" ]; then
             php /var/www/html/occ app:install fulltextsearch
         elif [ "$(php /var/www/html/occ config:app:get fulltextsearch enabled)" != "yes" ]; then
@@ -946,8 +999,8 @@ if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
             php /var/www/html/occ app:update files_fulltextsearch
         fi
         php /var/www/html/occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-        php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$FULLTEXTSEARCH_USER:$FULLTEXTSEARCH_PASSWORD@$FULLTEXTSEARCH_HOST:$FULLTEXTSEARCH_PORT\",\"elastic_index\":\"$FULLTEXTSEARCH_INDEX\"}"
-        php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
+        php /var/www/html/occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"$FULLTEXTSEARCH_PROTOCOL://$FULLTEXTSEARCH_USER:$FULLTEXTSEARCH_PASSWORD@$FULLTEXTSEARCH_HOST:$FULLTEXTSEARCH_PORT\",\"elastic_index\":\"$FULLTEXTSEARCH_INDEX\"}"
+        php /var/www/html/occ files_fulltextsearch:configure "{\"files_pdf\":true,\"files_office\":true}"
 
         # Do the index
         if ! [ -f "$NEXTCLOUD_DATA_DIR/fts-index.done" ]; then
@@ -976,13 +1029,13 @@ else
     fi
 fi
 
-# Docker socket proxy
+# Docker socket proxy / HaRP
 # app_api is a shipped app
 if [ -d "/var/www/html/custom_apps/app_api" ]; then
     php /var/www/html/occ app:disable app_api
     rm -r "/var/www/html/custom_apps/app_api"
 fi
-if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ]; then
+if [ "$DOCKER_SOCKET_PROXY_ENABLED" = 'yes' ] || [ "$HARP_ENABLED" = 'yes' ]; then
     if [ "$(php /var/www/html/occ config:app:get app_api enabled)" != "yes" ]; then
         php /var/www/html/occ app:enable app_api
     fi

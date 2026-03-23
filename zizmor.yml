@@ -1,0 +1,14 @@
+rules:
+  excessive-permissions:
+    disable: true
+  dangerous-triggers:
+    ignore:
+      - build_images.yml
+  artipacked:
+    disable: true
+  secrets-outside-env:
+    ignore:
+      - promote-to-beta.yml
+      - promote-to-latest.yml
+      - publish-to-aws.yml
+      - publish-to-digitalocean.yml

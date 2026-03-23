@@ -1,3 +1,8 @@
+> [!CAUTION]
+> NocoDB is licensed under a non-free license.
+> 
+> And is no longer maintained.
+
 > [!NOTE]
 > This container is there to compensate for the lack of functionality in Nextcloud Tables.
 >

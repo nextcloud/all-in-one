@@ -30,4 +30,10 @@ labels: 0. Needs triage
 
 #### Docker run command or docker-compose file that you used
 
-#### Other valuable info <!--- (like logs, screenshots & Co.) -->
+#### Output of `sudo docker logs nextcloud-aio-mastercontainer`
+
+#### Output of `sudo docker inspect nextcloud-aio-mastercontainer`
+
+#### Output of `sudo docker ps -a`
+
+#### Other valuable info <!--- (like additional logs, screenshots & Co.) -->

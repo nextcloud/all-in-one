@@ -15,7 +15,7 @@
 }
 
 https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
-http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests, see containers.json
+http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI requests, see containers.json
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
     header -Server
     header -X-Powered-By
@@ -56,6 +56,11 @@ http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests, see con
     route /whiteboard/* {
         uri strip_prefix /whiteboard
         reverse_proxy {$WHITEBOARD_HOST}:3002
+    }
+
+    # HaRP (ExApps)
+    route /exapps/* {
+        reverse_proxy {$HARP_HOST}:8780
     }
 
     # Nextcloud

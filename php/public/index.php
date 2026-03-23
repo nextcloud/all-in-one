@@ -11,6 +11,7 @@ ini_set('max_execution_time', '7200');
 ini_set('log_errors_max_len', '0');
 
 use DI\Container;
+use DI\NotFoundException;
 use Slim\Csrf\Guard;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
@@ -60,6 +61,7 @@ $app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . 
 $app->post('/api/docker/start', AIO\Controller\DockerController::class . ':StartContainer');
 $app->post('/api/docker/backup', AIO\Controller\DockerController::class . ':StartBackupContainerBackup');
 $app->post('/api/docker/backup-check', AIO\Controller\DockerController::class . ':StartBackupContainerCheck');
+$app->post('/api/docker/backup-list', AIO\Controller\DockerController::class . ':StartBackupContainerList');
 $app->post('/api/docker/backup-check-repair', AIO\Controller\DockerController::class . ':StartBackupContainerCheckRepair');
 $app->post('/api/docker/backup-test', AIO\Controller\DockerController::class . ':StartBackupContainerTest');
 $app->post('/api/docker/restore', AIO\Controller\DockerController::class . ':StartBackupContainerRestore');
@@ -76,76 +78,78 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $view->addExtension(new \AIO\Twig\ClassExtension());
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
     $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
-    /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
-    $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
+    $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
     /** @var \AIO\Controller\DockerController $dockerController */
     $dockerController = $container->get(\AIO\Controller\DockerController::class);
-    $dockerActionManger->ConnectMasterContainerToNetwork();
+    $dockerActionManager->ConnectMasterContainerToNetwork();
     $dockerController->StartDomaincheckContainer();
 
     // Check if bypass_mastercontainer_update is provided on the URL, a special developer mode to bypass a mastercontainer update and use local image.
     $params = $request->getQueryParams();
     $bypass_mastercontainer_update = isset($params['bypass_mastercontainer_update']);
     $bypass_container_update = isset($params['bypass_container_update']);
+    $skip_domain_validation = isset($params['skip_domain_validation']);
 
     return $view->render($response, 'containers.twig', [
-        'domain' => $configurationManager->GetDomain(),
-        'apache_port' => $configurationManager->GetApachePort(),
-        'borg_backup_host_location' => $configurationManager->GetBorgBackupHostLocation(),
-        'borg_remote_repo' => $configurationManager->GetBorgRemoteRepo(),
-        'borg_public_key' => $configurationManager->GetBorgPublicKey(),
-        'nextcloud_password' => $configurationManager->GetAndGenerateSecret('NEXTCLOUD_PASSWORD'),
+        'domain' => $configurationManager->domain,
+        'apache_port' => $configurationManager->apachePort,
+        'borg_backup_host_location' => $configurationManager->borgBackupHostLocation,
+        'borg_remote_repo' => $configurationManager->borgRemoteRepo,
+        'borg_public_key' => $configurationManager->getBorgPublicKey(),
+        'nextcloud_password' => $configurationManager->getAndGenerateSecret('NEXTCLOUD_PASSWORD'),
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
-        'borgbackup_password' => $configurationManager->GetAndGenerateSecret('BORGBACKUP_PASSWORD'),
-        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManger->IsMastercontainerUpdateAvailable() ),
+        'borgbackup_password' => $configurationManager->getAndGenerateSecret('BORGBACKUP_PASSWORD'),
+        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
-        'is_backup_container_running' => $dockerActionManger->isBackupContainerRunning(),
-        'backup_exit_code' => $dockerActionManger->GetBackupcontainerExitCode(),
-        'is_instance_restore_attempt' => $configurationManager->isInstanceRestoreAttempt(),
-        'borg_backup_mode' => $configurationManager->GetBorgBackupMode(),
-        'was_start_button_clicked' => $configurationManager->wasStartButtonClicked(),
-        'has_update_available' => $dockerActionManger->isAnyUpdateAvailable(),
-        'last_backup_time' => $configurationManager->GetLastBackupTime(),
-        'backup_times' => $configurationManager->GetBackupTimes(),
-        'current_channel' => $dockerActionManger->GetCurrentChannel(),
-        'is_clamav_enabled' => $configurationManager->isClamavEnabled(),
-        'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled(),
-        'is_collabora_enabled' => $configurationManager->isCollaboraEnabled(),
-        'is_talk_enabled' => $configurationManager->isTalkEnabled(),
-        'borg_restore_password' => $configurationManager->GetBorgRestorePassword(),
-        'daily_backup_time' => $configurationManager->GetDailyBackupTime(),
+        'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
+        'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
+        'is_instance_restore_attempt' => $configurationManager->instanceRestoreAttempt,
+        'borg_backup_mode' => $configurationManager->backupMode,
+        'was_start_button_clicked' => $configurationManager->wasStartButtonClicked,
+        'has_update_available' => $dockerActionManager->isAnyUpdateAvailable(),
+        'last_backup_time' => $configurationManager->getLastBackupTime(),
+        'backup_times' => $configurationManager->getBackupTimes(),
+        'current_channel' => $dockerActionManager->GetCurrentChannel(),
+        'is_clamav_enabled' => $configurationManager->isClamavEnabled,
+        'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled,
+        'is_collabora_enabled' => $configurationManager->isCollaboraEnabled,
+        'is_talk_enabled' => $configurationManager->isTalkEnabled,
+        'borg_restore_password' => $configurationManager->borgRestorePassword,
+        'daily_backup_time' => $configurationManager->getDailyBackupTime(),
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
-        'timezone' => $configurationManager->GetTimezone(),
-        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped(),
-        'talk_port' => $configurationManager->GetTalkPort(),
-        'collabora_dictionaries' => $configurationManager->GetCollaboraDictionaries(),
-        'collabora_additional_options' => $configurationManager->GetAdditionalCollaboraOptions(),
+        'timezone' => $configurationManager->timezone,
+        'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),
+        'talk_port' => $configurationManager->talkPort,
+        'collabora_dictionaries' => $configurationManager->collaboraDictionaries,
+        'collabora_additional_options' => $configurationManager->collaboraAdditionalOptions,
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
-        'is_backup_section_enabled' => $configurationManager->isBackupSectionEnabled(),
-        'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled(),
-        'is_fulltextsearch_enabled' => $configurationManager->isFulltextsearchEnabled(),
-        'additional_backup_directories' => $configurationManager->GetAdditionalBackupDirectoriesString(),
-        'nextcloud_datadir' => $configurationManager->GetNextcloudDatadirMount(),
-        'nextcloud_mount' => $configurationManager->GetNextcloudMount(),
-        'nextcloud_upload_limit' => $configurationManager->GetNextcloudUploadLimit(),
-        'nextcloud_max_time' => $configurationManager->GetNextcloudMaxTime(),
-        'nextcloud_memory_limit' => $configurationManager->GetNextcloudMemoryLimit(),
-        'is_dri_device_enabled' => $configurationManager->isDriDeviceEnabled(),
-        'is_nvidia_gpu_enabled' => $configurationManager->isNvidiaGpuEnabled(),
-        'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled(),
-        'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled(),
-        'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled(),
+        'is_backup_section_enabled' => !$configurationManager->disableBackupSection,
+        'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled,
+        'is_fulltextsearch_enabled' => $configurationManager->isFulltextsearchEnabled,
+        'additional_backup_directories' => $configurationManager->getAdditionalBackupDirectoriesString(),
+        'nextcloud_datadir' => $configurationManager->nextcloudDatadirMount,
+        'nextcloud_mount' => $configurationManager->nextcloudMount,
+        'nextcloud_upload_limit' => $configurationManager->nextcloudUploadLimit,
+        'nextcloud_max_time' => $configurationManager->nextcloudMaxTime,
+        'nextcloud_memory_limit' => $configurationManager->nextcloudMemoryLimit,
+        'is_dri_device_enabled' => $configurationManager->nextcloudEnableDriDevice,
+        'is_nvidia_gpu_enabled' => $configurationManager->enableNvidiaGpu,
+        'is_talk_recording_enabled' => $configurationManager->isTalkRecordingEnabled,
+        'is_docker_socket_proxy_enabled' => $configurationManager->isDockerSocketProxyEnabled,
+        'is_harp_enabled' => $configurationManager->isHarpEnabled,
+        'is_whiteboard_enabled' => $configurationManager->isWhiteboardEnabled,
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
-        'community_containers_enabled' => $configurationManager->GetEnabledCommunityContainers(),
+        'community_containers_enabled' => $configurationManager->aioCommunityContainers,
         'bypass_container_update' => $bypass_container_update,
     ]);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
-    /** @var \AIO\Docker\DockerActionManager $dockerActionManger */
-    $dockerActionManger = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
+    $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
     return $view->render($response, 'login.twig', [
-        'is_login_allowed' => $dockerActionManger->isLoginAllowed(),
+        'is_login_allowed' => $dockerActionManager->isLoginAllowed(),
     ]);
 });
 $app->get('/setup', function (Request $request, Response $response, array $args) use ($container) {
@@ -168,6 +172,15 @@ $app->get('/setup', function (Request $request, Response $response, array $args)
         ]
     );
 });
+$app->get('/log', function (Request $request, Response $response, array $args) use ($container) {
+    $params = $request->getQueryParams();
+    $id = $params['id'] ?? '';
+    if (!str_starts_with($id, 'nextcloud-aio-')) {
+        throw new DI\NotFoundException();
+    }
+    $view = Twig::fromRequest($request);
+    return $view->render($response, 'log.twig', ['id' => $id]);
+});
 
 // Auth Redirector
 $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $response, array $args) use ($container) {
@@ -178,21 +191,30 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
     $setup = $container->get(\AIO\Data\Setup::class);
     if($setup->CanBeInstalled()) {
         return $response
-            ->withHeader('Location', '/setup')
+            ->withHeader('Location', 'setup')
             ->withStatus(302);
     }
 
     if($authManager->IsAuthenticated()) {
         return $response
-            ->withHeader('Location', '/containers')
+            ->withHeader('Location', 'containers')
             ->withStatus(302);
     } else {
         return $response
-            ->withHeader('Location', '/login')
+            ->withHeader('Location', 'login')
             ->withStatus(302);
     }
 });
 
 $errorMiddleware = $app->addErrorMiddleware(false, true, true);
+
+// Set a custom Not Found handler, which doesn't pollute the app output with 404 errors.
+$errorMiddleware->setErrorHandler(
+    \Slim\Exception\HttpNotFoundException::class,
+    function (Request $request, Throwable $exception, bool $displayErrorDetails) use ($app) {
+        $response = $app->getResponseFactory()->createResponse();
+        $response->getBody()->write('Not Found');
+        return $response->withStatus(404);
+    });
 
 $app->run();

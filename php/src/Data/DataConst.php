@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace AIO\Data;
 
@@ -8,7 +9,7 @@ class DataConst {
             return '/mnt/docker-aio-config/data/';
         }
 
-        return realpath(__DIR__ . '/../../data/');
+        return (string)realpath(__DIR__ . '/../../data/');
     }
 
     public static function GetSessionDirectory() : string {
@@ -16,7 +17,7 @@ class DataConst {
             return '/mnt/docker-aio-config/session/';
         }
 
-        return realpath(__DIR__ . '/../../session/');
+        return (string)realpath(__DIR__ . '/../../session/');
     }
 
     public static function GetConfigFile() : string {
@@ -56,6 +57,18 @@ class DataConst {
     }
 
     public static function GetCommunityContainersDirectory() : string {
-        return realpath(__DIR__ . '/../../../community-containers/');
+        return (string)realpath(__DIR__ . '/../../../community-containers/');
+    }
+
+    public static function GetCollaboraSeccompProfilePath() : string {
+        return (string)realpath(__DIR__ . '/../../cool-seccomp-profile.json');
+    }
+
+    public static function GetContainersDefinitionPath() : string {
+        return (string)realpath(__DIR__ . '/../../containers.json');
+    }
+
+    public static function GetAioVersionFile() : string {
+        return (string)realpath(__DIR__ . '/../../templates/includes/aio-version.twig');
     }
 }
