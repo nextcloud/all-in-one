@@ -3,7 +3,7 @@
 Standalone tools for Nextcloud AIO containers, for tasks that shouldn't be executed in a shell environment
 (e.g. due to string handling issues).
 
-Golang was choosen because it doesn't require additional runtimes in the containers, and has a pretty easy
+Golang was chosen because it doesn't require additional runtimes in the containers, and has a pretty easy
 syntax that is comprehensible even for people without much experience with the language.
 
 The tools should be built in the container image build process, so they are built for the correct target
