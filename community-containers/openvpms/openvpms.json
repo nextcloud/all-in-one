@@ -6,13 +6,14 @@
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/openvpms",
             "image": "ghcr.io/szaimen/aio-openvpms",
             "image_tag": "latest",
-            "internal_port": "11000",
+            "internal_port": "11001",
             "restart": "unless-stopped",
             "depends_on": [
                 "nextcloud-aio-openvpms-db"
             ],
             "environment": [
                 "TZ=%TIMEZONE%",
+                "NC_DOMAIN=%NC_DOMAIN%",
                 "DB_HOST=nextcloud-aio-openvpms-db",
                 "DB_NAME=openvpms",
                 "DB_USER=openvpms",
@@ -22,17 +23,15 @@
                 "OPENVPMS_DB_PASSWORD"
             ],
             "ui_secret": "OPENVPMS_DB_PASSWORD",
-            "ports": [
-                {
-                    "ip_binding": "%APACHE_IP_BINDING%",
-                    "port_number": "11000",
-                    "protocol": "tcp"
-                }
-            ],
             "volumes": [
                 {
                     "source": "nextcloud_aio_openvpms",
                     "destination": "/opt/openvpms/data",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_openvpms_logs",
+                    "destination": "/usr/local/tomcat/logs",
                     "writeable": true
                 }
             ],
