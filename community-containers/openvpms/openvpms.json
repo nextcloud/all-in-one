@@ -1,0 +1,68 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-openvpms",
+            "display_name": "OpenVPMS",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/openvpms",
+            "image": "ghcr.io/szaimen/aio-openvpms",
+            "image_tag": "latest",
+            "internal_port": "11000",
+            "restart": "unless-stopped",
+            "depends_on": [
+                "nextcloud-aio-openvpms-db"
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "DB_HOST=nextcloud-aio-openvpms-db",
+                "DB_NAME=openvpms",
+                "DB_USER=openvpms",
+                "DB_PASSWORD=%OPENVPMS_DB_PASSWORD%"
+            ],
+            "secrets": [
+                "OPENVPMS_DB_PASSWORD"
+            ],
+            "ui_secret": "OPENVPMS_DB_PASSWORD",
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "11000",
+                    "protocol": "tcp"
+                }
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_openvpms",
+                    "destination": "/opt/openvpms/data",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_openvpms"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-openvpms-db",
+            "display_name": "OpenVPMS Database",
+            "image": "mariadb",
+            "image_tag": "lts",
+            "hide_from_list": true,
+            "restart": "unless-stopped",
+            "environment": [
+                "MYSQL_DATABASE=openvpms",
+                "MYSQL_USER=openvpms",
+                "MYSQL_PASSWORD=%OPENVPMS_DB_PASSWORD%",
+                "MYSQL_RANDOM_ROOT_PASSWORD=yes"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_openvpms_db",
+                    "destination": "/var/lib/mysql",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_openvpms_db"
+            ]
+        }
+    ]
+}
