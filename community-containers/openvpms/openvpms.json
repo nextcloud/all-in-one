@@ -9,7 +9,8 @@
             "internal_port": "11001",
             "restart": "unless-stopped",
             "depends_on": [
-                "nextcloud-aio-openvpms-db"
+                "nextcloud-aio-openvpms-db",
+                "nextcloud-aio-openvpms-redis"
             ],
             "environment": [
                 "TZ=%TIMEZONE%",
@@ -17,7 +18,8 @@
                 "DB_HOST=nextcloud-aio-openvpms-db",
                 "DB_NAME=openvpms",
                 "DB_USER=openvpms",
-                "DB_PASSWORD=%OPENVPMS_DB_PASSWORD%"
+                "DB_PASSWORD=%OPENVPMS_DB_PASSWORD%",
+                "REDIS_HOST=nextcloud-aio-openvpms-redis"
             ],
             "secrets": [
                 "OPENVPMS_DB_PASSWORD"
@@ -37,6 +39,17 @@
             ],
             "backup_volumes": [
                 "nextcloud_aio_openvpms"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-openvpms-redis",
+            "display_name": "OpenVPMS Redis",
+            "image": "redis",
+            "image_tag": "7-alpine",
+            "hide_from_list": true,
+            "restart": "unless-stopped",
+            "tmpfs": [
+                "/data"
             ]
         },
         {

@@ -9,6 +9,20 @@ until mariadb -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" -e
 done
 echo "Database is ready."
 
+# Wait for Redis to be ready
+echo "Waiting for Redis at ${REDIS_HOST}:6379 to be ready..."
+until redis-cli -h "${REDIS_HOST}" ping 2>/dev/null | grep -q "PONG"; do
+    echo "Redis not yet available, retrying in 3 seconds..."
+    sleep 3
+done
+echo "Redis is ready."
+
+# Write the Redisson configuration for Redis-backed session management
+cat > /usr/local/tomcat/conf/redisson.yaml <<EOF
+singleServerConfig:
+  address: "redis://${REDIS_HOST}:6379"
+EOF
+
 # Write the JNDI datasource configuration, substituting env vars at runtime
 cat > /usr/local/tomcat/conf/context.xml <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -23,6 +37,10 @@ cat > /usr/local/tomcat/conf/context.xml <<EOF
               maxTotal="20"
               maxIdle="10"
               maxWaitMillis="-1"/>
+    <Manager className="org.redisson.tomcat.RedissonSessionManager"
+             configPath="/usr/local/tomcat/conf/redisson.yaml"
+             readMode="REDIS"
+             updateMode="DEFAULT"/>
 </Context>
 EOF
 

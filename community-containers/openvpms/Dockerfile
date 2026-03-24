@@ -3,6 +3,7 @@ FROM tomcat:9.0-jdk17-temurin-alpine
 
 ARG OPENVPMS_VERSION=2.4.0.1
 ARG MARIADB_DRIVER_VERSION=3.4.1
+ARG REDISSON_VERSION=4.3.0
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -10,6 +11,7 @@ RUN set -ex; \
         bash \
         curl \
         mariadb-client \
+        redis \
         unzip; \
     \
     # Change Tomcat's connector port from 8080 to 11001
@@ -18,6 +20,12 @@ RUN set -ex; \
     # Download MariaDB JDBC driver into Tomcat's shared lib directory
     curl -fsSL -o /usr/local/tomcat/lib/mariadb-java-client.jar \
         "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/${MARIADB_DRIVER_VERSION}/mariadb-java-client-${MARIADB_DRIVER_VERSION}.jar"; \
+    \
+    # Download Redisson JARs for Redis-backed Tomcat session management
+    curl -fsSL -o /usr/local/tomcat/lib/redisson-all.jar \
+        "https://repo1.maven.org/maven2/org/redisson/redisson-all/${REDISSON_VERSION}/redisson-all-${REDISSON_VERSION}.jar"; \
+    curl -fsSL -o /usr/local/tomcat/lib/redisson-tomcat-9.jar \
+        "https://repo1.maven.org/maven2/org/redisson/redisson-tomcat-9/${REDISSON_VERSION}/redisson-tomcat-9-${REDISSON_VERSION}.jar"; \
     \
     # Remove default webapps
     rm -rf /usr/local/tomcat/webapps/*; \
