@@ -48,8 +48,12 @@
             "image_tag": "7-alpine",
             "hide_from_list": true,
             "restart": "unless-stopped",
-            "tmpfs": [
-                "/data"
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_openvpms_redis",
+                    "destination": "/data",
+                    "writeable": true
+                }
             ]
         },
         {
