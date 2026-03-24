@@ -3,8 +3,8 @@ FROM docker.io/library/golang:alpine AS aio-container-tools-builder
 
 # hadolint ignore=DL3022
 COPY --from=aio-container-tools . /tmp/aio-container-tools/
-RUN cd /tmp/aio-container-tools \
- && go build -o /usr/local/bin/aio-pg-init ./cmd/aio-pg-init \
+WORKDIR /tmp/aio-container-tools
+RUN go build -o /usr/local/bin/aio-pg-init ./cmd/aio-pg-init \
  && go build -o /usr/local/bin/aio-pg-healthcheck ./cmd/aio-pg-healthcheck
 
 # From https://github.com/docker-library/postgres/blob/master/17/alpine3.23/Dockerfile
