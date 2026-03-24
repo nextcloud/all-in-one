@@ -75,6 +75,11 @@
                     "source": "nextcloud_aio_bahmni_configuration_checksums",
                     "destination": "/openmrs/data/configuration_checksums",
                     "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_openmrs_logs",
+                    "destination": "/openmrs/data/logs",
+                    "writeable": true
                 }
             ],
             "backup_volumes": [
@@ -83,7 +88,8 @@
                 "nextcloud_aio_bahmni_clinical_forms",
                 "nextcloud_aio_bahmni_lab_results",
                 "nextcloud_aio_bahmni_uploaded_files",
-                "nextcloud_aio_bahmni_configuration_checksums"
+                "nextcloud_aio_bahmni_configuration_checksums",
+                "nextcloud_aio_bahmni_openmrs_logs"
             ],
             "depends_on": [
                 "nextcloud-aio-bahmni-openmrsdb",
@@ -210,6 +216,7 @@
                 "MYSQL_PASSWORD=%BAHMNI_REPORTS_DB_PASSWORD%"
             ],
             "secrets": [
+                "BAHMNI_MYSQL_ROOT_PASSWORD",
                 "BAHMNI_REPORTS_DB_PASSWORD"
             ],
             "volumes": [
@@ -317,6 +324,7 @@
                 "MYSQL_PASSWORD=%BAHMNI_CRATER_DB_PASSWORD%"
             ],
             "secrets": [
+                "BAHMNI_MYSQL_ROOT_PASSWORD",
                 "BAHMNI_CRATER_DB_PASSWORD"
             ],
             "volumes": [
@@ -407,6 +415,7 @@
                 "MYSQL_PASSWORD=%BAHMNI_CRATER_ATOMFEED_DB_PASSWORD%"
             ],
             "secrets": [
+                "BAHMNI_MYSQL_ROOT_PASSWORD",
                 "BAHMNI_CRATER_ATOMFEED_DB_PASSWORD"
             ],
             "volumes": [
