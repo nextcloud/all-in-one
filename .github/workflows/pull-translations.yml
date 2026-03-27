@@ -1,0 +1,62 @@
+name: Pull Translations from Transifex
+
+on:
+  schedule:
+    # Run every day at 02:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      org:
+        description: 'Transifex organisation slug'
+        required: false
+        default: 'nextcloud'
+      project:
+        description: 'Transifex project slug'
+        required: false
+        default: 'nextcloud-all-in-one'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pull-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Make pull script executable
+        run: chmod +x php/translations/pull.sh
+
+      - name: Pull translations from Transifex
+        env:
+          TRANSIFEX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN }}
+          TRANSIFEX_ORG: ${{ inputs.org || 'nextcloud' }}
+          TRANSIFEX_PROJECT: ${{ inputs.project || 'nextcloud-all-in-one' }}
+        run: php/translations/pull.sh
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet php/translations/ && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(i18n): update translations from Transifex'
+          branch: chore/update-translations
+          delete-branch: true
+          title: 'chore(i18n): update translations from Transifex'
+          body: |
+            Automated pull of the latest translations from Transifex.
+
+            This PR was created automatically by the **Pull Translations** workflow.
+            Please review the changes and merge when ready.
+          labels: translations
