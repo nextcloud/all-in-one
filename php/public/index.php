@@ -55,6 +55,9 @@ $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 // Auth Middleware
 $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
+// Security Headers Middleware
+$app->add(new \AIO\Middleware\SecurityHeadersMiddleware());
+
 // API
 $app->post('/api/docker/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
 $app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
