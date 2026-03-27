@@ -258,7 +258,16 @@ readonly class DockerController {
     }
 
     public function startTopContainer(bool $pullImage, ?\Closure $addToStreamingResponseBody = null) : void {
-        $this->configurationManager->aioToken = bin2hex(random_bytes(24));
+        $keypair = sodium_crypto_sign_keypair();
+
+        $privateKeyBin = sodium_crypto_sign_secretkey($keypair);
+        $publicKeyBin = sodium_crypto_sign_publickey($keypair);
+
+        $privateKeyBase64 = sodium_bin2base64($privateKeyBin, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+        $publicKeyBase64 = sodium_bin2base64($publicKeyBin, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+
+        $this->configurationManager->aioPublicKey = $publicKeyBase64;
+        $this->configurationManager->aioPrivateKey = $privateKeyBase64;
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
