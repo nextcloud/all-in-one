@@ -4,6 +4,7 @@
 DATADIR="/var/lib/postgresql/data"
 export DUMP_DIR="/mnt/data"
 DUMP_FILE="$DUMP_DIR/database-dump.sql"
+# TODO: Do we need this? It's not used anywhere visible
 export PGPASSWORD="$POSTGRES_PASSWORD"
 
 # Don't start database as long as backup is running
@@ -85,7 +86,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     exec docker-entrypoint.sh postgres &
 
     # Wait for creation
-    while ! psql -d "postgresql://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@127.0.0.1:11000/$POSTGRES_DB" -c "select now()"; do
+    while ! env POSTGRES_PORT=11000 POSTGRES_USER="oc_$POSTGRES_USER" /usr/local/bin/aio-pg-healthcheck; do
         echo "Waiting for the database to start."
         sleep 5
     done
@@ -107,12 +108,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         exit 1
     elif [ "$DB_OWNER" != "oc_$POSTGRES_USER" ]; then
         DIFFERENT_DB_OWNER=1
-        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-            CREATE USER "$DB_OWNER" WITH PASSWORD '$POSTGRES_PASSWORD' CREATEDB;
-            ALTER DATABASE "$POSTGRES_DB" OWNER TO "$DB_OWNER";
-            GRANT ALL PRIVILEGES ON DATABASE "$POSTGRES_DB" TO "$DB_OWNER";
-            GRANT ALL PRIVILEGES ON SCHEMA public TO "$DB_OWNER";
-EOSQL
+        POSTGRES_DB_OWNER="$DB_OWNER" /usr/local/bin/aio-pg-init
     fi
 
     # Restore database
