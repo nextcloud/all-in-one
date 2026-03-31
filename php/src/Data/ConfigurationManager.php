@@ -657,7 +657,7 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("Please enter your current password.");
         }
 
-        if ($currentPassword !== $this->password) {
+        if (!hash_equals($this->password, $currentPassword)) {
             throw new InvalidSettingConfigurationException("The entered current password is not correct.");
         }
 
