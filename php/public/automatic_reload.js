@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function(event) {
+window.addEventListener("load", function(event) {
     if (document.hasFocus()) {
         // hide reload button if the site reloads automatically
         let list = document.getElementsByClassName("reload button");
