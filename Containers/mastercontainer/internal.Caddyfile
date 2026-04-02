@@ -2,7 +2,7 @@
 	admin off
 
 	storage file_system {
-		root /mnt/docker-aio-config/caddy/
+		root /mnt/docker-aio-config/caddy-internal/
 	}
 
 	log {
