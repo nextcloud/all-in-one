@@ -364,6 +364,7 @@ fi
 mkdir -p /mnt/docker-aio-config/data/
 mkdir -p /mnt/docker-aio-config/session/
 mkdir -p /mnt/docker-aio-config/caddy/
+mkdir -p /mnt/docker-aio-config/caddy-internal/
 
 # Adjust permissions for all instances
 chmod 770 -R /mnt/docker-aio-config
@@ -371,6 +372,7 @@ chmod 777 /mnt/docker-aio-config
 chown www-data:www-data -R /mnt/docker-aio-config/data/
 chown www-data:www-data -R /mnt/docker-aio-config/session/
 chown www-data:www-data -R /mnt/docker-aio-config/caddy/
+chown www-data:www-data -R /mnt/docker-aio-config/caddy-internal/
 
 print_green "Initial startup of Nextcloud All-in-One complete!
 You should be able to open the Nextcloud AIO Interface now on port 8080 of this server!
