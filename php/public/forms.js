@@ -29,6 +29,9 @@ function showPassword(id) {
     const xhr = e.target;
     if (xhr.status === 201) {
       window.location.replace(xhr.getResponseHeader('Location'));
+    } else if ([422, 429].includes(xhr.status)) {
+      disableSpinner()
+      showError(xhr.response);
     } else if (xhr.status === 422) {
       disableSpinner()
       showError(xhr.response);
