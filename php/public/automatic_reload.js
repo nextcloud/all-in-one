@@ -9,7 +9,7 @@ window.addEventListener("load", function(event) {
 
         // set timeout for reload
         setTimeout(function(){
-        window.location.reload(1);
+        window.location.reload(true);
         }, 5000);
     } else {
         window.addEventListener("beforeunload", function() {

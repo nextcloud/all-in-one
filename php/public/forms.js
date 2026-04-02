@@ -36,11 +36,11 @@ function showPassword(id) {
       showError("Server error. Please check the mastercontainer logs for details. This page will reload after 10s automatically. Then you can check the mastercontainer logs.");
       // Reload after 10s since it is expected that the updated view is shown (e.g. after starting containers)
       setTimeout(function(){
-        window.location.reload(1);
+        window.location.reload(true);
       }, 10000);
     } else {
       // If the responose is not one of the above, we should reload to show the latest content
-      window.location.reload(1);
+      window.location.reload(true);
     }
   }
 
@@ -84,7 +84,7 @@ function showPassword(id) {
             document.getElementById('overlay-log')?.classList.add('visible');
             // Reload the page after the response was fully loaded into the iframe.
             document.querySelector('iframe[name="overlay-log"]').addEventListener('load', () => {
-                location.reload();
+                location.reload(true);
             });
         };
     }
