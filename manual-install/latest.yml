@@ -249,8 +249,8 @@ services:
     expose:
       - "9980"
     environment:
-      - aliasgroup1=https://${NC_DOMAIN}:443,http://nextcloud-aio-apache:23973
-      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:logging.level=warning --o:logging.level_startup=warning --o:welcome.enable=false --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
+      - aliasgroup1=https://${NC_DOMAIN}:443,http://nextcloud-aio-apache.nextcloud-aio:23973
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:logging.level=warning --o:logging.level_startup=warning --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
       - dictionaries=${COLLABORA_DICTIONARIES}
       - TZ=${TIMEZONE}
       - server_name=${NC_DOMAIN}
@@ -259,7 +259,6 @@ services:
     profiles:
       - collabora
     cap_add:
-      - MKNOD
       - SYS_ADMIN
       - SYS_CHROOT
       - FOWNER
@@ -283,6 +282,8 @@ services:
       - ${TALK_PORT}:${TALK_PORT}/udp
     expose:
       - "8081"
+    volumes:
+      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     environment:
       - NC_DOMAIN
       - TALK_HOST=nextcloud-aio-talk
