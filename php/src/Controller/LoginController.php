@@ -42,6 +42,9 @@ readonly class LoginController {
             return $response->withHeader('Location', '../..')->withStatus(302);
         }
 
+        // Punish failed auth attempts with a delay, as a very simple means against bots.
+        sleep(5);
+
         return $response->withHeader('Location', '../..')->withStatus(302);
     }
 
