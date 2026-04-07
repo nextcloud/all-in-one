@@ -28,6 +28,9 @@ readonly class LoginController {
             return $response->withHeader('Location', '.')->withStatus(201);
         }
 
+        // Punish failed auth attempts with a delay, as a very simple means against bots.
+        sleep(5);
+
         $response->getBody()->write("The password is incorrect.");
         return $response->withHeader('Location', '.')->withStatus(422);
     }
