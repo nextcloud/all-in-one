@@ -54,6 +54,9 @@
             "ui_secret": "SMBSERVER_PASSWORD",
             "backup_volumes": [
                 "nextcloud_aio_smbserver"
+            ],
+            "nextcloud_exec_commands": [
+                "php /var/www/html/occ config:system:set filesystem_check_changes --value=1 --type=integer"
             ]
         }
     ]

@@ -27,7 +27,7 @@
             <script type="text/javascript" src="timezone.js"></script>
 
             {# js for optional containers and additional containers forms #}
-            <script type="text/javascript" src="containers-form-submit.js?v6"></script>
+            <script type="text/javascript" src="containers-form-submit.js?v7"></script>
 
             {% set hasBackupLocation = borg_backup_host_location or borg_remote_repo %}
             {% set isAnyRunning = false %}
@@ -635,7 +635,7 @@
             {% endif %}
 
         {% if isApacheStarting == true or is_backup_container_running == true or isWatchtowerRunning == true or is_daily_backup_running == true %}
-            <script type="text/javascript" src="automatic_reload.js"></script>
+            <script type="text/javascript" src="automatic_reload.js?v2"></script>
         {% else %}
             <script type="text/javascript" src="before-unload.js"></script>
         {% endif %}
