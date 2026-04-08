@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function(event) {
+window.addEventListener("load", function(event) {
     if (document.hasFocus()) {
         // hide reload button if the site reloads automatically
         let list = document.getElementsByClassName("reload button");
@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         // set timeout for reload
         setTimeout(function(){
-        window.location.reload(1);
+        window.location.reload(true);
         }, 5000);
     } else {
         window.addEventListener("beforeunload", function() {

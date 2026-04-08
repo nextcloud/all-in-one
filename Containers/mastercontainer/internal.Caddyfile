@@ -1,8 +1,11 @@
 {
 	admin off
 
+	# auto_https will be handled manually in acme.Caddyfile
+	auto_https disable_redirects
+
 	storage file_system {
-		root /mnt/docker-aio-config/caddy/
+		root /mnt/docker-aio-config/caddy-internal/
 	}
 
 	log {

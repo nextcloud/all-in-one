@@ -26,6 +26,7 @@ readonly class AuthManager {
     public function SetAuthState(bool $isLoggedIn) : void {
 
         if (!$this->IsAuthenticated() && $isLoggedIn === true) {
+            session_regenerate_id(true);
             $date = new DateTime();
             $dateTime = $date->getTimestamp();
             $_SESSION['date_time'] = $dateTime;
