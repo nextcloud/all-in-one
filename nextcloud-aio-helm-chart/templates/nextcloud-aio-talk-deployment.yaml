@@ -13,6 +13,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-talk
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -52,7 +54,7 @@ spec:
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-talk:20260306_081319
+          image: ghcr.io/nextcloud-releases/aio-talk:20260409_094910
           readinessProbe:
             exec:
               command:
@@ -84,4 +86,12 @@ spec:
               {{- else }}
               drop: ["NET_RAW"]
               {{- end }}
+          volumeMounts:
+            - mountPath: /usr/local/share/ca-certificates
+              name: nextcloud-aio-nextcloud-trusted-cacerts
+              readOnly: true
+      volumes:
+        - name: nextcloud-aio-nextcloud-trusted-cacerts
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-nextcloud-trusted-cacerts
 {{- end }}
