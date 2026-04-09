@@ -74,6 +74,7 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
     # TLS options
     tls {
         issuer acme {
+            profile shortlived
             disable_http_challenge
         }
     }

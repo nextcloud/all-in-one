@@ -46,6 +46,7 @@ https://:8443 {
 	tls {
 		on_demand
 		issuer acme {
+            profile shortlived
 			disable_tlsalpn_challenge
 		}
 	}
