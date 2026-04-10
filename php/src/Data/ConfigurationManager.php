@@ -703,11 +703,11 @@ class ConfigurationManager
         $tempFile = DataConst::GetConfigFile() . '.tmp';
         if (file_put_contents($tempFile, $content) === false) {
             @unlink($tempFile);
-            throw new InvalidSettingConfigurationException("Failed to write temporary config file to " . DataConst::GetDataDirectory() . "!");
+            throw new InvalidSettingConfigurationException("Failed to write temporary config file: " . $tempFile);
         }
         if (!rename($tempFile, DataConst::GetConfigFile())) {
             @unlink($tempFile);
-            throw new InvalidSettingConfigurationException("Failed to atomically replace config file in " . DataConst::GetDataDirectory() . "!");
+            throw new InvalidSettingConfigurationException("Failed to rename " . $tempFile . " to " . DataConst::GetConfigFile());
         }
         $this->config = [];
     }
