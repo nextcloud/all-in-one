@@ -294,6 +294,9 @@ class ConfigurationManager
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
         {
             $configContent = (string)file_get_contents(DataConst::GetConfigFile());
+            if ($configContent === '') {
+                throw new \RuntimeException("The config file " . DataConst::GetConfigFile() . " is empty. It may have been truncated due to low disk space. Please restore it from a backup.");
+            }
             $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
@@ -694,7 +697,18 @@ class ConfigurationManager
         if ($df !== false && (int)$df < $size) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
         }
-        file_put_contents(DataConst::GetConfigFile(), $content);
+        // Write to a temp file first to avoid truncating the config file if the
+        // disk fills up mid-write. rename() is atomic on POSIX filesystems, so the
+        // original config is never touched until the new content is fully on disk.
+        $tempFile = DataConst::GetConfigFile() . '.tmp';
+        if (file_put_contents($tempFile, $content) === false) {
+            @unlink($tempFile);
+            throw new InvalidSettingConfigurationException("Failed to write temporary config file to " . DataConst::GetDataDirectory() . "!");
+        }
+        if (!rename($tempFile, DataConst::GetConfigFile())) {
+            @unlink($tempFile);
+            throw new InvalidSettingConfigurationException("Failed to atomically replace config file in " . DataConst::GetDataDirectory() . "!");
+        }
         $this->config = [];
     }
 
