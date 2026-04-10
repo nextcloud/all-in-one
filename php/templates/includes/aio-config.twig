@@ -1,44 +1,44 @@
 <details>
-    <summary>Click here to view the current AIO config and documentation links</summary>
+    <summary>{{ t('Click here to view the current AIO config and documentation links') }}</summary>
     {% if was_start_button_clicked == true %}
-        <p>Nextcloud's config.php file is stored in the nextcloud_aio_nextcloud Docker volume and can be edited by following the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-edit-nextclouds-configphp-file-with-a-texteditor">config.php documentation</a>.</p>
-        <p>You can run Nextcloud's usual occ commands by following the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-run-occ-commands">occ documentation</a></strong>.</p>
+        <p>{{ t('Nextcloud\'s config.php file is stored in the nextcloud_aio_nextcloud Docker volume and can be edited by following the') }} <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-edit-nextclouds-configphp-file-with-a-texteditor">{{ t('config.php documentation') }}</a>.</p>
+        <p>{{ t('You can run Nextcloud\'s usual occ commands by following the') }} <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-run-occ-commands">{{ t('occ documentation') }}</a>.</p>
     {% endif %}
 
     <p>
         {% if nextcloud_datadir starts with '/' %}
-            Nextcloud's datadir is getting stored in the {{ nextcloud_datadir }} directory.
+            {{ t('Nextcloud\'s datadir is getting stored in the') }} {{ nextcloud_datadir }} {{ t('directory.') }}
         {% else %}
-            Nextcloud's datadir is getting stored in the {{ nextcloud_datadir }} Docker volume.
+            {{ t('Nextcloud\'s datadir is getting stored in the') }} {{ nextcloud_datadir }} {{ t('Docker volume.') }}
         {% endif %}
-        See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir">NEXTCLOUD_DATADIR documentation</a> on how to change this.
+        {{ t('See the') }} <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir">{{ t('NEXTCLOUD_DATADIR documentation') }}</a> {{ t('on how to change this.') }}
     </p>
 
     <p>
         {% if nextcloud_mount == '' %}
-            The Nextcloud container is confined and local external storage in Nextcloud is disabled.
+            {{ t('The Nextcloud container is confined and local external storage in Nextcloud is disabled.') }}
         {% else %}
-            The Nextcloud container is getting access to the {{ nextcloud_mount }} directory and local external storage in Nextcloud is enabled.
+            {{ t('The Nextcloud container is getting access to the') }} {{ nextcloud_mount }} {{ t('directory and local external storage in Nextcloud is enabled.') }}
         {% endif %}
-        See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host">NEXTCLOUD_MOUNT documentation</a> on how to change this.</p>
+        {{ t('See the') }} <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host">{{ t('NEXTCLOUD_MOUNT documentation') }}</a> {{ t('on how to change this.') }}</p>
 
-    <p>Nextcloud has an upload limit of {{ nextcloud_upload_limit }} configured (for public link uploads. Bigger uploads are always possible when users are logged in). See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud">NEXTCLOUD_UPLOAD_LIMIT documentation</a> on how to change this.</p>
+    <p>{{ t('Nextcloud has an upload limit of') }} {{ nextcloud_upload_limit }} {{ t('configured (for public link uploads. Bigger uploads are always possible when users are logged in). See the') }} <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud">{{ t('NEXTCLOUD_UPLOAD_LIMIT documentation') }}</a> {{ t('on how to change this.') }}</p>
 
-    <p>For Nextcloud, a memory limit of {{ nextcloud_memory_limit }} per PHP process is configured. See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud">NEXTCLOUD_MEMORY_LIMIT documentation</a> on how to change this.</p>
+    <p>{{ t('For Nextcloud, a memory limit of') }} {{ nextcloud_memory_limit }} {{ t('per PHP process is configured. See the') }} <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud">{{ t('NEXTCLOUD_MEMORY_LIMIT documentation') }}</a> {{ t('on how to change this.') }}</p>
 
-    <p>Nextcloud has a timeout of {{ nextcloud_max_time }} seconds configured (important for big file uploads). See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud">NEXTCLOUD_MAX_TIME documentation</a> on how to change this.</p>
+    <p>{{ t('Nextcloud has a timeout of') }} {{ nextcloud_max_time }} {{ t('seconds configured (important for big file uploads). See the') }} <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud">{{ t('NEXTCLOUD_MAX_TIME documentation') }}</a> {{ t('on how to change this.') }}</p>
 
     <p>
         {% if is_dri_device_enabled == true and is_nvidia_gpu_enabled == true %}
-            Hardware acceleration is enabled with the /dev/dri device and the Nvidia runtime.
+            {{ t('Hardware acceleration is enabled with the /dev/dri device and the Nvidia runtime.') }}
         {% elseif is_dri_device_enabled == true %}
-            Hardware acceleration is enabled with the /dev/dri device.
+            {{ t('Hardware acceleration is enabled with the /dev/dri device.') }}
         {% elseif is_nvidia_gpu_enabled == true %}
-            Hardware acceleration is enabled with the Nvidia runtime.
+            {{ t('Hardware acceleration is enabled with the Nvidia runtime.') }}
         {% else %}
-            Hardware acceleration is not enabled. It's recommended to enable hardware transcoding for better performance.
+            {{ t('Hardware acceleration is not enabled. It\'s recommended to enable hardware transcoding for better performance.') }}
         {% endif %}
-        See the <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud">hardware acceleration documentation</a> on how to change this.</p>
+        {{ t('See the') }} <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud">{{ t('hardware acceleration documentation') }}</a> {{ t('on how to change this.') }}</p>
 
-    <p>For further documentation on AIO, refer to <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one#nextcloud-all-in-one">this page</a></strong>. You can use the browser search [CTRL]+[F] to search through the documentation. Additional documentation can be found <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/categories/wiki">here</a></strong>.</p>
+    <p>{{ t('For further documentation on AIO, refer to') }} <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one#nextcloud-all-in-one">{{ t('this page') }}</a></strong>. {{ t('You can use the browser search [CTRL]+[F] to search through the documentation. Additional documentation can be found') }} <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/categories/wiki">{{ t('here') }}</a></strong>.</p>
 </details>
