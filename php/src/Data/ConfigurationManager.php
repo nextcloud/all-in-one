@@ -702,11 +702,14 @@ class ConfigurationManager
         // original config is never touched until the new content is fully on disk.
         $tempFile = DataConst::GetConfigFile() . '.tmp';
         if (file_put_contents($tempFile, $content) === false) {
-            @unlink($tempFile);
+            // The file probably wasn't created, but better check nonetheless.
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
             throw new InvalidSettingConfigurationException("Failed to write temporary config file: " . $tempFile);
         }
         if (!rename($tempFile, DataConst::GetConfigFile())) {
-            @unlink($tempFile);
+            unlink($tempFile);
             throw new InvalidSettingConfigurationException("Failed to rename " . $tempFile . " to " . DataConst::GetConfigFile());
         }
         $this->config = [];
