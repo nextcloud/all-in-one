@@ -151,7 +151,7 @@ sudo docker run \
   - `--sig-proxy=false` — prevents Ctrl+C in the attached terminal from stopping the container.  
   - `--name nextcloud-aio-mastercontainer` — the container name. Do not change this name; mastercontainer updates rely on it.  
   - `--restart always` — ensures the container restarts automatically with the Docker daemon.  
-  - `--publish 80:80` — publishes container port 80 on host port 80 (used for ACME http-challenge when obtaining certificates). Not required if you run AIO behind a reverse proxy.  
+  - `--publish 80:80` — publishes container port 80 on host port 80 (used for ACME http-challenge when obtaining certificates, used for for the AIO-interface running inside the mastercontainer). Not required if you run AIO behind a reverse proxy.
   - `--publish 8080:8080` — publishes the AIO interface (self-signed certificate) on host port 8080. You may map a different host port if 8080 is in use (e.g. `--publish 8081:8080`).  
   - `--publish 8443:8443` — publishes the AIO interface with a valid certificate on host port 8443 (requires ports 80 and 8443 to be reachable and a domain pointing to your server). Not required if you run AIO behind a reverse proxy.  
   - `--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config` — stores mastercontainer configuration in the named Docker volume. Do not change this volume name; built-in backups depend on it.  
@@ -221,6 +221,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [How to adjust the internally used docker api version?](#how-to-adjust-the-internally-used-docker-api-version)
     - [How to change the default location of Nextcloud's Datadir?](#how-to-change-the-default-location-of-nextclouds-datadir)
     - [How to configure custom UID/GID?](#how-to-configure-custom-uidgid)
+    - [How to move the appdata folder from the datadir to an ssd to improve the performance?](#how-to-move-the-appdata-folder-from-the-datadir-to-an-ssd-to-improve-the-performance)
     - [How to store the files/installation on a separate drive?](#how-to-store-the-filesinstallation-on-a-separate-drive)
     - [How to limit the resource usage of AIO?](#how-to-limit-the-resource-usage-of-aio)
     - [How to allow the Nextcloud container to access directories on the host?](#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host)
@@ -475,7 +476,26 @@ Another solution if you really need to use host mounts is to use a bind mount to
 /source/path  /target/path/where/the/source/directory/will/be/mounted/on/the/server  fuse.bindfs  force-user=33,force-group=33,allow_other  0  0
 ```
 
-You can then use `--env NEXTCLOUD_DATADIR="/target/path/where/the/source/directory/will/be/mounted/on/the/server"` as described in the section above.
+Then use `sudo mount /target/path/where/the/source/directory/will/be/mounted/on/the/server` to mount it directly.
+
+You can afterwards use `--env NEXTCLOUD_DATADIR="/target/path/where/the/source/directory/will/be/mounted/on/the/server"` as described in the section above.
+
+### How to move the appdata folder from the datadir to an ssd to improve the performance?
+If the datadir in your setup is configured to be placed on an HDD or network FS like SMB or NFS, you can follow the steps below to change the location of the appdata folder to be located on an SSD in order to improve the performance of the setup.
+
+> [!NOTE]  
+> The following steps only work if you already configured and used NEXTCLOUD_DATADIR as mentioned [two sections above](#how-to-change-the-default-location-of-nextclouds-datadir). 
+> In this example here, we assume that you used `NEXTCLOUD_DATADIR="/target/path/`.
+
+After the initial installation is done and all datadir files of Nextcloud are stored inside the configured `/target/path` directory, you will also see an `appdata_*` folder in there that stores app-related data. You can now move that folder to a faster SSD if the target dir is not already positioned on an SSD by first using `rsync` to sync the files a location on an SSD. Afterwards rename the appdata folder in the datadir to something like `appdata_*-backup`. Afterwards add the following line to `/etc/fstab`:
+```
+/source/path/on/ssd  /target/path/<appdata-path>  fuse.bindfs  force-user=33,force-group=33,allow_other  0  0
+```
+Do not forget to adjust `<appdata-path>` to the correct `appdata_*` name that your installation initially created automatically.
+
+Then use `sudo mount /target/path/<appdata-path>` to mount it directly.
+
+Afterwards things should be speed up.
 
 ### How to store the files/installation on a separate drive?
 You can move the whole docker library and all its files including all Nextcloud AIO files and folders to a separate drive by first mounting the drive in the host OS (NTFS is not supported and ext4 is recommended as FS) and then following this tutorial: https://www.guguweb.com/2019/02/07/how-to-move-docker-data-directory-to-another-location-on-ubuntu/<br>
@@ -683,7 +703,7 @@ Simply run the following command: `sudo docker exec --user www-data nextcloud-ai
 See [multiple-instances.md](./multiple-instances.md) for some documentation on this.
 
 ### Bruteforce protection FAQ
-Nextcloud features a built-in bruteforce protection which may get triggered and will block an ip-address or disable a user. You can unblock an ip-address by running `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ security:bruteforce:reset <ip-address>` and enable a disabled user by running `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ user:enable <name of user>`. See https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html#security for further information. **Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management
+Nextcloud features a built-in bruteforce protection which may get triggered and will block an ip-address or disable a user. You can unblock an ip-address by running `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ security:bruteforce:reset <ip-address>` and enable a disabled user by running `sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ user:enable <name of user>`. See https://docs.nextcloud.com/server/latest/admin_manual/occ_command.html#security-commands-label for further information. **Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management
 
 ### How to switch the channel?
 You can switch to a different channel like e.g. the beta channel or from the beta channel back to the latest channel by stopping the mastercontainer, removing it (no data will be lost) and recreating the container using the same command that you used initially to create the mastercontainer. You simply need to change the last line `ghcr.io/nextcloud-releases/all-in-one:latest` to `ghcr.io/nextcloud-releases/all-in-one:beta` and vice versa. ⚠️ In some rare occurrences, you might need to run `docker pull ghcr.io/nextcloud-releases/all-in-one:latest` or `docker pull ghcr.io/nextcloud-releases/all-in-one:beta` first before being able to use the image.
@@ -748,7 +768,10 @@ password=<password>
 ```
 (Of course you need to modify `<smb/cifs username>` and `<password>` for your specific case.)
 
-Now you can use `/mnt/storagebox` as Nextcloud's datadir like described in the section above this one.
+Now you can use `/mnt/storagebox` as Nextcloud's datadir like described in the section [here](#how-to-change-the-default-location-of-nextclouds-datadir).
+
+> [!NOTE]  
+> You also might want to move the appdata dir after the initial installation is done to improve the performance. See [this section](#how-to-move-the-appdata-folder-from-the-datadir-to-an-ssd-to-improve-the-performance)
 
 ### Can I run this with Docker swarm?
 Yes. For that to work, you need to use and follow the [manual-install documentation](./manual-install/).

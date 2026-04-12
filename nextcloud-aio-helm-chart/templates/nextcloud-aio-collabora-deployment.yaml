@@ -28,17 +28,17 @@ spec:
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
             - name: aliasgroup1
-              value: https://{{ .Values.NC_DOMAIN }}:443,http://nextcloud-aio-apache:23973
+              value: https://{{ .Values.NC_DOMAIN }}:443,http://nextcloud-aio-apache.nextcloud-aio:23973
             - name: dictionaries
               value: "{{ .Values.COLLABORA_DICTIONARIES }}"
             - name: extra_params
-              value: --o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:logging.level=warning --o:logging.level_startup=warning --o:welcome.enable=false --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
+              value: --o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:logging.level=warning --o:logging.level_startup=warning --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
             - name: server_name
               value: "{{ .Values.NC_DOMAIN }}"
           {{- if contains "--o:support_key=" (join " " (.Values.ADDITIONAL_COLLABORA_OPTIONS | default list)) }}
-          image: ghcr.io/nextcloud-releases/aio-collabora-online:20260306_081319
+          image: ghcr.io/nextcloud-releases/aio-collabora-online:20260409_094910
           {{- else }}
-          image: ghcr.io/nextcloud-releases/aio-collabora:20260306_081319
+          image: ghcr.io/nextcloud-releases/aio-collabora:20260409_094910
           {{- end }}
           readinessProbe:
             exec:
@@ -63,7 +63,6 @@ spec:
           securityContext:
             capabilities:
               add:
-                - MKNOD
                 - CAP_SYS_ADMIN
                 - SYS_CHROOT
                 - FOWNER

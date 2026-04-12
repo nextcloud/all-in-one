@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:29.3.0-cli AS docker
+FROM docker:29.4.0-cli AS docker
 
 ARG CADDY_REMOTE_HOST_HASH=b21775afa730ffb52a24ddff310c8a6d1fd37276
 
@@ -13,7 +13,7 @@ RUN set -ex; \
     /usr/bin/caddy list-modules
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.23/fpm/Dockerfile
-FROM php:8.5.3-fpm-alpine3.23
+FROM php:8.5.5-fpm-alpine3.23
 
 EXPOSE 80
 EXPOSE 8080

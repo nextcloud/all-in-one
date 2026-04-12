@@ -3,15 +3,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link rel="stylesheet" href="style.css">
         <style>
-            body {
+            html, body {
+                height: 100%;
+                overflow: hidden;
+                padding: 0;
+                margin: 0;
+            }
+            pre {
+                height: 100%;
+                overflow: auto;
+                margin: 0;
                 padding: 1rem;
+                box-sizing: border-box;
             }
             #floating-box {
-                position: sticky;
+                position: fixed;
                 top: 1rem;
-                float: right;
                 right: 1rem;
-                width: 20rem;
+                max-width: calc(100vw - 2rem);
+                z-index: 10;
                 display: flex;
                 justify-content: end;
                 align-items: center;
@@ -43,7 +53,7 @@
                 transition: opacity 1s, display 1s allow-discrete;
             }
         </style>
-        <script src="log-view.js"></script>
+        <script src="log-view.js?v1"></script>
     </head>
     <body data-container-id="{{ id }}">
         <div id="floating-box">

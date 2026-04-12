@@ -43,8 +43,7 @@ jobs:
           extensions: apcu
           coverage: none
           ini-file: development
-          # Temporary workaround for missing pcntl_* in PHP 8.3
-          ini-values: disable_functions=
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

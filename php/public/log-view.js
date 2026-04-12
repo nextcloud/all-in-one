@@ -96,7 +96,7 @@ class LogViewer {
     }
 
     scrollToBottom() {
-        window.scrollTo(0, document.body.scrollHeight);
+        this.logElem.scrollTop = this.logElem.scrollHeight;
     }
 
     initAutoloadingControls() {

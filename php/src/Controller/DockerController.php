@@ -87,19 +87,26 @@ readonly class DockerController {
     }
 
     public function StartBackupContainerBackup(Request $request, Response $response, array $args) : Response {
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
+
         $forceStopNextcloud = true;
-        $this->startBackup($forceStopNextcloud);
-        return $response->withStatus(201)->withHeader('Location', '.');
+        $this->startBackup($forceStopNextcloud, $addToStreamingResponseBody);
+
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
     }
 
-    public function startBackup(bool $forceStopNextcloud = false) : void {
+    public function startBackup(bool $forceStopNextcloud = false, ?\Closure $addToStreamingResponseBody = null) : void {
         $this->configurationManager->backupMode = 'backup';
 
         $id = self::TOP_CONTAINER;
-        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud);
+        $this->PerformRecursiveContainerStop($id, $forceStopNextcloud, $addToStreamingResponseBody);
 
         $id = 'nextcloud-aio-borgbackup';
-        $this->PerformRecursiveContainerStart($id);
+        $this->PerformRecursiveContainerStart($id, true, $addToStreamingResponseBody);
     }
 
     public function StartBackupContainerCheck(Request $request, Response $response, array $args) : Response {
@@ -396,6 +403,7 @@ readonly class DockerController {
             ->withBody(new NonBufferedBody())
             ->withHeader('Content-Type', 'text/html; charset=utf-8')
             ->withHeader('X-Accel-Buffering', 'no')
+            ->withHeader('Content-Length', '-1')
             ->withHeader('Cache-Control', 'no-cache');
             
         // Text written into this body is immediately sent to the client, without waiting for later content.

@@ -18,6 +18,7 @@ jobs:
           php-version: 8.5
           extensions: apcu
           coverage: none
+          ini-file: development
 
       - name: Run script
         run: |

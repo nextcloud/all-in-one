@@ -27,7 +27,7 @@
             <script type="text/javascript" src="timezone.js"></script>
 
             {# js for optional containers and additional containers forms #}
-            <script type="text/javascript" src="containers-form-submit.js?v6"></script>
+            <script type="text/javascript" src="containers-form-submit.js?v7"></script>
             <script type="text/javascript" src="click-handlers.js?v1"></script>
 
             {% set hasBackupLocation = borg_backup_host_location or borg_remote_repo %}
@@ -354,6 +354,9 @@
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input id="base_path" type="hidden" name="base_path" value="">
+                                        {% if bypass_container_update == true %}
+                                            <input type="hidden" name="bypass_container_update" value="true">
+                                        {% endif %}
                                         <input type="submit" value="Start containers" />
                                     </form>
                                 {% else %}
@@ -362,7 +365,7 @@
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input id="base_path" type="hidden" name="base_path" value="">
                                         {% if bypass_container_update == true %}
-                                            <input type="hidden" name="bypass_container_update" value="{{bypass_container_update}}">
+                                            <input type="hidden" name="bypass_container_update" value="true">
                                         {% endif %}
                                         <input class="button " type="submit" value="Start and update containers" data-confirm='Start and update containers? You should consider creating a backup first.' />
                                     </form>
@@ -473,7 +476,7 @@
                                     {% if isApacheStarting != true %}
                                         <h3>Backup creation</h3>
                                         <p>Clicking on the button below will create a backup.</p>
-                                        <form method="POST" action="api/docker/backup" class="xhr">
+                                        <form method="POST" action="api/docker/backup" target="overlay-log">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                             <input type="submit" value="Create backup" data-confirm='Create backup? Are you sure that you want to create a backup? This will stop all running containers and create the backup.' />
@@ -633,7 +636,7 @@
             {% endif %}
 
         {% if isApacheStarting == true or is_backup_container_running == true or isWatchtowerRunning == true or is_daily_backup_running == true %}
-            <script type="text/javascript" src="automatic_reload.js"></script>
+            <script type="text/javascript" src="automatic_reload.js?v2"></script>
         {% else %}
             <script type="text/javascript" src="before-unload.js"></script>
         {% endif %}
