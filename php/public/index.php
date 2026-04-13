@@ -38,14 +38,15 @@ $container->set(Guard::class, function () use ($responseFactory) {
 
 // Register Middleware To Be Executed On All Routes
 session_start([
-    "save_path" => $dataConst->GetSessionDirectory(), // where to save the session files
-    "gc_maxlifetime" => 86400, // delete sessions after 24 hours ... // https://www.php.net/manual/en/session.configuration.php#ini.session.gc-maxlifetime
-    "gc_probability" => 1, // ... to ... // https://www.php.net/manual/en/session.configuration.php#ini.session.gc-probability
+    "save_path" => $dataConst->GetSessionDirectory(), // Where to save the session files
+    "cookie_lifetime" => 0, // Delete the session cookie whenever the browser is closed. See https://www.php.net/manual/en/session.configuration.php#ini.session.cookie-lifetime
+    "gc_maxlifetime" => 86400, // Delete sessions after 24 hours. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-maxlifetime
+    "gc_probability" => 1, // Probability that the session cleanup starts. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-probability
     "gc_divisor" => 1, // gc_probability/gc_divisor = 1/1 = 100%, meaning that *all* outdated sessions get deleted when the cleanup job runs. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-divisor
-    "use_strict_mode" => true, // only allow initialized session IDs // https://www.php.net/manual/en/session.configuration.php#ini.session.use-strict-mode
-    "cookie_secure" => true, // only send cookies over https (not http) // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#secure
-    "cookie_httponly" => true, // block the cookie from being read with js in the browser, will still be send for fetch request triggered by js // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly
-    "cookie_samesite" => "Strict", // only send the cookie with requests triggered by AIO itself // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value
+    "use_strict_mode" => true, // Only allow initialized session IDs. See https://www.php.net/manual/en/session.configuration.php#ini.session.use-strict-mode
+    "cookie_secure" => true, // Only send cookies over https (not http). See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#secure
+    "cookie_httponly" => true, // Block the cookie from being read with js in the browser, will still be send for fetch request triggered by js. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly
+    "cookie_samesite" => "Strict", // Only send the cookie with requests triggered by AIO itself. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value
 ]);
 $app->add(Guard::class);
 
