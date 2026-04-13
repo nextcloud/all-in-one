@@ -1,0 +1,18 @@
+(headers) {
+    header {
+        Content-Security-Policy "default-src 'none'; script-src-elem 'self' 'sha256-6bNyZN1sRD0pH97KGhXK/G/B9DKHZKxOiD7jfyz+EQ4='; script-src-attr 'unsafe-hashes' 'sha256-/9h5/n5yL7jhlwt387Bkaq9iLJ9eWZ53JtGvRLcqIOI=' 'sha256-5A3XM6HcvFhh9xP7kCNZfN0CGPwX97AvizFmXhdfAzc='; style-src-elem 'self' 'sha256-5v2scpgjNvJlJ7X3jvyxT8eEABeZfYB+9eiR+YLtQqo='; style-src-attr 'unsafe-hashes' 'sha256-BmMpY1aLoCxBMFnwjzq/SVkHNNPpa2IUx4R/PPxgwV8=' 'sha256-Vc6YdsPwJmyOyOWY3K0+DEFqLyvNxfsrADVC0UvQkxI='; img-src 'self'; connect-src 'self'; frame-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types 'none';"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-Permitted-Cross-Domain-Policies "none"
+        X-DNS-Prefetch-Control "off"
+        Referrer-Policy "no-referrer"
+        X-Robots-Tag "noindex, nofollow"
+        Cross-Origin-Opener-Policy "same-origin";
+        Cross-Origin-Embedder-Policy "require-corp";
+        Cross-Origin-Resource-Policy "same-origin";
+
+        -Server
+        -X-Powered-By
+        -Via
+    }
+}
