@@ -41,7 +41,7 @@ session_start([
     "save_path" => $dataConst->GetSessionDirectory(), // where to save the session files
     "gc_maxlifetime" => 86400, // delete sessions after 24 hours ... // https://www.php.net/manual/en/session.configuration.php#ini.session.gc-maxlifetime
     "gc_probability" => 1, // ... to ... // https://www.php.net/manual/en/session.configuration.php#ini.session.gc-probability
-    "gc_divisor" => 1, // 100% (gc_probability/gc_divisor = 1/1 = 100%)  // https://www.php.net/manual/en/session.configuration.php#ini.session.gc-divisor
+    "gc_divisor" => 1, // gc_probability/gc_divisor = 1/1 = 100%, meaning that *all* outdated sessions get deleted when the cleanup job runs. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-divisor
     "use_strict_mode" => true, // only allow initialized session IDs // https://www.php.net/manual/en/session.configuration.php#ini.session.use-strict-mode
     "cookie_secure" => true, // only send cookies over https (not http) // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#secure
     "cookie_httponly" => true, // block the cookie from being read with js in the browser, will still be send for fetch request triggered by js // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly
