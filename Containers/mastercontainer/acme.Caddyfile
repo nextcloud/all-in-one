@@ -28,21 +28,18 @@
 	skip_install_trust
 }
 
-import headers.Caddyfile
-
 http://:80 {
-    import headers
+    import headers.Caddyfile
 	redir https://{host}{uri} permanent
 }
 
 https://:8443 {
-    import headers
+    import headers.Caddyfile
 
 	@denied {
 		path /api/auth/login /api/auth/getlogin
 		remote_host nextcloud-aio-nextcloud
 	}
-  
 	abort @denied
 
 	root * /var/www/docker-aio/php/public
