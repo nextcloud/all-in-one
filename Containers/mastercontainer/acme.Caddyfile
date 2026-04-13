@@ -29,7 +29,6 @@
 }
 
 http://:80 {
-    import headers.Caddyfile
 	redir https://{host}{uri} permanent
 }
 
