@@ -240,6 +240,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [How to trust user-defined Certification Authorities (CA)?](#how-to-trust-user-defined-certification-authorities-ca)
     - [How to disable Collabora's Seccomp feature?](#how-to-disable-collaboras-seccomp-feature)
     - [How to adjust the Fulltextsearch Java options?](#how-to-adjust-the-fulltextsearch-java-options)
+    - [How to adjust the log level?](#how-to-adjust-the-log-level)
 - [Guides](#guides)
     - [How to run AIO on macOS?](#how-to-run-aio-on-macos)
     - [How to run AIO on Windows?](#how-to-run-aio-on-windows)
@@ -608,6 +609,9 @@ The Collabora container enables Seccomp by default, which is a security feature 
 
 ### How to adjust the Fulltextsearch Java options?
 The Fulltextsearch Java options are by default set to `-Xms512M -Xmx512M` which might not be enough on some systems. You can adjust this by adding e.g. `--env FULLTEXTSEARCH_JAVA_OPTIONS="-Xms1024M -Xmx1024M"` to the initial docker run command. If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used.
+
+### How to adjust the log level?
+The log level for all included containers is by default set to `warning`. You can adjust this by adding e.g. `--env AIO_LOG_LEVEL=error` to the initial docker run command. If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used. Allowed values are `warning`, `error`, `info` and `debug`.
 
 ## Guides
 

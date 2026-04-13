@@ -21,8 +21,14 @@ rm -fr /tmp/{*,.*}
 
 cat << RECORDING_CONF > "/conf/recording.conf"
 [logs]
-# 30 means Warning
-level = 30
+# 10=debug 20=info 30=warning 40=error
+$(case "${AIO_LOG_LEVEL:-warning}" in
+    debug)   echo "level = 10" ;;
+    info)    echo "level = 20" ;;
+    warning) echo "level = 30" ;;
+    error)   echo "level = 40" ;;
+    *)       echo "level = 30" ;;
+esac)
 
 [http]
 listen = 0.0.0.0:1234

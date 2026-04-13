@@ -4,6 +4,39 @@
 export MOUNT_DIR="/mnt/borgbackup"
 export BORG_BACKUP_DIRECTORY="$MOUNT_DIR/borg"  # necessary even when remote to store the aio-lockfile
 
+# Map AIO_LOG_LEVEL to a Python logging config for borg (via BORG_LOGGING_CONF)
+case "${AIO_LOG_LEVEL:-warning}" in
+    debug)   BORG_PYTHON_LOG_LEVEL="DEBUG" ;;
+    info)    BORG_PYTHON_LOG_LEVEL="INFO" ;;
+    warning) BORG_PYTHON_LOG_LEVEL="WARNING" ;;
+    error)   BORG_PYTHON_LOG_LEVEL="ERROR" ;;
+    *)       BORG_PYTHON_LOG_LEVEL="WARNING" ;;
+esac
+cat > /tmp/borg-logging.conf << EOF
+[loggers]
+keys=root
+
+[handlers]
+keys=console
+
+[formatters]
+keys=simple
+
+[logger_root]
+level=$BORG_PYTHON_LOG_LEVEL
+handlers=console
+
+[handler_console]
+class=StreamHandler
+level=$BORG_PYTHON_LOG_LEVEL
+formatter=simple
+args=(sys.stderr,)
+
+[formatter_simple]
+format=%(message)s
+EOF
+export BORG_LOGGING_CONF=/tmp/borg-logging.conf
+
 # Validate BORG_PASSWORD
 if [ -z "$BORG_PASSWORD" ] && [ -z "$BACKUP_RESTORE_PASSWORD" ]; then
     echo "Neither BORG_PASSWORD nor BACKUP_RESTORE_PASSWORD are set."

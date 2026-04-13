@@ -396,6 +396,19 @@ if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
     rm -rf /mnt/docker-aio-config/caddy/locks/*
 fi
 
+# Apply log level to Caddyfiles, supervisord and PHP-FPM
+case "${AIO_LOG_LEVEL:-warning}" in
+    debug)   CADDY_LOG_LEVEL="DEBUG";  SUPERVISORD_LOG_LEVEL="debug";  PHP_FPM_LOG_LEVEL="debug" ;;
+    info)    CADDY_LOG_LEVEL="INFO";   SUPERVISORD_LOG_LEVEL="info";   PHP_FPM_LOG_LEVEL="notice" ;;
+    warning) CADDY_LOG_LEVEL="WARN";   SUPERVISORD_LOG_LEVEL="warn";   PHP_FPM_LOG_LEVEL="warning" ;;
+    error)   CADDY_LOG_LEVEL="ERROR";  SUPERVISORD_LOG_LEVEL="error";  PHP_FPM_LOG_LEVEL="error" ;;
+    *)       CADDY_LOG_LEVEL="WARN";   SUPERVISORD_LOG_LEVEL="warn";   PHP_FPM_LOG_LEVEL="warning" ;;
+esac
+sed -i "s|level [A-Z]*|level $CADDY_LOG_LEVEL|" /acme.Caddyfile
+sed -i "s|level [A-Z]*|level $CADDY_LOG_LEVEL|" /internal.Caddyfile
+sed -i "s|loglevel=.*|loglevel=$SUPERVISORD_LOG_LEVEL|" /supervisord.conf
+printf '[global]\nlog_level = %s\n' "$PHP_FPM_LOG_LEVEL" > /usr/local/etc/php-fpm.d/z-aio-log-level.conf
+
 # Fix the Caddyfile format
 caddy fmt --overwrite /acme.Caddyfile
 caddy fmt --overwrite /internal.Caddyfile

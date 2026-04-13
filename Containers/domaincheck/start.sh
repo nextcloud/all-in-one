@@ -14,6 +14,16 @@ fi
 CONF_FILE="$(sed "s|ipv6-placeholder|\[::\]:$APACHE_PORT|" /lighttpd.conf)"
 echo "$CONF_FILE" > /etc/lighttpd/lighttpd.conf
 
+# Enable verbose debug logging when AIO_LOG_LEVEL is set to debug
+if [ "${AIO_LOG_LEVEL:-warning}" = "debug" ]; then
+    {
+        echo 'debug.log-request-handling = "enable"'
+        echo 'debug.log-response-header = "enable"'
+        echo 'debug.log-request-header = "enable"'
+        echo 'debug.log-condition-handling = "enable"'
+    } >> /etc/lighttpd/lighttpd.conf
+fi
+
 # Check config file
 lighttpd -tt -f /etc/lighttpd/lighttpd.conf
 

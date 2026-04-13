@@ -289,6 +289,41 @@ class ConfigurationManager
         set { $this->set('nextcloud_keep_disabled_apps', $value); }
     }
 
+    /**
+     * @throws InvalidSettingConfigurationException
+     */
+    public string $aioLogLevel {
+        get => $this->getEnvironmentalVariableOrConfig('AIO_LOG_LEVEL', 'aio_log_level', 'warning');
+        set {
+            $this->validateAioLogLevel($value);
+            $this->set('aio_log_level', $value);
+        }
+    }
+
+    private function validateAioLogLevel(string $value) : void {
+        $allowedValues = ['warning', 'error', 'info', 'debug'];
+        if (!in_array($value, $allowedValues, true)) {
+            throw new InvalidSettingConfigurationException("Invalid log level '" . $value . "'. Allowed values are: " . implode(', ', $allowedValues));
+        }
+    }
+
+    private function getCollaboraLogLevel() : string {
+        return match ($this->aioLogLevel) {
+            'info' => 'information',
+            default => $this->aioLogLevel,
+        };
+    }
+
+    private function getUppercaseLogLevel() : string {
+        return match ($this->aioLogLevel) {
+            'warning' => 'WARN',
+            'error' => 'ERROR',
+            'info' => 'INFO',
+            'debug' => 'DEBUG',
+            default => 'WARN',
+        };
+    }
+
     private function getConfig() : array
     {
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
@@ -1062,6 +1097,10 @@ class ConfigurationManager
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
+            'AIO_LOG_LEVEL' => $this->aioLogLevel,
+            'COLLABORA_LOG_LEVEL' => $this->getCollaboraLogLevel(),
+            'FULLTEXTSEARCH_LOG_LEVEL' => $this->getUppercaseLogLevel(),
+            'ONLYOFFICE_LOG_LEVEL' => $this->getUppercaseLogLevel(),
             default => $this->getRegisteredSecret($placeholder),
         };
     }

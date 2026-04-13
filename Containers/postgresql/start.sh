@@ -6,6 +6,15 @@ export DUMP_DIR="/mnt/data"
 DUMP_FILE="$DUMP_DIR/database-dump.sql"
 export PGPASSWORD="$POSTGRES_PASSWORD"
 
+# Map AIO_LOG_LEVEL to PostgreSQL log_min_messages
+case "${AIO_LOG_LEVEL:-warning}" in
+    debug)   PG_LOG_LEVEL="DEBUG1" ;;
+    info)    PG_LOG_LEVEL="INFO" ;;
+    warning) PG_LOG_LEVEL="WARNING" ;;
+    error)   PG_LOG_LEVEL="ERROR" ;;
+    *)       PG_LOG_LEVEL="WARNING" ;;
+esac
+
 # Don't start database as long as backup is running
 while [ -f "$DUMP_DIR/backup-is-running" ]; do
     echo "Waiting for backup container to finish..."
@@ -82,7 +91,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     export PGPORT=11000
 
     # Create new database
-    exec docker-entrypoint.sh postgres &
+    exec docker-entrypoint.sh postgres -c "log_min_messages=$PG_LOG_LEVEL" &
 
     # Wait for creation
     while ! psql -d "postgresql://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@127.0.0.1:11000/$POSTGRES_DB" -c "select now()"; do
@@ -164,6 +173,9 @@ if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
         sed -i 's|#log_checkpoints.*|log_checkpoints = off|' /var/lib/postgresql/data/postgresql.conf
     fi
 
+    # Set log level
+    sed -i "s|^#\?log_min_messages.*|log_min_messages = $PG_LOG_LEVEL|" "/var/lib/postgresql/data/postgresql.conf"
+
     # Closing idling connections automatically seems to break any logic so was reverted again to default where it is disabled
     if grep -q "^idle_session_timeout" /var/lib/postgresql/data/postgresql.conf; then
         sed -i 's|^idle_session_timeout.*|#idle_session_timeout|' /var/lib/postgresql/data/postgresql.conf
@@ -194,5 +206,5 @@ do_database_dump() {
 trap do_database_dump SIGINT SIGTERM
 
 # Start the database
-exec docker-entrypoint.sh postgres &
+exec docker-entrypoint.sh postgres -c "log_min_messages=$PG_LOG_LEVEL" &
 wait $!

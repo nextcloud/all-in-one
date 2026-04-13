@@ -36,12 +36,25 @@ else
     export PROTOCOL="https"
 fi
 
+# Apply log level to Caddy and Apache httpd
+case "${AIO_LOG_LEVEL:-warning}" in
+    debug)   CADDY_LOG_LEVEL="DEBUG"; APACHE_LOG_LEVEL="debug" ;;
+    info)    CADDY_LOG_LEVEL="INFO";  APACHE_LOG_LEVEL="info" ;;
+    warning) CADDY_LOG_LEVEL="WARN";  APACHE_LOG_LEVEL="warn" ;;
+    error)   CADDY_LOG_LEVEL="ERROR"; APACHE_LOG_LEVEL="error" ;;
+    *)       CADDY_LOG_LEVEL="WARN";  APACHE_LOG_LEVEL="warn" ;;
+esac
+
 # Change the auto_https in case of reverse proxies
 if [ "$APACHE_PORT" != '443' ]; then
     CADDYFILE="$(sed 's|auto_https.*|auto_https off|' /Caddyfile)"
 else
     CADDYFILE="$(sed 's|auto_https.*|auto_https disable_redirects|' /Caddyfile)"
 fi
+echo "$CADDYFILE" > /tmp/Caddyfile
+
+# Apply Caddy log level
+CADDYFILE="$(sed "s|level [A-Z]*|level $CADDY_LOG_LEVEL|" /tmp/Caddyfile)"
 echo "$CADDYFILE" > /tmp/Caddyfile
 
 # Change the trusted_proxies in case of reverse proxies
@@ -74,4 +87,18 @@ fi
 # Fix apache startup
 rm -f /usr/local/apache2/logs/httpd.pid
 
-exec "$@"
+# Apply Apache httpd log level
+sed -i "s|LogLevel [a-z]*|LogLevel $APACHE_LOG_LEVEL|" /usr/local/apache2/conf/nextcloud.conf
+
+# Apply supervisord log level (supervisord.conf is not writable by this user, so use /tmp copy)
+case "${AIO_LOG_LEVEL:-warning}" in
+    debug)   SUPERVISORD_LOG_LEVEL="debug" ;;
+    info)    SUPERVISORD_LOG_LEVEL="info" ;;
+    warning) SUPERVISORD_LOG_LEVEL="warn" ;;
+    error)   SUPERVISORD_LOG_LEVEL="error" ;;
+    *)       SUPERVISORD_LOG_LEVEL="warn" ;;
+esac
+cp /supervisord.conf /tmp/supervisord.conf
+sed -i "s|loglevel=.*|loglevel=$SUPERVISORD_LOG_LEVEL|" /tmp/supervisord.conf
+
+exec /usr/bin/supervisord -c /tmp/supervisord.conf

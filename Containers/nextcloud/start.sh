@@ -172,4 +172,14 @@ if [ "$THIS_IS_AIO" = "true" ] && [ "$APACHE_PORT" = 443 ]; then
 fi
 set +x
 
+# Apply AIO_LOG_LEVEL to supervisord (runs as root so file is writable)
+case "${AIO_LOG_LEVEL:-warning}" in
+    debug)   SUPERVISORD_LOG_LEVEL="debug" ;;
+    info)    SUPERVISORD_LOG_LEVEL="info" ;;
+    warning) SUPERVISORD_LOG_LEVEL="warn" ;;
+    error)   SUPERVISORD_LOG_LEVEL="error" ;;
+    *)       SUPERVISORD_LOG_LEVEL="warn" ;;
+esac
+sed -i "s|loglevel=.*|loglevel=$SUPERVISORD_LOG_LEVEL|" /supervisord.conf
+
 exec "$@"

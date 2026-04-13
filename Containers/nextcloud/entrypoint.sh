@@ -437,7 +437,14 @@ EOF
             # Apply log settings
             echo "Applying default settings..."
             mkdir -p /var/www/html/data
-            php /var/www/html/occ config:system:set loglevel --value="2" --type=integer
+            case "${AIO_LOG_LEVEL:-warning}" in
+                debug)   NC_LOG_LEVEL=0 ;;
+                info)    NC_LOG_LEVEL=1 ;;
+                warning) NC_LOG_LEVEL=2 ;;
+                error)   NC_LOG_LEVEL=3 ;;
+                *)       NC_LOG_LEVEL=2 ;;
+            esac
+            php /var/www/html/occ config:system:set loglevel --value="$NC_LOG_LEVEL" --type=integer
             php /var/www/html/occ config:system:set log_type --value="file"
             php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
             php /var/www/html/occ config:system:set log_rotate_size --value="10485760" --type=integer

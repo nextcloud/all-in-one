@@ -66,7 +66,7 @@ eturnal:
       port: $TALK_PORT
       transport: tcp
   log_dir: stdout
-  log_level: warning
+  log_level: ${AIO_LOG_LEVEL:-warning}
   secret: "$TURN_SECRET"
   relay_ipv4_addr: "$IPv4_ADDRESS_TALK_RELAY"
   relay_ipv6_addr: "$IPv6_ADDRESS_TALK"
@@ -129,4 +129,18 @@ maxstreambitrate = ${TALK_MAX_STREAM_BITRATE}
 maxscreenbitrate = ${TALK_MAX_SCREEN_BITRATE}
 SIGNALING_CONF
 
-exec "$@"
+# Apply AIO_LOG_LEVEL to supervisord and Janus debug level
+# (supervisord.conf is not writable by this user, so use /tmp copy)
+# Janus debug levels: 2=ERR, 3=WARN, 4=INFO, 7=DBG
+case "${AIO_LOG_LEVEL:-warning}" in
+    debug)   SUPERVISORD_LOG_LEVEL="debug"; JANUS_DEBUG_LEVEL=7 ;;
+    info)    SUPERVISORD_LOG_LEVEL="info";  JANUS_DEBUG_LEVEL=4 ;;
+    warning) SUPERVISORD_LOG_LEVEL="warn";  JANUS_DEBUG_LEVEL=3 ;;
+    error)   SUPERVISORD_LOG_LEVEL="error"; JANUS_DEBUG_LEVEL=2 ;;
+    *)       SUPERVISORD_LOG_LEVEL="warn";  JANUS_DEBUG_LEVEL=3 ;;
+esac
+cp /supervisord.conf /tmp/supervisord.conf
+sed -i "s|loglevel=.*|loglevel=$SUPERVISORD_LOG_LEVEL|" /tmp/supervisord.conf
+sed -i "s|--debug-level [0-9]*|--debug-level $JANUS_DEBUG_LEVEL|" /tmp/supervisord.conf
+
+exec supervisord -c /tmp/supervisord.conf

@@ -38,6 +38,12 @@ fi
 
 echo "notify-push was started"
 
+# Map AIO_LOG_LEVEL to RUST_LOG (Rust uses 'warn' not 'warning')
+case "${AIO_LOG_LEVEL:-warning}" in
+    warning) export RUST_LOG="warn" ;;
+    *)       export RUST_LOG="${AIO_LOG_LEVEL:-warn}" ;;
+esac
+
 # Run it
 /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
     --port 7867 \

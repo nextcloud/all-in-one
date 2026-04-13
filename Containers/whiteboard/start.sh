@@ -16,5 +16,11 @@ REDIS_HOST_PASSWORD="$(jq -rn --arg v "$REDIS_HOST_PASSWORD" '$v|@uri')"
 
 export REDIS_URL="redis://$REDIS_USER:$REDIS_HOST_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB_INDEX"
 
+# Map AIO_LOG_LEVEL to pino log level (pino uses 'warn' not 'warning')
+case "${AIO_LOG_LEVEL:-warning}" in
+    warning) export LOG_LEVEL="warn" ;;
+    *)       export LOG_LEVEL="${AIO_LOG_LEVEL:-warn}" ;;
+esac
+
 # Run it
 exec npm --prefix /app run server:start
