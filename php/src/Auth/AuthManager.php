@@ -39,7 +39,7 @@ readonly class AuthManager {
         }
 
         $timeElapsed = time() - (int) $timestamp;
-        if ($timeElapsed > 60) {
+        if ($timeElapsed > 60 || $timeElapsed < 0) {
             return false;
         }
 
