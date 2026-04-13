@@ -1,4 +1,11 @@
 # syntax=docker/dockerfile:latest
+FROM docker.io/library/golang:alpine AS aio-container-tools-builder
+
+# hadolint ignore=DL3022
+COPY --from=aio-container-tools . /tmp/aio-container-tools/
+WORKDIR /tmp/aio-container-tools
+RUN go build -o /usr/local/bin/aio-pg-healthcheck ./cmd/aio-pg-healthcheck
+
 FROM php:8.3.30-fpm-alpine3.23
 
 ENV PHP_MEMORY_LIMIT=512M
@@ -17,6 +24,7 @@ COPY --chmod=775 Containers/nextcloud/*.sh /
 COPY --chmod=774 Containers/nextcloud/upgrade.exclude /upgrade.exclude
 COPY Containers/nextcloud/config/*.php /
 COPY Containers/nextcloud/supervisord.conf /supervisord.conf
+COPY --from=aio-container-tools-builder /usr/local/bin/aio-pg-healthcheck /usr/local/bin/aio-pg-healthcheck
 
 # AIO cloning start # Do not remove or change this line!
 COPY app /usr/src/nextcloud/apps/nextcloud-aio
@@ -226,7 +234,6 @@ RUN set -ex; \
         openssl \
         gnupg \
         git \
-        postgresql-client \
         tzdata \
         sudo \
         grep \

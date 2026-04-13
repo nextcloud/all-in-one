@@ -25,7 +25,7 @@ fi
 # Fix false database connection on old instances
 if [ -f "/var/www/html/config/config.php" ]; then
     sleep 2
-    while ! sudo -E -u www-data psql -d "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB" -c "select now()"; do
+    while ! sudo -E -u www-data /usr/local/bin/aio-pg-healthcheck; do
         echo "Waiting for the database to start..."
         sleep 5
     done

@@ -1,8 +1,18 @@
 # syntax=docker/dockerfile:latest
+FROM docker.io/library/golang:alpine AS aio-container-tools-builder
+
+# hadolint ignore=DL3022
+COPY --from=aio-container-tools . /tmp/aio-container-tools/
+WORKDIR /tmp/aio-container-tools
+RUN go build -o /usr/local/bin/aio-pg-init ./cmd/aio-pg-init \
+ && go build -o /usr/local/bin/aio-pg-healthcheck ./cmd/aio-pg-healthcheck
+
 # From https://github.com/docker-library/postgres/blob/master/17/alpine3.23/Dockerfile
 FROM postgres:17.9-alpine
 
 COPY --chmod=775 start.sh /start.sh
+COPY --from=aio-container-tools-builder /usr/local/bin/aio-pg-init /usr/local/bin/aio-pg-init
+COPY --from=aio-container-tools-builder /usr/local/bin/aio-pg-healthcheck /usr/local/bin/aio-pg-healthcheck
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=775 init-user-db.sh /docker-entrypoint-initdb.d/init-user-db.sh
 
