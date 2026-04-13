@@ -23,11 +23,8 @@
 	skip_install_trust
 }
 
-
-import headers.Caddyfile
-
 https://:8080 {
-    import headers
+    import headers.Caddyfile
 
 	@denied {
 		path /api/auth/login /api/auth/getlogin
