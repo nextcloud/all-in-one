@@ -8,9 +8,14 @@
             "image_tag": "stable",
             "internal_port": "host",
             "restart": "unless-stopped",
+            "init": false,
             "environment": [
                 "TZ=%TIMEZONE%",
                 "DISABLE_JEMALLOC=true"
+            ],
+            "cap_add": [
+                "NET_ADMIN",
+                "NET_RAW"
             ],
             "volumes": [
                 {
