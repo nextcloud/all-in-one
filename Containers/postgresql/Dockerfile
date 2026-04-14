@@ -24,7 +24,7 @@ RUN set -ex; \
     apk del --no-cache shadow; \
     \
 # Fix default permissions
-    mkdir -p /var/lib/postgresql; \
+    mkdir -p /var/lib/postgresql/data; \
     chown -R postgres:postgres /var/lib/postgresql; \
     chown -R postgres:postgres /var/run/postgresql; \
     chmod -R 777 /var/run/postgresql; \
