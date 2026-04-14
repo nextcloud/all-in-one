@@ -2,7 +2,7 @@
 # From https://github.com/docker-library/postgres/blob/master/18/alpine3.23/Dockerfile
 FROM postgres:18.3-alpine
 
-ENV PGDATA=/var/lib/postgresql
+ENV PGDATA=/var/lib/postgresql/data
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
