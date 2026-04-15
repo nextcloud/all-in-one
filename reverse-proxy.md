@@ -653,8 +653,8 @@ const proxy = HttpProxy.createProxyServer({
 	target: 'http://localhost:11000', // Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 	// The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting proxyTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
 	//  If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
-	timeout: 1000 * 60 * 3,
-	proxyTimeout: 1000 * 60 * 3,
+	timeout: 1000 * 3610,
+	proxyTimeout: 1000 * 3610,
 	// Not 100% certain whether autoRewrite is necessary, but enabling it SEEMS to make it behave more stably.
 	autoRewrite: true,
 	// Do not enable followRedirects.
