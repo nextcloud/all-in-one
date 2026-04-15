@@ -252,8 +252,10 @@ Add this as a new Apache site config:
 
     # Support big file uploads
     LimitRequestBody 0
-    # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
-	# If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
+
+    # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+    # By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not Apache.
+    # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
     Timeout 3610
     ProxyTimeout 3610
 </VirtualHost>
@@ -505,9 +507,12 @@ server {
     client_max_body_size 0;
     client_body_buffer_size 512k;
     # http3_stream_buffer_size 512k; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+
+    # The default NEXTCLOUD_MAX_TIME value is 3600 seconds.
+    # By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
+    # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
     proxy_read_timeout 3610s;
-	# The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
-	# If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
+
 
     server_name <your-nc-domain>;
 
@@ -605,10 +610,12 @@ Second, see these screenshots for a working config:
 ```
 client_body_buffer_size 512k;
 client_max_body_size 0;
+
+# The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+# By setting proxy_read_timeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NPM. 
+# If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
 proxy_read_timeout 3610s;
 ```
-
-The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting proxy_read_timeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX. If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 Also change `<you>@<your-mail-provider-domain>` to a mail address of yours.
@@ -651,10 +658,13 @@ const http = require('http');
 const app = express();
 const proxy = HttpProxy.createProxyServer({
 	target: 'http://localhost:11000', // Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
-	// The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting proxyTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
-	//  If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
+
+  // The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+  // By setting proxyTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not Node.js with Express.
+  // If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
 	timeout: 1000 * 3610,
 	proxyTimeout: 1000 * 3610,
+
 	// Not 100% certain whether autoRewrite is necessary, but enabling it SEEMS to make it behave more stably.
 	autoRewrite: true,
 	// Do not enable followRedirects.
@@ -781,9 +791,10 @@ The examples below define the dynamic configuration in YAML files. If you rather
         address: ":443" # Create an entrypoint called "https" that uses port 443
         transport:
           respondingTimeouts:
+            # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+            # By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not Traefik.
+            # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
             readTimeout: 3610s
-            # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
-            # If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
         # If you want to enable HTTP/3 support, uncomment the line below
         # http3: {}
     
@@ -873,12 +884,10 @@ The examples below define the dynamic configuration in YAML files. If you rather
         address: ":443" # Create an entrypoint called "https" that uses port 443
         transport:
           respondingTimeouts:
-            readTimeout: 3610s #
-    		# The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
-			# If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
+            # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+            # By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not Traefik.
+            # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
             readTimeout: 3610s
-            # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
-            # If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
         http:
           # Required for Nextcloud to correctly handle encoded URL characters (%2F, %3F and %25 in this case) in newer Traefik versions (v3.6.4+).
           encodedCharacters:  
