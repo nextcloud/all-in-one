@@ -877,7 +877,10 @@ The examples below define the dynamic configuration in YAML files. If you rather
             readTimeout: 3610s #
     		# The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
 			# If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
-		http:
+            readTimeout: 3610s
+            # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
+            # If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
+        http:
           # Required for Nextcloud to correctly handle encoded URL characters (%2F, %3F and %25 in this case) in newer Traefik versions (v3.6.4+).
           encodedCharacters:  
             allowEncodedSlash: true
