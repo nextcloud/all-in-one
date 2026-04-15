@@ -782,9 +782,9 @@ The examples below define the dynamic configuration in YAML files. If you rather
         address: ":443" # Create an entrypoint called "https" that uses port 443
         transport:
           respondingTimeouts:
-            readTimeout: 3610s #
-    		# The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
-			# If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
+            readTimeout: 3610s
+            # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
+            # If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
         # If you want to enable HTTP/3 support, uncomment the line below
         # http3: {}
     
