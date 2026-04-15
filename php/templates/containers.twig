@@ -37,7 +37,7 @@
             {% set isBackupOrRestoreRunning = false %}
             {% set isApacheStarting = false %}
             {# Setting newMajorVersion to '' will hide corresponding options/elements, can be set to an integer like 26 in order to show corresponding elements. If set, also increase installLatestMajor in https://github.com/nextcloud/all-in-one/blob/main/php/src/Controller/DockerController.php #}
-            {% set newMajorVersionString = '26 Winter' %}
+            {% set newMajorVersionString = '' %}
             {% set oldMajorVersionString = '25 Autumn' %}
 
             {% if is_backup_container_running == true %}

@@ -74,6 +74,9 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
     # TLS options
     tls {
         issuer acme {
+            profile shortlived
+            # Disable HTTP challenge because that would require port 80, which we don't get (it's exposed to the mastercontainer).
+            # This container by default only exposes port 443 if not configured otherwise via APACHE_PORT.
             disable_http_challenge
         }
     }

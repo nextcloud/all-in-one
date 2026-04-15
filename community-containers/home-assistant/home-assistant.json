@@ -1,0 +1,32 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-home-assistant",
+            "display_name": "Home Assistant",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/home-assistant",
+            "image": "ghcr.io/home-assistant/home-assistant",
+            "image_tag": "stable",
+            "internal_port": "host",
+            "restart": "unless-stopped",
+            "init": false,
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "DISABLE_JEMALLOC=true"
+            ],
+            "cap_add": [
+                "NET_ADMIN",
+                "NET_RAW"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_home_assistant",
+                    "destination": "/config",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_home_assistant"
+            ]
+        }
+    ]
+}

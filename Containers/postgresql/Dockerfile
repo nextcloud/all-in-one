@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:latest
-# From https://github.com/docker-library/postgres/blob/master/17/alpine3.23/Dockerfile
-FROM postgres:17.9-alpine
+# From https://github.com/docker-library/postgres/blob/master/18/alpine3.23/Dockerfile
+FROM postgres:18.3-alpine
+
+ENV PGDATA=/var/lib/postgresql/data
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
@@ -22,6 +24,7 @@ RUN set -ex; \
     apk del --no-cache shadow; \
     \
 # Fix default permissions
+    mkdir -p /var/lib/postgresql/data; \
     chown -R postgres:postgres /var/lib/postgresql; \
     chown -R postgres:postgres /var/run/postgresql; \
     chmod -R 777 /var/run/postgresql; \
