@@ -612,7 +612,7 @@ proxy_read_timeout 3610s;
 The default NEXTCLOUD_MAX_TIME value is 3600 seconds. By setting proxy_read_timeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX. If you increased NEXTCLOUD_MAX_TIME, increase this timeout accordingly.
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
-Also change `<you>@<your-mail-provider-domain>` to a mail address of yours. 
+Also change `<you>@<your-mail-provider-domain>` to a mail address of yours.
 
 </details>
 
