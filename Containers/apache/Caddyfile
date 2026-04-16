@@ -18,6 +18,8 @@ https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
 http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI requests, see containers.json
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
     header {
+        Strict-Transport-Security max-age=31536000;
+
         -Server
         -X-Powered-By
         -Via
@@ -68,7 +70,6 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
 
     # Nextcloud
     route {
-        header Strict-Transport-Security max-age=31536000;
         reverse_proxy 127.0.0.1:8000
     }
     redir /.well-known/carddav /remote.php/dav/ 301
