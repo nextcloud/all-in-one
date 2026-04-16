@@ -11,7 +11,7 @@
         {% if is_login_allowed == true %}
             <p>Log in using your Nextcloud AIO passphrase:</p>
             <form method="POST" action="api/auth/login" class="xhr">
-                <input type="password" autocomplete="current-password" name="password" placeholder="Password" id="master-password" oninput="showPassword('master-password')">
+                <input type="password" autocomplete="current-password" name="password" placeholder="Password" id="master-password" data-input-show-password="showPassword('master-password')">
                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                 <input type="submit" class="button" value="Log in" />

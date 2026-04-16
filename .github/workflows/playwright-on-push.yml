@@ -68,6 +68,8 @@ jobs:
             --publish 8080:8080 \
             --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
             --volume ./php:/var/www/docker-aio/php \
+            --volume ./Containers/mastercontainer/internal.Caddyfile:/internal.Caddyfile \
+            --volume ./Containers/mastercontainer/headers.Caddyfile:/headers.Caddyfile \
             --volume /var/run/docker.sock:/var/run/docker.sock:ro \
             --env SKIP_DOMAIN_VALIDATION=true \
             --env APACHE_PORT=11000 \
@@ -97,6 +99,8 @@ jobs:
             --publish 8080:8080 \
             --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
             --volume ./php:/var/www/docker-aio/php \
+            --volume ./Containers/mastercontainer/internal.Caddyfile:/internal.Caddyfile \
+            --volume ./Containers/mastercontainer/headers.Caddyfile:/headers.Caddyfile \
             --volume /var/run/docker.sock:/var/run/docker.sock:ro \
             --env SKIP_DOMAIN_VALIDATION=false \
             --env APACHE_PORT=11000 \

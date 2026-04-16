@@ -2,57 +2,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link rel="stylesheet" href="style.css">
-        <style>
-            html, body {
-                height: 100%;
-                overflow: hidden;
-                padding: 0;
-                margin: 0;
-            }
-            pre {
-                height: 100%;
-                overflow: auto;
-                margin: 0;
-                padding: 1rem;
-                box-sizing: border-box;
-            }
-            #floating-box {
-                position: fixed;
-                top: 1rem;
-                right: 1rem;
-                max-width: calc(100vw - 2rem);
-                z-index: 10;
-                display: flex;
-                justify-content: end;
-                align-items: center;
-            }
-            #autoloading-box {
-                display: grid;
-                gap: 0.5rem;
-                font-size: large;
-                border: solid thin gray;
-                background-color: #f9f9f9;
-                width: 10rem;
-                padding: 0.5rem 1rem;
-                margin: 0 0 0 1rem;
-            }
-            .loader {
-                opacity: 1;
-                width: 40px;
-                height: 40px;
-                align-self: inherit;
-            }
-            @starting-style {
-              .loader {
-                opacity: 0;
-              }
-            }
-            .loader.hidden {
-                display: none;
-                opacity: 0;
-                transition: opacity 1s, display 1s allow-discrete;
-            }
-        </style>
+        <link rel="stylesheet" href="logs.css">
         <script src="log-view.js?v1"></script>
     </head>
     <body data-container-id="{{ id }}">

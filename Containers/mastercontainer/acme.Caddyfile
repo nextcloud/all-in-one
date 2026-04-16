@@ -33,6 +33,8 @@ http://:80 {
 }
 
 https://:8443 {
+    import headers.Caddyfile
+
 	@denied {
 		path /api/auth/login /api/auth/getlogin
 		remote_host nextcloud-aio-nextcloud
