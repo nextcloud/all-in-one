@@ -38,6 +38,7 @@ $container->set(Guard::class, function () use ($responseFactory) {
 
 // Register Middleware To Be Executed On All Routes
 session_start([
+    "name" => "__Host-Http-PHPSESSID", // Set cookie prefix to prevent other pages from overwriting this cookie. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#cookie_prefixes
     "save_path" => $dataConst->GetSessionDirectory(), // Where to save the session files
     "cookie_lifetime" => 0, // Delete the session cookie whenever the browser is closed. See https://www.php.net/manual/en/session.configuration.php#ini.session.cookie-lifetime
     "gc_maxlifetime" => 86400, // Delete sessions after 24 hours. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-maxlifetime
