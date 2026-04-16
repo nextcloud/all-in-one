@@ -381,7 +381,7 @@ readonly class DockerController {
         <html lang="en" class="overlay-iframe">
             <head>
                 <link rel="stylesheet" href="../../style.css?v8" media="all" />
-                <script type="text/javascript" src="scroll-into-view.js"></script>
+                <script type="text/javascript" src="../../scroll-into-view.js"></script>
             </head>
             <body>
             
