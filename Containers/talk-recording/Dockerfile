@@ -19,6 +19,7 @@ RUN set -ex; \
         bash \
         xvfb \
         ffmpeg \
+        mesa-va-gallium \
         firefox \
         font-noto-all \
         font-noto-cjk \

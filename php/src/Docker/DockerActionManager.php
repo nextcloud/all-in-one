@@ -311,15 +311,29 @@ readonly class DockerActionManager {
         }
 
         $devices = [];
+        $groupAdd = [];
         foreach ($container->devices as $device) {
             if ($device === '/dev/dri' && !$this->configurationManager->nextcloudEnableDriDevice) {
                 continue;
             }
             $devices[] = ["PathOnHost" => $device, "PathInContainer" => $device, "CgroupPermissions" => "rwm"];
+            if ($device === '/dev/dri') {
+                // Add the render device's group as a supplemental group so that non-root
+                // containers (e.g. nextcloud-aio-talk-recording) can access the device.
+                // The GID is detected during mastercontainer startup when /dev/dri is bind-mounted.
+                $gid = $this->configurationManager->driDeviceGid;
+                if ($gid !== '' && !in_array($gid, $groupAdd, true)) {
+                    $groupAdd[] = $gid;
+                }
+            }
         }
 
         if (count($devices) > 0) {
             $requestBody['HostConfig']['Devices'] = $devices;
+        }
+
+        if (count($groupAdd) > 0) {
+            $requestBody['HostConfig']['GroupAdd'] = $groupAdd;
         }
 
         if ($container->enableNvidiaGpu && $this->configurationManager->enableNvidiaGpu) {

@@ -564,14 +564,15 @@ Some container can use GPU acceleration to increase performance like [memories a
 #### With open source drivers MESA for AMD, Intel and **new** drivers `Nouveau` for Nvidia
 
 > [!WARNING]  
-> This only works if the `/dev/dri` device is present on the host! If it does not exist on your host, don't proceed as otherwise the Nextcloud container will fail to start! If you are unsure about this, better do not proceed with the instructions below. Make sure that your driver is correctly configured on the host.
+> This only works if the `/dev/dri` device is present on the host! If it does not exist on your host, don't proceed as otherwise the mastercontainer will fail to start! If you are unsure about this, better do not proceed with the instructions below. Make sure that your driver is correctly configured on the host.
 
 A list of supported device can be fond in [MESA 3D documentation](https://docs.mesa3d.org/systems.html).
 
 This method use the [Direct Rendering Infrastructure](https://dri.freedesktop.org/wiki/) with the access to the `/dev/dri` device.
 
-In order to use that, you need to add `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) which will mount the `/dev/dri` device into the container.
+In order to use that, you need to pass the `/dev/dri` device into the mastercontainer by adding `--device=/dev/dri` to the docker run command (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). The `/dev/dri` device gets mounted into the containers that benefit from it.
 
+With this device in place, the AIO mastercontainer automatically detects the `/dev/dri` device, enables hardware acceleration for the relevant containers and passes the correct render device group to the talk-recording container so that VA-API hardware transcoding (`h264_vaapi`) is used when recording calls.
 
 #### With proprietary drivers for Nvidia :warning: BETA
 
@@ -583,6 +584,8 @@ In order to use that, you need to add `--env NEXTCLOUD_ENABLE_DRI_DEVICE=true` t
 This method use the [Nvidia Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html) with the nvidia runtime.
 
 In order to use that, you need to add `--env NEXTCLOUD_ENABLE_NVIDIA_GPU=true` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) which will enable the nvidia runtime.
+
+The talk-recording container automatically detects the NVIDIA GPU at startup and uses `h264_nvenc` hardware encoding when available. No additional steps are required beyond enabling the NVIDIA runtime.
 
 If you're using WSL2 and want to use the NVIDIA runtime, please follow the instructions to [install the NVIDIA Container Toolkit meta-version in WSL](https://docs.nvidia.com/cuda/wsl-user-guide/index.html#cuda-support-for-wsl-2).
 

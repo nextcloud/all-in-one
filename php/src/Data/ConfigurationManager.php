@@ -279,6 +279,10 @@ class ConfigurationManager
         set { $this->set('nextcloud_enable_dri_device', $value); }
     }
 
+    public string $driDeviceGid {
+        get => getenv('NEXTCLOUD_DRI_GID') ?: '';
+    }
+
     public bool $enableNvidiaGpu {
         get => $this->booleanize($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
         set { $this->set('enable_nvidia_gpu', $value); }
