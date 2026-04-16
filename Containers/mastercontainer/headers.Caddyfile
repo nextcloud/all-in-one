@@ -9,7 +9,7 @@ header {
     Cross-Origin-Opener-Policy "same-origin";
     Cross-Origin-Embedder-Policy "require-corp"; # Harder rules for cross origin embeds. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Embedder-Policy
 
-    Cross-Origin-Resource-Policy "same-origin";
+    Cross-Origin-Resource-Policy "same-origin"; # Only allow the same origin to load resources. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cross-Origin_Resource_Policy
 
     -Server
     -X-Powered-By
