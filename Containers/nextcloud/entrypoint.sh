@@ -871,20 +871,16 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update spreed
     fi
-    # Add turn server
-    # shellcheck disable=SC2153
-    if ! php /var/www/html/occ talk:turn:list --output="plain" | grep server | grep -q " $TURN_DOMAIN:$TALK_PORT"; then
+    # Based on https://github.com/nextcloud/spreed/issues/960#issuecomment-416993435
+    if [ -z "$(php /var/www/html/occ talk:turn:list --output="plain")" ]; then
+        # shellcheck disable=SC2153
         php /var/www/html/occ talk:turn:add turn "$TURN_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
     fi
-    # Add stun server
     STUN_SERVER="$(php /var/www/html/occ talk:stun:list --output="plain")"
-    if ! echo "$STUN_SERVER" | grep -q " $TURN_DOMAIN:$TALK_PORT"; then
-        php /var/www/html/occ talk:stun:add "$TURN_DOMAIN:$TALK_PORT"
-    fi
     if [ -z "$STUN_SERVER" ] || echo "$STUN_SERVER" | grep -oP '[a-zA-Z.:0-9]+' | grep -q "^stun.nextcloud.com:443$"; then
+        php /var/www/html/occ talk:stun:add "$TURN_DOMAIN:$TALK_PORT"
         php /var/www/html/occ talk:stun:delete "stun.nextcloud.com:443"
     fi
-    # Add HPB
     if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://$TALK_HOST$HPB_PATH"; then
         php /var/www/html/occ talk:signaling:add "https://$TALK_HOST$HPB_PATH" "$SIGNALING_SECRET" --verify
     fi
