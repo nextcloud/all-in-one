@@ -573,13 +573,19 @@ Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
-<img width="675" height="695" alt="image" src="https://github.com/user-attachments/assets/196f53f9-ff86-4da2-960e-f7b7a2ceac0c" />
+<img width="672" height="982" alt="grafik" src="https://github.com/user-attachments/assets/e8914a63-58d2-4a47-ac51-981d21979495" />
 
-<img width="675" height="355" alt="image" src="https://github.com/user-attachments/assets/8a45a6d8-fbaf-4519-86f7-c7424ed780da" />
+<img width="675" height="355" alt="grafik" src="https://github.com/user-attachments/assets/c4a006f5-f8c4-4898-9ea6-ec33ee7e5bd3" />
 
-<img width="675" height="542" alt="image" src="https://github.com/user-attachments/assets/7e880d02-0f4f-459a-a3f6-216bcb1b04ca" />
+<img width="675" height="650" alt="grafik" src="https://github.com/user-attachments/assets/a4f80ecc-c539-4972-91ed-7b078c269dd1" />
 
-<img width="675" height="570" alt="image" src="https://github.com/user-attachments/assets/2812ecc1-ecf0-44bd-9249-b76b30f8c25e" />
+<img width="675" height="570" alt="grafik" src="https://github.com/user-attachments/assets/8ea357c2-11d5-48af-abf7-f249bc677213" />
+
+The "Enable compression by upstream, not recommended" Button can stay unchecked if you don't use Collabora. (https://github.com/CollaboraOnline/online/issues/10157) <br>
+You may need to check the "Disable Crowdsec Appsec" Button if you use crowdsec and uploads or downloads fail. <br>
+You may want to enable the "Disable Request/Response Buffering" Button since it could improve uploads and downloads. <br>
+You can check the "Send noindex header and block some user agents" Button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>
+If you want/need you can also configure Auth Request/mTLS if needed or change the X-Frame-Options header if you want to embed Nextcloud.
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
@@ -599,22 +605,22 @@ Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
-![grafik](https://user-images.githubusercontent.com/75573284/213889707-b7841ca0-3ea7-4321-acf6-50e1c1649442.png)
+<img width="675" height="806" alt="grafik" src="https://github.com/user-attachments/assets/a7395147-62fd-415f-b04e-db92b50b1ff0" />
 
-![grafik](https://user-images.githubusercontent.com/75573284/213889724-1ab32264-3e0c-4d83-b067-9fe9d1672fb2.png)
+<img width="675" height="355" alt="grafik" src="https://github.com/user-attachments/assets/b36c79ba-7c7f-4334-a27f-89de6c11a30a" />
 
-![grafik](https://github.com/nextcloud/all-in-one/assets/24786786/fecbb5ef-d2f4-4e0f-bc4b-82207e2c2809)
+<img width="675" height="532" alt="grafik" src="https://github.com/user-attachments/assets/a3f3fa8c-9805-4c53-b573-c7428404f28c" />
 
-![grafik](https://user-images.githubusercontent.com/75573284/213889746-87dbe8c5-4d1f-492f-b251-bbf82f1510d0.png)
+<img width="675" height="570" alt="grafik" src="https://github.com/user-attachments/assets/188e6541-6805-4374-866e-8c9bf9e80693" />
+
 
 ```
-client_body_buffer_size 512k;
-client_max_body_size 0;
-
 # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
 # By setting proxy_read_timeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NPM. 
 # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
 proxy_read_timeout 3610s;
+
+client_max_body_size 0; # This controls the maximum upload size, 0 means unlimited
 ```
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
