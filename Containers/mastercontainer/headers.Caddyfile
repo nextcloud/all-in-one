@@ -4,7 +4,7 @@ header {
     # script-src-elem/style-src-elem 'self'; Only allow loading css/js files from same origin (AIO itself) while blocking all inline css/js
     # img-src 'self'; Only allow loading images from same origin (from AIO itself)
     # connect-src 'self'; Allow fetch to only connect same origin (to AIO itself)
-    # frame-src 'self'; Allow AIO to only embed itself "what can be embeded"
+    # frame-src 'self'; Allow AIO to only embed itself "what can be embedded"
     # base-uri 'none'; This does not fallback to default-src, AIO does not use the html base tag
     # form-action 'self'; Html forms are only allowed to submit to AIO and not cross origin
     # frame-ancestors 'self'; Only allow AIO itself to embed it self "who can embed"
