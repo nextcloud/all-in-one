@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - 'php/**'
+      - 'Containers/mastercontainer/*.Caddyfile'
   push:
     branches:
       - main
     paths:
       - 'php/**'
+      - 'Containers/mastercontainer/*.Caddyfile'
 
 concurrency:
   group: playwright-${{ github.head_ref || github.run_id }}
