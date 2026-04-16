@@ -1,14 +1,5 @@
 "use strict";
 
-function showPassword(id) {
-  let passwordField = document.getElementById(id);
-  if (passwordField.type === "password" && passwordField.value !== "") {
-    passwordField.type = "text";
-  } else if (passwordField.type === "text" && passwordField.value === "") {
-    passwordField.type = "password";
-  }
-}
-
 (function (){
   let lastError;
 

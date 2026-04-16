@@ -28,7 +28,6 @@
 
             {# js for optional containers and additional containers forms #}
             <script type="text/javascript" src="containers-form-submit.js?v7"></script>
-            <script type="text/javascript" src="click-handlers.js?v1"></script>
 
             {% set hasBackupLocation = borg_backup_host_location or borg_remote_repo %}
             {% set isAnyRunning = false %}
@@ -588,8 +587,8 @@
                                     <summary>Click here to change your AIO passphrase</summary>
                                     <p>You can change your AIO passphrase below:</p>
                                     <form method="POST" action="api/configuration" class="xhr">
-                                        <input type="password" autocomplete="current-password" name="current-master-password" placeholder="Your current AIO passphrase" id="current-master-password" oninput="showPassword('current-master-password')">
-                                        <input type="password" autocomplete="new-password" name="new-master-password" placeholder="Your new AIO passphrase" id="new-master-password" oninput="showPassword('new-master-password')">
+                                        <input type="password" autocomplete="current-password" name="current-master-password" placeholder="Your current AIO passphrase" id="current-master-password" data-input-show-password="showPassword('current-master-password')">
+                                        <input type="password" autocomplete="new-password" name="new-master-password" placeholder="Your new AIO passphrase" id="new-master-password" data-input-show-password="showPassword('new-master-password')">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input type="submit" value="Submit passphrase change" />
