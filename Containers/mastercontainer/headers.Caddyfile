@@ -17,6 +17,7 @@ header {
     X-DNS-Prefetch-Control "off" # Tells the browser to not pre-fetch the DNS of linked pages. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-DNS-Prefetch-Control
     Referrer-Policy "no-referrer" # Tells the browser to never sent a Referer header. See https://developer.mozilla.org/de/docs/Web/HTTP/Reference/Headers/Referrer-Policy
     X-Robots-Tag "noindex, nofollow" # Tells web crawlers to not index this page. See https://developer.mozilla.org/de/docs/Web/HTTP/Reference/Headers/X-Robots-Tag
+    Origin-Agent-Cluster "?1" # Isolates AIO from other same site pages. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Origin-Agent-Cluster
     Cross-Origin-Opener-Policy "same-origin"; # AIO does not use any popup, still we can isolate its BCG if it is opened as a pop up by another page. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Opener-Policy
     Cross-Origin-Embedder-Policy "require-corp"; # Harder rules for cross origin embeds. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Embedder-Policy
     Cross-Origin-Resource-Policy "same-origin"; # Only allow the same origin to load resources. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cross-Origin_Resource_Policy
