@@ -1,6 +1,6 @@
 header {
     Content-Security-Policy "default-src 'none'; script-src-elem 'self'; style-src-elem 'self'; img-src 'self'; connect-src 'self'; frame-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types 'none';"
-    X-Content-Type-Options "nosniff"
+    X-Content-Type-Options "nosniff" # This forces the browser to use the MIME type of the Content-Type header. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options
     X-Frame-Options "SAMEORIGIN"
     X-Permitted-Cross-Domain-Policies "none"
     X-DNS-Prefetch-Control "off"
