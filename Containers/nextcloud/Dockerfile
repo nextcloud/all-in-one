@@ -265,4 +265,9 @@ CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
-    org.label-schema.vendor="Nextcloud"
+    org.opencontainers.image.title="Nextcloud for Nextcloud AIO" \
+    org.opencontainers.image.description="Nextcloud server with all required PHP extensions for Nextcloud All-in-One" \
+    org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.vendor="Nextcloud" \
+    org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"

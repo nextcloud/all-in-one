@@ -90,7 +90,12 @@ RUN set -ex; \
     mkdir /var/run/supervisord;
 
 # hadolint ignore=DL3048
-LABEL org.label-schema.vendor="Nextcloud" \
+LABEL org.opencontainers.image.title="Nextcloud All-in-One" \
+    org.opencontainers.image.description="Easy deployment and maintenance of a Nextcloud server with all dependencies and optional services" \
+    org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.vendor="Nextcloud" \
+    org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md" \
     wud.watch="false" \
     com.docker.compose.project="nextcloud-aio"
 
