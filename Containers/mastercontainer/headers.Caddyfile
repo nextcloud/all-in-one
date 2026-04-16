@@ -4,7 +4,7 @@ header {
     X-Frame-Options "SAMEORIGIN" # Only allow AIO itself to embed itself, this is also enforced as part of the CSP frame-ancestors. See https://developer.mozilla.org/de/docs/Web/HTTP/Reference/Headers/X-Frame-Options
     X-Permitted-Cross-Domain-Policies "none" # We block all cross origin request, including ones from Adobe Acrobat or Microsoft Silverlight and Adobe Flash Player. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Permitted-Cross-Domain-Policies
     X-DNS-Prefetch-Control "off" # Tells the browser to not pre-fetch the DNS of linked pages. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-DNS-Prefetch-Control
-    Referrer-Policy "no-referrer"
+    Referrer-Policy "no-referrer" # Tells the browser to never sent a Referer header. See https://developer.mozilla.org/de/docs/Web/HTTP/Reference/Headers/Referrer-Policy
     X-Robots-Tag "noindex, nofollow" # Tells web crawlers to not index this page. See https://developer.mozilla.org/de/docs/Web/HTTP/Reference/Headers/X-Robots-Tag
     Cross-Origin-Opener-Policy "same-origin";
     Cross-Origin-Embedder-Policy "require-corp"; # Harder rules for cross origin embeds. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Embedder-Policy
