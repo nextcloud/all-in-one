@@ -34,6 +34,7 @@ http://:80 {
 
 https://:8443 {
     import headers.Caddyfile
+    header Strict-Transport-Security max-age=31536000;
 
 	@denied {
 		path /api/auth/login /api/auth/getlogin
