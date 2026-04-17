@@ -441,6 +441,9 @@ services:
       - http.port=9200
       - xpack.license.self_generated.type=basic
       - xpack.security.enabled=false
+      - indices.fielddata.cache.size=20%
+      - indices.memory.index_buffer_size=20%
+      - thread_pool.write.queue_size=1000
       - FULLTEXTSEARCH_PASSWORD
     volumes:
       - nextcloud_aio_elasticsearch:/usr/share/elasticsearch/data:rw
