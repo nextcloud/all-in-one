@@ -45,6 +45,7 @@
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_HOST=nextcloud-aio-talk",
         "APACHE_PORT=%APACHE_PORT%",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
         "TZ=%TIMEZONE%",
         "APACHE_MAX_SIZE=%APACHE_MAX_SIZE%",
@@ -120,6 +121,7 @@
         "POSTGRES_PASSWORD=%DATABASE_PASSWORD%",
         "POSTGRES_DB=nextcloud_database",
         "POSTGRES_USER=nextcloud",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "PGTZ=%TIMEZONE%"
       ],
@@ -222,6 +224,7 @@
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
         "ONLYOFFICE_SECRET=%ONLYOFFICE_SECRET%",
         "AIO_URL=%AIO_URL%",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "NC_AIO_VERSION=v%AIO_VERSION%",
         "NEXTCLOUD_MOUNT=%NEXTCLOUD_MOUNT%",
         "CLAMAV_ENABLED=%CLAMAV_ENABLED%",
@@ -310,6 +313,7 @@
       ],
       "environment": [
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%"
       ],
       "restart": "unless-stopped",
@@ -339,6 +343,7 @@
       "internal_port": "6379",
       "environment": [
         "REDIS_HOST_PASSWORD=%REDIS_PASSWORD%",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%"
       ],
       "volumes": [
@@ -380,8 +385,9 @@
       "internal_port": "9980",
       "environment": [
         "aliasgroup1=https://%NC_DOMAIN%:443,http://nextcloud-aio-apache.nextcloud-aio:23973",
-        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:logging.level=warning --o:logging.level_startup=warning --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false %COLLABORA_SECCOMP_POLICY% --o:remote_font_config.url=https://%NC_DOMAIN%/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+",
+        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:logging.level=%COLLABORA_LOG_LEVEL% --o:logging.level_startup=%COLLABORA_LOG_LEVEL% --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false %COLLABORA_SECCOMP_POLICY% --o:remote_font_config.url=https://%NC_DOMAIN%/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+",
         "dictionaries=%COLLABORA_DICTIONARIES%",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "server_name=%NC_DOMAIN%",
         "DONT_GEN_SSL_CERT=1"
@@ -448,6 +454,7 @@
         "TALK_HOST=nextcloud-aio-talk",
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "TALK_PORT=%TALK_PORT%",
         "INTERNAL_SECRET=%TALK_INTERNAL_SECRET%"
@@ -495,6 +502,7 @@
       "internal_port": "1234",
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "RECORDING_SECRET=%RECORDING_SECRET%",
         "INTERNAL_SECRET=%TALK_INTERNAL_SECRET%"
@@ -538,6 +546,7 @@
         "BORG_REMOTE_REPO=%BORGBACKUP_REMOTE_REPO%",
         "BORG_PASSWORD=%BORGBACKUP_PASSWORD%",
         "BORG_MODE=%BORGBACKUP_MODE%",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "SELECTED_RESTORE_TIME=%SELECTED_RESTORE_TIME%",
         "RESTORE_EXCLUDE_PREVIEWS=%RESTORE_EXCLUDE_PREVIEWS%",
         "BACKUP_RESTORE_PASSWORD=%BACKUP_RESTORE_PASSWORD%",
@@ -605,7 +614,8 @@
       "image": "ghcr.io/nextcloud-releases/aio-watchtower",
       "init": true,
       "environment": [
-        "CONTAINER_TO_UPDATE=nextcloud-aio-mastercontainer"
+        "CONTAINER_TO_UPDATE=nextcloud-aio-mastercontainer",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%"
       ],
       "volumes": [
         {
@@ -636,7 +646,8 @@
       "internal_port": "%APACHE_PORT%",
       "environment": [
         "INSTANCE_ID=%INSTANCE_ID%",
-        "APACHE_PORT=%APACHE_PORT%"
+        "APACHE_PORT=%APACHE_PORT%",
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%"
       ],
       "secrets": [
         "INSTANCE_ID"
@@ -671,6 +682,7 @@
       ],
       "internal_port": "3310",
       "environment": [
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "MAX_SIZE=%NEXTCLOUD_UPLOAD_LIMIT%"
       ],
@@ -716,6 +728,8 @@
       ],
       "internal_port": "80",
       "environment": [
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
+        "LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "JWT_ENABLED=true",
         "JWT_HEADER=AuthorizationJwt",
@@ -759,6 +773,7 @@
       ],
       "internal_port": "9000",
       "environment": [
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "IMAGINARY_SECRET=%IMAGINARY_SECRET%"
       ],
@@ -800,12 +815,13 @@
       ],
       "internal_port": "9200",
       "environment": [
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "ES_JAVA_OPTS=%FULLTEXTSEARCH_JAVA_OPTIONS%",
         "bootstrap.memory_lock=false",
         "cluster.name=nextcloud-aio",
         "discovery.type=single-node",
-        "logger.level=WARN",
+        "logger.level=%ELASTIC_LOG_LEVEL%",
         "http.port=9200",
         "xpack.license.self_generated.type=basic",
         "xpack.security.enabled=false",
@@ -837,6 +853,7 @@
       "init": true,
       "internal_port": "2375",
       "environment": [
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%"
       ],
       "volumes": [
@@ -868,7 +885,7 @@
       "environment": [
         "HP_SHARED_KEY=%HP_SHARED_KEY%",
         "NC_INSTANCE_URL=https://%NC_DOMAIN%",
-        "HP_LOG_LEVEL=warning",
+        "HP_LOG_LEVEL=%COLLABORA_LOG_LEVEL%",
         "HP_FRP_DISABLE_TLS=true",
         "TZ=%TIMEZONE%"
       ],
@@ -920,6 +937,7 @@
       ],
       "internal_port": "3002",
       "environment": [
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "NEXTCLOUD_URL=https://%NC_DOMAIN%",
         "JWT_SECRET_KEY=%WHITEBOARD_SECRET%",
