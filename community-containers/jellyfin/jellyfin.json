@@ -34,6 +34,9 @@
             "enable_nvidia_gpu": true,
             "backup_volumes": [
                 "nextcloud_aio_jellyfin"
+            ],
+            "depends_on": [
+                "nextcloud-aio-lldap"
             ]
         }
     ]

@@ -212,6 +212,13 @@ readonly class ContainerDefinitionFetcher {
                         if (!$this->configurationManager->isWhiteboardEnabled) {
                             continue;
                         }
+                    } else {
+                        // Skip dependencies on community containers that are not currently enabled.
+                        // Only apply this when the current entry is itself a community container,
+                        // to avoid dropping dependencies of standard containers.json entries.
+                        if (in_array($entry['container_name'], $additionalContainerNames, true) && !in_array($value, $additionalContainerNames, true)) {
+                            continue;
+                        }
                     }
                     $dependsOn[] = $value;
                 }
