@@ -312,6 +312,26 @@ if [ -n "$AIO_COMMUNITY_CONTAINERS" ]; then
     print_red "You've set AIO_COMMUNITY_CONTAINERS but the option was removed.
 The community containers get managed via the AIO interface now."
 fi
+if [ -n "$NEXTCLOUD_ENABLE_DRI_DEVICE" ]; then
+    print_red "The environmental variable NEXTCLOUD_ENABLE_DRI_DEVICE is deprecated. Please mount the /dev/dri device into the mastercontainer instead and remove NEXTCLOUD_ENABLE_DRI_DEVICE. It will then be set automatically."
+fi
+
+# Automatically enable the /dev/dri device if it is mounted into the mastercontainer
+if [ -d "/dev/dri" ]; then
+    export NEXTCLOUD_ENABLE_DRI_DEVICE="true"
+    if [ -e "/dev/dri/renderD128" ]; then
+        NEXTCLOUD_DRI_GID="$(stat -c '%g' /dev/dri/renderD128)"
+        export NEXTCLOUD_DRI_GID
+    else
+        export NEXTCLOUD_DRI_GID=""
+    fi
+else
+    if [ -z "$NEXTCLOUD_ENABLE_DRI_DEVICE" ]; then
+        # Force the unset of the env if it was not externally overwritten already
+        export NEXTCLOUD_ENABLE_DRI_DEVICE="false"
+    fi
+    export NEXTCLOUD_DRI_GID=""
+fi
 
 # Check if ghcr.io is reachable
 # Solves issues like https://github.com/nextcloud/all-in-one/discussions/5268
