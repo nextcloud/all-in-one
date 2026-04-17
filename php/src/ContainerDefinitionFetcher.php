@@ -41,6 +41,8 @@ readonly class ContainerDefinitionFetcher {
     {
         $data = json_decode((string)file_get_contents(DataConst::GetContainersDefinitionPath()), true, 512, JSON_THROW_ON_ERROR);
 
+        $standardContainerNames = array_column($data['aio_services_v1'], 'container_name');
+
         $additionalContainerNames = [];
         foreach ($this->configurationManager->aioCommunityContainers as $communityContainer) {
             if ($communityContainer !== '') {
@@ -215,8 +217,10 @@ readonly class ContainerDefinitionFetcher {
                     } else {
                         // Skip dependencies on community containers that are not currently enabled.
                         // Only apply this when the current entry is itself a community container,
-                        // to avoid dropping dependencies of standard containers.json entries.
-                        if (in_array($entry['container_name'], $additionalContainerNames, true) && !in_array($value, $additionalContainerNames, true)) {
+                        // and the dependency is not an enabled community container or a standard built-in container.
+                        if (in_array($entry['container_name'], $additionalContainerNames, true)
+                            && !in_array($value, $additionalContainerNames, true)
+                            && !in_array($value, $standardContainerNames, true)) {
                             continue;
                         }
                     }
