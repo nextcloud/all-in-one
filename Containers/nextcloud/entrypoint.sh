@@ -10,6 +10,10 @@ directory_empty() {
     [ -z "$(ls -A "$1/")" ]
 }
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 run_upgrade_if_needed_due_to_app_update() {
     if php /var/www/html/occ status | grep maintenance | grep -q true; then
         php /var/www/html/occ maintenance:mode --off
@@ -19,6 +23,14 @@ run_upgrade_if_needed_due_to_app_update() {
         php /var/www/html/occ app:enable nextcloud-aio --force
     fi
 }
+
+NEXTCLOUD_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
+    debug) printf '0' ;;
+    info) printf '1' ;;
+    warn) printf '2' ;;
+    error) printf '3' ;;
+esac)"
+export NEXTCLOUD_LOG_LEVEL
 
 # Create cert bundle
 if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
@@ -75,7 +87,9 @@ if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
     cat "$CERTIFICATE_BUNDLE"
 
     # Disable debug mode
-    set +x
+    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+        set +x
+    fi
 fi
 
 # Adjust DATABASE_TYPE to by Nextcloud supported value
@@ -217,7 +231,9 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 if grep -q appstoreurl /var/www/html/config/config.php; then
                     set -x
                     APPSTORE_URL="$(grep appstoreurl /var/www/html/config/config.php | grep -oP 'https://.*v[0-9]+')"
-                    set +x
+                    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+                        set +x
+                    fi
                 fi
                 # Default appstoreurl parameter in config.php defaults to 'https://apps.nextcloud.com/api/v1' so we check for the apps.json file stored in there
                 CURL_STATUS="$(curl -LI "$APPSTORE_URL"/apps.json -o /dev/null -w '%{http_code}\n' -s)"
@@ -284,7 +300,9 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                     "$SOURCE_LOCATION/custom_apps/" \
                     /var/www/html/custom_apps/
             done
-            set +x
+            if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+                set +x
+            fi
         fi
 
         # Copy these from Nextcloud archive if they don't exist yet (i.e. new install)
@@ -437,7 +455,7 @@ EOF
             # Apply log settings
             echo "Applying default settings..."
             mkdir -p /var/www/html/data
-            php /var/www/html/occ config:system:set loglevel --value="2" --type=integer
+            php /var/www/html/occ config:system:set loglevel --value="$NEXTCLOUD_LOG_LEVEL" --type=integer
             php /var/www/html/occ config:system:set log_type --value="file"
             php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
             php /var/www/html/occ config:system:set log_rotate_size --value="10485760" --type=integer
@@ -742,7 +760,9 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     if echo "$COLLABORA_HOST" | grep -q "nextcloud-.*-collabora"; then
         COLLABORA_HOST="$NC_DOMAIN"
     fi
-    set +x
+    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+        set +x
+    fi
     # Remove richdcoumentscode if it should be incorrectly installed
     if [ -d "/var/www/html/custom_apps/richdocumentscode" ]; then
         php /var/www/html/occ app:remove richdocumentscode
@@ -863,7 +883,9 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     if [ -z "$TURN_DOMAIN" ]; then
         TURN_DOMAIN="$TALK_HOST"
     fi
-    set +x
+    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+        set +x
+    fi
     if ! [ -d "/var/www/html/custom_apps/spreed" ]; then
         php /var/www/html/occ app:install spreed
     elif [ "$(php /var/www/html/occ config:app:get spreed enabled)" != "yes" ]; then
