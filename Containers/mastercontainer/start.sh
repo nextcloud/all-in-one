@@ -423,5 +423,10 @@ caddy fmt --overwrite /internal.Caddyfile
 # Fix caddy log 
 chmod 777 /root
 
+# Create Twig template cache directory (path must match TWIG_CACHE_PATH in php/public/index.php)
+mkdir -p /tmp/twig-cache
+chown www-data:www-data /tmp/twig-cache
+chmod 770 /tmp/twig-cache
+
 # Start supervisord
 exec /usr/bin/supervisord -c /supervisord.conf
