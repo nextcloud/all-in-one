@@ -91,10 +91,12 @@ if [ -z "$TALK_MAX_SCREEN_BITRATE" ]; then
     TALK_MAX_SCREEN_BITRATE=2097152
 fi
 
-# Signling
+# Signaling
 cat << SIGNALING_CONF > "/conf/signaling.conf"
 [http]
 listen = 0.0.0.0:8081
+readtimeout = 15
+writetimeout = 30
 
 [app]
 debug = false
@@ -110,7 +112,7 @@ internalsecret = ${INTERNAL_SECRET}
 backends = backend-1
 allowall = false
 timeout = 10
-connectionsperhost = 8
+connectionsperhost = 32
 skipverify = ${SKIP_CERT_VERIFY}
 
 [backend-1]
