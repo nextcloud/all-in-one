@@ -258,6 +258,9 @@ services:
     restart: unless-stopped
     profiles:
       - collabora
+    shm_size: 268435456
+    tmpfs:
+      - /tmp
     cap_add:
       - SYS_ADMIN
       - SYS_CHROOT
