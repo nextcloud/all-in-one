@@ -35,6 +35,11 @@
                     "source": "nextcloud_aio_jellyseerr",
                     "destination": "/jellyseerr",
                     "writeable": false
+                },
+                {
+                    "source": "nextcloud_aio_bitwarden_lite",
+                    "destination": "/bitwarden-lite",
+                    "writeable": false
                 }
             ]
         }
