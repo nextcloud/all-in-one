@@ -14,10 +14,13 @@ use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
 use AIO\Docker\DockerActionManager;
 
-readonly class ContainerDefinitionFetcher {
+class ContainerDefinitionFetcher {
+    /** @var list<Container>|null */
+    private ?array $cachedContainers = null;
+
     public function __construct(
-        private ConfigurationManager $configurationManager,
-        private \DI\Container $container
+        private readonly ConfigurationManager $configurationManager,
+        private readonly \DI\Container $container
     ) {
     }
 
@@ -361,6 +364,9 @@ readonly class ContainerDefinitionFetcher {
 
     public function FetchDefinition(): array
     {
-        return $this->GetDefinition();
+        if ($this->cachedContainers === null) {
+            $this->cachedContainers = $this->GetDefinition();
+        }
+        return $this->cachedContainers;
     }
 }

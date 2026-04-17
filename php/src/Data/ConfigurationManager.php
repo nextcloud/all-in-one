@@ -14,6 +14,11 @@ class ConfigurationManager
 
     private bool $noWrite = false;
 
+    /** @var list<string>|null */
+    private ?array $cachedDailyBackupLines = null;
+
+    private bool $dailyBackupFileCached = false;
+
     public string $aioToken {
         get => $this->get('AIO_TOKEN', '');
         set { $this->set('AIO_TOKEN', $value); }
@@ -699,7 +704,6 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
         }
         file_put_contents(DataConst::GetConfigFile(), $content);
-        $this->config = [];
     }
 
     private function getEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
@@ -760,24 +764,24 @@ class ConfigurationManager
             $time .= PHP_EOL;
         }
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
+        $this->cachedDailyBackupLines = null;
+        $this->dailyBackupFileCached = false;
     }
 
     public function getDailyBackupTime() : string {
-        if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
+        $lines = $this->getDailyBackupFileLines();
+        if ($lines === null) {
             return '';
         }
-        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
-        $dailyBackupFileArray = explode("\n", $dailyBackupFile);
-        return $dailyBackupFileArray[0];
+        return $lines[0];
     }
 
     public function areAutomaticUpdatesEnabled() : bool {
-        if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
+        $lines = $this->getDailyBackupFileLines();
+        if ($lines === null) {
             return false;
         }
-        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
-        $dailyBackupFileArray = explode("\n", $dailyBackupFile);
-        if (isset($dailyBackupFileArray[1]) && $dailyBackupFileArray[1] === 'automaticUpdatesAreNotEnabled') {
+        if (isset($lines[1]) && $lines[1] === 'automaticUpdatesAreNotEnabled') {
             return false;
         } else {
             return true;
@@ -788,6 +792,19 @@ class ConfigurationManager
         if (file_exists(DataConst::GetDailyBackupTimeFile())) {
             unlink(DataConst::GetDailyBackupTimeFile());
         }
+        $this->cachedDailyBackupLines = null;
+        $this->dailyBackupFileCached = false;
+    }
+
+    /** @return list<string>|null Lines from the daily backup time file, or null if the file does not exist. */
+    private function getDailyBackupFileLines() : ?array {
+        if (!$this->dailyBackupFileCached) {
+            $this->dailyBackupFileCached = true;
+            if (file_exists(DataConst::GetDailyBackupTimeFile())) {
+                $this->cachedDailyBackupLines = explode("\n", (string)file_get_contents(DataConst::GetDailyBackupTimeFile()));
+            }
+        }
+        return $this->cachedDailyBackupLines;
     }
 
     /**

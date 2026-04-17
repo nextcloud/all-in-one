@@ -16,6 +16,7 @@ use http\Env\Response;
 readonly class DockerActionManager {
     private const string API_VERSION = 'v1.44';
     private Client $guzzleClient;
+    private string $apiUrlBase;
 
     public function __construct(
         private ConfigurationManager           $configurationManager,
@@ -24,16 +25,17 @@ readonly class DockerActionManager {
         private GitHubContainerRegistryManager $gitHubContainerRegistryManager
     ) {
         $this->guzzleClient = new Client(['curl' => [CURLOPT_UNIX_SOCKET_PATH => '/var/run/docker.sock']]);
-    }
-
-    private function BuildApiUrl(string $url): string {
         $apiVersion = getenv('DOCKER_API_VERSION');
         if ($apiVersion === false || empty($apiVersion)) {
             $apiVersion = self::API_VERSION;
         } else {
-            $apiVersion = 'v'. $apiVersion;
+            $apiVersion = 'v' . $apiVersion;
         }
-        return sprintf('http://127.0.0.1/%s/%s', $apiVersion, $url);
+        $this->apiUrlBase = 'http://127.0.0.1/' . $apiVersion . '/';
+    }
+
+    private function BuildApiUrl(string $url): string {
+        return $this->apiUrlBase . $url;
     }
 
     private function BuildImageName(Container $container): string {
