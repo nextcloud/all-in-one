@@ -41,6 +41,9 @@ readonly class ContainerDefinitionFetcher {
     {
         $data = json_decode((string)file_get_contents(DataConst::GetContainersDefinitionPath()), true, 512, JSON_THROW_ON_ERROR);
 
+        // We store this information for later because we need to use it to distinct between community containers and default containers.
+        $standardContainerNames = array_column($data['aio_services_v1'], 'container_name');
+
         $additionalContainerNames = [];
         foreach ($this->configurationManager->aioCommunityContainers as $communityContainer) {
             if ($communityContainer !== '') {
@@ -210,6 +213,15 @@ readonly class ContainerDefinitionFetcher {
                         }
                     } elseif ($value === 'nextcloud-aio-whiteboard') {
                         if (!$this->configurationManager->isWhiteboardEnabled) {
+                            continue;
+                        }
+                    } else {
+                        // Skip dependencies on community containers that are not currently enabled.
+                        // Only apply this when the current entry is itself a community container,
+                        // and the dependency is not an enabled community container or a standard built-in container.
+                        if (in_array($entry['container_name'], $additionalContainerNames, true)
+                            && !in_array($value, $additionalContainerNames, true)
+                            && !in_array($value, $standardContainerNames, true)) {
                             continue;
                         }
                     }
