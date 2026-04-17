@@ -5,12 +5,14 @@ on:
     paths:
       - 'php/**'
       - 'Containers/mastercontainer/*.Caddyfile'
+      - 'Containers/mastercontainer/start.sh'
   push:
     branches:
       - main
     paths:
       - 'php/**'
       - 'Containers/mastercontainer/*.Caddyfile'
+      - 'Containers/mastercontainer/start.sh'
 
 concurrency:
   group: playwright-${{ github.head_ref || github.run_id }}
@@ -55,7 +57,7 @@ jobs:
           rm -r ./session
           composer install --no-dev
           composer clear-cache
-          sudo chmod 777 -R ./
+          sudo chmod 777 -R ../
 
       - name: Start fresh development server
         run: |
@@ -72,6 +74,7 @@ jobs:
             --volume ./php:/var/www/docker-aio/php \
             --volume ./Containers/mastercontainer/internal.Caddyfile:/internal.Caddyfile \
             --volume ./Containers/mastercontainer/headers.Caddyfile:/headers.Caddyfile \
+            --volume ./Containers/mastercontainer/start.sh:/start.sh \
             --volume /var/run/docker.sock:/var/run/docker.sock:ro \
             --env SKIP_DOMAIN_VALIDATION=true \
             --env APACHE_PORT=11000 \
@@ -103,6 +106,7 @@ jobs:
             --volume ./php:/var/www/docker-aio/php \
             --volume ./Containers/mastercontainer/internal.Caddyfile:/internal.Caddyfile \
             --volume ./Containers/mastercontainer/headers.Caddyfile:/headers.Caddyfile \
+            --volume ./Containers/mastercontainer/start.sh:/start.sh \
             --volume /var/run/docker.sock:/var/run/docker.sock:ro \
             --env SKIP_DOMAIN_VALIDATION=false \
             --env APACHE_PORT=11000 \
