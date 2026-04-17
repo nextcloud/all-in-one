@@ -178,7 +178,9 @@ if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
     sed -i "s|^#effective_cache_size = .*|effective_cache_size = 1GB|" "$PGCONF"
     sed -i "s|^effective_cache_size = .*|effective_cache_size = 1GB|" "$PGCONF"
 
-    # Increase per-operation sort/hash memory to reduce disk spills for file listing and share queries
+    # Increase per-operation sort/hash memory to reduce disk spills for file listing and share queries.
+    # Note: this is allocated per sort/hash operation, not per connection, so the theoretical worst-case
+    # (max_connections × work_mem) is rarely approached in practice.
     sed -i "s|^#work_mem = .*|work_mem = 16MB|" "$PGCONF"
     sed -i "s|^work_mem = .*|work_mem = 16MB|" "$PGCONF"
 
