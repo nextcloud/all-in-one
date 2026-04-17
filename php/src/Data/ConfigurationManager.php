@@ -799,6 +799,9 @@ class ConfigurationManager
     /** @return list<string>|null Lines from the daily backup time file, or null if the file does not exist. */
     private function getDailyBackupFileLines() : ?array {
         if (!$this->dailyBackupFileCached) {
+            // Mark as cached first so that a missing file is also cached (null result),
+            // avoiding a repeated file_exists() on every call. The cache is explicitly
+            // invalidated by setDailyBackupTime() and deleteDailyBackupTime().
             $this->dailyBackupFileCached = true;
             if (file_exists(DataConst::GetDailyBackupTimeFile())) {
                 $this->cachedDailyBackupLines = explode("\n", (string)file_get_contents(DataConst::GetDailyBackupTimeFile()));
