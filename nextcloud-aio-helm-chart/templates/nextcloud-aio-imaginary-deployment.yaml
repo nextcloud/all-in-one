@@ -36,6 +36,8 @@ spec:
         - env:
             - name: IMAGINARY_SECRET
               value: "{{ .Values.IMAGINARY_SECRET }}"
+            - name: IMAGINARY_CONCURRENCY
+              value: "{{ .Values.IMAGINARY_CONCURRENCY }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
           image: ghcr.io/nextcloud-releases/aio-imaginary:20260409_094910
