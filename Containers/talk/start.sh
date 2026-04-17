@@ -129,4 +129,34 @@ maxstreambitrate = ${TALK_MAX_STREAM_BITRATE}
 maxscreenbitrate = ${TALK_MAX_SCREEN_BITRATE}
 SIGNALING_CONF
 
+# Configure Janus to use the local TURN server for its own relay candidates.
+# Ephemeral TURN credentials (TURN REST API pattern):
+#   username = "<expiry_unix_timestamp>:<random_hex>"  (valid for 3 months)
+#   password  = base64(HMAC-SHA1(TURN_SECRET, username))
+# eturnal validates both the HMAC and the embedded expiry on every Allocate,
+# so a captured credential stops working after at most 3 months.
+JANUS_TURN_USER="$(( $(date +%s) + 7776000 )):$(openssl rand -hex 16)"
+JANUS_TURN_PWD="$(printf '%s' "$JANUS_TURN_USER" | openssl dgst -sha1 -hmac "$TURN_SECRET" -binary | openssl base64)"
+
+if [ -z "$TURN_DOMAIN" ]; then
+    TURN_DOMAIN="$NC_DOMAIN"
+fi
+
+# Build janus.jcfg: strip the entire nat block from the original and append a
+# clean minimal one that points at the TURN server.
+{
+    sed '/^nat:/,/^}/d' /usr/local/etc/janus/janus.jcfg
+    cat << NAT_CONF
+nat: {
+	turn_server = "$TURN_DOMAIN"
+	turn_port = $TALK_PORT
+	turn_type = "udp"
+	turn_user = "$JANUS_TURN_USER"
+	turn_pwd = "$JANUS_TURN_PWD"
+    # The ice ignore list is set by janus by default, so also do this here
+    ice_ignore_list = "vmnet"
+}
+NAT_CONF
+} > /conf/janus.jcfg
+
 exec "$@"
