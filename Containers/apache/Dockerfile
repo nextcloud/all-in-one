@@ -90,7 +90,7 @@ CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
-    org.opencontainers.image.title="Apache for Nextcloud AIO" \
+    org.opencontainers.image.title="Apache and Caddy for Nextcloud AIO" \
     org.opencontainers.image.description="Apache HTTP server with Caddy for Nextcloud All-in-One" \
     org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
     org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
