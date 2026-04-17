@@ -1,5 +1,17 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+POSTGRES_LOG_MIN_MESSAGES="$(case "$AIO_LOG_LEVEL" in
+    debug) printf 'debug1' ;;
+    info) printf 'info' ;;
+    warn) printf 'warning' ;;
+    error) printf 'error' ;;
+esac)"
+export POSTGRES_LOG_MIN_MESSAGES
+
 # Variables
 DATADIR="/var/lib/postgresql/data"
 export DUMP_DIR="/mnt/data"
@@ -165,6 +177,12 @@ if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
         sed -i 's|#log_checkpoints.*|log_checkpoints = off|' "$PGCONF"
     fi
 
+    if grep -q "^#\?log_min_messages" /var/lib/postgresql/data/postgresql.conf; then
+        sed -i "s|^#\?log_min_messages.*|log_min_messages = $POSTGRES_LOG_MIN_MESSAGES|" /var/lib/postgresql/data/postgresql.conf
+    else
+        echo "log_min_messages = $POSTGRES_LOG_MIN_MESSAGES" >> /var/lib/postgresql/data/postgresql.conf
+    fi
+
     # Closing idling connections automatically seems to break any logic so was reverted again to default where it is disabled
     if grep -q "^idle_session_timeout" "$PGCONF"; then
         sed -i 's|^idle_session_timeout.*|#idle_session_timeout|' "$PGCONF"
@@ -222,12 +240,16 @@ do_database_dump() {
         pg_ctl stop -m fast
         rm "$DUMP_DIR/export.failed"
         echo 'Database dump successful!'
-        set +x
+        if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+            set +x
+        fi
         exit 0
     else
         pg_ctl stop -m fast
         echo "Database dump unsuccessful!"
-        set +x
+        if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+            set +x
+        fi
         exit 1
     fi
 }

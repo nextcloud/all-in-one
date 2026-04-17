@@ -1,4 +1,9 @@
 #!/bin/bash
+
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 set -ex
 
 touch "$DUMP_DIR/initialization.failed"
