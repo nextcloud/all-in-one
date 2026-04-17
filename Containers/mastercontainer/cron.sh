@@ -59,8 +59,9 @@ while true; do
         sudo -E -u www-data docker container remove nextcloud-aio-domaincheck
     fi
 
-    # Remove dangling images
+    # Remove dangling images (support both deprecated label-schema and OCI standard vendor label)
     sudo -E -u www-data docker image prune --filter "label=org.label-schema.vendor=Nextcloud" --force
+    sudo -E -u www-data docker image prune --filter "label=org.opencontainers.image.vendor=Nextcloud" --force
 
     # Check for available free space
     sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/CheckFreeDiskSpace.php
