@@ -48,18 +48,21 @@ RUN set -ex; \
             -e 's/^#\(LoadModule .*mod_alias.so\)/\1/' \
             -e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
             -e 's/^#\(LoadModule .*mod_brotli.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_http2.so\)/\1/' \
             -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
             -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
             -e 's/\(ScriptAlias \)/#\1/' \
         /usr/local/apache2/conf/httpd.conf; \
     echo "Include conf/nextcloud.conf" | tee -a /usr/local/apache2/conf/httpd.conf; \
     echo "ServerName localhost" | tee -a /usr/local/apache2/conf/httpd.conf; \
-# Sync this with max db connections and pm.max_children
-# We don't actually expect so many workers but don't want to limit it artificially because people will report issues otherwise.
-    sed -i 's|MaxRequestWorkers.*|MaxRequestWorkers 5000|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+# Tune mpm_event settings; ServerLimit = MaxRequestWorkers / ThreadsPerChild = 400 / 25 = 16
+    sed -i 's|MaxRequestWorkers.*|MaxRequestWorkers 400|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
     grep -q '<IfModule mpm_event_module>' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
-# ServerLimit needs to be set to MaxRequestWorkers divided by ThreadsPerChild which is set to 25 by default
-    sed -i '/<IfModule mpm_event_module>/a\ \ \ \ ServerLimit 200' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+    sed -i '/<IfModule mpm_event_module>/a\ \ \ \ ServerLimit 16' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+    sed -i 's|ThreadsPerChild.*|ThreadsPerChild 25|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+    sed -i 's|StartServers.*|StartServers 2|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+    sed -i 's|MinSpareThreads.*|MinSpareThreads 25|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+    sed -i 's|MaxSpareThreads.*|MaxSpareThreads 75|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
     \
     rm -rf /usr/local/apache2/conf/original /var/www; \
     mkdir -p /var/www; \
