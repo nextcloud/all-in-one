@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 while true; do
     if [ -f "/mnt/docker-aio-config/data/daily_backup_time" ]; then
         set -x
@@ -17,7 +21,9 @@ while true; do
         else
             export SEND_SUCCESS_NOTIFICATIONS=0
         fi
-        set +x
+        if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+            set +x
+        fi
         if [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
             export LOCK_FILE_PRESENT=1
         else
