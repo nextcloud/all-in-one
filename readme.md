@@ -219,6 +219,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [Are there known problems when SELinux is enabled?](#are-there-known-problems-when-selinux-is-enabled)
 - [Customization](#customization)
     - [How to adjust the internally used docker api version?](#how-to-adjust-the-internally-used-docker-api-version)
+    - [How to adjust the log level for AIO components?](#how-to-adjust-the-log-level-for-aio-components)
     - [How to change the default location of Nextcloud's Datadir?](#how-to-change-the-default-location-of-nextclouds-datadir)
     - [How to configure custom UID/GID?](#how-to-configure-custom-uidgid)
     - [How to move the appdata folder from the datadir to an ssd to improve the performance?](#how-to-move-the-appdata-folder-from-the-datadir-to-an-ssd-to-improve-the-performance)
@@ -444,6 +445,9 @@ Yes. If SELinux is enabled, you might need to add the `--security-opt label:disa
 
 ### How to adjust the internally used docker api version?
 If you run an outdated or too new docker version, you might run into problems with the by AIO internally used docker api version. To fix this, you can specify the api version manually. You can do so by adding `--env DOCKER_API_VERSION=1.44` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). This variable excepts a string based on the pattern `[0-9].[0-9]+`, so e.g. `1.44`. ⚠️ However please note that only the default api version (unset this variable) is supported and tested by the maintainers of Nextcloud AIO. So use this on your own risk and things might break without warning.
+
+### How to adjust the log level for AIO components?
+You can globally adjust the log level of the included AIO components by adding `--env AIO_LOG_LEVEL=warn` to the docker run command of the mastercontainer. This setting is propagated from the mastercontainer to the built-in sibling containers. If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command or compose file that you initially used. For troubleshooting, `debug` and `info` may additionally re-enable some supervisord child stdout or stderr streams that are normally suppressed in order to keep the default logs concise. Allowed values are `error`, `warn`, `info` and `debug`.
 
 ### How to change the default location of Nextcloud's Datadir?
 > [!WARNING]  
@@ -1219,7 +1223,7 @@ This project values stability over new features. That means that when a new majo
 AIO ships its own update notifications implementation. It checks if container updates are available. If so, it sends a notification with the title `Container updates available!` on saturdays to Nextcloud users that are part of the `admin` group. If the Nextcloud container image should be older than 90 days (~3 months) and thus badly outdated, AIO sends a notification to all Nextcloud users with the title `AIO is outdated!`. Thus admins should make sure to update the container images at least once every 3 months in order to make sure that the instance gets all security bugfixes as soon as possible.
 
 ### Huge docker logs
-If you should run into issues with huge docker logs, you can adjust the log size by following https://docs.docker.com/config/containers/logging/local/#usage. However for the included AIO containers, this should usually not be needed because almost all of them have the log level set to warn so they should not produce many logs.
+If you should run into issues with huge docker logs, you can adjust the log size by following https://docs.docker.com/config/containers/logging/local/#usage. You can additionally reduce the verbosity of the included AIO containers by setting `AIO_LOG_LEVEL=error` on the mastercontainer. By default, AIO keeps the existing component-specific log defaults, so this should usually not be needed.
 
 <details>
 

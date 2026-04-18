@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 echo "Daily backup script has started"
 
 # Check if initial configuration has been done, otherwise this script should do nothing.
