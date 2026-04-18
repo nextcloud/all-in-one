@@ -39,7 +39,14 @@ readonly class ContainerDefinitionFetcher {
      */
     private function GetDefinition(): array
     {
-        $data = json_decode((string)file_get_contents(DataConst::GetContainersDefinitionPath()), true, 512, JSON_THROW_ON_ERROR);
+        $containersDefinitionPath = DataConst::GetContainersDefinitionPath();
+        $cacheKey = 'containers-json-' . $containersDefinitionPath;
+        $cachedJson = apcu_fetch($cacheKey);
+        if (!is_string($cachedJson)) {
+            $cachedJson = (string)file_get_contents($containersDefinitionPath);
+            apcu_add($cacheKey, $cachedJson);
+        }
+        $data = json_decode($cachedJson, true, 512, JSON_THROW_ON_ERROR);
 
         $additionalContainerNames = [];
         foreach ($this->configurationManager->aioCommunityContainers as $communityContainer) {
