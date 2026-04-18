@@ -82,7 +82,7 @@ RUN set -ex; \
     touch \
         /etc/nats.conf \
         /etc/eturnal.yml; \
-    echo "listen: 127.0.0.1:4222" | tee /etc/nats.conf; \
+    printf 'listen: 127.0.0.1:4222\nwrite_deadline: "10s"\nmax_payload: 8MB\n' | tee /etc/nats.conf; \
     mkdir -p \
         /var/tmp \
         /conf \
