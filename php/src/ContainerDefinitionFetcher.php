@@ -14,13 +14,10 @@ use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
 use AIO\Docker\DockerActionManager;
 
-class ContainerDefinitionFetcher {
-    /** @var list<Container>|null */
-    private ?array $cachedContainers = null;
-
+readonly class ContainerDefinitionFetcher {
     public function __construct(
-        private readonly ConfigurationManager $configurationManager,
-        private readonly \DI\Container $container
+        private ConfigurationManager $configurationManager,
+        private \DI\Container $container
     ) {
     }
 
@@ -42,7 +39,14 @@ class ContainerDefinitionFetcher {
      */
     private function GetDefinition(): array
     {
-        $data = json_decode((string)file_get_contents(DataConst::GetContainersDefinitionPath()), true, 512, JSON_THROW_ON_ERROR);
+        $containersDefinitionPath = DataConst::GetContainersDefinitionPath();
+        $cacheKey = 'containers-json-' . $containersDefinitionPath;
+        $cachedJson = apcu_fetch($cacheKey);
+        if (!is_string($cachedJson)) {
+            $cachedJson = (string)file_get_contents($containersDefinitionPath);
+            apcu_add($cacheKey, $cachedJson);
+        }
+        $data = json_decode($cachedJson, true, 512, JSON_THROW_ON_ERROR);
 
         $additionalContainerNames = [];
         foreach ($this->configurationManager->aioCommunityContainers as $communityContainer) {
@@ -364,9 +368,6 @@ class ContainerDefinitionFetcher {
 
     public function FetchDefinition(): array
     {
-        if ($this->cachedContainers === null) {
-            $this->cachedContainers = $this->GetDefinition();
-        }
-        return $this->cachedContainers;
+        return $this->GetDefinition();
     }
 }
