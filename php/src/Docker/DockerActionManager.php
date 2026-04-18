@@ -997,4 +997,71 @@ readonly class DockerActionManager {
             return $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
         }
     }
+
+    public function SystemPrune(?\Closure $addToStreamingResponseBody = null): void {
+        $endpoints = [
+            // Remove stopped containers
+            'containers/prune',
+            // Remove unused images
+            'images/prune',
+            // Remove unused volumes
+            'volumes/prune',
+            // Remove unused networks
+            'networks/prune',
+            // Prune build cache
+            'build/prune',
+        ];
+
+        foreach ($endpoints as $endpoint) {
+            // Special-case images prune to include the dangling filter as requested
+            if ($endpoint === 'images/prune') {
+                $filters = json_encode(['dangling' => ['false']]);
+                $url = $this->BuildApiUrl($endpoint . '?filters=' . urlencode((string) $filters));
+            } else {
+                $url = $this->BuildApiUrl($endpoint);
+            }
+
+            if ($addToStreamingResponseBody !== null) {
+                $addToStreamingResponseBody("Running $endpoint...");
+            }
+
+            try {
+                $response = $this->guzzleClient->post($url);
+                if ($addToStreamingResponseBody !== null) {
+                    $data = json_decode((string)$response->getBody(), true);
+                    $deleted = 0;
+                    foreach (['ContainersDeleted', 'ImagesDeleted', 'VolumesDeleted', 'NetworksDeleted', 'CachesDeleted'] as $key) {
+                        if (isset($data[$key]) && is_array($data[$key])) {
+                            $deleted += count($data[$key]);
+                        }
+                    }
+                    $reclaimed = $data['SpaceReclaimed'] ?? 0;
+                    $parts = [];
+                    if ($deleted > 0) {
+                        $parts[] = "$deleted item(s) deleted";
+                    }
+                    if ($reclaimed > 0) {
+                        $i = (int)floor(log($reclaimed, 1024));
+                        $parts[] = 'Space reclaimed: ' . (string)round($reclaimed / (1024 ** $i), 2) . ' ' . ['B','KB','MB','GB'][$i];
+                    }
+                    $addToStreamingResponseBody(!empty($parts) ? implode('. ', $parts) . '.' : 'Nothing to prune.');
+                }
+            } catch (RequestException $e) {
+                error_log(sprintf('Docker prune (%s) failed: %s', $endpoint, $e->getMessage()));
+                if ($addToStreamingResponseBody !== null) {
+                    $addToStreamingResponseBody('Error: ' . $e->getMessage());
+                }
+                // continue with next prune step
+            }
+        }
+
+        if ($addToStreamingResponseBody !== null) {
+            $addToStreamingResponseBody("Docker system prune completed.");
+            sleep(1);
+
+            // We automatically reload after 10s so that the output can be read or copied if necessary
+            $addToStreamingResponseBody("Automatically reloading the page after 10s.");
+            sleep(10);
+        }
+    }
 }
