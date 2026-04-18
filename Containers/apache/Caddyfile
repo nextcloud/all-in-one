@@ -15,7 +15,7 @@
 }
 
 https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
-http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI requests, see containers.json
+http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI requests
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
     header {
         Strict-Transport-Security max-age=31536000;
