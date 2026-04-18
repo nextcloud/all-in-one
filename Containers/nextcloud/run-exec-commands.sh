@@ -17,7 +17,12 @@ else
     # exec-commands for Collabora are specified here since Collabora must work also if using manual-install 
     if [ "$COLLABORA_ENABLED" = yes ]; then
         echo "Activating Collabora config..."
-        php /var/www/html/occ richdocuments:activate-config --wopi-url='http://nextcloud-aio-apache.nextcloud-aio:23973' --callback-url='http://nextcloud-aio-apache.nextcloud-aio:23973'
+        ACTIVATE_CONFIG_COMMAND="php /var/www/html/occ richdocuments:activate-config"
+        if [ -n "$COLLABORA_WOPI_CALLBACK_URL" ]; then
+            $ACTIVATE_CONFIG_COMMAND --callback-url="$COLLABORA_WOPI_CALLBACK_URL"
+        else
+            $ACTIVATE_CONFIG_COMMAND
+        fi
     fi
 fi
 
