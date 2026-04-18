@@ -10,6 +10,9 @@ ini_set('max_execution_time', '7200');
 // Log whole log messages
 ini_set('log_errors_max_len', '0');
 
+// Path for the Twig compiled-template cache (created at container startup by start.sh)
+const TWIG_CACHE_PATH = '/tmp/twig-cache';
+
 use DI\Container;
 use DI\NotFoundException;
 use Slim\Csrf\Guard;
@@ -42,8 +45,8 @@ session_start([
     "save_path" => $dataConst->GetSessionDirectory(), // Where to save the session files
     "cookie_lifetime" => 0, // Delete the session cookie whenever the browser is closed. See https://www.php.net/manual/en/session.configuration.php#ini.session.cookie-lifetime
     "gc_maxlifetime" => 86400, // Delete sessions after 24 hours. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-maxlifetime
-    "gc_probability" => 1, // Probability that the session cleanup starts. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-probability
-    "gc_divisor" => 1, // gc_probability/gc_divisor = 1/1 = 100%, meaning that *all* outdated sessions get deleted when the cleanup job runs. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-divisor
+    "gc_probability" => 0, // Probability that the session cleanup starts. The sessions are cleaned up by a cron job instead, see /cron.sh. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-probability
+    "gc_divisor" => 100, // gc_probability/gc_divisor = 0/100 = 0%, meaning that PHP will never run session GC itself (cron.sh handles cleanup instead). See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-divisor
     "use_strict_mode" => true, // Only allow initialized session IDs. See https://www.php.net/manual/en/session.configuration.php#ini.session.use-strict-mode
     "cookie_secure" => true, // Only send cookies over https (not http). See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#secure
     "cookie_httponly" => true, // Block the cookie from being read with js in the browser, will still be send for fetch request triggered by js. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly
@@ -52,7 +55,7 @@ session_start([
 $app->add(Guard::class);
 
 // Create Twig
-$twig = Twig::create(__DIR__ . '/../templates/', ['cache' => false]);
+$twig = Twig::create(__DIR__ . '/../templates/', ['cache' => TWIG_CACHE_PATH]);
 $app->add(TwigMiddleware::create($app, $twig));
 $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 

@@ -53,6 +53,14 @@ RUN set -ex; \
         build-base; \
     pecl install APCu-5.1.28; \
     docker-php-ext-enable apcu; \
+    docker-php-ext-enable opcache; \
+    { \
+        echo 'opcache.enable=1'; \
+        echo 'opcache.memory_consumption=32'; \
+        echo 'opcache.interned_strings_buffer=8'; \
+        echo 'opcache.max_accelerated_files=4000'; \
+        echo 'opcache.validate_timestamps=0'; \
+    } >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini; \
     rm -r /tmp/pear; \
     runDeps="$( \
         scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
