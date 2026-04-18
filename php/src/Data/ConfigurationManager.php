@@ -12,9 +12,11 @@ class ConfigurationManager
 
     private array $config = [];
 
+    public string $aioPrivateKey = '';
+
     private bool $noWrite = false;
 
-    public string $aioToken {
+    public string $aioPublicKey {
         get => $this->get('AIO_TOKEN', '');
         set { $this->set('AIO_TOKEN', $value); }
     }
@@ -1021,7 +1023,7 @@ class ConfigurationManager
         return match ($placeholder) {
             'NC_DOMAIN' => $this->domain,
             'NC_BASE_DN' => $this->getBaseDN(),
-            'AIO_TOKEN' => $this->aioToken,
+            'AIO_TOKEN' => $this->aioPrivateKey,
             'BORGBACKUP_REMOTE_REPO' => $this->borgRemoteRepo,
             'BORGBACKUP_MODE' => $this->backupMode,
             'AIO_URL' => $this->aioUrl,
