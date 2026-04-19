@@ -25,6 +25,8 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
         -Via
     }
 
+    encode gzip zstd
+
     # Collabora
     route /browser/* {
         reverse_proxy {$COLLABORA_HOST}:9980
