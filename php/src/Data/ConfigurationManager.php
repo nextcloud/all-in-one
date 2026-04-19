@@ -305,6 +305,9 @@ class ConfigurationManager
                 $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
                 $this->configMtime = $mtime;
             }
+        } else {
+            $this->config = [];
+            $this->configMtime = null;
         }
 
         return $this->config;
@@ -710,6 +713,7 @@ class ConfigurationManager
         if ($mtime !== false) {
             $this->configMtime = $mtime;
         } else {
+            $this->config = [];
             $this->configMtime = null;
         }
     }
