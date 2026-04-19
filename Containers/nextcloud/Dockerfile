@@ -114,18 +114,18 @@ RUN set -ex; \
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/server_tuning.html#enable-php-opcache and below
     { \
-        echo 'opcache.max_accelerated_files=10000'; \
+        echo 'opcache.max_accelerated_files=20000'; \
         echo 'opcache.memory_consumption=256'; \
         echo 'opcache.interned_strings_buffer=64'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
         echo 'opcache.jit=1255'; \
-        echo 'opcache.jit_buffer_size=8M'; \
+        echo 'opcache.jit_buffer_size=128M'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
     { \
         echo 'apc.enable_cli=1'; \
-        echo 'apc.shm_size=64M'; \
+        echo 'apc.shm_size=128M'; \
     } >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
     { \
@@ -135,6 +135,9 @@ RUN set -ex; \
         echo 'max_execution_time=${PHP_MAX_TIME}'; \
         echo 'max_input_time=-1'; \
         echo 'default_socket_timeout=${PHP_MAX_TIME}'; \
+        echo 'output_buffering=0'; \
+        echo 'realpath_cache_size=8M'; \
+        echo 'realpath_cache_ttl=600'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
     { \
@@ -142,7 +145,10 @@ RUN set -ex; \
         echo 'session.save_path = "tcp://${REDIS_HOST}:${REDIS_PORT}?database=${REDIS_DB_INDEX}${REDIS_USER_AUTH}&auth[]=${REDIS_HOST_PASSWORD}"'; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
-        echo 'redis.session.lock_wait_time = 10000'; \
+        echo '; 100ms in microseconds - prevents timeout on long requests such as large file uploads'; \
+        echo 'redis.session.lock_wait_time = 100000'; \
+        echo '; prevents stale locks from crashed workers (seconds)'; \
+        echo 'redis.session.lock_expire = 60'; \
         echo 'session.gc_maxlifetime = 86400'; \
     } > /usr/local/etc/php/conf.d/redis-session.ini; \
     \
