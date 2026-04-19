@@ -12,6 +12,8 @@ class ConfigurationManager
 
     private array $config = [];
 
+    private ?int $configMtime = null;
+
     private bool $noWrite = false;
 
     public string $aioToken {
@@ -295,10 +297,17 @@ class ConfigurationManager
 
     private function getConfig() : array
     {
-        if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
-        {
-            $configContent = (string)file_get_contents(DataConst::GetConfigFile());
-            $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
+        $configFile = DataConst::GetConfigFile();
+        if (file_exists($configFile)) {
+            $mtime = filemtime($configFile);
+            if ($mtime !== false && $mtime !== $this->configMtime) {
+                $configContent = (string)file_get_contents($configFile);
+                $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
+                $this->configMtime = $mtime;
+            }
+        } else {
+            $this->config = [];
+            $this->configMtime = null;
         }
 
         return $this->config;
@@ -699,7 +708,14 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
         }
         file_put_contents(DataConst::GetConfigFile(), $content);
-        $this->config = [];
+        clearstatcache(true, DataConst::GetConfigFile());
+        $mtime = filemtime(DataConst::GetConfigFile());
+        if ($mtime !== false) {
+            $this->configMtime = $mtime;
+        } else {
+            $this->config = [];
+            $this->configMtime = null;
+        }
     }
 
     private function getEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
