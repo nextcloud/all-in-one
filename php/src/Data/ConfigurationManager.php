@@ -14,6 +14,10 @@ class ConfigurationManager
 
     private bool $noWrite = false;
 
+    private string $dailyBackupFileCache = '';
+
+    private int $dailyBackupFileMtime = 0;
+
     public string $aioToken {
         get => $this->get('AIO_TOKEN', '');
         set { $this->set('AIO_TOKEN', $value); }
@@ -760,23 +764,47 @@ class ConfigurationManager
             $time .= PHP_EOL;
         }
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
+        $this->dailyBackupFileCache = '';
+        $this->dailyBackupFileMtime = 0;
+    }
+
+    private function getDailyBackupFileContent() : string {
+        $file = DataConst::GetDailyBackupTimeFile();
+        if (!file_exists($file)) {
+            $this->dailyBackupFileCache = '';
+            $this->dailyBackupFileMtime = 0;
+            return '';
+        }
+        $mtime = filemtime($file);
+        if ($mtime !== false && $this->dailyBackupFileMtime === $mtime && $this->dailyBackupFileCache !== '') {
+            return $this->dailyBackupFileCache;
+        }
+        $content = file_get_contents($file);
+        if ($content === false || $content === '') {
+            return '';
+        }
+        if ($mtime !== false) {
+            $this->dailyBackupFileCache = $content;
+            $this->dailyBackupFileMtime = $mtime;
+        }
+        return $content;
     }
 
     public function getDailyBackupTime() : string {
-        if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
+        $content = $this->getDailyBackupFileContent();
+        if ($content === '') {
             return '';
         }
-        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
-        $dailyBackupFileArray = explode("\n", $dailyBackupFile);
+        $dailyBackupFileArray = explode("\n", $content);
         return $dailyBackupFileArray[0];
     }
 
     public function areAutomaticUpdatesEnabled() : bool {
-        if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
+        $content = $this->getDailyBackupFileContent();
+        if ($content === '') {
             return false;
         }
-        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
-        $dailyBackupFileArray = explode("\n", $dailyBackupFile);
+        $dailyBackupFileArray = explode("\n", $content);
         if (isset($dailyBackupFileArray[1]) && $dailyBackupFileArray[1] === 'automaticUpdatesAreNotEnabled') {
             return false;
         } else {
@@ -788,11 +816,10 @@ class ConfigurationManager
         if (file_exists(DataConst::GetDailyBackupTimeFile())) {
             unlink(DataConst::GetDailyBackupTimeFile());
         }
+        $this->dailyBackupFileCache = '';
+        $this->dailyBackupFileMtime = 0;
     }
 
-    /**
-     * @throws InvalidSettingConfigurationException
-     */
     public function setAdditionalBackupDirectories(string $additionalBackupDirectories) : void {
         $additionalBackupDirectoriesArray = explode("\n", $additionalBackupDirectories);
         $validDirectories = '';
