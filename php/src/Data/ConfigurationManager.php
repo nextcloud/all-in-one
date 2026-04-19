@@ -12,7 +12,7 @@ class ConfigurationManager
 
     private array $config = [];
 
-    private int $configMtime = 0;
+    private ?int $configMtime = null;
 
     private bool $noWrite = false;
 
@@ -709,6 +709,8 @@ class ConfigurationManager
         $mtime = filemtime(DataConst::GetConfigFile());
         if ($mtime !== false) {
             $this->configMtime = $mtime;
+        } else {
+            $this->configMtime = null;
         }
     }
 
