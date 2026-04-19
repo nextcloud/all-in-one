@@ -760,7 +760,6 @@
       "internal_port": "9000",
       "environment": [
         "TZ=%TIMEZONE%",
-        "IMAGINARY_CONCURRENCY=%IMAGINARY_CONCURRENCY%",
         "IMAGINARY_SECRET=%IMAGINARY_SECRET%"
       ],
       "restart": "unless-stopped",

@@ -4,10 +4,6 @@ echo "Imaginary has started"
 
 IMAGINARY_ARGS=(-return-size -max-allowed-resolution 222.2)
 
-if [ -n "$IMAGINARY_CONCURRENCY" ]; then
-    IMAGINARY_ARGS+=(-concurrency "$IMAGINARY_CONCURRENCY")
-fi
-
 if [ -n "$IMAGINARY_SECRET" ]; then
     IMAGINARY_ARGS+=(-key "$IMAGINARY_SECRET")
 fi
