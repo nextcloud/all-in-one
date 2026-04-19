@@ -224,16 +224,7 @@
 </form>
 <p><strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advice and recommendations see <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong></p>
 {% if isAnyRunning == true %}
-    <script type="text/javascript" src="disable-clamav.js"></script>
-    <script type="text/javascript" src="disable-docker-socket-proxy.js"></script>
-    <script type="text/javascript" src="disable-harp.js"></script>
-    <script type="text/javascript" src="disable-talk.js"></script>
-    <script type="text/javascript" src="disable-collabora.js?v2"></script>
-    <script type="text/javascript" src="disable-onlyoffice.js?v2"></script>
-    <script type="text/javascript" src="disable-imaginary.js"></script>
-    <script type="text/javascript" src="disable-fulltextsearch.js"></script>
-    <script type="text/javascript" src="disable-talk-recording.js"></script>
-    <script type="text/javascript" src="disable-whiteboard.js"></script>
+    <script type="text/javascript" src="disable-containers.js"></script>
 {% endif %}
 
 {% if is_collabora_enabled == true and isAnyRunning == false and was_start_button_clicked == true %}
