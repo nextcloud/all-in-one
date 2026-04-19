@@ -12,6 +12,8 @@ class ConfigurationManager
 
     private array $config = [];
 
+    private int $configMtime = 0;
+
     private bool $noWrite = false;
 
     private string $dailyBackupFileCache = '';
@@ -299,13 +301,21 @@ class ConfigurationManager
 
     private function getConfig() : array
     {
-        if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
-        {
-            $configContent = (string)file_get_contents(DataConst::GetConfigFile());
-            if ($configContent === '') {
-                throw new \RuntimeException("The config file " . DataConst::GetConfigFile() . " is empty. It may have been truncated due to low disk space. Please restore it from a backup.");
+        $configFile = DataConst::GetConfigFile();
+        if (file_exists($configFile)) {
+            $mtime = filemtime($configFile);
+            if ($mtime !== false && $mtime !== $this->configMtime) {
+                $configContent = (string)file_get_contents($configFile);
+                $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
+                $configContent = (string)file_get_contents(DataConst::GetConfigFile());
+                if ($configContent === '') {
+                    throw new \RuntimeException("The config file " . DataConst::GetConfigFile() . " is empty. It may have been truncated due to low disk space. Please restore it from a backup.");
+                }
+                $this->configMtime = $mtime;
             }
-            $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
+        } else {
+            $this->config = [];
+            $this->configMtime = 0;
         }
 
         return $this->config;
@@ -720,7 +730,14 @@ class ConfigurationManager
             unlink($tempFile);
             throw new InvalidSettingConfigurationException("Failed to rename " . $tempFile . " to " . DataConst::GetConfigFile());
         }
-        $this->config = [];
+        clearstatcache(true, DataConst::GetConfigFile());
+        $mtime = filemtime(DataConst::GetConfigFile());
+        if ($mtime !== false) {
+            $this->configMtime = $mtime;
+        } else {
+            $this->config = [];
+            $this->configMtime = 0;
+        }
     }
 
     private function getEnvironmentalVariableOrConfig(string $envVariableName, string $configName, string $defaultValue) : string {
