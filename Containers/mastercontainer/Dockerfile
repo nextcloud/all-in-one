@@ -56,7 +56,7 @@ RUN set -ex; \
     { \
         echo 'apc.shm_size=32M'; \
     } >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
-    docker-php-ext-enable opcache; \
+    docker-php-ext-install -j "$(nproc)" opcache; \
     { \
         echo 'opcache.enable=1'; \
         echo 'opcache.memory_consumption=32'; \
