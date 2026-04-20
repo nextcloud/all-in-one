@@ -7,6 +7,8 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
 
   if (getenv('REDIS_HOST')) {
     $CONFIG['redis']['host'] = (string) getenv('REDIS_HOST');
+    $CONFIG['redis']['timeout'] = 1.5;
+    $CONFIG['redis']['read_timeout'] = 1.5;
   }
 
   if (getenv('REDIS_HOST_PASSWORD')) {
