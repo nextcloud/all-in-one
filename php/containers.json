@@ -267,6 +267,7 @@
       ],
       "stop_grace_period": 600,
       "restart": "unless-stopped",
+      "shm_size": 134217728,
       "devices": [
         "/dev/dri"
       ],
