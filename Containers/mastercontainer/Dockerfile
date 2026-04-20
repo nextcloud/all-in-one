@@ -53,6 +53,9 @@ RUN set -ex; \
         build-base; \
     pecl install APCu-5.1.28; \
     docker-php-ext-enable apcu; \
+    { \
+        echo 'apc.shm_size=32M'; \
+    } >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     docker-php-ext-enable opcache; \
     { \
         echo 'opcache.enable=1'; \
