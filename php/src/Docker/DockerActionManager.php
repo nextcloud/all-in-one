@@ -425,6 +425,13 @@ readonly class DockerActionManager {
             //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
             //     }
 
+        // Special things for the jellyfin community container
+        } elseif ($container->identifier === 'nextcloud-aio-jellyfin') {
+            $lldapIp = gethostbyname('nextcloud-aio-lldap');
+            if ($lldapIp !== 'nextcloud-aio-lldap') {
+                $requestBody['HostConfig']['ExtraHosts'] = ['nextcloud-aio-lldap:' . $lldapIp];
+            }
+
         // Special things for the caddy community container
         } elseif ($container->identifier === 'nextcloud-aio-caddy') {
             $requestBody['HostConfig']['ExtraHosts'] = ['host.docker.internal:host-gateway'];
