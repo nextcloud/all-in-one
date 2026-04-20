@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     document.querySelectorAll('input[data-input-show-password]').forEach((element) => {
-        element.addEventListener('input', (element) => {
-            let passwordField = element
+        element.addEventListener('input', (event) => {
+            let passwordField = event.target;
             if (passwordField.type === "password" && passwordField.value !== "") {
                 passwordField.type = "text";
             } else if (passwordField.type === "text" && passwordField.value === "") {

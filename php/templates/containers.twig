@@ -599,8 +599,8 @@
                                     <summary>Click here to change your AIO passphrase</summary>
                                     <p>You can change your AIO passphrase below:</p>
                                     <form method="POST" action="api/configuration" class="xhr">
-                                        <input type="password" autocomplete="current-password" name="current-master-password" placeholder="Your current AIO passphrase" id="current-master-password" data-input-show-password="showPassword('current-master-password')">
-                                        <input type="password" autocomplete="new-password" name="new-master-password" placeholder="Your new AIO passphrase" id="new-master-password" data-input-show-password="showPassword('new-master-password')">
+                                        <input type="password" autocomplete="current-password" name="current-master-password" placeholder="Your current AIO passphrase" id="current-master-password" data-input-show-password>
+                                        <input type="password" autocomplete="new-password" name="new-master-password" placeholder="Your new AIO passphrase" id="new-master-password" data-input-show-password>
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input type="submit" value="Submit passphrase change" />
