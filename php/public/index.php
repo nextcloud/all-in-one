@@ -37,6 +37,20 @@ $container->set(Guard::class, function () use ($responseFactory) {
 });
 
 // Register Middleware To Be Executed On All Routes
+
+// Migrate from the old PHPSESSID cookie to the new __Host-Http-PHPSESSID cookie.
+// This is needed because the session cookie was renamed in a previous release. Without this,
+// users that were logged in before the update would be logged out after the container restarts.
+$wasAuthenticated = false;
+if (!isset($_COOKIE['__Host-Http-PHPSESSID']) && isset($_COOKIE['PHPSESSID'])) {
+    session_name('PHPSESSID');
+    if (session_start(['save_path' => $dataConst->GetSessionDirectory(), 'use_strict_mode' => true])) {
+        $wasAuthenticated = isset($_SESSION[\AIO\Auth\AuthManager::SESSION_KEY]) && $_SESSION[\AIO\Auth\AuthManager::SESSION_KEY] === true;
+        session_unset();
+        session_destroy();
+    }
+}
+
 session_start([
     "name" => "__Host-Http-PHPSESSID", // Set cookie prefix to prevent other pages from overwriting this cookie. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#cookie_prefixes
     "save_path" => $dataConst->GetSessionDirectory(), // Where to save the session files
@@ -49,6 +63,10 @@ session_start([
     "cookie_httponly" => true, // Block the cookie from being read with js in the browser, will still be send for fetch request triggered by js. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly
     "cookie_samesite" => "Strict", // Only send the cookie with requests triggered by AIO itself. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value
 ]);
+
+if ($wasAuthenticated) {
+    $container->get(\AIO\Auth\AuthManager::class)->SetAuthState(true);
+}
 $app->add(Guard::class);
 
 // Create Twig
