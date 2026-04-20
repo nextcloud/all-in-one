@@ -60,6 +60,19 @@ RUN set -ex; \
     grep -q '<IfModule mpm_event_module>' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
 # ServerLimit needs to be set to MaxRequestWorkers divided by ThreadsPerChild which is set to 25 by default
     sed -i '/<IfModule mpm_event_module>/a\ \ \ \ ServerLimit 200' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+# Pin ThreadsPerChild so the value is deterministic regardless of the httpd base-image
+# defaults; 25 threads per process balances concurrency against per-process memory use.
+    sed -i 's|ThreadsPerChild.*|ThreadsPerChild 25|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+# Start two server processes on boot to absorb the first requests without spawning
+# new processes on the critical path, while avoiding unnecessary memory overhead.
+    sed -i 's|StartServers.*|StartServers 2|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+# Keep at least 25 idle threads (one full process worth) so traffic bursts can be
+# absorbed immediately without triggering new process creation.
+    sed -i 's|MinSpareThreads.*|MinSpareThreads 25|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
+# Retire idle threads above 50 to reclaim memory during quiet periods. 50 is the
+# minimum valid value (MinSpareThreads + ThreadsPerChild = 25 + 25) and is enough
+# to absorb typical bursts without respawning a new process.
+    sed -i 's|MaxSpareThreads.*|MaxSpareThreads 50|' /usr/local/apache2/conf/extra/httpd-mpm.conf; \
     \
     rm -rf /usr/local/apache2/conf/original /var/www; \
     mkdir -p /var/www; \
