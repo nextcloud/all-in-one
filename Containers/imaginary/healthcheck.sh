@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nc -z 127.0.0.1 "$PORT" || exit 1
+wget -q -O /dev/null "http://127.0.0.1:${PORT}/health" || exit 1
