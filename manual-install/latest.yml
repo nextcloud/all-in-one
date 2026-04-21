@@ -186,6 +186,7 @@ services:
       - WHITEBOARD_ENABLED
     stop_grace_period: 600s
     restart: unless-stopped
+    shm_size: 134217728
     cap_drop:
       - NET_RAW
 
