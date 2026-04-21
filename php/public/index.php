@@ -45,12 +45,16 @@ $container->set(Guard::class, function () use ($responseFactory) {
 // This is needed because the session cookie was renamed in a previous release. Without this,
 // users that were logged in before the update would be logged out after the container restarts.
 $wasAuthenticated = false;
+$oldSessionTimestamp = null;
 if (!isset($_COOKIE['__Host-Http-PHPSESSID']) && isset($_COOKIE['PHPSESSID'])) {
     session_name('PHPSESSID');
     if (session_start(['save_path' => $dataConst->GetSessionDirectory(), 'use_strict_mode' => true])) {
         $wasAuthenticated = isset($_SESSION[\AIO\Auth\AuthManager::SESSION_KEY]) && $_SESSION[\AIO\Auth\AuthManager::SESSION_KEY] === true;
-        session_unset();
-        session_destroy();
+        $oldSessionTimestamp = isset($_SESSION['date_time']) ? (int)$_SESSION['date_time'] : null;
+        // Do not destroy the old session: if the response carrying the new __Host-Http-PHPSESSID
+        // cookie is lost (e.g., due to a 502 during a mastercontainer update), the client can
+        // retry with the old PHPSESSID cookie and still be authenticated.
+        session_write_close();
     }
 }
 
@@ -68,7 +72,15 @@ session_start([
 ]);
 
 if ($wasAuthenticated) {
-    $container->get(\AIO\Auth\AuthManager::class)->SetAuthState(true);
+    if ($oldSessionTimestamp !== null) {
+        // Use MigrateAuthState to preserve the original login timestamp. This prevents the
+        // session deduplicator from running and keeps the old PHPSESSID session file alive,
+        // so the client can retry with the old cookie if the 502 response causes the new
+        // __Host-Http-PHPSESSID cookie to not be received.
+        $container->get(\AIO\Auth\AuthManager::class)->MigrateAuthState($oldSessionTimestamp);
+    } else {
+        $container->get(\AIO\Auth\AuthManager::class)->SetAuthState(true);
+    }
 }
 $app->add(Guard::class);
 
