@@ -244,27 +244,12 @@ RUN set -ex; \
         imagemagick-tiff \
         coreutils; \
     \
-# Use dynamic pm mode: spare workers stay alive between requests so every request is served immediately
-# without waiting for a new process to spawn (unlike ondemand which forks on every request when idle).
-# pm.max_children: upper bound on worker processes; synced with max DB connections and MaxRequestWorkers.
-# Set high so users never hit an artificial limit under peak load — spare-server bounds keep idle memory usage low.
+    grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
+# Sync this with max db connections and MaxRequestWorkers
+# We don't actually expect so many children but don't want to limit it artificially because people will report issues otherwise.
+# Also children will usually be terminated again after the process is done due to the ondemand setting
     sed -i 's/^pm.max_children =.*/pm.max_children = 5000/' /usr/local/etc/php-fpm.d/www.conf; \
-# pm.start_servers: number of workers pre-forked at container startup.
-# Having 2 workers ready immediately means the first requests after boot are served without any spawn delay.
-    sed -i '/^;pm.start_servers/s/^;//' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's/^pm.start_servers =.*/pm.start_servers = 2/' /usr/local/etc/php-fpm.d/www.conf; \
-# pm.min_spare_servers: floor of idle workers kept alive at all times.
-# Guarantees at least 1 ready worker so a sudden burst of requests is handled without any fork wait.
-    sed -i '/^;pm.min_spare_servers/s/^;//' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's/^pm.min_spare_servers =.*/pm.min_spare_servers = 1/' /usr/local/etc/php-fpm.d/www.conf; \
-# pm.max_spare_servers: ceiling of idle workers kept alive during quiet periods.
-# Capping at 3 limits idle memory consumption while still keeping a small ready pool.
-    sed -i '/^;pm.max_spare_servers/s/^;//' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's/^pm.max_spare_servers =.*/pm.max_spare_servers = 3/' /usr/local/etc/php-fpm.d/www.conf; \
-# pm.max_requests: recycle each worker after handling 500 requests.
-# PHP extensions and apps can leak memory over time; recycling prevents those leaks from accumulating indefinitely.
-    sed -i '/^;pm.max_requests/s/^;//' /usr/local/etc/php-fpm.d/www.conf; \
-    sed -i 's/^pm.max_requests =.*/pm.max_requests = 500/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
     echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \
