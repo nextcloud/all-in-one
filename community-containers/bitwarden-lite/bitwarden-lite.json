@@ -4,7 +4,7 @@
             "container_name": "nextcloud-aio-bitwarden-lite",
             "display_name": "Bitwarden Lite",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/bitwarden-lite",
-            "image": "ghcr.io/bitwarden/self-host",
+            "image": "ghcr.io/bitwarden/lite",
             "image_tag": "latest",
             "internal_port": "8813",
             "restart": "unless-stopped",
