@@ -363,7 +363,7 @@ class ConfigurationManager
     }
 
     public function getRegisteredSecret(string $secretId) : string {
-        if ($this->secrets[$secretId]) {
+        if (isset($this->secrets[$secretId])) {
             return $this->getAndGenerateSecret($secretId);
         }
         throw new \Exception("The secret " . $secretId . " was not registered. Please check if it is defined in secrets of containers.json.");
@@ -563,7 +563,6 @@ class ConfigurationManager
         $this->set('domain', $domain);
         // Reset the borg restore password when setting the domain
         $this->borgRestorePassword = '';
-        $this->startTransaction();
         $this->commitTransaction();
     }
 
