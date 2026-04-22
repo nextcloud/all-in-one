@@ -438,11 +438,19 @@ EOF
             echo "Applying default settings..."
             mkdir -p /var/www/html/data
             php /var/www/html/occ config:system:set loglevel --value="2" --type=integer
-            php /var/www/html/occ config:system:set log_type --value="file"
-            php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
+            if [ "$NEXTCLOUD_LOG_TYPE" = "errorlog" ]; then
+                php /var/www/html/occ config:system:set log_type --value="errorlog"
+                php /var/www/html/occ config:system:set log_type_audit --value="errorlog"
+                php /var/www/html/occ app:disable logreader
+            else
+                php /var/www/html/occ config:system:set log_type --value="file"
+                php /var/www/html/occ config:system:set log_type_audit --value="file"
+                php /var/www/html/occ app:enable logreader
+                php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
+                php /var/www/html/occ config:system:set logfile_audit --value="/var/www/html/data/audit.log"
+            fi
             php /var/www/html/occ config:system:set log_rotate_size --value="10485760" --type=integer
             php /var/www/html/occ app:enable admin_audit
-            php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
             php /var/www/html/occ config:system:set log.condition apps 0 --value="admin_audit"
 
             # Apply preview settings
@@ -640,8 +648,17 @@ fi
 # Adjusting log files to be stored on a volume
 echo "Adjusting log files..."
 php /var/www/html/occ config:system:set upgrade.cli-upgrade-link --value="https://github.com/nextcloud/all-in-one/discussions/2726"
-php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
-php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
+if [ "$NEXTCLOUD_LOG_TYPE" = "errorlog" ]; then
+    php /var/www/html/occ config:system:set log_type --value="errorlog"
+    php /var/www/html/occ config:system:set log_type_audit --value="errorlog"
+    php /var/www/html/occ app:disable logreader
+else
+    php /var/www/html/occ config:system:set log_type --value="file"
+    php /var/www/html/occ config:system:set log_type_audit --value="file"
+    php /var/www/html/occ app:enable logreader
+    php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
+    php /var/www/html/occ config:system:set logfile_audit --value="/var/www/html/data/audit.log"
+fi
 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
 if [ -n "$NEXTCLOUD_SKELETON_DIRECTORY" ]; then
     if [ "$NEXTCLOUD_SKELETON_DIRECTORY" = "empty" ]; then
