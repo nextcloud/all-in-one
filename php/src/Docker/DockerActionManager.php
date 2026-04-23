@@ -739,49 +739,67 @@ readonly class DockerActionManager {
         return true;
     }
 
-    public function sendNotification(Container $container, string $subject, string $message, string $file = '/notify.sh'): void {
-        if ($this->GetContainerStartingState($container) === ContainerState::Running) {
+    public function execCommandInContainer(Container $container, array $cmd, ?\Closure $outputCallback = null): void {
+        if ($this->GetContainerStartingState($container) !== ContainerState::Running) {
+            return;
+        }
 
-            $containerName = $container->identifier;
+        $containerName = $container->identifier;
 
-            // schedule the exec
-            $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
-            $response = json_decode(
-                $this->guzzleClient->request(
-                    'POST',
-                    $url,
-                    [
-                        'json' => [
-                            'AttachStdout' => true,
-                            'Tty' => true,
-                            'Cmd' => [
-                                'bash',
-                                $file,
-                                $subject,
-                                $message
-                            ],
-                        ],
-                    ]
-                )->getBody()->getContents(),
-                true,
-                512, 
-                JSON_THROW_ON_ERROR,
-            );
-
-            $id = $response['Id'];
-
-            // start the exec
-            $url = $this->BuildApiUrl(sprintf('exec/%s/start', $id));
+        // Create exec instance
+        $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
+        $response = json_decode(
             $this->guzzleClient->request(
                 'POST',
                 $url,
                 [
                     'json' => [
-                        'Detach' => false,
+                        'AttachStdout' => true,
+                        'AttachStderr' => true,
                         'Tty' => true,
+                        'Cmd' => $cmd,
                     ],
                 ]
-            );
+            )->getBody()->getContents(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR,
+        );
+
+        $execId = $response['Id'];
+
+        // Start exec
+        $url = $this->BuildApiUrl(sprintf('exec/%s/start', $execId));
+        $requestOptions = [
+            'json' => [
+                'Detach' => false,
+                'Tty' => true,
+            ],
+        ];
+        if ($outputCallback !== null) {
+            $requestOptions['stream'] = true;
+        }
+
+        $startResponse = $this->guzzleClient->request('POST', $url, $requestOptions);
+
+        if ($outputCallback !== null) {
+            $body = $startResponse->getBody();
+            $buffer = '';
+            while (!$body->eof()) {
+                $chunk = $body->read(1024);
+                $buffer .= $chunk;
+                while (($pos = strpos($buffer, "\n")) !== false) {
+                    $line = substr($buffer, 0, $pos);
+                    $buffer = substr($buffer, $pos + 1);
+                    $line = rtrim($line, "\r");
+                    if ($line !== '') {
+                        $outputCallback($line);
+                    }
+                }
+            }
+            if (trim($buffer) !== '') {
+                $outputCallback(trim($buffer));
+            }
         }
     }
 
@@ -1007,63 +1025,8 @@ readonly class DockerActionManager {
     }
 
     public function RunNextcloudUpgradeToLatestMajor(\Closure $addToStreamingResponseBody): void {
-        $containerName = 'nextcloud-aio-nextcloud';
-
-        // Create exec instance
-        $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
-        $response = json_decode(
-            $this->guzzleClient->request(
-                'POST',
-                $url,
-                [
-                    'json' => [
-                        'AttachStdout' => true,
-                        'AttachStderr' => true,
-                        'Tty' => true,
-                        'Cmd' => ['bash', '/upgrade-latest-major.sh'],
-                    ],
-                ]
-            )->getBody()->getContents(),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
-        );
-
-        $execId = $response['Id'];
-
-        // Start exec and stream output
-        $url = $this->BuildApiUrl(sprintf('exec/%s/start', $execId));
-        $streamResponse = $this->guzzleClient->request(
-            'POST',
-            $url,
-            [
-                'stream' => true,
-                'json' => [
-                    'Detach' => false,
-                    'Tty' => true,
-                ],
-            ]
-        );
-
-        $body = $streamResponse->getBody();
-        $buffer = '';
-        while (!$body->eof()) {
-            $chunk = $body->read(1024);
-            $buffer .= $chunk;
-            // Flush complete lines
-            while (($pos = strpos($buffer, "\n")) !== false) {
-                $line = substr($buffer, 0, $pos);
-                $buffer = substr($buffer, $pos + 1);
-                $line = rtrim($line, "\r");
-                if ($line !== '') {
-                    $addToStreamingResponseBody($line);
-                }
-            }
-        }
-        // Flush any remaining output
-        if (trim($buffer) !== '') {
-            $addToStreamingResponseBody(trim($buffer));
-        }
+        $container = $this->containerDefinitionFetcher->GetContainerById('nextcloud-aio-nextcloud');
+        $this->execCommandInContainer($container, ['bash', '/upgrade-latest-major.sh'], $addToStreamingResponseBody);
     }
 
     public function SystemPrune(?\Closure $addToStreamingResponseBody = null): void {

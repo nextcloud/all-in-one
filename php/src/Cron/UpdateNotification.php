@@ -22,9 +22,9 @@ $isMastercontainerUpdateAvailable = $dockerActionManager->IsMastercontainerUpdat
 $isAnyUpdateAvailable = $dockerActionManager->isAnyUpdateAvailable();
 
 if ($isMastercontainerUpdateAvailable === true) {
-    $dockerActionManager->sendNotification($nextcloudContainer, 'Mastercontainer update available!', 'Please open your AIO interface to update it. If you do not want to do it manually each time, you can enable the daily backup feature from the AIO interface which also automatically updates the mastercontainer.');
+    $dockerActionManager->execCommandInContainer($nextcloudContainer, ['bash', '/notify.sh', 'Mastercontainer update available!', 'Please open your AIO interface to update it. If you do not want to do it manually each time, you can enable the daily backup feature from the AIO interface which also automatically updates the mastercontainer.']);
 }
 
 if ($isAnyUpdateAvailable === true) {
-    $dockerActionManager->sendNotification($nextcloudContainer, 'Container updates available!', 'Please open your AIO interface to update them. If you do not want to do it manually each time, you can enable the daily backup feature from the AIO interface which also automatically updates your containers and your Nextcloud apps.');
+    $dockerActionManager->execCommandInContainer($nextcloudContainer, ['bash', '/notify.sh', 'Container updates available!', 'Please open your AIO interface to update them. If you do not want to do it manually each time, you can enable the daily backup feature from the AIO interface which also automatically updates your containers and your Nextcloud apps.']);
 }

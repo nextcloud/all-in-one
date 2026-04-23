@@ -21,6 +21,6 @@ $nextcloudContainer = $containerDefinitionFetcher->GetContainerById($id);
 $isNextcloudImageOutdated = $dockerActionManager->isNextcloudImageOutdated();
 
 if ($isNextcloudImageOutdated === true) {
-    $dockerActionManager->sendNotification($nextcloudContainer, 'AIO is outdated!', 'Please open the AIO interface or ask an administrator to update it. If you do not want to do it manually each time, you can enable the daily backup feature from the AIO interface which automatically updates all containers.', '/notify-all.sh');
+    $dockerActionManager->execCommandInContainer($nextcloudContainer, ['bash', '/notify-all.sh', 'AIO is outdated!', 'Please open the AIO interface or ask an administrator to update it. If you do not want to do it manually each time, you can enable the daily backup feature from the AIO interface which automatically updates all containers.']);
 }
 
