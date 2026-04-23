@@ -740,6 +740,15 @@ readonly class DockerActionManager {
     }
 
     public function execCommandInContainer(Container $container, array $cmd, ?\Closure $outputCallback = null): void {
+        if ($cmd === []) {
+            throw new \InvalidArgumentException('$cmd must not be empty.');
+        }
+        foreach ($cmd as $arg) {
+            if (!is_string($arg) || $arg === '') {
+                throw new \InvalidArgumentException('Every element of $cmd must be a non-empty string.');
+            }
+        }
+
         if ($this->GetContainerStartingState($container) !== ContainerState::Running) {
             return;
         }
