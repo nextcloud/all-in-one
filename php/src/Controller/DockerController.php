@@ -329,6 +329,8 @@ readonly class DockerController {
     }
 
     public function RunNextcloudUpgradeToLatestMajor(Request $request, Response $response, array $args) : Response {
+        $this->configurationManager->installLatestMajor = '33';
+
         // Get streaming response start and closure
         $nonbufResp = $this->startStreamingResponse($response);
         $body = $nonbufResp->getBody();
