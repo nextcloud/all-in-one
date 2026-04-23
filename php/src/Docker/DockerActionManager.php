@@ -157,11 +157,12 @@ readonly class DockerActionManager {
         $response = "";
         $separator = "\r\n";
         $line = strtok($responseBody, $separator);
-        $response = substr((string)$line, 8) . $separator;
+        if ($line !== false) {
+            $response = substr($line, 8) . $separator;
+        }
 
-        while ($line !== false) {
-            $line = strtok($separator);
-            $response .= substr((string)$line, 8) . $separator;
+        while (($line = strtok($separator)) !== false) {
+            $response .= substr($line, 8) . $separator;
         }
 
         return $response;
@@ -187,7 +188,7 @@ readonly class DockerActionManager {
             ];
 
             if ($volume->name === 'nextcloud_aio_nextcloud_datadir' || $volume->name === 'nextcloud_aio_backupdir') {
-                return;
+                continue;
             }
 
             $firstChar = substr($volume->name, 0, 1);
