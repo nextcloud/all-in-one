@@ -1006,6 +1006,66 @@ readonly class DockerActionManager {
         }
     }
 
+    public function RunNextcloudUpgradeToLatestMajor(\Closure $addToStreamingResponseBody): void {
+        $containerName = 'nextcloud-aio-nextcloud';
+
+        // Create exec instance
+        $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
+        $response = json_decode(
+            $this->guzzleClient->request(
+                'POST',
+                $url,
+                [
+                    'json' => [
+                        'AttachStdout' => true,
+                        'AttachStderr' => true,
+                        'Tty' => true,
+                        'Cmd' => ['bash', '/upgrade-latest-major.sh'],
+                    ],
+                ]
+            )->getBody()->getContents(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR,
+        );
+
+        $execId = $response['Id'];
+
+        // Start exec and stream output
+        $url = $this->BuildApiUrl(sprintf('exec/%s/start', $execId));
+        $streamResponse = $this->guzzleClient->request(
+            'POST',
+            $url,
+            [
+                'stream' => true,
+                'json' => [
+                    'Detach' => false,
+                    'Tty' => true,
+                ],
+            ]
+        );
+
+        $body = $streamResponse->getBody();
+        $buffer = '';
+        while (!$body->eof()) {
+            $chunk = $body->read(1024);
+            $buffer .= $chunk;
+            // Flush complete lines
+            while (($pos = strpos($buffer, "\n")) !== false) {
+                $line = substr($buffer, 0, $pos);
+                $buffer = substr($buffer, $pos + 1);
+                $line = rtrim($line, "\r");
+                if ($line !== '') {
+                    $addToStreamingResponseBody($line);
+                }
+            }
+        }
+        // Flush any remaining output
+        if (trim($buffer) !== '') {
+            $addToStreamingResponseBody(trim($buffer));
+        }
+    }
+
     public function SystemPrune(?\Closure $addToStreamingResponseBody = null): void {
         $endpoints = [
             // Remove stopped containers
