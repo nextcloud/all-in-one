@@ -115,6 +115,11 @@ rm -f "$test_file"
 if [ -f /var/www/html/version.php ]; then
     # shellcheck disable=SC2016
     installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+    if [ -z "$installed_version" ]; then
+        echo "Could not determine the installed Nextcloud version via php -r. The PHP installation might be broken."
+        echo "Please check the container logs and your PHP installation."
+        exit 1
+    fi
 else
     installed_version="0.0.0.0"
 fi
