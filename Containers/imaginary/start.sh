@@ -8,4 +8,4 @@ if [ -n "$IMAGINARY_SECRET" ]; then
     IMAGINARY_ARGS+=(-key "$IMAGINARY_SECRET")
 fi
 
-imaginary "${IMAGINARY_ARGS[@]}" "$@"
+exec imaginary "${IMAGINARY_ARGS[@]}" "$@"

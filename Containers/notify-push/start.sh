@@ -39,8 +39,6 @@ fi
 echo "notify-push was started"
 
 # Run it
-/var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
+exec /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
     --port 7867 \
     /var/www/html/config/config.php
-
-exec "$@"
