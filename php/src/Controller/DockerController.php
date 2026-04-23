@@ -14,6 +14,7 @@ use Slim\Psr7\NonBufferedBody;
 
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
+    private const string LATEST_MAJOR_VERSION = '34';
 
     public function __construct(
         private DockerActionManager           $dockerActionManager,
@@ -221,7 +222,7 @@ readonly class DockerController {
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = '34';
+            $installLatestMajor = self::LATEST_MAJOR_VERSION;
         } else {
             $installLatestMajor = '';
         }
@@ -333,6 +334,20 @@ readonly class DockerController {
         return $response->withStatus(201)->withHeader('Location', '.');
     }
 
+    public function RunNextcloudUpgradeToLatestMajor(Request $request, Response $response, array $args) : Response {
+        $this->configurationManager->installLatestMajor = self::LATEST_MAJOR_VERSION;
+
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $addToStreamingResponseBody = $this->getPlainStreamingCallback($nonbufResp);
+
+        $this->dockerActionManager->RunNextcloudUpgradeToLatestMajor($addToStreamingResponseBody);
+
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
+    }
+
     public function SystemPrune(Request $request, Response $response, array $args) : Response {
         // Get streaming response start and closure
         $nonbufResp = $this->startStreamingResponse($response);
@@ -431,10 +446,16 @@ readonly class DockerController {
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
         $addToStreamingResponseBody = function (Container $container, string $message) use ($nonbufResp) : void {
-            $nonbufResp->getBody()->write("<div>{$container->displayName}: {$message}</div>");
+            $nonbufResp->getBody()->write("<div>" . htmlspecialchars("{$container->displayName}: {$message}", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</div>");
         };
 
         return $addToStreamingResponseBody;
+    }
+
+    private function getPlainStreamingCallback(Response $nonbufResp) : \Closure {
+        return function (string $message) use ($nonbufResp) : void {
+            $nonbufResp->getBody()->write("<div>" . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</div>");
+        };
     }
 
     private function finalizeStreamingResponse(Response $nonbufResp) : void {
