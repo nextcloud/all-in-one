@@ -15,6 +15,7 @@ readonly class DesecController {
     private const string DEDYN_SUFFIX = '.dedyn.io';
     private const int MAX_SLUG_ATTEMPTS = 5;
     private const int SLUG_BYTES = 5; // 10-char hex slug
+    private const string SLUG_PATTERN = '/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/';
 
     private Client $guzzleClient;
 
@@ -41,13 +42,22 @@ readonly class DesecController {
             return $response->withStatus(422);
         }
 
+        $slug = trim((string)($request->getParsedBody()['desec_slug'] ?? ''));
+        if ($slug !== '' && !preg_match(self::SLUG_PATTERN, $slug)) {
+            $response->getBody()->write(
+                'The desired subdomain must contain only lowercase letters, digits and hyphens, '
+                . 'be between 1 and 63 characters long, and must not start or end with a hyphen.'
+            );
+            return $response->withStatus(422);
+        }
+
         try {
             // Register an account at deSEC and obtain an API token
             $password = bin2hex(random_bytes(24));
             $token = $this->registerDesecAccount($email, $password);
 
             // Register a free dedyn.io subdomain
-            $domain = $this->registerDesecDomain($token);
+            $domain = $this->registerDesecDomain($token, $slug);
 
             // Persist the credentials and auto-enable caddy as the reverse proxy
             $this->configurationManager->startTransaction();
@@ -160,11 +170,47 @@ readonly class DesecController {
 
     /**
      * Registers a new dedyn.io subdomain and returns its full name.
-     * Retries with a different random slug on name conflicts.
+     *
+     * When $requestedSlug is non-empty the caller's preferred slug is tried once; a 409
+     * conflict returns an actionable error immediately (no silent retry).
+     * When $requestedSlug is empty a random 10-char hex slug is generated and retried up
+     * to MAX_SLUG_ATTEMPTS times on 409 conflicts.
      *
      * @throws \Exception when all attempts fail or a network/API error occurs
      */
-    private function registerDesecDomain(string $token): string {
+    private function registerDesecDomain(string $token, string $requestedSlug = ''): string {
+        if ($requestedSlug !== '') {
+            // User chose a specific slug — try it exactly once.
+            $domain = $requestedSlug . self::DEDYN_SUFFIX;
+            try {
+                $res = $this->guzzleClient->post(self::DESEC_API_BASE . '/domains/', [
+                    'headers' => ['Authorization' => 'Token ' . $token],
+                    'json' => ['name' => $domain],
+                ]);
+            } catch (TransferException $e) {
+                throw new \Exception('Could not reach the deSEC API: ' . $e->getMessage());
+            }
+
+            $httpCode = $res->getStatusCode();
+
+            if ($httpCode === 201) {
+                return $domain;
+            }
+
+            if ($httpCode === 409) {
+                throw new \Exception(
+                    '"' . $domain . '" is already taken. Please choose a different subdomain and try again.',
+                );
+            }
+
+            $body = $res->getBody()->getContents();
+            throw new \Exception(
+                'Unexpected response from deSEC during domain registration '
+                . '(HTTP ' . $httpCode . '): ' . $body,
+            );
+        }
+
+        // No slug provided — generate random slugs and retry on conflicts.
         $lastError = '';
 
         for ($attempt = 0; $attempt < self::MAX_SLUG_ATTEMPTS; $attempt++) {

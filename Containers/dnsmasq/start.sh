@@ -6,6 +6,8 @@ if [ -z "$NC_DOMAIN" ]; then
     exit 1
 fi
 
+LOCAL_IP=""
+
 # Determine the server's primary LAN IP - use the source address chosen by the kernel
 # for a route to a well-known public IP (1.1.1.1 is used purely to query the routing table;
 # no traffic is sent there).
