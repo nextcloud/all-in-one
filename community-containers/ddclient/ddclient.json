@@ -1,0 +1,27 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-ddclient",
+            "display_name": "DDclient (deSEC DDNS)",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/ddclient",
+            "image": "ghcr.io/linuxserver/ddclient",
+            "image_tag": "latest",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "NC_DOMAIN=%NC_DOMAIN%",
+                "DESEC_TOKEN=%DESEC_TOKEN%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_ddclient",
+                    "destination": "/config",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_ddclient"
+            ]
+        }
+    ]
+}

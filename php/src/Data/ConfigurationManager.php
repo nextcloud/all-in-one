@@ -198,6 +198,36 @@ class ConfigurationManager
         set { $this->set('turn_domain', $value); }
     }
 
+    public string $desecEmail {
+        get => $this->get('desec_email', '');
+        set { $this->set('desec_email', $value); }
+    }
+
+    /**
+     * Stores a deSEC API token in the secrets store.
+     * Unlike randomly-generated secrets, this token is obtained from the deSEC REST API and
+     * must be set explicitly; it is never auto-generated.
+     */
+    public function setDesecToken(string $token): void {
+        $secrets = $this->get('secrets', []);
+        $secrets['DESEC_TOKEN'] = $token;
+        $this->set('secrets', $secrets);
+    }
+
+    public function getDesecToken(): string {
+        $secrets = $this->get('secrets', []);
+        return isset($secrets['DESEC_TOKEN']) && is_string($secrets['DESEC_TOKEN'])
+            ? $secrets['DESEC_TOKEN']
+            : '';
+    }
+
+    /**
+     * Returns true when the configured domain is a deSEC dedyn.io subdomain and a token is stored.
+     */
+    public function isDesecDomain(): bool {
+        return str_ends_with($this->domain, '.dedyn.io') && $this->getDesecToken() !== '';
+    }
+
     public string $apachePort {
         get => $this->getEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
         set { $this->set('apache_port', $value); }
@@ -1109,6 +1139,7 @@ class ConfigurationManager
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
+            'DESEC_TOKEN' => $this->getDesecToken(),
             default => $this->getRegisteredSecret($placeholder),
         };
     }
