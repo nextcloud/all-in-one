@@ -805,7 +805,7 @@ readonly class DockerActionManager {
         }
     }
 
-    private function ConnectContainerIdToNetwork(string $id, string $internalPort, string $network = 'nextcloud-aio', bool $createNetwork = true, array $aliases = []): void {
+    private function ConnectContainerIdToNetwork(string $id, string $internalPort, string $network = 'nextcloud-aio', bool $createNetwork = true, array $alias = ''): void {
         if ($internalPort === 'host') {
             return;
         }
@@ -837,8 +837,8 @@ readonly class DockerActionManager {
             sprintf('networks/%s/connect', $network)
         );
         $jsonPayload = ['Container' => $id];
-        if (count($aliases) > 0) {
-            $jsonPayload['EndpointConfig'] = ['Aliases' => $aliases];
+        if ($alias !== '') {
+            $jsonPayload['EndpointConfig'] = ['Aliases' => [$alias]];
         }
 
         try {
@@ -864,30 +864,25 @@ readonly class DockerActionManager {
     }
 
     public function ConnectContainerToNetwork(Container $container): void {
-        $aliases = [];
-
         // Add a secondary alias for domaincheck container, to keep it as similar to actual apache controller as possible.
         // If a reverse-proxy is relying on container name as hostname this allows it to operate as usual and still validate the domain
         // The domaincheck container and apache container are never supposed to be active at the same time because they use the same APACHE_PORT anyway, so this doesn't add any new constraints.
         if ($container->identifier === 'nextcloud-aio-domaincheck') {
-            $aliases[] = 'nextcloud-aio-apache';
+            $alias = 'nextcloud-aio-apache';
         }
 
         // Add NC_DOMAIN as a Docker network alias so that intra-network traffic for the Nextcloud
-        // domain is forwarded directly to this container without leaving the Docker network.
-        if ($container->identifier === 'nextcloud-aio-apache' || $container->identifier === 'nextcloud-aio-domaincheck') {
-            $domain = $this->configurationManager->domain;
-            if ($domain !== '') {
-                $aliases[] = $domain;
-            }
+        // domain is forwarded directly to the aio-caddy container without leaving the Docker network.
+        if ($container->identifier === 'nextcloud-aio-caddy') {
+            $alias = $this->configurationManager->domain;
         }
 
-        $this->ConnectContainerIdToNetwork($container->identifier, $container->internalPorts, aliases: $aliases);
+        $this->ConnectContainerIdToNetwork($container->identifier, $container->internalPorts, alias: $alias);
 
         if ($container->identifier === 'nextcloud-aio-apache' || $container->identifier === 'nextcloud-aio-domaincheck') {
             $apacheAdditionalNetwork = $this->configurationManager->getApacheAdditionalNetwork();
             if ($apacheAdditionalNetwork !== '') {
-                $this->ConnectContainerIdToNetwork($container->identifier, $container->internalPorts, $apacheAdditionalNetwork, false, $aliases);
+                $this->ConnectContainerIdToNetwork($container->identifier, $container->internalPorts, $apacheAdditionalNetwork, false, $alias);
             }
         }
     }
