@@ -805,7 +805,7 @@ readonly class DockerActionManager {
         }
     }
 
-    private function ConnectContainerIdToNetwork(string $id, string $internalPort, string $network = 'nextcloud-aio', bool $createNetwork = true, array $alias = ''): void {
+    private function ConnectContainerIdToNetwork(string $id, string $internalPort, string $network = 'nextcloud-aio', bool $createNetwork = true, string $alias = ''): void {
         if ($internalPort === 'host') {
             return;
         }
