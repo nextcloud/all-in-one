@@ -63,15 +63,16 @@ readonly class DesecController {
         try {
             if (!$accountAlreadyRegistered) {
                 // Register an account at deSEC and obtain an API token.
-                // The password is intentionally ephemeral: only the API token is needed for
-                // subsequent calls, so the password does not need to be stored.
+                // The password is stored so the user can log in to desec.io directly if needed.
                 $password = bin2hex(random_bytes(24));
                 $token = $this->registerDesecAccount($email, $password);
 
-                // Persist the token and email immediately so that a subsequent domain-registration
-                // failure leaves the account credentials stored and allows the user to retry.
+                // Persist the token, password and email immediately so that a subsequent
+                // domain-registration failure leaves the account credentials stored and allows
+                // the user to retry.
                 $this->configurationManager->startTransaction();
                 $this->configurationManager->setDesecToken($token);
+                $this->configurationManager->setDesecPassword($password);
                 $this->configurationManager->desecEmail = $email;
                 $this->configurationManager->commitTransaction();
             }

@@ -182,6 +182,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'community_containers_enabled' => $configurationManager->aioCommunityContainers,
         'bypass_container_update' => $bypass_container_update,
         'desec_email' => $configurationManager->desecEmail,
+        'desec_password' => $configurationManager->getDesecPassword(),
         'is_desec_domain' => $configurationManager->isDesecDomain(),
         'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
     ]);

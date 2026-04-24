@@ -222,6 +222,22 @@ class ConfigurationManager
     }
 
     /**
+     * Stores the deSEC account password in the secrets store so the user can log in at desec.io.
+     */
+    public function setDesecPassword(string $password): void {
+        $secrets = $this->get('secrets', []);
+        $secrets['DESEC_PASSWORD'] = $password;
+        $this->set('secrets', $secrets);
+    }
+
+    public function getDesecPassword(): string {
+        $secrets = $this->get('secrets', []);
+        return isset($secrets['DESEC_PASSWORD']) && is_string($secrets['DESEC_PASSWORD'])
+            ? $secrets['DESEC_PASSWORD']
+            : '';
+    }
+
+    /**
      * Returns true when the configured domain is a deSEC dedyn.io subdomain and a token is stored.
      */
     public function isDesecDomain(): bool {
