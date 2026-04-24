@@ -87,6 +87,70 @@ Included are:
 |---|---|
 | ![image](https://github.com/user-attachments/assets/6ef5d7b5-86f2-402c-bc6c-b633af2ca7dd) | ![image](https://github.com/user-attachments/assets/939d0fdf-436f-433d-82d3-27548263a040) |
 
+## Architecture overview
+
+```mermaid
+flowchart TB
+    %% ── Styles ───────────────────────────────────────────────────────────────────
+    classDef user      fill:#FFF3CD,stroke:#F0AD4E,color:#333
+    classDef master    fill:#E8D5F5,stroke:#9B59B6,color:#222
+    classDef core      fill:#D6EAF8,stroke:#2E86C1,color:#222
+    classDef opt       fill:#D5F5E3,stroke:#27AE60,color:#222
+    classDef community fill:#FDEBD0,stroke:#E67E22,color:#222
+    classDef access    fill:#EAFAF1,stroke:#1E8449,color:#222
+
+    %% ── Top row: people ─────────────────────────────────────────────────────────
+    YOU(["🧑‍💻 Admin\n(You)"]):::user
+    ENDUSER(["🧑‍🤝‍🧑 Users\n(family / team)"]):::user
+
+    %% ── Everything that runs inside AIO ─────────────────────────────────────────
+    subgraph AIO["  🐳  Nextcloud AIO  "]
+        MC(["🧠 Mastercontainer\n─────────────────────────\n▸ AIO interface :8080 / :8443\n▸ Manages & updates containers\n▸ Handles backups"]):::master
+
+        subgraph CORE["  📦  Core Stack  (auto-started)  "]
+            PROXY(["🔀 Apache\nProxy & HTTPS"]):::core
+            NC(["☁️ Nextcloud\nApp Server"]):::core
+            DB(["🗄️ PostgreSQL\nDatabase"]):::core
+            CACHE(["⚡ Redis\nCache"]):::core
+            PUSH(["🔔 Notify Push\nReal-time sync"]):::core
+        end
+
+        subgraph OPT["  🧩  Optional Built-in Containers  (enable in AIO interface)  "]
+            COLLA(["📄 Nextcloud Office"]):::opt
+            OO(["📄 OnlyOffice\nDocument Server"]):::opt
+            TALK(["🎙️ Talk\nVideo & Voice calls"]):::opt
+            TALKREC(["🎬 Talk Recording"]):::opt
+            FTS(["🔎 Full-text Search\n(Elasticsearch)"]):::opt
+            IMAG(["🖼️ Imaginary\nImage previews"]):::opt
+            CLAM(["🦠 ClamAV\nAntivirus"]):::opt
+            WB(["🖊️ Whiteboard"]):::opt
+        end
+
+        COMM(["🌍 Community Containers\n──────────────────────\n30+ optional add-ons\nSee community-containers/"]):::community
+        click COMM "https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers" "Browse community containers"
+    end
+
+    %% ── Result node (outside AIO) ────────────────────────────────────────────────
+    NC_URL(["🌐 https://your-domain.com\n✅ Nextcloud — ready to use!"]):::access
+
+    %% ── Flows ────────────────────────────────────────────────────────────────────
+    YOU -->|"① open :8080 or :8443 in browser"| MC
+    MC -->|"② auto-starts & wires up"| CORE
+    MC -. "③ enable in AIO interface" .-> OPT
+    MC -. "④ add via AIO interface" .-> COMM
+
+    PROXY --> NC
+    NC --- DB
+    NC --- CACHE
+    NC --- PUSH
+    OPT -->|"integrate with"| NC
+    COMM -.->|"integrate with"| NC
+
+    CORE -->|"⑤ stack is ready!"| NC_URL
+    ENDUSER -->|"⑥ browser / app"| NC_URL
+    YOU -->|"⑥ use normally"| NC_URL
+```
+
 ## How to use this?
 
 The steps below are written for Linux. For platform-specific guidance see:
