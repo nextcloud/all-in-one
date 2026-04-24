@@ -5,6 +5,38 @@
 
 The official Nextcloud installation method. Nextcloud AIO provides easy deployment and maintenance with most features included in this one Nextcloud instance. 
 
+## Comparison with other Nextcloud deployment methods
+
+| Feature | **[Nextcloud AIO](https://github.com/nextcloud/all-in-one)** | **[Nextcloud VM](https://github.com/nextcloud/vm)** | **[NextcloudPi](https://github.com/nextcloud/nextcloudpi)** | **[Snap](https://github.com/nextcloud-snap/nextcloud-snap)** | Manual (LAMP/LEMP) | Docker Compose (custom) | Helm Chart (Kubernetes) |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Officially supported by Nextcloud GmbH | ✅ | ❌ | ⚠️ | ⚠️ | ✅ | ❌ | ✅ |
+| Typical deployment platform | Docker | Virtual machine | RPi / SBC / LXC | Ubuntu / Debian | Bare metal / VM | Docker | Kubernetes |
+| Easy / guided setup | ✅ one command | ⚠️ interactive script | ✅ image or curl | ✅ one command | ❌ | ⚠️ | ❌ |
+| Web management UI (non-Nextcloud) | ✅ AIO panel | ⚠️ Webmin (opt.) | ✅ ncp-web | ❌ | ❌ | ❌ | ❌ |
+| Automatic TLS (Let's Encrypt) | ✅ | ✅ via script | ✅ | ✅ | ❌ | ❌ | ⚠️ |
+| Included database | PostgreSQL | PostgreSQL 16 | MariaDB | MySQL 8.4 | user choice | user choice | user choice |
+| Redis caching included | ✅ | ✅ | ✅ | ✅ | ❌ | ⚠️ | ⚠️ |
+| APCu caching included | ✅ | ❌ | ✅ | ❌ | ❌ | ⚠️ | ⚠️ |
+| Built-in backup solution | ✅ BorgBackup | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Automated updates | ✅ | ✅ via script | ✅ | ✅ snap | ❌ | ❌ | ❌ |
+| Nextcloud Office / Collabora | ✅ optional | ✅ optional | ❌ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| High-performance Talk backend | ✅ optional | ❌ | ❌ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| ClamAV antivirus | ✅ optional | ❌ | ❌ | ❌ | ⚠️ | ⚠️ | ❌ |
+| Fulltextsearch | ✅ optional | ❌ | ❌ | ❌ | ⚠️ | ⚠️ | ❌ |
+| Fail2Ban included | ⚠️ community | ⚠️ optional | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Hardware transcoding support | ✅ | ❌ | ❌ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| Community add-on containers | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| A+ security score out of the box | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| Docker rootless support | ✅ | ❌ | ❌ | ❌ | ❌ | ⚠️ | N/A |
+| Kubernetes / Helm support | ⚠️ via Helm chart | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Full configuration control | ⚠️ limited | ✅ | ✅ | ⚠️ limited | ✅ | ✅ | ✅ |
+| Suitable for beginners | ✅ | ⚠️ | ✅ | ✅ | ❌ | ⚠️ | ❌ |
+| Raspberry Pi / SBC support | ⚠️ via Docker | ⚠️ RPi 4/5 | ✅ primary target | ✅ | ✅ | ✅ | ❌ |
+
+> ✅ = included / supported out of the box &nbsp; ⚠️ = possible but requires manual steps or has caveats &nbsp; ❌ = not supported / not included
+>
+> **Notes:** NextcloudPi and the Snap are community-maintained but hosted under the Nextcloud GitHub organisation. The Nextcloud VM is community-maintained by Hansson IT; Nextcloud GmbH does not provide official support for it. NCP Docker support has been discontinued.
+
 Included are:
 - Nextcloud
 - High performance backend for Nextcloud Files (Client Push)
