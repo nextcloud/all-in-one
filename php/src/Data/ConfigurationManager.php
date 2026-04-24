@@ -1129,12 +1129,7 @@ class ConfigurationManager
     }
 
     private function getElasticLogLevel() : string {
-        return match ($this->aioLogLevel) {
-            'debug' => 'DEBUG',
-            'info' => 'INFO',
-            'error' => 'ERROR',
-            default => 'WARN',
-        };
+        return strtoupper($this->aioLogLevel);
     }
     
     private function booleanize(mixed $value) : bool {

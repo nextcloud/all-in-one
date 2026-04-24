@@ -33,7 +33,8 @@ COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
-ENV PORT=9000
+ENV PORT=9000 \
+    AIO_LOG_LEVEL=warn
 
 USER 65534
 

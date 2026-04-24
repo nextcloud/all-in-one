@@ -4,15 +4,15 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     set -x
 fi
 
-if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+GOLANG_LOG="$(case "$AIO_LOG_LEVEL" in
+    debug) printf 'info' ;;
+    info) printf 'info' ;;
+    warn) printf 'warning' ;;
+    error) printf 'error' ;;
+esac)"
+export GOLANG_LOG
+if [ "$AIO_LOG_LEVEL" = "debug" ]; then
     export DEBUG='*'
-    export GOLANG_LOG='info'
-elif [ "$AIO_LOG_LEVEL" = 'info' ]; then
-    export GOLANG_LOG='info'
-elif [ "$AIO_LOG_LEVEL" = 'warn' ]; then
-    export GOLANG_LOG='warning'
-else
-    export GOLANG_LOG='error'
 fi
 
 echo "Imaginary has started"

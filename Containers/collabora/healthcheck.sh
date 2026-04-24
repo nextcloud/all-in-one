@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
-    set -x
-fi
-
 # Unfortunately, no curl and no nc is installed in the container 
 # and packages can also not be added as the package list is broken.
 # So always exiting 0 for now.
