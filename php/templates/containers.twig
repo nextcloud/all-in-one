@@ -134,7 +134,7 @@
                                 </details>
                                 <details>
                                     <summary>Don't have a domain? Get a free one from deSEC</summary>
-                                    <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. The <strong>ddclient</strong> and <strong>caddy</strong> community containers will be enabled so that your IP address is kept up to date and your traffic is routed through a reverse proxy.</p>
+                                    <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. The <strong>caddy</strong> community container will be enabled as a reverse proxy, and the mastercontainer will keep your DNS record up to date automatically. You can additionally enable the <strong>ddclient</strong> community container for continuous DNS monitoring between cron cycles.</p>
                                     <p><strong>Requirements:</strong> Your server must be reachable from the internet (a public IP address is needed). Port 80 and 443 must be open/forwarded in your firewall/router.</p>
                                     <p>Please enter your email address. A deSEC account and a random <em>subdomain.dedyn.io</em> domain will be created for you.</p>
                                     <form method="POST" action="api/desec/register" class="xhr">

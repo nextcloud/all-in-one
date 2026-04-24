@@ -18,7 +18,8 @@ readonly class DockerController {
     public function __construct(
         private DockerActionManager           $dockerActionManager,
         private ContainerDefinitionFetcher    $containerDefinitionFetcher,
-        private ConfigurationManager $configurationManager
+        private ConfigurationManager $configurationManager,
+        private DesecController $desecController,
     ) {
     }
 
@@ -262,6 +263,9 @@ readonly class DockerController {
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
+
+        // Refresh the deSEC DNS record with the current public IP before starting containers
+        $this->desecController->updateIpIfDesecDomain();
 
         $id = self::TOP_CONTAINER;
 

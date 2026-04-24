@@ -49,7 +49,7 @@ readonly class DesecController {
             // Register a free dedyn.io subdomain
             $domain = $this->registerDesecDomain($token);
 
-            // Persist the credentials and auto-enable the companion community containers
+            // Persist the credentials and auto-enable caddy as the reverse proxy
             $this->configurationManager->startTransaction();
             $this->configurationManager->setDesecToken($token);
             $this->configurationManager->desecEmail = $email;
@@ -57,10 +57,8 @@ readonly class DesecController {
                 $this->configurationManager->aioCommunityContainers,
                 fn(string $cc): bool => $cc !== '',
             ));
-            foreach (['caddy', 'ddclient'] as $cc) {
-                if (!in_array($cc, $enabled, true)) {
-                    $enabled[] = $cc;
-                }
+            if (!in_array('caddy', $enabled, true)) {
+                $enabled[] = 'caddy';
             }
             $this->configurationManager->aioCommunityContainers = $enabled;
             $this->configurationManager->commitTransaction();
@@ -69,6 +67,9 @@ readonly class DesecController {
             // created and DNS propagation may not have completed yet.
             $this->configurationManager->setDomain($domain, true);
 
+            // Perform the first DNS IP update so the record is populated immediately
+            $this->updateIpIfDesecDomain();
+
             return $response->withStatus(201)->withHeader('Location', '.');
         } catch (InvalidSettingConfigurationException $ex) {
             $response->getBody()->write($ex->getMessage());
@@ -76,6 +77,36 @@ readonly class DesecController {
         } catch (\Exception $ex) {
             $response->getBody()->write($ex->getMessage());
             return $response->withStatus(422);
+        }
+    }
+
+    /**
+     * Updates the deSEC DNS A/AAAA record with the current public IP of this host.
+     * Uses deSEC's DynDNS2-compatible update endpoint, which auto-detects the requester's IP.
+     * Safe to call frequently; the endpoint returns "nochg" when the IP has not changed.
+     * Errors are logged but never thrown, so callers are not interrupted.
+     */
+    public function updateIpIfDesecDomain(): void {
+        if (!$this->configurationManager->isDesecDomain()) {
+            return;
+        }
+
+        $domain = $this->configurationManager->domain;
+        $token  = $this->configurationManager->getDesecToken();
+
+        try {
+            $res    = $this->guzzleClient->get('https://update.dedyn.io/', [
+                'query'   => ['hostname' => $domain],
+                'headers' => ['Authorization' => 'Token ' . $token],
+            ]);
+            $status = trim($res->getBody()->getContents());
+            if (str_starts_with($status, 'good') || str_starts_with($status, 'nochg')) {
+                error_log('deSEC IP update for ' . $domain . ': ' . $status);
+            } else {
+                error_log('deSEC IP update for ' . $domain . ' returned unexpected response: ' . $status);
+            }
+        } catch (\Exception $e) {
+            error_log('Could not update deSEC DNS record for ' . $domain . ': ' . $e->getMessage());
         }
     }
 

@@ -4,8 +4,8 @@
             "container_name": "nextcloud-aio-ddclient",
             "display_name": "DDclient (deSEC DDNS)",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/ddclient",
-            "image": "ghcr.io/linuxserver/ddclient",
-            "image_tag": "latest",
+            "image": "ghcr.io/nextcloud-releases/aio-ddclient",
+            "image_tag": "%AIO_CHANNEL%",
             "restart": "unless-stopped",
             "environment": [
                 "TZ=%TIMEZONE%",
