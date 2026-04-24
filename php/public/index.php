@@ -183,6 +183,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'bypass_container_update' => $bypass_container_update,
         'desec_email' => $configurationManager->desecEmail,
         'is_desec_domain' => $configurationManager->isDesecDomain(),
+        'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
     ]);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {

@@ -228,6 +228,15 @@ class ConfigurationManager
         return str_ends_with($this->domain, '.dedyn.io') && $this->getDesecToken() !== '';
     }
 
+    /**
+     * Returns true when a deSEC account token is stored but no domain has been configured yet.
+     * This happens when account registration succeeded but domain registration subsequently failed.
+     * In this state the user can retry domain registration with a different slug.
+     */
+    public function isDesecAccountRegistered(): bool {
+        return $this->getDesecToken() !== '' && $this->desecEmail !== '' && $this->domain === '';
+    }
+
     public string $apachePort {
         get => $this->getEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
         set { $this->set('apache_port', $value); }

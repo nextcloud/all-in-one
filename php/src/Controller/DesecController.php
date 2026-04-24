@@ -36,10 +36,19 @@ readonly class DesecController {
             return $response->withStatus(422);
         }
 
-        $email = trim((string)($request->getParsedBody()['desec_email'] ?? ''));
-        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            $response->getBody()->write('Please provide a valid email address.');
-            return $response->withStatus(422);
+        // When a deSEC account was already registered (token exists) but domain creation previously
+        // failed, we skip account registration and re-use the stored token and email.
+        $accountAlreadyRegistered = $this->configurationManager->isDesecAccountRegistered();
+
+        if ($accountAlreadyRegistered) {
+            $token = $this->configurationManager->getDesecToken();
+            // email is already stored; no need to validate or update it
+        } else {
+            $email = trim((string)($request->getParsedBody()['desec_email'] ?? ''));
+            if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+                $response->getBody()->write('Please provide a valid email address.');
+                return $response->withStatus(422);
+            }
         }
 
         $slug = trim((string)($request->getParsedBody()['desec_slug'] ?? ''));
@@ -52,17 +61,26 @@ readonly class DesecController {
         }
 
         try {
-            // Register an account at deSEC and obtain an API token
-            $password = bin2hex(random_bytes(24));
-            $token = $this->registerDesecAccount($email, $password);
+            if (!$accountAlreadyRegistered) {
+                // Register an account at deSEC and obtain an API token.
+                // The password is intentionally ephemeral: only the API token is needed for
+                // subsequent calls, so the password does not need to be stored.
+                $password = bin2hex(random_bytes(24));
+                $token = $this->registerDesecAccount($email, $password);
+
+                // Persist the token and email immediately so that a subsequent domain-registration
+                // failure leaves the account credentials stored and allows the user to retry.
+                $this->configurationManager->startTransaction();
+                $this->configurationManager->setDesecToken($token);
+                $this->configurationManager->desecEmail = $email;
+                $this->configurationManager->commitTransaction();
+            }
 
             // Register a free dedyn.io subdomain
             $domain = $this->registerDesecDomain($token, $slug);
 
-            // Persist the credentials and auto-enable caddy as the reverse proxy
+            // Auto-enable caddy and dnsmasq (idempotent — safe to call even on retry)
             $this->configurationManager->startTransaction();
-            $this->configurationManager->setDesecToken($token);
-            $this->configurationManager->desecEmail = $email;
             $enabled = array_values(array_filter(
                 $this->configurationManager->aioCommunityContainers,
                 fn(string $cc): bool => $cc !== '',
