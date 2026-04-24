@@ -60,6 +60,9 @@ readonly class DesecController {
             if (!in_array('caddy', $enabled, true)) {
                 $enabled[] = 'caddy';
             }
+            if (!in_array('dnsmasq', $enabled, true)) {
+                $enabled[] = 'dnsmasq';
+            }
             $this->configurationManager->aioCommunityContainers = $enabled;
             $this->configurationManager->commitTransaction();
 
@@ -132,7 +135,7 @@ readonly class DesecController {
             if (is_array($data) && isset($data['email'])) {
                 throw new \Exception(
                     'This email address is already registered at deSEC. '
-                    . 'Please log in at https://desec.io to retrieve your token and configure ddclient manually.',
+                    . 'Please log in at https://desec.io to retrieve your token and set up your domain manually.',
                 );
             }
             throw new \Exception('Registration at deSEC failed (HTTP 400): ' . $body);
