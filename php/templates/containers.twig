@@ -124,7 +124,7 @@
                                 <details>
                                     <summary>Click here for further hints</summary>
                                     <p>If you do not have a domain yet, you can get one for free e.g. from duckdns.org and others. Recommended is to use <a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/6817">Tailscale</a></p>
-                                    <p>If you have a dynamic public IP address, you can use e.g. a DDNS client with a compatible domain provider for DNS updates.</p>
+                                    <p>If you have a dynamic public IP-address, you can use e.g. <a target="_blank" href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates.</p>
                                     <p>If you only want to install AIO locally without exposing it to the public internet or if you cannot do so, feel free to follow <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/local-instance.md">this documentation</a>.</p>
                                     <p>If you should be using Cloudflare Proxy for your domain, make sure to disable the Proxy feature temporarily as it might block the domain validation attempts.</p>
                                     {% if apache_port != '443' %}
@@ -135,7 +135,6 @@
                                 <details>
                                     <summary>Don't have a domain? Get a free one from deSEC</summary>
                                     <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. The <strong>caddy</strong> community container will be enabled as a reverse proxy, the <strong>dnsmasq</strong> container will be enabled for local DNS resolution, and the mastercontainer will keep your DNS record up to date automatically.</p>
-                                    <p><strong>Requirements:</strong> Your server must be reachable from the internet (a public IP address is needed). Port 80 and 443 must be open/forwarded in your firewall/router.</p>
                                     <p>Please enter your email address. A deSEC account and a random <em>subdomain.dedyn.io</em> domain will be created for you.</p>
                                     <form method="POST" action="api/desec/register" class="xhr">
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -143,7 +142,7 @@
                                         <input type="email" name="desec_email" placeholder="your@email.com" required />
                                         <input type="submit" value="Register free domain via deSEC" />
                                     </form>
-                                    <p><strong>Note:</strong> By submitting this form you agree to the <a target="_blank" href="https://desec.io/terms">deSEC terms of service</a>. The registered domain and your deSEC account credentials are stored in the AIO configuration. After registration, set your router's DHCP DNS server to this machine's local IP address so LAN devices resolve the domain locally (see the <a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq">dnsmasq documentation</a>).</p>
+                                    <p><strong>Note:</strong> By submitting this form you agree to the <a target="_blank" href="https://desec.io/terms">deSEC terms of service</a>. The registered domain and your deSEC account credentials are stored in the AIO configuration. After registration, set your router's DHCP DNS server to this machine's local IP address so LAN devices resolve the domain locally (see the <a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq">dnsmasq documentation</a>). Alternatively adjust the hosts files on your clients so that they can reach the server using the local ip-address.</p>
                                 </details>
                             {% endif %}
 
