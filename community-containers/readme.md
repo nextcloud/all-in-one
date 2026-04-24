@@ -4,6 +4,61 @@ This directory features containers that are built for AIO which allows to add ad
 ## Disclaimers
 All containers that are in this directory are community maintained so the responsibility is on the community to keep them updated and secure. There is no guarantee that this will be the case in the future.
 
+## Overview
+
+```mermaid
+flowchart TD
+    %% ── Styles ───────────────────────────────────────────────────────────────────
+    classDef community fill:#FDEBD0,stroke:#E67E22,color:#222
+    classDef group     fill:#FEF9E7,stroke:#F39C12,color:#333
+
+    subgraph COMM_AI["🤖 AI & Language"]
+        LAI(["🧠  Local AI\nPrivate AI assistant"]):::community
+        LT(["✏️  LanguageTool\nSpell & grammar check"]):::community
+        LTRANS(["🌐  LibreTranslate\nTranslation engine"]):::community
+        FACE(["🙂  FaceRecognition\nPhoto AI processor"]):::community
+    end
+
+    subgraph COMM_BACKUP["💾 Backup & Storage"]
+        BV(["📦  Borgbackup Viewer\nBrowse backups"]):::community
+        CALB(["📅  CalCardBackup\nCalendar/Contacts backup"]):::community
+        MINIO(["🗃️  MinIO\nS3-compatible storage"]):::community
+        SMB(["📂  SMB Server\nWindows file sharing"]):::community
+    end
+
+    subgraph COMM_EXTRA["🌟 Extra Services"]
+        HA(["🏠  Home Assistant\nHome automation"]):::community
+        STLW(["📧  Stalwart\nMail server"]):::community
+        NOCO(["🗂️  NocoDB\nNo-code database"]):::community
+        JSER(["🎯  Jellyseerr\nMedia request manager"]):::community
+        NOTIF(["📣  Notifications\nExternal push notify"]):::community
+    end
+
+    subgraph COMM_MEDIA["🎬 Media"]
+        PLEX(["🎞️  Plex\nMedia Server"]):::community
+        JELLY(["🎬  Jellyfin\nMedia Server"]):::community
+        DLNA(["📡  DLNA\nMedia Streaming"]):::community
+        MEMTR(["📸  Memories\nVideo Transcoder"]):::community
+        MKV(["💿  MakeMKV\nBlu-ray / DVD rip"]):::community
+    end
+
+    subgraph COMM_MONITOR["📊 Monitoring & Infra"]
+        GLAN(["📈  Glances\nSystem monitoring"]):::community
+        EXP(["📊  Nextcloud Exporter\nPrometheus metrics"]):::community
+        SCRU(["💽  Scrutiny\nDisk health (S.M.A.R.T.)"]):::community
+        CMGMT(["🐳  Container Mgmt\nDocker web console"]):::community
+    end
+
+    subgraph COMM_SEC["🔒 Security & Network"]
+        F2B(["🚫  Fail2ban\nBrute-force protection"]):::community
+        PIH(["🕳️  Pi-hole\nAd & DNS blocker"]):::community
+        VW(["🔐  Vaultwarden\nPassword Manager"]):::community
+        LDAP(["👥  LLDAP\nLight LDAP / Users"]):::community
+        CADDY(["🌐  Caddy\nReverse Proxy + Geoblocking"]):::community
+        NPMPLUS(["🌐  NPMplus\nNginx Proxy Manager"]):::community
+    end
+```
+
 ## How to use this?
 Starting with v11 of AIO, the management of Community Containers is done via the AIO interface (it is the last section in the AIO interface, so only visible if you scroll down). 
 ⚠️⚠️⚠️ Please review the folder for documentation on each of the containers before adding them! Not reviewing the documentation for each of them first might break starting the AIO containers because e.g. fail2ban only works on Linux and not on Docker Desktop! **Hint:** If the containers where running already, in order to actually start the added container, you need to click on `Stop containers` and the `Update and start containers` in order to actually start it.
