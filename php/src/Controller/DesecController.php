@@ -64,6 +64,7 @@ readonly class DesecController {
             if (!$accountAlreadyRegistered) {
                 // Register an account at deSEC and obtain an API token.
                 // The password is stored so the user can log in to desec.io directly if needed.
+                // 24 random bytes encoded as hex produce a 48-character password.
                 $password = bin2hex(random_bytes(24));
                 $token = $this->registerDesecAccount($email, $password);
 

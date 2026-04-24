@@ -137,7 +137,7 @@
                                     <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. The <strong>caddy</strong> community container will be enabled as a reverse proxy, the <strong>dnsmasq</strong> container will be enabled for local DNS resolution, and the mastercontainer will keep your DNS record up to date automatically.</p>
                                     {% if desec_account_registered %}
                                         <p>Your deSEC account (<strong>{{ desec_email }}</strong>) was registered successfully but the domain could not be registered. Please enter a desired subdomain slug (the part before <code>.dedyn.io</code>) and try again, or leave it blank for a random one.</p>
-                                        <p>Your deSEC login credentials (for <a target="_blank" href="https://desec.io">desec.io</a>): Email: <strong>{{ desec_email }}</strong>, Password: <strong>{{ desec_password }}</strong>. Please save these in a safe place.</p>
+                                        <p>Your deSEC login credentials (for <a target="_blank" href="https://desec.io">desec.io</a>): Email: <strong>{{ desec_email }}</strong>. <details style="display:inline"><summary>Reveal deSEC password</summary><strong>{{ desec_password }}</strong></details>. Please save these in a safe place.</p>
                                         <form method="POST" action="api/desec/register" class="xhr">
                                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -403,7 +403,7 @@
                             <h2>deSEC account credentials</h2>
                             <p>Your domain <strong>{{ domain }}</strong> is managed via <a target="_blank" href="https://desec.io">deSEC</a>. Below are your deSEC account credentials. You can use them to log in at <a target="_blank" href="https://desec.io">desec.io</a> to manage your domain directly.</p>
                             <p>Email: <strong>{{ desec_email }}</strong></p>
-                            <p>Password: <strong>{{ desec_password }}</strong></p>
+                            <p>Password: <details style="display:inline"><summary>Reveal deSEC password</summary><strong>{{ desec_password }}</strong></details></p>
                             <p>Please save these credentials in a safe place.</p>
                         {% endif %}
 
