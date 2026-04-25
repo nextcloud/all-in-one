@@ -61,7 +61,8 @@ flowchart TD
 
 ## How to use this?
 Starting with v11 of AIO, the management of Community Containers is done via the AIO interface (it is the last section in the AIO interface, so only visible if you scroll down). 
-⚠️⚠️⚠️ Please review the folder for documentation on each of the containers before adding them! Not reviewing the documentation for each of them first might break starting the AIO containers because e.g. fail2ban only works on Linux and not on Docker Desktop! **Hint:** If the containers where running already, in order to actually start the added container, you need to click on `Stop containers` and the `Update and start containers` in order to actually start it.
+
+⚠️⚠️⚠️ Please review the folder for documentation on each of the containers before adding them! Not reviewing the documentation for each of them first might break starting the AIO containers because some containers are not compatible with each other and more.
 
 ## How to add containers?
 Simply submit a PR by creating a new folder in this directory: https://github.com/nextcloud/all-in-one/tree/main/community-containers with the name of your container. It must include a json file with the same name and with correct syntax and a readme.md with additional information. You might get inspired by caddy, fail2ban, local-ai, libretranslate, plex, pi-hole or vaultwarden (subfolders in this directory). For a full-blown example of the json file, see https://github.com/nextcloud/all-in-one/blob/main/php/containers.json. The json-schema that it validates against can be found here: https://github.com/nextcloud/all-in-one/blob/main/php/containers-schema.json.
