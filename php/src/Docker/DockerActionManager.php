@@ -440,9 +440,11 @@ readonly class DockerActionManager {
         // Special things for the collabora container which should not be exposed in the containers.json
         } elseif ($container->identifier === 'nextcloud-aio-collabora') {
             if (!$this->configurationManager->collaboraSeccompDisabled) {
-                // Load reference seccomp profile for collabora
+                // Load reference seccomp profile for collabora...
                 $seccompProfile = (string)file_get_contents(DataConst::GetCollaboraSeccompProfilePath());
                 $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile"];
+                // ...which allows the collabora container to run without any capabilities
+                $requestBody['HostConfig']['CapAdd'] = [];
             }
 
             // Additional Collabora options
