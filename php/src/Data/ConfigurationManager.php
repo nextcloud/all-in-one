@@ -8,6 +8,8 @@ use AIO\Controller\DockerController;
 
 class ConfigurationManager
 {
+    public const string DEDYN_SUFFIX = '.dedyn.io';
+
     private array $secrets = [];
 
     private array $config = [];
@@ -196,6 +198,43 @@ class ConfigurationManager
     public string $turnDomain {
         get => $this->get('turn_domain', '');
         set { $this->set('turn_domain', $value); }
+    }
+
+    public string $desecEmail {
+        get => $this->get('desec_email', '');
+        set { $this->set('desec_email', $value); }
+    }
+
+    public string $desecToken {
+        get {
+            $s = $this->get('secrets', []);
+            return isset($s['DESEC_TOKEN']) && is_string($s['DESEC_TOKEN']) ? $s['DESEC_TOKEN'] : '';
+        }
+        set {
+            $s = $this->get('secrets', []);
+            $s['DESEC_TOKEN'] = $value;
+            $this->set('secrets', $s);
+        }
+    }
+
+    public string $desecPassword {
+        get {
+            $s = $this->get('secrets', []);
+            return isset($s['DESEC_PASSWORD']) && is_string($s['DESEC_PASSWORD']) ? $s['DESEC_PASSWORD'] : '';
+        }
+        set {
+            $s = $this->get('secrets', []);
+            $s['DESEC_PASSWORD'] = $value;
+            $this->set('secrets', $s);
+        }
+    }
+
+    public function isDesecDomain(): bool {
+        return str_ends_with($this->domain, self::DEDYN_SUFFIX) && $this->desecToken !== '';
+    }
+
+    public function isDesecAccountRegistered(): bool {
+        return $this->desecToken !== '' && $this->desecEmail !== '' && $this->domain === '';
     }
 
     public string $apachePort {
@@ -1109,6 +1148,7 @@ class ConfigurationManager
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
+            'DESEC_TOKEN' => $this->desecToken,
             default => $this->getRegisteredSecret($placeholder),
         };
     }

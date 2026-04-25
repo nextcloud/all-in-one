@@ -1,0 +1,17 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-dnsmasq",
+            "display_name": "Dnsmasq (Local DNS)",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq",
+            "image": "ghcr.io/nextcloud-releases/aio-dnsmasq",
+            "image_tag": "%AIO_CHANNEL%",
+            "internal_port": "host",
+            "restart": "unless-stopped",
+            "environment": [
+                "NC_DOMAIN=%NC_DOMAIN%",
+                "TZ=%TIMEZONE%"
+            ]
+        }
+    ]
+}

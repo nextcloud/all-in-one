@@ -123,7 +123,7 @@
                                 <p>Make sure that this server is reachable on port 443 (port 443/tcp is open/forwarded in your firewall/router and 443/udp as well if you want to enable http3) and that you've correctly set up the DNS config for the domain that you enter (set the A record to your public ipv4-address and if you need ipv6, set the AAAA record to your public ipv6-address. A CNAME record is, of course, also possible). You should see hints on what went wrong in the top right corner if your domain is not accepted.</p>
                                 <details>
                                     <summary>Click here for further hints</summary>
-                                    <p>If you do not have a domain yet, you can get one for free e.g. from duckdns.org and others. Recommended is to use <a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/6817">Tailscale</a></p>
+                                    <p>If you do not have a domain yet, the easiest option is to use the <strong>deSEC free domain</strong> registration below. You can also get a free domain from duckdns.org or others, or use <a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/6817">Tailscale</a>.</p>
                                     <p>If you have a dynamic public IP-address, you can use e.g. <a target="_blank" href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates.</p>
                                     <p>If you only want to install AIO locally without exposing it to the public internet or if you cannot do so, feel free to follow <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/local-instance.md">this documentation</a>.</p>
                                     <p>If you should be using Cloudflare Proxy for your domain, make sure to disable the Proxy feature temporarily as it might block the domain validation attempts.</p>
@@ -131,6 +131,30 @@
                                         <p>If you run into issues with your domain being accepted, see <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#how-to-debug">these steps</a> for how to debug things.</p>
                                     {% endif %}
                                     <p><strong>Hint:</strong> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.</p>
+                                </details>
+                                <details{% if desec_account_registered %} open{% endif %}>
+                                    <summary>Don't have a domain? Get a free one from deSEC</summary>
+                                    <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. The <strong>caddy</strong> community container will be enabled as a reverse proxy, the <strong>dnsmasq</strong> container will be enabled for local DNS resolution, and the mastercontainer will keep your DNS record up to date automatically.</p>
+                                    {% if desec_account_registered %}
+                                        <p>Your deSEC account (<strong>{{ desec_email }}</strong>) was registered successfully but the domain could not be registered. Please enter a desired subdomain slug (the part before <code>.dedyn.io</code>) and try again, or leave it blank for a random one.</p>
+                                        <p>Your deSEC login credentials (for <a target="_blank" href="https://desec.io">desec.io</a>): Email: <strong>{{ desec_email }}</strong>. <details style="display:inline"><summary>Reveal deSEC password</summary><strong>{{ desec_password }}</strong></details>. Please save these in a safe place.</p>
+                                        <form method="POST" action="api/desec/register" class="xhr">
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input type="text" name="desec_slug" placeholder="my-nextcloud (optional)" pattern="[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?" title="Only lowercase letters, digits and hyphens (1–63 characters). No leading or trailing hyphen." />
+                                            <input type="submit" value="Register free domain via deSEC" />
+                                        </form>
+                                    {% else %}
+                                        <p>Please enter your email address. You can also enter a desired subdomain slug (the part before <code>.dedyn.io</code>); leave it blank for a random one.</p>
+                                        <form method="POST" action="api/desec/register" class="xhr">
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input type="email" name="desec_email" placeholder="your@email.com" required />
+                                            <input type="text" name="desec_slug" placeholder="my-nextcloud (optional)" pattern="[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?" title="Only lowercase letters, digits and hyphens (1–63 characters). No leading or trailing hyphen." />
+                                            <input type="submit" value="Register free domain via deSEC" />
+                                        </form>
+                                        <p><strong>Note:</strong> By submitting this form you agree to the <a target="_blank" href="https://desec.io/terms">deSEC terms of service</a>. The registered domain and your deSEC account credentials are stored in the AIO configuration. After registration, set your router's DHCP DNS server to this machine's local IP address so LAN devices resolve the domain locally (see the <a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq">dnsmasq documentation</a>). Alternatively adjust the hosts files on your clients so that they can reach the server using the local ip-address.</p>
+                                    {% endif %}
                                 </details>
                             {% endif %}
 
@@ -374,6 +398,14 @@
                     {% endif %}
 
                     {% if was_start_button_clicked == true %}
+
+                        {% if is_desec_domain %}
+                            <h2>deSEC account credentials</h2>
+                            <p>Your domain <strong>{{ domain }}</strong> is managed via <a target="_blank" href="https://desec.io">deSEC</a>. Below are your deSEC account credentials. You can use them to log in at <a target="_blank" href="https://desec.io">desec.io</a> to manage your domain directly.</p>
+                            <p>Email: <strong>{{ desec_email }}</strong></p>
+                            <p>Password: <details style="display:inline"><summary>Reveal deSEC password</summary><strong>{{ desec_password }}</strong></details></p>
+                            <p>Please save these credentials in a safe place.</p>
+                        {% endif %}
 
                         {% if is_backup_section_enabled == false %}
                             <h2>Backup and restore</h2>

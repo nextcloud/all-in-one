@@ -61,6 +61,7 @@ Included are:
 - [Mail server can be added](https://github.com/nextcloud/all-in-one#mail-server)
 - Nextcloud can be [accessed locally via the domain](https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally)
 - Can [be installed locally](https://github.com/nextcloud/all-in-one/blob/main/local-instance.md) (if you don't want or cannot make the instance publicly reachable)
+- Free [deSEC](https://desec.io) dynamic-DNS domain (`*.dedyn.io`) can be registered directly from the AIO interface — no external domain needed
 - [IPv6-ready](https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md)
 - Can be used with [Docker rootless](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md) (good for additional security)
 - Runs on all platforms Docker supports (e.g. also on Windows and Macos)
@@ -248,6 +249,9 @@ https://your-domain-that-points-to-this-server.tld:8443
 
 5. If you enable Nextcloud Talk, open port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk (TURN) container.
 
+> [!TIP]
+> Don't have a domain yet? AIO can register a free dynamic-DNS subdomain under `dedyn.io` for you via [deSEC](https://desec.io) — no external setup needed. Look for the **"Don't have a domain? Get a free one from deSEC"** section on the AIO interface when you are asked to enter your domain. AIO will automatically register the domain, keep the DNS record up to date, and enable the [Caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container as a reverse proxy as well as the [dnsmasq](https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq) container for local DNS resolution.
+
 # FAQ
 - [TOC](#faq)
     - [Where can I find additional documentation?](#where-can-i-find-additional-documentation)
@@ -261,6 +265,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [Notes on Cloudflare (proxy/tunnel)](#notes-on-cloudflare-proxytunnel)
     - [How to run Nextcloud behind a Cloudflare Tunnel?](#how-to-run-nextcloud-behind-a-cloudflare-tunnel)
     - [How to run Nextcloud via Tailscale?](#how-to-run-nextcloud-via-tailscale)
+    - [How to get a free domain via deSEC?](#how-to-get-a-free-domain-via-desec)
     - [How to get Nextcloud running using the ACME DNS-challenge?](#how-to-get-nextcloud-running-using-the-acme-dns-challenge)
     - [How to run Nextcloud locally? No domain wanted, or wanting intranet access within your LAN.](#how-to-run-nextcloud-locally-no-domain-wanted-or-wanting-intranet-access-within-your-lan)
     - [Can I use an ip-address for Nextcloud instead of a domain?](#can-i-use-an-ip-address-for-nextcloud-instead-of-a-domain)
@@ -390,7 +395,7 @@ Only those (if you access the Mastercontainer Interface internally via port 8080
 - `3478/TCP` and `3478/UDP`: will be used by the Turnserver inside the Talk container and needs to be open/forwarded in your firewall/router
 
 ### Notes on Cloudflare (proxy/tunnel)
-Since Cloudflare Proxy/Tunnel comes with a lot of limitations which are listed below, it is rather recommended to switch to [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817) if possible.
+Since Cloudflare Proxy/Tunnel comes with a lot of limitations which are listed below, it is rather recommended to use the [built-in deSEC domain registration](#how-to-get-a-free-domain-via-desec) or switch to [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817) if possible.
 - Cloudflare Proxy and Cloudflare Tunnel both require Cloudflare to perform TLS termination on their side and thus decrypt all the traffic on their infrastructure. This is a privacy concern and you will need to look for other solutions if it's unacceptable for you.
 - Using Cloudflare Tunnel might potentially slow down Nextcloud since local access via the configured domain is not possible because TLS termination is in that case offloaded to Cloudflare's infrastructure. There is no way to disable this behavior in Cloudflare Tunnel.
 - It is known that the domain validation may not work correctly behind Cloudflare since Cloudflare might block the validation attempt. You can simply skip it in that case by following: https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation
@@ -410,6 +415,19 @@ Although it does not seems like it is the case but from AIO perspective a Cloudf
 ### How to run Nextcloud via Tailscale?
 For a reverse proxy example guide for Tailscale, see this guide by [@Perseus333](https://github.com/Perseus333): https://github.com/nextcloud/all-in-one/discussions/6817
 
+### How to get a free domain via deSEC?
+[deSEC](https://desec.io) offers free dynamic-DNS subdomains under `dedyn.io`. AIO integrates the registration process directly:
+
+1. Open the AIO interface and expand the **"Don't have a domain? Get a free one from deSEC"** section on the domain-entry page.
+2. Enter your email address and, optionally, a desired subdomain slug (the part before `.dedyn.io`). Leave the slug blank for a random one.
+3. Click **Register free domain via deSEC**. AIO will create a deSEC account, register the subdomain and store the credentials in its configuration.
+
+After successful registration:
+- AIO sets the registered `*.dedyn.io` domain as the Nextcloud domain automatically.
+- The [Caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container is enabled as a reverse proxy.
+- The [dnsmasq](https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq) community container is enabled so that LAN devices can resolve the domain to the server's local IP. Follow the [dnsmasq documentation](https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq) for the required router change.
+- The mastercontainer keeps the DNS record up to date automatically when your public IP changes.
+
 ### How to get Nextcloud running using the ACME DNS-challenge?
 You can install AIO behind an external reverse proxy where is also documented how to get it running using the ACME DNS-challenge for getting a valid certificate for AIO. See the [reverse proxy documentation](./reverse-proxy.md). (Meant is the `Caddy with ACME DNS-challenge` section). Also see https://github.com/dani-garcia/vaultwarden/wiki/Running-a-private-vaultwarden-instance-with-Let%27s-Encrypt-certs#getting-a-custom-caddy-build for additional docs on this topic.
 
@@ -417,22 +435,22 @@ You can install AIO behind an external reverse proxy where is also documented ho
 If you do not want to open Nextcloud to the public internet, you may have a look at the following documentation on how to set it up locally: [local-instance.md](./local-instance.md), but keep in mind you're still required to have https working properly.
 
 ### Can I use an ip-address for Nextcloud instead of a domain?
-No and it will not be added. If you only want to run it locally, you may have a look at the following documentation: [local-instance.md](./local-instance.md). Recommended is to use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817).
+No and it will not be added. If you only want to run it locally, you may have a look at the following documentation: [local-instance.md](./local-instance.md). Recommended is to use the [built-in deSEC domain registration](#how-to-get-a-free-domain-via-desec) to get a free domain automatically, or alternatively [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817).
 
 ### Can I run AIO offline or in an airgapped system?
 No. This is not possible and will not be added due to multiple reasons: update checks, app installs via app-store, downloading additional docker images on demand and more.
 
 ### Are self-signed certificates supported for Nextcloud?
-No and they will not be. If you want to run it locally, without opening Nextcloud to the public internet, please have a look at the [local instance documentation](./local-instance.md). Recommended is to use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817).
+No and they will not be. If you want to run it locally, without opening Nextcloud to the public internet, please have a look at the [local instance documentation](./local-instance.md). Recommended is to use the [built-in deSEC domain registration](#how-to-get-a-free-domain-via-desec) to obtain a free domain with a valid certificate automatically, or alternatively [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817).
 
 ### Can I use AIO with multiple domains?
 No and it will not be added. However you can use [this feature](https://github.com/nextcloud/all-in-one/blob/main/multiple-instances.md) in order to create multiple AIO instances, one for each domain.
 
 ### Are other ports than the default 443 for Nextcloud supported?
-No and they will not be. If port 443 and/or 80 is blocked for you, you may use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817) if you want to publish it online. If you already run a different service on port 443, please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). However in all cases the Nextcloud interface will redirect you to port 443.
+No and they will not be. If port 443 and/or 80 is blocked for you, you may use the [built-in deSEC domain registration](#how-to-get-a-free-domain-via-desec) (which uses the Caddy community container on port 443) or [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817) if you want to publish it online. If you already run a different service on port 443, please use a dedicated domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). However in all cases the Nextcloud interface will redirect you to port 443.
 
 ### Can I run Nextcloud in a subdirectory on my domain?
-No and it will not be added. Please use a dedicated (sub-)domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). Alternatively, you may use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817) if you want to publish it online.
+No and it will not be added. Please use a dedicated (sub-)domain for Nextcloud and set it up correctly by following the [reverse proxy documentation](./reverse-proxy.md). If you don't have a domain yet, use the [built-in deSEC domain registration](#how-to-get-a-free-domain-via-desec) to get one for free, or alternatively [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817).
 
 ### How can I access Nextcloud locally?
 Please note that local access is not possible if you are running AIO behind Cloudflare Tunnel since TLS proxying is in that case offloaded to Cloudflares infrastructure. You can fix this by setting up your own reverse proxy that handles TLS proxying locally and will make the steps below work.
@@ -445,6 +463,8 @@ Now that this is out of the way, the recommended way how to access Nextcloud loc
 - https://howchoo.com/pi/pi-hole-setup together with https://web.archive.org/web/20221203223505/https://docs.callitkarma.me/posts/PiHole-Local-DNS/
 - https://dockerlabs.collabnix.com/intermediate/networking/Configuring_DNS.html
 Apart from that there is now a community container that can be added to the AIO stack: https://github.com/nextcloud/all-in-one/tree/main/community-containers/pi-hole
+
+If you registered your domain via the built-in [deSEC integration](#how-to-get-a-free-domain-via-desec), the [dnsmasq](https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq) community container is automatically enabled and resolves your Nextcloud domain to the server's local IP for LAN clients. You only need to point your router's DHCP DNS server to the AIO host — see the [dnsmasq documentation](https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq) for details.
 
 ### How to overwrite the local DNS resolution for some domains or add extra hosts to the containers?
 

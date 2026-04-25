@@ -6,6 +6,7 @@ namespace AIO\Controller;
 use AIO\Container\Container;
 use AIO\Container\ContainerState;
 use AIO\ContainerDefinitionFetcher;
+use AIO\Desec\DesecManager;
 use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -18,7 +19,8 @@ readonly class DockerController {
     public function __construct(
         private DockerActionManager           $dockerActionManager,
         private ContainerDefinitionFetcher    $containerDefinitionFetcher,
-        private ConfigurationManager $configurationManager
+        private ConfigurationManager $configurationManager,
+        private DesecManager $desecManager,
     ) {
     }
 
@@ -262,6 +264,9 @@ readonly class DockerController {
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
+
+        // Refresh the deSEC DNS record with the current public IP before starting containers
+        $this->desecManager->updateIpIfDesecDomain();
 
         $id = self::TOP_CONTAINER;
 

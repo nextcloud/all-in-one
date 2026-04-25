@@ -51,6 +51,9 @@ while true; do
     # Check if AIO is outdated
     sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/OutdatedNotification.php
 
+    # Update deSEC DNS IP record (no-op when IP is unchanged or deSEC is not configured)
+    sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/UpdateDesecIp.php
+
     # Remove sessions older than 24h
     find "/mnt/docker-aio-config/session/" -mindepth 1 -mmin +1440 -delete
 
