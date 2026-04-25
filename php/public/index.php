@@ -185,7 +185,11 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'desec_password' => $configurationManager->desecPassword,
         'is_desec_domain' => $configurationManager->isDesecDomain(),
         'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
+        'desec_show_password' => (bool)($_SESSION['desec_show_password'] ?? false),
+        'desec_prefill_email' => (string)($_SESSION['desec_prefill_email'] ?? ''),
+        'desec_error' => (string)($_SESSION['desec_error'] ?? ''),
     ]);
+    unset($_SESSION['desec_show_password'], $_SESSION['desec_prefill_email'], $_SESSION['desec_error']);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);

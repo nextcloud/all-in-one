@@ -122,10 +122,7 @@ class DesecManager {
         if ($code === 400) {
             $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             if (is_array($data) && isset($data['email'])) {
-                throw new \Exception(
-                    'This email address is already registered at deSEC. '
-                    . 'If this is your account, please enter your deSEC password in the password field and try again.',
-                );
+                throw new AlreadyRegisteredException($email);
             }
             throw new \Exception('Registration at deSEC failed (HTTP 400): ' . $body);
         }
