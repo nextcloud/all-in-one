@@ -378,9 +378,9 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['CapAdd'] = $capAdds;
         }
 
-        // Disable arp spoofing
-        if (!in_array('NET_RAW', $capAdds, true)) {
-            $requestBody['HostConfig']['CapDrop'] = ['NET_RAW'];
+        $capDrops = $container->capDrop;
+        if (count($capDrops) > 0) {
+            $requestBody['HostConfig']['CapDrop'] = $capDrops;
         }
 
         // Disable SELinux for AIO containers so that it does not break them
