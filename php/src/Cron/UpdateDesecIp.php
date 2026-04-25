@@ -11,7 +11,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 $container = \AIO\DependencyInjection::GetContainer();
 
-/** @var \AIO\Controller\DesecController $desecController */
-$desecController = $container->get(\AIO\Controller\DesecController::class);
+/** @var \AIO\Desec\DesecManager $desecManager */
+$desecManager = $container->get(\AIO\Desec\DesecManager::class);
 
-$desecController->updateIpIfDesecDomain();
+$desecManager->updateIpIfDesecDomain();
