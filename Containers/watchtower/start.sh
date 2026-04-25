@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 # Check if socket is available and readable
 if ! [ -e "/var/run/docker.sock" ]; then
     echo "Docker socket is not available. Cannot continue."
@@ -17,7 +21,7 @@ if [ -f /run/.containerenv ]; then
 fi
 
 if [ -n "$CONTAINER_TO_UPDATE" ]; then
-    exec /watchtower --cleanup --debug --run-once "$CONTAINER_TO_UPDATE"
+    exec /watchtower --cleanup --log-level "$AIO_LOG_LEVEL" --run-once "$CONTAINER_TO_UPDATE"
 else
     echo "'CONTAINER_TO_UPDATE' is not set. Cannot update anything."
     exit 1

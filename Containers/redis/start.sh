@@ -1,5 +1,16 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+if [ "$AIO_LOG_LEVEL" = "warn" ]; then
+    REDIS_LOG_LEVEL="warning"
+else
+    REDIS_LOG_LEVEL="$AIO_LOG_LEVEL"
+fi
+export REDIS_LOG_LEVEL
+
 # Show wiki if vm.overcommit is disabled
 if [ "$(sysctl -n vm.overcommit_memory)" != "1" ]; then
     echo "Memory overcommit is disabled but necessary for safe operation"
@@ -16,7 +27,7 @@ fi
 
 # Build the redis-server argument list.
 REDIS_ARGS=(
-    --loglevel warning
+    --loglevel "$REDIS_LOG_LEVEL"
     --save "" # Disable RDB persistence (Redis is used as a pure cache/lock store)
     --maxmemory-policy allkeys-lru # Evict least-recently-used keys when memory is full
     --lazyfree-lazy-eviction yes # Perform evictions in a background thread

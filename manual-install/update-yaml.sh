@@ -100,6 +100,9 @@ sed -i 's|NC_DOMAIN=|NC_DOMAIN=yourdomain.com          # TODO! Needs to be chang
 sed -i 's|NEXTCLOUD_PASSWORD=|NEXTCLOUD_PASSWORD=          # TODO! This is the password of the initially created Nextcloud admin with username "admin".|' sample.conf
 sed -i 's|TIMEZONE=|TIMEZONE=Europe/Berlin          # TODO! This is the timezone that your containers will use.|' sample.conf
 sed -i 's|COLLABORA_SECCOMP_POLICY=|COLLABORA_SECCOMP_POLICY=--o:security.seccomp=true          # Changing the value to false allows to disable the seccomp feature of the Collabora container.|' sample.conf
+sed -i 's|AIO_LOG_LEVEL=|AIO_LOG_LEVEL=warning          # Allows to adjust the global AIO log level. Valid values are debug, info, warn and error.|' sample.conf
+sed -i 's|COLLABORA_LOG_LEVEL=|COLLABORA_LOG_LEVEL=warning          # Allows to adjust the Collabora log level. Valid values are debug, info, warning and error.|' sample.conf
+sed -i 's|ELASTIC_LOG_LEVEL=|ELASTIC_LOG_LEVEL=WARN          # Allows to adjust the Fulltextsearch (Elasticsearch) log level. Valid values are TRACE, DEBUG, INFO, WARN and ERROR.|' sample.conf
 sed -i 's|FULLTEXTSEARCH_JAVA_OPTIONS=|FULLTEXTSEARCH_JAVA_OPTIONS="-Xms512M -Xmx512M"          # Allows to adjust the fulltextsearch java options.|' sample.conf
 sed -i 's|NEXTCLOUD_STARTUP_APPS=|NEXTCLOUD_STARTUP_APPS="deck twofactor_totp tasks calendar contacts notes"        # Allows to modify the Nextcloud apps that are installed on starting AIO the first time. You can also disable apps by using a hyphen in front of them. E.g. "-app_api"|' sample.conf
 sed -i 's|NEXTCLOUD_ADDITIONAL_APKS=|NEXTCLOUD_ADDITIONAL_APKS=imagemagick        # This allows to add additional packages to the Nextcloud container permanently. Default is imagemagick but can be overwritten by modifying this value.|' sample.conf
