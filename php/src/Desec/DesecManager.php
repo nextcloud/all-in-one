@@ -54,8 +54,9 @@ class DesecManager {
 
             if ($validatedPassword !== '') {
                 // The user supplied their existing deSEC password — log in instead of registering.
+                // Store an empty password: the token is all we need; the user's password must not be persisted.
                 $token = $this->loginAccount($validatedEmail, $validatedPassword);
-                $this->saveAccountCredentials($token, $validatedPassword, $validatedEmail);
+                $this->saveAccountCredentials($token, '', $validatedEmail);
             } else {
                 // 24 random bytes → 48-char hex password; satisfies deSEC's minimum length
                 // and lets the user log in at desec.io if they ever need to.
