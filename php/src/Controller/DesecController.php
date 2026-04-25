@@ -11,7 +11,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 readonly class DesecController {
     private const string DESEC_API_BASE = 'https://desec.io/api/v1';
-    private const string DEDYN_SUFFIX = '.dedyn.io';
     private const int MAX_SLUG_ATTEMPTS = 5;
     private const int SLUG_BYTES = 5; // bin2hex → 10-char slug
     private const string SLUG_PATTERN = '/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/';
@@ -57,7 +56,8 @@ readonly class DesecController {
 
         try {
             if (!$accountAlreadyRegistered) {
-                // 24 random bytes → 48-char hex password, stored so the user can log in at desec.io.
+                // 24 random bytes produce a 48-char hex password, satisfying deSEC's minimum
+                // length requirement and stored so the user can log in at desec.io if needed.
                 $password = bin2hex(random_bytes(24));
                 $token = $this->registerDesecAccount($email, $password);
 
@@ -158,7 +158,7 @@ readonly class DesecController {
         $attempts = $random ? self::MAX_SLUG_ATTEMPTS : 1;
 
         for ($i = 0; $i < $attempts; $i++) {
-            $domain = ($random ? bin2hex(random_bytes(self::SLUG_BYTES)) : $slug) . self::DEDYN_SUFFIX;
+            $domain = ($random ? bin2hex(random_bytes(self::SLUG_BYTES)) : $slug) . ConfigurationManager::DEDYN_SUFFIX;
 
             try {
                 $res = $this->guzzleClient->post(self::DESEC_API_BASE . '/domains/', [

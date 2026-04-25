@@ -8,6 +8,8 @@ use AIO\Controller\DockerController;
 
 class ConfigurationManager
 {
+    public const string DEDYN_SUFFIX = '.dedyn.io';
+
     private array $secrets = [];
 
     private array $config = [];
@@ -228,7 +230,7 @@ class ConfigurationManager
     }
 
     public function isDesecDomain(): bool {
-        return str_ends_with($this->domain, '.dedyn.io') && $this->desecToken !== '';
+        return str_ends_with($this->domain, self::DEDYN_SUFFIX) && $this->desecToken !== '';
     }
 
     public function isDesecAccountRegistered(): bool {
