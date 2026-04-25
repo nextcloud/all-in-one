@@ -142,6 +142,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
         'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
         'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
+        'is_ssh_auth_error' => $dockerActionManager->isBorgBackupSshAuthError(),
         'is_instance_restore_attempt' => $configurationManager->instanceRestoreAttempt,
         'borg_backup_mode' => $configurationManager->backupMode,
         'was_start_button_clicked' => $configurationManager->wasStartButtonClicked,

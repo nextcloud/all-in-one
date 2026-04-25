@@ -14,6 +14,30 @@ get_expiration_time() {
     DURATION_HOUR=$((DURATION / 3600))
     DURATION_READABLE=$(printf "%02d hours %02d minutes %02d seconds" $DURATION_HOUR $DURATION_MIN $DURATION_SEC)
 }
+# Run "borg info" and handle the exit code.
+# If the exit code indicates a connection failure (80 = ConnectionClosed,
+# 81 = ConnectionClosedWithHint) and a remote repo is configured, the SSH
+# auth error signal file is created so the mastercontainer can show a
+# targeted error message.  Returns the original borg exit code.
+borg_info() {
+    borg info > /dev/null
+    local _exit=$?
+    if [ -n "$BORG_REMOTE_REPO" ] && { [ "$_exit" -eq 80 ] || [ "$_exit" -eq 81 ]; }; then
+        touch "$SSH_AUTH_ERROR_FILE"
+    fi
+    return $_exit
+}
+
+# Signal file written when an SSH authentication failure is detected so the
+# mastercontainer can show a targeted error without needing to scan container logs.
+# Borg exit codes 80 (ConnectionClosed) and 81 (ConnectionClosedWithHint) indicate
+# connection failures that occur before the Borg protocol is established, which covers
+# SSH authentication errors and host-key verification failures.
+# These codes are available because BORG_EXIT_CODES=modern is set in start.sh.
+SSH_AUTH_ERROR_FILE="/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg_ssh_auth_error"
+
+# Start with a clean state for every run
+rm -f "$SSH_AUTH_ERROR_FILE"
 
 # Test if all volumes aren't empty
 VOLUME_DIRS="$(find /nextcloud_aio_volumes -mindepth 1 -maxdepth 1 -type d)"
@@ -123,7 +147,7 @@ if [ "$BORG_MODE" = backup ]; then
     fi
 
     # Initialize the repository if can't get info from target
-    if ! borg info > /dev/null; then
+    if ! borg_info; then
         # Don't initialize if already initialized
         if [ -f "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/borg.config" ]; then
             if [ -n "$BORG_REMOTE_REPO" ]; then
@@ -584,7 +608,7 @@ fi
 # Do the backup test
 if [ "$BORG_MODE" = test ]; then
     if [ -n "$BORG_REMOTE_REPO" ]; then
-        if ! borg info > /dev/null; then
+        if ! borg_info; then
             echo "Borg could not get info from the remote repo."
             echo "See the above borg info output for details."
             exit 1
