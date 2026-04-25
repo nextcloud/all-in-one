@@ -203,54 +203,36 @@ class ConfigurationManager
         set { $this->set('desec_email', $value); }
     }
 
-    /**
-     * Stores a deSEC API token in the secrets store.
-     * Unlike randomly-generated secrets, this token is obtained from the deSEC REST API and
-     * must be set explicitly; it is never auto-generated.
-     */
-    public function setDesecToken(string $token): void {
-        $secrets = $this->get('secrets', []);
-        $secrets['DESEC_TOKEN'] = $token;
-        $this->set('secrets', $secrets);
+    public string $desecToken {
+        get {
+            $s = $this->get('secrets', []);
+            return isset($s['DESEC_TOKEN']) && is_string($s['DESEC_TOKEN']) ? $s['DESEC_TOKEN'] : '';
+        }
+        set {
+            $s = $this->get('secrets', []);
+            $s['DESEC_TOKEN'] = $value;
+            $this->set('secrets', $s);
+        }
     }
 
-    public function getDesecToken(): string {
-        $secrets = $this->get('secrets', []);
-        return isset($secrets['DESEC_TOKEN']) && is_string($secrets['DESEC_TOKEN'])
-            ? $secrets['DESEC_TOKEN']
-            : '';
+    public string $desecPassword {
+        get {
+            $s = $this->get('secrets', []);
+            return isset($s['DESEC_PASSWORD']) && is_string($s['DESEC_PASSWORD']) ? $s['DESEC_PASSWORD'] : '';
+        }
+        set {
+            $s = $this->get('secrets', []);
+            $s['DESEC_PASSWORD'] = $value;
+            $this->set('secrets', $s);
+        }
     }
 
-    /**
-     * Stores the deSEC account password in the secrets store so the user can log in at desec.io.
-     */
-    public function setDesecPassword(string $password): void {
-        $secrets = $this->get('secrets', []);
-        $secrets['DESEC_PASSWORD'] = $password;
-        $this->set('secrets', $secrets);
-    }
-
-    public function getDesecPassword(): string {
-        $secrets = $this->get('secrets', []);
-        return isset($secrets['DESEC_PASSWORD']) && is_string($secrets['DESEC_PASSWORD'])
-            ? $secrets['DESEC_PASSWORD']
-            : '';
-    }
-
-    /**
-     * Returns true when the configured domain is a deSEC dedyn.io subdomain and a token is stored.
-     */
     public function isDesecDomain(): bool {
-        return str_ends_with($this->domain, '.dedyn.io') && $this->getDesecToken() !== '';
+        return str_ends_with($this->domain, '.dedyn.io') && $this->desecToken !== '';
     }
 
-    /**
-     * Returns true when a deSEC account token is stored but no domain has been configured yet.
-     * This happens when account registration succeeded but domain registration subsequently failed.
-     * In this state the user can retry domain registration with a different slug.
-     */
     public function isDesecAccountRegistered(): bool {
-        return $this->getDesecToken() !== '' && $this->desecEmail !== '' && $this->domain === '';
+        return $this->desecToken !== '' && $this->desecEmail !== '' && $this->domain === '';
     }
 
     public string $apachePort {
@@ -1164,7 +1146,7 @@ class ConfigurationManager
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
-            'DESEC_TOKEN' => $this->getDesecToken(),
+            'DESEC_TOKEN' => $this->desecToken,
             default => $this->getRegisteredSecret($placeholder),
         };
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace AIO\Controller;
 
 use AIO\Data\ConfigurationManager;
-use AIO\Data\InvalidSettingConfigurationException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -14,7 +13,7 @@ readonly class DesecController {
     private const string DESEC_API_BASE = 'https://desec.io/api/v1';
     private const string DEDYN_SUFFIX = '.dedyn.io';
     private const int MAX_SLUG_ATTEMPTS = 5;
-    private const int SLUG_BYTES = 5; // 10-char hex slug
+    private const int SLUG_BYTES = 5; // bin2hex → 10-char slug
     private const string SLUG_PATTERN = '/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/';
 
     private Client $guzzleClient;
@@ -30,19 +29,15 @@ readonly class DesecController {
     }
 
     public function Register(Request $request, Response $response, array $args): Response {
-        // Only allow registration when no domain is configured yet
         if ($this->configurationManager->domain !== '') {
             $response->getBody()->write('A domain is already configured. Reset the AIO instance first to register a new domain.');
             return $response->withStatus(422);
         }
 
-        // When a deSEC account was already registered (token exists) but domain creation previously
-        // failed, we skip account registration and re-use the stored token and email.
         $accountAlreadyRegistered = $this->configurationManager->isDesecAccountRegistered();
 
         if ($accountAlreadyRegistered) {
-            $token = $this->configurationManager->getDesecToken();
-            // email is already stored; no need to validate or update it
+            $token = $this->configurationManager->desecToken;
         } else {
             $email = trim((string)($request->getParsedBody()['desec_email'] ?? ''));
             if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
@@ -62,26 +57,19 @@ readonly class DesecController {
 
         try {
             if (!$accountAlreadyRegistered) {
-                // Register an account at deSEC and obtain an API token.
-                // The password is stored so the user can log in to desec.io directly if needed.
-                // 24 random bytes encoded as hex produce a 48-character password.
+                // 24 random bytes → 48-char hex password, stored so the user can log in at desec.io.
                 $password = bin2hex(random_bytes(24));
                 $token = $this->registerDesecAccount($email, $password);
 
-                // Persist the token, password and email immediately so that a subsequent
-                // domain-registration failure leaves the account credentials stored and allows
-                // the user to retry.
                 $this->configurationManager->startTransaction();
-                $this->configurationManager->setDesecToken($token);
-                $this->configurationManager->setDesecPassword($password);
-                $this->configurationManager->desecEmail = $email;
+                $this->configurationManager->desecToken    = $token;
+                $this->configurationManager->desecPassword = $password;
+                $this->configurationManager->desecEmail    = $email;
                 $this->configurationManager->commitTransaction();
             }
 
-            // Register a free dedyn.io subdomain
             $domain = $this->registerDesecDomain($token, $slug);
 
-            // Auto-enable caddy and dnsmasq (idempotent — safe to call even on retry)
             $this->configurationManager->startTransaction();
             $enabled = array_values(array_filter(
                 $this->configurationManager->aioCommunityContainers,
@@ -96,36 +84,23 @@ readonly class DesecController {
             $this->configurationManager->aioCommunityContainers = $enabled;
             $this->configurationManager->commitTransaction();
 
-            // Set the domain; skip the reachability validation because the domain was just
-            // created and DNS propagation may not have completed yet.
             $this->configurationManager->setDomain($domain, true);
-
-            // Perform the first DNS IP update so the record is populated immediately
             $this->updateIpIfDesecDomain();
 
             return $response->withStatus(201)->withHeader('Location', '.');
-        } catch (InvalidSettingConfigurationException $ex) {
-            $response->getBody()->write($ex->getMessage());
-            return $response->withStatus(422);
         } catch (\Exception $ex) {
             $response->getBody()->write($ex->getMessage());
             return $response->withStatus(422);
         }
     }
 
-    /**
-     * Updates the deSEC DNS A/AAAA record with the current public IP of this host.
-     * Uses deSEC's DynDNS2-compatible update endpoint, which auto-detects the requester's IP.
-     * Safe to call frequently; the endpoint returns "nochg" when the IP has not changed.
-     * Errors are logged but never thrown, so callers are not interrupted.
-     */
     public function updateIpIfDesecDomain(): void {
         if (!$this->configurationManager->isDesecDomain()) {
             return;
         }
 
         $domain = $this->configurationManager->domain;
-        $token  = $this->configurationManager->getDesecToken();
+        $token  = $this->configurationManager->desecToken;
 
         try {
             $res    = $this->guzzleClient->get('https://update.dedyn.io/', [
@@ -143,11 +118,6 @@ readonly class DesecController {
         }
     }
 
-    /**
-     * Creates a new deSEC account and returns the API token from the response.
-     *
-     * @throws \Exception on network failure or an unexpected API response
-     */
     private function registerDesecAccount(string $email, string $password): string {
         try {
             $res = $this->guzzleClient->post(self::DESEC_API_BASE . '/auth/', [
@@ -157,10 +127,10 @@ readonly class DesecController {
             throw new \Exception('Could not reach the deSEC API: ' . $e->getMessage());
         }
 
-        $httpCode = $res->getStatusCode();
+        $code = $res->getStatusCode();
         $body = $res->getBody()->getContents();
 
-        if ($httpCode === 400) {
+        if ($code === 400) {
             $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             if (is_array($data) && isset($data['email'])) {
                 throw new \Exception(
@@ -171,103 +141,50 @@ readonly class DesecController {
             throw new \Exception('Registration at deSEC failed (HTTP 400): ' . $body);
         }
 
-        if ($httpCode !== 201) {
-            throw new \Exception(
-                'Unexpected response from deSEC during account registration '
-                . '(HTTP ' . $httpCode . '): ' . $body,
-            );
+        if ($code !== 201) {
+            throw new \Exception('Unexpected response from deSEC during account registration (HTTP ' . $code . '): ' . $body);
         }
 
         $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
         if (!is_array($data) || !isset($data['token']['token']) || !is_string($data['token']['token'])) {
-            throw new \Exception(
-                'Could not extract the API token from the deSEC response. Please try again.',
-            );
+            throw new \Exception('Could not extract the API token from the deSEC response. Please try again.');
         }
 
         return $data['token']['token'];
     }
 
-    /**
-     * Registers a new dedyn.io subdomain and returns its full name.
-     *
-     * When $requestedSlug is non-empty the caller's preferred slug is tried once; a 409
-     * conflict returns an actionable error immediately (no silent retry).
-     * When $requestedSlug is empty a random 10-char hex slug is generated and retried up
-     * to MAX_SLUG_ATTEMPTS times on 409 conflicts.
-     *
-     * @throws \Exception when all attempts fail or a network/API error occurs
-     */
-    private function registerDesecDomain(string $token, string $requestedSlug = ''): string {
-        if ($requestedSlug !== '') {
-            // User chose a specific slug — try it exactly once.
-            $domain = $requestedSlug . self::DEDYN_SUFFIX;
+    private function registerDesecDomain(string $token, string $slug): string {
+        $random   = $slug === '';
+        $attempts = $random ? self::MAX_SLUG_ATTEMPTS : 1;
+
+        for ($i = 0; $i < $attempts; $i++) {
+            $domain = ($random ? bin2hex(random_bytes(self::SLUG_BYTES)) : $slug) . self::DEDYN_SUFFIX;
+
             try {
                 $res = $this->guzzleClient->post(self::DESEC_API_BASE . '/domains/', [
                     'headers' => ['Authorization' => 'Token ' . $token],
-                    'json' => ['name' => $domain],
+                    'json'    => ['name' => $domain],
                 ]);
             } catch (TransferException $e) {
                 throw new \Exception('Could not reach the deSEC API: ' . $e->getMessage());
             }
 
-            $httpCode = $res->getStatusCode();
+            $code = $res->getStatusCode();
 
-            if ($httpCode === 201) {
+            if ($code === 201) {
                 return $domain;
             }
 
-            if ($httpCode === 409) {
-                throw new \Exception(
-                    '"' . $domain . '" is already taken. Please choose a different subdomain and try again.',
-                );
-            }
-
-            $body = $res->getBody()->getContents();
-            throw new \Exception(
-                'Unexpected response from deSEC during domain registration '
-                . '(HTTP ' . $httpCode . '): ' . $body,
-            );
-        }
-
-        // No slug provided — generate random slugs and retry on conflicts.
-        $lastError = '';
-
-        for ($attempt = 0; $attempt < self::MAX_SLUG_ATTEMPTS; $attempt++) {
-            $slug = bin2hex(random_bytes(self::SLUG_BYTES));
-            $domain = $slug . self::DEDYN_SUFFIX;
-
-            try {
-                $res = $this->guzzleClient->post(self::DESEC_API_BASE . '/domains/', [
-                    'headers' => ['Authorization' => 'Token ' . $token],
-                    'json' => ['name' => $domain],
-                ]);
-            } catch (TransferException $e) {
-                throw new \Exception('Could not reach the deSEC API: ' . $e->getMessage());
-            }
-
-            $httpCode = $res->getStatusCode();
-
-            if ($httpCode === 201) {
-                return $domain;
-            }
-
-            if ($httpCode === 409) {
-                // Slug already taken — try another one
-                $lastError = '"' . $domain . '" is already taken';
+            if ($code === 409) {
+                if (!$random) {
+                    throw new \Exception('"' . $domain . '" is already taken. Please choose a different subdomain and try again.');
+                }
                 continue;
             }
 
-            $body = $res->getBody()->getContents();
-            throw new \Exception(
-                'Unexpected response from deSEC during domain registration '
-                . '(HTTP ' . $httpCode . '): ' . $body,
-            );
+            throw new \Exception('Unexpected response from deSEC during domain registration (HTTP ' . $code . '): ' . $res->getBody()->getContents());
         }
 
-        throw new \Exception(
-            'Could not register a free dedyn.io domain after ' . self::MAX_SLUG_ATTEMPTS . ' attempts'
-            . ($lastError !== '' ? ' (' . $lastError . ')' : '') . '. Please try again.',
-        );
+        throw new \Exception('Could not register a free dedyn.io domain after ' . self::MAX_SLUG_ATTEMPTS . ' attempts. Please try again.');
     }
 }
