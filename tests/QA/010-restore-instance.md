@@ -22,7 +22,9 @@ For the below to work, you need a backup archive of an AIO instance and the loca
     - [ ] Enter an invalid remote repo URL (e.g. `user` without `@` and `:`) which should send an error
     - [ ] Enter a valid remote borg repo URL and the correct backup password:
         - [ ] Should reload and should hide all options except the option to test the path and password
-        - [ ] After the first failed connection attempt, the SSH public key for borg should be shown so it can be authorized on the remote server
+        - [ ] After the first failed connection attempt, the behavior depends on the failure reason:
+            - [ ] **SSH auth error** (exit codes 80/81 – connection closed before Borg protocol established): a prominent ⚠️ **"SSH key not authorized on the remote server."** warning should appear with the SSH public key displayed and instructions to add it to `~/.ssh/authorized_keys` on the remote server. After adding the key, scroll down and click on the test button again.
+            - [ ] **Other error** (wrong path, unreachable host, etc.): a generic message should appear noting the public key that may still need to be authorized on the remote.
         - [ ] After authorizing the key on the remote server, scroll down and click on the test button again. This time it should succeed and show the options to check the integrity and list backup archives
         - [ ] After the test you should see the options to check the integrity of the backup and a list of backup archives that you can choose from to restore your instance
         - [ ] Clicking on either option should show a window prompt that lets you cancel the operation
