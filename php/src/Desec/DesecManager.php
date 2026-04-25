@@ -11,6 +11,7 @@ class DesecManager {
     private const string DESEC_API_BASE = 'https://desec.io/api/v1';
     private const int MAX_SLUG_ATTEMPTS = 5;
     private const int SLUG_BYTES = 5; // bin2hex → 10-char slug
+    private const string SLUG_PATTERN = '/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/';
 
     private Client $guzzleClient;
 
@@ -22,6 +23,73 @@ class DesecManager {
             'connect_timeout' => 10,
             'http_errors' => false,
         ]);
+    }
+
+    /**
+     * Full registration flow: validates inputs, creates an account if needed,
+     * registers the domain, enables required containers, and updates the DNS record.
+     *
+     * @throws \Exception on any validation or API error
+     */
+    public function register(string $email, string $slug): void {
+        if ($this->configurationManager->domain !== '') {
+            throw new \Exception('A domain is already configured. Reset the AIO instance first to register a new domain.');
+        }
+
+        $accountAlreadyRegistered = $this->configurationManager->isDesecAccountRegistered();
+        $token = $accountAlreadyRegistered
+            ? $this->configurationManager->desecToken
+            : null;
+
+        $validatedEmail = null;
+        if (!$accountAlreadyRegistered) {
+            $validatedEmail = $this->validateEmail($email);
+        }
+
+        $validatedSlug = $this->validateSlug($slug);
+
+        if (!$accountAlreadyRegistered) {
+            // 24 random bytes → 48-char hex password; satisfies deSEC's minimum length
+            // and lets the user log in at desec.io if they ever need to.
+            $password = bin2hex(random_bytes(24));
+            $token    = $this->registerAccount($validatedEmail, $password);
+            $this->saveAccountCredentials($token, $password, $validatedEmail);
+        }
+
+        $domain = $this->registerDomain($token, $validatedSlug);
+        $this->enableDesecContainers();
+        $this->configurationManager->setDomain($domain, true);
+        $this->updateIpIfDesecDomain();
+    }
+
+    /**
+     * Validates an email address string.
+     *
+     * @throws \Exception if the email is empty or syntactically invalid
+     */
+    private function validateEmail(string $email): string {
+        $email = trim($email);
+        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new \Exception('Please provide a valid email address.');
+        }
+        return $email;
+    }
+
+    /**
+     * Validates an optional subdomain slug.
+     * Returns an empty string when the caller wants a randomly generated slug.
+     *
+     * @throws \Exception if the slug is non-empty but does not match the allowed pattern
+     */
+    private function validateSlug(string $slug): string {
+        $slug = trim($slug);
+        if ($slug !== '' && !preg_match(self::SLUG_PATTERN, $slug)) {
+            throw new \Exception(
+                'The desired subdomain must contain only lowercase letters, digits and hyphens, '
+                . 'be between 1 and 63 characters long, and must not start or end with a hyphen.'
+            );
+        }
+        return $slug;
     }
 
     /**
