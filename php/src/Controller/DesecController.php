@@ -15,9 +15,10 @@ readonly class DesecController {
 
     public function Register(Request $request, Response $response, array $args): Response {
         try {
-            $email = (string)($request->getParsedBody()['desec_email'] ?? '');
-            $slug  = (string)($request->getParsedBody()['desec_slug'] ?? '');
-            $this->desecManager->register($email, $slug);
+            $email    = (string)($request->getParsedBody()['desec_email']    ?? '');
+            $slug     = (string)($request->getParsedBody()['desec_slug']     ?? '');
+            $password = (string)($request->getParsedBody()['desec_password'] ?? '');
+            $this->desecManager->register($email, $slug, $password);
             return $response->withStatus(201)->withHeader('Location', '.');
         } catch (\Exception $ex) {
             $response->getBody()->write($ex->getMessage());

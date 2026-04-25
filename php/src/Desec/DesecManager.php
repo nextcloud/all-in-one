@@ -29,9 +29,14 @@ class DesecManager {
      * Full registration flow: validates inputs, creates an account if needed,
      * registers the domain, enables required containers, and updates the DNS record.
      *
+     * When $password is non-empty the user is logging into an existing deSEC account
+     * rather than creating a new one. When $password is empty a new account is created
+     * with a randomly generated password (unless an account was already registered in a
+     * previous attempt).
+     *
      * @throws \Exception on any validation or API error
      */
-    public function register(string $email, string $slug): void {
+    public function register(string $email, string $slug, string $password = ''): void {
         if ($this->configurationManager->domain !== '') {
             throw new \Exception('A domain is already configured. Reset the AIO instance first to register a new domain.');
         }
@@ -41,19 +46,23 @@ class DesecManager {
             ? $this->configurationManager->desecToken
             : null;
 
-        $validatedEmail = null;
-        if (!$accountAlreadyRegistered) {
-            $validatedEmail = $this->validateEmail($email);
-        }
-
         $validatedSlug = $this->validateSlug($slug);
 
         if (!$accountAlreadyRegistered) {
-            // 24 random bytes → 48-char hex password; satisfies deSEC's minimum length
-            // and lets the user log in at desec.io if they ever need to.
-            $password = bin2hex(random_bytes(24));
-            $token    = $this->registerAccount($validatedEmail, $password);
-            $this->saveAccountCredentials($token, $password, $validatedEmail);
+            $validatedEmail    = $this->validateEmail($email);
+            $validatedPassword = trim($password);
+
+            if ($validatedPassword !== '') {
+                // The user supplied their existing deSEC password — log in instead of registering.
+                $token = $this->loginAccount($validatedEmail, $validatedPassword);
+                $this->saveAccountCredentials($token, $validatedPassword, $validatedEmail);
+            } else {
+                // 24 random bytes → 48-char hex password; satisfies deSEC's minimum length
+                // and lets the user log in at desec.io if they ever need to.
+                $generatedPassword = bin2hex(random_bytes(24));
+                $token             = $this->registerAccount($validatedEmail, $generatedPassword);
+                $this->saveAccountCredentials($token, $generatedPassword, $validatedEmail);
+            }
         }
 
         $domain = $this->registerDomain($token, $validatedSlug);
@@ -114,7 +123,7 @@ class DesecManager {
             if (is_array($data) && isset($data['email'])) {
                 throw new \Exception(
                     'This email address is already registered at deSEC. '
-                    . 'Please log in at https://desec.io to retrieve your token and set up your domain manually.',
+                    . 'If this is your account, please enter your deSEC password in the password field and try again.',
                 );
             }
             throw new \Exception('Registration at deSEC failed (HTTP 400): ' . $body);
@@ -130,6 +139,39 @@ class DesecManager {
         }
 
         return $data['token']['token'];
+    }
+
+    /**
+     * Authenticates with an existing deSEC account and returns the API token issued for it.
+     *
+     * @throws \Exception on invalid credentials, network failure, or an unexpected HTTP response
+     */
+    public function loginAccount(string $email, string $password): string {
+        try {
+            $res = $this->guzzleClient->post(self::DESEC_API_BASE . '/auth/login/', [
+                'json' => ['email' => $email, 'password' => $password],
+            ]);
+        } catch (TransferException $e) {
+            throw new \Exception('Could not reach the deSEC API: ' . $e->getMessage());
+        }
+
+        $code = $res->getStatusCode();
+        $body = $res->getBody()->getContents();
+
+        if ($code === 400 || $code === 403) {
+            throw new \Exception('Could not log in to deSEC: invalid email address or password.');
+        }
+
+        if ($code !== 200 && $code !== 201) {
+            throw new \Exception('Unexpected response from deSEC during login (HTTP ' . $code . '): ' . $body);
+        }
+
+        $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        if (!is_array($data) || !isset($data['token']) || !is_string($data['token'])) {
+            throw new \Exception('Could not extract the API token from the deSEC login response. Please try again.');
+        }
+
+        return $data['token'];
     }
 
     /**
