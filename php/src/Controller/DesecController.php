@@ -28,62 +28,27 @@ readonly class DesecController {
     }
 
     public function Register(Request $request, Response $response, array $args): Response {
-        if ($this->configurationManager->domain !== '') {
-            $response->getBody()->write('A domain is already configured. Reset the AIO instance first to register a new domain.');
-            return $response->withStatus(422);
-        }
-
-        $accountAlreadyRegistered = $this->configurationManager->isDesecAccountRegistered();
-
-        if ($accountAlreadyRegistered) {
-            $token = $this->configurationManager->desecToken;
-        } else {
-            $email = trim((string)($request->getParsedBody()['desec_email'] ?? ''));
-            if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-                $response->getBody()->write('Please provide a valid email address.');
-                return $response->withStatus(422);
-            }
-        }
-
-        $slug = trim((string)($request->getParsedBody()['desec_slug'] ?? ''));
-        if ($slug !== '' && !preg_match(self::SLUG_PATTERN, $slug)) {
-            $response->getBody()->write(
-                'The desired subdomain must contain only lowercase letters, digits and hyphens, '
-                . 'be between 1 and 63 characters long, and must not start or end with a hyphen.'
-            );
-            return $response->withStatus(422);
-        }
-
         try {
-            if (!$accountAlreadyRegistered) {
-                // 24 random bytes produce a 48-char hex password, satisfying deSEC's minimum
-                // length requirement and stored so the user can log in at desec.io if needed.
-                $password = bin2hex(random_bytes(24));
-                $token = $this->registerDesecAccount($email, $password);
+            $this->validateNoDomainAlreadyConfigured();
 
-                $this->configurationManager->startTransaction();
-                $this->configurationManager->desecToken    = $token;
-                $this->configurationManager->desecPassword = $password;
-                $this->configurationManager->desecEmail    = $email;
-                $this->configurationManager->commitTransaction();
+            $accountAlreadyRegistered = $this->configurationManager->isDesecAccountRegistered();
+            $token = $accountAlreadyRegistered
+                ? $this->configurationManager->desecToken
+                : null;
+
+            $email = $accountAlreadyRegistered ? null : $this->getEmailFromRequest($request);
+            $slug  = $this->getSlugFromRequest($request);
+
+            if (!$accountAlreadyRegistered) {
+                // 24 random bytes → 48-char hex password; satisfies deSEC's minimum length
+                // and lets the user log in at desec.io if they ever need to.
+                $password = bin2hex(random_bytes(24));
+                $token    = $this->registerDesecAccount($email, $password);
+                $this->saveAccountCredentials($token, $password, $email);
             }
 
             $domain = $this->registerDesecDomain($token, $slug);
-
-            $this->configurationManager->startTransaction();
-            $enabled = array_values(array_filter(
-                $this->configurationManager->aioCommunityContainers,
-                fn(string $cc): bool => $cc !== '',
-            ));
-            if (!in_array('caddy', $enabled, true)) {
-                $enabled[] = 'caddy';
-            }
-            if (!in_array('dnsmasq', $enabled, true)) {
-                $enabled[] = 'dnsmasq';
-            }
-            $this->configurationManager->aioCommunityContainers = $enabled;
-            $this->configurationManager->commitTransaction();
-
+            $this->enableDesecContainers();
             $this->configurationManager->setDomain($domain, true);
             $this->updateIpIfDesecDomain();
 
@@ -92,6 +57,67 @@ readonly class DesecController {
             $response->getBody()->write($ex->getMessage());
             return $response->withStatus(422);
         }
+    }
+
+    /** @throws \Exception if a domain is already configured */
+    private function validateNoDomainAlreadyConfigured(): void {
+        if ($this->configurationManager->domain !== '') {
+            throw new \Exception('A domain is already configured. Reset the AIO instance first to register a new domain.');
+        }
+    }
+
+    /**
+     * Reads and validates the email address from the request body.
+     *
+     * @throws \Exception if the email is missing or syntactically invalid
+     */
+    private function getEmailFromRequest(Request $request): string {
+        $email = trim((string)($request->getParsedBody()['desec_email'] ?? ''));
+        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new \Exception('Please provide a valid email address.');
+        }
+        return $email;
+    }
+
+    /**
+     * Reads and validates the optional subdomain slug from the request body.
+     * Returns an empty string when the user wants a randomly generated slug.
+     *
+     * @throws \Exception if the slug is present but does not match the allowed pattern
+     */
+    private function getSlugFromRequest(Request $request): string {
+        $slug = trim((string)($request->getParsedBody()['desec_slug'] ?? ''));
+        if ($slug !== '' && !preg_match(self::SLUG_PATTERN, $slug)) {
+            throw new \Exception(
+                'The desired subdomain must contain only lowercase letters, digits and hyphens, '
+                . 'be between 1 and 63 characters long, and must not start or end with a hyphen.'
+            );
+        }
+        return $slug;
+    }
+
+    private function saveAccountCredentials(string $token, string $password, string $email): void {
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->desecToken    = $token;
+        $this->configurationManager->desecPassword = $password;
+        $this->configurationManager->desecEmail    = $email;
+        $this->configurationManager->commitTransaction();
+    }
+
+    private function enableDesecContainers(): void {
+        $this->configurationManager->startTransaction();
+        $enabled = array_values(array_filter(
+            $this->configurationManager->aioCommunityContainers,
+            fn(string $cc): bool => $cc !== '',
+        ));
+        if (!in_array('caddy', $enabled, true)) {
+            $enabled[] = 'caddy';
+        }
+        if (!in_array('dnsmasq', $enabled, true)) {
+            $enabled[] = 'dnsmasq';
+        }
+        $this->configurationManager->aioCommunityContainers = $enabled;
+        $this->configurationManager->commitTransaction();
     }
 
     public function updateIpIfDesecDomain(): void {
@@ -118,6 +144,11 @@ readonly class DesecController {
         }
     }
 
+    /**
+     * Creates a new deSEC account and returns the API token issued for it.
+     *
+     * @throws \Exception on network failure or an unexpected HTTP response
+     */
     private function registerDesecAccount(string $email, string $password): string {
         try {
             $res = $this->guzzleClient->post(self::DESEC_API_BASE . '/auth/', [
@@ -153,6 +184,13 @@ readonly class DesecController {
         return $data['token']['token'];
     }
 
+    /**
+     * Registers a dedyn.io domain for the authenticated account.
+     * When $slug is empty a random 10-character slug is tried up to MAX_SLUG_ATTEMPTS times.
+     *
+     * @return string the fully-qualified domain name that was registered
+     * @throws \Exception if the slug is taken, on network failure, or after exhausting random attempts
+     */
     private function registerDesecDomain(string $token, string $slug): string {
         $random   = $slug === '';
         $attempts = $random ? self::MAX_SLUG_ATTEMPTS : 1;
