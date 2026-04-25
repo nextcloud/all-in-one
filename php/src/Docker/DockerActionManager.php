@@ -145,6 +145,27 @@ readonly class DockerActionManager {
         }
     }
 
+    public function deleteBorgBackupConfig(): void {
+        // Delete the borgbackup container
+        $id = 'nextcloud-aio-borgbackup';
+        $borgbackupContainer = $this->containerDefinitionFetcher->GetContainerById($id);
+        $this->DeleteContainer($borgbackupContainer);
+
+        // Delete the borg cache volume
+        $url = $this->BuildApiUrl('volumes/nextcloud_aio_backup_cache');
+        try {
+            $this->guzzleClient->delete($url);
+            error_log('nextcloud_aio_backup_cache volume deleted successfully.');
+        } catch (RequestException $e) {
+            if ($e->getCode() !== 404) {
+                error_log('Could not delete nextcloud_aio_backup_cache volume: ' . $e->getMessage());
+            }
+        }
+
+        // Clear the configuration variables and files
+        $this->configurationManager->deleteBorgBackupLocationItems();
+    }
+
     public function GetLogs(string $id, string $since = ''): string {
         $url = $this->BuildApiUrl(
             sprintf(
