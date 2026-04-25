@@ -117,7 +117,7 @@ To run Nextcloud AIO behind an external reverse proxy or secure tunneling/proxyi
 The sections below provide detailed instructions for each step.
 
 > [!TIP]
-> If you don't have a domain yet, AIO can register a free `*.dedyn.io` subdomain for you via [deSEC](https://desec.io) directly from the AIO interface — see [How to get a free domain via deSEC](https://github.com/nextcloud/all-in-one#how-to-get-a-free-domain-via-desec). Alternatively, we recommend using [an approach using Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817). If you don't have an external reverse proxy yet, we recommend [Caddy](https://github.com/nextcloud/all-in-one/discussions/575).
+> If you don't have a domain yet, AIO can register a free `*.dedyn.io` subdomain for you via [deSEC](https://desec.io) directly from the AIO interface — see [How to get a free domain via deSEC](https://github.com/nextcloud/all-in-one#how-to-get-a-free-domain-via-desec). This is the recommended option. Alternatively, you can use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817). If you don't have an external reverse proxy yet, we recommend [Caddy](https://github.com/nextcloud/all-in-one/discussions/575).
 
 ### Step-by-Step Instructions
 

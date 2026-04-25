@@ -2,17 +2,14 @@
 It is possible due to several reasons that you do not want or cannot open Nextcloud to the public internet. Perhaps you were hoping to access AIO directly from an `ip.add.r.ess` (unsupported) or without a valid domain.  However, AIO requires a valid certificate to work correctly. Below is discussed how you can achieve both: Having a valid certificate for Nextcloud and only using it locally.
 
 ### Content
-- [1. Tailscale](#1-tailscale)
-- [2. deSEC free domain](#2-desec-free-domain)
+- [1. deSEC free domain (recommended)](#1-desec-free-domain-recommended)
+- [2. Tailscale](#2-tailscale)
 - [3. The normal way](#3-the-normal-way)
 - [4. Use the ACME DNS-challenge](#4-use-the-acme-dns-challenge)
 - [5. Use Cloudflare](#5-use-cloudflare)
 - [6. Buy a certificate and use that](#6-buy-a-certificate-and-use-that)
 
-## 1. Tailscale
-This is the recommended way. For a reverse proxy example guide for Tailscale, see this guide by [@Perseus333](https://github.com/Perseus333): https://github.com/nextcloud/all-in-one/discussions/6817
-
-## 2. deSEC free domain
+## 1. deSEC free domain (recommended)
 [deSEC](https://desec.io) offers free dynamic-DNS subdomains under `dedyn.io`. AIO can register an account and a subdomain for you automatically — directly from the domain-entry page of the AIO interface. After registration:
 - The [Caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container is enabled automatically as a reverse proxy and handles TLS via Let's Encrypt.
 - The [dnsmasq](https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq) community container is enabled automatically so that LAN clients resolve your Nextcloud domain to the server's local IP address — no separate Pi-hole or local DNS server required.
@@ -21,6 +18,9 @@ This is the recommended way. For a reverse proxy example guide for Tailscale, se
 **How to set it up:** Open the AIO interface, expand the **"Don't have a domain? Get a free one from deSEC"** section, enter your email and an optional subdomain slug, and click **Register free domain via deSEC**. See the full documentation at [How to get a free domain via deSEC](https://github.com/nextcloud/all-in-one#how-to-get-a-free-domain-via-desec).
 
 After registration, follow the [dnsmasq documentation](https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq) to point your router's DHCP DNS server to the AIO host so that all LAN devices resolve the domain locally.
+
+## 2. Tailscale
+For a reverse proxy example guide for Tailscale, see this guide by [@Perseus333](https://github.com/Perseus333): https://github.com/nextcloud/all-in-one/discussions/6817
 
 ## 3. The normal way
 The normal way is the following:
