@@ -89,6 +89,8 @@ If the restored data is older than any clients you want to continue to sync, for
 
 ### Migrating from a snap installation
 
+**Disclaimer:** it might be possible that the guide below is not working 100% correctly, yet. Improvements to it are very welcome!
+
 Since the Nextcloud snap is read-only, it is not possible to install the `pdo_pgsql` PHP extension inside the snap to perform the MySQL-to-PostgreSQL database conversion required by AIO. As a workaround, a temporary [nextcloud/docker](https://github.com/nextcloud/docker) container can be used as an intermediate environment that already includes `pdo_pgsql` and can convert the snap's MySQL database to PostgreSQL for you.
 
 This procedure covers steps 1–3 of the regular migration above (version matching, app updates, and database conversion) and also produces the `database-dump.sql` needed for step 4. Once finished, continue from step 5 of the [Migrate the files and the database](#migrate-the-files-and-the-database) procedure above.
