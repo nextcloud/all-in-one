@@ -16,13 +16,21 @@
     setTimeout(toast.remove.bind(toast), 10000)
   }
 
-  function handleEvent(e) {
+  function handleEvent(e, form) {
     const xhr = e.target;
     if (xhr.status === 201) {
       window.location.replace(xhr.getResponseHeader('Location'));
     } else if (xhr.status === 422) {
       disableSpinner()
       showError(xhr.response);
+      if (form) {
+        const revealSelector = form.dataset.revealOnError;
+        const revealWhen = form.dataset.revealWhen;
+        if (revealSelector && (!revealWhen || xhr.response.includes(revealWhen))) {
+          const target = document.querySelector(revealSelector);
+          if (target) target.style.display = '';
+        }
+      }
     } else if (xhr.status === 500) {
       showError("Server error. Please check the mastercontainer logs for details. This page will reload after 10s automatically. Then you can check the mastercontainer logs.");
       // Reload after 10s since it is expected that the updated view is shown (e.g. after starting containers)
@@ -50,7 +58,7 @@
         lastError.remove()
       }
       let xhr = new XMLHttpRequest();
-      xhr.addEventListener('load', handleEvent);
+      xhr.addEventListener('load', function(e) { handleEvent(e, form); });
       xhr.addEventListener('error', () => showError("Failed to talk to server."));
       xhr.addEventListener('error', () => disableSpinner());
       xhr.open(form.method, form.getAttribute("action"));
