@@ -15,6 +15,10 @@ use Slim\Psr7\NonBufferedBody;
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
 
+    private function getLatestMajorVersion(): string {
+        return '33';
+    }
+
     public function __construct(
         private DockerActionManager           $dockerActionManager,
         private ContainerDefinitionFetcher    $containerDefinitionFetcher,
@@ -221,7 +225,7 @@ readonly class DockerController {
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = '33';
+            $installLatestMajor = $this->getLatestMajorVersion();
         } else {
             $installLatestMajor = '';
         }
@@ -322,6 +326,23 @@ readonly class DockerController {
         $id = self::TOP_CONTAINER;
         $forceStopNextcloud = true;
         $this->PerformRecursiveContainerStop($id, $forceStopNextcloud, $addToStreamingResponseBody);
+
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
+    }
+
+    public function RunNextcloudUpgradeToLatestMajor(Request $request, Response $response, array $args) : Response {
+        $this->configurationManager->installLatestMajor = $this->getLatestMajorVersion();
+
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $body = $nonbufResp->getBody();
+        $addToStreamingResponseBody = function (string $message) use ($body) : void {
+            $body->write("<div>" . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</div>");
+        };
+
+        $this->dockerActionManager->RunNextcloudUpgradeToLatestMajor($addToStreamingResponseBody);
 
         // End streaming response
         $this->finalizeStreamingResponse($nonbufResp);
