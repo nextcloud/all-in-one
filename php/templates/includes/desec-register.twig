@@ -12,14 +12,12 @@
         </form>
     {% else %}
         <p>Please enter your email address. You can also enter a desired subdomain slug (the part before <code>.dedyn.io</code>); leave it blank for a random one.</p>
-        <form method="POST" action="api/desec/register" class="xhr" data-reveal-on-error="#desec-password-field" data-reveal-when="already registered at deSEC">
+        <p>If you already have a deSEC account for this email address, enter your deSEC password in the optional password field below to log in with it instead of creating a new account.</p>
+        <form method="POST" action="api/desec/register" class="xhr">
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
             <input type="email" name="desec_email" placeholder="your@email.com" required />
-            <div id="desec-password-field" style="display:none">
-                <p>This email address is already registered at deSEC. Enter your deSEC password below to log in with it instead of creating a new account.</p>
-                <input type="password" name="desec_password" placeholder="deSEC password" autocomplete="current-password" />
-            </div>
+            <input type="password" name="desec_password" placeholder="deSEC password (only if already registered)" autocomplete="current-password" />
             <input type="text" name="desec_slug" placeholder="my-nextcloud (optional)" pattern="[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?" title="Only lowercase letters, digits and hyphens (1–63 characters). No leading or trailing hyphen." />
             <input type="submit" value="Register free domain via deSEC" />
         </form>
