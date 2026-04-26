@@ -3,7 +3,7 @@
 There are basically three ways how to migrate from an already existing Nextcloud installation to Nextcloud AIO (if you ran AIO on the former installation already, you can follow [these steps](https://github.com/nextcloud/all-in-one#how-to-migrate-from-aio-to-aio)):
 
 1. Migrate only the files which is the easiest way (this excludes all calendar data for example)
-1. Migrate the files and the database which is much more complicated (and doesn't work on former snap installations)
+1. Migrate the files and the database which is much more complicated (with special handling required for former snap installations, see [below](#migrating-from-a-snap-installation))
 1. Use the user_migration app that allows to migrate some of the user's data from a former instance to a new instance but needs to be done manually for each user
 
 ## Migrate only the files 
@@ -21,7 +21,7 @@ The procedure for migrating only the files works like this:
 1. If the restored data is older than any clients you want to continue to sync, for example if the server was down for a period of time during migration, you may want to take a look at [Synchronising with clients after migration](/migration.md#synchronising-with-clients-after-migration) below.
 
 ## Migrate the files and the database
-**Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned! Also, this will not work on former snap installations as the snap is read-only and thus you cannot install the necessary `pdo_pgsql` PHP extension. So if migrating from snap, you will need to use one of the other methods. However you could try to ask if the snaps maintainer could add this one small PHP extension to the snap here: https://github.com/nextcloud-snap/nextcloud-snap/issues which would allow for an easy migration.
+**Please note**: this is much more complicated than migrating only the files and also not as failproof so be warned! If you are migrating from a snap installation, please first follow the [dedicated snap migration steps](#migrating-from-a-snap-installation) below, which show you how to perform the database conversion using a temporary Docker container. Once done, you can continue from step 5 of this guide.
 
 The procedure for migrating the files and the database works like this:
 1. Make sure that your old instance is on exactly the same version like the version used in Nextcloud AIO. (e.g. 23.0.0) You can find the used version here: [click here](https://github.com/nextcloud/all-in-one/search?l=Dockerfile&q=NEXTCLOUD_VERSION&type=). If not, simply upgrade your former installation to that version or wait until the version used in Nextcloud AIO got updated to the same version of your former installation or the other way around.
@@ -86,6 +86,128 @@ Now the whole Nextcloud instance should work again.<br>
 If not, feel free to restore the AIO instance from backup and start at step 8 again.
 
 If the restored data is older than any clients you want to continue to sync, for example if the server was down for a period of time during migration, you may want to take a look at [Synchronising with clients after migration](/migration.md#synchronising-with-clients-after-migration) below.
+
+### Migrating from a snap installation
+
+Since the Nextcloud snap is read-only, it is not possible to install the `pdo_pgsql` PHP extension inside the snap to perform the MySQL-to-PostgreSQL database conversion required by AIO. As a workaround, a temporary [nextcloud/docker](https://github.com/nextcloud/docker) container can be used as an intermediate environment that already includes `pdo_pgsql` and can convert the snap's MySQL database to PostgreSQL for you.
+
+This procedure covers steps 1–3 of the regular migration above (version matching, app updates, and database conversion) and also produces the `database-dump.sql` needed for step 4. Once finished, continue from step 5 of the [Migrate the files and the database](#migrate-the-files-and-the-database) procedure above.
+
+1. **Create a backup of the snap before doing anything else**, so you can restore the snap to its current state if anything goes wrong:
+    ```
+    sudo snap save nextcloud
+    ```
+    This creates a snapshot that can be restored later with `sudo snap restore <snapshot-id>`. The snapshot ID is shown in the output of `snap save`. You can also list existing snapshots with `snap saved`.
+1. Note the exact Nextcloud version of your snap installation:
+    ```
+    sudo nextcloud.occ -V
+    ```
+1. Make sure that this version matches exactly the version used in Nextcloud AIO. You can find the AIO version here: [click here](https://github.com/nextcloud/all-in-one/search?l=Dockerfile&q=NEXTCLOUD_VERSION&type=). If they do not match, upgrade your snap with `sudo snap refresh nextcloud --channel=<major-version>/stable` or wait for AIO to be updated to the same version.
+1. Update all installed Nextcloud apps to their latest versions:
+    ```
+    sudo nextcloud.occ app:update --all
+    ```
+1. Retrieve the necessary configuration values from the snap using `nextcloud.occ` and store them in environment variables. Do this **before** stopping the snap, as `nextcloud.occ` requires the snap services to be running:
+    ```
+    export INSTANCEID=$(sudo nextcloud.occ config:system:get instanceid)
+    export PASSWORDSALT=$(sudo nextcloud.occ config:system:get passwordsalt)
+    export SECRET=$(sudo nextcloud.occ config:system:get secret)
+    export TABLE_PREFIX=$(sudo nextcloud.occ config:system:get dbtableprefix || echo "oc_")
+    export SNAP_DATA=$(sudo nextcloud.occ config:system:get datadirectory)
+    # Note down SNAP_DATA — you will need it later when copying files
+    echo "Snap data directory: $SNAP_DATA"
+    ```
+1. Export a dump of the snap's MySQL database:
+    ```
+    sudo nextcloud.mysqldump > ~/mysql-dump.sql
+    ```
+1. Stop the snap to prevent further writes during the migration:
+    ```
+    sudo snap stop nextcloud
+    ```
+1. Set up environment variables for the temporary containers (adjust the version and passwords as needed):
+    ```
+    export NEXTCLOUD_VERSION="29.0.0"  # Replace with the exact version from step 2
+    export MYSQL_PASSWORD="mysql-temp-password"
+    export PG_USER="ncadmin"
+    export PG_PASSWORD="my-temporary-pg-password"
+    export PG_DATABASE="nextcloud_db"
+    ```
+1. Create a Docker network for the temporary migration containers:
+    ```
+    docker network create nextcloud-migration
+    ```
+1. Start a temporary MySQL container and import the snap database dump into it:
+    ```
+    docker run -d \
+      --name mysql-migration \
+      --network nextcloud-migration \
+      -e MYSQL_ROOT_PASSWORD="mysql-root-temp" \
+      -e MYSQL_DATABASE="nextcloud" \
+      -e MYSQL_USER="nextcloud" \
+      -e MYSQL_PASSWORD="$MYSQL_PASSWORD" \
+      mysql:8
+    # Wait for MySQL to finish starting up before importing
+    until docker exec mysql-migration mysqladmin ping -h localhost --silent 2>/dev/null; do sleep 1; done
+    docker exec -i mysql-migration mysql -u nextcloud -p"$MYSQL_PASSWORD" nextcloud < ~/mysql-dump.sql
+    ```
+1. Start a temporary PostgreSQL container as the migration target:
+    ```
+    docker run -d \
+      --name postgres-migration \
+      --network nextcloud-migration \
+      -e POSTGRES_USER="$PG_USER" \
+      -e POSTGRES_PASSWORD="$PG_PASSWORD" \
+      -e POSTGRES_DB="$PG_DATABASE" \
+      postgres:16
+    ```
+1. Create a temporary config file for the migration container using the values retrieved in step 5:
+    ```
+    cat > /tmp/migration-config.php << EOF
+    <?php
+    \$CONFIG = array(
+      'instanceid' => '$INSTANCEID',
+      'passwordsalt' => '$PASSWORDSALT',
+      'secret' => '$SECRET',
+      'dbtype' => 'mysql',
+      'dbname' => 'nextcloud',
+      'dbhost' => 'mysql-migration',
+      'dbport' => '',
+      'dbtableprefix' => '$TABLE_PREFIX',
+      'dbuser' => 'nextcloud',
+      'dbpassword' => '$MYSQL_PASSWORD',
+      'datadirectory' => '$SNAP_DATA',
+      'installed' => true,
+    );
+    EOF
+    ```
+1. Run a temporary nextcloud/docker container to convert the MySQL database to PostgreSQL. Note that the container image version must match the Nextcloud version you noted in step 2, and that `pdo_pgsql` is already included in the `nextcloud` Docker image:
+    ```
+    docker run --rm \
+      --network nextcloud-migration \
+      --entrypoint bash \
+      -v /tmp/migration-config.php:/var/www/html/config/config.php:rw \
+      -v "${SNAP_DATA}:${SNAP_DATA}:ro" \
+      nextcloud:${NEXTCLOUD_VERSION}-apache \
+      -c "php /var/www/html/occ db:convert-type --all-apps --password '$PG_PASSWORD' pgsql '$PG_USER' postgres-migration '$PG_DATABASE'"
+    ```
+    **Please note:** The `occ` command may print a warning about being run as root — this can be safely ignored for this migration step.
+1. Export the converted PostgreSQL database:
+    ```
+    docker exec postgres-migration pg_dump -U "$PG_USER" "$PG_DATABASE" > ~/database-dump.sql
+    ```
+    **Please note:** The exact name of the database export file is important! (`database-dump.sql`)
+1. Clean up the temporary containers and network:
+    ```
+    docker rm -f mysql-migration postgres-migration
+    docker network rm nextcloud-migration
+    ```
+1. You now have a `~/database-dump.sql`. Continue from step 5 of the [Migrate the files and the database](#migrate-the-files-and-the-database) procedure above. When those steps ask for your old data directory path, use the `$SNAP_DATA` value noted in step 5 (typically `/var/snap/nextcloud/common`). If you have opened a new shell session since then, you can retrieve it again with `sudo nextcloud.occ config:system:get datadirectory` (requires the snap to be running) or read it directly from `/var/snap/nextcloud/current/nextcloud/config/config.php`.
+1. Once you have verified that the migration to AIO was successful and everything is working correctly, you can permanently remove the Nextcloud snap from your system:
+    ```
+    sudo snap remove --purge nextcloud
+    ```
+    The `--purge` flag removes the snap along with all its saved snapshots and data. Omit it if you want to keep the snap snapshots as a fallback. **Only do this after you are fully satisfied that your AIO instance is working correctly**, as this action cannot be undone.
 
 ## Use the user_migration app
 A new way since the Nextcloud update to 24 is to use the new [user_migration app](https://apps.nextcloud.com/apps/user_migration#app-gallery). It allows to export the most important data on one instance and import it on a different Nextcloud instance. For that, you need to install and enable the user_migration app on your old instance, trigger the export for the user, create the user on the new instance, log in with that user and import the archive that was created during the export. This then needs to be done for each user that you want to migrate.
