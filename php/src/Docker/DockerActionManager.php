@@ -378,9 +378,9 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['CapAdd'] = $capAdds;
         }
 
-        // Disable arp spoofing
-        if (!in_array('NET_RAW', $capAdds, true)) {
-            $requestBody['HostConfig']['CapDrop'] = ['NET_RAW'];
+        $capDrops = $container->capDrop;
+        if (count($capDrops) > 0) {
+            $requestBody['HostConfig']['CapDrop'] = $capDrops;
         }
 
         // Disable SELinux for AIO containers so that it does not break them
@@ -440,9 +440,11 @@ readonly class DockerActionManager {
         // Special things for the collabora container which should not be exposed in the containers.json
         } elseif ($container->identifier === 'nextcloud-aio-collabora') {
             if (!$this->configurationManager->collaboraSeccompDisabled) {
-                // Load reference seccomp profile for collabora
+                // Load reference seccomp profile for collabora...
                 $seccompProfile = (string)file_get_contents(DataConst::GetCollaboraSeccompProfilePath());
                 $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile"];
+                // ...which allows the collabora container to run without any capabilities
+                $requestBody['HostConfig']['CapAdd'] = [];
             }
 
             // Additional Collabora options
