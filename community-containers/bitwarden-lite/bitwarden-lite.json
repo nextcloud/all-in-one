@@ -1,0 +1,35 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-bitwarden-lite",
+            "display_name": "Bitwarden Lite",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/bitwarden-lite",
+            "image": "ghcr.io/bitwarden/lite",
+            "image_tag": "latest",
+            "internal_port": "8813",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                  "ip_binding": "%APACHE_IP_BINDING%",
+                  "port_number": "8813",
+                  "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "ASPNETCORE_HTTP_PORTS=8813",
+                "globalSettings__baseServiceUri__vault=https://bw.%NC_DOMAIN%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bitwarden_lite",
+                    "destination": "/etc/bitwarden",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_bitwarden_lite"
+            ]
+        }
+    ]
+}
