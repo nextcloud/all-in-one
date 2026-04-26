@@ -43,6 +43,8 @@ sed -i "s|- \${APACHE_PORT}|- $APACHE_PORT|" latest.yml
 sed -i "s|- \${TALK_PORT}|- $TALK_PORT|" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
 sed -i "s|\${ADDITIONAL_COLLABORA_OPTIONS}|ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER|" latest.yml
+sed -i "/COLLABORA_WOPI_URL/d" latest.yml
+sed -i "/COLLABORA_WOPI_CALLBACK_URL/d" latest.yml
 sed -i "/name: nextcloud-aio/,$ d" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
