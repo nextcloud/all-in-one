@@ -18,6 +18,8 @@ else
 fi
 export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+# Use specific exit codes (80/81 for connection failures) instead of the legacy generic exit code 2
+export BORG_EXIT_CODES=modern
 if [ -n "$BORG_REMOTE_REPO" ]; then
     export BORG_REPO="$BORG_REMOTE_REPO"
 
