@@ -112,13 +112,7 @@ $app->post('/api/configuration', \AIO\Controller\ConfigurationController::class 
 $app->post('/api/desec/register', \AIO\Controller\DesecController::class . ':Register');
 
 // Views
-// Shared closure that renders the containers page.
-// $desecVars can override 'desec_show_password', 'desec_prefill_email', and 'desec_error'.
-$renderContainersPage = function (
-    Response $response,
-    Request  $request,
-    array    $desecVars = [],
-) use ($container): Response {
+$app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     $view->addExtension(new \AIO\Twig\ClassExtension());
     /** @var \AIO\Data\ConfigurationManager $configurationManager */
@@ -136,7 +130,7 @@ $renderContainersPage = function (
     $bypass_container_update = isset($params['bypass_container_update']);
     $skip_domain_validation = isset($params['skip_domain_validation']);
 
-    return $view->render($response, 'containers.twig', array_merge([
+    return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->domain,
         'apache_port' => $configurationManager->apachePort,
         'borg_backup_host_location' => $configurationManager->borgBackupHostLocation,
@@ -191,39 +185,8 @@ $renderContainersPage = function (
         'desec_password' => $configurationManager->desecPassword,
         'is_desec_domain' => $configurationManager->isDesecDomain(),
         'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
-        'desec_show_password' => false,
-        'desec_prefill_email' => '',
-        'desec_error' => '',
-    ], $desecVars));
-};
-
-$app->get('/containers', function (Request $request, Response $response, array $args) use ($renderContainersPage): Response {
-    return $renderContainersPage($response, $request);
+    ]);
 })->setName('profile');
-
-$app->post('/containers', function (Request $request, Response $response, array $args) use ($container, $renderContainersPage): Response {
-    $email    = (string)($request->getParsedBody()['desec_email']    ?? '');
-    $slug     = (string)($request->getParsedBody()['desec_slug']     ?? '');
-    $password = (string)($request->getParsedBody()['desec_password'] ?? '');
-
-    /** @var \AIO\Desec\DesecManager $desecManager */
-    $desecManager = $container->get(\AIO\Desec\DesecManager::class);
-    try {
-        $desecManager->register($email, $slug, $password);
-        return $response->withStatus(303)->withHeader('Location', '/containers');
-    } catch (\AIO\Desec\AlreadyRegisteredException $ex) {
-        return $renderContainersPage($response, $request, [
-            'desec_show_password' => true,
-            'desec_prefill_email' => $email,
-            'desec_error'         => $ex->getMessage(),
-        ]);
-    } catch (\Exception $ex) {
-        return $renderContainersPage($response, $request, [
-            'desec_prefill_email' => $email,
-            'desec_error'         => $ex->getMessage(),
-        ]);
-    }
-});
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
