@@ -1290,8 +1290,9 @@ AIO ships its own update notifications implementation. It checks if container up
 If you should run into issues with huge docker logs, you can adjust the log size by following https://docs.docker.com/config/containers/logging/local/#usage. However for the included AIO containers, this should usually not be needed because almost all of them have the log level set to warn so they should not produce many logs.
 
 ### How to verify the image signature?
-All AIO images published to `ghcr.io/nextcloud-releases/` are signed using [cosign](https://github.com/sigstore/cosign) with keyless signing via GitHub Actions (Sigstore). You can verify the signature of the mastercontainer image before running it by installing cosign and executing:
+All AIO images published to `ghcr.io/nextcloud-releases/` and the `nextcloud/all-in-one` Docker Hub image are signed using [cosign](https://github.com/sigstore/cosign) with keyless signing via GitHub Actions (Sigstore). You can verify the signature of the mastercontainer image before running it by installing cosign and executing one of the following commands depending on which registry you use:
 
+For `ghcr.io/nextcloud-releases/all-in-one` (GitHub Container Registry):
 ```sh
 cosign verify \
   --certificate-identity-regexp '^https://github\.com/nextcloud-releases/all-in-one/\.github/workflows/' \
@@ -1299,10 +1300,18 @@ cosign verify \
   ghcr.io/nextcloud-releases/all-in-one:latest
 ```
 
+For `nextcloud/all-in-one` (Docker Hub):
+```sh
+cosign verify \
+  --certificate-identity-regexp '^https://github\.com/nextcloud-releases/all-in-one/\.github/workflows/' \
+  --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
+  nextcloud/all-in-one:latest
+```
+
 Replace `latest` with the tag you intend to run (e.g. `beta`). A successful verification prints the signing certificate details and exits with code 0. Any non-zero exit code means the signature could not be verified and you should **not** run that image.
 
 > [!NOTE]
-> AIO itself automatically verifies the cosign signature of every image it pulls from `ghcr.io/nextcloud-releases/` and refuses to pull images that fail verification. The manual command above lets you perform the same check independently before the initial `docker run`.
+> AIO itself automatically verifies the cosign signature of every image it pulls from `ghcr.io/nextcloud-releases/` or `nextcloud/all-in-one` (Docker Hub) and refuses to pull images that fail verification. The manual command above lets you perform the same check independently before the initial `docker run`.
 
 <details>
 

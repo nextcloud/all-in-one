@@ -559,9 +559,10 @@ readonly class DockerActionManager {
     }
 
     private function verifyImageSignature(string $imageName): void {
-        // Only verify images from the nextcloud-releases ghcr.io registry,
-        // as those are the images signed via the CI workflows in PR #97.
-        if (!str_starts_with($imageName, 'ghcr.io/nextcloud-releases/')) {
+        // Only verify images from the nextcloud-releases ghcr.io registry or
+        // the nextcloud/all-in-one Docker Hub image, as those are the images
+        // signed via the CI workflows in PR #97.
+        if (!str_starts_with($imageName, 'ghcr.io/nextcloud-releases/') && !str_starts_with($imageName, 'nextcloud/all-in-one')) {
             return;
         }
 
