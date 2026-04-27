@@ -1090,5 +1090,22 @@ else
     fi
 fi
 
+# Windmill app
+if [ "$WINDMILL_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/windmill" ]; then
+        php /var/www/html/occ app:install windmill
+    elif [ "$(php /var/www/html/occ config:app:get windmill enabled)" != "yes" ]; then
+        php /var/www/html/occ app:enable windmill
+    elif [ "$SKIP_UPDATE" != 1 ]; then
+        php /var/www/html/occ app:update windmill
+    fi
+    php /var/www/html/occ config:app:set windmill windmill_url --value="https://$NC_DOMAIN:3100"
+    php /var/www/html/occ config:app:set windmill windmill_instance_url --value="http://$WINDMILL_HOST:8000"
+else
+    if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/windmill" ]; then
+        php /var/www/html/occ app:remove windmill
+    fi
+fi
+
 # Remove the update skip file always
 rm -f "$NEXTCLOUD_DATA_DIR"/skip.update

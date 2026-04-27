@@ -45,6 +45,12 @@ class ConfigurationManager
         set { $this->set('isWhiteboardEnabled', $value); }
     }
 
+    public bool $isWindmillEnabled {
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isWindmillEnabled', false);
+        set { $this->set('isWindmillEnabled', $value); }
+    }
+
     public bool $restoreExcludePreviews {
         // Type-cast because old configs could have '1'/'' for this key.
         get => (bool) $this->get('restore-exclude-previews', false);
@@ -1108,6 +1114,7 @@ class ConfigurationManager
             // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
+            'WINDMILL_ENABLED' => $this->isWindmillEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
             default => $this->getRegisteredSecret($placeholder),
         };

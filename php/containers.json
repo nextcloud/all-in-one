@@ -11,6 +11,7 @@
         "nextcloud-aio-notify-push",
         "nextcloud-aio-whiteboard",
         "nextcloud-aio-harp",
+        "nextcloud-aio-windmill",
         "nextcloud-aio-nextcloud"
       ],
       "display_name": "Apache & Caddy",
@@ -35,6 +36,11 @@
           "ip_binding": "%APACHE_IP_BINDING%",
           "port_number": "%APACHE_PORT%",
           "protocol": "udp"
+        },
+        {
+          "ip_binding": "%APACHE_IP_BINDING%",
+          "port_number": "3100",
+          "protocol": "tcp"
         }
       ],
       "internal_port": "%APACHE_PORT%",
@@ -51,7 +57,9 @@
         "APACHE_MAX_TIME=%NEXTCLOUD_MAX_TIME%",
         "NOTIFY_PUSH_HOST=nextcloud-aio-notify-push",
         "WHITEBOARD_HOST=nextcloud-aio-whiteboard",
-        "HARP_HOST=nextcloud-aio-harp"
+        "HARP_HOST=nextcloud-aio-harp",
+        "WINDMILL_ENABLED=%WINDMILL_ENABLED%",
+        "WINDMILL_HOST=nextcloud-aio-windmill"
       ],
       "volumes": [
         {
@@ -102,7 +110,8 @@
       ],
       "internal_port": "5432",
       "secrets": [
-        "DATABASE_PASSWORD"
+        "DATABASE_PASSWORD",
+        "WINDMILL_DB_PASSWORD"
       ],
       "volumes": [
         {
@@ -121,7 +130,9 @@
         "POSTGRES_DB=nextcloud_database",
         "POSTGRES_USER=nextcloud",
         "TZ=%TIMEZONE%",
-        "PGTZ=%TIMEZONE%"
+        "PGTZ=%TIMEZONE%",
+        "WINDMILL_DB_PASSWORD=%WINDMILL_DB_PASSWORD%",
+        "WINDMILL_ENABLED=%WINDMILL_ENABLED%"
       ],
       "stop_grace_period": 1800,
       "restart": "unless-stopped",
@@ -148,7 +159,8 @@
         "nextcloud-aio-fulltextsearch",
         "nextcloud-aio-talk-recording",
         "nextcloud-aio-imaginary",
-        "nextcloud-aio-docker-socket-proxy"
+        "nextcloud-aio-docker-socket-proxy",
+        "nextcloud-aio-windmill"
       ],
       "display_name": "Nextcloud",
       "image": "ghcr.io/nextcloud-releases/aio-nextcloud",
@@ -263,7 +275,9 @@
         "WHITEBOARD_SECRET=%WHITEBOARD_SECRET%",
         "WHITEBOARD_ENABLED=%WHITEBOARD_ENABLED%",
         "HARP_ENABLED=%HARP_ENABLED%",
-        "HP_SHARED_KEY=%HP_SHARED_KEY%"
+        "HP_SHARED_KEY=%HP_SHARED_KEY%",
+        "WINDMILL_ENABLED=%WINDMILL_ENABLED%",
+        "WINDMILL_HOST=nextcloud-aio-windmill"
       ],
       "stop_grace_period": 600,
       "restart": "unless-stopped",
@@ -946,6 +960,45 @@
         "whiteboard"
       ],
       "read_only": true,
+      "cap_drop": [
+        "NET_RAW"
+      ]
+    },
+    {
+      "container_name": "nextcloud-aio-windmill",
+      "image_tag": "main",
+      "display_name": "Windmill",
+      "image": "ghcr.io/windmill-labs/windmill",
+      "init": true,
+      "depends_on": [
+        "nextcloud-aio-database"
+      ],
+      "internal_port": "8000",
+      "expose": [
+        "8000"
+      ],
+      "secrets": [
+        "WINDMILL_DB_PASSWORD"
+      ],
+      "environment": [
+        "DATABASE_URL=postgresql://windmill:%WINDMILL_DB_PASSWORD%@nextcloud-aio-database/windmill",
+        "WM_BASE_URL=https://%NC_DOMAIN%:3100",
+        "TZ=%TIMEZONE%",
+        "NUM_WORKERS=1",
+        "MODE=standalone",
+        "DISABLE_NSJAIL=true"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_windmill",
+          "destination": "/tmp/windmill/cache",
+          "writeable": true
+        }
+      ],
+      "restart": "unless-stopped",
+      "profiles": [
+        "windmill"
+      ],
       "cap_drop": [
         "NET_RAW"
       ]

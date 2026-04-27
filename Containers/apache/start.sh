@@ -60,6 +60,16 @@ if [ -z "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
 fi
 echo "$CADDYFILE" > /tmp/Caddyfile
 
+# Add windmill site if windmill is enabled
+if [ "$WINDMILL_ENABLED" = "yes" ]; then
+    cat >> /tmp/Caddyfile << 'WINDMILL_EOF'
+
+https://{$NC_DOMAIN}:3100 {
+    reverse_proxy {$WINDMILL_HOST}:8000
+}
+WINDMILL_EOF
+fi
+
 # Fix the Caddyfile format
 caddy fmt --overwrite /tmp/Caddyfile
 
