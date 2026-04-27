@@ -110,8 +110,7 @@
       ],
       "internal_port": "5432",
       "secrets": [
-        "DATABASE_PASSWORD",
-        "WINDMILL_DB_PASSWORD"
+        "DATABASE_PASSWORD"
       ],
       "volumes": [
         {
@@ -130,9 +129,7 @@
         "POSTGRES_DB=nextcloud_database",
         "POSTGRES_USER=nextcloud",
         "TZ=%TIMEZONE%",
-        "PGTZ=%TIMEZONE%",
-        "WINDMILL_DB_PASSWORD=%WINDMILL_DB_PASSWORD%",
-        "WINDMILL_ENABLED=%WINDMILL_ENABLED%"
+        "PGTZ=%TIMEZONE%"
       ],
       "stop_grace_period": 1800,
       "restart": "unless-stopped",
@@ -966,34 +963,44 @@
     },
     {
       "container_name": "nextcloud-aio-windmill",
-      "image_tag": "main",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "Windmill",
-      "image": "ghcr.io/windmill-labs/windmill",
+      "image": "ghcr.io/nextcloud-releases/aio-windmill",
       "init": true,
-      "depends_on": [
-        "nextcloud-aio-database"
-      ],
       "internal_port": "8000",
       "expose": [
         "8000"
       ],
-      "secrets": [
-        "WINDMILL_DB_PASSWORD"
-      ],
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
       "environment": [
-        "DATABASE_URL=postgresql://windmill:%WINDMILL_DB_PASSWORD%@nextcloud-aio-database/windmill",
-        "WM_BASE_URL=https://%NC_DOMAIN%:3100",
+        "BASE_URL=https://%NC_DOMAIN%:3100",
         "TZ=%TIMEZONE%",
         "NUM_WORKERS=1",
         "MODE=standalone",
-        "DISABLE_NSJAIL=true"
+        "DISABLE_NSJAIL=true",
+        "DATABASE_URL=postgresql://windmill@localhost/windmill?host=/var/run/postgresql"
       ],
       "volumes": [
+        {
+          "source": "nextcloud_aio_windmill_db",
+          "destination": "/var/lib/postgresql/data",
+          "writeable": true
+        },
         {
           "source": "nextcloud_aio_windmill",
           "destination": "/tmp/windmill/cache",
           "writeable": true
         }
+      ],
+      "backup_volumes": [
+        "nextcloud_aio_windmill_db"
       ],
       "restart": "unless-stopped",
       "profiles": [
