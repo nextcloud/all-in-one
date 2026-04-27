@@ -258,6 +258,13 @@ RUN set -ex; \
 # produce a 502.  300 s (5 min) keeps a warm pool through normal sync-client
 # polling cycles while still reclaiming memory during genuinely idle periods.
     sed -i 's/^;*pm.process_idle_timeout\s*=.*/pm.process_idle_timeout = 300s/' /usr/local/etc/php-fpm.d/www.conf; \
+# Set request_terminate_timeout so that PHP-FPM forcibly kills workers that
+# exceed the wall-clock limit.  Without this (default = 0 = disabled) a worker
+# stuck on a slow DB query, a stalled Redis connection, or a hung syscall is
+# never reaped.  Over time these zombies fill up pm.max_children, leaving no
+# free slots for legitimate requests and causing Apache to return 502 Bad
+# Gateway upstream.
+    sed -i "s|^;*request_terminate_timeout = .*|request_terminate_timeout = ${PHP_MAX_TIME}|" /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
     echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \

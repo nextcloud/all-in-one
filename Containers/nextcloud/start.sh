@@ -156,15 +156,6 @@ while [ "$THIS_IS_AIO" = "true" ] && [ -z "$(dig nextcloud-aio-apache A +short +
     sleep 5
 done
 
-# Set request_terminate_timeout so that PHP-FPM forcibly kills workers that
-# exceed the wall-clock limit.  Without this (default = 0 = disabled) a worker
-# stuck on a slow DB query, a stalled Redis connection, or a hung syscall is
-# never reaped.  Over time these zombies fill up pm.max_children, leaving no
-# free slots for legitimate requests and causing Apache to return 502 Bad
-# Gateway upstream.  Setting it equal to PHP_MAX_TIME means a worker lives at
-# most as long as a PHP script is allowed to run, which keeps the pool healthy.
-sed -i "s|^;*request_terminate_timeout = .*|request_terminate_timeout = ${PHP_MAX_TIME}|" /usr/local/etc/php-fpm.d/www.conf
-
 set -x
 # shellcheck disable=SC2235
 if [ "$THIS_IS_AIO" = "true" ] && [ "$APACHE_PORT" = 443 ]; then
