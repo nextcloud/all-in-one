@@ -66,7 +66,14 @@ class DesecManager {
             }
         }
 
+        $isNewAccount = !$accountAlreadyRegistered && trim($password) === '';
+
         $domain = $this->registerDomain($token, $validatedSlug);
+
+        if ($isNewAccount) {
+            $this->createWildcardCname($token, $domain);
+        }
+
         $this->enableDesecContainers();
         $this->configurationManager->setDomain($domain, true);
         $this->updateIpIfDesecDomain();
@@ -215,6 +222,32 @@ class DesecManager {
         }
 
         throw new \Exception('Could not register a free dedyn.io domain after ' . self::MAX_SLUG_ATTEMPTS . ' attempts. Please try again.');
+    }
+
+    /**
+     * Creates a wildcard CNAME rrset (*.domain → domain.) for a newly registered domain.
+     * Errors are logged but do not abort the overall registration.
+     */
+    private function createWildcardCname(string $token, string $domain): void {
+        try {
+            $res = $this->guzzleClient->post(self::DESEC_API_BASE . '/domains/' . $domain . '/rrsets/', [
+                'headers' => ['Authorization' => 'Token ' . $token],
+                'json'    => [
+                    'subname' => '*',
+                    'type'    => 'CNAME',
+                    'ttl'     => 3600,
+                    'records' => [$domain . '.'],
+                ],
+            ]);
+        } catch (TransferException $e) {
+            error_log('Could not create wildcard CNAME for ' . $domain . ': ' . $e->getMessage());
+            return;
+        }
+
+        $code = $res->getStatusCode();
+        if ($code !== 201) {
+            error_log('Unexpected response when creating wildcard CNAME for ' . $domain . ' (HTTP ' . $code . '): ' . $res->getBody()->getContents());
+        }
     }
 
     /**
