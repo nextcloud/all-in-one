@@ -41,4 +41,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     // Whiteboard
     let whiteboard = document.getElementById("whiteboard");
     whiteboard.disabled = true;
+
+    // Windmill
+    let windmill = document.getElementById("windmill");
+    if (windmill) {
+        windmill.disabled = true;
+    }
 });

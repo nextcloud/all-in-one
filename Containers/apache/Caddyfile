@@ -63,6 +63,12 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
         reverse_proxy {$WHITEBOARD_HOST}:3002
     }
 
+    # Windmill
+    route /windmill/* {
+        uri strip_prefix /windmill
+        reverse_proxy {$WINDMILL_HOST}:8000
+    }
+
     # HaRP (ExApps)
     route /exapps/* {
         reverse_proxy {$HARP_HOST}:8780

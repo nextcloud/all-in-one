@@ -36,11 +36,6 @@
           "ip_binding": "%APACHE_IP_BINDING%",
           "port_number": "%APACHE_PORT%",
           "protocol": "udp"
-        },
-        {
-          "ip_binding": "%APACHE_IP_BINDING%",
-          "port_number": "3100",
-          "protocol": "tcp"
         }
       ],
       "internal_port": "%APACHE_PORT%",
@@ -981,7 +976,7 @@
         "retries": 3
       },
       "environment": [
-        "BASE_URL=https://%NC_DOMAIN%:3100",
+        "BASE_URL=https://%NC_DOMAIN%/windmill",
         "TZ=%TIMEZONE%",
         "NUM_WORKERS=1",
         "MODE=standalone",

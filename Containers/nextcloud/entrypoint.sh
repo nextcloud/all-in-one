@@ -1099,7 +1099,7 @@ if [ "$WINDMILL_ENABLED" = 'yes' ]; then
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update windmill
     fi
-    php /var/www/html/occ config:app:set windmill windmill_url --value="https://$NC_DOMAIN:3100"
+    php /var/www/html/occ config:app:set windmill windmill_url --value="https://$NC_DOMAIN/windmill"
     php /var/www/html/occ config:app:set windmill windmill_instance_url --value="http://$WINDMILL_HOST:8000"
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/windmill" ]; then
