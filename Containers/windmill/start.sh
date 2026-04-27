@@ -8,10 +8,29 @@ if [ -z "$BASE_URL" ]; then
 fi
 
 export TZ="${TZ:-Etc/UTC}"
+
+# The Docker daemon injects SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt and
+# SSL_CERT_DIR=/etc/ssl/certs into every container, but /etc/ssl/certs/ is mode 700
+# (root only) in the base Windmill image, so uid=1000 cannot traverse it.
+# Build a combined, world-readable CA bundle in the writable /tmp tmpfs and
+# override all SSL cert env vars so Windmill and its sub-processes use it.
+_COMBINED_BUNDLE="/tmp/ca-bundle.crt"
+cat /etc/ssl/ca-bundle.crt /etc/ssl/cert.pem > "$_COMBINED_BUNDLE" 2>/dev/null || \
+    cat /etc/ssl/ca-bundle.crt > "$_COMBINED_BUNDLE" 2>/dev/null || true
+if [ -s "$_COMBINED_BUNDLE" ]; then
+    export SSL_CERT_FILE="$_COMBINED_BUNDLE"
+    export CURL_CA_BUNDLE="$_COMBINED_BUNDLE"
+    export REQUESTS_CA_BUNDLE="$_COMBINED_BUNDLE"
+    export NODE_EXTRA_CA_CERTS="$_COMBINED_BUNDLE"
+    # Unset SSL_CERT_DIR so rustls-native-certs does not also try to traverse
+    # the inaccessible /etc/ssl/certs/ directory.
+    unset SSL_CERT_DIR
+fi
+
 PGDATA="/var/lib/postgresql/data"
 
 # Initialize PostgreSQL data directory on first run.
-# No su/chown needed — we already own PGDATA (uid=10001 owns the volume).
+# No su/chown needed — we already own PGDATA (the windmill user owns the volume).
 if [ -z "$(ls -A "$PGDATA" 2>/dev/null)" ]; then
     echo "Initializing PostgreSQL database for Windmill..."
 

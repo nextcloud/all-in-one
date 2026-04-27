@@ -966,6 +966,7 @@
       "image_tag": "%AIO_CHANNEL%",
       "display_name": "Windmill",
       "image": "ghcr.io/nextcloud-releases/aio-windmill",
+      "user": "1000",
       "init": true,
       "internal_port": "8000",
       "expose": [
@@ -1003,6 +1004,13 @@
         "nextcloud_aio_windmill_db"
       ],
       "restart": "unless-stopped",
+      "read_only": true,
+      "tmpfs": [
+        "/tmp",
+        "/var/run/postgresql",
+        "/var/log/supervisord",
+        "/var/run/supervisord"
+      ],
       "profiles": [
         "windmill"
       ],

@@ -27,33 +27,37 @@ RUN set -ex; \
     apt-get update; \
     apt-get upgrade -y; \
     apt-get install -y --no-install-recommends \
+        ca-certificates \
         supervisor \
         tzdata \
         netcat-openbsd; \
     rm -rf /var/lib/apt/lists/*; \
+    update-ca-certificates; \
+    # Copy the CA bundle to a world-readable path so uid=1000 can access it.
+    # /etc/ssl/certs/ is persistently mode 700 in the base image's layer and
+    # cannot be chmod'd in a derived image, so we copy the regenerated bundle.
+    cp /etc/ssl/certs/ca-certificates.crt /etc/ssl/ca-bundle.crt; \
+    chmod 644 /etc/ssl/ca-bundle.crt; \
     \
-    # Create a single non-root windmill user (uid=10001) that owns both PostgreSQL
-    # and Windmill processes — no root or privilege-switching needed at runtime
-    groupadd -r windmill --gid=10001; \
-    useradd -r -g windmill --uid=10001 --home-dir=/var/lib/windmill --shell=/sbin/nologin windmill; \
-    \
-    # Create required directories and give windmill user full ownership
+    # The base image already ships a 'windmill' user/group at uid/gid 1000.
+    # Create the directories our services need and hand them to that user.
+    # /tmp/windmill/cache is intentionally excluded: the base image pre-creates
+    # it as 777 so any UID can write to it; a recursive chown on ~340 MB of
+    # pre-installed runtimes would create a huge and unnecessary image layer.
     mkdir -p \
         /var/lib/postgresql/data \
         /var/run/postgresql \
         /var/log/supervisord \
-        /var/run/supervisord \
-        /tmp/windmill/cache \
-        /var/lib/windmill; \
+        /var/run/supervisord; \
     chown -R windmill:windmill \
         /var/lib/postgresql \
         /var/run/postgresql \
         /var/log/supervisord \
-        /var/run/supervisord \
-        /tmp/windmill/cache \
-        /var/lib/windmill; \
-    chmod 750 /var/run/postgresql; \
-    chmod 750 /var/log/supervisord /var/run/supervisord; \
+        /var/run/supervisord; \
+    chmod 1777 \
+        /var/run/postgresql \
+        /var/log/supervisord \
+        /var/run/supervisord; \
     \
     # Create symlinks so postgres tools are on PATH
     ln -sf /usr/lib/postgresql/17/bin/postgres /usr/local/bin/postgres; \
@@ -65,9 +69,22 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=775 windmill-start.sh /windmill-start.sh
 COPY --chmod=664 supervisord.conf /supervisord.conf
 
+# Redirect writable tool dirs to the persistent cache volume so the
+# container can run with a read-only root filesystem.
+# HOME is already correct (/home/windmill) for the pre-existing uid=1000 user.
+# WINDMILL_DIR is set to the cache volume so Windmill's logs/worker dirs
+# are inside the volume and writable (Docker creates the volume mount-point
+# parent /tmp/windmill as root:root, making /tmp/windmill/logs inaccessible
+# for uid=1000 when /tmp is a tmpfs).
+ENV UV_TOOL_BIN_DIR=/tmp/windmill/cache/uv/bin \
+    UV_TOOL_DIR=/tmp/windmill/cache/uv/tools \
+    WINDMILL_DIR=/tmp/windmill/cache \
+    SSL_CERT_FILE=/etc/ssl/ca-bundle.crt
+
 VOLUME ["/var/lib/postgresql/data", "/tmp/windmill/cache"]
 
-USER 10001
+# Use the pre-existing windmill user (uid=1000) from the base image
+USER 1000
 
 EXPOSE 8000
 
