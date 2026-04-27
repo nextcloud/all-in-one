@@ -273,15 +273,18 @@ readonly class DockerController {
         $nonbufResp = $this->startStreamingResponse($response);
         $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
 
-        $this->startWatchtower($addToStreamingResponseBody);
+        // Allow temporarily skipping the cosign check via a POST body parameter
+        $skipCosignCheck = isset($request->getParsedBody()['skip_cosign_check']);
+
+        $this->startWatchtower($addToStreamingResponseBody, $skipCosignCheck);
 
         // End streaming response
         $this->finalizeStreamingResponse($nonbufResp);
         return $nonbufResp;
     }
 
-    public function startWatchtower(?\Closure $addToStreamingResponseBody = null) : void {
-        $this->dockerActionManager->verifyMastercontainerImageSignature();
+    public function startWatchtower(?\Closure $addToStreamingResponseBody = null, bool $skipCosignCheck = false) : void {
+        $this->dockerActionManager->verifyMastercontainerImageSignature($skipCosignCheck);
         $id = 'nextcloud-aio-watchtower';
 
         $this->PerformRecursiveContainerStart($id, true, $addToStreamingResponseBody);

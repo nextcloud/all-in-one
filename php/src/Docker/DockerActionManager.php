@@ -601,7 +601,11 @@ readonly class DockerActionManager {
         }
     }
 
-    public function verifyMastercontainerImageSignature(): void {
+    public function verifyMastercontainerImageSignature(bool $skipCosignCheck = false): void {
+        if ($skipCosignCheck) {
+            error_log('WARNING: Skipping cosign signature verification for mastercontainer image. This should only be done temporarily.');
+            return;
+        }
         $imageName = $this->GetCurrentImageName() . ':' . $this->GetCurrentChannel();
         $this->verifyImageSignature($imageName);
     }
