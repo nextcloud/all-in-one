@@ -366,6 +366,7 @@
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
       "display_name": "Nextcloud Office",
       "image": "ghcr.io/nextcloud-releases/aio-collabora",
+      "user": "1001",
       "init": true,
       "healthcheck": {
         "start_period": "60s",
@@ -396,6 +397,7 @@
         "collabora"
       ],
       "shm_size": 268435456,
+      "read_only": true,
       "tmpfs": [
         "/tmp"
       ],
@@ -630,6 +632,7 @@
       "hide_from_list": true,
       "image_tag": "%AIO_CHANNEL%",
       "image": "ghcr.io/nextcloud-releases/aio-domaincheck",
+      "user": "100",
       "init": true,
       "ports": [
         {
@@ -791,6 +794,7 @@
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1709",
       "display_name": "Fulltextsearch",
       "image": "ghcr.io/nextcloud-releases/aio-fulltextsearch",
+      "user": "1000",
       "init": false,
       "healthcheck": {
         "start_period": "60s",
@@ -832,6 +836,11 @@
       ],
       "secrets": [
         "FULLTEXTSEARCH_PASSWORD"
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/tmp",
+        "/usr/share/elasticsearch/logs"
       ],
       "cap_drop": [
         "NET_RAW"
