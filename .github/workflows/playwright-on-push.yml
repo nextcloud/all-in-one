@@ -19,6 +19,9 @@ concurrency:
 env:
   BASE_URL: https://localhost:8080
 
+permissions:
+  contents: read
+
 jobs:
   test:
     timeout-minutes: 60
@@ -27,8 +30,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: lts/*
 
@@ -39,7 +44,7 @@ jobs:
         run: cd php/tests && npx playwright install --with-deps chromium
 
       - name: Set up php 8.5
-        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # v2.37.0
+        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # master
         with:
           extensions: apcu
           php-version: 8.5
