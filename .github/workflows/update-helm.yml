@@ -5,6 +5,10 @@ on:
   schedule:
   - cron:  '00 12 * * *'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   update-helm:
     name: update helm chart

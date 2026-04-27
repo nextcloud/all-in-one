@@ -6,6 +6,9 @@ on:
     paths:
       - 'nextcloud-aio-helm-chart/**'
 
+permissions:
+  contents: read
+
 jobs:
   lint-helm:
     runs-on: ubuntu-latest

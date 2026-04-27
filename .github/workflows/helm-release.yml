@@ -8,6 +8,9 @@ on:
     paths:
       - 'nextcloud-aio-helm-chart/**'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest

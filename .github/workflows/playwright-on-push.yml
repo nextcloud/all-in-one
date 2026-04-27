@@ -19,6 +19,9 @@ concurrency:
 env:
   BASE_URL: https://localhost:8080
 
+permissions:
+  contents: read
+
 jobs:
   test:
     timeout-minutes: 60

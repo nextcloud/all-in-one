@@ -10,6 +10,9 @@ on:
     paths:
       - '**.sh'
 
+permissions:
+  contents: read
+
 jobs:
   shellcheck:
     name: Check Shell

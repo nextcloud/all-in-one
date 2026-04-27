@@ -10,6 +10,9 @@ on:
     paths:
       - 'community-containers/**'
 
+permissions:
+  contents: read
+
 jobs:
   validator-community-containers:
     name: Validate community containers
