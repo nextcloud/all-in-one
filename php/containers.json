@@ -53,7 +53,6 @@
         "NOTIFY_PUSH_HOST=nextcloud-aio-notify-push",
         "WHITEBOARD_HOST=nextcloud-aio-whiteboard",
         "HARP_HOST=nextcloud-aio-harp",
-        "WINDMILL_ENABLED=%WINDMILL_ENABLED%",
         "WINDMILL_HOST=nextcloud-aio-windmill"
       ],
       "volumes": [
