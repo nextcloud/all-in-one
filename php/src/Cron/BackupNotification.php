@@ -24,10 +24,10 @@ if ($backupExitCode === 0) {
     if (getenv('SEND_SUCCESS_NOTIFICATIONS') === "0") {
         error_log("Daily backup successful! Only logging successful backup and not sending backup notification since that has been disabled! You can get further info by looking at the backup logs in the AIO interface.");
     } else {
-        $dockerActionManager->sendNotification($nextcloudContainer, 'Daily backup successful!', 'You can get further info by looking at the backup logs in the AIO interface.');
+        $dockerActionManager->execCommandInContainer($nextcloudContainer, ['bash', '/notify.sh', 'Daily backup successful!', 'You can get further info by looking at the backup logs in the AIO interface.']);
     }
 }
 
 if ($backupExitCode > 0) {
-    $dockerActionManager->sendNotification($nextcloudContainer, 'Daily backup failed!', 'You can get further info by looking at the backup logs in the AIO interface.');
+    $dockerActionManager->execCommandInContainer($nextcloudContainer, ['bash', '/notify.sh', 'Daily backup failed!', 'You can get further info by looking at the backup logs in the AIO interface.']);
 }

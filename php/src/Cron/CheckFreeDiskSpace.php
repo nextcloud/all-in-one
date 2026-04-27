@@ -22,5 +22,5 @@ $nextcloudContainer = $containerDefinitionFetcher->GetContainerById($id);
 $df = disk_free_space(DataConst::GetDataDirectory());
 if ($df !== false && (int)$df < 1024 * 1024 * 1024 * 5) {
     error_log("The drive that hosts the mastercontainer volume has less than 5 GB free space. Container updates and backups might not succeed due to that!");
-    $dockerActionManager->sendNotification($nextcloudContainer, 'Low on space!', 'The drive that hosts the mastercontainer volume has less than 5 GB free space. Container updates and backups might not succeed due to that!');
+    $dockerActionManager->execCommandInContainer($nextcloudContainer, ['bash', '/notify.sh', 'Low on space!', 'The drive that hosts the mastercontainer volume has less than 5 GB free space. Container updates and backups might not succeed due to that!']);
 }
