@@ -32,28 +32,33 @@ RUN set -ex; \
         netcat-openbsd; \
     rm -rf /var/lib/apt/lists/*; \
     \
-    # Create the postgres system user and group (without a fixed GID to avoid conflicts)
-    groupadd -r postgres || true; \
-    useradd -r -g postgres --home-dir=/var/lib/postgresql --shell=/bin/bash postgres || true; \
+    # Create a single non-root windmill user (uid=10001) that owns both PostgreSQL
+    # and Windmill processes — no root or privilege-switching needed at runtime
+    groupadd -r windmill --gid=10001; \
+    useradd -r -g windmill --uid=10001 --home-dir=/var/lib/windmill --shell=/sbin/nologin windmill; \
     \
-    # Create required directories
+    # Create required directories and give windmill user full ownership
     mkdir -p \
         /var/lib/postgresql/data \
         /var/run/postgresql \
         /var/log/supervisord \
         /var/run/supervisord \
-        /tmp/windmill/cache; \
-    chown -R postgres:postgres /var/lib/postgresql /var/run/postgresql; \
-    chmod 775 /var/run/postgresql; \
-    chmod 777 \
+        /tmp/windmill/cache \
+        /var/lib/windmill; \
+    chown -R windmill:windmill \
+        /var/lib/postgresql \
+        /var/run/postgresql \
         /var/log/supervisord \
         /var/run/supervisord \
-        /tmp/windmill/cache; \
+        /tmp/windmill/cache \
+        /var/lib/windmill; \
+    chmod 750 /var/run/postgresql; \
+    chmod 750 /var/log/supervisord /var/run/supervisord; \
     \
-    # Create a symlink so 'postgres' and other pg tools are on PATH
+    # Create symlinks so postgres tools are on PATH
     ln -sf /usr/lib/postgresql/17/bin/postgres /usr/local/bin/postgres; \
-    ln -sf /usr/lib/postgresql/17/bin/initdb /usr/local/bin/initdb; \
-    ln -sf /usr/lib/postgresql/17/bin/pg_ctl /usr/local/bin/pg_ctl
+    ln -sf /usr/lib/postgresql/17/bin/initdb   /usr/local/bin/initdb; \
+    ln -sf /usr/lib/postgresql/17/bin/pg_ctl   /usr/local/bin/pg_ctl
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
@@ -61,6 +66,8 @@ COPY --chmod=775 windmill-start.sh /windmill-start.sh
 COPY --chmod=664 supervisord.conf /supervisord.conf
 
 VOLUME ["/var/lib/postgresql/data", "/tmp/windmill/cache"]
+
+USER 10001
 
 EXPOSE 8000
 
