@@ -281,6 +281,7 @@ readonly class DockerController {
     }
 
     public function startWatchtower(?\Closure $addToStreamingResponseBody = null) : void {
+        $this->dockerActionManager->verifyMastercontainerImageSignature();
         $id = 'nextcloud-aio-watchtower';
 
         $this->PerformRecursiveContainerStart($id, true, $addToStreamingResponseBody);

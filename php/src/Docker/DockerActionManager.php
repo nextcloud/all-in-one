@@ -586,7 +586,7 @@ readonly class DockerActionManager {
         );
 
         if (!is_resource($process)) {
-            throw new \Exception('Could not run cosign to verify image ' . $imageName);
+            throw new \Exception('Could not execute cosign command to verify image ' . $imageName . '. Ensure cosign is installed and accessible.');
         }
 
         $stderr = stream_get_contents($pipes[2]);
@@ -594,8 +594,15 @@ readonly class DockerActionManager {
         $exitCode = proc_close($process);
 
         if ($exitCode !== 0) {
-            throw new \Exception('Image signature verification failed for ' . $imageName . ': ' . ($stderr !== false ? $stderr : ''));
+            $stderrOutput = $stderr !== false ? $stderr : '';
+            error_log('cosign verification output for ' . $imageName . ': ' . $stderrOutput);
+            throw new \Exception('Image signature verification failed for ' . $imageName . '. The image may not be correctly signed.');
         }
+    }
+
+    public function verifyMastercontainerImageSignature(): void {
+        $imageName = $this->GetCurrentImageName() . ':' . $this->GetCurrentChannel();
+        $this->verifyImageSignature($imageName);
     }
 
     private function isContainerUpdateAvailable(string $id): string {
