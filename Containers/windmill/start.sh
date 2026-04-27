@@ -29,15 +29,38 @@ if [ -f "$IMAGE_EPOCH_FILE" ]; then
 fi
 
 PGDATA="/var/lib/postgresql/data"
+DUMP_FILE="$PGDATA/windmill-db-dump.sql"
 
-# ── Automatic PostgreSQL major-version upgrade ────────────────────────────────
-# The image records the current PG major version in /etc/postgres-major-version
-# at build time.  On each start we compare that against the version stored in
-# $PGDATA/PG_VERSION (written by initdb).  When the image ships a newer major
-# version we run pg_upgrade automatically; the old binaries are kept in the
-# image for exactly this purpose.
-CURRENT_PG_MAJOR=$(cat /etc/postgres-major-version 2>/dev/null || postgres --version | grep -oP '\d+' | head -1)
+# Current PG major version as shipped in this image
+CURRENT_PG_MAJOR=$(cat /etc/postgres-major-version 2>/dev/null)
 
+# ── Don't start if previous import failed ────────────────────────────────────
+if [ -f "$PGDATA/import.failed" ]; then
+    echo "The database import failed the last time. Please restore a backup and try again."
+    echo "For further clues on what went wrong, look at the logs above."
+    exit 1
+fi
+
+# ── Don't start if previous export failed ────────────────────────────────────
+if [ -f "$PGDATA/export.failed" ]; then
+    echo "Database export failed the last time. Most likely was the export time not high enough."
+    echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
+    exit 1
+fi
+
+# Write the standard pg_hba.conf and listen_addresses settings into a data directory.
+configure_pg() {
+    local datadir="$1"
+    cat > "$datadir/pg_hba.conf" << 'HBAEOF'
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+local   all             all                                     trust
+host    all             all             127.0.0.1/32            trust
+host    all             all             ::1/128                 trust
+HBAEOF
+    echo "listen_addresses = 'localhost'" >> "$datadir/postgresql.conf"
+}
+
+# ── PostgreSQL major-version upgrade via dump/restore ────────────────────────
 if [ -f "$PGDATA/PG_VERSION" ]; then
     DATA_PG_MAJOR=$(cat "$PGDATA/PG_VERSION")
 
@@ -50,66 +73,77 @@ if [ -f "$PGDATA/PG_VERSION" ]; then
     if [ "$DATA_PG_MAJOR" -lt "$CURRENT_PG_MAJOR" ]; then
         echo "PostgreSQL major-version upgrade required: $DATA_PG_MAJOR → $CURRENT_PG_MAJOR"
 
-        OLD_BIN="/usr/lib/postgresql/${DATA_PG_MAJOR}/bin"
-        NEW_BIN="/usr/lib/postgresql/${CURRENT_PG_MAJOR}/bin"
-        PGDATA_NEW="/var/lib/postgresql/data_new"
-
-        if [ ! -d "$OLD_BIN" ]; then
-            echo "ERROR: Old PostgreSQL $DATA_PG_MAJOR binaries not found at $OLD_BIN."
-            echo "Cannot upgrade automatically. Data is preserved at $PGDATA."
+        if ! [ -f "$DUMP_FILE" ]; then
+            echo "Unable to upgrade because the database dump is missing."
+            echo "Please restore a backup and try again."
             exit 1
         fi
 
-        # Remove any leftover working directory from a previous failed attempt
-        rm -rf "$PGDATA_NEW"
+        # Write output to logfile so the import can be inspected later
+        exec > >(tee -i "$PGDATA/database-import.log")
+        exec 2>&1
 
-        echo "Initializing new PostgreSQL $CURRENT_PG_MAJOR cluster..."
-        "$NEW_BIN/initdb" -D "$PGDATA_NEW" \
+        echo "Restoring database from dump into new PostgreSQL $CURRENT_PG_MAJOR cluster."
+
+        # Copy dump out of PGDATA before wiping it
+        cp "$DUMP_FILE" /tmp/windmill-db-dump.sql
+
+        # Mark import as in-progress
+        # (written to /tmp because PGDATA is about to be wiped)
+        IMPORT_FAILED_TMP=/tmp/windmill-import.failed
+        touch "$IMPORT_FAILED_TMP"
+
+        set -ex
+
+        # Remove old data directory
+        rm -rf "${PGDATA:?}/"*
+
+        # Initialise a fresh cluster for the new major version
+        initdb -D "$PGDATA" \
             --username=windmill \
             --auth-local=trust \
             --auth-host=trust \
             --no-instructions
 
-        echo "Running pg_upgrade (this may take a moment)..."
-        # pg_upgrade writes log files to its working directory; use the volume
-        # root so they persist for post-upgrade inspection if needed.
-        cd /var/lib/postgresql
-        if ! "$NEW_BIN/pg_upgrade" \
-                --old-bindir="$OLD_BIN" \
-                --new-bindir="$NEW_BIN" \
-                --old-datadir="$PGDATA" \
-                --new-datadir="$PGDATA_NEW"; then
-            echo "ERROR: pg_upgrade failed. Old data is preserved at $PGDATA."
-            echo "Check /var/lib/postgresql/pg_upgrade_output.d/ for details."
-            rm -rf "$PGDATA_NEW"
-            exit 1
-        fi
+        configure_pg "$PGDATA"
 
-        # Swap data directories: current → backup, upgraded → active
-        mv "$PGDATA" "${PGDATA}_old_v${DATA_PG_MAJOR}"
-        mv "$PGDATA_NEW" "$PGDATA"
+        # Mark import as in-progress inside the new data dir
+        touch "$PGDATA/import.failed"
 
-        # Restore the custom connection settings that a fresh initdb does not set
-        cat > "$PGDATA/pg_hba.conf" << 'HBAEOF'
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
-local   all             all                                     trust
-host    all             all             127.0.0.1/32            trust
-host    all             all             ::1/128                 trust
-HBAEOF
+        # Start postgres temporarily on an alternate TCP port so we can import
+        export PGPORT=11000
+        postgres -D "$PGDATA" -h 127.0.0.1 -p 11000 &
+        TEMP_PG_PID=$!
 
-        echo "listen_addresses = 'localhost'" >> "$PGDATA/postgresql.conf"
+        # Wait until postgres accepts connections
+        while ! psql -h 127.0.0.1 -p 11000 -U windmill -d postgres -c "select now()" > /dev/null 2>&1; do
+            echo "Waiting for the temporary database to start..."
+            sleep 5
+        done
 
-        # Remove pg_upgrade artefacts from the working directory
-        rm -rf /var/lib/postgresql/pg_upgrade_output.d
+        # Create the windmill database
+        psql -h 127.0.0.1 -p 11000 -U windmill -d postgres \
+            -c "CREATE DATABASE windmill OWNER windmill;"
 
+        # Restore from dump
+        echo "Restoring the database from dump..."
+        psql -h 127.0.0.1 -p 11000 -U windmill -d windmill < /tmp/windmill-db-dump.sql
+
+        # Stop the temporary postgres cleanly
+        pg_ctl -D "$PGDATA" stop -m smart -t 1800
+        wait "$TEMP_PG_PID" 2>/dev/null || true
+        unset PGPORT
+
+        set +ex
+
+        # Remove sentinel files
+        rm -f "$PGDATA/import.failed" "$IMPORT_FAILED_TMP"
         echo "PostgreSQL upgrade to $CURRENT_PG_MAJOR complete."
-        echo "Old data backed up at ${PGDATA}_old_v${DATA_PG_MAJOR} – safe to remove once verified."
     fi
 fi
-# ── End of automatic upgrade section ─────────────────────────────────────────
+# ── End of major-version upgrade section ─────────────────────────────────────
 
-# Initialize PostgreSQL data directory on first run.
-# No su/chown needed — we already own PGDATA (the windmill user owns the volume).
+# ── Initialize PostgreSQL data directory on first run ────────────────────────
 if [ -z "$(ls -A "$PGDATA" 2>/dev/null)" ]; then
     echo "Initializing PostgreSQL database for Windmill..."
 
@@ -119,17 +153,7 @@ if [ -z "$(ls -A "$PGDATA" 2>/dev/null)" ]; then
         --auth-host=trust \
         --no-instructions
 
-    # Allow local connections without a password; listen only on localhost
-    cat > "$PGDATA/pg_hba.conf" << 'EOF'
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
-local   all             all                                     trust
-host    all             all             127.0.0.1/32            trust
-host    all             all             ::1/128                 trust
-EOF
-
-    cat >> "$PGDATA/postgresql.conf" << 'EOF'
-listen_addresses = 'localhost'
-EOF
+    configure_pg "$PGDATA"
 
     # Start PostgreSQL temporarily to create the windmill database, then stop it.
     # supervisord will restart it properly afterward.
@@ -141,4 +165,27 @@ EOF
     echo "PostgreSQL initialization complete."
 fi
 
-exec supervisord -c /supervisord.conf
+# ── Dump database and shut down on container stop ────────────────────────────
+do_database_dump() {
+    set -x
+    touch "$PGDATA/export.failed"
+    rm -f "$DUMP_FILE.temp"
+    if pg_dump -h /var/run/postgresql -U windmill windmill > "$DUMP_FILE.temp"; then
+        mv "$DUMP_FILE.temp" "$DUMP_FILE"
+        rm "$PGDATA/export.failed"
+        echo "Database dump successful!"
+    else
+        echo "Database dump unsuccessful!"
+    fi
+    set +x
+    # Stop supervisord (which stops postgres and windmill)
+    kill "$SUPERVISORD_PID" 2>/dev/null || true
+    wait "$SUPERVISORD_PID" 2>/dev/null || true
+}
+
+trap do_database_dump SIGTERM SIGINT
+
+# ── Start services ────────────────────────────────────────────────────────────
+supervisord -c /supervisord.conf &
+SUPERVISORD_PID=$!
+wait "$SUPERVISORD_PID"

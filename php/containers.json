@@ -998,6 +998,7 @@
         "nextcloud_aio_windmill_db"
       ],
       "restart": "unless-stopped",
+      "stop_grace_period": 1800,
       "read_only": true,
       "tmpfs": [
         "/tmp",

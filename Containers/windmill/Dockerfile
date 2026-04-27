@@ -1,10 +1,5 @@
 # syntax=docker/dockerfile:latest
-# Stage 1: Previous PostgreSQL major version – binaries are copied into the
-# final image so that start.sh can run pg_upgrade when the data directory was
-# created by an older major version.
-FROM postgres:16.13-bookworm AS postgres-prev
-
-# Stage 2: Current PostgreSQL server – version is pinned to a full patch
+# Stage 1: Current PostgreSQL server – version is pinned to a full patch
 # release so builds are reproducible and the exact version is auditable.
 # (matches the Debian bookworm base used by windmill-labs/windmill)
 FROM postgres:17.9-bookworm AS postgres-base
@@ -23,10 +18,6 @@ COPY --from=postgres-base /usr/bin/pg_dump \
                           /usr/bin/pg_dumpall \
                           /usr/bin/pg_restore \
                           /usr/bin/
-
-# Copy previous PostgreSQL major version binaries for automatic pg_upgrade
-COPY --from=postgres-prev /usr/lib/postgresql /usr/lib/postgresql
-COPY --from=postgres-prev /usr/share/postgresql /usr/share/postgresql
 
 # Install supervisor from standard Debian repos (remove broken external sources first)
 # hadolint ignore=DL3008
@@ -74,10 +65,9 @@ RUN set -ex; \
     ln -sf /usr/lib/postgresql/17/bin/initdb      /usr/local/bin/initdb; \
     ln -sf /usr/lib/postgresql/17/bin/pg_ctl      /usr/local/bin/pg_ctl; \
     ln -sf /usr/lib/postgresql/17/bin/pg_isready  /usr/local/bin/pg_isready; \
-    ln -sf /usr/lib/postgresql/17/bin/pg_upgrade  /usr/local/bin/pg_upgrade; \
     \
     # Record the current PostgreSQL major version so start.sh can detect when
-    # the bundled major version has changed and trigger an automatic pg_upgrade.
+    # the bundled major version has changed and trigger an automatic dump/restore upgrade.
     echo "17" > /etc/postgres-major-version; \
     \
     # Write a build-time marker so start.sh can detect image updates and
