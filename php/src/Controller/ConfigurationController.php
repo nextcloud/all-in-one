@@ -3,16 +3,14 @@ declare(strict_types=1);
 
 namespace AIO\Controller;
 
-use AIO\ContainerDefinitionFetcher;
 use AIO\Data\ConfigurationManager;
 use AIO\Data\InvalidSettingConfigurationException;
-use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 readonly class ConfigurationController {
     public function __construct(
-        private ConfigurationManager $configurationManager
+        private ConfigurationManager $configurationManager,
     ) {
     }
 
@@ -130,10 +128,6 @@ readonly class ConfigurationController {
             if (isset($request->getParsedBody()['collabora_additional_options'])) {
                 $additionalCollaboraOptions = $request->getParsedBody()['collabora_additional_options'] ?? '';
                 $this->configurationManager->collaboraAdditionalOptions = $additionalCollaboraOptions;
-            }
-
-            if (isset($request->getParsedBody()['delete_borg_backup_location_vars'])) {
-                $this->configurationManager->deleteBorgBackupLocationItems();
             }
 
             return $response->withStatus(201)->withHeader('Location', '.');
