@@ -257,7 +257,7 @@ RUN set -ex; \
 # a loaded host that spawn latency can push Apache past its FastCGI timeout and
 # produce a 502.  300 s (5 min) keeps a warm pool through normal sync-client
 # polling cycles while still reclaiming memory during genuinely idle periods.
-    sed -i 's/^;*pm.process_idle_timeout.*/pm.process_idle_timeout = 300s/' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^;*pm.process_idle_timeout\s*=.*/pm.process_idle_timeout = 300s/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
     echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \

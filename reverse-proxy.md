@@ -1246,7 +1246,7 @@ A **502 Bad Gateway** response from your reverse proxy means the proxy successfu
 
 1. **Reverse proxy read timeout too short** — The nginx default `proxy_read_timeout` is only 60 seconds. Long-running operations (large file uploads, remote storage scans, etc.) can exceed this limit, causing nginx to close the connection and show 502 (or 504) to the client. Make sure your reverse proxy timeout is set higher than AIO's `NEXTCLOUD_MAX_TIME` (default 3600 s). The sample configs in this document already set `proxy_read_timeout 3610s` for nginx and equivalent values for other proxies.
 
-2. **PHP-FPM worker pool exhausted** — Each PHP request is served by a PHP-FPM worker. Workers are spawned on demand and terminated after 5 minutes of idle time. If a burst of concurrent requests arrives and no workers are available (e.g. all current workers are busy with long operations), Apache returns 502 to Caddy, which returns it to your proxy. Check worker usage with:
+2. **PHP-FPM worker pool exhausted** — Each PHP request is served by a PHP-FPM worker. Workers are spawned on demand and terminated after a configurable idle timeout (`pm.process_idle_timeout`). If a burst of concurrent requests arrives and no workers are available (e.g. all current workers are busy with long operations), Apache returns 502 to Caddy, which returns it to your proxy. Check worker usage with:
     ```
     sudo docker exec nextcloud-aio-nextcloud php-fpm -t && \
     sudo docker exec nextcloud-aio-nextcloud ps aux | grep php-fpm | wc -l
