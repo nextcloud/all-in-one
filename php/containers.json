@@ -632,7 +632,7 @@
       "hide_from_list": true,
       "image_tag": "%AIO_CHANNEL%",
       "image": "ghcr.io/nextcloud-releases/aio-domaincheck",
-      "user": "100",
+      "user": "101",
       "init": true,
       "ports": [
         {
