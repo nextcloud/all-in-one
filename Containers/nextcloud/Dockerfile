@@ -250,6 +250,14 @@ RUN set -ex; \
 # We don't actually expect so many children but don't want to limit it artificially because people will report issues otherwise.
 # Also children will usually be terminated again after the process is done due to the ondemand setting
     sed -i 's/^pm.max_children =.*/pm.max_children = 5000/' /usr/local/etc/php-fpm.d/www.conf; \
+# With pm = ondemand, workers are killed after pm.process_idle_timeout seconds
+# of inactivity.  The upstream default is 10 s, which is aggressive: after a
+# brief quiet period (e.g. desktop-sync clients polling every few seconds), all
+# workers are reaped and the next request burst must wait for fresh forks.  On
+# a loaded host that spawn latency can push Apache past its FastCGI timeout and
+# produce a 502.  300 s (5 min) keeps a warm pool through normal sync-client
+# polling cycles while still reclaiming memory during genuinely idle periods.
+    sed -i 's/^;*pm.process_idle_timeout.*/pm.process_idle_timeout = 300s/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
     echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \

@@ -1240,6 +1240,27 @@ If something does not work, follow the steps below:
 1. Try to configure everything from scratch - if it still does not work by following https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance.
 1. As last resort, you may disable the domain validation by adding `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command. But only use this if you are completely sure that you've correctly configured everything! Also see [this documentation](https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation).
 
+#### Troubleshooting 502 Bad Gateway errors
+
+A **502 Bad Gateway** response from your reverse proxy means the proxy successfully connected to AIO's Apache/Caddy layer but received an invalid or no response from the backend. Common causes and fixes:
+
+1. **Reverse proxy read timeout too short** — The nginx default `proxy_read_timeout` is only 60 seconds. Long-running operations (large file uploads, remote storage scans, etc.) can exceed this limit, causing nginx to close the connection and show 502 (or 504) to the client. Make sure your reverse proxy timeout is set higher than AIO's `NEXTCLOUD_MAX_TIME` (default 3600 s). The sample configs in this document already set `proxy_read_timeout 3610s` for nginx and equivalent values for other proxies.
+
+2. **PHP-FPM worker pool exhausted** — Each PHP request is served by a PHP-FPM worker. Workers are spawned on demand and terminated after 5 minutes of idle time. If a burst of concurrent requests arrives and no workers are available (e.g. all current workers are busy with long operations), Apache returns 502 to Caddy, which returns it to your proxy. Check worker usage with:
+    ```
+    sudo docker exec nextcloud-aio-nextcloud php-fpm -t && \
+    sudo docker exec nextcloud-aio-nextcloud ps aux | grep php-fpm | wc -l
+    ```
+    If the count is consistently high, consider increasing `PHP_MEMORY_LIMIT` so individual workers use less memory and the host can sustain more of them, or reduce concurrent background jobs.
+
+3. **Stuck PHP-FPM workers** — Without a `request_terminate_timeout`, a PHP worker that blocks indefinitely (e.g. waiting on a slow database query or a stalled Redis connection) is never killed. Over time, these stuck workers consume all available slots in `pm.max_children`, leaving no free workers for new requests and causing a cascade of 502 errors. AIO now sets `request_terminate_timeout` automatically, but if you run a custom PHP-FPM config you must set it yourself.
+
+4. **Redis session lock contention** — When one request holds a session lock (e.g. a long file upload or a background scan), other requests for the same user session queue up waiting for the lock. If the lock wait time exceeds the reverse proxy timeout the proxy sees a 502. You can reduce this with session-less API calls or by checking for Redis performance issues: `sudo docker logs nextcloud-aio-redis`.
+
+5. **AIO containers not fully started** — After a container restart there is a brief window where PHP-FPM accepts TCP connections but is not yet ready to serve requests. Retrying the failed request usually succeeds. To confirm, check: `sudo docker logs nextcloud-aio-nextcloud` and `sudo docker logs nextcloud-aio-apache` for startup messages.
+
+6. **Apache or Caddy restart during certificate renewal** — Caddy renews TLS certificates automatically and briefly restarts. During those few seconds your reverse proxy may see a 502. These are transient and self-healing.
+
 ### 8. Removing the reverse proxy
 
 If you, at some point, want to remove the reverse proxy, here are some general steps:
