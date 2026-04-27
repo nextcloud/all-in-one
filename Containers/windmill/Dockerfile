@@ -62,7 +62,11 @@ RUN set -ex; \
     # Create symlinks so postgres tools are on PATH
     ln -sf /usr/lib/postgresql/17/bin/postgres /usr/local/bin/postgres; \
     ln -sf /usr/lib/postgresql/17/bin/initdb   /usr/local/bin/initdb; \
-    ln -sf /usr/lib/postgresql/17/bin/pg_ctl   /usr/local/bin/pg_ctl
+    ln -sf /usr/lib/postgresql/17/bin/pg_ctl   /usr/local/bin/pg_ctl; \
+    \
+    # Write a build-time marker so start.sh can detect image updates and
+    # clear the cache volume when a new image version is deployed.
+    date -u +%s > /etc/windmill-image-build-epoch
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
@@ -79,7 +83,10 @@ COPY --chmod=664 supervisord.conf /supervisord.conf
 ENV UV_TOOL_BIN_DIR=/tmp/windmill/cache/uv/bin \
     UV_TOOL_DIR=/tmp/windmill/cache/uv/tools \
     WINDMILL_DIR=/tmp/windmill/cache \
-    SSL_CERT_FILE=/etc/ssl/ca-bundle.crt
+    SSL_CERT_FILE=/etc/ssl/ca-bundle.crt \
+    CURL_CA_BUNDLE=/etc/ssl/ca-bundle.crt \
+    REQUESTS_CA_BUNDLE=/etc/ssl/ca-bundle.crt \
+    NODE_EXTRA_CA_CERTS=/etc/ssl/ca-bundle.crt
 
 VOLUME ["/var/lib/postgresql/data", "/tmp/windmill/cache"]
 
