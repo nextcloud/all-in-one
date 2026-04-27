@@ -523,6 +523,7 @@ readonly class DockerActionManager {
         }
 
         $imageName = $this->BuildImageName($container);
+        $this->verifyImageSignature($imageName);
         $encodedImageName = urlencode($imageName);
         $url = $this->BuildApiUrl(sprintf('images/create?fromImage=%s', $encodedImageName));
         $imageIsThere = true;
@@ -555,6 +556,58 @@ readonly class DockerActionManager {
                 }
             }
         }
+    }
+
+    private function verifyImageSignature(string $imageName): void {
+        // Only verify images from the nextcloud-releases ghcr.io registry or
+        // the nextcloud/all-in-one Docker Hub image, as those are the images
+        // signed via the CI workflows in PR #97.
+        if (!str_starts_with($imageName, 'ghcr.io/nextcloud-releases/') && !str_starts_with($imageName, 'nextcloud/all-in-one')) {
+            return;
+        }
+
+        $command = [
+            'cosign',
+            'verify',
+            '--certificate-identity-regexp',
+            '^https://github\\.com/nextcloud-releases/all-in-one/\\.github/workflows/',
+            '--certificate-oidc-issuer',
+            'https://token.actions.githubusercontent.com',
+            $imageName,
+        ];
+
+        $process = proc_open(
+            $command,
+            [
+                0 => ['file', '/dev/null', 'r'],
+                1 => ['file', '/dev/null', 'w'],
+                2 => ['pipe', 'w'],
+            ],
+            $pipes
+        );
+
+        if (!is_resource($process)) {
+            throw new \Exception('Could not execute cosign command to verify image ' . $imageName . '. Ensure cosign is installed and accessible.');
+        }
+
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        $exitCode = proc_close($process);
+
+        if ($exitCode !== 0) {
+            $stderrOutput = $stderr !== false ? $stderr : '';
+            error_log('cosign verification output for ' . $imageName . ': ' . $stderrOutput);
+            throw new \Exception('Image signature verification failed for ' . $imageName . '. The image may not be correctly signed.');
+        }
+    }
+
+    public function verifyMastercontainerImageSignature(bool $skipCosignCheck = false): void {
+        if ($skipCosignCheck) {
+            error_log('WARNING: Skipping cosign signature verification for mastercontainer image. This should only be done temporarily.');
+            return;
+        }
+        $imageName = $this->GetCurrentImageName() . ':' . $this->GetCurrentChannel();
+        $this->verifyImageSignature($imageName);
     }
 
     private function isContainerUpdateAvailable(string $id): string {
