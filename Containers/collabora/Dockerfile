@@ -5,7 +5,10 @@ FROM collabora/code:25.04.9.4.1
 USER root
 ARG DEBIAN_FRONTEND=noninteractive
 
+COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
+
+ENV AIO_LOG_LEVEL=warn
 
 USER 1001
 
@@ -18,3 +21,5 @@ LABEL com.centurylinklabs.watchtower.enable="false" \
     org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
     org.opencontainers.image.vendor="Nextcloud" \
     org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"
+
+ENTRYPOINT ["/start.sh"]

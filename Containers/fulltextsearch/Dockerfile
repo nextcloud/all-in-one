@@ -13,7 +13,10 @@ RUN set -ex; \
     ; \
     microdnf clean all;
 
+COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
+
+ENV AIO_LOG_LEVEL=warn
 
 USER 1000:0
 
@@ -27,3 +30,5 @@ LABEL com.centurylinklabs.watchtower.enable="false" \
     org.opencontainers.image.vendor="Nextcloud" \
     org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"
 ENV ES_JAVA_OPTS="-Xms512M -Xmx512M"
+
+ENTRYPOINT ["/start.sh"]
