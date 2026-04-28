@@ -29,39 +29,29 @@ if [ -f "$IMAGE_EPOCH_FILE" ]; then
 fi
 
 PGDATA="/var/lib/postgresql/data"
-DUMP_FILE="$PGDATA/windmill-db-dump.sql"
 
-# Staging directory for the new cluster during a major-version upgrade.
-# It lives INSIDE $PGDATA (the persistent volume) so the dump file is never
-# on tmpfs and is never lost if the container crashes mid-upgrade.
-UPGRADE_DIR="$PGDATA/upgrade_data"
+# The dump and its sentinel/log files live on a dedicated Docker volume that is
+# separate from the postgres data directory.  This means the dump survives a
+# complete PGDATA wipe (which happens during a major-version upgrade) and there
+# is no need for a staging subdirectory or complex file exclusion logic.
+DUMP_DIR="/var/lib/windmill-dump"
+DUMP_FILE="$DUMP_DIR/windmill-db-dump.sql"
 
 # Current PG major version as shipped in this image
 CURRENT_PG_MAJOR=$(cat /etc/postgres-major-version 2>/dev/null)
 
 # ── Don't start if previous import failed ────────────────────────────────────
-if [ -f "$PGDATA/import.failed" ]; then
+if [ -f "$DUMP_DIR/import.failed" ]; then
     echo "The database import failed the last time. Please restore a backup and try again."
     echo "For further clues on what went wrong, look at the logs above."
-    if [ -d "$UPGRADE_DIR" ]; then
-        echo "The staged upgraded cluster is still present at $UPGRADE_DIR."
-    fi
     exit 1
 fi
 
 # ── Don't start if previous export failed ────────────────────────────────────
-if [ -f "$PGDATA/export.failed" ]; then
+if [ -f "$DUMP_DIR/export.failed" ]; then
     echo "Database export failed the last time. Most likely was the export time not high enough."
     echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
     exit 1
-fi
-
-# ── Clean up any leftover upgrade staging directory ──────────────────────────
-# Normally absent; only present if a previous upgrade was interrupted after the
-# swap completed but before the directory was removed (extremely unlikely).
-if [ -d "$UPGRADE_DIR" ]; then
-    echo "Removing leftover upgrade staging directory..."
-    rm -rf "$UPGRADE_DIR"
 fi
 
 # Write the standard pg_hba.conf and listen_addresses settings into a data directory.
@@ -96,34 +86,33 @@ if [ -f "$PGDATA/PG_VERSION" ]; then
         fi
 
         # Write output to logfile so the import can be inspected later
-        exec > >(tee -i "$PGDATA/database-import.log")
+        exec > >(tee -i "$DUMP_DIR/database-import.log")
         exec 2>&1
 
         echo "Restoring database from dump into new PostgreSQL $CURRENT_PG_MAJOR cluster."
 
         # Set the sentinel BEFORE any destructive operation so that a crash at
         # any point leaves the guard in place and blocks the next start.
-        touch "$PGDATA/import.failed"
+        # The sentinel lives on the dump volume and therefore survives the PGDATA wipe.
+        touch "$DUMP_DIR/import.failed"
 
         set -ex
 
-        # Initialise the new cluster in a subdirectory of the persistent volume.
-        # This keeps the dump file ($DUMP_FILE) untouched throughout the upgrade;
-        # no data is ever copied to or relied upon from tmpfs.
-        rm -rf "$UPGRADE_DIR"
-        mkdir "$UPGRADE_DIR"
+        # Wipe the old cluster and initialise a fresh one.
+        # The dump file is on a separate volume and is not affected.
+        rm -rf "${PGDATA:?}/"*
 
-        initdb -D "$UPGRADE_DIR" \
+        initdb -D "$PGDATA" \
             --username=windmill \
             --auth-local=trust \
             --auth-host=trust \
             --no-instructions
 
-        configure_pg "$UPGRADE_DIR"
+        configure_pg "$PGDATA"
 
         # Start postgres temporarily on an alternate TCP port so we can import.
         # Use explicit flags; do NOT export PGPORT to avoid side-effects.
-        postgres -D "$UPGRADE_DIR" -h 127.0.0.1 -p 11000 &
+        postgres -D "$PGDATA" -h 127.0.0.1 -p 11000 &
         TEMP_PG_PID=$!
 
         # Wait until postgres accepts connections
@@ -136,36 +125,18 @@ if [ -f "$PGDATA/PG_VERSION" ]; then
         psql -h 127.0.0.1 -p 11000 -U windmill -d postgres \
             -c "CREATE DATABASE windmill OWNER windmill;"
 
-        # Restore from dump.  $DUMP_FILE still lives in $PGDATA — it was never
-        # wiped because we used $UPGRADE_DIR for the new cluster.
+        # Restore from dump
         echo "Restoring the database from dump..."
         psql -h 127.0.0.1 -p 11000 -U windmill -d windmill < "$DUMP_FILE"
 
         # Stop the temporary postgres cleanly
-        pg_ctl -D "$UPGRADE_DIR" stop -m smart -t 1800
+        pg_ctl -D "$PGDATA" stop -m smart -t 1800
         wait "$TEMP_PG_PID" 2>/dev/null || true
-
-        # ── Swap the upgraded cluster into the main PGDATA slot ──────────────
-        # Remove all old cluster files except: the staging dir, the dump,
-        # the import log, and the import.failed sentinel.
-        DUMP_BASENAME="$(basename "$DUMP_FILE")"
-        find "$PGDATA" -maxdepth 1 -mindepth 1 \
-            ! -name 'upgrade_data' \
-            ! -name "$DUMP_BASENAME" \
-            ! -name 'database-import.log' \
-            ! -name 'import.failed' \
-            -exec rm -rf {} +
-
-        # Move the new cluster files into PGDATA
-        find "$UPGRADE_DIR" -maxdepth 1 -mindepth 1 -exec mv -t "$PGDATA" {} +
-
-        # Remove the now-empty staging directory
-        rmdir "$UPGRADE_DIR"
 
         set +ex
 
-        # Remove the sentinel only after the swap has fully completed
-        rm "$PGDATA/import.failed"
+        # Remove the sentinel only after the restore has fully completed
+        rm "$DUMP_DIR/import.failed"
         echo "PostgreSQL upgrade to $CURRENT_PG_MAJOR complete."
     fi
 fi
@@ -195,8 +166,8 @@ fi
 
 # ── Dump database and shut down on container stop ────────────────────────────
 do_database_dump() {
-    # Stop windmill first so it is not writing to the database during the dump.
-    supervisorctl -c /supervisord.conf stop windmill 2>/dev/null || true
+    # pg_dump uses a consistent transaction snapshot, so it is safe to run
+    # while Windmill is still connected — no need to stop it beforehand.
 
     # Verify postgres is still accepting connections before attempting the dump.
     if ! pg_isready -h /var/run/postgresql -U windmill -q; then
@@ -207,11 +178,11 @@ do_database_dump() {
     fi
 
     set -x
-    touch "$PGDATA/export.failed"
+    touch "$DUMP_DIR/export.failed"
     rm -f "$DUMP_FILE.temp"
     if pg_dump -h /var/run/postgresql -U windmill windmill > "$DUMP_FILE.temp"; then
         mv "$DUMP_FILE.temp" "$DUMP_FILE"
-        rm "$PGDATA/export.failed"
+        rm "$DUMP_DIR/export.failed"
         echo "Database dump successful!"
     else
         rm -f "$DUMP_FILE.temp"
@@ -219,7 +190,7 @@ do_database_dump() {
     fi
     set +x
 
-    # Stop supervisord (which stops postgres and any remaining programs)
+    # Stop supervisord (which stops postgres and windmill)
     kill "$SUPERVISORD_PID" 2>/dev/null || true
     wait "$SUPERVISORD_PID" 2>/dev/null || true
 }

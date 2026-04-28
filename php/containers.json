@@ -989,6 +989,11 @@
           "writeable": true
         },
         {
+          "source": "nextcloud_aio_windmill_dump",
+          "destination": "/var/lib/windmill-dump",
+          "writeable": true
+        },
+        {
           "source": "nextcloud_aio_windmill",
           "destination": "/tmp/windmill/cache",
           "writeable": true
