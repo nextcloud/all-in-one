@@ -191,10 +191,17 @@
 
                             {% if not hasBackupLocation or borg_backup_mode not in ['test', 'check', ''] or backup_exit_code > 0 %}
                                 {% if borg_remote_repo and backup_exit_code > 0 %}
-                                <p>
-                                You may still need to authorize this pubkey on your borg remote:<br><strong>{{ borg_public_key }}</strong><br>
-                                To try again, resubmit your location and rerun the test.
-                                </p>
+                                    {% if is_ssh_auth_error %}
+                                        <p>
+                                        ⚠️ <strong>SSH key not authorized on the remote server.</strong> You must add the following SSH public key to the <code>authorized_keys</code> file on your remote backup server before the restore test can succeed:<br><br><strong>{{ borg_public_key }}</strong><br><br>
+                                        Once you have added the key on the remote server, resubmit your location and rerun the test.
+                                        </p>
+                                    {% else %}
+                                        <p>
+                                        You may still need to authorize this pubkey on your borg remote:<br><strong>{{ borg_public_key }}</strong><br>
+                                        To try again, resubmit your location and rerun the test.
+                                        </p>
+                                    {% endif %}
                                 {% endif %}
 
                                 <p>
@@ -420,21 +427,29 @@
                                         {% if has_backup_run_once == false %}
                                             <p>The initial backup was not successful.</p>
 
-                                            {% if borg_remote_repo %}
-                                            <p>
-                                            You may still need to authorize this pubkey on your borg remote:<br><strong>{{ borg_public_key }}</strong><br>
-                                            To try again, click <strong>Create backup</strong>.
-                                            </p>
+                                            {% if borg_remote_repo and is_ssh_auth_error %}
+                                                <p>
+                                                ⚠️ <strong>SSH key not authorized on the remote server.</strong> You must add the following SSH public key to the <code>authorized_keys</code> file on your remote backup server before the backup can succeed:<br><br><strong>{{ borg_public_key }}</strong><br><br>
+                                                Once you have added the key on the remote server, click <strong>Create backup</strong> to try again.
+                                                </p>
+                                            {% else %}
+                                                <p>
+                                                You may want to reset the backup location which allows you to enter a new one afterwards. 
+                                                </p>
+                                                <p>
+                                                If the configured backup host location <strong>{{ borg_backup_host_location }}</strong>
+                                                {% if borg_remote_repo %}
+                                                    or the remote repo <strong>{{ borg_remote_repo }}</strong>
+                                                {% endif %}
+                                                is wrong or if you want to reset the backup location due to other reasons, you can do so by clicking on the button below.
+                                                </p>
+                                                <form method="POST" action="api/configuration" class="xhr">
+                                                    <input type="hidden" name="delete_borg_backup_location_vars" value="yes"/>
+                                                    <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                                    <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                                    <input type="submit" value="Reset backup location" data-confirm='Are you sure that you want to reset the backup location?' />
+                                                </form>
                                             {% endif %}
-
-                                            <p>You may change the backup path again since the initial backup was not successful. After submitting the new value, you need to click on <strong>Create Backup</strong> to test the new value.</p>
-                                            <form method="POST" action="api/configuration" class="xhr">
-                                                <label>Local backup location</label> <input type="text" name="borg_backup_host_location" placeholder="/mnt/backup"/><br>
-                                                <label>Remote borg repo</label> <input type="text" name="borg_remote_repo" placeholder="ssh://user@host:port/path/to/repo"/><br>
-                                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                                <input type="submit" value="Set backup location again" />
-                                            </form>
                                         {% endif %}
                                     {% elseif backup_exit_code == 0 %}
                                         {% if borg_backup_mode == "backup" %}

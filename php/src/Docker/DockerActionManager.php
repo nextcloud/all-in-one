@@ -916,6 +916,10 @@ readonly class DockerActionManager {
         }
     }
 
+    public function isBorgBackupSshAuthError(): bool {
+        return file_exists(DataConst::GetBorgSshAuthErrorFile());
+    }
+
     public function GetBackupcontainerExitCode(): int {
         $containerName = 'nextcloud-aio-borgbackup';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($containerName)));
