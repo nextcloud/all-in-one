@@ -75,6 +75,13 @@ if grep -q "1" /sys/module/ipv6/parameters/disable \
 || grep -q "1" /proc/sys/net/ipv6/conf/default/disable_ipv6; then
     IP_BINDING="0.0.0.0"
 fi
+# Build a listen address suitable for the signaling server's "ip:port" format.
+# IPv6 needs bracket notation: [::]:8081; IPv4 keeps the plain form: 0.0.0.0:8081
+if [ "$IP_BINDING" = "::" ]; then
+    SIGNALING_LISTEN="[::]:8081"
+else
+    SIGNALING_LISTEN="$IP_BINDING:8081"
+fi
 if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
     set +x
 fi
@@ -118,7 +125,7 @@ fi
 # Signaling
 cat << SIGNALING_CONF > "/conf/signaling.conf"
 [http]
-listen = 0.0.0.0:8081
+listen = ${SIGNALING_LISTEN}
 readtimeout = 15
 writetimeout = 30
 

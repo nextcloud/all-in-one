@@ -5,6 +5,7 @@ namespace AIO\Data;
 
 use AIO\Auth\PasswordGenerator;
 use AIO\Controller\DockerController;
+use AIO\Helper\NetworkHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
 
@@ -1111,9 +1112,9 @@ class ConfigurationManager
             'INSTALL_LATEST_MAJOR' => $this->installLatestMajor ? 'yes' : '',
             'REMOVE_DISABLED_APPS' => $this->nextcloudKeepDisabledApps ? '' : 'yes',
             // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
-            'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
+            'AIO_DATABASE_HOST' => NetworkHelper::resolveHostname('nextcloud-aio-database'),
             // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
-            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
+            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? NetworkHelper::resolveHostname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
             default => $this->getRegisteredSecret($placeholder),
