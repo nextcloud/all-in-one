@@ -1101,6 +1101,11 @@ if [ "$WINDMILL_ENABLED" = 'yes' ]; then
     fi
     php /var/www/html/occ config:app:set windmill windmill_url --value="https://$NC_DOMAIN/windmill"
     php /var/www/html/occ config:app:set windmill windmill_instance_url --value="http://$WINDMILL_HOST:8000"
+    php /var/www/html/occ config:app:set windmill windmill_admin_token --value="$WINDMILL_SECRET"
+    if ! curl -sf -H "Authorization: Bearer $WINDMILL_SECRET" "http://$WINDMILL_HOST:8000/api/workspaces/list" > /dev/null; then
+        echo "Failed to authenticate against Windmill API. Exiting!"
+        exit 1
+    fi
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/windmill" ]; then
         php /var/www/html/occ app:remove windmill
