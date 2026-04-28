@@ -1102,8 +1102,9 @@ if [ "$WINDMILL_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:app:set windmill windmill_url --value="https://$NC_DOMAIN/windmill"
     php /var/www/html/occ config:app:set windmill windmill_instance_url --value="http://$WINDMILL_HOST:8000"
     php /var/www/html/occ config:app:set windmill windmill_admin_token --value="$WINDMILL_SECRET"
-    if ! curl -sf -H "Authorization: Bearer $WINDMILL_SECRET" "http://$WINDMILL_HOST:8000/api/workspaces/list" > /dev/null; then
-        echo "Failed to authenticate against Windmill API. Exiting!"
+    WINDMILL_HTTP_STATUS="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $WINDMILL_SECRET" "http://$WINDMILL_HOST:8000/api/workspaces/list")"
+    if [ "$WINDMILL_HTTP_STATUS" != "200" ]; then
+        echo "Failed to authenticate against Windmill API (HTTP $WINDMILL_HTTP_STATUS). Exiting!"
         exit 1
     fi
 else
