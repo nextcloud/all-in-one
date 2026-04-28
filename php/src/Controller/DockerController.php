@@ -45,15 +45,15 @@ readonly class DockerController {
         $this->dockerActionManager->ConnectContainerToNetwork($container);
     }
 
-    private function PerformRecursiveImagePull(string $id) : void {
+    private function PerformRecursiveImagePull(string $id, ?\Closure $addToStreamingResponseBody = null) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         // Pull all dependencies first and then itself
         foreach($container->dependsOn as $dependency) {
-            $this->PerformRecursiveImagePull($dependency);
+            $this->PerformRecursiveImagePull($dependency, $addToStreamingResponseBody);
         }
 
-        $this->dockerActionManager->PullImage($container, true);
+        $this->dockerActionManager->PullImage($container, true, $addToStreamingResponseBody);
     }
 
     public function PullAllContainerImages(): void {
@@ -61,6 +61,21 @@ readonly class DockerController {
         $id = self::TOP_CONTAINER;
 
         $this->PerformRecursiveImagePull($id);
+    }
+
+    public function PullImages(Request $request, Response $response, array $args) : Response {
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
+
+        $id = self::TOP_CONTAINER;
+        $this->PerformRecursiveImagePull($id, $addToStreamingResponseBody);
+
+        $nonbufResp->getBody()->write('<div>Done pulling images. The new images will automatically be used whenever the containers are recreated manually or automatically via AIO.</div>');
+
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
     }
 
     public function GetLogs(Request $request, Response $response, array $args) : Response
