@@ -1071,8 +1071,6 @@ class ConfigurationManager
             'NC_BASE_DN' => $this->getBaseDN(),
             'AIO_TOKEN' => $this->aioToken,
             'AIO_LOG_LEVEL' => $this->aioLogLevel,
-            'COLLABORA_LOG_LEVEL' => $this->getCollaboraLogLevel(),
-            'ELASTIC_LOG_LEVEL' => $this->getElasticLogLevel(),
             'BORGBACKUP_REMOTE_REPO' => $this->borgRemoteRepo,
             'BORGBACKUP_MODE' => $this->backupMode,
             'AIO_URL' => $this->aioUrl,
@@ -1119,17 +1117,6 @@ class ConfigurationManager
             'AIO_VERSION' => $this->getAioVersion(),
             default => $this->getRegisteredSecret($placeholder),
         };
-    }
-
-    private function getCollaboraLogLevel() : string {
-        return match ($this->aioLogLevel) {
-            'warn' => 'warning',
-            default => $this->aioLogLevel,
-        };
-    }
-
-    private function getElasticLogLevel() : string {
-        return strtoupper($this->aioLogLevel);
     }
     
     private function booleanize(mixed $value) : bool {
