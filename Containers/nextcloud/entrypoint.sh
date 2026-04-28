@@ -1106,33 +1106,9 @@ if [ "$WINDMILL_ENABLED" = 'yes' ]; then
     WINDMILL_NC_OAUTH_CLIENT_SECRET="$(php /var/www/html/occ config:app:get windmill nc_oauth_client_secret 2>/dev/null)"
     if [ -z "$WINDMILL_NC_OAUTH_CLIENT_ID" ] || [ -z "$WINDMILL_NC_OAUTH_CLIENT_SECRET" ]; then
         WINDMILL_NC_REDIRECT_URI="https://$NC_DOMAIN/windmill/user/login_callback/nextcloud"
-        # Bootstrap NC to create the oauth2 client using NC's own DI container
-        WINDMILL_OAUTH_JSON="$(php -r "
-define('OC_CONSOLE', 1);
-require_once '/var/www/html/lib/base.php';
-\OC_App::loadApp('oauth2');
-\$container = \OC::getContainer();
-\$mapper = \$container->get(\OCA\OAuth2\Db\ClientMapper::class);
-\$crypto = \$container->get(\OCP\Security\ICrypto::class);
-\$random = \$container->get(\OCP\Security\ISecureRandom::class);
-\$redirectUri = '${WINDMILL_NC_REDIRECT_URI}';
-// Delete any stale 'Windmill' client that might have lost its secret
-foreach (\$mapper->getClients() as \$c) {
-    if (\$c->getName() === 'Windmill') { \$mapper->delete(\$c); }
-}
-\$client = new \OCA\OAuth2\Db\Client();
-\$client->setName('Windmill');
-\$client->setRedirectUri(\$redirectUri);
-\$secret = \$random->generate(64, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789');
-\$hashedSecret = bin2hex(\$crypto->calculateHMAC(\$secret));
-\$client->setSecret(\$hashedSecret);
-\$clientId = \$random->generate(64, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789');
-\$client->setClientIdentifier(\$clientId);
-\$mapper->insert(\$client);
-echo json_encode(['client_id' => \$clientId, 'client_secret' => \$secret]);
-" 2>/dev/null)"
-        WINDMILL_NC_OAUTH_CLIENT_ID="$(echo "$WINDMILL_OAUTH_JSON" | php -r "echo json_decode(stream_get_contents(STDIN))->client_id;")"
-        WINDMILL_NC_OAUTH_CLIENT_SECRET="$(echo "$WINDMILL_OAUTH_JSON" | php -r "echo json_decode(stream_get_contents(STDIN))->client_secret;")"
+        WINDMILL_OAUTH_OUTPUT="$(php /create-oauth2-client.php "Windmill" "$WINDMILL_NC_REDIRECT_URI" 2>/dev/null)"
+        WINDMILL_NC_OAUTH_CLIENT_ID="$(printf '%s' "$WINDMILL_OAUTH_OUTPUT" | head -1)"
+        WINDMILL_NC_OAUTH_CLIENT_SECRET="$(printf '%s' "$WINDMILL_OAUTH_OUTPUT" | tail -1)"
         php /var/www/html/occ config:app:set windmill nc_oauth_client_id --value="$WINDMILL_NC_OAUTH_CLIENT_ID"
         php /var/www/html/occ config:app:set windmill nc_oauth_client_secret --value="$WINDMILL_NC_OAUTH_CLIENT_SECRET"
     fi
