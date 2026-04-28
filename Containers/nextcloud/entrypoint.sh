@@ -1101,10 +1101,46 @@ if [ "$WINDMILL_ENABLED" = 'yes' ]; then
     fi
     php /var/www/html/occ config:app:set windmill windmill_url --value="https://$NC_DOMAIN/windmill"
     php /var/www/html/occ config:app:set windmill windmill_instance_url --value="http://$WINDMILL_HOST:8000"
-    php /var/www/html/occ config:app:set windmill windmill_admin_token --value="$WINDMILL_SECRET"
-    WINDMILL_HTTP_STATUS="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $WINDMILL_SECRET" "http://$WINDMILL_HOST:8000/api/workspaces/list")"
-    if [ "$WINDMILL_HTTP_STATUS" != "200" ]; then
-        echo "Failed to authenticate against Windmill API (HTTP $WINDMILL_HTTP_STATUS). Exiting!"
+    # Create an NC OAuth2 client for Windmill (idempotent: reuse stored credentials if already created)
+    WINDMILL_NC_OAUTH_CLIENT_ID="$(php /var/www/html/occ config:app:get windmill nc_oauth_client_id 2>/dev/null)"
+    WINDMILL_NC_OAUTH_CLIENT_SECRET="$(php /var/www/html/occ config:app:get windmill nc_oauth_client_secret 2>/dev/null)"
+    if [ -z "$WINDMILL_NC_OAUTH_CLIENT_ID" ] || [ -z "$WINDMILL_NC_OAUTH_CLIENT_SECRET" ]; then
+        WINDMILL_NC_REDIRECT_URI="https://$NC_DOMAIN/windmill/user/login_callback/nextcloud"
+        # Bootstrap NC to create the oauth2 client using NC's own DI container
+        WINDMILL_OAUTH_JSON="$(php -r "
+define('OC_CONSOLE', 1);
+require_once '/var/www/html/lib/base.php';
+\OC_App::loadApp('oauth2');
+\$container = \OC::getContainer();
+\$mapper = \$container->get(\OCA\OAuth2\Db\ClientMapper::class);
+\$crypto = \$container->get(\OCP\Security\ICrypto::class);
+\$random = \$container->get(\OCP\Security\ISecureRandom::class);
+\$redirectUri = '${WINDMILL_NC_REDIRECT_URI}';
+// Delete any stale 'Windmill' client that might have lost its secret
+foreach (\$mapper->getClients() as \$c) {
+    if (\$c->getName() === 'Windmill') { \$mapper->delete(\$c); }
+}
+\$client = new \OCA\OAuth2\Db\Client();
+\$client->setName('Windmill');
+\$client->setRedirectUri(\$redirectUri);
+\$secret = \$random->generate(64, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789');
+\$hashedSecret = bin2hex(\$crypto->calculateHMAC(\$secret));
+\$client->setSecret(\$hashedSecret);
+\$clientId = \$random->generate(64, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789');
+\$client->setClientIdentifier(\$clientId);
+\$mapper->insert(\$client);
+echo json_encode(['client_id' => \$clientId, 'client_secret' => \$secret]);
+" 2>/dev/null)"
+        WINDMILL_NC_OAUTH_CLIENT_ID="$(echo "$WINDMILL_OAUTH_JSON" | php -r "echo json_decode(stream_get_contents(STDIN))->client_id;")"
+        WINDMILL_NC_OAUTH_CLIENT_SECRET="$(echo "$WINDMILL_OAUTH_JSON" | php -r "echo json_decode(stream_get_contents(STDIN))->client_secret;")"
+        php /var/www/html/occ config:app:set windmill nc_oauth_client_id --value="$WINDMILL_NC_OAUTH_CLIENT_ID"
+        php /var/www/html/occ config:app:set windmill nc_oauth_client_secret --value="$WINDMILL_NC_OAUTH_CLIENT_SECRET"
+    fi
+    # Configure Windmill to use NC as OAuth SSO provider
+    WINDMILL_OAUTH_BODY="{\"value\":{\"nextcloud\":{\"id\":\"$WINDMILL_NC_OAUTH_CLIENT_ID\",\"secret\":\"$WINDMILL_NC_OAUTH_CLIENT_SECRET\",\"login_config\":{\"auth_url\":\"https://$NC_DOMAIN/apps/oauth2/authorize\",\"token_url\":\"https://$NC_DOMAIN/apps/oauth2/api/v1/token\",\"userinfo_url\":\"https://$NC_DOMAIN/ocs/v2.php/cloud/user?format=json\",\"scopes\":[]}}}}"
+    WINDMILL_OAUTH_STATUS="$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $WINDMILL_SECRET" -d "$WINDMILL_OAUTH_BODY" "http://$WINDMILL_HOST:8000/api/settings/global/oauths")"
+    if [ "$WINDMILL_OAUTH_STATUS" != "200" ]; then
+        echo "Failed to configure Windmill OAuth (HTTP $WINDMILL_OAUTH_STATUS). Exiting!"
         exit 1
     fi
 else
