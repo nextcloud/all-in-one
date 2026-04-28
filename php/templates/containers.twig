@@ -291,6 +291,14 @@
                         {% if has_update_available == true %}
                             {% if is_mastercontainer_update_available == false %}
                                 <p>⚠️ Container updates are available. Click on <strong>Stop containers</strong> and <strong>Start and update containers</strong> to update them. You should consider creating a backup first.</p>
+                                {% if isAnyRunning == true and isApacheStarting != true %}
+                                    <p>Alternatively, you can already pull the new images now while the containers are still running. The new images will automatically be used whenever the containers are recreated – either manually or automatically via AIO's daily backup/update schedule.</p>
+                                    <form method="POST" action="api/docker/pull-images" target="overlay-log">
+                                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                        <input type="submit" value="Pull new images" />
+                                    </form>
+                                {% endif %}
                             {% endif %}
                         {% else %}
                             {% if is_mastercontainer_update_available == false %}
