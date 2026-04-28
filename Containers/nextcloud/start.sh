@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 # Set a default value for POSTGRES_PORT
 if [ -z "$POSTGRES_PORT" ]; then
     POSTGRES_PORT=5432
@@ -53,7 +57,9 @@ if ! [ -f "/dev-dri-group-was-added" ] && [ -n "$(find /dev -maxdepth 1 -mindept
     usermod -aG "$GROUP" www-data
     touch "/dev-dri-group-was-added"
 fi
-set +x
+if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+    set +x
+fi
 
 # Check datadir permissions
 sudo -E -u www-data touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
@@ -170,6 +176,8 @@ if [ "$THIS_IS_AIO" = "true" ] && [ "$APACHE_PORT" = 443 ]; then
     sed -i "/^listen.allowed_clients/s/,$//" /usr/local/etc/php-fpm.d/www.conf
     grep listen.allowed_clients /usr/local/etc/php-fpm.d/www.conf
 fi
-set +x
+if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+    set +x
+fi
 
 exec "$@"

@@ -1,8 +1,20 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 if [ -z "$NC_DOMAIN" ]; then
     echo "NC_DOMAIN and NEXTCLOUD_HOST need to be provided. Exiting!"
     exit 1
+fi
+
+CADDY_LOG_LEVEL="$(echo "$AIO_LOG_LEVEL" | tr '[:lower:]' '[:upper:]')"
+export CADDY_LOG_LEVEL
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    export SUPERVISORD_STDOUT=/dev/stdout
+else
+    export SUPERVISORD_STDOUT=NONE
 fi
 
 # Need write access to /mnt/data

@@ -10,7 +10,7 @@
     }
 
     log {
-        level ERROR
+        level {$CADDY_LOG_LEVEL}
     }
 }
 

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+export RUST_LOG="$AIO_LOG_LEVEL"
+
 if [ -z "$NEXTCLOUD_HOST" ]; then
     echo "NEXTCLOUD_HOST needs to be provided. Exiting!"
     exit 1

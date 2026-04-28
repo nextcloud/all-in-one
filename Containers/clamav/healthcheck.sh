@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 if [ "$(echo "PING" | nc 127.0.0.1 3310)" != "PONG" ]; then
 	echo "ERROR: Unable to contact server"
 	exit 1
