@@ -33,6 +33,7 @@ readonly class Container {
         public array                         $backupVolumes,
         public array                         $nextcloudExecCommands,
         public bool                          $readOnlyRootFs,
+        public bool                          $noNewPrivileges,
         public array                         $tmpfs,
         public bool                          $init,
         public string                        $imageTag,
