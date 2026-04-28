@@ -449,7 +449,7 @@ readonly class DockerActionManager {
 
         // Special things for the jellyfin community container
         } elseif ($container->identifier === 'nextcloud-aio-jellyfin') {
-            $lldapIp = gethostbyname('nextcloud-aio-lldap');
+            $lldapIp = $this->resolveHostname('nextcloud-aio-lldap');
             if ($lldapIp !== 'nextcloud-aio-lldap') {
                 $requestBody['HostConfig']['ExtraHosts'] = ['nextcloud-aio-lldap:' . $lldapIp];
             }
@@ -1092,5 +1092,22 @@ readonly class DockerActionManager {
             $addToStreamingResponseBody("Automatically reloading the page after 10s.");
             sleep(10);
         }
+    }
+
+    /**
+     * Resolve a hostname to its IP address, trying IPv4 first and falling back
+     * to IPv6 (AAAA record) when no A record is found.  Returns the hostname
+     * unchanged when neither record resolves successfully.
+     */
+    private function resolveHostname(string $hostname): string {
+        $ipv4 = gethostbyname($hostname);
+        if ($ipv4 !== $hostname) {
+            return $ipv4;
+        }
+        $records = dns_get_record($hostname, DNS_AAAA);
+        if (is_array($records) && isset($records[0]['ipv6']) && $records[0]['ipv6'] !== '') {
+            return $records[0]['ipv6'];
+        }
+        return $hostname;
     }
 }
