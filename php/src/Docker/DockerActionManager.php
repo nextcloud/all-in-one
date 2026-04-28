@@ -15,6 +15,9 @@ use http\Env\Response;
 
 readonly class DockerActionManager {
     private const string API_VERSION = 'v1.44';
+    private const int PULL_STREAM_READ_CHUNK_SIZE = 65536;
+    private const int PULL_STREAM_MAX_BUFFER_SIZE = 1048576;
+    private const int PULL_HEARTBEAT_INTERVAL_SECONDS = 5;
     private Client $guzzleClient;
 
     public function __construct(
@@ -560,10 +563,60 @@ readonly class DockerActionManager {
         $maxRetries = 3;
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
-                $this->guzzleClient->post($url);
+                // Use streaming so we can write heartbeat messages to the response while the
+                // image is being pulled. Without this, a long pull produces no output and a
+                // reverse proxy (nginx) can drop the connection after its read timeout expires.
+                // Once the connection is gone, PHP aborts on the next write and all consecutive
+                // containers are never started.
+                $pullResponse = $this->guzzleClient->post($url, ['stream' => true]);
+                $pullBody = $pullResponse->getBody();
+                $buffer = '';
+                $pullErrors = [];
+                $lastHeartbeat = 0;
+                while (!$pullBody->eof()) {
+                    $chunk = $pullBody->read(self::PULL_STREAM_READ_CHUNK_SIZE);
+                    if ($chunk === '') {
+                        continue;
+                    }
+                    $buffer .= $chunk;
+                    // Guard against malformed responses that contain no newlines.
+                    if (strlen($buffer) > self::PULL_STREAM_MAX_BUFFER_SIZE && strpos($buffer, "\n") === false) {
+                        error_log('Docker pull response buffer exceeded 1 MB without a newline, discarding buffer for ' . $imageName);
+                        $buffer = '';
+                        continue;
+                    }
+                    while (($newlinePos = strpos($buffer, "\n")) !== false) {
+                        $line = trim(substr($buffer, 0, $newlinePos));
+                        $buffer = substr($buffer, $newlinePos + 1);
+                        if ($line === '') {
+                            continue;
+                        }
+                        $event = json_decode($line, true);
+                        if (!is_array($event)) {
+                            continue;
+                        }
+                        if (isset($event['error'])) {
+                            $pullErrors[] = $event['error'];
+                        } elseif ($addToStreamingResponseBody !== null) {
+                            // Write a heartbeat at most once every 5 seconds so the reverse
+                            // proxy sees continuous data and does not close the connection.
+                            $now = time();
+                            if ($now - $lastHeartbeat >= self::PULL_HEARTBEAT_INTERVAL_SECONDS) {
+                                $addToStreamingResponseBody($container, "Pulling image");
+                                $lastHeartbeat = $now;
+                            }
+                        }
+                    }
+                }
+                if ($pullErrors !== []) {
+                    throw new \Exception(implode('; ', $pullErrors));
+                }
                 break;
-            } catch (RequestException $e) {
-                $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $e->getResponse()?->getBody()->getContents();
+            } catch (\Exception $e) {
+                $errorDetails = $e instanceof RequestException
+                    ? $e->getResponse()?->getBody()->getContents()
+                    : $e->getMessage();
+                $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $errorDetails;
                 if ($attempt === $maxRetries) {
                     if ($imageIsThere === false) {
                         throw new \Exception($message);
