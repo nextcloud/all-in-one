@@ -1138,9 +1138,10 @@ echo json_encode(['client_id' => \$clientId, 'client_secret' => \$secret]);
     fi
     # Configure Windmill to use NC as OAuth SSO provider
     WINDMILL_OAUTH_BODY="{\"value\":{\"nextcloud\":{\"id\":\"$WINDMILL_NC_OAUTH_CLIENT_ID\",\"secret\":\"$WINDMILL_NC_OAUTH_CLIENT_SECRET\",\"login_config\":{\"auth_url\":\"https://$NC_DOMAIN/apps/oauth2/authorize\",\"token_url\":\"https://$NC_DOMAIN/apps/oauth2/api/v1/token\",\"userinfo_url\":\"https://$NC_DOMAIN/ocs/v2.php/cloud/user?format=json\",\"scopes\":[]}}}}"
-    WINDMILL_OAUTH_STATUS="$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $WINDMILL_SECRET" -d "$WINDMILL_OAUTH_BODY" "http://$WINDMILL_HOST:8000/api/settings/global/oauths")"
+    WINDMILL_OAUTH_RESPONSE="$(curl -s -w '\n%{http_code}' -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $WINDMILL_SECRET" -d "$WINDMILL_OAUTH_BODY" "http://$WINDMILL_HOST:8000/api/settings/global/oauths")"
+    WINDMILL_OAUTH_STATUS="$(echo "$WINDMILL_OAUTH_RESPONSE" | tail -1)"
     if [ "$WINDMILL_OAUTH_STATUS" != "200" ]; then
-        echo "Failed to configure Windmill OAuth (HTTP $WINDMILL_OAUTH_STATUS). Exiting!"
+        echo "Failed to configure Windmill OAuth against http://$WINDMILL_HOST:8000 (HTTP $WINDMILL_OAUTH_STATUS). Response: $(echo "$WINDMILL_OAUTH_RESPONSE" | head -1). Exiting!"
         exit 1
     fi
 else
