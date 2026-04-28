@@ -178,7 +178,8 @@
         "FULLTEXTSEARCH_PASSWORD",
         "IMAGINARY_SECRET",
         "WHITEBOARD_SECRET",
-        "HP_SHARED_KEY"
+        "HP_SHARED_KEY",
+        "WINDMILL_SECRET"
       ],
       "volumes": [
         {
@@ -268,7 +269,8 @@
         "HARP_ENABLED=%HARP_ENABLED%",
         "HP_SHARED_KEY=%HP_SHARED_KEY%",
         "WINDMILL_ENABLED=%WINDMILL_ENABLED%",
-        "WINDMILL_HOST=nextcloud-aio-windmill"
+        "WINDMILL_HOST=nextcloud-aio-windmill",
+        "WINDMILL_SECRET=%WINDMILL_SECRET%"
       ],
       "stop_grace_period": 600,
       "restart": "unless-stopped",
@@ -980,7 +982,11 @@
         "NUM_WORKERS=1",
         "MODE=standalone",
         "DISABLE_NSJAIL=true",
-        "DATABASE_URL=postgresql://windmill@localhost/windmill?host=/var/run/postgresql"
+        "DATABASE_URL=postgresql://windmill@localhost/windmill?host=/var/run/postgresql",
+        "SUPERADMIN_SECRET=%WINDMILL_SECRET%"
+      ],
+      "secrets": [
+        "WINDMILL_SECRET"
       ],
       "volumes": [
         {
@@ -994,13 +1000,14 @@
           "writeable": true
         },
         {
-          "source": "nextcloud_aio_windmill",
+          "source": "nextcloud_aio_windmill_cache",
           "destination": "/tmp/windmill/cache",
           "writeable": true
         }
       ],
       "backup_volumes": [
-        "nextcloud_aio_windmill_db"
+        "nextcloud_aio_windmill_db",
+        "nextcloud_aio_windmill_dump"
       ],
       "restart": "unless-stopped",
       "stop_grace_period": 1800,

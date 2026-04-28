@@ -60,10 +60,9 @@ configure_pg() {
     cat > "$datadir/pg_hba.conf" << 'HBAEOF'
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 local   all             all                                     trust
-host    all             all             127.0.0.1/32            trust
-host    all             all             ::1/128                 trust
 HBAEOF
-    echo "listen_addresses = 'localhost'" >> "$datadir/postgresql.conf"
+    # Disable TCP entirely; all communication uses the Unix socket.
+    echo "listen_addresses = ''" >> "$datadir/postgresql.conf"
 }
 
 # ── PostgreSQL major-version upgrade via dump/restore ────────────────────────
@@ -110,24 +109,24 @@ if [ -f "$PGDATA/PG_VERSION" ]; then
 
         configure_pg "$PGDATA"
 
-        # Start postgres temporarily on an alternate TCP port so we can import.
-        # Use explicit flags; do NOT export PGPORT to avoid side-effects.
-        postgres -D "$PGDATA" -h 127.0.0.1 -p 11000 &
+        # Start postgres temporarily on a socket in /tmp so we can import.
+        # No TCP port is needed since we connect via the socket.
+        postgres -D "$PGDATA" -k /tmp -h "" &
         TEMP_PG_PID=$!
 
         # Wait until postgres accepts connections
-        while ! psql -h 127.0.0.1 -p 11000 -U windmill -d postgres -c "select now()" > /dev/null 2>&1; do
+        while ! psql -h /tmp -U windmill -d postgres -c "select now()" > /dev/null 2>&1; do
             echo "Waiting for the temporary database to start..."
             sleep 5
         done
 
         # Create the windmill database
-        psql -h 127.0.0.1 -p 11000 -U windmill -d postgres \
+        psql -h /tmp -U windmill -d postgres \
             -c "CREATE DATABASE windmill OWNER windmill;"
 
         # Restore from dump
         echo "Restoring the database from dump..."
-        psql -h 127.0.0.1 -p 11000 -U windmill -d windmill < "$DUMP_FILE"
+        psql -h /tmp -U windmill -d windmill < "$DUMP_FILE"
 
         # Stop the temporary postgres cleanly
         pg_ctl -D "$PGDATA" stop -m smart -t 1800

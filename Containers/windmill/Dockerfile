@@ -47,11 +47,13 @@ RUN set -ex; \
     # pre-installed runtimes would create a huge and unnecessary image layer.
     mkdir -p \
         /var/lib/postgresql/data \
+        /var/lib/windmill-dump \
         /var/run/postgresql \
         /var/log/supervisord \
         /var/run/supervisord; \
     chown -R windmill:windmill \
         /var/lib/postgresql \
+        /var/lib/windmill-dump \
         /var/run/postgresql \
         /var/log/supervisord \
         /var/run/supervisord; \
@@ -94,7 +96,7 @@ ENV UV_TOOL_BIN_DIR=/tmp/windmill/cache/uv/bin \
     REQUESTS_CA_BUNDLE=/etc/ssl/ca-bundle.crt \
     NODE_EXTRA_CA_CERTS=/etc/ssl/ca-bundle.crt
 
-VOLUME ["/var/lib/postgresql/data", "/tmp/windmill/cache"]
+VOLUME ["/var/lib/postgresql/data", "/var/lib/windmill-dump", "/tmp/windmill/cache"]
 
 # Use the pre-existing windmill user (uid=1000) from the base image
 USER 1000
