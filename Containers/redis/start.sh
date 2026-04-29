@@ -7,6 +7,8 @@ fi
 # Redis only supports [debug, verbose, notice, warning, nothing] as log level
 if [ "$AIO_LOG_LEVEL" = "warn" ] || [ "$AIO_LOG_LEVEL" = "error" ]; then
     REDIS_LOG_LEVEL="warning"
+elif [ "$AIO_LOG_LEVEL" = "info" ]; then
+    REDIS_LOG_LEVEL="notice"
 else
     REDIS_LOG_LEVEL="$AIO_LOG_LEVEL"
 fi
