@@ -14,6 +14,7 @@ RUN set -ex; \
         bash \
         openssl \
         shadow \
+        netcat-openbsd \
         grep; \
     \
 # We need to use the same gid and uid as on old installations
