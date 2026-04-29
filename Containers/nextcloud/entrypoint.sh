@@ -671,6 +671,7 @@ fi
 # Adjusting log files to be stored on a volume
 echo "Adjusting log files..."
 php /var/www/html/occ config:system:set upgrade.cli-upgrade-link --value="https://github.com/nextcloud/all-in-one/discussions/2726"
+php /var/www/html/occ config:system:set loglevel --value="$NEXTCLOUD_LOG_LEVEL" --type=integer
 if [ "$NEXTCLOUD_LOG_TYPE" = "errorlog" ]; then
     php /var/www/html/occ config:system:set log_type --value="errorlog"
     php /var/www/html/occ config:system:set log_type_audit --value="errorlog"
