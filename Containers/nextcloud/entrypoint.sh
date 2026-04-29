@@ -1113,5 +1113,41 @@ else
     fi
 fi
 
+# Windmill app
+if [ "$WINDMILL_ENABLED" = 'yes' ]; then
+    if ! [ -d "/var/www/html/custom_apps/windmill" ]; then
+        php /var/www/html/occ app:install windmill
+    elif [ "$(php /var/www/html/occ config:app:get windmill enabled)" != "yes" ]; then
+        php /var/www/html/occ app:enable windmill
+    elif [ "$SKIP_UPDATE" != 1 ]; then
+        php /var/www/html/occ app:update windmill
+    fi
+    php /var/www/html/occ config:app:set windmill windmill_url --value="https://$NC_DOMAIN/windmill"
+    php /var/www/html/occ config:app:set windmill windmill_instance_url --value="http://$WINDMILL_HOST:8000"
+    # Create an NC OAuth2 client for Windmill (idempotent: reuse stored credentials if already created)
+    WINDMILL_NC_OAUTH_CLIENT_ID="$(php /var/www/html/occ config:app:get windmill nc_oauth_client_id 2>/dev/null)"
+    WINDMILL_NC_OAUTH_CLIENT_SECRET="$(php /var/www/html/occ config:app:get windmill nc_oauth_client_secret 2>/dev/null)"
+    if [ -z "$WINDMILL_NC_OAUTH_CLIENT_ID" ] || [ -z "$WINDMILL_NC_OAUTH_CLIENT_SECRET" ]; then
+        WINDMILL_NC_REDIRECT_URI="https://$NC_DOMAIN/windmill/user/login_callback/nextcloud"
+        WINDMILL_OAUTH_OUTPUT="$(php /create-oauth2-client.php "Windmill" "$WINDMILL_NC_REDIRECT_URI" 2>/dev/null)"
+        WINDMILL_NC_OAUTH_CLIENT_ID="$(printf '%s' "$WINDMILL_OAUTH_OUTPUT" | head -1)"
+        WINDMILL_NC_OAUTH_CLIENT_SECRET="$(printf '%s' "$WINDMILL_OAUTH_OUTPUT" | tail -1)"
+        php /var/www/html/occ config:app:set windmill nc_oauth_client_id --value="$WINDMILL_NC_OAUTH_CLIENT_ID"
+        php /var/www/html/occ config:app:set windmill nc_oauth_client_secret --value="$WINDMILL_NC_OAUTH_CLIENT_SECRET"
+    fi
+    # Configure Windmill to use NC as OAuth SSO provider
+    WINDMILL_OAUTH_BODY="{\"value\":{\"nextcloud\":{\"id\":\"$WINDMILL_NC_OAUTH_CLIENT_ID\",\"secret\":\"$WINDMILL_NC_OAUTH_CLIENT_SECRET\",\"login_config\":{\"auth_url\":\"https://$NC_DOMAIN/apps/oauth2/authorize\",\"token_url\":\"https://$NC_DOMAIN/apps/oauth2/api/v1/token\",\"userinfo_url\":\"https://$NC_DOMAIN/ocs/v2.php/cloud/user?format=json\",\"scopes\":[]}}}}"
+    WINDMILL_OAUTH_RESPONSE="$(curl -s -w '\n%{http_code}' -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $WINDMILL_SECRET" -d "$WINDMILL_OAUTH_BODY" "http://$WINDMILL_HOST:8000/api/settings/global/oauths")"
+    WINDMILL_OAUTH_STATUS="$(echo "$WINDMILL_OAUTH_RESPONSE" | tail -1)"
+    if [ "$WINDMILL_OAUTH_STATUS" != "200" ]; then
+        echo "Failed to configure Windmill OAuth against http://$WINDMILL_HOST:8000 (HTTP $WINDMILL_OAUTH_STATUS). Response: $(echo "$WINDMILL_OAUTH_RESPONSE" | head -1). Exiting!"
+        exit 1
+    fi
+else
+    if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/windmill" ]; then
+        php /var/www/html/occ app:remove windmill
+    fi
+fi
+
 # Remove the update skip file always
 rm -f "$NEXTCLOUD_DATA_DIR"/skip.update
