@@ -4,7 +4,8 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     set -x
 fi
 
-if [ "$AIO_LOG_LEVEL" = "warn" ]; then
+# Redis only supports [debug, verbose, notice, warning, nothing] as log level
+if [ "$AIO_LOG_LEVEL" = "warn" ] [ "$AIO_LOG_LEVEL" = "error" ]; then
     REDIS_LOG_LEVEL="warning"
 else
     REDIS_LOG_LEVEL="$AIO_LOG_LEVEL"
