@@ -9,8 +9,6 @@ if [ -z "$NC_DOMAIN" ]; then
     exit 1
 fi
 
-CADDY_LOG_LEVEL="$(echo "$AIO_LOG_LEVEL" | tr '[:lower:]' '[:upper:]')"
-export CADDY_LOG_LEVEL
 if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     export SUPERVISORD_STDOUT=/dev/stdout
 else

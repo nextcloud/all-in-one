@@ -347,13 +347,11 @@ if [ -z "$AIO_LOG_LEVEL" ]; then
     export AIO_LOG_LEVEL="warn"
 fi
 
-CADDY_LOG_LEVEL="$(echo "$AIO_LOG_LEVEL" | tr '[:lower:]' '[:upper:]')"
 if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     export SUPERVISORD_STDOUT=/dev/stdout
 else
     export SUPERVISORD_STDOUT=NONE
 fi
-export CADDY_LOG_LEVEL
 
 # Check if ghcr.io is reachable
 # Solves issues like https://github.com/nextcloud/all-in-one/discussions/5268
