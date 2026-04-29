@@ -6,6 +6,8 @@ fi
 
 if [ "$AIO_LOG_LEVEL" = "warn" ]; then
     COLLABORA_LOG_LEVEL="warning"
+elif [ "$AIO_LOG_LEVEL" = "info" ]; then
+    COLLABORA_LOG_LEVEL="notice"
 else
     COLLABORA_LOG_LEVEL="$AIO_LOG_LEVEL"
 fi
