@@ -449,7 +449,7 @@ readonly class DockerActionManager {
 
         // Special things for the jellyfin community container
         } elseif ($container->identifier === 'nextcloud-aio-jellyfin') {
-            $lldapIp = gethostbyname('nextcloud-aio-lldap');
+            $lldapIp = DataConst::resolveHostname('nextcloud-aio-lldap');
             if ($lldapIp !== 'nextcloud-aio-lldap') {
                 $requestBody['HostConfig']['ExtraHosts'] = ['nextcloud-aio-lldap:' . $lldapIp];
             }

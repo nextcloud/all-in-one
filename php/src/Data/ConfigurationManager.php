@@ -1111,9 +1111,9 @@ class ConfigurationManager
             'INSTALL_LATEST_MAJOR' => $this->installLatestMajor ? 'yes' : '',
             'REMOVE_DISABLED_APPS' => $this->nextcloudKeepDisabledApps ? '' : 'yes',
             // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
-            'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
+            'AIO_DATABASE_HOST' => DataConst::resolveHostname('nextcloud-aio-database'),
             // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
-            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
+            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? DataConst::resolveHostname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
             default => $this->getRegisteredSecret($placeholder),
