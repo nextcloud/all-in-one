@@ -1,0 +1,53 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-joplin-server",
+            "image_tag": "v1",
+            "display_name": "Joplin Server",
+            "documentation": "https://hub.docker.com/r/joplin/server",
+            "image": "joplin/server:3.6.1",
+            "depends_on": ["nextcloud-aio-joplin-database"],
+            "internal_port": "22300",
+            "ports": [
+                {
+                    "ip_binding": "",
+                    "port_number": "22300",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "DB_CLIENT=pg",
+                "POSTGRES_PASSWORD=joplin",
+                "POSTGRES_DATABASE=joplin",
+                "POSTGRES_USER=joplin",
+                "POSTGRES_PORT=5432",
+                "POSTGRES_HOST=nextcloud-aio-joplin-database"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-joplin-database",
+            "image_tag": "v1",
+            "display_name": "Joplin Database (PostgreSQL)",
+            "documentation": "https://hub.docker.com/_/postgres",
+            "image": "postgres:18",
+            "expose": [
+                "5432"
+            ],
+            "environment": [
+                "POSTGRES_PASSWORD=joplin",
+                "POSTGRES_DB=joplin",
+                "POSTGRES_USER=joplin"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_joplin_data",
+                    "destination": "/var/lib/postgresql/data",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_joplin_data"
+            ]
+        }
+    ]
+}
