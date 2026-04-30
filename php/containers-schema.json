@@ -216,7 +216,7 @@
 							"properties": {
 								"destination": {
 									"type": "string",
-									"pattern": "^((/[a-z_/.-]+)|(%[A-Z_]+%))$"
+									"pattern": "^((/[a-z0-9_/.-]+)|(%[A-Z_]+%))$"
 								},
 								"source": {
 									"type": "string",
