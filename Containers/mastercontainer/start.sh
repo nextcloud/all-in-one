@@ -338,7 +338,7 @@ else
 fi
 
 # Log level logics
-if [ -n "$AIO_LOG_LEVEL" ] && ! grep -q "^debug$\|^info$\|^warn$\|^error$"; then
+if [ -n "$AIO_LOG_LEVEL" ] && ! echo "$AIO_LOG_LEVEL" | grep -q "^debug$\|^info$\|^warn$\|^error$"; then
     print_red "AIO_LOG_LEVEL must be one of 'debug', 'info', 'warn' or 'error'.
 It is set to '$AIO_LOG_LEVEL'".
     exit 1
