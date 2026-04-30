@@ -6,12 +6,18 @@ on:
   schedule:
   - cron:  '00 12 * * *'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   run_update_sh:
     name: Run nextcloud-update script
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
     - name: Run nextcloud-update script
       run: |
         # Inspired by https://github.com/nextcloud/docker/blob/master/update.sh
@@ -79,7 +85,7 @@ jobs:
         fi
 
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v7
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: nextcloud-update automated change

@@ -5,12 +5,18 @@ on:
   schedule:
   - cron:  '00 12 * * *'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   watchtower-update:
     name: update watchtower
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
     - name: Run watchtower-container-update
       run: |
         # Watchtower
@@ -26,7 +32,7 @@ jobs:
         sed -i "s|\$WATCHTOWER_COMMIT_HASH.*$|\$WATCHTOWER_COMMIT_HASH # $watchtower_version|" ./Containers/watchtower/Dockerfile
         
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v7
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: watchtower-update automated change
