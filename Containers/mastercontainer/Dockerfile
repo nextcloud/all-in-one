@@ -46,7 +46,8 @@ RUN set -ex; \
         sudo \
         netcat-openbsd \
         curl \
-        grep; \
+        grep \
+        cosign; \
     \
     apk add --no-cache --virtual .build-deps \
         autoconf \
