@@ -27,6 +27,8 @@ readonly class Container {
         public bool                          $enableNvidiaGpu,
         /** @var string[] */
         public array                         $capAdd,
+        /** @var string[] */
+        public array                         $capDrop,
         public int                           $shmSize,
         public bool                          $apparmorUnconfined,
         /** @var string[] */
