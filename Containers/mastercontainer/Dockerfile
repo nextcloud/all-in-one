@@ -2,7 +2,7 @@
 # Docker CLI is a requirement
 FROM docker:29.4.1-cli AS docker
 
-ARG CADDY_REMOTE_HOST_HASH=b21775afa730ffb52a24ddff310c8a6d1fd37276
+ARG CADDY_REMOTE_HOST_HASH=e80a9931765a8dbcbb47db415863387f0df0e1b3
 
 # Caddy is a requirement
 FROM caddy:2.11.2-builder-alpine AS caddy
