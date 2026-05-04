@@ -62,7 +62,11 @@ readonly class LoginController {
         // password and other secrets, so it must be kept confidential regardless.
         $hmacKey = $this->dockerActionManager->GetAndGenerateSecretWrapper('RATE_LIMIT_HMAC_KEY');
         $rateLimitKey = 'login_attempts_' . hash_hmac('sha256', $ip, $hmacKey);
-        $attempts = (int)(apcu_fetch($rateLimitKey) ?: 0);
+        // Use the $success parameter to distinguish "key not found" from an APCu error.
+        // Since apcu_enabled() confirmed APCu is operational, false here reliably means
+        // the key is absent (no prior failed attempts in the current window).
+        $fetchedValue = apcu_fetch($rateLimitKey, $fetchSuccess);
+        $attempts = ($fetchSuccess === true) ? (int)$fetchedValue : 0;
 
         if ($attempts >= self::MAX_FAILED_ATTEMPTS) {
             // Return 429 immediately; the rate limit itself is sufficient protection.
@@ -82,8 +86,14 @@ readonly class LoginController {
         // - apcu_add() creates the key with a TTL only on the FIRST failure in a window.
         // - apcu_inc() atomically increments on subsequent failures WITHOUT resetting the TTL,
         //   ensuring the window always expires RATE_LIMIT_WINDOW_SEC after the first failure.
+        // If apcu_add() fails for a reason other than the key already existing (e.g., cache full),
+        // apcu_inc() will also fail and return false. In that case, fail safe by refusing the request.
         if (!apcu_add($rateLimitKey, 1, self::RATE_LIMIT_WINDOW_SEC)) {
-            apcu_inc($rateLimitKey);
+            if (apcu_inc($rateLimitKey) === false) {
+                error_log('APCu rate limit increment failed; refusing login attempt to fail safe.');
+                $response->getBody()->write("Login temporarily unavailable. Please try again later.");
+                return $response->withStatus(503);
+            }
         }
 
         // Punish failed auth attempts with a delay, as a very simple means against bots.
@@ -100,6 +110,8 @@ readonly class LoginController {
             // Return a minimal HTML page that uses JavaScript to replace the browser's
             // current history entry (removing the token from it) before navigating to
             // the main AIO page.  This prevents the token from remaining in browser history.
+            // The script is served from 'self'; same-origin scripts are already trusted under
+            // the 'script-src-elem self' CSP directive, so no SRI hash is needed here.
             $response->getBody()->write(
                 '<!DOCTYPE html>' .
                 '<html lang="en">' .

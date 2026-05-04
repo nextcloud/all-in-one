@@ -10,11 +10,17 @@
 // We replace with location.pathname only (no query string, no hash), which
 // intentionally strips the ?token=… parameter and any hash fragment from the
 // recorded history entry.
-const rawTarget = document.currentScript.dataset.target;
 
-// Only accept the exact relative path we set server-side to prevent any
-// potential open-redirect via a manipulated data-target value.
-const target = rawTarget === '../../' ? rawTarget : '/';
+// Guard against environments where document.currentScript may be null.
+if (!document.currentScript) {
+    window.location.replace('/');
+} else {
+    const rawTarget = document.currentScript.dataset.target;
 
-history.replaceState(null, '', location.pathname);
-window.location.replace(target);
+    // Only accept the exact relative path we set server-side to prevent any
+    // potential open-redirect via a manipulated data-target value.
+    const target = rawTarget === '../../' ? rawTarget : '/';
+
+    history.replaceState(null, '', location.pathname);
+    window.location.replace(target);
+}
