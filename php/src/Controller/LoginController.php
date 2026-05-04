@@ -46,10 +46,20 @@ readonly class LoginController {
             return $response->withStatus(403);
         }
 
+        // Require APCu to be available: without it rate limiting cannot be enforced, so we
+        // refuse logins rather than silently allowing unlimited attempts.
+        if (!apcu_enabled()) {
+            error_log('APCu is not available. Login rejected to enforce rate limiting.');
+            $response->getBody()->write("Login temporarily unavailable. Please try again later.");
+            return $response->withStatus(503);
+        }
+
         // Use HMAC so the cache keys are not predictable from IP addresses alone, preventing
         // enumeration of which IPs have attempted logins via APCu key inspection.
-        // The HMAC key is persisted via the configuration manager so it survives cache clears
-        // and container restarts, preserving rate-limit state across APCu evictions.
+        // The HMAC key is persisted via the configuration manager (in configuration.json) so it
+        // survives cache clears and container restarts. Note: anyone with read access to
+        // configuration.json could derive cache keys, but that file already contains the master
+        // password and other secrets, so it must be kept confidential regardless.
         $hmacKey = $this->dockerActionManager->GetAndGenerateSecretWrapper('RATE_LIMIT_HMAC_KEY');
         $rateLimitKey = 'login_attempts_' . hash_hmac('sha256', $ip, $hmacKey);
         $attempts = (int)(apcu_fetch($rateLimitKey) ?: 0);
@@ -68,8 +78,13 @@ readonly class LoginController {
             return $response->withHeader('Location', '.')->withStatus(201);
         }
 
-        // Increment the failed-attempts counter (expires after RATE_LIMIT_WINDOW_SEC seconds).
-        apcu_store($rateLimitKey, $attempts + 1, self::RATE_LIMIT_WINDOW_SEC);
+        // Increment the failed-attempts counter using a fixed-window approach:
+        // - apcu_add() creates the key with a TTL only on the FIRST failure in a window.
+        // - apcu_inc() atomically increments on subsequent failures WITHOUT resetting the TTL,
+        //   ensuring the window always expires RATE_LIMIT_WINDOW_SEC after the first failure.
+        if (!apcu_add($rateLimitKey, 1, self::RATE_LIMIT_WINDOW_SEC)) {
+            apcu_inc($rateLimitKey);
+        }
 
         // Punish failed auth attempts with a delay, as a very simple means against bots.
         sleep(5);

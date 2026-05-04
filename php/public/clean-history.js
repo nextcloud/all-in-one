@@ -12,14 +12,9 @@
 // recorded history entry.
 const rawTarget = document.currentScript.dataset.target;
 
-// Validate that the redirect target is a safe relative path (starts with '.' or '/').
-// This guards against hypothetical injection (e.g. 'javascript:…') even though the
-// value is server-set.
-const safePattern = /^[./]/;
-const unsafePattern = /^\/\//;
-const target = (typeof rawTarget === 'string' && safePattern.test(rawTarget) && !unsafePattern.test(rawTarget))
-    ? rawTarget
-    : '/';
+// Only accept the exact relative path we set server-side to prevent any
+// potential open-redirect via a manipulated data-target value.
+const target = rawTarget === '../../' ? rawTarget : '/';
 
 history.replaceState(null, '', location.pathname);
 window.location.replace(target);
