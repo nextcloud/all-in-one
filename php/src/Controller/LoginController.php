@@ -34,7 +34,12 @@ readonly class LoginController {
         }
 
         // Per-IP rate limiting: block after MAX_FAILED_ATTEMPTS failures within RATE_LIMIT_WINDOW_SEC.
-        $ip = $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown';
+        $ip = $request->getServerParams()['REMOTE_ADDR'] ?? '';
+        if ($ip === '') {
+            // Refuse to rate-limit against a shared bucket when no IP is available.
+            $response->getBody()->write("Unable to determine client IP. Login refused.");
+            return $response->withStatus(403);
+        }
         $rateLimitKey = 'login_attempts_' . hash('sha256', $ip);
         $attempts = (int)(apcu_fetch($rateLimitKey) ?: 0);
 
@@ -42,7 +47,7 @@ readonly class LoginController {
             // Keep a delay even when blocked so the 429 itself isn't a timing oracle.
             sleep(5);
             $response->getBody()->write("Too many failed login attempts. Please try again later.");
-            return $response->withHeader('Location', '.')->withStatus(429);
+            return $response->withStatus(429);
         }
 
         $password = $request->getParsedBody()['password'] ?? '';
@@ -73,7 +78,7 @@ readonly class LoginController {
             $response->getBody()->write(
                 '<!DOCTYPE html>' .
                 '<html lang="en">' .
-                '<head><script src="../../clean-history.js"></script></head>' .
+                '<head><script src="../../clean-history.js" data-target="../../"></script></head>' .
                 '<body></body>' .
                 '</html>'
             );
