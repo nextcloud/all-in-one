@@ -167,6 +167,8 @@ readonly class DockerController {
 
         // The password has been passed to the borgbackup container's environment.
         // Clear it from the persistent config so it is not kept at rest longer than needed.
+        // ConfigurationManager.set() overwrites the stored value with an empty string and
+        // immediately writes the updated config to disk, so the plaintext password is removed.
         $this->configurationManager->borgRestorePassword = '';
 
         // End streaming response

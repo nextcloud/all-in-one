@@ -6,6 +6,10 @@
 // The target URL is passed via the script tag's data-target attribute.
 // document.currentScript is only available during synchronous script execution
 // (not with defer/async), so this script is loaded without those attributes.
+//
+// We replace with location.pathname only (no query string, no hash), which
+// intentionally strips the ?token=… parameter and any hash fragment from the
+// recorded history entry.
 const target = document.currentScript.dataset.target;
 history.replaceState(null, '', location.pathname);
 window.location.replace(target);

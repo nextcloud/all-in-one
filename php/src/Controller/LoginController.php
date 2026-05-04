@@ -40,12 +40,18 @@ readonly class LoginController {
             $response->getBody()->write("Unable to determine client IP. Login refused.");
             return $response->withStatus(403);
         }
-        $rateLimitKey = 'login_attempts_' . hash('sha256', $ip);
+
+        // Use HMAC to avoid leaking which IPs are being tracked via predictable cache-key names.
+        $hmacKey = (string)(apcu_fetch('login_rate_limit_hmac_key') ?: '');
+        if ($hmacKey === '') {
+            $hmacKey = bin2hex(random_bytes(16));
+            apcu_add('login_rate_limit_hmac_key', $hmacKey);
+        }
+        $rateLimitKey = 'login_attempts_' . hash_hmac('sha256', $ip, $hmacKey);
         $attempts = (int)(apcu_fetch($rateLimitKey) ?: 0);
 
         if ($attempts >= self::MAX_FAILED_ATTEMPTS) {
-            // Keep a delay even when blocked so the 429 itself isn't a timing oracle.
-            sleep(5);
+            // Return 429 immediately; the rate limit itself is sufficient protection.
             $response->getBody()->write("Too many failed login attempts. Please try again later.");
             return $response->withStatus(429);
         }
