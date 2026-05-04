@@ -78,6 +78,10 @@ readonly class ContainerDefinitionFetcher {
                 if (!$this->configurationManager->isOnlyofficeEnabled) {
                     continue;
                 }
+            } elseif ($entry['container_name'] === 'nextcloud-aio-eurooffice') {
+                if (!$this->configurationManager->isEuroofficeEnabled) {
+                    continue;
+                }
             } elseif ($entry['container_name'] === 'nextcloud-aio-collabora') {
                 if (!$this->configurationManager->isCollaboraEnabled) {
                     continue;
@@ -192,6 +196,10 @@ readonly class ContainerDefinitionFetcher {
                         }
                     } elseif ($value === 'nextcloud-aio-onlyoffice') {
                         if (!$this->configurationManager->isOnlyofficeEnabled) {
+                            continue;
+                        }
+                    } elseif ($value === 'nextcloud-aio-eurooffice') {
+                        if (!$this->configurationManager->isEuroofficeEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-collabora') {

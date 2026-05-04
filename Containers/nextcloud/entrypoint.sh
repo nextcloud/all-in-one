@@ -867,6 +867,58 @@ else
     fi
 fi
 
+# EuroOffice
+if [ "$EUROOFFICE_ENABLED" = 'yes' ]; then
+    # Determine EuroOffice port based on host pattern
+    if echo "$EUROOFFICE_HOST" | grep -q "nextcloud-.*-eurooffice"; then
+        EUROOFFICE_PORT=80
+    else
+        EUROOFFICE_PORT=443
+    fi
+
+    count=0
+    while ! nc -z "$EUROOFFICE_HOST" "$EUROOFFICE_PORT" && [ "$count" -lt 90 ]; do
+        echo "Waiting for EuroOffice to become available..."
+        count=$((count+5))
+        sleep 5
+    done
+    if [ "$count" -ge 90 ]; then
+        bash /notify.sh "EuroOffice did not start in time!" "Skipping initialization and disabling eurooffice app."
+        php /var/www/html/occ app:disable eurooffice
+    else
+        # Install or enable EuroOffice app as needed
+        if ! [ -d "/var/www/html/custom_apps/eurooffice" ]; then
+            php /var/www/html/occ app:install eurooffice
+        elif [ "$(php /var/www/html/occ config:app:get eurooffice enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable eurooffice
+        elif [ "$SKIP_UPDATE" != 1 ]; then
+            php /var/www/html/occ app:update eurooffice
+        fi
+
+        # Set EuroOffice configuration
+        php /var/www/html/occ config:system:set eurooffice editors_check_interval --value="0" --type=integer 
+        php /var/www/html/occ config:system:set eurooffice jwt_secret --value="$EUROOFFICE_SECRET"
+        php /var/www/html/occ config:app:set eurooffice jwt_secret --value="$EUROOFFICE_SECRET"
+        php /var/www/html/occ config:system:set eurooffice jwt_header --value="AuthorizationJwt"
+
+        # Adjust the EuroOffice host if using internal pattern
+        if echo "$EUROOFFICE_HOST" | grep -q "nextcloud-.*-eurooffice"; then
+            EUROOFFICE_HOST="$NC_DOMAIN/eurooffice"
+            export EUROOFFICE_HOST
+        fi
+
+        php /var/www/html/occ config:app:set eurooffice DocumentServerUrl --value="https://$EUROOFFICE_HOST"
+    fi
+else
+    # Remove EuroOffice app if disabled and removal is requested
+    if [ "$REMOVE_DISABLED_APPS" = yes ] && \
+       [ -d "/var/www/html/custom_apps/eurooffice" ] && \
+       [ -n "$EUROOFFICE_SECRET" ] && \
+       [ "$(php /var/www/html/occ config:system:get eurooffice jwt_secret)" = "$EUROOFFICE_SECRET" ]; then
+        php /var/www/html/occ app:remove eurooffice
+    fi
+fi
+
 # Talk
 if [ "$TALK_ENABLED" = 'yes' ]; then
     set -x

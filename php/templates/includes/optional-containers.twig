@@ -81,6 +81,37 @@
             {% endif %}
         </label>
         <input type="hidden" id="onlyoffice" name="onlyoffice" value="" data-initial-state="{% if is_onlyoffice_enabled == true %}true{% else %}false{% endif %}">
+        <input
+            type="radio"
+            id="office-eurooffice"
+            name="office_suite_choice"
+            value="eurooffice"
+            class="office-radio"
+            {% if is_eurooffice_enabled == true %}
+                checked="checked"
+            {% endif %}
+        >
+        <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-eurooffice">
+            <div class="office-card-header">
+                <h4>EuroOffice</h4>
+                <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
+                    <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <ul class="office-features">
+                <li>Good Nextcloud integration</li>
+                <li>European alternative</li>
+                <li>Good performance</li>
+                <li>Good Microsoft compatibility</li>
+            </ul>
+            {% if isAnyRunning == false %}
+                <a href="https://www.eurooffice.org/" target="_blank" class="office-learn-more" data-stop-event-propagation="true">
+                    Learn more
+                </a>
+            {% endif %}
+        </label>
+        <input type="hidden" id="eurooffice" name="eurooffice" value="" data-initial-state="{% if is_eurooffice_enabled == true %}true{% else %}false{% endif %}">
     </div>
     {% if isAnyRunning == false %}
         <div class="office-none-card">
@@ -90,7 +121,7 @@
                 name="office_suite_choice"
                 value=""
                 class="office-radio"
-                {% if is_collabora_enabled == false and is_onlyoffice_enabled == false %}
+                {% if is_collabora_enabled == false and is_onlyoffice_enabled == false and is_eurooffice_enabled == false %}
                     checked="checked"
                 {% endif %}
             >

@@ -140,6 +140,12 @@ spec:
               value: nextcloud-aio-onlyoffice
             - name: ONLYOFFICE_SECRET
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
+            - name: EUROOFFICE_ENABLED
+              value: "{{ .Values.EUROOFFICE_ENABLED }}"
+            - name: EUROOFFICE_HOST
+              value: nextcloud-aio-eurooffice
+            - name: EUROOFFICE_SECRET
+              value: "{{ .Values.EUROOFFICE_SECRET }}"
             - name: OVERWRITEPROTOCOL
               value: https
             - name: PHP_MAX_TIME

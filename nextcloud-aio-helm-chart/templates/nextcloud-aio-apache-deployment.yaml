@@ -57,6 +57,8 @@ spec:
               value: nextcloud-aio-notify-push
             - name: ONLYOFFICE_HOST
               value: nextcloud-aio-onlyoffice
+            - name: EUROOFFICE_HOST
+              value: nextcloud-aio-eurooffice
             - name: TALK_HOST
               value: nextcloud-aio-talk
             - name: TZ
