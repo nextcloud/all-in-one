@@ -34,19 +34,23 @@ readonly class LoginController {
         }
 
         // Per-IP rate limiting: block after MAX_FAILED_ATTEMPTS failures within RATE_LIMIT_WINDOW_SEC.
+        //
+        // REMOTE_ADDR is set by Caddy (the reverse proxy that sits in front of PHP-FPM inside
+        // the mastercontainer), which passes the real client IP. In environments where an
+        // additional upstream proxy forwards traffic to Caddy, operators should configure Caddy
+        // with `trusted_proxies` so that REMOTE_ADDR reflects the actual client.
         $ip = $request->getServerParams()['REMOTE_ADDR'] ?? '';
         if ($ip === '') {
-            // Refuse to rate-limit against a shared bucket when no IP is available.
+            // Refuse to fall back to a shared bucket when no IP is available.
             $response->getBody()->write("Unable to determine client IP. Login refused.");
             return $response->withStatus(403);
         }
 
-        // Use HMAC to avoid leaking which IPs are being tracked via predictable cache-key names.
-        $hmacKey = (string)(apcu_fetch('login_rate_limit_hmac_key') ?: '');
-        if ($hmacKey === '') {
-            $hmacKey = bin2hex(random_bytes(16));
-            apcu_add('login_rate_limit_hmac_key', $hmacKey);
-        }
+        // Use HMAC so the cache keys are not predictable from IP addresses alone, preventing
+        // enumeration of which IPs have attempted logins via APCu key inspection.
+        // The HMAC key is persisted via the configuration manager so it survives cache clears
+        // and container restarts, preserving rate-limit state across APCu evictions.
+        $hmacKey = $this->dockerActionManager->GetAndGenerateSecretWrapper('RATE_LIMIT_HMAC_KEY');
         $rateLimitKey = 'login_attempts_' . hash_hmac('sha256', $ip, $hmacKey);
         $attempts = (int)(apcu_fetch($rateLimitKey) ?: 0);
 

@@ -10,6 +10,16 @@
 // We replace with location.pathname only (no query string, no hash), which
 // intentionally strips the ?token=… parameter and any hash fragment from the
 // recorded history entry.
-const target = document.currentScript.dataset.target;
+const rawTarget = document.currentScript.dataset.target;
+
+// Validate that the redirect target is a safe relative path (starts with '.' or '/').
+// This guards against hypothetical injection (e.g. 'javascript:…') even though the
+// value is server-set.
+const safePattern = /^[./]/;
+const unsafePattern = /^\/\//;
+const target = (typeof rawTarget === 'string' && safePattern.test(rawTarget) && !unsafePattern.test(rawTarget))
+    ? rawTarget
+    : '/';
+
 history.replaceState(null, '', location.pathname);
 window.location.replace(target);
