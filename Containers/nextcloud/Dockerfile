@@ -255,9 +255,13 @@ RUN set -ex; \
 # brief quiet period (e.g. desktop-sync clients polling every few seconds), all
 # workers are reaped and the next request burst must wait for fresh forks.  On
 # a loaded host that spawn latency can push Apache past its FastCGI timeout and
-# produce a 502.  300 s (5 min) keeps a warm pool through normal sync-client
-# polling cycles while still reclaiming memory during genuinely idle periods.
-    sed -i 's/^;*pm.process_idle_timeout\s*=.*/pm.process_idle_timeout = 300s/' /usr/local/etc/php-fpm.d/www.conf; \
+# produce a 502.  Set to PHP_MAX_TIME (default 3600 s / 1 h) so the idle
+# timeout is consistent with the overall upload/execution limit configured via
+# NEXTCLOUD_MAX_TIME: this prevents the rare edge case where a worker handling
+# a very long upload is considered idle and prematurely killed before the
+# request_terminate_timeout can fire, and keeps the warm-pool window aligned
+# with the user-configured upload timeout.
+    sed -i 's/^;*pm.process_idle_timeout\s*=.*/pm.process_idle_timeout = ${PHP_MAX_TIME}s/' /usr/local/etc/php-fpm.d/www.conf; \
 # Set request_terminate_timeout so that PHP-FPM forcibly kills workers that
 # exceed the wall-clock limit.  Without this (default = 0 = disabled) a worker
 # stuck on a slow DB query, a stalled Redis connection, or a hung syscall is
