@@ -96,6 +96,7 @@ readonly class ConfigurationController {
                 $this->configurationManager->isDockerSocketProxyEnabled = isset($request->getParsedBody()['docker-socket-proxy']);
                 $this->configurationManager->isHarpEnabled = isset($request->getParsedBody()['harp']);
                 $this->configurationManager->isWhiteboardEnabled = isset($request->getParsedBody()['whiteboard']);
+                $this->configurationManager->isWindmillEnabled = isset($request->getParsedBody()['windmill']);
             }
 
             if (isset($request->getParsedBody()['community-form'])) {
