@@ -27,6 +27,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const onlyoffice = document.getElementById("office-onlyoffice");
     onlyoffice.disabled = true;
 
+    // EuroOffice
+    const eurooffice = document.getElementById("office-eurooffice");
+    if (eurooffice) {
+        eurooffice.disabled = true;
+    }
+
     // Imaginary
     let imaginary = document.getElementById("imaginary");
     imaginary.disabled = true;

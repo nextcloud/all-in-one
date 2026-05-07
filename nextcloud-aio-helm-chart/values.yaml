@@ -4,6 +4,7 @@ IMAGINARY_SECRET:           # TODO! This needs to be a unique and good password!
 NC_DOMAIN: yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.
 NEXTCLOUD_PASSWORD:           # TODO! This is the password of the initially created Nextcloud admin with username admin.
 ONLYOFFICE_SECRET:           # TODO! This needs to be a unique and good password!
+EUROOFFICE_SECRET:           # TODO! This needs to be a unique and good password!
 RECORDING_SECRET:           # TODO! This needs to be a unique and good password!
 REDIS_PASSWORD:           # TODO! This needs to be a unique and good password!
 SIGNALING_SECRET:           # TODO! This needs to be a unique and good password!
@@ -17,6 +18,7 @@ COLLABORA_ENABLED: "no"          # Setting this to "yes" (with quotes) enables t
 FULLTEXTSEARCH_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 IMAGINARY_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 ONLYOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
+EUROOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 TALK_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 TALK_RECORDING_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 WHITEBOARD_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
@@ -49,6 +51,7 @@ NEXTCLOUD_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud vol
 NEXTCLOUD_DATA_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud-data volume that default to 1Gi with this value
 NEXTCLOUD_TRUSTED_CACERTS_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud-trusted-cacerts volume that default to 1Gi with this value
 ONLYOFFICE_STORAGE_SIZE: 1Gi       # You can change the size of the onlyoffice volume that default to 1Gi with this value
+EUROOFFICE_STORAGE_SIZE: 1Gi       # You can change the size of the eurooffice volume that default to 1Gi with this value
 REDIS_STORAGE_SIZE: 1Gi       # You can change the size of the redis volume that default to 1Gi with this value
 TALK_RECORDING_STORAGE_SIZE: 1Gi       # You can change the size of the talk-recording volume that default to 1Gi with this value
 
