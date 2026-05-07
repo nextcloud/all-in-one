@@ -25,9 +25,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Set up php ${{ matrix.php-versions }}
-        uses: shivammathur/setup-php@7bf05c6b704e0b9bfee22300130a31b5ea68d593 # v2
+        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # master
         with:
           php-version: 8.5
           extensions: apcu
