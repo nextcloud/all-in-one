@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Nextcloud GmbH <https://nextcloud.com>
-# SPDX-License-Identifier: AGPL-3.0-only
-
 {{- if and (ne .Values.NAMESPACE "default") (ne .Values.NAMESPACE_DISABLED "yes") }}
 apiVersion: v1
 kind: Namespace

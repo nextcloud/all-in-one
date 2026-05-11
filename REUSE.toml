@@ -108,8 +108,24 @@ path = [
 SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
 SPDX-License-Identifier = "AGPL-3.0-only"
 
-# GitHub workflow files (cannot be modified per task requirements)
+# GitHub workflow files (cannot be modified due to branch protection)
 [[annotations]]
 path = ".github/workflows/**"
 SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
-SPDX-License-Identifier = "MIT"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Helm chart templates and config (YAML with Helm template syntax)
+[[annotations]]
+path = [
+    "nextcloud-aio-helm-chart/Chart.yaml",
+    "nextcloud-aio-helm-chart/values.yaml",
+    "nextcloud-aio-helm-chart/templates/**",
+]
+SPDX-FileCopyrightText = "2022 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Manual install sample config
+[[annotations]]
+path = "manual-install/sample.conf"
+SPDX-FileCopyrightText = "2022 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
