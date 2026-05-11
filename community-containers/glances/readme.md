@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ## Glances
 This container starts Glances, a web-based info-board, and auto-configures it for you.
 

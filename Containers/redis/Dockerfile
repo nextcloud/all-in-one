@@ -1,4 +1,6 @@
 # syntax=docker/dockerfile:latest
+# SPDX-FileCopyrightText: 2021 Nextcloud GmbH <https://nextcloud.com>
+# SPDX-License-Identifier: AGPL-3.0-only
 # From https://github.com/redis/docker-library-redis/blob/release/8.2/alpine/Dockerfile
 FROM redis:8.6.3-alpine
 

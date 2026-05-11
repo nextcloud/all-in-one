@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # Initial backup
 
 - [ ] In the Backup and restore section, you should now see two input boxes where for one you should type in the path where the backup should get created and some explanation below or the other type in a remote ssh location

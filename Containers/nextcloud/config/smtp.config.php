@@ -1,4 +1,7 @@
 <?php
+// SPDX-FileCopyrightText: 2023 Nextcloud GmbH <https://nextcloud.com>
+// SPDX-License-Identifier: AGPL-3.0-only
+
 if (getenv('SMTP_HOST') && getenv('MAIL_FROM_ADDRESS') && getenv('MAIL_DOMAIN')) {
   $CONFIG = array (
     'mail_smtpmode' => 'smtp',

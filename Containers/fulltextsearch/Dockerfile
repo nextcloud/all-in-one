@@ -1,4 +1,6 @@
 # syntax=docker/dockerfile:latest
+# SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+# SPDX-License-Identifier: AGPL-3.0-only
 # Probably from here https://github.com/elastic/dockerfiles/blob/9.3/elasticsearch/Dockerfile
 FROM elasticsearch:9.4.0
 

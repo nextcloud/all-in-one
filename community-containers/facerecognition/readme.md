@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2024 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ## Facerecognition
 This container bundles the external model of facerecognition and auto-configures it for you.
 

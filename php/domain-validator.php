@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1);
+// SPDX-FileCopyrightText: 2023 Nextcloud GmbH <https://nextcloud.com>
+// SPDX-License-Identifier: AGPL-3.0-only
 
 $domain = '';
 if (isset($_GET['domain']) && is_string($_GET['domain'])) {

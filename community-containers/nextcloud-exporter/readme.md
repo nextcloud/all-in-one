@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ## Prometheus Nextcloud Exporter
 
 A Prometheus exporter that collects metrics from your Nextcloud instance for monitoring and alerting.

@@ -1,4 +1,7 @@
 <?php
+// SPDX-FileCopyrightText: 2021 Nextcloud GmbH <https://nextcloud.com>
+// SPDX-License-Identifier: AGPL-3.0-only
+
 if (getenv('REDIS_MODE') !== 'rediscluster') {
   $CONFIG = array(
     'memcache.distributed' => '\OC\Memcache\Redis',

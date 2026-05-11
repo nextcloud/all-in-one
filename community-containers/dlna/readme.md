@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2023 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ## DLNA server
 This container bundles DLNA server for your Nextcloud files to be accessible by the clients in your local network. Simply run the container and look for a new media server `nextcloud-aio` in your local network.
 

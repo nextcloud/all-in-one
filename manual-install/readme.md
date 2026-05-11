@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # Manual installation
 
 You can run the containers that are build for AIO with docker-compose. This comes with a few downsides, that are discussed below.

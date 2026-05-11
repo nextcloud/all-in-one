@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2021 Nextcloud GmbH <https://nextcloud.com> */
+/* SPDX-License-Identifier: AGPL-3.0-only */
+
 :root {
     --color-nextcloud-blue: #0082c9;
     --color-nextcloud-logo: var(--color-nextcloud-blue);

@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ---
 name: 📖 Existing feature/documentation enhancement
 about: Suggest an enhancement of an existing feature/documentation - for other types, please use the feature request option below
