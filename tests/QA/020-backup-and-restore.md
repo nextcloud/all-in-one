@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # Backup and restore
 
 - [ ] Expanding all backup options in the Backup and restore sectioin should reveal a Backup information section, Backup creation section, Backup check section, Backup restore section and a Daily backup section as well as a additional backup location section

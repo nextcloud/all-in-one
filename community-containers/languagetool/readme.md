@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ## LanguageTool for Nextcloud Office
 This container bundles a LanguageTool for Nextcloud Office which adds spell checking functionality to Nextcloud Office.
 

@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2023 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ## Vaultwarden
 This container bundles vaultwarden and auto-configures it for you.
 

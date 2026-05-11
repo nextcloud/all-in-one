@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2024 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ## MakeMKV
 This container bundles MakeMKV and auto-configures it for you.
 

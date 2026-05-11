@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # Automatic login
 
 - [ ] After you log in to Nextcloud using the provided initial credentials, open https://yourdomain.com/settings/admin/overview

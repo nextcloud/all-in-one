@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2023 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # Community containers
 This directory features containers that are built for AIO which allows to add additional functionality very easily.
 

@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # Optional addons
 
 - [ ] Close to the bottom of the page in the AIO interface, you should see the optional addons section

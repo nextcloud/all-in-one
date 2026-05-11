@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # New instance
 
 For the below to work, it is important that you have a domain that you point onto your testserver and open port 443 in your router/firewall.

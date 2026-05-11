@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2023 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 > [!CAUTION]
 > Be aware that the mail server is the most difficult service to deploy.
 > 

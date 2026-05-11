@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2024 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ## Light LDAP server
 This container bundles LLDAP server and auto-configures your Nextcloud instance for you.
 
