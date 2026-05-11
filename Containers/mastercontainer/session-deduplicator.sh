@@ -1,4 +1,7 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+# SPDX-License-Identifier: AGPL-3.0-only
+
 
 deduplicate_sessions() {
     echo "Deleting duplicate sessions"

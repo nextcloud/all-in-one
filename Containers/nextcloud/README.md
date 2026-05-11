@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # Nextcloud All-in-One ``nextcloud`` Container
 
 This folder contains the OCI/Docker container definition, along with associated resources and configuration files, for building the `nextcloud` container as part of the [Nextcloud All-in-One](https://github.com/nextcloud/all-in-one) project. This container hosts PHP and the Nextcloud Server application.

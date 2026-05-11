@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # Nextcloud All-in-One `mastercontainer`
 
 This folder contains the OCI/Docker container definition, along with associated resources and

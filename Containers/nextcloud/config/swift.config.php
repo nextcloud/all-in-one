@@ -1,4 +1,7 @@
 <?php
+// SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+// SPDX-License-Identifier: AGPL-3.0-only
+
 if (getenv('OBJECTSTORE_SWIFT_URL')) {
     $autocreate = getenv('OBJECTSTORE_SWIFT_AUTOCREATE');
   $CONFIG = array(
