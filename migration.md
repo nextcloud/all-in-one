@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2021 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # How to migrate from an already existing Nextcloud installation to Nextcloud AIO?
 
 There are basically three ways how to migrate from an already existing Nextcloud installation to Nextcloud AIO (if you ran AIO on the former installation already, you can follow [these steps](https://github.com/nextcloud/all-in-one#how-to-migrate-from-aio-to-aio)):

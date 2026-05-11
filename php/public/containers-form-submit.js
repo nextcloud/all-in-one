@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 document.addEventListener("DOMContentLoaded", function () {
     // Don't run if the expected form isn't present.
     if (document.getElementById('options-form') === null) {

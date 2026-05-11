@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Community Containers
 
 - [ ] At the very bottom of the page, there should be a Community Containers section

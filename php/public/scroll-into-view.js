@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 const observer = new MutationObserver((records) => {
     const node = records[0]?.addedNodes[0];
     // Text nodes also appear here but can't be scrolled to, so we have to check for the

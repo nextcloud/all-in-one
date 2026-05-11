@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 ## Notifications
 This container allows other AIO community containers to send admin notifications to Nextcloud users. 
 

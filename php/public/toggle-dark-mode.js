@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // Function to toggle theme
 function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');

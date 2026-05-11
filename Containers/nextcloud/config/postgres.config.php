@@ -1,4 +1,8 @@
 <?php
+
+// SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_POSTGRES')) {
   $CONFIG = array(
     'pgsql_ssl' => array(

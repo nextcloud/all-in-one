@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
+
 name: Block if prerelease is present
 
 on:

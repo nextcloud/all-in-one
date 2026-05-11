@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
 FROM docker:29.4.1-cli AS docker

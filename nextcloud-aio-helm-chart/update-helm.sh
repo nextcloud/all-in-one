@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 #!/bin/bash
 
 [ -z "$1" ] && { echo "Error: Docker tag is not specified. Usage: ./nextcloud-aio-helm-chart/update-helm.sh <Docker tag>"; exit 2; }

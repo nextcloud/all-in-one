@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 ## Plex
 This container bundles Plex and auto-configures it for you.
 

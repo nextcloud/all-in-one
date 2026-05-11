@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 ## calcardbackup  
 This container packages calcardbackup which is a tool that exports calendars and addressbooks from Nextcloud to .ics and .vcf files and saves them to a compressed file.
   

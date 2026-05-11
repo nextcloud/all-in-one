@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Environmental variables
 
 - [ ] When starting the mastercontainer with `--env APACHE_PORT=11000` on a clean instance, the domaincheck container should be started with that same port published. That makes sure that also the Apache container will use that port later on. Using a value here that is not a port will not allow the mastercontainer to start correctly. However `@INTERNAL` is also an allowed value which skips publishing the port on the host for internal usage inside a bridged network for example.

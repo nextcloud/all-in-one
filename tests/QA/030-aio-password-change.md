@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # AIO passphrase change
 
 - [ ] In the AIO passphrase change section you should see two input fields. And below the requirements for a new passphrase

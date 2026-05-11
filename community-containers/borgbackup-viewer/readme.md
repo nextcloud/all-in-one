@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 ## Borgbackup Viewer
 This container allows to view the local borg repository in a web session. It also allows you to restore files and folders from the backup by using desktop programs in a web browser.
 

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # syntax=docker/dockerfile:latest
 # From a file located probably somewhere here: https://github.com/CollaboraOnline/online/blob/master/docker/from-packages/Dockerfile
 FROM collabora/code:25.04.9.4.1

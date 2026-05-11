@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # syntax=docker/dockerfile:latest
 # Probably from this file: https://github.com/nextcloud/whiteboard/blob/main/Dockerfile
 FROM ghcr.io/nextcloud-releases/whiteboard:v1.5.7

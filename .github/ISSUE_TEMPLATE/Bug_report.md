@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 ---
 name: 🐛 Bug report - no questions and no support!
 about: Help us improving by reporting a bug - this category is not for questions and also not for support! Please use one of the options below for questions and support

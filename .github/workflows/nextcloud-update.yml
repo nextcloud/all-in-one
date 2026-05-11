@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
+
 # Inspired by https://github.com/nextcloud/docker/blob/master/.github/workflows/update-sh.yml
 name: nextcloud-update
 

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
+
 name: Playwright Tests on push
 
 on:

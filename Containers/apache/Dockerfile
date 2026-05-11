@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # syntax=docker/dockerfile:latest
 FROM caddy:2.11.2-alpine AS caddy
 
