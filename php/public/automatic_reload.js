@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+// SPDX-License-Identifier: AGPL-3.0-only
+
 window.addEventListener("load", function(event) {
     if (document.hasFocus()) {
         // hide reload button if the site reloads automatically

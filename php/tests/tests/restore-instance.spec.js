@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 Nextcloud GmbH <https://nextcloud.com>
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 

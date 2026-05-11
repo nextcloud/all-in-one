@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Nextcloud GmbH <https://nextcloud.com>
+// SPDX-License-Identifier: AGPL-3.0-only
+
 document.addEventListener("DOMContentLoaded", function(event) {
     // Clamav
     let clamav = document.getElementById("clamav");

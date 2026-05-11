@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Nextcloud GmbH <https://nextcloud.com>
+// SPDX-License-Identifier: AGPL-3.0-only
+
 class LogViewer {
     // Configure the interval in seconds for autoloading log data.
     autoloadIntervalSec = 5;
