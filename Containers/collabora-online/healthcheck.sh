@@ -1,4 +1,7 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2024 Nextcloud GmbH <https://nextcloud.com>
+# SPDX-License-Identifier: AGPL-3.0-only
+
 
 # Unfortunately, no curl and no nc is installed in the container 
 # and packages can also not be added as the package list is broken.

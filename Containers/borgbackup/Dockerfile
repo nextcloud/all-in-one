@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 Nextcloud GmbH <https://nextcloud.com>
+# SPDX-License-Identifier: AGPL-3.0-only
+
 # syntax=docker/dockerfile:latest
 FROM alpine:3.23.4
 
