@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # Manual upgrade
 
 If you do not update Nextcloud AIO for a long time (6+ months), when you eventually update in the AIO interface you will find Nextcloud no longer works. This is due to incompatible PHP versions within the nextcloud container.

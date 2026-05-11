@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 Nextcloud GmbH <https://nextcloud.com>
+# SPDX-License-Identifier: AGPL-3.0-only
+
 name: nextcloud-aio # Add the container to the same compose project like all the sibling containers are added to automatically.
 services:
   nextcloud-aio-mastercontainer:

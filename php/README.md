@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2021 Nextcloud GmbH <https://nextcloud.com>
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # PHP Docker Controller
 
 This is the code for the PHP Docker controller.
