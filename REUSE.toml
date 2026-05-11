@@ -1,0 +1,115 @@
+version = 1
+
+# Composer vendor files (MIT licensed, third-party)
+[[annotations]]
+path = "app/composer/composer/**"
+SPDX-FileCopyrightText = "Nils Adermann <naderman@naderman.de>, Jordi Boggiano <j.boggiano@seld.be>"
+SPDX-License-Identifier = "MIT"
+
+# Composer generated autoloader
+[[annotations]]
+path = "app/composer/autoload.php"
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Root LICENSE file
+[[annotations]]
+path = "LICENSE"
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Lock files (generated)
+[[annotations]]
+path = [
+    "app/composer/composer.lock",
+    "php/composer.lock",
+    "php/tests/package-lock.json",
+]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Git metadata files
+[[annotations]]
+path = [
+    ".gitignore",
+    ".gitattributes",
+    "php/tests/.gitignore",
+]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Empty placeholder files
+[[annotations]]
+path = [
+    "php/data/.gitkeep",
+    "php/session/.gitkeep",
+]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# JSON data/config files (no comment support)
+[[annotations]]
+path = [
+    "app/composer/composer.json",
+    "php/composer.json",
+    "php/containers.json",
+    "php/containers-schema.json",
+    "php/cool-seccomp-profile.json",
+    "php/tests/package.json",
+]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Community container JSON definitions
+[[annotations]]
+path = "community-containers/**/*.json"
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Binary image files
+[[annotations]]
+path = [
+    "php/public/img/favicon.png",
+    "php/public/img/jo-myoung-hee-fluid-dark.webp",
+    "php/public/img/jo-myoung-hee-fluid.webp",
+]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# SVG image files
+[[annotations]]
+path = [
+    "php/public/img/collabora.svg",
+    "php/public/img/nextcloud-logo.svg",
+    "php/public/img/office-none.svg",
+    "php/public/img/onlyoffice.svg",
+]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Generated Psalm baseline
+[[annotations]]
+path = "php/psalm-baseline.xml"
+SPDX-FileCopyrightText = "2022 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# robots.txt
+[[annotations]]
+path = "php/public/robots.txt"
+SPDX-FileCopyrightText = "2022 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Plain text files without comment syntax
+[[annotations]]
+path = [
+    "Containers/nextcloud/root.motd",
+    "Containers/nextcloud/upgrade.exclude",
+]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# GitHub workflow files (cannot be modified per task requirements)
+[[annotations]]
+path = ".github/workflows/**"
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH <https://nextcloud.com>"
+SPDX-License-Identifier = "MIT"
