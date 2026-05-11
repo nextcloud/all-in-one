@@ -1,0 +1,48 @@
+version = 1
+
+# Repository license file
+[[annotations]]
+path = ["LICENSE"]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+# Composer vendor / generated files
+[[annotations]]
+path = ["app/composer/**"]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+# Lock files and generated data
+[[annotations]]
+path = ["php/composer.lock", "php/tests/package-lock.json"]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+# Empty placeholder files
+[[annotations]]
+path = ["php/data/.gitkeep", "php/session/.gitkeep"]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+# Binary images
+[[annotations]]
+path = ["php/public/img/favicon.png", "php/public/img/jo-myoung-hee-fluid-dark.webp", "php/public/img/jo-myoung-hee-fluid.webp"]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+# JSON files (cannot contain inline comments)
+[[annotations]]
+path = ["php/containers.json", "php/containers-schema.json", "php/cool-seccomp-profile.json", "php/composer.json"]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = ["community-containers/**/*.json"]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+# Tests package.json
+[[annotations]]
+path = ["php/tests/package.json"]
+SPDX-FileCopyrightText = "2021 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
