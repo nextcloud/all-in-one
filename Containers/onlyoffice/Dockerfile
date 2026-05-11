@@ -1,7 +1,6 @@
+# syntax=docker/dockerfile:latest
 # SPDX-FileCopyrightText: 2022 Nextcloud GmbH <https://nextcloud.com>
 # SPDX-License-Identifier: AGPL-3.0-only
-
-# syntax=docker/dockerfile:latest
 # From https://github.com/ONLYOFFICE/Docker-DocumentServer/blob/master/Dockerfile
 FROM onlyoffice/documentserver:9.3.1.2
 

@@ -1,7 +1,6 @@
+# syntax=docker/dockerfile:latest
 # SPDX-FileCopyrightText: 2023 Nextcloud GmbH <https://nextcloud.com>
 # SPDX-License-Identifier: AGPL-3.0-only
-
-# syntax=docker/dockerfile:latest
 FROM alpine:3.23.4
 
 COPY --chmod=775 start.sh /start.sh

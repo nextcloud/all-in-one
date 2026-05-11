@@ -1,7 +1,6 @@
+# syntax=docker/dockerfile:latest
 # SPDX-FileCopyrightText: 2021 Nextcloud GmbH <https://nextcloud.com>
 # SPDX-License-Identifier: AGPL-3.0-only
-
-# syntax=docker/dockerfile:latest
 # From https://github.com/docker-library/postgres/blob/master/18/alpine3.23/Dockerfile
 FROM postgres:18.3-alpine
 

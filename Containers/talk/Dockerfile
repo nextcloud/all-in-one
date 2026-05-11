@@ -1,7 +1,6 @@
+# syntax=docker/dockerfile:latest
 # SPDX-FileCopyrightText: 2021 Nextcloud GmbH <https://nextcloud.com>
 # SPDX-License-Identifier: AGPL-3.0-only
-
-# syntax=docker/dockerfile:latest
 FROM nats:2.14.0-scratch AS nats
 FROM eturnal/eturnal:1.12.2-alpine AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:2.1.1 AS signaling

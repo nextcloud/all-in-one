@@ -1,7 +1,6 @@
+# syntax=docker/dockerfile:latest
 # SPDX-FileCopyrightText: 2021 Nextcloud GmbH <https://nextcloud.com>
 # SPDX-License-Identifier: AGPL-3.0-only
-
-# syntax=docker/dockerfile:latest
 # From https://gitlab.collabora.com/collabora-online/docker
 # hadolint ignore=DL3007
 FROM registry.gitlab.collabora.com/collabora-online/docker:latest
