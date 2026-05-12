@@ -347,7 +347,7 @@ readonly class ContainerDefinitionFetcher {
 
             $oomScoreAdj = 0;
             if (isset($entry['oom_score_adj'])) {
-                $oomScoreAdj = $entry['oom_score_adj'];
+                $oomScoreAdj = max(-1000, min(0, (int)$entry['oom_score_adj']));
             }
 
             $containers[] = new Container(
