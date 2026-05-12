@@ -210,7 +210,7 @@
 					"oom_score_adj": {
 					"type": "integer",
 					"minimum": -1000,
-					"maximum": 0
+					"maximum": 1000
 				},
 				"volumes": {
 						"type": "array",
