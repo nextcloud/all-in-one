@@ -53,6 +53,7 @@ readonly class LoginController {
         $ip = (string)($request->getServerParams()['REMOTE_ADDR'] ?? '');
 
         if ($this->rateLimiter->isLimitReached($ip)) {
+            $response->getBody()->write("Too many failed login attempts. Please try again later.");
             return $response
                 ->withHeader('Retry-After', (string)RateLimiter::WINDOW_SECONDS)
                 ->withStatus(429);

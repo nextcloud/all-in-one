@@ -13,7 +13,7 @@ class RateLimiter {
      */
     public function isLimitReached(string $ip): bool {
         $attempts = apcu_fetch($this->getKey($ip));
-        return $attempts !== false && (int)$attempts >= self::MAX_ATTEMPTS;
+        return $attempts !== false && is_numeric($attempts) && (int)$attempts >= self::MAX_ATTEMPTS;
     }
 
     /**
@@ -23,11 +23,11 @@ class RateLimiter {
      */
     public function recordFailedAttempt(string $ip): void {
         $key = $this->getKey($ip);
-        // apcu_add only stores when the key does not yet exist.
-        // If it already exists (returns false), we increment the existing counter.
-        if (!apcu_add($key, 1, self::WINDOW_SECONDS)) {
-            apcu_inc($key);
-        }
+        // Initialize the key if it does not yet exist (apcu_add is a no-op when key exists).
+        // apcu_inc is atomic, so using add-then-increment gives a consistent count even
+        // under concurrent requests.
+        apcu_add($key, 0, self::WINDOW_SECONDS);
+        apcu_inc($key);
     }
 
     /**
