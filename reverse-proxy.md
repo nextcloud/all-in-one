@@ -1105,7 +1105,7 @@ sudo docker run \
 --name nextcloud-aio-mastercontainer \
 --restart always \
 --publish 8080:8080 \
---cpu-shares 4096 \
+--cpu-shares 2048 \
 --env APACHE_PORT=11000 \
 --env APACHE_IP_BINDING=0.0.0.0 \
 --env APACHE_ADDITIONAL_NETWORK="" \
@@ -1125,7 +1125,7 @@ ghcr.io/nextcloud-releases/all-in-one:latest
 - `--name nextcloud-aio-mastercontainer` This is the name of the container. This line is not allowed to be changed, since mastercontainer updates would fail.
 - `--restart always` This is the "restart policy". `always` means that the container should always get started with the Docker daemon. See the Docker documentation for further detail about restart policies: https://docs.docker.com/config/containers/start-containers-automatically/
 - `--publish 8080:8080` This means that port 8080 of the container should get published on the host using port 8080. This port is used for the AIO interface and uses a self-signed certificate by default. You can also use a different host port if port 8080 is already used on your host, for example `--publish 8081:8080` (only the first port can be changed for the host, the second port is for the container and must remain at 8080).
-- `--cpu-shares 4096` This gives the mastercontainer four times the default CPU share weighting (default is 1024), ensuring it stays responsive under heavy load from sibling containers.
+- `--cpu-shares 2048` This gives the mastercontainer twice the default CPU share weighting (default is 1024), ensuring it stays responsive under heavy load from sibling containers.
 - `--env APACHE_PORT=11000` This is the port that is published on the host that runs Docker and Nextcloud AIO at which the reverse proxy should point at.
 - `--env APACHE_IP_BINDING=0.0.0.0` This can be modified to allow access to the published port on the host only from certain ip-addresses. [See this documentation](#3-limit-the-access-to-the-apache-container)
 - `--env APACHE_ADDITIONAL_NETWORK=""` This can be used to put the sibling apache container that is created by AIO into a specified network - useful if your reverse proxy runs as a container on the same host. [See this documentation](#adapting-the-sample-web-server-configurations-below)
@@ -1156,7 +1156,7 @@ docker run ^
 --name nextcloud-aio-mastercontainer ^
 --restart always ^
 --publish 8080:8080 ^
---cpu-shares 4096 ^
+--cpu-shares 2048 ^
 --env APACHE_PORT=11000 ^
 --env APACHE_IP_BINDING=0.0.0.0 ^
 --env APACHE_ADDITIONAL_NETWORK="" ^

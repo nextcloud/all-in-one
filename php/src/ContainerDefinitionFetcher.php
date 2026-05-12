@@ -303,7 +303,7 @@ readonly class ContainerDefinitionFetcher {
                 $shmSize = $entry['shm_size'];
             }
 
-            $cpuShares = 1024;
+            $cpuShares = 512;
             if (isset($entry['cpu_shares'])) {
                 $cpuShares = $entry['cpu_shares'];
             }
