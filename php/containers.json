@@ -82,7 +82,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": -800
+      "oom_score_adj": -600
     },
     {
       "container_name": "nextcloud-aio-database",
@@ -140,7 +140,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": -1000
+      "oom_score_adj": -800
     },
     {
       "container_name": "nextcloud-aio-nextcloud",
@@ -283,7 +283,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": -900
+      "oom_score_adj": -600
     },
     {
       "container_name": "nextcloud-aio-notify-push",
@@ -546,7 +546,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": -100
+      "oom_score_adj": -200
     },
     {
       "container_name": "nextcloud-aio-borgbackup",
@@ -618,7 +618,7 @@
         "/tmp",
         "/nextcloud_aio_volumes"
       ],
-      "oom_score_adj": 0
+      "oom_score_adj": -800
     },
     {
       "container_name": "nextcloud-aio-watchtower",
@@ -642,7 +642,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": 0
+      "oom_score_adj": -200
     },
     {
       "container_name": "nextcloud-aio-domaincheck",
@@ -676,7 +676,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": 0
+      "oom_score_adj": -200
     },
     {
       "container_name": "nextcloud-aio-clamav",
@@ -724,7 +724,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": 0
+      "oom_score_adj": -200
     },
     {
       "container_name": "nextcloud-aio-onlyoffice",
@@ -812,7 +812,7 @@
       "secrets": [
         "IMAGINARY_SECRET"
       ],
-      "oom_score_adj": -100
+      "oom_score_adj": -200
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
@@ -865,7 +865,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": 0
+      "oom_score_adj": -200
     },
     {
       "container_name": "nextcloud-aio-docker-socket-proxy",
@@ -893,7 +893,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": -100
+      "oom_score_adj": -400
     },
     {
       "container_name": "nextcloud-aio-harp",
@@ -982,7 +982,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": -100
+      "oom_score_adj": -200
     }
   ]
 }
