@@ -345,7 +345,7 @@ readonly class ContainerDefinitionFetcher {
 
             $hideFromList = $entry['hide_from_list'] ?? false;
 
-            $oomScoreAdj = 0;
+            $oomScoreAdj = 500;
             if (isset($entry['oom_score_adj'])) {
                 $oomScoreAdj = $entry['oom_score_adj'];
             }
