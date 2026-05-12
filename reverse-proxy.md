@@ -1104,6 +1104,7 @@ sudo docker run \
 --sig-proxy=false \
 --name nextcloud-aio-mastercontainer \
 --restart always \
+--oom-score-adj -1000 \
 --publish 8080:8080 \
 --env APACHE_PORT=11000 \
 --env APACHE_IP_BINDING=0.0.0.0 \
@@ -1123,6 +1124,7 @@ ghcr.io/nextcloud-releases/all-in-one:latest
 - `--sig-proxy=false` This option allows to exit the container shell that gets attached automatically when using `docker run` by using `[CTRL] + [C]` without shutting down the container.
 - `--name nextcloud-aio-mastercontainer` This is the name of the container. This line is not allowed to be changed, since mastercontainer updates would fail.
 - `--restart always` This is the "restart policy". `always` means that the container should always get started with the Docker daemon. See the Docker documentation for further detail about restart policies: https://docs.docker.com/config/containers/start-containers-automatically/
+- `--oom-score-adj -1000` This instructs the Linux OOM killer to never kill the mastercontainer, keeping the AIO interface accessible even under memory pressure. `-1000` is the minimum value meaning "never kill".
 - `--publish 8080:8080` This means that port 8080 of the container should get published on the host using port 8080. This port is used for the AIO interface and uses a self-signed certificate by default. You can also use a different host port if port 8080 is already used on your host, for example `--publish 8081:8080` (only the first port can be changed for the host, the second port is for the container and must remain at 8080).
 - `--env APACHE_PORT=11000` This is the port that is published on the host that runs Docker and Nextcloud AIO at which the reverse proxy should point at.
 - `--env APACHE_IP_BINDING=0.0.0.0` This can be modified to allow access to the published port on the host only from certain ip-addresses. [See this documentation](#3-limit-the-access-to-the-apache-container)
@@ -1153,6 +1155,7 @@ docker run ^
 --sig-proxy=false ^
 --name nextcloud-aio-mastercontainer ^
 --restart always ^
+--oom-score-adj -1000 ^
 --publish 8080:8080 ^
 --env APACHE_PORT=11000 ^
 --env APACHE_IP_BINDING=0.0.0.0 ^
