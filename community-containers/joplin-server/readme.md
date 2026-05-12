@@ -1,6 +1,6 @@
 # Joplin Server
 
-This container allow you to deploy a [Joplin Server](https://joplinapp.org/help/dev/spec/architecture#joplin-server). Deploy automically a postgreSQL instance as a sidecar.
+This container allow you to deploy a [Joplin Server](https://joplinapp.org/help/dev/spec/architecture#joplin-server). Deploy automatically a postgreSQL instance as a sidecar.
 
 
 
