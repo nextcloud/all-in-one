@@ -394,6 +394,8 @@ readonly class DockerActionManager {
             $requestBody['StopTimeout'] = $maxShutDownTime;
         }
 
+        $requestBody['HostConfig']['OomScoreAdj'] = $container->oomScoreAdj;
+
         $capAdds = $container->capAdd;
         if (count($capAdds) > 0) {
             $requestBody['HostConfig']['CapAdd'] = $capAdds;
