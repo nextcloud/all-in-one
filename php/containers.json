@@ -418,7 +418,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 512
     },
     {
       "container_name": "nextcloud-aio-talk",
@@ -489,7 +490,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 512
     },
     {
       "container_name": "nextcloud-aio-talk-recording",
@@ -543,7 +545,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 512
     },
     {
       "container_name": "nextcloud-aio-borgbackup",
@@ -672,7 +675,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 512
     },
     {
       "container_name": "nextcloud-aio-clamav",
@@ -719,7 +723,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 512
     },
     {
       "container_name": "nextcloud-aio-onlyoffice",
@@ -763,7 +768,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 512
     },
     {
       "container_name": "nextcloud-aio-imaginary",
@@ -805,7 +811,8 @@
       ],
       "secrets": [
         "IMAGINARY_SECRET"
-      ]
+      ],
+      "cpu_shares": 512
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
@@ -857,7 +864,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 512
     },
     {
       "container_name": "nextcloud-aio-docker-socket-proxy",
@@ -973,7 +981,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 512
     }
   ]
 }
