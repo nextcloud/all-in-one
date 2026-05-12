@@ -107,7 +107,19 @@ readonly class LoginController {
         $token = $request->getQueryParams()['token'] ?? '';
         if($this->authManager->CheckToken($token)) {
             $this->authManager->SetAuthState(true);
-            return $response->withHeader('Location', '../..')->withStatus(302);
+            // Return a minimal HTML page that uses JavaScript to replace the browser's
+            // current history entry (removing the token from it) before navigating to
+            // the main AIO page.  This prevents the token from remaining in browser history.
+            // The script is served from 'self'; same-origin scripts are already trusted under
+            // the 'script-src-elem self' CSP directive, so no SRI hash is needed here.
+            $response->getBody()->write(
+                '<!DOCTYPE html>' .
+                '<html lang="en">' .
+                '<head><script src="../../clean-history.js" data-target="../../"></script></head>' .
+                '<body></body>' .
+                '</html>'
+            );
+            return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(200);
         }
 
         // Punish failed auth attempts with a delay, as a very simple means against bots.
