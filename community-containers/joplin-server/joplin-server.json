@@ -2,10 +2,10 @@
     "aio_services_v1": [
         {
             "container_name": "nextcloud-aio-joplin-server",
-            "image_tag": "v1",
+            "image_tag": "latest",
             "display_name": "Joplin Server",
             "documentation": "https://hub.docker.com/r/joplin/server",
-            "image": "joplin/server:3.6.1",
+            "image": "joplin/server",
             "depends_on": ["nextcloud-aio-joplin-database"],
             "internal_port": "22300",
             "ports": [
