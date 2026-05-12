@@ -14,10 +14,7 @@ use Slim\Psr7\NonBufferedBody;
 
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
-
-    private function getLatestMajorVersion(): string {
-        return '33';
-    }
+    private const string LATEST_MAJOR_VERSION = '33';
 
     public function __construct(
         private DockerActionManager           $dockerActionManager,
@@ -225,7 +222,7 @@ readonly class DockerController {
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = $this->getLatestMajorVersion();
+            $installLatestMajor = self::LATEST_MAJOR_VERSION;
         } else {
             $installLatestMajor = '';
         }
@@ -333,7 +330,7 @@ readonly class DockerController {
     }
 
     public function RunNextcloudUpgradeToLatestMajor(Request $request, Response $response, array $args) : Response {
-        $this->configurationManager->installLatestMajor = $this->getLatestMajorVersion();
+        $this->configurationManager->installLatestMajor = self::LATEST_MAJOR_VERSION;
 
         // Get streaming response start and closure
         $nonbufResp = $this->startStreamingResponse($response);

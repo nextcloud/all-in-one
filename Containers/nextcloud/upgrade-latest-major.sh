@@ -30,8 +30,6 @@ if ! [ "$INSTALLED_MAJOR" -gt "$IMAGE_MAJOR" ]; then
         touch "$NEXTCLOUD_DATA_DIR/install.failed"
         exit 1
     fi
-    # shellcheck disable=SC2016
-    installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
 fi
 php /var/www/html/occ config:system:set updatechecker --type=bool --value=true
 php /var/www/html/occ app:enable nextcloud-aio --force

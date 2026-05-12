@@ -405,6 +405,8 @@ EOF
                     echo "Upgrade to latest major version failed! Check the output above for details."
                     exit 1
                 fi
+                # shellcheck disable=SC2016
+                installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
             fi
 # AIO update to latest end # Do not remove or change this line!
 
