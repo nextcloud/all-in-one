@@ -4,7 +4,7 @@ services:
     image: ghcr.io/nextcloud-releases/all-in-one:latest # This is the container image used. You can switch to ghcr.io/nextcloud-releases/all-in-one:beta if you want to help testing new releases. See https://github.com/nextcloud/all-in-one#how-to-switch-the-channel
     init: true # This setting makes sure that signals from main process inside the container are correctly forwarded to children. See https://docs.docker.com/reference/compose-file/services/#init
     restart: always # This makes sure that the container starts always together with the host OS. See https://docs.docker.com/reference/compose-file/services/#restart
-    oom_score_adj: -1000 # This instructs the Linux OOM killer to never kill the mastercontainer, keeping the AIO interface accessible even under memory pressure. -1000 is the minimum value and means "never kill". See https://docs.kernel.org/admin-guide/cgroup-v1/memory.html
+    oom_score_adj: -500 # This instructs the Linux OOM killer to strongly prefer killing other processes before the mastercontainer, keeping the AIO interface accessible even under memory pressure. -500 is a very low value that makes the mastercontainer very unlikely to be killed. See https://docs.kernel.org/admin-guide/cgroup-v1/memory.html
     container_name: nextcloud-aio-mastercontainer # This line is not allowed to be changed as otherwise AIO will not work correctly
     volumes:
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed as otherwise the built-in backup solution will not work

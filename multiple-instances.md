@@ -143,7 +143,7 @@ apt install --no-install-recommends qemu-system qemu-utils libvirt-clients libvi
    --sig-proxy=false \
    --name nextcloud-aio-mastercontainer \
    --restart always \
-   --oom-score-adj -1000 \
+   --oom-score-adj -500 \
    --publish 8080:8080 \
    --env APACHE_PORT=11000 \
    --env APACHE_IP_BINDING=0.0.0.0 \
