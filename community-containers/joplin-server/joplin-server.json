@@ -26,10 +26,10 @@
         },
         {
             "container_name": "nextcloud-aio-joplin-database",
-            "image_tag": "v1",
+            "image_tag": "18",
             "display_name": "Joplin Database (PostgreSQL)",
             "documentation": "https://hub.docker.com/_/postgres",
-            "image": "postgres:18",
+            "image": "postgres",
             "expose": [
                 "5432"
             ],
