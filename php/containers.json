@@ -81,7 +81,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 2048
     },
     {
       "container_name": "nextcloud-aio-database",
@@ -138,7 +139,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 2048
     },
     {
       "container_name": "nextcloud-aio-nextcloud",
@@ -280,7 +282,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 2048
     },
     {
       "container_name": "nextcloud-aio-notify-push",
@@ -321,7 +324,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 2048
     },
     {
       "container_name": "nextcloud-aio-redis",
@@ -363,7 +367,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 2048
     },
     {
       "container_name": "nextcloud-aio-collabora",
@@ -609,7 +614,8 @@
       "tmpfs": [
         "/tmp",
         "/nextcloud_aio_volumes"
-      ]
+      ],
+      "cpu_shares": 2048
     },
     {
       "container_name": "nextcloud-aio-watchtower",
@@ -632,7 +638,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 2048
     },
     {
       "container_name": "nextcloud-aio-domaincheck",
@@ -877,7 +884,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 2048
     },
     {
       "container_name": "nextcloud-aio-harp",
@@ -918,7 +926,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "cpu_shares": 2048
     },
     {
       "container_name": "nextcloud-aio-whiteboard",

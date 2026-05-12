@@ -141,6 +141,9 @@
 					"shm_size": {
 						"type": "integer"
 					},
+					"cpu_shares": {
+						"type": "integer"
+					},
 					"secrets": {
 						"type": "array",
 						"items": {
