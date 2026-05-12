@@ -17,12 +17,13 @@
             ],
             "environment": [
                 "DB_CLIENT=pg",
-                "POSTGRES_PASSWORD=joplin",
+                "POSTGRES_PASSWORD=%JOPLIN_DB_PASSWORD%",
                 "POSTGRES_DATABASE=joplin",
                 "POSTGRES_USER=joplin",
                 "POSTGRES_PORT=5432",
                 "POSTGRES_HOST=nextcloud-aio-joplin-database"
-            ]
+            ],
+        "secrets": [JOPLIN_DB_PASSWORD]
         },
         {
             "container_name": "nextcloud-aio-joplin-database",
