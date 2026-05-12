@@ -642,7 +642,7 @@
       "cap_drop": [
         "NET_RAW"
       ],
-      "oom_score_adj": -200
+      "oom_score_adj": -800
     },
     {
       "container_name": "nextcloud-aio-domaincheck",
