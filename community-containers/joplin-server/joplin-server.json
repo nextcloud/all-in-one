@@ -31,9 +31,7 @@
             "display_name": "Joplin Database (PostgreSQL)",
             "documentation": "https://hub.docker.com/_/postgres",
             "image": "postgres",
-            "expose": [
-                "5432"
-            ],
+            "internal_port": "5432"
             "environment": [
                 "POSTGRES_PASSWORD=joplin",
                 "POSTGRES_DB=joplin",
