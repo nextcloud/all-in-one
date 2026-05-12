@@ -1,0 +1,30 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "joplin-server",
+            "image_tag": "v1",
+            "display_name": "Joplin Server",
+            "documentation": "https://github.com/lonode/joplin-server-standalone",
+            "image": "ghcr.io/lonode/joplin-server-standalone",
+            "internal_port": "22300",
+            "ports": [
+                {
+                    "ip_binding": "",
+                    "port_number": "22300",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_joplin_data",
+                    "destination": "/var/lib/postgresql/data",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_joplin_data"
+            ]
+        }
+    ]
+}
