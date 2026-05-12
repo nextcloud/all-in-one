@@ -37,8 +37,10 @@
             "environment": [
                 "POSTGRES_PASSWORD=joplin",
                 "POSTGRES_DB=joplin",
-                "POSTGRES_USER=joplin"
+                "POSTGRES_USER=%JOPLIN_DB_PASSWORD%",
+                "PGDATA=/var/lib/postgresql/data"
             ],
+        "secrets": ["JOPLIN_DB_PASSWORD"],
             "volumes": [
                 {
                     "source": "nextcloud_aio_joplin_data",
