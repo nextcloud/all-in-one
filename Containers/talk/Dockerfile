@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.12.7-scratch AS nats
+FROM nats:2.14.0-scratch AS nats
 FROM eturnal/eturnal:1.12.2-alpine AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:2.1.1 AS signaling
 FROM alpine:3.23.4 AS janus
@@ -37,7 +37,8 @@ RUN set -ex; \
 
 FROM alpine:3.23.4
 ENV ETURNAL_ETC_DIR="/conf"
-ENV SKIP_CERT_VERIFY=false
+ENV SKIP_CERT_VERIFY=false \
+    AIO_LOG_LEVEL=warn
 COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/local                          /usr/local
 COPY --from=eturnal   --chmod=777 --chown=1000:1000 /opt/eturnal                        /opt/eturnal
 COPY --from=nats      --chmod=777 --chown=1000:1000 /nats-server                        /usr/local/bin/nats-server

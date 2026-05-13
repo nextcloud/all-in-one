@@ -35,11 +35,13 @@ spec:
         {{- end }}
       containers:
         - env:
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: REDIS_HOST_PASSWORD
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-redis:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-redis:20260513_090235
           readinessProbe:
             exec:
               command:

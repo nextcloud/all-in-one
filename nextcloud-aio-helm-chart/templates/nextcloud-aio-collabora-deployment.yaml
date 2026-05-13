@@ -23,6 +23,8 @@ spec:
       containers:
         - args: {{ .Values.ADDITIONAL_COLLABORA_OPTIONS | default list | toJson }}
           env:
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: DONT_GEN_SSL_CERT
               value: "1"
             - name: TZ
@@ -32,13 +34,13 @@ spec:
             - name: dictionaries
               value: "{{ .Values.COLLABORA_DICTIONARIES }}"
             - name: extra_params
-              value: --o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:logging.level=warning --o:logging.level_startup=warning --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
+              value: --o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
             - name: server_name
               value: "{{ .Values.NC_DOMAIN }}"
           {{- if contains "--o:support_key=" (join " " (.Values.ADDITIONAL_COLLABORA_OPTIONS | default list)) }}
-          image: ghcr.io/nextcloud-releases/aio-collabora-online:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-collabora-online:20260513_090235
           {{- else }}
-          image: ghcr.io/nextcloud-releases/aio-collabora:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-collabora:20260513_090235
           {{- end }}
           readinessProbe:
             exec:

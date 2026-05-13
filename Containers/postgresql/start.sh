@@ -1,5 +1,17 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+POSTGRES_LOG_MIN_MESSAGES="$(case "$AIO_LOG_LEVEL" in
+    debug) printf 'debug1' ;;
+    info) printf 'info' ;;
+    warn) printf 'warning' ;;
+    error) printf 'error' ;;
+esac)"
+export POSTGRES_LOG_MIN_MESSAGES
+
 # Variables
 DATADIR="/var/lib/postgresql/data"
 export DUMP_DIR="/mnt/data"
@@ -85,7 +97,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     exec docker-entrypoint.sh postgres &
 
     # Wait for creation
-    while ! psql -d "postgresql://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@127.0.0.1:11000/$POSTGRES_DB" -c "select now()"; do
+    while ! psql -h 127.0.0.1 -p 11000 -U "oc_$POSTGRES_USER" -d "$POSTGRES_DB" -c "select now()"; do
         echo "Waiting for the database to start."
         sleep 5
     done
@@ -107,8 +119,9 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         exit 1
     elif [ "$DB_OWNER" != "oc_$POSTGRES_USER" ]; then
         DIFFERENT_DB_OWNER=1
-        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-            CREATE USER "$DB_OWNER" WITH PASSWORD '$POSTGRES_PASSWORD' CREATEDB;
+        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
+            -v "pg_new_password=$POSTGRES_PASSWORD" <<-EOSQL
+            CREATE USER "$DB_OWNER" WITH PASSWORD :'pg_new_password' CREATEDB;
             ALTER DATABASE "$POSTGRES_DB" OWNER TO "$DB_OWNER";
             GRANT ALL PRIVILEGES ON DATABASE "$POSTGRES_DB" TO "$DB_OWNER";
             GRANT ALL PRIVILEGES ON SCHEMA public TO "$DB_OWNER";
@@ -163,6 +176,12 @@ if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
     # Do not log checkpoints
     if grep -q "#log_checkpoints" "$PGCONF"; then
         sed -i 's|#log_checkpoints.*|log_checkpoints = off|' "$PGCONF"
+    fi
+
+    if grep -q "^#\?log_min_messages" /var/lib/postgresql/data/postgresql.conf; then
+        sed -i "s|^#\?log_min_messages.*|log_min_messages = $POSTGRES_LOG_MIN_MESSAGES|" /var/lib/postgresql/data/postgresql.conf
+    else
+        echo "log_min_messages = $POSTGRES_LOG_MIN_MESSAGES" >> /var/lib/postgresql/data/postgresql.conf
     fi
 
     # Closing idling connections automatically seems to break any logic so was reverted again to default where it is disabled
@@ -222,12 +241,16 @@ do_database_dump() {
         pg_ctl stop -m fast
         rm "$DUMP_DIR/export.failed"
         echo 'Database dump successful!'
-        set +x
+        if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+            set +x
+        fi
         exit 0
     else
         pg_ctl stop -m fast
         echo "Database dump unsuccessful!"
-        set +x
+        if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+            set +x
+        fi
         exit 1
     fi
 }

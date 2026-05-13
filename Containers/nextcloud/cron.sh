@@ -1,4 +1,9 @@
 #!/bin/bash
+
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 wait_for_cron() {
     set -x
     while [ -n "$(pgrep -f /var/www/html/cron.php)" ]; do

@@ -23,6 +23,10 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
     $CONFIG['redis']['dbindex'] = (int) getenv('REDIS_DB_INDEX');
   }
 
+  if (getenv('REDIS_PREFIX')) {
+    $CONFIG['redis']['memcache_customprefix'] = getenv('REDIS_PREFIX');
+  }
+
   if (getenv('REDIS_USER_AUTH')) {
     $CONFIG['redis']['user'] = str_replace("&auth[]=", "", getenv('REDIS_USER_AUTH'));
   }
@@ -58,6 +62,10 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
 
   if (getenv('REDIS_USER_AUTH')) {
     $CONFIG['redis.cluster']['user'] = str_replace("&auth[]=", "", getenv('REDIS_USER_AUTH'));
+  }
+
+  if (getenv('REDIS_PREFIX')) {
+    $CONFIG['redis.cluster']['memcache_customprefix'] = getenv('REDIS_PREFIX');
   }
 
   if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_REDIS')) {

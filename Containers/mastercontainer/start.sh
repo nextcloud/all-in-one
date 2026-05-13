@@ -20,6 +20,10 @@ case "${1}" in
 esac
 }
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 # Check if running as root user
 if [ "$EUID" != "0" ]; then
     print_red "Container does not run as root user. This is not supported."
@@ -331,6 +335,22 @@ else
         export NEXTCLOUD_ENABLE_DRI_DEVICE="false"
     fi
     export NEXTCLOUD_DRI_GID=""
+fi
+
+# Log level logics
+if [ -n "$AIO_LOG_LEVEL" ] && ! echo "$AIO_LOG_LEVEL" | grep -q "^debug$\|^info$\|^warn$\|^error$"; then
+    print_red "AIO_LOG_LEVEL must be one of 'debug', 'info', 'warn' or 'error'.
+It is set to '$AIO_LOG_LEVEL'".
+    exit 1
+fi
+if [ -z "$AIO_LOG_LEVEL" ]; then
+    export AIO_LOG_LEVEL="warn"
+fi
+
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    export SUPERVISORD_STDOUT=/dev/stdout
+else
+    export SUPERVISORD_STDOUT=NONE
 fi
 
 # Check if ghcr.io is reachable

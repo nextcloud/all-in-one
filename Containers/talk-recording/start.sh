@@ -1,5 +1,17 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+TALK_RECORDING_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
+    debug) printf '10' ;;
+    info) printf '20' ;;
+    warn) printf '30' ;;
+    error) printf '40' ;;
+esac)"
+export TALK_RECORDING_LOG_LEVEL
+
 # Variables
 if [ -z "$NC_DOMAIN" ]; then
     echo "You need to provide the NC_DOMAIN."
@@ -49,7 +61,7 @@ fi
 cat << RECORDING_CONF > "/conf/recording.conf"
 [logs]
 # 30 means Warning
-level = 30
+level = ${TALK_RECORDING_LOG_LEVEL}
 
 [http]
 listen = 0.0.0.0:1234

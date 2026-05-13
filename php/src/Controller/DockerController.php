@@ -328,6 +328,11 @@ readonly class DockerController {
         return $nonbufResp;
     }
 
+    public function DeleteBorgBackupConfig(Request $request, Response $response, array $args) : Response {
+        $this->dockerActionManager->deleteBorgBackupConfig();
+        return $response->withStatus(201)->withHeader('Location', '.');
+    }
+
     public function SystemPrune(Request $request, Response $response, array $args) : Response {
         // Get streaming response start and closure
         $nonbufResp = $this->startStreamingResponse($response);

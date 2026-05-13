@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 # Wait until the apache container is ready
 while ! nc -z "$APACHE_HOST" "$APACHE_PORT"; do
     echo "Waiting for $APACHE_HOST to become available..."

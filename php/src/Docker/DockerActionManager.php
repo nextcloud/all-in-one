@@ -145,6 +145,27 @@ readonly class DockerActionManager {
         }
     }
 
+    public function deleteBorgBackupConfig(): void {
+        // Delete the borgbackup container
+        $id = 'nextcloud-aio-borgbackup';
+        $borgbackupContainer = $this->containerDefinitionFetcher->GetContainerById($id);
+        $this->DeleteContainer($borgbackupContainer);
+
+        // Delete the borg cache volume
+        $url = $this->BuildApiUrl('volumes/nextcloud_aio_backup_cache');
+        try {
+            $this->guzzleClient->delete($url);
+            error_log('nextcloud_aio_backup_cache volume deleted successfully.');
+        } catch (RequestException $e) {
+            if ($e->getCode() !== 404) {
+                error_log('Could not delete nextcloud_aio_backup_cache volume: ' . $e->getMessage());
+            }
+        }
+
+        // Clear the configuration variables and files
+        $this->configurationManager->deleteBorgBackupLocationItems();
+    }
+
     public function GetLogs(string $id, string $since = ''): string {
         $url = $this->BuildApiUrl(
             sprintf(
@@ -157,11 +178,12 @@ readonly class DockerActionManager {
         $response = "";
         $separator = "\r\n";
         $line = strtok($responseBody, $separator);
-        $response = substr((string)$line, 8) . $separator;
+        if ($line !== false) {
+            $response = substr($line, 8) . $separator;
+        }
 
-        while ($line !== false) {
-            $line = strtok($separator);
-            $response .= substr((string)$line, 8) . $separator;
+        while (($line = strtok($separator)) !== false) {
+            $response .= substr($line, 8) . $separator;
         }
 
         return $response;
@@ -187,7 +209,7 @@ readonly class DockerActionManager {
             ];
 
             if ($volume->name === 'nextcloud_aio_nextcloud_datadir' || $volume->name === 'nextcloud_aio_backupdir') {
-                return;
+                continue;
             }
 
             $firstChar = substr($volume->name, 0, 1);

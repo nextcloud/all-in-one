@@ -6,7 +6,7 @@ This guide explains how to connect to Nextcloud AIO securely via HTTPS (TLS) usi
 
 - **Integrated**: AIO's built-in reverse proxy with automatic HTTPS
 - **External**: An external reverse proxy (such as Caddy or Nginx or Cloudflare Proxy)
-- **Secure tunnel**: Tunneling services for private network access or public access without port forwarding (such as Tailscale Serve or Cloudflare Tunnel)
+- **Secure tunnel**: Tunneling services for private network access or public access without port forwarding (such as Tailscale Serve, Cloudflare Tunnel, or Pangolin)
 
 ## Choosing Your Approach
 
@@ -23,6 +23,7 @@ This guide explains how to connect to Nextcloud AIO securely via HTTPS (TLS) usi
 | **Integrated** | Simple setups, single service on port 443 | Public IP, dedicated port 443 | Yes (443) |
 | **External Reverse Proxy** (including Cloudflare Proxy) | Multiple services, existing web server, or users wanting DDoS protection | Existing reverse proxy, willingness to set one up, or Cloudflare account | Yes (443) |
 | **Cloudflare Tunnel** | No port forwarding possible/desired, public access | Cloudflare account | No |
+| **Pangolin** | No port forwarding possible/desired, public or private access, self-hostable tunnel | Pangolin Cloud account or self-hosted Pangolin server | No |
 | **Tailscale Serve** | Private access (tailnet only) | Tailscale account | No |
 | **Tailscale Funnel** | Public access via Tailscale | Tailscale account | No |
 
@@ -68,29 +69,32 @@ Using an existing external reverse proxy is required in particular if port `443/
 > [!NOTE]
 > An external reverse proxy can also facilitate other routing approaches, but Nextcloud AIO only supports having its own dedicated hostname (e.g., `cloud.example.com`). You cannot run it in a subfolder like `example.com/nextcloud/`.[^shared]
 
-### Secure tunnel: Using AIO with a secure tunneling service (*Tailscale, Cloudflare*)
+### Secure tunnel: Using AIO with a secure tunneling service (*Tailscale, Cloudflare, Pangolin*)
 
-Cloudflare and Tailscale offer secure tunneling services that let you access your Nextcloud without opening ports on your firewall. 
+Cloudflare, Tailscale, and Pangolin offer secure tunneling services that let you access your Nextcloud without opening ports on your firewall. 
 
 #### Private network access
 
 For Nextcloud AIO, you can use:
 - **Cloudflare Tunnel (`cloudflared`)** - Secure outbound-only tunnels that don't require exposing ports
 - **Tailscale Serve** - Expose services privately on your Tailscale network (tailnet only)
+- **Pangolin** - WireGuard-based outbound tunnels using the Newt connector; can be used for both private and public access
 
-Both options provide private network access to your Nextcloud AIO instance.
+All three options provide private network access to your Nextcloud AIO instance.
 
 #### Public Internet access (without port forwarding)
 
 To make your Nextcloud AIO instance accessible from the public Internet (not just your private network), you can use:
 - **Cloudflare Tunnel** with public routes enabled (which combines Cloudflare Tunnel with Cloudflare's proxy features)
 - **Tailscale Funnel** - Expose services to the public Internet via Tailscale's infrastructure
+- **Pangolin** - Expose services publicly via Pangolin Cloud or a self-hosted Pangolin server
 
-**Comparison of Cloudflare and Tailscale options:**
+**Comparison of Cloudflare, Tailscale, and Pangolin options:**
 
 | Feature | Access Scope | Inbound Ports Required | Use Case |
 |---------|--------------|----------------|----------|
 | **Cloudflare Tunnel** | Public Internet | None | Public access without port forwarding |
+| **Pangolin** | Public Internet or private | None | Public or private access; self-hostable |
 | **Tailscale Serve** | Your Tailscale network only | None | Private access for you and invited users |
 | **Tailscale Funnel** | Public Internet | None | Public access through Tailscale |
 
@@ -734,6 +738,48 @@ httpServer.on('upgrade', (req, socket, head) => {
 ```
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+
+</details>
+
+##### Pangolin
+
+<details>
+
+<summary>click here to expand</summary>
+
+[Pangolin](https://pangolin.net/) is an open-source, identity-based remote access platform built on WireGuard that enables secure connectivity to private resources without opening inbound firewall ports. It uses the **Newt** connector as an outbound-only WireGuard tunnel client that runs alongside AIO on your server and connects to a Pangolin server (either Pangolin Cloud or your own self-hosted instance). From AIO's perspective, Pangolin works like a reverse proxy: Pangolin handles TLS and routes public traffic through the tunnel to AIO.
+
+**Requirements:**
+- A [Pangolin Cloud](https://app.pangolin.net/) account **or** a [self-hosted Pangolin server](https://docs.pangolin.net/self-host/quick-install)
+- No open inbound ports required
+
+**Setup:**
+
+1. **Set up Pangolin**: Either sign up for a free [Pangolin Cloud](https://app.pangolin.net/) account, or [self-host Pangolin](https://docs.pangolin.net/self-host/quick-install) on a VPS with a public IP address.
+
+1. **Create a site**: In the Pangolin dashboard, create a new site for the machine that will run AIO. Follow the instructions to generate a **Newt ID** and **Newt secret** for the site.
+
+1. **Deploy Newt on the AIO host**: Run the Newt connector on the same machine as AIO. You can deploy it as a Docker container alongside AIO:
+
+    ```yaml
+    services:
+      newt:
+        image: fosrl/newt
+        restart: unless-stopped
+        environment:
+          - PANGOLIN_ENDPOINT=https://app.pangolin.net  # For Pangolin Cloud; replace with your self-hosted server URL if self-hosting
+          - NEWT_ID=<your-newt-id>
+          - NEWT_SECRET=<your-newt-secret>
+    ```
+
+    Or as a standalone binary — see the [Newt documentation](https://github.com/fosrl/newt) for details.
+
+1. **Create a resource**: In the Pangolin dashboard, create a new resource for the site. Set the target to `http://private.ip.address.of.server:11000`.<br>
+    ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the port and address to match your `APACHE_PORT` and `APACHE_IP_BINDING` settings.
+
+1. **Configure AIO**: When starting AIO, add `--env SKIP_DOMAIN_VALIDATION=true` to disable domain validation (domain validation is known to not work through Pangolin tunnels). Use the domain assigned by Pangolin as your Nextcloud domain when opening the AIO interface.
+
+1. Now continue with [point 2](#2-use-this-startup-command).
 
 </details>
 

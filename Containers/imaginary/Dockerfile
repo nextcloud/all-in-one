@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.26.2-alpine3.23 AS go
+FROM golang:1.26.3-alpine3.23 AS go
 
 ENV IMAGINARY_HASH=6a274b488759a896aff02f52afee6e50b5e3a3ee
 
@@ -33,7 +33,8 @@ COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
-ENV PORT=9000
+ENV PORT=9000 \
+    AIO_LOG_LEVEL=warn
 
 USER 65534
 

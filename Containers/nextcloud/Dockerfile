@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.3.30-fpm-alpine3.23
+FROM php:8.3.31-fpm-alpine3.23
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=16G
@@ -8,7 +8,7 @@ ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=33.0.2
+ENV NEXTCLOUD_VERSION=33.0.3
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
@@ -142,7 +142,7 @@ RUN set -ex; \
     \
     { \
         echo 'session.save_handler = redis'; \
-        echo 'session.save_path = "tcp://${REDIS_HOST}:${REDIS_PORT}?database=${REDIS_DB_INDEX}${REDIS_USER_AUTH}&auth[]=${REDIS_HOST_PASSWORD}"'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:${REDIS_PORT}?database=${REDIS_DB_INDEX}${REDIS_USER_AUTH}&auth[]=${REDIS_HOST_PASSWORD}&timeout=3.0&read_timeout=10.0"'; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
         echo '; 100ms in microseconds - prevents timeout on long requests such as large file uploads'; \
@@ -250,6 +250,21 @@ RUN set -ex; \
 # We don't actually expect so many children but don't want to limit it artificially because people will report issues otherwise.
 # Also children will usually be terminated again after the process is done due to the ondemand setting
     sed -i 's/^pm.max_children =.*/pm.max_children = 5000/' /usr/local/etc/php-fpm.d/www.conf; \
+# With pm = ondemand, workers are killed after pm.process_idle_timeout seconds
+# of inactivity.  The upstream default is 10 s, which is aggressive: after a
+# brief quiet period (e.g. desktop-sync clients polling every few seconds), all
+# workers are reaped and the next request burst must wait for fresh forks.  On
+# a loaded host that spawn latency can push Apache past its FastCGI timeout and
+# produce a 502.  300 s (5 min) keeps a warm pool through normal sync-client
+# polling cycles while still reclaiming memory during genuinely idle periods.
+    sed -i 's/^;*pm.process_idle_timeout\s*=.*/pm.process_idle_timeout = 300s/' /usr/local/etc/php-fpm.d/www.conf; \
+# Set request_terminate_timeout so that PHP-FPM forcibly kills workers that
+# exceed the wall-clock limit.  Without this (default = 0 = disabled) a worker
+# stuck on a slow DB query, a stalled Redis connection, or a hung syscall is
+# never reaped.  Over time these zombies fill up pm.max_children, leaving no
+# free slots for legitimate requests and causing Apache to return 502 Bad
+# Gateway upstream.
+    sed -i "s|^;*request_terminate_timeout = .*|request_terminate_timeout = \${PHP_MAX_TIME}|" /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
     echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \

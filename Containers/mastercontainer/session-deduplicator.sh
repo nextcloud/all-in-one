@@ -16,6 +16,10 @@ compare_times() {
     fi
 }
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 while true; do
     compare_times
     sleep 2

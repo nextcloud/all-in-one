@@ -5,11 +5,12 @@ COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 ENV RECORDING_VERSION=v0.2.1
-ENV ALLOW_ALL=false
-ENV HPB_PROTOCOL=https
-ENV NC_PROTOCOL=https
-ENV SKIP_VERIFY=false
-ENV HPB_PATH=/standalone-signaling/
+ENV ALLOW_ALL=false \
+    HPB_PROTOCOL=https \
+    NC_PROTOCOL=https \
+    SKIP_VERIFY=false \
+    HPB_PATH=/standalone-signaling/ \
+    AIO_LOG_LEVEL=warn
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \

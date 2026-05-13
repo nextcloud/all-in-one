@@ -1,5 +1,23 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+if [ "$AIO_LOG_LEVEL" = "warn" ]; then
+    ETURNAL_LOG_LEVEL="warning"
+else
+    ETURNAL_LOG_LEVEL="$AIO_LOG_LEVEL"
+fi
+export ETURNAL_LOG_LEVEL
+JANUS_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
+    debug) printf '7' ;;
+    info) printf '4' ;;
+    warn) printf '3' ;;
+    error) printf '1' ;;
+esac)"
+export JANUS_LOG_LEVEL
+
 # Variables
 if [ -z "$NC_DOMAIN" ]; then
     echo "You need to provide the NC_DOMAIN."
@@ -31,7 +49,9 @@ if mountpoint -q /usr/local/share/ca-certificates; then
         fi
     done
     export SSL_CERT_FILE=/tmp/ca-certificates.crt
-    set +x
+    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+        set +x
+    fi
 fi
 
 set -x
@@ -40,7 +60,9 @@ IPv4_ADDRESS_TALK_RELAY="$(hostname -i | grep -oP '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]
 IPv4_ADDRESS_TALK="$(dig "$TALK_HOST" IN A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
 # shellcheck disable=SC2153
 IPv6_ADDRESS_TALK="$(dig "$TALK_HOST" AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
-set +x
+if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+    set +x
+fi
 
 if [ -n "$IPv4_ADDRESS_TALK" ] && [ "$IPv4_ADDRESS_TALK_RELAY" = "$IPv4_ADDRESS_TALK" ]; then
     IPv4_ADDRESS_TALK=""
@@ -53,7 +75,9 @@ if grep -q "1" /sys/module/ipv6/parameters/disable \
 || grep -q "1" /proc/sys/net/ipv6/conf/default/disable_ipv6; then
     IP_BINDING="0.0.0.0"
 fi
-set +x
+if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+    set +x
+fi
 
 # Turn
 cat << TURN_CONF > "/conf/eturnal.yml"
@@ -66,7 +90,7 @@ eturnal:
       port: $TALK_PORT
       transport: tcp
   log_dir: stdout
-  log_level: warning
+  log_level: ${ETURNAL_LOG_LEVEL}
   secret: "$TURN_SECRET"
   relay_ipv4_addr: "$IPv4_ADDRESS_TALK_RELAY"
   relay_ipv6_addr: "$IPv6_ADDRESS_TALK"

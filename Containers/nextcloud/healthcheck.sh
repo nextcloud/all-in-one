@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 # Set a default value for POSTGRES_PORT
 if [ -z "$POSTGRES_PORT" ]; then
     POSTGRES_PORT=5432
