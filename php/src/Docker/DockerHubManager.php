@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace AIO\Docker;
 
-use AIO\ContainerDefinitionFetcher;
-use AIO\Data\ConfigurationManager;
 use GuzzleHttp\Client;
 
 readonly class DockerHubManager {
@@ -15,6 +13,16 @@ readonly class DockerHubManager {
         $this->guzzleClient = new Client();
     }
 
+
+    // Official Docker Hub images need the library/ prefix when using the registry API directly.
+    private function NormalizeImageName(string $name): string {
+        if (!str_contains($name, '/')) {
+            return 'library/' . $name;
+        }
+        return $name;
+    }
+
+
     public function GetLatestDigestOfTag(string $name, string $tag) : ?string {
         $cacheKey = 'dockerhub-manifest-' . $name . $tag;
 
@@ -24,11 +32,12 @@ readonly class DockerHubManager {
         }
 
         // If one of the links below should ever become outdated, we can still upgrade the mastercontainer via the webinterface manually by opening '/api/docker/getwatchtower'
+        $normalizedName = $this->NormalizeImageName($name);
 
         try {
             $authTokenRequest = $this->guzzleClient->request(
                 'GET',
-                'https://auth.docker.io/token?service=registry.docker.io&scope=repository:' . $name . ':pull'
+                'https://auth.docker.io/token?service=registry.docker.io&scope=repository:' . $normalizedName . ':pull'
             );
             $body = $authTokenRequest->getBody()->getContents();
             $decodedBody = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -36,7 +45,7 @@ readonly class DockerHubManager {
                 $authToken = $decodedBody['token'];
                 $manifestRequest = $this->guzzleClient->request(
                     'HEAD',
-                    'https://registry-1.docker.io/v2/'.$name.'/manifests/' . $tag,
+                    'https://registry-1.docker.io/v2/'.$normalizedName.'/manifests/' . $tag,
                     [
                         'headers' => [
                             'Accept' => 'application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json,application/vnd.docker.distribution.manifest.v2+json',
@@ -52,10 +61,10 @@ readonly class DockerHubManager {
                 }
             }
 
-            error_log('Could not get digest of container ' . $name . ':' . $tag);
+            error_log('Could not get digest of container ' . $normalizedName . ':' . $tag);
             return null;
         } catch (\Exception $e) {
-            error_log('Could not get digest of container ' . $name . ':' . $tag . ' ' . $e->getMessage());
+            error_log('Could not get digest of container ' . $normalizedName . ':' . $tag . ' ' . $e->getMessage());
             return null;
         }
     }
