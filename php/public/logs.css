@@ -10,6 +10,7 @@ pre {
     margin: 0;
     padding: 1rem;
     box-sizing: border-box;
+    font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
 }
 #floating-box {
     position: fixed;
@@ -26,7 +27,8 @@ pre {
     gap: 0.5rem;
     font-size: large;
     border: solid thin gray;
-    background-color: #f9f9f9;
+    background-color: var(--color-main-background);
+    color: var(--color-main-text);
     width: 10rem;
     padding: 0.5rem 1rem;
     margin: 0 0 0 1rem;
