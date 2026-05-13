@@ -24,7 +24,7 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260513_090235
           command:
             - chmod
             - "777"
@@ -34,15 +34,19 @@ spec:
               mountPath: /nextcloud-aio-onlyoffice
       containers:
         - env:
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: JWT_ENABLED
               value: "true"
             - name: JWT_HEADER
               value: AuthorizationJwt
             - name: JWT_SECRET
               value: "{{ .Values.ONLYOFFICE_SECRET }}"
+            - name: LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-onlyoffice:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-onlyoffice:20260513_090235
           readinessProbe:
             exec:
               command:

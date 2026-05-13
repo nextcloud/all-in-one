@@ -40,6 +40,8 @@ spec:
               value: "{{ .Values.TALK_MAX_STREAM_BITRATE }}"
             - name: TALK_MAX_SCREEN_BITRATE
               value: "{{ .Values.TALK_MAX_SCREEN_BITRATE }}"
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: INTERNAL_SECRET
               value: "{{ .Values.TALK_INTERNAL_SECRET }}"
             - name: NC_DOMAIN
@@ -54,7 +56,7 @@ spec:
               value: "{{ .Values.TURN_SECRET }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-talk:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-talk:20260513_090235
           readinessProbe:
             exec:
               command:

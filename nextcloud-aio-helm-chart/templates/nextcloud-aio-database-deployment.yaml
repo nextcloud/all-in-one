@@ -35,7 +35,7 @@ spec:
         {{- end }}
       initContainers:
         - name: init-subpath
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260513_090235
           command:
             - mkdir
             - "-p"
@@ -54,6 +54,8 @@ spec:
               {{- end }}
       containers:
         - env:
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: PGTZ
               value: "{{ .Values.TIMEZONE }}"
             - name: POSTGRES_DB
@@ -64,7 +66,7 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-postgresql:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-postgresql:20260513_090235
           readinessProbe:
             exec:
               command:

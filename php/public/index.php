@@ -68,7 +68,7 @@ session_start([
     "use_strict_mode" => true, // Only allow initialized session IDs. See https://www.php.net/manual/en/session.configuration.php#ini.session.use-strict-mode
     "cookie_secure" => true, // Only send cookies over https (not http). See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#secure
     "cookie_httponly" => true, // Block the cookie from being read with js in the browser, will still be send for fetch request triggered by js. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly
-    "cookie_samesite" => "Strict", // Only send the cookie with requests triggered by AIO itself. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value
+    "cookie_samesite" => "Lax", // Send the cookie with same-site requests and top-level cross-site navigations (e.g. redirect after token-based getlogin). "Strict" would block the session cookie on the redirect that follows a cross-site navigation, breaking the getlogin flow from Nextcloud's admin panel. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value
 ]);
 
 if ($wasAuthenticated) {

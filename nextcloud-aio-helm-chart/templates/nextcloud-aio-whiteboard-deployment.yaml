@@ -34,6 +34,8 @@ spec:
         {{- end }}
       containers:
         - env:
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: BACKUP_DIR
               value: /tmp
             - name: JWT_SECRET_KEY
@@ -50,7 +52,7 @@ spec:
               value: redis
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-whiteboard:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-whiteboard:20260513_090235
           readinessProbe:
             exec:
               command:

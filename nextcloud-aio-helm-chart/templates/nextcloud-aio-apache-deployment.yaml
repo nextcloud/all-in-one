@@ -37,6 +37,8 @@ spec:
         - env:
             - name: ADDITIONAL_TRUSTED_DOMAIN
               value: "{{ .Values.ADDITIONAL_TRUSTED_DOMAIN }}"
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: APACHE_HOST
               value: nextcloud-aio-apache
             - name: APACHE_MAX_SIZE
@@ -63,7 +65,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: ghcr.io/nextcloud-releases/aio-apache:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-apache:20260513_090235
           readinessProbe:
             exec:
               command:

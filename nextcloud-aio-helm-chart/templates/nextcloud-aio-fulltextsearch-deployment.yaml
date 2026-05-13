@@ -24,7 +24,7 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260513_090235
           command:
             - chmod
             - "777"
@@ -34,6 +34,8 @@ spec:
               mountPath: /nextcloud-aio-elasticsearch
       containers:
         - env:
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: ES_JAVA_OPTS
               value: "{{ .Values.FULLTEXTSEARCH_JAVA_OPTIONS | default "-Xms512M -Xmx512M" }}"
             - name: FULLTEXTSEARCH_PASSWORD
@@ -48,13 +50,17 @@ spec:
               value: single-node
             - name: http.port
               value: "9200"
-            - name: logger.level
-              value: WARN
+            - name: indices.fielddata.cache.size
+              value: 20%
+            - name: indices.memory.index_buffer_size
+              value: 20%
+            - name: thread_pool.write.queue_size
+              value: "1000"
             - name: xpack.license.self_generated.type
               value: basic
             - name: xpack.security.enabled
               value: "false"
-          image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20260409_094910
+          image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20260513_090235
           readinessProbe:
             exec:
               command:
