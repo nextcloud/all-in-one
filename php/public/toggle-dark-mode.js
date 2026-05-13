@@ -35,4 +35,6 @@ setThemeToDOM(getSavedTheme());
 document.addEventListener('DOMContentLoaded', () => {
     setThemeIcon(getSavedTheme())
     document.querySelector('button#theme-toggle')?.addEventListener('click', () => toggleTheme());
+    // Re-apply theme when the overlay-log iframe navigates (e.g. after a form submission).
+    document.querySelector('iframe#overlay-log')?.addEventListener('load', () => setThemeToDOM(getSavedTheme()));
 });

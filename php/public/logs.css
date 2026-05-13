@@ -10,6 +10,7 @@ pre {
     margin: 0;
     padding: 1rem;
     box-sizing: border-box;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen-Sans, Cantarell, Ubuntu, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 #floating-box {
     position: fixed;
@@ -26,7 +27,8 @@ pre {
     gap: 0.5rem;
     font-size: large;
     border: solid thin gray;
-    background-color: #f9f9f9;
+    background-color: var(--color-main-background);
+    color: var(--color-main-text);
     width: 10rem;
     padding: 0.5rem 1rem;
     margin: 0 0 0 1rem;
