@@ -9,6 +9,7 @@ POSTGRES_LOG_MIN_MESSAGES="$(case "$AIO_LOG_LEVEL" in
     info) printf 'info' ;;
     warn) printf 'warning' ;;
     error) printf 'error' ;;
+    *) printf 'warning' ;;
 esac)"
 export POSTGRES_LOG_MIN_MESSAGES
 
