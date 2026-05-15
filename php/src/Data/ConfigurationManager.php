@@ -230,6 +230,11 @@ class ConfigurationManager
         set { $this->set('nextcloud_memory_limit', $value); }
     }
 
+    public string $notifyPushNextcloudUrl {
+        get => $this->getEnvironmentalVariableOrConfig('NOTIFY_PUSH_NEXTCLOUD_URL', 'notify_push_nextcloud_url', '');
+        set { $this->set('notify_push_nextcloud_url', $value); }
+    }
+
     public function getApacheMaxSize() : int {
         $uploadLimit = (int)rtrim($this->nextcloudUploadLimit, 'G');
         return $uploadLimit * 1024 * 1024 * 1024;
@@ -1097,6 +1102,7 @@ class ConfigurationManager
             'HARP_ENABLED' => $this->isHarpEnabled ? 'yes' : '',
             'NEXTCLOUD_UPLOAD_LIMIT' => $this->nextcloudUploadLimit,
             'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloudMemoryLimit,
+            'NOTIFY_PUSH_NEXTCLOUD_URL' => $this->notifyPushNextcloudUrl,
             'NEXTCLOUD_MAX_TIME' => $this->nextcloudMaxTime,
             'BORG_RETENTION_POLICY' => $this->borgRetentionPolicy,
             'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->fulltextsearchJavaOptions,

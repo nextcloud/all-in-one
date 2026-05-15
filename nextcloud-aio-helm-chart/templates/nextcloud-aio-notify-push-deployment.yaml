@@ -41,6 +41,10 @@ spec:
               value: nextcloud-aio-nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
+            {{- if .Values.NOTIFY_PUSH_NEXTCLOUD_URL }}
+            - name: NOTIFY_PUSH_NEXTCLOUD_URL
+              value: "{{ .Values.NOTIFY_PUSH_NEXTCLOUD_URL }}"
+            {{- end }}
           image: ghcr.io/nextcloud-releases/aio-notify-push:20260513_090235
           readinessProbe:
             exec:

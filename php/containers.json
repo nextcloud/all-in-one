@@ -315,7 +315,8 @@
       "environment": [
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
         "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
-        "TZ=%TIMEZONE%"
+        "TZ=%TIMEZONE%",
+        "NOTIFY_PUSH_NEXTCLOUD_URL=%NOTIFY_PUSH_NEXTCLOUD_URL%"
       ],
       "restart": "unless-stopped",
       "read_only": true,
