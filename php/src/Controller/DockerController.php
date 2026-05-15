@@ -258,6 +258,16 @@ readonly class DockerController {
     }
 
     public function startTopContainer(bool $pullImage, ?\Closure $addToStreamingResponseBody = null) : void {
+        if ($pullImage && $this->dockerActionManager->IsMastercontainerUpdateAvailable()) {
+            // The mastercontainer must always be updated before the sibling containers.
+            // If a mastercontainer update is still available at this point it means we are likely
+            // running inside the old mastercontainer during its Docker stop grace period while
+            // watchtower has already started the new mastercontainer. Skip the update here —
+            // the new mastercontainer will re-run this process and perform the update correctly.
+            error_log('Not updating sibling containers because a mastercontainer update is available. The mastercontainer must be updated first.');
+            return;
+        }
+
         $this->configurationManager->aioToken = bin2hex(random_bytes(24));
 
         // Stop domaincheck since apache would not be able to start otherwise
