@@ -93,6 +93,9 @@
                         <form method="POST" action="api/docker/watchtower" target="overlay-log">
                             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                            {% if skip_cosign_check == true %}
+                                <input type="hidden" name="skip_cosign_check" value="true">
+                            {% endif %}
                             <input type="submit" value="Update mastercontainer" />
                         </form>
                     {% else %}
@@ -335,6 +338,9 @@
                                 <form method="POST" action="api/docker/watchtower" target="overlay-log">
                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                    {% if skip_cosign_check == true %}
+                                        <input type="hidden" name="skip_cosign_check" value="true">
+                                    {% endif %}
                                     <input type="submit" value="Update mastercontainer" />
                                 </form>
                             {% else %}

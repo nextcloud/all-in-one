@@ -129,6 +129,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $bypass_mastercontainer_update = isset($params['bypass_mastercontainer_update']);
     $bypass_container_update = isset($params['bypass_container_update']);
     $skip_domain_validation = isset($params['skip_domain_validation']);
+    $skip_cosign_check = isset($params['skip_cosign_check']);
 
     return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->domain,
@@ -181,6 +182,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->aioCommunityContainers,
         'bypass_container_update' => $bypass_container_update,
+        'skip_cosign_check' => $skip_cosign_check,
     ]);
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
