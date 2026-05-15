@@ -4,11 +4,15 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     set -x
 fi
 
+# Defensive default: ensure AIO_LOG_LEVEL is never empty so log-level mappings below always resolve correctly
+AIO_LOG_LEVEL="${AIO_LOG_LEVEL:-warn}"
+
 POSTGRES_LOG_MIN_MESSAGES="$(case "$AIO_LOG_LEVEL" in
     debug) printf 'debug1' ;;
     info) printf 'info' ;;
     warn) printf 'warning' ;;
     error) printf 'error' ;;
+    *) printf 'warning' ;;
 esac)"
 export POSTGRES_LOG_MIN_MESSAGES
 

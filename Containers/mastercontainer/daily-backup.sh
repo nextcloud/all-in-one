@@ -59,6 +59,15 @@ fi
 
 # Wait for watchtower to stop
 if [ "$AUTOMATIC_UPDATES" = 1 ]; then
+    # Give Docker time to register the container as running before checking for it.
+    # Without this, there is a race condition where the check below runs before watchtower
+    # appears in `docker ps`, causing the script to skip the wait and continue with
+    # the potentially outdated mastercontainer code while watchtower is still updating it.
+    count=0
+    while ! docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-watchtower$" && [ "$count" -lt 12 ]; do
+        sleep 5
+        count=$((count + 1))
+    done
     if ! docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-watchtower$"; then
         echo "Something seems to be wrong: Watchtower should be started at this step."
     fi

@@ -4,6 +4,9 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     set -x
 fi
 
+# Defensive default: ensure AIO_LOG_LEVEL is never empty so log-level mappings below always resolve correctly
+AIO_LOG_LEVEL="${AIO_LOG_LEVEL:-warn}"
+
 if [ "$AIO_LOG_LEVEL" = "warn" ]; then
     BORG_LOG_LEVEL_FLAG="--warning"
 else

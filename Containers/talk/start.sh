@@ -4,6 +4,9 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     set -x
 fi
 
+# Defensive default: ensure AIO_LOG_LEVEL is never empty so log-level mappings below always resolve correctly
+AIO_LOG_LEVEL="${AIO_LOG_LEVEL:-warn}"
+
 if [ "$AIO_LOG_LEVEL" = "warn" ]; then
     ETURNAL_LOG_LEVEL="warning"
 else
@@ -15,6 +18,7 @@ JANUS_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
     info) printf '4' ;;
     warn) printf '3' ;;
     error) printf '1' ;;
+    *) printf '3' ;;
 esac)"
 export JANUS_LOG_LEVEL
 

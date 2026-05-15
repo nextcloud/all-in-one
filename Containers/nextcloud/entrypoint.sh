@@ -14,6 +14,9 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     set -x
 fi
 
+# Defensive default: ensure AIO_LOG_LEVEL is never empty so log-level mappings below always resolve correctly
+AIO_LOG_LEVEL="${AIO_LOG_LEVEL:-warn}"
+
 run_upgrade_if_needed_due_to_app_update() {
     if php /var/www/html/occ status | grep maintenance | grep -q true; then
         php /var/www/html/occ maintenance:mode --off
@@ -29,6 +32,7 @@ NEXTCLOUD_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
     info) printf '1' ;;
     warn) printf '2' ;;
     error) printf '3' ;;
+    *) printf '2' ;;
 esac)"
 export NEXTCLOUD_LOG_LEVEL
 

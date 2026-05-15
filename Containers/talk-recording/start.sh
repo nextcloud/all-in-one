@@ -4,11 +4,15 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     set -x
 fi
 
+# Defensive default: ensure AIO_LOG_LEVEL is never empty so log-level mappings below always resolve correctly
+AIO_LOG_LEVEL="${AIO_LOG_LEVEL:-warn}"
+
 TALK_RECORDING_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
     debug) printf '10' ;;
     info) printf '20' ;;
     warn) printf '30' ;;
     error) printf '40' ;;
+    *) printf '30' ;;
 esac)"
 export TALK_RECORDING_LOG_LEVEL
 
