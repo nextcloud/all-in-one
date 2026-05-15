@@ -21,7 +21,7 @@ if [ -f /run/.containerenv ]; then
 fi
 
 if [ -n "$CONTAINER_TO_UPDATE" ]; then
-    exec /watchtower --cleanup --log-level "$AIO_LOG_LEVEL" --run-once "$CONTAINER_TO_UPDATE"
+    exec /watchtower --cleanup --log-level "${AIO_LOG_LEVEL:-warn}" --run-once "$CONTAINER_TO_UPDATE"
 else
     echo "'CONTAINER_TO_UPDATE' is not set. Cannot update anything."
     exit 1

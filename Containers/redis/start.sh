@@ -9,8 +9,10 @@ if [ "$AIO_LOG_LEVEL" = "warn" ] || [ "$AIO_LOG_LEVEL" = "error" ]; then
     REDIS_LOG_LEVEL="warning"
 elif [ "$AIO_LOG_LEVEL" = "info" ]; then
     REDIS_LOG_LEVEL="notice"
+elif [ "$AIO_LOG_LEVEL" = "debug" ]; then
+    REDIS_LOG_LEVEL="debug"
 else
-    REDIS_LOG_LEVEL="$AIO_LOG_LEVEL"
+    REDIS_LOG_LEVEL="warning"
 fi
 export REDIS_LOG_LEVEL
 
