@@ -71,4 +71,5 @@ class DataConst {
     public static function GetAioVersionFile() : string {
         return (string)realpath(__DIR__ . '/../../templates/includes/aio-version.twig');
     }
+
 }
