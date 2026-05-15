@@ -44,7 +44,19 @@ fi
 
 echo "notify-push was started"
 
+# Build optional --nextcloud-url flag.
+# Set NOTIFY_PUSH_NEXTCLOUD_URL to an internal URL (e.g. https://nextcloud-aio-apache)
+# when an upstream reverse proxy strips or replaces the X-Forwarded-For header and
+# the notify_push self-test reports "push server is not a trusted proxy".
+# --allow-self-signed is needed because the TLS cert is issued for the public domain,
+# not the internal container hostname.
+NEXTCLOUD_URL_ARGS=()
+if [ -n "$NOTIFY_PUSH_NEXTCLOUD_URL" ]; then
+    NEXTCLOUD_URL_ARGS=(--nextcloud-url "$NOTIFY_PUSH_NEXTCLOUD_URL" --allow-self-signed)
+fi
+
 # Run it
 exec /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
     --port 7867 \
+    "${NEXTCLOUD_URL_ARGS[@]}" \
     /var/www/html/config/config.php
