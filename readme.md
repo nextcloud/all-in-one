@@ -202,6 +202,7 @@ sudo docker run \
   --publish 80:80 \
   --publish 8080:8080 \
   --publish 8443:8443 \
+  --cpu-shares 2048 \
   --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
   --volume /var/run/docker.sock:/var/run/docker.sock:ro \
   ghcr.io/nextcloud-releases/all-in-one:latest
@@ -218,6 +219,7 @@ sudo docker run \
   - `--publish 80:80` — publishes container port 80 on host port 80 (used for ACME http-challenge when obtaining certificates, used for for the AIO-interface running inside the mastercontainer). Not required if you run AIO behind a reverse proxy.
   - `--publish 8080:8080` — publishes the AIO interface (self-signed certificate) on host port 8080. You may map a different host port if 8080 is in use (e.g. `--publish 8081:8080`).  
   - `--publish 8443:8443` — publishes the AIO interface with a valid certificate on host port 8443 (requires ports 80 and 8443 to be reachable and a domain pointing to your server). Not required if you run AIO behind a reverse proxy.  
+  - `--cpu-shares 2048` — gives the mastercontainer twice the default CPU share weighting (default is 1024), ensuring it stays responsive under heavy load from sibling containers.  
   - `--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config` — stores mastercontainer configuration in the named Docker volume. Do not change this volume name; built-in backups depend on it.  
   - `--volume /var/run/docker.sock:/var/run/docker.sock:ro` — mounts the Docker socket (read-only) so the mastercontainer can manage other containers. On Windows/macOS or when using rootless Docker, this path may need adjustment; see the platform-specific docs. If you change the socket path, also set `WATCHTOWER_DOCKER_SOCKET_PATH` accordingly. If you prefer not to expose the socket, see the manual-install documentation: [Manual install without docker socket access](https://github.com/nextcloud/all-in-one/tree/main/manual-install)  
   - `ghcr.io/nextcloud-releases/all-in-one:latest` — the mastercontainer image.
@@ -703,6 +705,7 @@ docker run ^
 --publish 80:80 ^
 --publish 8080:8080 ^
 --publish 8443:8443 ^
+--cpu-shares 2048 ^
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config ^
 --volume //var/run/docker.sock:/var/run/docker.sock:ro ^
 ghcr.io/nextcloud-releases/all-in-one:latest
