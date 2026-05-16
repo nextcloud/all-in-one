@@ -181,7 +181,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->aioCommunityContainers,
         'bypass_container_update' => $bypass_container_update,
-    ]);
+    ])->withHeader('Cache-Control', 'no-store');
 })->setName('profile');
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
@@ -209,7 +209,7 @@ $app->get('/setup', function (Request $request, Response $response, array $args)
         [
             'password' => $setup->Setup(),
         ]
-    );
+    )->withHeader('Cache-Control', 'no-store');
 });
 $app->get('/log', function (Request $request, Response $response, array $args) use ($container) {
     $params = $request->getQueryParams();
