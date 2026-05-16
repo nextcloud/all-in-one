@@ -32,6 +32,7 @@ Here is a command to quickly launch a container :
 docker run \
 --rm \
 --name nextcloud-aio-mastercontainer \
+--oom-score-adj -500 \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock \
 ghcr.io/nextcloud-releases/all-in-one:latest
