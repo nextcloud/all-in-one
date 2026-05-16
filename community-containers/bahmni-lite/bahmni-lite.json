@@ -1,0 +1,460 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-bahmni-openmrs",
+            "display_name": "Bahmni Lite",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/bahmni-lite",
+            "image": "bahmni/openmrs",
+            "image_tag": "latest",
+            "internal_port": "8080",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "OMRS_DB_NAME=openmrs",
+                "OMRS_DB_HOSTNAME=nextcloud-aio-bahmni-openmrsdb",
+                "OMRS_DB_USERNAME=openmrs-user",
+                "OMRS_DB_PASSWORD=%BAHMNI_OPENMRS_DB_PASSWORD%",
+                "OMRS_CREATE_TABLES=false",
+                "OMRS_AUTO_UPDATE_DATABASE=true",
+                "OMRS_MODULE_WEB_ADMIN=false",
+                "OMRS_JAVA_SERVER_OPTS=",
+                "OMRS_JAVA_MEMORY_OPTS=",
+                "SEND_MAIL=false",
+                "MAIL_TRANSPORT_PROTOCOL=smtps",
+                "MAIL_SMTP_AUTH=true",
+                "MAIL_SMTP_STARTTLS_ENABLE=true",
+                "MAIL_SMTP_SSL_ENABLE=true",
+                "MAIL_DEBUG=false",
+                "MAIL_FROM=",
+                "MAIL_USER=",
+                "MAIL_PASSWORD=",
+                "MAIL_SMTP_HOST=",
+                "MAIL_SMTP_PORT=",
+                "OMRS_DOCKER_ENV=true",
+                "OMRS_C3P0_MAX_SIZE=50",
+                "LUCENE_MATCH_TYPE=START",
+                "DOCUMENT_MAX_SIZE_MB=7",
+                "WEIGHT_CONCEPT_UUID=5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                "HEIGHT_CONCEPT_UUID=5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            ],
+            "secrets": [
+                "BAHMNI_OPENMRS_DB_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_config",
+                    "destination": "/etc/bahmni_config/",
+                    "writeable": false
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_lab_results",
+                    "destination": "/home/bahmni/uploaded_results",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_uploaded_files",
+                    "destination": "/home/bahmni/uploaded-files",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_patient_images",
+                    "destination": "/home/bahmni/patient_images",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_document_images",
+                    "destination": "/home/bahmni/document_images",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_clinical_forms",
+                    "destination": "/home/bahmni/clinical_forms",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_configuration_checksums",
+                    "destination": "/openmrs/data/configuration_checksums",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_openmrs_logs",
+                    "destination": "/openmrs/data/logs",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_bahmni_patient_images",
+                "nextcloud_aio_bahmni_document_images",
+                "nextcloud_aio_bahmni_clinical_forms",
+                "nextcloud_aio_bahmni_lab_results",
+                "nextcloud_aio_bahmni_uploaded_files",
+                "nextcloud_aio_bahmni_configuration_checksums",
+                "nextcloud_aio_bahmni_openmrs_logs"
+            ],
+            "depends_on": [
+                "nextcloud-aio-bahmni-openmrsdb",
+                "nextcloud-aio-bahmni-config"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-openmrsdb",
+            "image": "bahmni/openmrs-db",
+            "image_tag": "1.0.0-lite-mysql5.6",
+            "internal_port": "3306",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "MYSQL_ROOT_PASSWORD=%BAHMNI_MYSQL_ROOT_PASSWORD%",
+                "MYSQL_DATABASE=openmrs",
+                "MYSQL_USER=openmrs-user",
+                "MYSQL_PASSWORD=%BAHMNI_OPENMRS_DB_PASSWORD%"
+            ],
+            "secrets": [
+                "BAHMNI_MYSQL_ROOT_PASSWORD",
+                "BAHMNI_OPENMRS_DB_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_openmrsdb",
+                    "destination": "/var/lib/mysql",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_configuration_checksums",
+                    "destination": "/configuration_checksums",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_bahmni_openmrsdb"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-config",
+            "image": "bahmni/clinic-config",
+            "image_tag": "latest",
+            "internal_port": "80",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_config",
+                    "destination": "/usr/local/bahmni_config",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_bahmni_config"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-web",
+            "image": "bahmni/bahmni-web",
+            "image_tag": "latest",
+            "internal_port": "80",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_config",
+                    "destination": "/usr/local/apache2/htdocs/bahmni_config/",
+                    "writeable": false
+                }
+            ],
+            "depends_on": [
+                "nextcloud-aio-bahmni-openmrs"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-apps-frontend",
+            "image": "bahmni/bahmni-apps-frontend",
+            "image_tag": "latest",
+            "internal_port": "80",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-lab",
+            "image": "bahmni/bahmni-lab",
+            "image_tag": "latest",
+            "internal_port": "80",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-implementer-interface",
+            "image": "bahmni/implementer-interface",
+            "image_tag": "latest",
+            "internal_port": "80",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ],
+            "depends_on": [
+                "nextcloud-aio-bahmni-openmrs"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-reportsdb",
+            "image": "mysql",
+            "image_tag": "8.0",
+            "internal_port": "3306",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "MYSQL_ROOT_PASSWORD=%BAHMNI_MYSQL_ROOT_PASSWORD%",
+                "MYSQL_DATABASE=bahmni-reports",
+                "MYSQL_USER=reports-user",
+                "MYSQL_PASSWORD=%BAHMNI_REPORTS_DB_PASSWORD%"
+            ],
+            "secrets": [
+                "BAHMNI_MYSQL_ROOT_PASSWORD",
+                "BAHMNI_REPORTS_DB_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_reportsdb",
+                    "destination": "/var/lib/mysql",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_bahmni_reportsdb"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-reports",
+            "image": "bahmni/reports",
+            "image_tag": "latest",
+            "internal_port": "8080",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "OPENMRS_DB_HOST=nextcloud-aio-bahmni-openmrsdb",
+                "OPENMRS_DB_NAME=openmrs",
+                "OPENMRS_DB_USERNAME=openmrs-user",
+                "OPENMRS_DB_PASSWORD=%BAHMNI_OPENMRS_DB_PASSWORD%",
+                "OPENMRS_HOST=nextcloud-aio-bahmni-openmrs",
+                "OPENMRS_PORT=8080",
+                "REPORTS_DB_SERVER=nextcloud-aio-bahmni-reportsdb",
+                "REPORTS_DB_NAME=bahmni-reports",
+                "REPORTS_DB_USERNAME=reports-user",
+                "REPORTS_DB_PASSWORD=%BAHMNI_REPORTS_DB_PASSWORD%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_config",
+                    "destination": "/etc/bahmni_config/",
+                    "writeable": false
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_queued_reports",
+                    "destination": "/home/bahmni/reports",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_bahmni_queued_reports"
+            ],
+            "depends_on": [
+                "nextcloud-aio-bahmni-reportsdb",
+                "nextcloud-aio-bahmni-openmrs"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-patient-documents",
+            "image": "bahmni/patient-documents",
+            "image_tag": "latest",
+            "internal_port": "80",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "OPENMRS_HOST=nextcloud-aio-bahmni-openmrs"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_document_images",
+                    "destination": "/usr/share/nginx/html/document_images",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_lab_results",
+                    "destination": "/usr/share/nginx/html/uploaded_results",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_bahmni_uploaded_files",
+                    "destination": "/usr/share/nginx/html/uploaded-files",
+                    "writeable": true
+                }
+            ],
+            "depends_on": [
+                "nextcloud-aio-bahmni-openmrs"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-appointments",
+            "image": "bahmni/appointments",
+            "image_tag": "latest",
+            "internal_port": "80",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-craterdb",
+            "image": "mysql",
+            "image_tag": "8.0",
+            "internal_port": "3306",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "MYSQL_ROOT_PASSWORD=%BAHMNI_MYSQL_ROOT_PASSWORD%",
+                "MYSQL_DATABASE=crater",
+                "MYSQL_USER=crater",
+                "MYSQL_PASSWORD=%BAHMNI_CRATER_DB_PASSWORD%"
+            ],
+            "secrets": [
+                "BAHMNI_MYSQL_ROOT_PASSWORD",
+                "BAHMNI_CRATER_DB_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_craterdb",
+                    "destination": "/var/lib/mysql",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_bahmni_craterdb"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-crater-php",
+            "image": "bahmni/crater-php",
+            "image_tag": "latest",
+            "internal_port": "9000",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "APP_URL=http://nextcloud-aio-bahmni-crater-nginx",
+                "DB_HOST=nextcloud-aio-bahmni-craterdb",
+                "DB_PORT=3306",
+                "DB_DATABASE=crater",
+                "DB_USERNAME=crater",
+                "DB_PASSWORD=%BAHMNI_CRATER_DB_PASSWORD%",
+                "SANCTUM_STATEFUL_DOMAINS=nextcloud-aio-bahmni-crater-nginx",
+                "SESSION_DOMAIN=nextcloud-aio-bahmni-crater-nginx",
+                "AUTO_INSTALL=true",
+                "ADMIN_NAME=Super Admin",
+                "ADMIN_EMAIL=admin@bahmni.org",
+                "ADMIN_PASSWORD=%BAHMNI_CRATER_ADMIN_PASSWORD%",
+                "COMPANY_NAME=Bahmni",
+                "COMPANY_SLUG=bahmni",
+                "COUNTRY_ID=101",
+                "CRATER_DEFAULT_CURRENCY=USD",
+                "APP_DEBUG=false"
+            ],
+            "secrets": [
+                "BAHMNI_CRATER_ADMIN_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_crater_app",
+                    "destination": "/var/www/storage/app/public",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_bahmni_crater_app"
+            ],
+            "depends_on": [
+                "nextcloud-aio-bahmni-craterdb"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-crater-nginx",
+            "image": "bahmni/crater-nginx",
+            "image_tag": "latest",
+            "internal_port": "80",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_crater_app",
+                    "destination": "/var/www/public/storage",
+                    "writeable": true
+                }
+            ],
+            "depends_on": [
+                "nextcloud-aio-bahmni-crater-php"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-crater-atomfeed-db",
+            "image": "mysql",
+            "image_tag": "8.0",
+            "internal_port": "3306",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "MYSQL_ROOT_PASSWORD=%BAHMNI_MYSQL_ROOT_PASSWORD%",
+                "MYSQL_DATABASE=crater-atomfeed",
+                "MYSQL_USER=crater-atomfeed-user",
+                "MYSQL_PASSWORD=%BAHMNI_CRATER_ATOMFEED_DB_PASSWORD%"
+            ],
+            "secrets": [
+                "BAHMNI_MYSQL_ROOT_PASSWORD",
+                "BAHMNI_CRATER_ATOMFEED_DB_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_bahmni_crater_atomfeed_db",
+                    "destination": "/var/lib/mysql",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_bahmni_crater_atomfeed_db"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-bahmni-crater-atomfeed",
+            "image": "bahmni/crater-atomfeed",
+            "image_tag": "latest",
+            "internal_port": "8080",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "OPENMRS_HOST=nextcloud-aio-bahmni-openmrs",
+                "OPENMRS_PORT=8080",
+                "OPENMRS_ATOMFEED_USER=admin",
+                "OPENMRS_ATOMFEED_PASSWORD=Admin123",
+                "CRATER_ATOMFEED_DB_HOST=nextcloud-aio-bahmni-crater-atomfeed-db",
+                "CRATER_ATOMFEED_DB_PORT=3306",
+                "CRATER_USERNAME=admin@bahmni.org",
+                "CRATER_PASSWORD=%BAHMNI_CRATER_ADMIN_PASSWORD%",
+                "CRATER_ATOMFEED_DB_USERNAME=crater-atomfeed-user",
+                "CRATER_ATOMFEED_DB_PASSWORD=%BAHMNI_CRATER_ATOMFEED_DB_PASSWORD%",
+                "CRATER_ATOMFEED_DB_NAME=crater-atomfeed",
+                "CRATER_URL=http://nextcloud-aio-bahmni-crater-nginx"
+            ],
+            "depends_on": [
+                "nextcloud-aio-bahmni-openmrs",
+                "nextcloud-aio-bahmni-crater-nginx",
+                "nextcloud-aio-bahmni-crater-atomfeed-db"
+            ]
+        }
+    ]
+}
