@@ -28,7 +28,7 @@ elif [ "$CPU_ARCH" != "x86_64" ]; then
 fi
 
 # Add warning
-if ! [ -f /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; then
+if ! [ -f /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ] && ! [ -f /var/www/html/apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; then
     echo "The notify_push binary was not found."
     echo "Most likely is DNS resolution not working correctly."
     echo "You can try to fix this by configuring a DNS server globally in dockers daemon.json."
@@ -44,7 +44,13 @@ fi
 
 echo "notify-push was started"
 
+
+if [ -f /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; then
+    PUSH_PATH="/var/www/html/custom_apps/notify_push/bin/$CPU_ARCH/notify_push"
+else
+    PUSH_PATH="/var/www/html/apps/notify_push/bin/$CPU_ARCH/notify_push"
+fi
 # Run it
-exec /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
+exec "$PUSH_PATH" \
     --port 7867 \
     /var/www/html/config/config.php
