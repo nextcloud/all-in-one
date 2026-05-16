@@ -245,6 +245,7 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
     }
 });
 
+// Default error handler
 $errorMiddleware = $app->addErrorMiddleware(false, true, true);
 
 // Set a custom Not Found handler, which doesn't pollute the app output with 404 errors.
@@ -254,6 +255,17 @@ $errorMiddleware->setErrorHandler(
         $response = $app->getResponseFactory()->createResponse();
         $response->getBody()->write('Not Found');
         return $response->withStatus(404);
-    });
+    }
+);
+
+// Set another custom error handler, which doesn't pollute the app output with 405 errors.
+$errorMiddleware->setErrorHandler(
+    \Slim\Exception\HttpMethodNotAllowedException::class,
+    function (Request $request, Throwable $exception, bool $displayErrorDetails) use ($app) {
+        $response = $app->getResponseFactory()->createResponse();
+        $response->getBody()->write('Method not allowed');
+        return $response->withStatus(405);
+    }
+);
 
 $app->run();
