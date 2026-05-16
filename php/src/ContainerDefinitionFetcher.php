@@ -52,14 +52,18 @@ readonly class ContainerDefinitionFetcher {
         $standardContainerNames = array_column($data['aio_services_v1'], 'container_name');
 
         $additionalContainerNames = [];
+        $additionalTopLevelContainerNames = [];
         foreach ($this->configurationManager->aioCommunityContainers as $communityContainer) {
             if ($communityContainer !== '') {
                 $path = DataConst::GetCommunityContainersDirectory() . '/' . $communityContainer . '/' . $communityContainer . '.json';
                 $additionalData = json_decode((string)file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
                 $data = array_merge_recursive($data, $additionalData);
+                foreach ($additionalData['aio_services_v1'] as $additionalEntry) {
+                    $additionalContainerNames[] = $additionalEntry['container_name'];
+                }
                 if (isset($additionalData['aio_services_v1'][0]['display_name']) && $additionalData['aio_services_v1'][0]['display_name'] !== '') {
-                    // Store container_name of community containers in variable for later
-                    $additionalContainerNames[] = $additionalData['aio_services_v1'][0]['container_name'];
+                    // Store main container_name of community containers in variable for later
+                    $additionalTopLevelContainerNames[] = $additionalData['aio_services_v1'][0]['container_name'];
                 }
             }
         }
@@ -176,7 +180,7 @@ readonly class ContainerDefinitionFetcher {
                 if ($entry['container_name'] === 'nextcloud-aio-apache') {
                     // Add community containers first and default ones last so that aio_variables works correctly
                     $valueDependsOnTemp = [];
-                    foreach ($additionalContainerNames as $containerName) {
+                    foreach ($additionalTopLevelContainerNames as $containerName) {
                         $valueDependsOnTemp[] = $containerName;
                     }
                     $valueDependsOn = array_merge_recursive($valueDependsOnTemp, $valueDependsOn);
