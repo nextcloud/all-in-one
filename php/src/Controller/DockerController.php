@@ -410,6 +410,11 @@ readonly class DockerController {
     }
 
     private function startStreamingResponse(Response $response) : Response {
+        // Ensure the script keeps running even if the client connection drops (e.g. due to a
+        // reverse proxy read timeout during a long image pull). Without this, PHP would abort
+        // on the first write after the connection is gone, leaving only some containers started.
+        ignore_user_abort(true);
+
         $nonbufResp = $response
             ->withBody(new NonBufferedBody())
             ->withHeader('Content-Type', 'text/html; charset=utf-8')
