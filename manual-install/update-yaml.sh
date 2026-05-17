@@ -1,6 +1,14 @@
 #!/bin/bash -ex
 
-type {jq,sudo} || { echo "Commands not found. Please install them"; exit 127; }
+# Used to generate latest.yml and sample.conf from /php/containers.json
+
+type jq || { echo "jq command not found. Please install it" >&2; exit 127; }
+if ! type yq; then
+    type sudo || { echo "sudo command not found. Please install it" >&2; exit 127; }
+    sudo snap install yq
+fi
+
+cd "$( dirname -- "${BASH_SOURCE[0]:-$0}" )/.." || exit
 
 jq -c . ./php/containers.json > /tmp/containers.json
 sed -i 's|aio_services_v1|services|g' /tmp/containers.json
@@ -10,7 +18,7 @@ sed -i 's|","writeable":true|:rw"|g' /tmp/containers.json
 sed -i 's|","port_number":"|:|g' /tmp/containers.json
 sed -i 's|","protocol":"|/|g' /tmp/containers.json
 sed -i 's|"ip_binding":":|"ip_binding":"|g' /tmp/containers.json
-cat /tmp/containers.json
+#cat /tmp/containers.json
 OUTPUT="$(cat /tmp/containers.json)"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].internal_port)')"
 OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[].secrets)')"
@@ -31,11 +39,12 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "next
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= if contains(["nextcloud-aio-harp"]) then del(.[index("nextcloud-aio-harp")]) else . end else . end')"
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= map({ (.): { "condition": "service_started", "required": false } }) else . end' | jq '.services[] |= if has("depends_on") then .depends_on |= reduce .[] as $item ({}; . + $item) else . end')"
 
-sudo snap install yq
 mkdir -p ./manual-install
-echo "$OUTPUT" | yq -P > ./manual-install/containers.yml
-
 cd manual-install || exit
+echo '# Usage: copy this file to a file named compose.yaml, and make any necessary edits in there (and remove this line ;-)' > containers.yml
+echo '' >> containers.yml
+echo "$OUTPUT" | yq -P >> containers.yml
+
 sed -i "s|'||g" containers.yml
 sed -i '/display_name:/d' containers.yml
 sed -i '/THIS_IS_AIO/d' containers.yml
@@ -55,7 +64,7 @@ sed -i '/NC_AIO_VERSION/d' containers.yml
 
 TCP="$(grep -oP '[%A-Z0-9_]+/tcp' containers.yml | sort -u)"
 mapfile -t TCP <<< "$TCP"
-for port in "${TCP[@]}" 
+for port in "${TCP[@]}"
 do
     solve_port="${port%%/tcp}"
     sed -i "s|$solve_port/tcp|$solve_port:$solve_port/tcp|" containers.yml
@@ -84,7 +93,7 @@ sed -i 's|_ENABLED=|_ENABLED="no"          # Setting this to "yes" (with quotes)
 sed -i 's|CLAMAV_ENABLED=no.*|CLAMAV_ENABLED="no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.|' sample.conf
 sed -i 's|TALK_ENABLED=no|TALK_ENABLED="yes"|' sample.conf
 sed -i 's|COLLABORA_ENABLED=no|COLLABORA_ENABLED="yes"|' sample.conf
-sed -i 's|COLLABORA_DICTIONARIES=|COLLABORA_DICTIONARIES="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru"        # You can change this in order to enable other dictionaries for collabora|' sample.conf
+sed -i 's|COLLABORA_DICTIONARIES=|COLLABORA_DICTIONARIES="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru"          # You can change this in order to enable other dictionaries for collabora|' sample.conf
 sed -i 's|NEXTCLOUD_DATADIR=|NEXTCLOUD_DATADIR=nextcloud_aio_nextcloud_data          # You can change this to e.g. "/mnt/ncdata" to map it to a location on your host. It needs to be adjusted before the first startup and never afterwards!|' sample.conf
 sed -i 's|NEXTCLOUD_MOUNT=|NEXTCLOUD_MOUNT=/mnt/          # This allows the Nextcloud container to access directories on the host. It must never be equal to the value of NEXTCLOUD_DATADIR!|' sample.conf
 sed -i 's|NEXTCLOUD_UPLOAD_LIMIT=|NEXTCLOUD_UPLOAD_LIMIT=16G          # This allows to change the upload limit of the Nextcloud container|' sample.conf
@@ -103,23 +112,25 @@ sed -i 's|COLLABORA_SECCOMP_POLICY=|COLLABORA_SECCOMP_POLICY=--o:security.seccom
 sed -i 's|AIO_LOG_LEVEL=|AIO_LOG_LEVEL=warn          # Allows to adjust the global AIO log level. Valid values are debug, info, warn and error.|' sample.conf
 sed -i 's|FULLTEXTSEARCH_JAVA_OPTIONS=|FULLTEXTSEARCH_JAVA_OPTIONS="-Xms512M -Xmx512M"          # Allows to adjust the fulltextsearch java options.|' sample.conf
 sed -i 's|NEXTCLOUD_STARTUP_APPS=|NEXTCLOUD_STARTUP_APPS="deck twofactor_totp tasks calendar contacts notes"        # Allows to modify the Nextcloud apps that are installed on starting AIO the first time. You can also disable apps by using a hyphen in front of them. E.g. "-app_api"|' sample.conf
-sed -i 's|NEXTCLOUD_ADDITIONAL_APKS=|NEXTCLOUD_ADDITIONAL_APKS=imagemagick        # This allows to add additional packages to the Nextcloud container permanently. Default is imagemagick but can be overwritten by modifying this value.|' sample.conf
+sed -i 's|NEXTCLOUD_ADDITIONAL_APKS=|NEXTCLOUD_ADDITIONAL_APKS=imagemagick          # This allows to add additional packages to the Nextcloud container permanently. Default is imagemagick but can be overwritten by modifying this value.|' sample.conf
 sed -i 's|NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=|NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=imagick        # This allows to add additional php extensions to the Nextcloud container permanently. Default is imagick but can be overwritten by modifying this value.|' sample.conf
-sed -i 's|INSTALL_LATEST_MAJOR=|INSTALL_LATEST_MAJOR=no        # Setting this to yes will install the latest Major Nextcloud version upon the first installation|' sample.conf
-sed -i 's|REMOVE_DISABLED_APPS=|REMOVE_DISABLED_APPS=yes        # Setting this to no keep Nextcloud apps that are disabled via their switch and not uninstall them if they should be installed in Nextcloud.|' sample.conf
+sed -i 's|INSTALL_LATEST_MAJOR=|INSTALL_LATEST_MAJOR=no          # Setting this to yes will install the latest Major Nextcloud version upon the first installation|' sample.conf
+sed -i 's|REMOVE_DISABLED_APPS=|REMOVE_DISABLED_APPS=yes          # Setting this to no keep Nextcloud apps that are disabled via their switch and not uninstall them if they should be installed in Nextcloud.|' sample.conf
 sed -i 's|=$|=          # TODO! This needs to be a unique and good password!|' sample.conf
 
 grep  '# TODO!' sample.conf > todo.conf
 grep -v '# TODO!\|_ENABLED' sample.conf > temp.conf
 grep '_ENABLED' sample.conf > enabled.conf
-cat todo.conf > sample.conf
+echo '# Usage: copy this file to a file named .env, and edit the values in there (and remove this line ;-)' > sample.conf
+echo '' >> sample.conf
+cat todo.conf >> sample.conf
 # shellcheck disable=SC2129
 echo '' >> sample.conf
 cat enabled.conf >> sample.conf
 echo '' >> sample.conf
 cat temp.conf >> sample.conf
 rm todo.conf temp.conf enabled.conf
-cat sample.conf
+#cat sample.conf
 
 OUTPUT="$(cat containers.yml)"
 NAMES="$(grep -oP "container_name:.*" containers.yml | grep -oP 'nextcloud-aio.*')"
