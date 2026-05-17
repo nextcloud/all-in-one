@@ -2,7 +2,11 @@
 
 # Used to generate latest.yml and sample.conf from /php/containers.json
 
-type {jq,sudo} || { echo "Commands not found. Please install them"; exit 127; }
+type jq || { echo "jq command not found. Please install it" >&2; exit 127; }
+if ! type yq; then
+    type sudo || { echo "sudo command not found. Please install it" >&2; exit 127; }
+    sudo snap install yq
+fi
 
 cd "$( dirname -- "${BASH_SOURCE[0]:-$0}" )/.." || exit
 
@@ -35,7 +39,6 @@ OUTPUT="$(echo "$OUTPUT" | jq 'del(.services[] | select(.container_name == "next
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= if contains(["nextcloud-aio-harp"]) then del(.[index("nextcloud-aio-harp")]) else . end else . end')"
 OUTPUT="$(echo "$OUTPUT" | jq '.services[] |= if has("depends_on") then .depends_on |= map({ (.): { "condition": "service_started", "required": false } }) else . end' | jq '.services[] |= if has("depends_on") then .depends_on |= reduce .[] as $item ({}; . + $item) else . end')"
 
-type yq || sudo snap install yq
 mkdir -p ./manual-install
 cd manual-install || exit
 echo '# Usage: copy this file to a file named compose.yaml, and make any necessary edits in there (and remove this line ;-)' > containers.yml
