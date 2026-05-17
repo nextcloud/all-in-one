@@ -1,3 +1,6 @@
+> [!CAUTION]
+> Minio is no longer maintained.
+
 ## Minio
 This container bundles minio s3 storage and auto-configures it for you.
 
