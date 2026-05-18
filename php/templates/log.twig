@@ -3,7 +3,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="logs.css">
-        <script src="log-view.js?v1"></script>
+        <script src="container-log.js?v1"></script>
+        <script>
+            // Detect if the log viewer script failed to load (e.g. blocked by an ad blocker
+            // or browser extension). The LogViewer constructor is defined in container-log.js
+            // and runs on DOMContentLoaded. Show an error if it hasn't initialized after
+            // a short grace period.
+            window.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    // The LogViewer class is defined globally by container-log.js.
+                    // If the script failed to load, typeof LogViewer will be 'undefined'.
+                    if (typeof LogViewer === 'undefined') {
+                        var floatingBox = document.getElementById('floating-box');
+                        if (floatingBox) {
+                            var errorMsg = document.createElement('div');
+                            errorMsg.style.cssText =
+                                'background:#fef2f2;border:1px solid #fecaca;color:#991b1b;' +
+                                'padding:12px 16px;border-radius:6px;margin-top:8px;font-size:14px;';
+                            errorMsg.textContent =
+                                'The log viewer script failed to load. This may be caused by a ' +
+                                'browser extension (such as an ad blocker). Try disabling the ' +
+                                'extension for this page, or use a different browser.';
+                            floatingBox.appendChild(errorMsg);
+                        }
+                    }
+                }, 2000);
+            });
+        </script>
     </head>
     <body data-container-id="{{ id }}">
         <div id="floating-box">
