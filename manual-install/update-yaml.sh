@@ -121,10 +121,10 @@ sed -i 's|=$|=          # TODO! This needs to be a unique and good password!|' s
 grep  '# TODO!' sample.conf > todo.conf
 grep -v '# TODO!\|_ENABLED' sample.conf > temp.conf
 grep '_ENABLED' sample.conf > enabled.conf
+# shellcheck disable=SC2129
 echo '# Usage: copy this file to a file named .env, and edit the values in there (and remove this line ;-)' > sample.conf
 echo '' >> sample.conf
 cat todo.conf >> sample.conf
-# shellcheck disable=SC2129
 echo '' >> sample.conf
 cat enabled.conf >> sample.conf
 echo '' >> sample.conf
