@@ -1,5 +1,5 @@
 ## Local AI
-This container bundles Local AI and auto-configures it for you. It support hardware acceleration with Vulkan.
+This container bundles [Local AI](https://localai.io/) and auto-configures it for you. It support hardware acceleration with Vulkan.
 
 ### Notes
 Documentation is available on the container repository. This documentation is regularly updated and is intended to be as simple and detailed as possible. Thanks for all your feedback!

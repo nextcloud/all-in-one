@@ -1,5 +1,5 @@
 ## LanguageTool for Nextcloud Office
-This container bundles a LanguageTool for Nextcloud Office which adds spell checking functionality to Nextcloud Office.
+This container bundles [LanguageTool](https://github.com/languagetool-org/languagetool) for Nextcloud Office which adds spell checking functionality to Nextcloud Office.
 
 ### Notes
 - Make sure to have Nextcloud Office enabled via the AIO interface

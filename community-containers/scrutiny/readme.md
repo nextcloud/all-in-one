@@ -1,5 +1,5 @@
 ## Scrutiny
-This container bundles Scrutiny which is a frontend for SMART stats and auto-configures it for you.
+This container bundles [Scrutiny](https://github.com/analogj/scrutiny), a web frontend for SMART stats, and auto-configures it for you.
 
 ### Notes
 - This container should only be run in home networks

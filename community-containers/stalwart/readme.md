@@ -4,7 +4,7 @@
 > Do not use this feature as a main mail server or without a redundancy system and without knowledge.
 
 ## Stalwart mail server
-This container bundles stalwart mail server and auto-configures it for you.
+This container bundles the [Stalwart](https://stalw.art/) mail server and auto-configures it for you.
 
 ### Notes
 Documentation is available on the container repository.

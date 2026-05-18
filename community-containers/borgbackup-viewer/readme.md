@@ -1,5 +1,5 @@
 ## Borgbackup Viewer
-This container allows to view the local borg repository in a web session. It also allows you to restore files and folders from the backup by using desktop programs in a web browser.
+This container allows to view the local borg backups repository in a web session. It also allows you to restore files and folders from the backup by using desktop programs in a web browser.
 
 ### Notes
 - After adding and starting the container, you need to visit `https://ip.address.of.this.server:5801` in order to log in with the user `nextcloud` and the password that you can see next to the container in the AIO interface. (The web page uses a self-signed certificate, so you need to accept the warning).
@@ -14,4 +14,3 @@ https://github.com/szaimen/aio-borgbackup-viewer
 
 ### Maintainer
 https://github.com/szaimen
-

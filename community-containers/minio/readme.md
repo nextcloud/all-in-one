@@ -1,5 +1,5 @@
 ## Minio
-This container bundles minio s3 storage and auto-configures it for you.
+This container bundles [minio](https://github.com/minio/minio) s3 storage and auto-configures it for you.
 
 >[!WARNING]
 > Enabling this container will remove access to all the files formerly written to the data directory.
