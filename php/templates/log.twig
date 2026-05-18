@@ -1,9 +1,10 @@
 <html lang="en">
     <head>
+        <title>AIO</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="logs.css">
-        <script src="log-view.js?v1"></script>
+        <link rel="icon" href="img/favicon.png">
     </head>
     <body data-container-id="{{ id }}">
         <div id="floating-box">
@@ -17,5 +18,6 @@
             </div>
         </div>
         <pre>{{ logContent }}</pre>
+        <script src="log-load.js?v1" onerror="document.getElementById('autoloading-box').textContent='Error loading the JS script. Check if your ad-blocker is interfering';"></script>
     </body>
 </html>
