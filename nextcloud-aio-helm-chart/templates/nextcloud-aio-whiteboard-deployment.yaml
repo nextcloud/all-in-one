@@ -52,7 +52,7 @@ spec:
               value: redis
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-whiteboard:20260513_090235
+          image: ghcr.io/nextcloud-releases/aio-whiteboard:20260515_145717
           readinessProbe:
             exec:
               command:

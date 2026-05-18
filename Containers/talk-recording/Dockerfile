@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.14.3-alpine3.23
+FROM python:3.14.5-alpine3.23
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
@@ -35,6 +35,9 @@ RUN set -ex; \
         build-base \
         linux-headers \
         geckodriver; \
+    if [ "$(apk --print-arch)" = "x86_64" ]; then \
+        apk add --no-cache intel-media-driver; \
+    fi; \
     useradd -d /tmp --system recording -u 122; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \

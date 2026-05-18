@@ -4,8 +4,8 @@
       "container_name": "nextcloud-aio-lldap",
       "display_name": "Light LDAP implementation",
       "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap",
-      "image": "lldap/lldap",
-      "image_tag": "v0-alpine",
+      "image": "ghcr.io/lldap/lldap",
+      "image_tag": "latest-alpine",
       "internal_port": "17170",
       "restart": "unless-stopped",
       "ports": [

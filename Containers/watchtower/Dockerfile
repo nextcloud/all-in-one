@@ -22,6 +22,8 @@ COPY --chmod=775 start.sh /start.sh
 # hadolint ignore=DL3002
 USER root
 
+ENV AIO_LOG_LEVEL="warn"
+
 ENTRYPOINT ["/start.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
