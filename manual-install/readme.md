@@ -25,7 +25,7 @@ git clone https://github.com/nextcloud/all-in-one.git
 cd all-in-one/manual-install
 ```
 Then copy the sample.conf file to default environment file, e.g. `cp sample.conf .env`, open the new conf file, e.g. with `nano .env`, edit all values that are marked with `# TODO!`, close and save the file.
-⚠️ **Warning**: Do not use the symbols `@` and `:` in your passwords. These symbols are used to build database connection strings. You will experience issues when using these symbols! Also, please note that changs to values inside the latest.yaml that are not exposed as variables are not officially supported. See for example [this report](https://github.com/nextcloud/all-in-one/issues/5612).
+⚠️ **Warning**: Do not use the symbols `@` and `:` in your passwords. These symbols are used to build database connection strings. You will experience issues when using these symbols! Also, please note that changes to values inside the latest.yaml that are not exposed as variables are not officially supported. See for example [this report](https://github.com/nextcloud/all-in-one/issues/5612).
 
 Then copy the provided yaml file to a compose.yaml file by running `cp latest.yml compose.yaml`.
 
