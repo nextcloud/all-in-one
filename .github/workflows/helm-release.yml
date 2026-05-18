@@ -10,6 +10,7 @@ on:
 
 jobs:
   release:
+    if: github.repository == 'nextcloud/all-in-one'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
