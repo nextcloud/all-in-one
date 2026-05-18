@@ -10,6 +10,8 @@ on:
 
 jobs:
   release:
+    # Do not run this workflow on forked repositories, as they might not have the `gh-pages` branch created, or might
+    # want to use it for other purposes than publishing helm charts
     if: github.repository == 'nextcloud/all-in-one'
     runs-on: ubuntu-latest
     steps:
