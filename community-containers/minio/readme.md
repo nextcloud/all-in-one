@@ -1,6 +1,9 @@
 ## Minio
 This container bundles minio s3 storage and auto-configures it for you.
 
+> [!CAUTION]
+> The Minio upstream project is no longer maintained. The container should still work in its current form...
+
 >[!WARNING]
 > Enabling this container will remove access to all the files formerly written to the data directory.
 > So only enable this on a clean instance directly after installing AIO.
