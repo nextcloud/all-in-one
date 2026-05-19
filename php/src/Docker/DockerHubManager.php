@@ -32,12 +32,12 @@ readonly class DockerHubManager {
         }
 
         // If one of the links below should ever become outdated, we can still upgrade the mastercontainer via the webinterface manually by opening '/api/docker/getwatchtower'
-        $normalizedName = $this->NormalizeImageName($name);
+        $name = $this->NormalizeImageName($name);
 
         try {
             $authTokenRequest = $this->guzzleClient->request(
                 'GET',
-                'https://auth.docker.io/token?service=registry.docker.io&scope=repository:' . $normalizedName . ':pull'
+                'https://auth.docker.io/token?service=registry.docker.io&scope=repository:' . $name . ':pull'
             );
             $body = $authTokenRequest->getBody()->getContents();
             $decodedBody = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -45,7 +45,7 @@ readonly class DockerHubManager {
                 $authToken = $decodedBody['token'];
                 $manifestRequest = $this->guzzleClient->request(
                     'HEAD',
-                    'https://registry-1.docker.io/v2/'.$normalizedName.'/manifests/' . $tag,
+                    'https://registry-1.docker.io/v2/'.$name.'/manifests/' . $tag,
                     [
                         'headers' => [
                             'Accept' => 'application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json,application/vnd.docker.distribution.manifest.v2+json',
@@ -61,10 +61,10 @@ readonly class DockerHubManager {
                 }
             }
 
-            error_log('Could not get digest of container ' . $normalizedName . ':' . $tag);
+            error_log('Could not get digest of container ' . $name . ':' . $tag);
             return null;
         } catch (\Exception $e) {
-            error_log('Could not get digest of container ' . $normalizedName . ':' . $tag . ' ' . $e->getMessage());
+            error_log('Could not get digest of container ' . $name . ':' . $tag . ' ' . $e->getMessage());
             return null;
         }
     }
