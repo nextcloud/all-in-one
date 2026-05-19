@@ -188,6 +188,9 @@ The process to run Nextcloud AIO behind a reverse proxy has three required steps
 
     </details>
 
+> [!NOTE]
+> **`X-Forwarded-For` is required for `notify_push`.** The `notify_push` app that powers instant desktop/mobile sync notifications performs a self-test on startup: it sends a request through your reverse proxy and verifies that the `X-Forwarded-For` header arrives at Nextcloud unchanged. If your reverse proxy strips or overwrites this header (e.g. using `proxy_set_header X-Forwarded-For ""` in Nginx), the self-test will fail, and clients will fall back to slow polling-based sync instead of real-time push notifications. The sample configurations below already include the necessary header forwarding — do not remove it. If you use an additional upstream proxy or CDN, make sure it also passes `X-Forwarded-For` through unchanged.
+
 ##### Apache
 
 <details>
@@ -1239,6 +1242,7 @@ If something does not work, follow the steps below:
 1. [Enable Hairpin NAT in your router](https://github.com/nextcloud/all-in-one/discussions/5849) or [set up a local DNS server and add a custom dns-record](https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally) that allows the server to reach itself locally
 1. Try to configure everything from scratch - if it still does not work by following https://github.com/nextcloud/all-in-one#how-to-properly-reset-the-instance.
 1. As last resort, you may disable the domain validation by adding `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command. But only use this if you are completely sure that you've correctly configured everything! Also see [this documentation](https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation).
+1. If desktop/mobile clients receive file change notifications slowly (sync updates only when the client polls, not immediately when a file changes), check whether `notify_push` is healthy by running `sudo docker logs nextcloud-aio-notify-push`. A **"self-test failed"** message means the reverse proxy is stripping the `X-Forwarded-For` header before it reaches Nextcloud. Fix this by ensuring your reverse proxy passes that header through unchanged — see the note in [step 1](#1-configure-the-reverse-proxy).
 
 ### 8. Removing the reverse proxy
 
