@@ -1,7 +1,7 @@
-# AIO app for NextCloud
+# AIO app for Nextcloud
 
-This folder contains a NextCloud app, which will be automatically installed within the NextCloud instance.
-It adds a link to the admin settings page that gives access to the All-in-One admin interface.
+This folder contains a Nextcloud app, which will be automatically installed within the Nextcloud instance.
+It adds a link to the admin settings page that gives access to the AIO interface.
 
 ## How to develop the app?
 
