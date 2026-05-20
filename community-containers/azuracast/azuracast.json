@@ -52,43 +52,13 @@
                     "writeable": true
                 },
                 {
-                    "source": "nextcloud_aio_azuracast_uploads",
-                    "destination": "/var/azuracast/storage/uploads",
+                    "source": "nextcloud_aio_azuracast_storage",
+                    "destination": "/var/azuracast/storage",
                     "writeable": true
                 },
                 {
                     "source": "nextcloud_aio_azuracast_backups",
                     "destination": "/var/azuracast/backups",
-                    "writeable": true
-                },
-                {
-                    "source": "nextcloud_aio_azuracast_acme",
-                    "destination": "/var/azuracast/storage/acme",
-                    "writeable": true
-                },
-                {
-                    "source": "nextcloud_aio_azuracast_sftpgo",
-                    "destination": "/var/azuracast/storage/sftpgo",
-                    "writeable": true
-                },
-                {
-                    "source": "nextcloud_aio_azuracast_shoutcast2_install",
-                    "destination": "/var/azuracast/storage/shoutcast2",
-                    "writeable": true
-                },
-                {
-                    "source": "nextcloud_aio_azuracast_stereo_tool_install",
-                    "destination": "/var/azuracast/storage/stereo_tool",
-                    "writeable": true
-                },
-                {
-                    "source": "nextcloud_aio_azuracast_rsas_install",
-                    "destination": "/var/azuracast/storage/rsas",
-                    "writeable": true
-                },
-                {
-                    "source": "nextcloud_aio_azuracast_geolite_install",
-                    "destination": "/var/azuracast/storage/geoip",
                     "writeable": true
                 },
                 {
@@ -100,7 +70,6 @@
             "backup_volumes": [
                 "nextcloud_aio_azuracast_stations",
                 "nextcloud_aio_azuracast_db",
-                "nextcloud_aio_azuracast_uploads",
                 "nextcloud_aio_azuracast_backups"
             ]
         }

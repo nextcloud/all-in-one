@@ -8,7 +8,7 @@ This container bundles [AzuraCast](https://www.azuracast.com/), an open-source w
 - To access AzuraCast from outside your local network, use the [Caddy community container](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy), which will automatically configure `radio.$NC_DOMAIN` to reverse-proxy the AzuraCast interface. Make sure to point `radio.your-nc-domain.com` to your server using an A or CNAME record before starting.
 - **Radio streaming ports** (8000–8046, covering up to 5 stations) are exposed directly on the host and cannot be reverse-proxied. Listeners connect to these ports directly. Configure your AzuraCast stations to use ports within this range.
 - **SFTP uploads** are available on port 2022.
-- AzuraCast's data (stations, database, uploads, backups) is automatically included in AIO's BorgBackup solution.
+- AzuraCast's data (stations, database, backups) is automatically included in AIO's BorgBackup solution.
 - **Updater:** The standard AzuraCast `updater` container is omitted — updates are managed through AIO's standard container update mechanism (pulling the new `ghcr.io/azuracast/azuracast:stable` image).
 - This container uses `AZURACAST_HTTP_PORT=8080` for AzuraCast's internal nginx. This port is only accessible within the Docker bridge network and does not conflict with the AIO mastercontainer's host-side port 8080. Do not attempt to access AzuraCast directly via `http://yourserver:8080` — that address reaches the AIO admin interface, not AzuraCast. Use `https://radio.your-nc-domain.com` instead.
 
@@ -45,7 +45,7 @@ If you need more than 5 stations, additional ports can be exposed by forking thi
 ### Known limitations
 
 - The `updater` container from the standard AzuraCast docker-compose is not included (requires Docker socket access, incompatible with AIO's security model).
-- The `shoutcast2`, `stereo_tool`, `rsas`, and `geolite` optional install volumes are included but the corresponding features (SHOUTcast 2, Stereo Tool, RSAS, GeoLite2 geolocation) must be installed and activated manually from within AzuraCast after the container is running.
+- The `shoutcast2`, `stereo_tool`, `rsas`, and `geolite` optional install directories are part of the unified `storage` volume. The corresponding features (SHOUTcast 2, Stereo Tool, RSAS, GeoLite2 geolocation) must be installed and activated manually from within AzuraCast after the container is running.
 
 #### Nextcloud file integration
 
