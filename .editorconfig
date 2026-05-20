@@ -1,5 +1,7 @@
 # https://editorconfig.org
 
+# Tip: to find files violating the rules set out here, run `docker run --rm --volume=$PWD:/check mstruebing/editorconfig-checker`
+
 root = true
 
 [*]
