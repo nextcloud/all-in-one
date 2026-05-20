@@ -1,5 +1,5 @@
 ## Fail2ban
-This container bundles [fail2ba](https://github.com/fail2ban/fail2ban) and auto-configures it for you in order to block ip-addresses automatically.
+This container bundles [fail2ban](https://github.com/fail2ban/fail2ban) and auto-configures it for you in order to block ip-addresses automatically.
 It also covers https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden, https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin, and https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr, if installed.
 
 ### Notes
