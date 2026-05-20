@@ -1,0 +1,108 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-azuracast",
+            "display_name": "AzuraCast",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast",
+            "image": "ghcr.io/azuracast/azuracast",
+            "image_tag": "stable",
+            "internal_port": "8080",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "",
+                    "port_number": "2022",
+                    "protocol": "tcp"
+                },
+                { "ip_binding": "", "port_number": "8000", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8005", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8006", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8010", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8015", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8016", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8020", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8025", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8026", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8030", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8035", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8036", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8040", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8045", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8046", "protocol": "tcp" }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "AZURACAST_HTTP_PORT=8080",
+                "AZURACAST_HTTPS_PORT=8443",
+                "MARIADB_ROOT_PASSWORD=%AZURACAST_DB_PASSWORD%"
+            ],
+            "secrets": [
+                "AZURACAST_DB_PASSWORD"
+            ],
+            "ui_secret": "AZURACAST_DB_PASSWORD",
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_azuracast_stations",
+                    "destination": "/var/azuracast/stations",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_db",
+                    "destination": "/var/lib/mysql",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_uploads",
+                    "destination": "/var/azuracast/storage/uploads",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_backups",
+                    "destination": "/var/azuracast/backups",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_acme",
+                    "destination": "/var/azuracast/storage/acme",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_sftpgo",
+                    "destination": "/var/azuracast/storage/sftpgo",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_shoutcast2_install",
+                    "destination": "/var/azuracast/storage/shoutcast2",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_stereo_tool_install",
+                    "destination": "/var/azuracast/storage/stereo_tool",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_rsas_install",
+                    "destination": "/var/azuracast/storage/rsas",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_geolite_install",
+                    "destination": "/var/azuracast/storage/geoip",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_shared",
+                    "destination": "/var/azuracast/shared",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_azuracast_stations",
+                "nextcloud_aio_azuracast_db",
+                "nextcloud_aio_azuracast_uploads",
+                "nextcloud_aio_azuracast_backups"
+            ]
+        }
+    ]
+}
