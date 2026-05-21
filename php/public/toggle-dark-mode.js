@@ -11,7 +11,7 @@ function toggleTheme() {
 
 function setThemeToDOM(value) {
     // Set the theme to the root document and all possible iframe documents (so they can adapt their styling, too).
-    const documents = [document, Array.from(document.querySelectorAll('iframe')).map((iframe) => iframe.contentDocument)].flat()
+    const documents = [document, ...Array.from(document.querySelectorAll('iframe')).map((iframe) => iframe.contentDocument).filter(Boolean)]
     documents.forEach((doc) => doc.documentElement.setAttribute('data-theme', value));
 }
 
