@@ -4,6 +4,10 @@ const observer = new MutationObserver((records) => {
     // function being present.
     if (node && typeof(node.scrollIntoView) === 'function') {
         node.scrollIntoView();
+        if (node.classList.contains('progress-indicator')) {
+            node.previousSibling.append('.');
+            node.remove();
+        }
     }
 });
 observer.observe(document, {childList: true, subtree: true});

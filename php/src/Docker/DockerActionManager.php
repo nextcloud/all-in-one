@@ -11,6 +11,7 @@ use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
 use AIO\Helper\NetworkHelper;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Utils;
 use http\Env\Response;
@@ -580,41 +581,24 @@ readonly class DockerActionManager {
                 // containers are never started.
                 $pullResponse = $this->sendHttpRequest('POST', $url, ['stream' => true]);
                 $pullBody = $pullResponse->getBody();
-                $buffer = '';
                 $pullErrors = [];
-                $lastHeartbeat = 0;
+                $lastHeartbeat = time();
                 while (!$pullBody->eof()) {
-                    $chunk = $pullBody->read(self::PULL_STREAM_READ_CHUNK_SIZE);
-                    if ($chunk === '') {
+                    $line = Utils::readLine($pullBody);
+                    $event = json_decode($line, true);
+                    if (!is_array($event)) {
                         continue;
                     }
-                    $buffer .= $chunk;
-                    // Guard against malformed responses that contain no newlines.
-                    if (strlen($buffer) > self::PULL_STREAM_MAX_BUFFER_SIZE && strpos($buffer, "\n") === false) {
-                        error_log('Docker pull response buffer exceeded 1 MB without a newline, discarding buffer for ' . $imageName);
-                        $buffer = '';
-                        continue;
-                    }
-                    while (($newlinePos = strpos($buffer, "\n")) !== false) {
-                        $line = trim(substr($buffer, 0, $newlinePos));
-                        $buffer = substr($buffer, $newlinePos + 1);
-                        if ($line === '') {
-                            continue;
-                        }
-                        $event = json_decode($line, true);
-                        if (!is_array($event)) {
-                            continue;
-                        }
-                        if (isset($event['error'])) {
-                            $pullErrors[] = $event['error'];
-                        } elseif ($addToStreamingResponseBody !== null) {
-                            // Write a heartbeat at most once every 5 seconds so the reverse
-                            // proxy sees continuous data and does not close the connection.
-                            $now = time();
-                            if ($now - $lastHeartbeat >= self::PULL_HEARTBEAT_INTERVAL_SECONDS) {
-                                $addToStreamingResponseBody($container, "Pulling image");
-                                $lastHeartbeat = $now;
-                            }
+                    if (isset($event['error'])) {
+                        $pullErrors[] = $event['error'];
+                    } elseif ($addToStreamingResponseBody !== null) {
+                        // Write a heartbeat at most once every 5 seconds so the reverse
+                        // proxy sees continuous data and does not close the connection.
+                        $now = time();
+                        $interval = time() - $lastHeartbeat;
+                        if ($interval >= self::PULL_HEARTBEAT_INTERVAL_SECONDS) {
+                            $addToStreamingResponseBody(".", $container);
+                            $lastHeartbeat = $now;
                         }
                     }
                 }

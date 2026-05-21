@@ -453,12 +453,19 @@ readonly class DockerController {
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
         $addToStreamingResponseBody = function (string $message, ?Container $container = null) use ($nonbufResp) : void {
-            // Strip ANSI codes.
-            $message = preg_replace('/\e[[][A-Za-z0-9];?[0-9]*m?/', '', $message);
-            if ($container) {
-                $message = "{$container->displayName}: {$message}";
+            // If the message is a single dot we treat it as a progress indicator and send a specific, empty
+            // HTML element, which gets special treatment by the Javascript code.
+            if ($message === '.') {
+                $html = "<span class='progress-indicator'></span>";
+            } else {
+                // Strip ANSI codes.
+                $text = preg_replace('/\e[[][A-Za-z0-9];?[0-9]*m?/', '', $message);
+                if ($container) {
+                    $text = sprintf("%s: %s", $container->displayName, $text);
+                }
+                $html = sprintf("<div>%s</div>", htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
             }
-            $nonbufResp->getBody()->write("<div>" . htmlspecialchars("{$message}", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</div>");
+            $nonbufResp->getBody()->write($html);
         };
 
         return $addToStreamingResponseBody;
