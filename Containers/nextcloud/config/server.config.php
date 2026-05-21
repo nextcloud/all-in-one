@@ -1,4 +1,4 @@
 <?php
 $CONFIG = array (
-  'serverid' => crc32(gethostname()) % 512,
+  'serverid' => hexdec(hash('xxh32', gethostname()) & 0x1FF,
 );
