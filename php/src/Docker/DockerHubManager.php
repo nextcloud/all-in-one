@@ -15,7 +15,7 @@ readonly class DockerHubManager {
 
 
     // Official Docker Hub images need the library/ prefix when using the registry API directly.
-    private function NormalizeImageName(string $name): string {
+    private function normalizeImageName(string $name): string {
         if (!str_contains($name, '/')) {
             return 'library/' . $name;
         }
@@ -32,7 +32,7 @@ readonly class DockerHubManager {
         }
 
         // If one of the links below should ever become outdated, we can still upgrade the mastercontainer via the webinterface manually by opening '/api/docker/getwatchtower'
-        $name = $this->NormalizeImageName($name);
+        $name = $this->normalizeImageName($name);
 
         try {
             $authTokenRequest = $this->guzzleClient->request(
