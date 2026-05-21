@@ -42,6 +42,15 @@ if ! [ -f /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ] &&
     exit 1
 fi
 
+# Logic for ipv6 disabled servers
+BIND="::"
+if grep -q "1" /sys/module/ipv6/parameters/disable \
+|| grep -q "1" /proc/sys/net/ipv6/conf/all/disable_ipv6 \
+|| grep -q "1" /proc/sys/net/ipv6/conf/default/disable_ipv6; then
+    BIND="0.0.0.0"
+fi
+export BIND
+
 echo "notify-push was started"
 
 
