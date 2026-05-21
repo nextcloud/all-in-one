@@ -568,7 +568,9 @@ readonly class DockerActionManager {
                 // reverse proxy (nginx) can drop the connection after its read timeout expires.
                 // Once the connection is gone, PHP aborts on the next write and all consecutive
                 // containers are never started.
-                $pullResponse = $this->guzzleClient->post($url, ['stream' => true]);
+                // We have to specify the proxy again, since when streaming, Guzzle apparently doesn't use
+                // libcurl and thus the curl option set when creating the client doesn't apply.
+                $pullResponse = $this->guzzleClient->post($url, ['proxy' => 'unix:///var/run/docker.sock', 'stream' => true]);
                 $pullBody = $pullResponse->getBody();
                 $buffer = '';
                 $pullErrors = [];
