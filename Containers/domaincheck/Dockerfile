@@ -19,6 +19,7 @@ ENTRYPOINT ["/start.sh"]
 HEALTHCHECK CMD nc -z 127.0.0.1 $APACHE_PORT || exit 1
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
+    dockhand.update="false" \
     org.opencontainers.image.title="Domain Check for Nextcloud AIO" \
     org.opencontainers.image.description="Domain validation service for Nextcloud All-in-One setup" \
     org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \

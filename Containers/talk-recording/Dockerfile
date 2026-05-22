@@ -67,6 +67,7 @@ CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.co
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
+    dockhand.update="false" \
     org.opencontainers.image.title="Talk Recording for Nextcloud AIO" \
     org.opencontainers.image.description="Nextcloud Talk recording service for Nextcloud All-in-One" \
     org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \

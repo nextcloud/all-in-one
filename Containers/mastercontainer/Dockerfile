@@ -107,6 +107,7 @@ LABEL org.opencontainers.image.title="Nextcloud All-in-One Mastercontainer" \
     org.opencontainers.image.vendor="Nextcloud" \
     org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md" \
     wud.watch="false" \
+    dockhand.update="false" \
     com.docker.compose.project="nextcloud-aio"
 
 # hadolint ignore=DL3002
