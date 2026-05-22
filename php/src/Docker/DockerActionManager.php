@@ -18,7 +18,7 @@ use http\Env\Response;
 
 readonly class DockerActionManager {
     private const string API_VERSION = 'v1.44';
-    private const int PULL_HEARTBEAT_INTERVAL_SECONDS = 5;
+    private const int PULL_HEARTBEAT_INTERVAL_SECONDS = 4;
     private Client $guzzleClient;
 
     public function __construct(
