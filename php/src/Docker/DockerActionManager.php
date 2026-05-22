@@ -16,8 +16,6 @@ use http\Env\Response;
 
 readonly class DockerActionManager {
     private const string API_VERSION = 'v1.44';
-    private const int PULL_STREAM_READ_CHUNK_SIZE = 65536;
-    private const int PULL_STREAM_MAX_BUFFER_SIZE = 1048576;
     private const int PULL_HEARTBEAT_INTERVAL_SECONDS = 5;
     private Client $guzzleClient;
 
