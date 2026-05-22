@@ -339,7 +339,7 @@ readonly class DockerController {
 
         $body = $nonbufResp->getBody();
         $addToStreamingResponseBody = function (string $message) use ($body) : void {
-            $body->write("<div>$message</div>");
+            $body->write('<div>' . htmlspecialchars($message, ENT_QUOTES | ENT_HTML5) . '</div>');
         };
 
         $this->dockerActionManager->SystemPrune($addToStreamingResponseBody);
@@ -430,7 +430,7 @@ readonly class DockerController {
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
         $addToStreamingResponseBody = function (Container $container, string $message) use ($nonbufResp) : void {
-            $nonbufResp->getBody()->write("<div>{$container->displayName}: {$message}</div>");
+            $nonbufResp->getBody()->write('<div>' . htmlspecialchars($container->displayName, ENT_QUOTES | ENT_HTML5) . ': ' . htmlspecialchars($message, ENT_QUOTES | ENT_HTML5) . '</div>');
         };
 
         return $addToStreamingResponseBody;
