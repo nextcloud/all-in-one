@@ -10,7 +10,7 @@ This container bundles [AzuraCast](https://www.azuracast.com/), an open-source w
 - **SFTP uploads** are available on port 2022.
 - AzuraCast's data (stations, database, backups) is automatically included in AIO's BorgBackup solution.
 - **Updater:** The standard AzuraCast `updater` container is omitted — updates are managed through AIO's standard container update mechanism (pulling the new `ghcr.io/azuracast/azuracast:stable` image).
-- This container uses `AZURACAST_HTTP_PORT=8080` for AzuraCast's internal nginx. This port is only accessible within the Docker bridge network and does not conflict with the AIO mastercontainer's host-side port 8080. Do not attempt to access AzuraCast directly via `http://yourserver:8080` — that address reaches the AIO admin interface, not AzuraCast. Use `https://radio.your-nc-domain.com` instead.
+- AzuraCast uses port **10080** (HTTP) and **10443** (HTTPS), following the [ports recommended by AzuraCast](https://www.azuracast.com/docs/administration/multi-site-installation/#edit-azuracast-web-serving-ports) for reverse proxy deployments. Both ports are exposed directly on the host. The recommended way to access the web interface is via `https://radio.your-nc-domain.com` through the Caddy community container. Direct HTTPS access is also available at `https://yourserver:10443` (self-signed certificate — browser warning expected).
 
 ### Recommended settings after first login
 

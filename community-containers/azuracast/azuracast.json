@@ -6,9 +6,19 @@
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast",
             "image": "ghcr.io/azuracast/azuracast",
             "image_tag": "stable",
-            "internal_port": "8080",
+            "internal_port": "10080",
             "restart": "unless-stopped",
             "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "10080",
+                    "protocol": "tcp"
+                },
+                {
+                    "ip_binding": "",
+                    "port_number": "10443",
+                    "protocol": "tcp"
+                },
                 {
                     "ip_binding": "",
                     "port_number": "2022",
@@ -32,8 +42,8 @@
             ],
             "environment": [
                 "TZ=%TIMEZONE%",
-                "AZURACAST_HTTP_PORT=8080",
-                "AZURACAST_HTTPS_PORT=8443",
+                "AZURACAST_HTTP_PORT=10080",
+                "AZURACAST_HTTPS_PORT=10443",
                 "MARIADB_ROOT_PASSWORD=%AZURACAST_DB_PASSWORD%"
             ],
             "secrets": [
