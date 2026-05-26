@@ -163,6 +163,10 @@ The steps below are written for Linux. For platform-specific guidance see:
 > [!IMPORTANT]  
 > These instructions assume there is no existing web server or reverse proxy (for example Apache, Nginx, Caddy, or Cloudflare Tunnel) that you intend to place in front of AIO. If you plan to run AIO behind an existing web server or reverse proxy, follow the AIO reverse proxy documentation: [Reverse proxy docs](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
 
+> [!WARNING]
+> AIO does **not** support IP addresses or self-signed certificates for the Nextcloud domain.
+> If you want a local-only instance, see [local-instance.md](./local-instance.md) before proceeding.
+
 You're encouraged to skim the attached [FAQ](#faq). While we've tried to make things straightforward, Nextcloud is a large and flexible platform. Reading the FAQ will save you time, particularly if edge cases come up.
 
 > [!TIP]  
