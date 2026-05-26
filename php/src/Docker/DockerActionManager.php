@@ -484,6 +484,7 @@ readonly class DockerActionManager {
 
         // All AIO-managed containers should not be updated externally via watchtower but gracefully by AIO's backup and update feature.
         // Also DIUN should not send update notifications. See https://crazymax.dev/diun/providers/docker/#docker-labels
+        // Also Dockhand should not be auto updating the containers. See https://dockhand.pro/manual/#container-labels-behavior
         // Additionally set a default org.label-schema.vendor and com.docker.compose.project
         $requestBody['Labels'] = ["com.centurylinklabs.watchtower.enable" => "false", "wud.watch" => "false", "diun.enable" => "false", "dockhand.update" => "false", "org.label-schema.vendor" => "Nextcloud", "com.docker.compose.project" => "nextcloud-aio"];
 
