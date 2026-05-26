@@ -1,5 +1,5 @@
 ## Glances
-This container starts Glances, a web-based info-board, and auto-configures it for you.
+This container starts [Glances](https://nicolargo.github.io/glances/), a web-based system monitoring dashboard, and auto-configures it for you.
 
 > [!CAUTION]
 > This container mounts the docker-socket from the host-system.

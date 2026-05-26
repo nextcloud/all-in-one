@@ -1,5 +1,5 @@
 ## Minio
-This container bundles minio s3 storage and auto-configures it for you.
+This container bundles [minio](https://github.com/minio/minio) s3 storage and auto-configures it for you.
 
 > [!CAUTION]
 > The Minio upstream project is no longer maintained. The container should still work in its current form...

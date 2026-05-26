@@ -1,5 +1,5 @@
 ## Plex
-This container bundles Plex and auto-configures it for you.
+This container bundles the [Plex Media Server](https://www.plex.tv/en-gb/personal-media-server/) and auto-configures it for you.
 
 ### Notes
 - This container is incompatible with the [Jellyfin](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin) community container. So make sure that you do not enable both at the same time!

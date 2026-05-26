@@ -1,5 +1,5 @@
 ## Pi-hole
-This container bundles pi-hole and auto-configures it for you.
+This container bundles the [pi-hole](https://pi-hole.net/) ad blocker and auto-configures it for you.
 
 ### Notes
 - You should not run this container on a public VPS! It is only intended to run in home networks!

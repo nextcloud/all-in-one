@@ -1,5 +1,5 @@
 ## Home Assistant
-This container bundles Home Assistant and auto-configures it for you.
+This container bundles [Home Assistant](https://www.home-assistant.io/) and auto-configures it for you.
 
 ### Notes
 - This container should only be run in home networks since Home Assistant is designed for local home automation.
