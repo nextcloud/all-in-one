@@ -72,8 +72,8 @@
                     "writeable": true
                 },
                 {
-                    "source": "nextcloud_aio_azuracast_shared",
-                    "destination": "/var/azuracast/shared",
+                    "source": "%NEXTCLOUD_MOUNT%",
+                    "destination": "%NEXTCLOUD_MOUNT%",
                     "writeable": true
                 }
             ],
