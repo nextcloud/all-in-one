@@ -12,6 +12,7 @@ use AIO\Data\DataConst;
 use AIO\Helper\NetworkHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Utils;
 use http\Env\Response;
 
 readonly class DockerActionManager {
@@ -843,21 +844,11 @@ readonly class DockerActionManager {
 
         if ($outputCallback !== null) {
             $body = $startResponse->getBody();
-            $buffer = '';
             while (!$body->eof()) {
-                $chunk = $body->read(1024);
-                $buffer .= $chunk;
-                while (($pos = strpos($buffer, "\n")) !== false) {
-                    $line = substr($buffer, 0, $pos);
-                    $buffer = substr($buffer, $pos + 1);
-                    $line = rtrim($line, "\r");
-                    if ($line !== '') {
-                        $outputCallback($line);
-                    }
+                $line = rtrim(Utils::readLine($pullBody), "\r");;
+                if ($line !== '') {
+                    $outputCallback($line);
                 }
-            }
-            if (trim($buffer) !== '') {
-                $outputCallback(trim($buffer));
             }
         }
     }
