@@ -444,6 +444,8 @@ readonly class DockerController {
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
         $addToStreamingResponseBody = function (string $message, ?Container $container = null) use ($nonbufResp) : void {
+            // Strip ANSI codes.
+            $message = preg_replace('/\e[[][A-Za-z0-9];?[0-9]*m?/', '', $message);
             if ($container) {
                 $message = "{$container->displayName}: {$message}";
             }
