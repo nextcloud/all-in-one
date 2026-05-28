@@ -777,29 +777,6 @@ readonly class DockerActionManager {
             }
         }
 
-            // schedule the exec
-            $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
-            $response = json_decode(
-                $this->guzzleClient->request(
-                    'POST',
-                    $url,
-                    [
-                        'json' => [
-                            'AttachStdout' => true,
-                            'Tty' => true,
-                            'Cmd' => [
-                                'bash',
-                                $file,
-                                $subject,
-                                $message
-                            ],
-                        ],
-                    ]
-                )->getBody()->getContents(),
-                true,
-                512,
-                JSON_THROW_ON_ERROR,
-            );
         if ($this->GetContainerStartingState($container) !== ContainerState::Running) {
             return;
         }
