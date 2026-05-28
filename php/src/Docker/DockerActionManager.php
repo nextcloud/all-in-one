@@ -49,7 +49,7 @@ readonly class DockerActionManager {
     public function GetContainerRunningState(Container $container): ContainerState {
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->identifier)));
         try {
-            $response = $this->guzzleClient->get($url);
+            $response = $this->sendHttpRequest('GET', $url);
         } catch (RequestException $e) {
             if ($e->getCode() === 404) {
                 return ContainerState::ImageDoesNotExist;
@@ -69,7 +69,7 @@ readonly class DockerActionManager {
     public function GetContainerRestartingState(Container $container): ContainerState {
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->identifier)));
         try {
-            $response = $this->guzzleClient->get($url);
+            $response = $this->sendHttpRequest('GET', $url);
         } catch (RequestException $e) {
             if ($e->getCode() === 404) {
                 return ContainerState::ImageDoesNotExist;
@@ -139,7 +139,7 @@ readonly class DockerActionManager {
     public function DeleteContainer(Container $container): void {
         $url = $this->BuildApiUrl(sprintf('containers/%s?v=true', urlencode($container->identifier)));
         try {
-            $this->guzzleClient->delete($url);
+            $this->sendHttpRequest('DELETE', $url);
         } catch (RequestException $e) {
             if ($e->getCode() !== 404) {
                 throw $e;
@@ -156,7 +156,7 @@ readonly class DockerActionManager {
         // Delete the borg cache volume
         $url = $this->BuildApiUrl('volumes/nextcloud_aio_backup_cache');
         try {
-            $this->guzzleClient->delete($url);
+            $this->sendHttpRequest('DELETE', $url);
             error_log('nextcloud_aio_backup_cache volume deleted successfully.');
         } catch (RequestException $e) {
             if ($e->getCode() !== 404) {
@@ -175,7 +175,7 @@ readonly class DockerActionManager {
                 urlencode($id),
                 $since
             ));
-        $responseBody = (string)$this->guzzleClient->get($url)->getBody();
+        $responseBody = (string)$this->sendHttpRequest('GET', $url)->getBody();
 
         $response = "";
         $separator = "\r\n";
@@ -197,7 +197,7 @@ readonly class DockerActionManager {
             if ($addToStreamingResponseBody !== null) {
                 $addToStreamingResponseBody("Starting container", $container);
             }
-            $this->guzzleClient->post($url);
+            $this->sendHttpRequest('POST', $url);
         } catch (RequestException $e) {
             throw new \Exception("Could not start container " . $container->identifier . ": " . $e->getResponse()?->getBody()->getContents());
         }
@@ -216,7 +216,7 @@ readonly class DockerActionManager {
 
             $firstChar = substr($volume->name, 0, 1);
             if (!in_array($firstChar, $forbiddenChars)) {
-                $this->guzzleClient->request(
+                $this->sendHttpRequest(
                     'POST',
                     $url,
                     [
@@ -495,7 +495,7 @@ readonly class DockerActionManager {
 
         $url = $this->BuildApiUrl('containers/create?name=' . $container->identifier);
         try {
-            $this->guzzleClient->request(
+            $this->sendHttpRequest(
                 'POST',
                 $url,
                 [
@@ -555,7 +555,7 @@ readonly class DockerActionManager {
                 $addToStreamingResponseBody("Pulling image", $container);
             }
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $encodedImageName));
-            $this->guzzleClient->get($imageUrl)->getBody()->getContents();
+            $this->sendHttpRequest('GET', $imageUrl)->getBody()->getContents();
         } catch (\Throwable $e) {
             $imageIsThere = false;
         }
@@ -563,7 +563,7 @@ readonly class DockerActionManager {
         $maxRetries = 3;
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
-                $this->guzzleClient->post($url);
+                $this->sendHttpRequest('POST', $url);
                 break;
             } catch (RequestException $e) {
                 $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $e->getResponse()?->getBody()->getContents();
@@ -648,11 +648,11 @@ readonly class DockerActionManager {
     private function GetRepoDigestsOfContainer(string $containerName): ?array {
         try {
             $containerUrl = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
-            $containerOutput = json_decode($this->guzzleClient->get($containerUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $containerOutput = json_decode($this->sendHttpRequest('GET', $containerUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $imageName = $containerOutput['Image'];
 
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
-            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $imageOutput = json_decode($this->sendHttpRequest('GET', $imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['RepoDigests'])) {
                 error_log('RepoDigests is not set of container ' . $containerName);
@@ -696,7 +696,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
-            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $output = json_decode($this->sendHttpRequest('GET', $url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $imageNameArray = explode(':', $output['Config']['Image']);
             if (count($imageNameArray) === 2) {
                 $imageName = $imageNameArray[0];
@@ -723,7 +723,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
-            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $output = json_decode($this->sendHttpRequest('GET', $url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $tagArray = explode(':', $output['Config']['Image']);
             if (count($tagArray) === 2) {
                 $tag = $tagArray[1];
@@ -809,7 +809,7 @@ readonly class DockerActionManager {
         // Create exec instance
         $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
         $response = json_decode(
-            $this->guzzleClient->request(
+            $this->sendHttpRequest(
                 'POST',
                 $url,
                 [
@@ -840,7 +840,7 @@ readonly class DockerActionManager {
             $requestOptions['stream'] = true;
         }
 
-        $startResponse = $this->guzzleClient->request('POST', $url, $requestOptions);
+        $startResponse = $this->sendHttpRequest('POST', $url, $requestOptions);
 
         if ($outputCallback !== null) {
             $body = $startResponse->getBody();
@@ -860,7 +860,7 @@ readonly class DockerActionManager {
         );
 
         try {
-            $this->guzzleClient->request(
+            $this->sendHttpRequest(
                 'POST',
                 $url,
                 [
@@ -881,7 +881,7 @@ readonly class DockerActionManager {
         if ($createNetwork) {
             $url = $this->BuildApiUrl('networks/create');
             try {
-                $this->guzzleClient->request(
+                $this->sendHttpRequest(
                     'POST',
                     $url,
                     [
@@ -910,7 +910,7 @@ readonly class DockerActionManager {
         }
 
         try {
-            $this->guzzleClient->request(
+            $this->sendHttpRequest(
                 'POST',
                 $url,
                 [
@@ -955,7 +955,7 @@ readonly class DockerActionManager {
         }
         $url = $this->BuildApiUrl(sprintf('containers/%s/stop?t=%s', urlencode($container->identifier), $maxShutDownTime));
         try {
-            $this->guzzleClient->post($url);
+            $this->sendHttpRequest('POST', $url);
         } catch (RequestException $e) {
             if ($e->getCode() !== 404 && $e->getCode() !== 304) {
                 throw $e;
@@ -967,7 +967,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-borgbackup';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($containerName)));
         try {
-            $response = $this->guzzleClient->get($url);
+            $response = $this->sendHttpRequest('GET', $url);
         } catch (RequestException $e) {
             if ($e->getCode() === 404) {
                 return -1;
@@ -989,7 +989,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-database';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($containerName)));
         try {
-            $response = $this->guzzleClient->get($url);
+            $response = $this->sendHttpRequest('GET', $url);
         } catch (RequestException $e) {
             if ($e->getCode() === 404) {
                 return -1;
@@ -1029,7 +1029,7 @@ readonly class DockerActionManager {
         $imageName = $imageName . ':' . $this->GetCurrentChannel();
         try {
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
-            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $imageOutput = json_decode($this->sendHttpRequest('GET', $imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['Created'])) {
                 error_log('Created is not set of image ' . $imageName);
@@ -1107,7 +1107,7 @@ readonly class DockerActionManager {
             }
 
             try {
-                $response = $this->guzzleClient->post($url);
+                $response = $this->sendHttpRequest('POST', $url);
                 if ($addToStreamingResponseBody !== null) {
                     $data = json_decode((string)$response->getBody(), true);
                     $deleted = 0;
@@ -1145,4 +1145,10 @@ readonly class DockerActionManager {
             sleep(10);
         }
     }
-}
+
+    protected function sendHttpRequest(string $httpMethod, string $url, array $requestOptions = []): Guzzle\Http\Message\Response {
+        if ($requestOptions['stream'] === true) {
+            $requestOptions['proxy'] = 'unix:///var/run/docker.sock';
+        }
+        return $this->guzzleClient->request($httpMethod, $url, $requestOptions);
+    }
