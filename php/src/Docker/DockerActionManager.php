@@ -1146,9 +1146,11 @@ readonly class DockerActionManager {
         }
     }
 
-    protected function sendHttpRequest(string $httpMethod, string $url, array $requestOptions = []): Guzzle\Http\Message\Response {
-        if ($requestOptions['stream'] === true) {
+    protected function sendHttpRequest(string $httpMethod, string $url, array $requestOptions = []): \GuzzleHttp\Psr7\Response {
+        if ($requestOptions['stream'] ?? null === true) {
             $requestOptions['proxy'] = 'unix:///var/run/docker.sock';
         }
         return $this->guzzleClient->request($httpMethod, $url, $requestOptions);
     }
+
+}
