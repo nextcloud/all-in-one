@@ -43,6 +43,7 @@ ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
+    dockhand.update="false" \
     org.opencontainers.image.title="ClamAV for Nextcloud AIO" \
     org.opencontainers.image.description="ClamAV antivirus scanner for Nextcloud All-in-One" \
     org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \

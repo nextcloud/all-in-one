@@ -25,6 +25,7 @@ USER root
 
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
+    dockhand.update="false" \
     org.opencontainers.image.title="Borgbackup for Nextcloud AIO" \
     org.opencontainers.image.description="BorgBackup-based backup service for Nextcloud All-in-One" \
     org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \

@@ -472,7 +472,7 @@ readonly class DockerActionManager {
                 // To avoid problems with whitespace or dashes in option arguments we use a regular expression
                 // that splits the string at every position where a whitespace is followed by '--o:'.
                 // The leading whitespace is removed in the split but the following characters are not.
-                // Example: "--o:example_config1='some thing' --o:example_config2=something-else" -> ["--o:example_config1='some thing'", "--o:example_config2=something-else"] 
+                // Example: "--o:example_config1='some thing' --o:example_config2=something-else" -> ["--o:example_config1='some thing'", "--o:example_config2=something-else"]
                 $regEx = '/\s+(?=--o:)/';
                 $requestBody['Cmd'] = preg_split($regEx, rtrim($this->configurationManager->collaboraAdditionalOptions));
             }
@@ -483,9 +483,10 @@ readonly class DockerActionManager {
         }
 
         // All AIO-managed containers should not be updated externally via watchtower but gracefully by AIO's backup and update feature.
-        // Also DIUN should not send update notifications. See https://crazymax.dev/diun/providers/docker/#docker-labels 
+        // Also DIUN should not send update notifications. See https://crazymax.dev/diun/providers/docker/#docker-labels
+        // Also Dockhand should not be auto updating the containers. See https://dockhand.pro/manual/#container-labels-behavior
         // Additionally set a default org.label-schema.vendor and com.docker.compose.project
-        $requestBody['Labels'] = ["com.centurylinklabs.watchtower.enable" => "false", "wud.watch" => "false", "diun.enable" => "false", "org.label-schema.vendor" => "Nextcloud", "com.docker.compose.project" => "nextcloud-aio"];
+        $requestBody['Labels'] = ["com.centurylinklabs.watchtower.enable" => "false", "wud.watch" => "false", "diun.enable" => "false", "dockhand.update" => "false", "org.label-schema.vendor" => "Nextcloud", "com.docker.compose.project" => "nextcloud-aio"];
 
         // Containers should have a fixed host name. See https://github.com/nextcloud/all-in-one/discussions/6589
         $requestBody['Hostname'] = $container->identifier;
@@ -785,7 +786,7 @@ readonly class DockerActionManager {
                     ]
                 )->getBody()->getContents(),
                 true,
-                512, 
+                512,
                 JSON_THROW_ON_ERROR,
             );
 
