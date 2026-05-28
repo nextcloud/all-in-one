@@ -575,7 +575,7 @@ readonly class DockerActionManager {
                 $lastHeartbeat = time();
                 while (!$pullBody->eof()) {
                     $line = Utils::readLine($pullBody);
-                    $event = json_decode($line, true);
+                    $event = json_decode($line, true, 512, JSON_THROW_ON_ERROR);
                     if (!is_array($event)) {
                         continue;
                     }
