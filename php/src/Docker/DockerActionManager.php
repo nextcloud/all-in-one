@@ -822,7 +822,7 @@ readonly class DockerActionManager {
         if ($outputCallback !== null) {
             $body = $startResponse->getBody();
             while (!$body->eof()) {
-                $line = rtrim(Utils::readLine($pullBody), "\r");;
+                $line = rtrim(Utils::readLine($body), "\r");;
                 if ($line !== '') {
                     $outputCallback($line);
                 }
