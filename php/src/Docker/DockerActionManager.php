@@ -194,7 +194,7 @@ readonly class DockerActionManager {
         $url = $this->BuildApiUrl(sprintf('containers/%s/start', urlencode($container->identifier)));
         try {
             if ($addToStreamingResponseBody !== null) {
-                $addToStreamingResponseBody($container, "Starting container");
+                $addToStreamingResponseBody("Starting container", $container);
             }
             $this->guzzleClient->post($url);
         } catch (RequestException $e) {
@@ -551,7 +551,7 @@ readonly class DockerActionManager {
         $imageIsThere = true;
         try {
             if ($addToStreamingResponseBody) {
-                $addToStreamingResponseBody($container, "Pulling image");
+                $addToStreamingResponseBody("Pulling image", $container);
             }
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $encodedImageName));
             $this->guzzleClient->get($imageUrl)->getBody()->getContents();

@@ -299,7 +299,7 @@ readonly class DockerController {
         }
 
         if ($addToStreamingResponseBody !== null) {
-            $addToStreamingResponseBody($container, "Stopping container");
+            $addToStreamingResponseBody("Stopping container", $container);
         }
 
         // Stop itself first and then all the dependencies
@@ -339,7 +339,7 @@ readonly class DockerController {
 
         // Get streaming response start and closure
         $nonbufResp = $this->startStreamingResponse($response);
-        $addToStreamingResponseBody = $this->getPlainStreamingCallback($nonbufResp);
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
 
         $this->dockerActionManager->RunNextcloudUpgradeToLatestMajor($addToStreamingResponseBody);
 
@@ -353,9 +353,7 @@ readonly class DockerController {
         $nonbufResp = $this->startStreamingResponse($response);
 
         $body = $nonbufResp->getBody();
-        $addToStreamingResponseBody = function (string $message) use ($body) : void {
-            $body->write("<div>$message</div>");
-        };
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
 
         $this->dockerActionManager->SystemPrune($addToStreamingResponseBody);
 
@@ -445,17 +443,14 @@ readonly class DockerController {
         // Create a closure to pass around to the code, which should to the logging (because it e.g. decides
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
-        $addToStreamingResponseBody = function (Container $container, string $message) use ($nonbufResp) : void {
-            $nonbufResp->getBody()->write("<div>" . htmlspecialchars("{$container->displayName}: {$message}", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</div>");
+        $addToStreamingResponseBody = function (string $message, ?Container $container = null) use ($nonbufResp) : void {
+            if ($container) {
+                $message = "{$container->displayName}: {$message}";
+            }
+            $nonbufResp->getBody()->write("<div>" . htmlspecialchars("{$message}", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</div>");
         };
 
         return $addToStreamingResponseBody;
-    }
-
-    private function getPlainStreamingCallback(Response $nonbufResp) : \Closure {
-        return function (string $message) use ($nonbufResp) : void {
-            $nonbufResp->getBody()->write("<div>" . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</div>");
-        };
     }
 
     private function finalizeStreamingResponse(Response $nonbufResp) : void {
