@@ -7,7 +7,7 @@ fi
 
 # shellcheck disable=SC2016
 image_version="$($PHP_CLI -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
-IMAGE_MAJOR="${image_version%%.*}"
+export IMAGE_MAJOR="${image_version%%.*}"
 
 $PHP_CLI /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
 INSTALLED_AT="$($PHP_CLI /var/www/html/occ config:app:get core installedat)"
@@ -25,9 +25,9 @@ if ! $PHP_CLI /var/www/html/occ -V || $PHP_CLI /var/www/html/occ status | grep m
 fi
 # shellcheck disable=SC2016
 installed_version="$($PHP_CLI -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
-INSTALLED_MAJOR="${installed_version%%.*}"
+export INSTALLED_MAJOR="${installed_version%%.*}"
 # If a valid upgrade path, trigger the Nextcloud built-in Updater
-if ! [ "$INSTALLED_MAJOR" -gt "$IMAGE_MAJOR" ]; then
+if ! $PHP_CLI -r "version_compare(getenv('INSTALLED_MAJOR'), getenv('IMAGE_MAJOR'), '>') || exit(1);"; then
     $PHP_CLI /var/www/html/updater/updater.phar --no-interaction --no-backup
     if ! $PHP_CLI /var/www/html/occ -V || $PHP_CLI /var/www/html/occ status | grep maintenance | grep -q 'true'; then
         echo "Installation of Nextcloud failed!"
