@@ -221,7 +221,7 @@ readonly class DockerController {
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = '33';
+            $installLatestMajor = '34';
         } else {
             $installLatestMajor = '';
         }
