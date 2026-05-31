@@ -375,6 +375,11 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['ShmSize'] = $shmSize;
         }
 
+        $cpuShares = $container->cpuShares;
+        if ($cpuShares > 0) {
+            $requestBody['HostConfig']['CpuShares'] = $cpuShares;
+        }
+
         $tmpfs = [];
         foreach ($container->tmpfs as $tmp) {
             $mode = "";
