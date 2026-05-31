@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
+6078222f7c61540504fa9892729f4a04 lint-php.yml
+9fe5efdf1113d7fe92ba1f54f1111c4f psalm.yml
+9dc6b717be0006fc7974a50351686fd7 sync-workflow-templates.yml
