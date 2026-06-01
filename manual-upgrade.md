@@ -27,7 +27,7 @@ The only way to fix this on your side is upgrading regularly (e.g. by enabling d
     ```bash
         sudo docker pull assaflavie/runlike
         echo '#!/bin/bash' > /tmp/nextcloud-aio-nextcloud
-        sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p nextcloud-aio-nextcloud >> /tmp/nextcloud-aio-nextcloud
+        sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock:ro assaflavie/runlike -p nextcloud-aio-nextcloud >> /tmp/nextcloud-aio-nextcloud
         sudo chown root:root /tmp/nextcloud-aio-nextcloud
     ```
 5. Now open `/tmp/nextcloud-aio-nextcloud` with a text editor, and edit the container tag:
@@ -66,7 +66,7 @@ Prerequisite: have all containers from AIO interface running.
 ##### 1. Install portainer if not installed:
 ```bash
 docker volume create portainer_data
-docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock:ro -v portainer_data:/data portainer/portainer-ce:latest
 ```
 - If you have a reverse proxy
     - you can setup and navigate using a domain name.
