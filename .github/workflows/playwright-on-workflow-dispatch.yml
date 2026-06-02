@@ -23,10 +23,10 @@ jobs:
         run: cd php/tests && npm ci
 
       - name: Install Playwright system dependencies
-        run: cd php/tests && npx playwright install-deps chromium
+        run: cd php/tests && ./node_modules/.bin/playwright install-deps chromium
 
       - name: Install Playwright Browsers
-        run: cd php/tests && npx playwright install chromium
+        run: cd php/tests && ./node_modules/.bin/playwright install chromium
 
       - name: Start fresh development server
         run: |
@@ -51,7 +51,7 @@ jobs:
         run: |
           cd php/tests
           export DEBUG=pw:api
-          if ! npx playwright test tests/initial-setup.spec.js; then
+          if ! ./node_modules/.bin/playwright test tests/initial-setup.spec.js; then
             docker logs nextcloud-aio-mastercontainer
             docker logs nextcloud-aio-borgbackup
             exit 1
@@ -79,7 +79,7 @@ jobs:
         run: |
           cd php/tests 
           export DEBUG=pw:api
-          if ! npx playwright test tests/restore-instance.spec.js; then
+          if ! ./node_modules/.bin/playwright test tests/restore-instance.spec.js; then
             docker logs nextcloud-aio-mastercontainer
             docker logs nextcloud-aio-borgbackup
             exit 1
