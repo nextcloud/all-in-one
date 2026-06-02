@@ -439,7 +439,7 @@ readonly class DockerController {
         return $nonbufResp;
     }
 
-    private function getAddToStreamingResponseBody(Response $nonbufResp) : ?\Closure {
+    private function getAddToStreamingResponseBody(Response $nonbufResp) : \Closure {
         // Create a closure to pass around to the code, which should to the logging (because it e.g. decides
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
