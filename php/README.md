@@ -1,5 +1,7 @@
 # PHP Docker Controller
 
+<!--test-->
+
 This is the code for the PHP Docker controller.
 
 ## How to run
