@@ -2,7 +2,7 @@
 
 PHP_CLI="php"
 if [[ "$EUID" = 0 ]]; then
-    PHP_CLI="sudo -u www-data $PHP_CLI"
+    PHP_CLI="sudo -u www-data -E $PHP_CLI"
 fi
 
 # shellcheck disable=SC2016
