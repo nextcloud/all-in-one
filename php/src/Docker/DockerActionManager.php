@@ -1123,7 +1123,7 @@ readonly class DockerActionManager {
         }
     }
 
-    protected function sendHttpRequest(string $httpMethod, string $url, array $requestOptions = []): \GuzzleHttp\Psr7\Response {
+    protected function sendHttpRequest(string $httpMethod, string $url, array $requestOptions = []): Psr\Http\Message\ResponseInterface {
         if ($requestOptions['stream'] ?? null === true) {
             $requestOptions['proxy'] = 'unix:///var/run/docker.sock';
         }
