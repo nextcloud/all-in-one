@@ -37,8 +37,11 @@ jobs:
       - name: Install dependencies
         run: cd php/tests && npm ci
 
+      - name: Install Playwright system dependencies
+        run: cd php/tests && npx playwright install-deps chromium
+
       - name: Install Playwright Browsers
-        run: cd php/tests && npx playwright install --with-deps chromium
+        run: cd php/tests && npx playwright install chromium
 
       - name: Set up php 8.5
         uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # v2.37.0

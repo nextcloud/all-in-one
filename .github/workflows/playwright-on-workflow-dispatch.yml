@@ -22,8 +22,11 @@ jobs:
       - name: Install dependencies
         run: cd php/tests && npm ci
 
+      - name: Install Playwright system dependencies
+        run: cd php/tests && npx playwright install-deps chromium
+
       - name: Install Playwright Browsers
-        run: cd php/tests && npx playwright install --with-deps chromium
+        run: cd php/tests && npx playwright install chromium
 
       - name: Start fresh development server
         run: |
