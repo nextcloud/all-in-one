@@ -411,6 +411,11 @@ readonly class DockerController {
     }
 
     private function startStreamingResponse(Response $response) : Response {
+        // Ensure the script keeps running even if the client connection drops (e.g. due to a
+        // reverse proxy read timeout during a long image pull). Without this, PHP would abort
+        // on the first write after the connection is gone, leaving only some containers started.
+        ignore_user_abort(true);
+
         $nonbufResp = $response
             ->withBody(new NonBufferedBody())
             ->withHeader('Content-Type', 'text/html; charset=utf-8')
@@ -431,7 +436,14 @@ readonly class DockerController {
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
         $addToStreamingResponseBody = function (Container $container, string $message) use ($nonbufResp) : void {
-            $nonbufResp->getBody()->write("<div>{$container->displayName}: {$message}</div>");
+            // If the message is a single dot we treat it as a progress indicator and send a specific, empty
+            // HTML element, which gets special treatment by the Javascript code.
+            if ($message === '.') {
+                $content = "<span class='progress-indicator'></span>";
+            } else {
+                $content = "<div>{$container->displayName}: {$message}</div>";
+            }
+            $nonbufResp->getBody()->write($content);
         };
 
         return $addToStreamingResponseBody;
