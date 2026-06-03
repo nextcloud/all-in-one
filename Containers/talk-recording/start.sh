@@ -58,21 +58,13 @@ extensionaudio = .m4a
 extensionvideo = .mp4"
 fi
 
-# Detect IPv6 availability to choose the right listen address
-RECORDING_LISTEN="0.0.0.0:1234"
-if ! grep -q "1" /sys/module/ipv6/parameters/disable 2>/dev/null \
-&& ! grep -q "1" /proc/sys/net/ipv6/conf/all/disable_ipv6 2>/dev/null \
-&& ! grep -q "1" /proc/sys/net/ipv6/conf/default/disable_ipv6 2>/dev/null; then
-    RECORDING_LISTEN="[::]:1234"
-fi
-
 cat << RECORDING_CONF > "/conf/recording.conf"
 [logs]
 # 30 means Warning
 level = ${TALK_RECORDING_LOG_LEVEL}
 
 [http]
-listen = ${RECORDING_LISTEN}
+listen = 0.0.0.0:1234
 
 [backend]
 allowall = ${ALLOW_ALL}
