@@ -16,6 +16,42 @@
     <div class="office-suite-cards">
         <input
             type="radio"
+            id="office-eurooffice"
+            name="office_suite_choice"
+            value="eurooffice"
+            class="office-radio"
+            {% if is_eurooffice_enabled == true %}
+                checked="checked"
+            {% endif %}
+        >
+        <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-eurooffice">
+            <div class="office-card-header">
+                <div>
+                    <h4>Nextcloud Office</h4>
+                    <p class="office-powered-by">powered by Euro-Office</p>
+                </div>
+                <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
+                    <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <ul class="office-features">
+                <li>Good Nextcloud integration</li>
+                <li>Open source</li>
+                <li>Best performance</li>
+                <li>Limited ODF compatibility</li>
+                <li>Best Microsoft compatibility</li>
+                <li>Good security</li>
+            </ul>
+            {% if isAnyRunning == false %}
+                <a href="https://github.com/Euro-Office" target="_blank" class="office-learn-more" data-stop-event-propagation="true">
+                    Learn more
+                </a>
+            {% endif %}
+        </label>
+        <input type="hidden" id="eurooffice" name="eurooffice" value="" data-initial-state="{% if is_eurooffice_enabled == true %}true{% else %}false{% endif %}">
+        <input
+            type="radio"
             id="office-collabora"
             name="office_suite_choice"
             value="collabora"
@@ -26,7 +62,10 @@
         >
         <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-collabora">
             <div class="office-card-header">
-                <h4>Collabora Office</h4>
+                <div>
+                    <h4>Nextcloud Office</h4>
+                    <p class="office-powered-by">powered by Collabora Online</p>
+                </div>
                 <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
                     <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -36,9 +75,9 @@
                 <li>Best Nextcloud integration</li>
                 <li>Open source</li>
                 <li>Good performance</li>
-                <li>Best security: documents never leave your server</li>
                 <li>Best ODF compatibility</li>
                 <li>Best support for legacy files</li>
+                <li>Best security: documents never leave your server</li>
             </ul>
             {% if isAnyRunning == false %}
                 <a href="https://www.collaboraoffice.com/code/" target="_blank" class="office-learn-more" data-stop-event-propagation="true">
@@ -60,18 +99,22 @@
         >
         <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}{{ is_onlyoffice_enabled == false ? ' office-card-hidden' : '' }}" for="office-onlyoffice">
             <div class="office-card-header">
-                <h4>OnlyOffice</h4>
+                <div>
+                    <h4>ONLYOFFICE</h4>
+                    <p class="office-powered-by">by Ascensio System SIA</p>
+                </div>
                 <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
                     <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
             <ul class="office-features">
-                <li>Good Nextcloud integration</li>
-                <li>Open core</li>
+                <li>OK Nextcloud integration</li>
+                <li>Open Core</li>
                 <li>Best performance</li>
-                <li>Best Microsoft compatibility</li>
                 <li>Limited ODF compatibility</li>
+                <li>Best Microsoft compatibility</li>
+                <li>Good security</li>
             </ul>
             {% if isAnyRunning == false %}
                 <a href="https://www.onlyoffice.com/" target="_blank" class="office-learn-more" data-stop-event-propagation="true">
@@ -81,39 +124,6 @@
             {% endif %}
         </label>
         <input type="hidden" id="onlyoffice" name="onlyoffice" value="" data-initial-state="{% if is_onlyoffice_enabled == true %}true{% else %}false{% endif %}">
-        <input
-            type="radio"
-            id="office-eurooffice"
-            name="office_suite_choice"
-            value="eurooffice"
-            class="office-radio"
-            {% if is_eurooffice_enabled == true %}
-                checked="checked"
-            {% endif %}
-        >
-        <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-eurooffice">
-            <div class="office-card-header">
-                <h4>Nextcloud Office</h4>
-                <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
-                    <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <ul class="office-features">
-                <li>Powered by Euro-Office</li>
-                <li>Good Nextcloud integration</li>
-                <li>Open source</li>
-                <li>Best performance</li>
-                <li>Limited ODF compatibility</li>
-                <li>Best Microsoft compatibility</li>
-            </ul>
-            {% if isAnyRunning == false %}
-                <a href="https://github.com/Euro-Office" target="_blank" class="office-learn-more" data-stop-event-propagation="true">
-                    Learn more
-                </a>
-            {% endif %}
-        </label>
-        <input type="hidden" id="eurooffice" name="eurooffice" value="" data-initial-state="{% if is_eurooffice_enabled == true %}true{% else %}false{% endif %}">
     </div>
     {% if isAnyRunning == false %}
         <div class="office-none-card">
