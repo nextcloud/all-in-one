@@ -599,6 +599,10 @@ input[type="checkbox"]:disabled:not(:checked) + label {
     pointer-events: none;
 }
 
+.office-card-hidden {
+    display: none;
+}
+
 .office-card:hover {
     border-color: var(--color-primary-element);
     box-shadow: 0 4px 12px rgba(0, 130, 201, 0.15);

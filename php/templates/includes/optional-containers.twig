@@ -58,7 +58,7 @@
                 checked="checked"
             {% endif %}
         >
-        <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-onlyoffice">
+        <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}{{ is_onlyoffice_enabled == false ? ' office-card-hidden' : '' }}" for="office-onlyoffice">
             <div class="office-card-header">
                 <h4>OnlyOffice</h4>
                 <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
