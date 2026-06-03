@@ -606,13 +606,15 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 }
 
 #office-collabora:checked + .office-card,
-#office-onlyoffice:checked + .office-card {
+#office-onlyoffice:checked + .office-card,
+#office-eurooffice:checked + .office-card {
     border-color: var(--color-nextcloud-blue);
     background: linear-gradient(135deg, rgba(0, 130, 201, 0.08) 0%, rgba(0, 130, 201, 0.02) 100%);
 }
 
 [data-theme="dark"] #office-collabora:checked + .office-card,
-[data-theme="dark"] #office-onlyoffice:checked + .office-card {
+[data-theme="dark"] #office-onlyoffice:checked + .office-card,
+[data-theme="dark"] #office-eurooffice:checked + .office-card {
     background: linear-gradient(135deg, rgba(0, 145, 242, 0.15) 0%, rgba(0, 145, 242, 0.03) 100%);
 }
 
@@ -637,7 +639,8 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 }
 
 #office-collabora:checked + .office-card .office-checkmark,
-#office-onlyoffice:checked + .office-card .office-checkmark {
+#office-onlyoffice:checked + .office-card .office-checkmark,
+#office-eurooffice:checked + .office-card .office-checkmark {
     display: block;
 }
 

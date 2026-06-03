@@ -118,6 +118,7 @@ flowchart TB
         subgraph OPT["  🧩  Optional Built-in Containers  (enable in AIO interface)  "]
             COLLA(["📄 Nextcloud Office"]):::opt
             OO(["📄 OnlyOffice\nDocument Server"]):::opt
+            EO(["📄 EuroOffice\nDocument Server"]):::opt
             TALK(["🎙️ Talk\nVideo & Voice calls"]):::opt
             TALKREC(["🎬 Talk Recording"]):::opt
             FTS(["🔎 Full-text Search\n(Elasticsearch)"]):::opt

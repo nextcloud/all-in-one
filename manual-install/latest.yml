@@ -426,6 +426,8 @@ services:
     expose:
       - "80"
     environment:
+      - AIO_LOG_LEVEL
+      - LOG_LEVEL=${AIO_LOG_LEVEL}
       - TZ=${TIMEZONE}
       - JWT_ENABLED=true
       - JWT_HEADER=AuthorizationJwt
