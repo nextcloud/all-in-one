@@ -1,0 +1,106 @@
+# This setup expects that you run the services via profiles!
+# Usage: docker compose --profile local-code up
+#    or: docker compose --profile code-from-image up
+
+name: nextcloud-aio
+services:
+  composer:
+    image: localhost/composer:latest
+    build: Containers/composer
+    pull_policy: never
+    volumes:
+      - ..:/app
+    working_dir: /app
+    command: |-
+      bash -c '
+        test -d ./data && rm -r ./data
+        test -d ./session && rm -r ./session
+        composer install --no-dev
+        composer clear-cache
+      '
+  app-base:
+    image: ghcr.io/nextcloud-releases/all-in-one:develop${ARM64_SUFFIX-}
+    pull_policy: always # Always pull so we don't risk to run into the "Update for mastercontainer" page.
+    init: true
+    restart: always
+    network_mode: bridge
+    ports:
+      - "8080:8080"
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - backup_vol:/mnt/test
+    profiles:
+      - none
+    environment:
+      SKIP_DOMAIN_VALIDATION: ${SKIP_DOMAIN_VALIDATION-true}
+      APACHE_PORT: 11000
+    entrypoint: bash /start.sh
+
+  app-code-from-image:
+    extends: app-base
+    container_name: nextcloud-aio-mastercontainer
+    profiles:
+      - code-from-image
+
+  app-local-code:
+    extends: app-base
+    container_name: nextcloud-aio-mastercontainer
+    depends_on:
+      composer:
+        condition: service_completed_successfully
+    volumes:
+      - ..:/var/www/docker-aio/php
+      - ../../Containers/mastercontainer/internal.Caddyfile:/internal.Caddyfile
+      - ../../Containers/mastercontainer/headers.Caddyfile:/headers.Caddyfile
+      - ../../Containers/mastercontainer/start.sh:/start.sh
+    profiles:
+      - local-code
+
+  test-runner-base:
+    image: mcr.microsoft.com/playwright:v1.56.1
+    volumes:
+      - ..:/app
+    working_dir: /app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - '9323:9323' # to view test reports
+    profiles:
+      - none
+    environment:
+      BASE_URL: "https://host.docker.internal:8080"
+      DEBUG: "pw:api"
+    command: |-
+      bash -c "
+        cd tests
+        # Install dependencies
+        npm ci --omit=optional
+        # Run the initial setup tests
+        npx playwright test "${TESTS_FILE-}"
+        exit $?
+      "
+
+  test-runner-code-from-image:
+    extends: test-runner-base
+    container_name: test-runner
+    profiles:
+      - code-from-image
+    depends_on:
+      app:
+        condition: service_healthy
+
+  test-runner-local-code:
+    extends: test-runner-base
+    container_name: test-runner
+    profiles:
+      - local-code
+    depends_on:
+      app-local-code:
+        condition: service_healthy
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer
+  backup_vol:
+
