@@ -14,6 +14,7 @@ use Slim\Psr7\NonBufferedBody;
 
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
+    private const string LATEST_MAJOR_VERSION = '34';
 
     public function __construct(
         private DockerActionManager           $dockerActionManager,
@@ -221,7 +222,7 @@ readonly class DockerController {
         }
 
         if (isset($request->getParsedBody()['install_latest_major'])) {
-            $installLatestMajor = '34';
+            $installLatestMajor = self::LATEST_MAJOR_VERSION;
         } else {
             $installLatestMajor = '';
         }
@@ -298,7 +299,7 @@ readonly class DockerController {
         }
 
         if ($addToStreamingResponseBody !== null) {
-            $addToStreamingResponseBody($container, "Stopping container");
+            $addToStreamingResponseBody("Stopping container", $container);
         }
 
         // Stop itself first and then all the dependencies
@@ -333,14 +334,30 @@ readonly class DockerController {
         return $response->withStatus(201)->withHeader('Location', '.');
     }
 
+    public function RunNextcloudUpgradeToLatestMajor(Request $request, Response $response, array $args) : Response {
+        $this->configurationManager->installLatestMajor = self::LATEST_MAJOR_VERSION;
+
+        // Get streaming response start and closure
+        $nonbufResp = $this->startStreamingResponse($response);
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
+
+        $this->dockerActionManager->RunNextcloudUpgradeToLatestMajor($addToStreamingResponseBody);
+
+        // We automatically reload after 10s so that the output can be read or copied if necessary 
+        $addToStreamingResponseBody("Automatically reloading the page after 10s."); 
+        sleep(10); 
+ 
+        // End streaming response
+        $this->finalizeStreamingResponse($nonbufResp);
+        return $nonbufResp;
+    }
+
     public function SystemPrune(Request $request, Response $response, array $args) : Response {
         // Get streaming response start and closure
         $nonbufResp = $this->startStreamingResponse($response);
 
         $body = $nonbufResp->getBody();
-        $addToStreamingResponseBody = function (string $message) use ($body) : void {
-            $body->write("<div>$message</div>");
-        };
+        $addToStreamingResponseBody = $this->getAddToStreamingResponseBody($nonbufResp);
 
         $this->dockerActionManager->SystemPrune($addToStreamingResponseBody);
 
@@ -426,12 +443,17 @@ readonly class DockerController {
         return $nonbufResp;
     }
 
-    private function getAddToStreamingResponseBody(Response $nonbufResp) : ?\Closure {
+    private function getAddToStreamingResponseBody(Response $nonbufResp) : \Closure {
         // Create a closure to pass around to the code, which should to the logging (because it e.g. decides
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
-        $addToStreamingResponseBody = function (Container $container, string $message) use ($nonbufResp) : void {
-            $nonbufResp->getBody()->write("<div>{$container->displayName}: {$message}</div>");
+        $addToStreamingResponseBody = function (string $message, ?Container $container = null) use ($nonbufResp) : void {
+            // Strip ANSI codes.
+            $message = preg_replace('/\e[[][A-Za-z0-9];?[0-9]*m?/', '', $message);
+            if ($container) {
+                $message = "{$container->displayName}: {$message}";
+            }
+            $nonbufResp->getBody()->write("<div>" . htmlspecialchars("{$message}", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</div>");
         };
 
         return $addToStreamingResponseBody;
