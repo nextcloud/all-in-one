@@ -343,6 +343,10 @@ readonly class DockerController {
 
         $this->dockerActionManager->RunNextcloudUpgradeToLatestMajor($addToStreamingResponseBody);
 
+        // We automatically reload after 10s so that the output can be read or copied if necessary 
+        $addToStreamingResponseBody("Automatically reloading the page after 10s."); 
+        sleep(10); 
+ 
         // End streaming response
         $this->finalizeStreamingResponse($nonbufResp);
         return $nonbufResp;
