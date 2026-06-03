@@ -69,7 +69,7 @@ test('Initial setup', async ({ page: setupPage }) => {
   const initialNextcloudPassword = await containersPage.locator('#initial-nextcloud-password').innerText();
 
   // Set backup location and create backup
-  const borgBackupLocation = `/mnt/test/aio-${Math.floor(Math.random() * 2147483647)}`
+  const borgBackupLocation = `/tmp/test/aio-${Math.floor(Math.random() * 2147483647)}`
   await containersPage.locator('#borg_backup_host_location').click();
   await containersPage.locator('#borg_backup_host_location').fill(borgBackupLocation);
   await containersPage.getByRole('button', { name: 'Submit backup location' }).click();
