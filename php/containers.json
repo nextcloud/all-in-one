@@ -793,7 +793,7 @@
       "volumes": [
         {
           "source": "nextcloud_aio_eurooffice",
-          "destination": "/var/lib/eurooffice",
+          "destination": "/var/lib/euro-office",
           "writeable": true
         }
       ],
