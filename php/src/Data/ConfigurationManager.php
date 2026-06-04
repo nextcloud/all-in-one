@@ -99,6 +99,11 @@ class ConfigurationManager
         set { $this->set('isOnlyofficeEnabled', $value); }
     }
 
+    public bool $isEuroofficeEnabled {
+        get => $this->get('isEuroofficeEnabled', false);
+        set { $this->set('isEuroofficeEnabled', $value); }
+    }
+
     public bool $isCollaboraEnabled {
         // Type-cast because old configs could have 1/0 for this key.
         get => (bool) $this->get('isCollaboraEnabled', true);
@@ -1087,6 +1092,7 @@ class ConfigurationManager
             'CLAMAV_ENABLED' => $this->isClamavEnabled ? 'yes' : '',
             'TALK_RECORDING_ENABLED' => $this->isTalkRecordingEnabled ? 'yes' : '',
             'ONLYOFFICE_ENABLED' => $this->isOnlyofficeEnabled ? 'yes' : '',
+            'EUROOFFICE_ENABLED' => $this->isEuroofficeEnabled ? 'yes' : '',
             'COLLABORA_ENABLED' => $this->isCollaboraEnabled ? 'yes' : '',
             'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
             'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? 'yes' : '',

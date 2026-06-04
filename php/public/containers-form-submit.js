@@ -22,9 +22,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Office suite radio buttons
     const collaboraRadio = document.getElementById('office-collabora');
     const onlyofficeRadio = document.getElementById('office-onlyoffice');
+    const euroofficeRadio = document.getElementById('office-eurooffice');
     const noneRadio = document.getElementById('office-none');
     const collaboraHidden = document.getElementById('collabora');
     const onlyofficeHidden = document.getElementById('onlyoffice');
+    const euroofficeHidden = document.getElementById('eurooffice');
     let initialOfficeSelection = null;
 
     optionsContainersCheckboxes.forEach(checkbox => {
@@ -36,11 +38,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Store initial office suite selection
-    if (collaboraRadio && onlyofficeRadio && noneRadio) {
+    if (collaboraRadio && onlyofficeRadio && euroofficeRadio && noneRadio) {
         if (collaboraRadio.checked) {
             initialOfficeSelection = 'collabora';
         } else if (onlyofficeRadio.checked) {
             initialOfficeSelection = 'onlyoffice';
+        } else if (euroofficeRadio.checked) {
+            initialOfficeSelection = 'eurooffice';
         } else {
             initialOfficeSelection = 'none';
         }
@@ -57,20 +61,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // Check office suite changes and sync to hidden inputs
-        if (collaboraRadio && onlyofficeRadio && noneRadio && collaboraHidden && onlyofficeHidden) {
+        if (collaboraRadio && onlyofficeRadio && euroofficeRadio && noneRadio && collaboraHidden && onlyofficeHidden && euroofficeHidden) {
             let currentOfficeSelection = null;
             if (collaboraRadio.checked) {
                 currentOfficeSelection = 'collabora';
                 collaboraHidden.value = 'on';
                 onlyofficeHidden.value = '';
+                euroofficeHidden.value = '';
             } else if (onlyofficeRadio.checked) {
                 currentOfficeSelection = 'onlyoffice';
                 collaboraHidden.value = '';
                 onlyofficeHidden.value = 'on';
+                euroofficeHidden.value = '';
+            } else if (euroofficeRadio.checked) {
+                currentOfficeSelection = 'eurooffice';
+                collaboraHidden.value = '';
+                onlyofficeHidden.value = '';
+                euroofficeHidden.value = 'on';
             } else {
                 currentOfficeSelection = 'none';
                 collaboraHidden.value = '';
                 onlyofficeHidden.value = '';
+                euroofficeHidden.value = '';
             }
 
             if (currentOfficeSelection !== initialOfficeSelection) {
@@ -144,9 +156,10 @@ document.addEventListener("DOMContentLoaded", function () {
     handleTalkVisibility();  // Ensure talk-recording is correctly initialized
 
     // Add event listeners for office suite radio buttons
-    if (collaboraRadio && onlyofficeRadio && noneRadio) {
+    if (collaboraRadio && onlyofficeRadio && euroofficeRadio && noneRadio) {
         collaboraRadio.addEventListener('change', checkForOptionContainerChanges);
         onlyofficeRadio.addEventListener('change', checkForOptionContainerChanges);
+        euroofficeRadio.addEventListener('change', checkForOptionContainerChanges);
         noneRadio.addEventListener('change', checkForOptionContainerChanges);
     }
 

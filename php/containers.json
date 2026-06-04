@@ -6,6 +6,7 @@
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/2105",
       "depends_on": [
         "nextcloud-aio-onlyoffice",
+        "nextcloud-aio-eurooffice",
         "nextcloud-aio-collabora",
         "nextcloud-aio-talk",
         "nextcloud-aio-notify-push",
@@ -47,6 +48,7 @@
         "APACHE_PORT=%APACHE_PORT%",
         "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
+        "EUROOFFICE_HOST=nextcloud-aio-eurooffice",
         "TZ=%TIMEZONE%",
         "APACHE_MAX_SIZE=%APACHE_MAX_SIZE%",
         "APACHE_MAX_TIME=%NEXTCLOUD_MAX_TIME%",
@@ -223,6 +225,7 @@
         "TURN_SECRET=%TURN_SECRET%",
         "SIGNALING_SECRET=%SIGNALING_SECRET%",
         "ONLYOFFICE_SECRET=%ONLYOFFICE_SECRET%",
+        "EUROOFFICE_SECRET=%EUROOFFICE_SECRET%",
         "AIO_URL=%AIO_URL%",
         "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "NC_AIO_VERSION=v%AIO_VERSION%",
@@ -230,10 +233,12 @@
         "CLAMAV_ENABLED=%CLAMAV_ENABLED%",
         "CLAMAV_HOST=nextcloud-aio-clamav",
         "ONLYOFFICE_ENABLED=%ONLYOFFICE_ENABLED%",
+        "EUROOFFICE_ENABLED=%EUROOFFICE_ENABLED%",
         "COLLABORA_ENABLED=%COLLABORA_ENABLED%",
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_ENABLED=%TALK_ENABLED%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
+        "EUROOFFICE_HOST=nextcloud-aio-eurooffice",
         "UPDATE_NEXTCLOUD_APPS=%UPDATE_NEXTCLOUD_APPS%",
         "TZ=%TIMEZONE%",
         "TALK_PORT=%TALK_PORT%",
@@ -357,6 +362,7 @@
       "secrets": [
         "REDIS_PASSWORD",
         "ONLYOFFICE_SECRET",
+        "EUROOFFICE_SECRET",
         "RECORDING_SECRET"
       ],
       "restart": "unless-stopped",
@@ -753,6 +759,50 @@
       "restart": "unless-stopped",
       "profiles": [
         "onlyoffice"
+      ],
+      "cap_drop": [
+        "NET_RAW"
+      ]
+    },
+    {
+      "container_name": "nextcloud-aio-eurooffice",
+      "image_tag": "%AIO_CHANNEL%",
+      "display_name": "EuroOffice",
+      "image": "ghcr.io/nextcloud-releases/aio-eurooffice",
+      "init": true,
+      "healthcheck": {
+        "start_period": "60s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 9
+      },
+      "expose": [
+        "80"
+      ],
+      "internal_port": "80",
+      "environment": [
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
+        "LOG_LEVEL=%AIO_LOG_LEVEL%",
+        "TZ=%TIMEZONE%",
+        "JWT_ENABLED=true",
+        "JWT_HEADER=AuthorizationJwt",
+        "JWT_SECRET=%EUROOFFICE_SECRET%"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_eurooffice",
+          "destination": "/var/lib/euro-office",
+          "writeable": true
+        }
+      ],
+      "secrets": [
+        "EUROOFFICE_SECRET"
+      ],
+      "restart": "unless-stopped",
+      "profiles": [
+        "eurooffice"
       ],
       "cap_drop": [
         "NET_RAW"

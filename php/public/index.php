@@ -153,6 +153,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'current_channel' => $dockerActionManager->GetCurrentChannel(),
         'is_clamav_enabled' => $configurationManager->isClamavEnabled,
         'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled,
+        'is_eurooffice_enabled' => $configurationManager->isEuroofficeEnabled,
         'is_collabora_enabled' => $configurationManager->isCollaboraEnabled,
         'is_talk_enabled' => $configurationManager->isTalkEnabled,
         'borg_restore_password' => $configurationManager->borgRestorePassword,

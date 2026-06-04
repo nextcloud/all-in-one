@@ -31,6 +31,7 @@ updates:
     - "/Containers/collabora"
     - "/Containers/docker-socket-proxy"
     - "/Containers/domaincheck"
+    - "/Containers/eurooffice"
     - "/Containers/fulltextsearch"
     - "/Containers/imaginary"
     - "/Containers/mastercontainer"

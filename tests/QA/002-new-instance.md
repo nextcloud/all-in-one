@@ -13,7 +13,7 @@ For the below to work, it is important that you have a domain that you point ont
 - [ ] Below that you should see a section `Optional addons` which shows a checkbox list with addons that can be enabled or disabled.
     - [ ] Collabora, Imaginary, Talk and Whiteboard should be enabled, the rest disabled
     - [ ] Unchecking/Checking any of these should insert a button that allows to save the set config
-    - [ ] Checking OnlyOffice and Collabora at the same time should show a warning that this is not supported and should  not saving the new config
+    - [ ] Only one of Collabora, OnlyOffice and EuroOffice should be selectable at the same time
     - [ ] Recommended is to uncheck all options now
     - [ ] Clicking on the save button should reload the page and activate the new config
 - [ ] Clickig on the `Start containers` button should finally reveal a big spinning wheel that should block all elements on the side of being clicked.

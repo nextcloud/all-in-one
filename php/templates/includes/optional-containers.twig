@@ -16,6 +16,42 @@
     <div class="office-suite-cards">
         <input
             type="radio"
+            id="office-eurooffice"
+            name="office_suite_choice"
+            value="eurooffice"
+            class="office-radio"
+            {% if is_eurooffice_enabled == true %}
+                checked="checked"
+            {% endif %}
+        >
+        <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-eurooffice">
+            <div class="office-card-header">
+                <div>
+                    <h4>Nextcloud Office</h4>
+                    <p class="office-powered-by">powered by Euro-Office</p>
+                </div>
+                <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
+                    <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <ul class="office-features">
+                <li>Good Nextcloud integration</li>
+                <li>Open source</li>
+                <li>Best performance</li>
+                <li>Limited ODF compatibility</li>
+                <li>Best Microsoft compatibility</li>
+                <li>Good security</li>
+            </ul>
+            {% if isAnyRunning == false %}
+                <a href="https://github.com/Euro-Office" target="_blank" class="office-learn-more" data-stop-event-propagation="true">
+                    Learn more
+                </a>
+            {% endif %}
+        </label>
+        <input type="hidden" id="eurooffice" name="eurooffice" value="" data-initial-state="{% if is_eurooffice_enabled == true %}true{% else %}false{% endif %}">
+        <input
+            type="radio"
             id="office-collabora"
             name="office_suite_choice"
             value="collabora"
@@ -26,7 +62,10 @@
         >
         <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-collabora">
             <div class="office-card-header">
-                <h4>Nextcloud Office</h4>
+                <div>
+                    <h4>Nextcloud Office</h4>
+                    <p class="office-powered-by">powered by Collabora Online</p>
+                </div>
                 <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
                     <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -36,9 +75,9 @@
                 <li>Best Nextcloud integration</li>
                 <li>Open source</li>
                 <li>Good performance</li>
-                <li>Best security: documents never leave your server</li>
                 <li>Best ODF compatibility</li>
                 <li>Best support for legacy files</li>
+                <li>Best security: documents never leave your server</li>
             </ul>
             {% if isAnyRunning == false %}
                 <a href="https://www.collaboraoffice.com/code/" target="_blank" class="office-learn-more" data-stop-event-propagation="true">
@@ -60,18 +99,22 @@
         >
         <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-onlyoffice">
             <div class="office-card-header">
-                <h4>OnlyOffice</h4>
+                <div>
+                    <h4>ONLYOFFICE</h4>
+                    <p class="office-powered-by">by Ascensio System SIA</p>
+                </div>
                 <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
                     <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
             <ul class="office-features">
-                <li>Good Nextcloud integration</li>
-                <li>Open core</li>
+                <li>OK Nextcloud integration</li>
+                <li>Open Core</li>
                 <li>Best performance</li>
-                <li>Best Microsoft compatibility</li>
                 <li>Limited ODF compatibility</li>
+                <li>Best Microsoft compatibility</li>
+                <li>Good security</li>
             </ul>
             {% if isAnyRunning == false %}
                 <a href="https://www.onlyoffice.com/" target="_blank" class="office-learn-more" data-stop-event-propagation="true">
@@ -90,7 +133,7 @@
                 name="office_suite_choice"
                 value=""
                 class="office-radio"
-                {% if is_collabora_enabled == false and is_onlyoffice_enabled == false %}
+                {% if is_collabora_enabled == false and is_onlyoffice_enabled == false and is_eurooffice_enabled == false %}
                     checked="checked"
                 {% endif %}
             >
@@ -224,7 +267,7 @@
 </form>
 <p><strong>Minimal system requirements:</strong> When any optional container is enabled, at least 2GB RAM, a dual-core CPU and 40GB system storage are required. When enabling ClamAV,  Nextcloud Talk Recording-server or Fulltextsearch, at least 3GB RAM are required. For Talk Recording-server additional 2 vCPUs are required. When enabling everything, at least 5GB RAM and a quad-core CPU are required. Recommended are at least 1GB more RAM than the minimal requirement. For further advice and recommendations see <strong><a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/1335">this documentation</a></strong></p>
 {% if isAnyRunning == true %}
-    <script type="text/javascript" src="disable-containers.js"></script>
+    <script type="text/javascript" src="disable-containers.js?v1"></script>
 {% endif %}
 
 {% if is_collabora_enabled == true and isAnyRunning == false and was_start_button_clicked == true %}
