@@ -4,9 +4,6 @@ services:
       nextcloud-aio-onlyoffice:
         condition: service_started
         required: false
-      nextcloud-aio-eurooffice:
-        condition: service_started
-        required: false
       nextcloud-aio-collabora:
         condition: service_started
         required: false
@@ -44,7 +41,6 @@ services:
       - APACHE_PORT
       - AIO_LOG_LEVEL
       - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
-      - EUROOFFICE_HOST=nextcloud-aio-eurooffice
       - TZ=${TIMEZONE}
       - APACHE_MAX_SIZE
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
@@ -155,17 +151,14 @@ services:
       - SIGNALING_SECRET
       - ONLYOFFICE_SECRET
       - AIO_LOG_LEVEL
-      - EUROOFFICE_SECRET
       - NEXTCLOUD_MOUNT
       - CLAMAV_ENABLED
       - CLAMAV_HOST=nextcloud-aio-clamav
       - ONLYOFFICE_ENABLED
-      - EUROOFFICE_ENABLED
       - COLLABORA_ENABLED
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_ENABLED
       - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
-      - EUROOFFICE_HOST=nextcloud-aio-eurooffice
       - UPDATE_NEXTCLOUD_APPS
       - TZ=${TIMEZONE}
       - TALK_PORT
@@ -413,33 +406,6 @@ services:
     cap_drop:
       - NET_RAW
 
-  nextcloud-aio-eurooffice:
-    image: ghcr.io/nextcloud-releases/aio-eurooffice:latest
-    init: true
-    healthcheck:
-      start_period: 60s
-      test: /healthcheck.sh
-      interval: 30s
-      timeout: 30s
-      start_interval: 5s
-      retries: 9
-    expose:
-      - "80"
-    environment:
-      - AIO_LOG_LEVEL
-      - LOG_LEVEL=${AIO_LOG_LEVEL}
-      - TZ=${TIMEZONE}
-      - JWT_ENABLED=true
-      - JWT_HEADER=AuthorizationJwt
-      - JWT_SECRET=${EUROOFFICE_SECRET}
-    volumes:
-      - nextcloud_aio_eurooffice:/var/lib/eurooffice:rw
-    restart: unless-stopped
-    profiles:
-      - eurooffice
-    cap_drop:
-      - NET_RAW
-
   nextcloud-aio-imaginary:
     image: ghcr.io/nextcloud-releases/aio-imaginary:latest
     user: "65534"
@@ -549,8 +515,6 @@ volumes:
     name: nextcloud_aio_nextcloud
   nextcloud_aio_onlyoffice:
     name: nextcloud_aio_onlyoffice
-  nextcloud_aio_eurooffice:
-    name: nextcloud_aio_eurooffice
   nextcloud_aio_redis:
     name: nextcloud_aio_redis
   nextcloud_aio_talk_recording:
