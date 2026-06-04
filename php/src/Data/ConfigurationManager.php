@@ -100,8 +100,7 @@ class ConfigurationManager
     }
 
     public bool $isEuroofficeEnabled {
-        // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->get('isEuroofficeEnabled', false);
+        get => $this->get('isEuroofficeEnabled', false);
         set { $this->set('isEuroofficeEnabled', $value); }
     }
 
