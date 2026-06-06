@@ -177,13 +177,28 @@ if [ -z "$TURN_DOMAIN" ]; then
     TURN_DOMAIN="$NC_DOMAIN"
 fi
 
+# Pre-resolve the TURN domain to an IP address so that Janus does not need to
+# perform DNS resolution itself at startup.  Janus uses getaddrinfo() which can
+# fail with Docker's embedded DNS resolver on Alpine/musl, even when dig/getent
+# work fine inside the same container.  Resolving here (where dig is reliable)
+# avoids this issue entirely.
+set -x
+TURN_IP="$(dig "$TURN_DOMAIN" IN A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
+if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+    set +x
+fi
+if [ -z "$TURN_IP" ]; then
+    echo "WARNING: Could not resolve TURN domain '$TURN_DOMAIN' to an IPv4 address, falling back to hostname"
+    TURN_IP="$TURN_DOMAIN"
+fi
+
 # Build janus.jcfg: strip the entire nat block from the original and append a
 # clean minimal one that points at the TURN server.
 {
     sed '/^nat:/,/^}/d' /usr/local/etc/janus/janus.jcfg
     cat << NAT_CONF
 nat: {
-	turn_server = "$TURN_DOMAIN"
+	turn_server = "$TURN_IP"
 	turn_port = $TALK_PORT
 	turn_type = "udp"
 	turn_user = "$JANUS_TURN_USER"
