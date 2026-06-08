@@ -25,6 +25,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 require __DIR__ . '/../vendor/autoload.php';
 
 $container = \AIO\DependencyInjection::GetContainer();
+$container->get(\AIO\Data\ConfigurationManager::class)->performMigrations();
 $dataConst = $container->get(\AIO\Data\DataConst::class);
 
 // Create app

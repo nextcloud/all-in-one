@@ -100,13 +100,14 @@ class ConfigurationManager
     }
 
     public bool $isEuroofficeEnabled {
-        get => $this->get('isEuroofficeEnabled', false);
+        // Type-cast because old configs could have 1/0 for this key.
+        get => (bool) $this->get('isEuroofficeEnabled', true);
         set { $this->set('isEuroofficeEnabled', $value); }
     }
 
     public bool $isCollaboraEnabled {
         // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->get('isCollaboraEnabled', true);
+        get => (bool) $this->get('isCollaboraEnabled', false);
         set { $this->set('isCollaboraEnabled', $value); }
     }
 
@@ -927,7 +928,16 @@ class ConfigurationManager
         if (is_string($apps)) {
             return trim($apps);
         }
-        return 'deck twofactor_totp tasks calendar contacts notes';
+        return 'deck twofactor_totp tasks calendar contacts notes eurooffice';
+    }
+
+    public function performMigrations(): void {
+        if (!$this->get('eurooffice_default_migration_v1', false)) {
+            $this->isCollaboraEnabled = false;
+            $this->isOnlyofficeEnabled = false;
+            $this->isEuroofficeEnabled = true;
+            $this->set('eurooffice_default_migration_v1', true);
+        }
     }
 
     /**
