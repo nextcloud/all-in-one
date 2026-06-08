@@ -10,7 +10,7 @@ Included are:
 - High performance backend for Nextcloud Files (Client Push)
 - Redis & APCU for performant caching
 - PostgreSQL as database
-- Nextcloud Office (optional)
+- EuroOffice Document Server (default) or Nextcloud Office / OnlyOffice (optional)
 - High performance backend for Nextcloud Talk and TURN-server (optional)
 - Nextcloud Talk Recording-server (optional)
 - Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
