@@ -4,6 +4,9 @@ services:
       nextcloud-aio-onlyoffice:
         condition: service_started
         required: false
+      nextcloud-aio-eurooffice:
+        condition: service_started
+        required: false
       nextcloud-aio-collabora:
         condition: service_started
         required: false
@@ -41,6 +44,7 @@ services:
       - APACHE_PORT
       - AIO_LOG_LEVEL
       - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
+      - EUROOFFICE_HOST=nextcloud-aio-eurooffice
       - TZ=${TIMEZONE}
       - APACHE_MAX_SIZE
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
@@ -150,15 +154,18 @@ services:
       - TURN_SECRET
       - SIGNALING_SECRET
       - ONLYOFFICE_SECRET
+      - EUROOFFICE_SECRET
       - AIO_LOG_LEVEL
       - NEXTCLOUD_MOUNT
       - CLAMAV_ENABLED
       - CLAMAV_HOST=nextcloud-aio-clamav
       - ONLYOFFICE_ENABLED
+      - EUROOFFICE_ENABLED
       - COLLABORA_ENABLED
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_ENABLED
       - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
+      - EUROOFFICE_HOST=nextcloud-aio-eurooffice
       - UPDATE_NEXTCLOUD_APPS
       - TZ=${TIMEZONE}
       - TALK_PORT
@@ -406,6 +413,33 @@ services:
     cap_drop:
       - NET_RAW
 
+  nextcloud-aio-eurooffice:
+    image: ghcr.io/nextcloud-releases/aio-eurooffice:latest
+    init: true
+    healthcheck:
+      start_period: 60s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 9
+    expose:
+      - "80"
+    environment:
+      - AIO_LOG_LEVEL
+      - LOG_LEVEL=${AIO_LOG_LEVEL}
+      - TZ=${TIMEZONE}
+      - JWT_ENABLED=true
+      - JWT_HEADER=AuthorizationJwt
+      - JWT_SECRET=${EUROOFFICE_SECRET}
+    volumes:
+      - nextcloud_aio_eurooffice:/var/lib/euro-office:rw
+    restart: unless-stopped
+    profiles:
+      - eurooffice
+    cap_drop:
+      - NET_RAW
+
   nextcloud-aio-imaginary:
     image: ghcr.io/nextcloud-releases/aio-imaginary:latest
     user: "65534"
@@ -455,11 +489,13 @@ services:
       - discovery.type=single-node
       - http.port=9200
       - xpack.license.self_generated.type=basic
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
       - indices.fielddata.cache.size=20%
       - indices.memory.index_buffer_size=20%
       - thread_pool.write.queue_size=1000
-      - FULLTEXTSEARCH_PASSWORD
+      - ELASTIC_PASSWORD=${FULLTEXTSEARCH_PASSWORD}
     volumes:
       - nextcloud_aio_elasticsearch:/usr/share/elasticsearch/data:rw
     restart: unless-stopped
@@ -511,6 +547,8 @@ volumes:
     name: nextcloud_aio_database_dump
   nextcloud_aio_elasticsearch:
     name: nextcloud_aio_elasticsearch
+  nextcloud_aio_eurooffice:
+    name: nextcloud_aio_eurooffice
   nextcloud_aio_nextcloud:
     name: nextcloud_aio_nextcloud
   nextcloud_aio_onlyoffice:
