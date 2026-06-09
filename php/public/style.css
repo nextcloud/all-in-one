@@ -487,10 +487,12 @@ input[type="checkbox"]:disabled:not(:checked) + label {
     height: min(400px, calc(100vh - 14rem));
     border-radius: var(--border-radius-large);
     border: solid thin rgb(192, 192, 192);
+    background-color: var(--color-main-background);
 }
 
 .overlay-iframe {
     padding: 1rem;
+    font-family: monospace, system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen-Sans, Cantarell, Ubuntu, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 .loader {
