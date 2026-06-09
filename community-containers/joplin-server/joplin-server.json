@@ -4,7 +4,7 @@
             "container_name": "nextcloud-aio-joplin-server",
             "image_tag": "latest",
             "display_name": "Joplin Server",
-            "documentation": "https://hub.docker.com/r/joplin/server",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/joplin-server",
             "image": "joplin/server",
             "depends_on": [
                 "nextcloud-aio-joplin-database"
