@@ -37,7 +37,6 @@ updates:
     - "/Containers/mastercontainer"
     - "/Containers/nextcloud"
     - "/Containers/notify-push"
-    - "/Containers/onlyoffice"
     - "/Containers/postgresql"
     - "/Containers/redis"
     - "/Containers/talk"
