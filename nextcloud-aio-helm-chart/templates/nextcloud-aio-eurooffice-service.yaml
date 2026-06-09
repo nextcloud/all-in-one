@@ -1,0 +1,19 @@
+{{- if eq .Values.EUROOFFICE_ENABLED "yes" }}
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.version: 1.38.0 (a8f5d1cbd)
+  labels:
+    io.kompose.service: nextcloud-aio-eurooffice
+  name: nextcloud-aio-eurooffice
+  namespace: "{{ .Values.NAMESPACE }}"
+spec:
+  ipFamilyPolicy: PreferDualStack
+  ports:
+    - name: "80"
+      port: 80
+      targetPort: 80
+  selector:
+    io.kompose.service: nextcloud-aio-eurooffice
+{{- end }}

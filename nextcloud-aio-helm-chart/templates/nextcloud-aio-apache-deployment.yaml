@@ -49,6 +49,8 @@ spec:
               value: "{{ .Values.APACHE_PORT }}"
             - name: COLLABORA_HOST
               value: nextcloud-aio-collabora
+            - name: EUROOFFICE_HOST
+              value: nextcloud-aio-eurooffice
             - name: NC_DOMAIN
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
@@ -63,7 +65,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: ghcr.io/nextcloud-releases/aio-apache:20260527_140826
+          image: ghcr.io/nextcloud-releases/aio-apache:20260609_115915
           readinessProbe:
             exec:
               command:

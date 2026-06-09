@@ -1,18 +1,18 @@
-{{- if eq .Values.ONLYOFFICE_ENABLED "yes" }}
+{{- if eq .Values.EUROOFFICE_ENABLED "yes" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
     kompose.version: 1.38.0 (a8f5d1cbd)
   labels:
-    io.kompose.service: nextcloud-aio-onlyoffice
-  name: nextcloud-aio-onlyoffice
+    io.kompose.service: nextcloud-aio-eurooffice
+  name: nextcloud-aio-eurooffice
   namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: nextcloud-aio-onlyoffice
+      io.kompose.service: nextcloud-aio-eurooffice
   strategy:
     type: Recreate
   template:
@@ -20,7 +20,7 @@ spec:
       annotations:
         kompose.version: 1.38.0 (a8f5d1cbd)
       labels:
-        io.kompose.service: nextcloud-aio-onlyoffice
+        io.kompose.service: nextcloud-aio-eurooffice
     spec:
       initContainers:
         - name: init-volumes
@@ -28,10 +28,10 @@ spec:
           command:
             - chmod
             - "777"
-            - /nextcloud-aio-onlyoffice
+            - /nextcloud-aio-eurooffice
           volumeMounts:
-            - name: nextcloud-aio-onlyoffice
-              mountPath: /nextcloud-aio-onlyoffice
+            - name: nextcloud-aio-eurooffice
+              mountPath: /nextcloud-aio-eurooffice
       containers:
         - env:
             - name: AIO_LOG_LEVEL
@@ -41,12 +41,12 @@ spec:
             - name: JWT_HEADER
               value: AuthorizationJwt
             - name: JWT_SECRET
-              value: "{{ .Values.ONLYOFFICE_SECRET }}"
+              value: "{{ .Values.EUROOFFICE_SECRET }}"
             - name: LOG_LEVEL
               value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-onlyoffice:20260609_115915
+          image: ghcr.io/nextcloud-releases/aio-eurooffice:20260609_115915
           readinessProbe:
             exec:
               command:
@@ -63,15 +63,15 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 30
-          name: nextcloud-aio-onlyoffice
+          name: nextcloud-aio-eurooffice
           ports:
             - containerPort: 80
               protocol: TCP
           volumeMounts:
-            - mountPath: /var/lib/onlyoffice
-              name: nextcloud-aio-onlyoffice
+            - mountPath: /var/lib/euro-office
+              name: nextcloud-aio-eurooffice
       volumes:
-        - name: nextcloud-aio-onlyoffice
+        - name: nextcloud-aio-eurooffice
           persistentVolumeClaim:
-            claimName: nextcloud-aio-onlyoffice
+            claimName: nextcloud-aio-eurooffice
 {{- end }}

@@ -1,4 +1,5 @@
 DATABASE_PASSWORD:           # TODO! This needs to be a unique and good password!
+EUROOFFICE_SECRET:           # TODO! This needs to be a unique and good password!
 FULLTEXTSEARCH_PASSWORD:           # TODO! This needs to be a unique and good password!
 IMAGINARY_SECRET:           # TODO! This needs to be a unique and good password!
 NC_DOMAIN: yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.
@@ -14,6 +15,7 @@ WHITEBOARD_SECRET:           # TODO! This needs to be a unique and good password
 
 CLAMAV_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 COLLABORA_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
+EUROOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 FULLTEXTSEARCH_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 IMAGINARY_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 ONLYOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
@@ -46,6 +48,7 @@ CLAMAV_STORAGE_SIZE: 1Gi       # You can change the size of the clamav volume th
 DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volume that default to 1Gi with this value
 DATABASE_DUMP_STORAGE_SIZE: 1Gi       # You can change the size of the database-dump volume that default to 1Gi with this value
 ELASTICSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the elasticsearch volume that default to 1Gi with this value
+EUROOFFICE_STORAGE_SIZE: 1Gi       # You can change the size of the eurooffice volume that default to 1Gi with this value
 NEXTCLOUD_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud volume that default to 1Gi with this value
 NEXTCLOUD_DATA_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud-data volume that default to 1Gi with this value
 NEXTCLOUD_TRUSTED_CACERTS_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud-trusted-cacerts volume that default to 1Gi with this value
