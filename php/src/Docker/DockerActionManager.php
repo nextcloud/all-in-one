@@ -478,6 +478,10 @@ readonly class DockerActionManager {
                 $regEx = '/\s+(?=--o:)/';
                 $requestBody['Cmd'] = preg_split($regEx, rtrim($this->configurationManager->collaboraAdditionalOptions));
             }
+        // Special things for the scrutiny container which should not be exposed in the containers.json
+        } elseif ($container->identifier === 'nextcloud-aio-scrutiny') {
+            // Allow it to access block devices
+            $requestBody['HostConfig']['DeviceCgroupRules'] = ["b *:* rmw"];
         }
 
         if (count($mounts) > 0) {
