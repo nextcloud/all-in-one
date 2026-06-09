@@ -37,6 +37,9 @@
                     "writeable": false
                 }
             ],
+            "cap_add": [
+                "SYS_RAWIO"
+            ],
             "environment": [
                 "TZ=%TIMEZONE%",
                 "SECURE_CONNECTION=1",

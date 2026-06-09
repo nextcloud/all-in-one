@@ -482,6 +482,10 @@ readonly class DockerActionManager {
         } elseif ($container->identifier === 'nextcloud-aio-scrutiny') {
             // Allow it to access block devices
             $requestBody['HostConfig']['DeviceCgroupRules'] = ["b *:* rmw"];
+        // Special things for the makemkv container which should not be exposed in the containers.json
+        } elseif ($container->identifier === 'nextcloud-aio-makemkv') {
+            // Allow it to access block devices
+            $requestBody['HostConfig']['DeviceCgroupRules'] = ["b 11:* rmw", "c 21:* rmw"];
         }
 
         if (count($mounts) > 0) {
