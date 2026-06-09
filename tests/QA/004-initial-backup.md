@@ -24,7 +24,7 @@
     - [ ] The page should now reload
     - [ ] Now click on `Create backup`
     - [ ] After the first failed backup attempt with a remote repo, the page should show **"The initial backup was not successful."** and one of two things depending on why it failed:
-        - [ ] **SSH auth error** (exit codes 80/81 – connection closed before Borg protocol established): a prominent ⚠️ **"SSH key not authorized on the remote server."** warning should appear with the public key displayed. After adding the key to `~/.ssh/authorized_keys` on the remote server, click **Create backup** again to retry.
+        - [ ] **SSH auth error** (exit code 81 – connection closed before Borg protocol established): a prominent ⚠️ **"SSH key not authorized on the remote server."** warning should appear with the public key displayed. After adding the key to `~/.ssh/authorized_keys` on the remote server, click **Create backup** again to retry.
         - [ ] **Other error** (wrong path, unreachable host, etc.): instead of the ⚠️ warning, a **"Reset backup location"** button should appear (with a confirmation prompt) that allows resetting the configured location so a new one can be entered. Note: there are no longer inline text inputs to re-enter the location at this point.
     - [ ] After authorizing the SSH key on the remote, scroll down and click on `Create backup` again to create another backup. This time it should succeed.
 - [ ] The initial Nextcloud credentials on top of the page that are visible when the containers are running should now be hidden in a details tag

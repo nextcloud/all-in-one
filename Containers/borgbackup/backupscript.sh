@@ -19,14 +19,14 @@ get_expiration_time() {
     DURATION_READABLE=$(printf "%02d hours %02d minutes %02d seconds" $DURATION_HOUR $DURATION_MIN $DURATION_SEC)
 }
 # Run "borg info" and handle the exit code.
-# If the exit code indicates a connection failure (80 = ConnectionClosed,
-# 81 = ConnectionClosedWithHint) and a remote repo is configured, the SSH
+# If the exit code indicates a connection failure 
+# (81 = ConnectionClosedWithHint) and a remote repo is configured, the SSH
 # auth error signal file is created so the mastercontainer can show a
 # targeted error message.  Returns the original borg exit code.
 borg_info() {
     borg "$BORG_LOG_LEVEL_FLAG" info > /dev/null
     local _exit=$?
-    if [ -n "$BORG_REMOTE_REPO" ] && { [ "$_exit" -eq 80 ] || [ "$_exit" -eq 81 ]; }; then
+    if [ -n "$BORG_REMOTE_REPO" ] && [ "$_exit" -eq 81 ]; then
         touch "$SSH_AUTH_ERROR_FILE"
     fi
     return $_exit
@@ -34,7 +34,7 @@ borg_info() {
 
 # Signal file written when an SSH authentication failure is detected so the
 # mastercontainer can show a targeted error without needing to scan container logs.
-# Borg exit codes 80 (ConnectionClosed) and 81 (ConnectionClosedWithHint) indicate
+# Borg exit code 81 (ConnectionClosedWithHint) indicate
 # connection failures that occur before the Borg protocol is established, which covers
 # SSH authentication errors and host-key verification failures.
 # These codes are available because BORG_EXIT_CODES=modern is set in start.sh.
