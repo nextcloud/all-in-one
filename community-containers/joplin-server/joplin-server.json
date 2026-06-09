@@ -34,7 +34,6 @@
             "container_name": "nextcloud-aio-joplin-database",
             "image_tag": "18",
             "display_name": "Joplin Database (PostgreSQL)",
-            "documentation": "https://hub.docker.com/_/postgres",
             "image": "postgres",
             "internal_port": "5432",
             "environment": [
