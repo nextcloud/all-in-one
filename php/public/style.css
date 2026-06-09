@@ -492,7 +492,7 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 
 .overlay-iframe {
     padding: 1rem;
-    font-family: monospace;
+    font-family: monospace, system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen-Sans, Cantarell, Ubuntu, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 .loader {
