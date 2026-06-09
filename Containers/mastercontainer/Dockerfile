@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:29.5.2-cli AS docker
+FROM docker:29.5.3-cli AS docker
 
 ARG CADDY_REMOTE_HOST_HASH=e80a9931765a8dbcbb47db415863387f0df0e1b3
 
