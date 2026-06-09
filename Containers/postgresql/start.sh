@@ -13,6 +13,8 @@ esac)"
 export POSTGRES_LOG_MIN_MESSAGES
 
 # Variables
+GREP_STRING='Name: oc_appconfig; Type: TABLE; Schema: public; Owner:'
+export GREP_STRING
 DATADIR="/var/lib/postgresql/data"
 export DUMP_DIR="/mnt/data"
 DUMP_FILE="$DUMP_DIR/database-dump.sql"
@@ -103,7 +105,6 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     done
 
     # Check if the line we grep for later on is there
-    GREP_STRING='Name: oc_appconfig; Type: TABLE; Schema: public; Owner:'
     if ! grep -qa "$GREP_STRING" "$DUMP_FILE"; then
         echo "The needed oc_appconfig line is not there which is unexpected."
         echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
@@ -239,6 +240,12 @@ do_database_dump() {
         rm -f "$DUMP_FILE"
         mv "$DUMP_FILE.temp" "$DUMP_FILE"
         pg_ctl stop -m fast
+        if ! grep -qa "$GREP_STRING" "$DUMP_FILE"; then
+            echo "Database dump was successful but the expected grep string does not exist."
+            echo "This is not expected!"
+            echo "Please report this to https://github.com/nextcloud/all-in-one/issues."
+            exit 1
+        fi
         rm "$DUMP_DIR/export.failed"
         echo 'Database dump successful!'
         if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
