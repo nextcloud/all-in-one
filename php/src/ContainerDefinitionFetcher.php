@@ -357,6 +357,11 @@ readonly class ContainerDefinitionFetcher {
 
             $hideFromList = $entry['hide_from_list'] ?? false;
 
+            $oomScoreAdj = 500;
+            if (isset($entry['oom_score_adj'])) {
+                $oomScoreAdj = $entry['oom_score_adj'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -383,6 +388,7 @@ readonly class ContainerDefinitionFetcher {
                 $aioVariables,
                 $documentation,
                 $hideFromList,
+                $oomScoreAdj,
                 $this->container->get(DockerActionManager::class)
             );
         }
