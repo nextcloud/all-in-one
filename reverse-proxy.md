@@ -995,6 +995,8 @@ The examples below define the dynamic configuration in YAML files. If you rather
             hostsProxyHeaders:
               - "X-Forwarded-Host"
             referrerPolicy: "same-origin"
+            customRequestHeaders:
+              X-Forwarded-Proto: "https"
 
         https-redirect:
           redirectscheme:
