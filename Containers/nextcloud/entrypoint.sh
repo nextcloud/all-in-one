@@ -912,7 +912,7 @@ if [ "$EUROOFFICE_ENABLED" = 'yes' ]; then
         # Register EuroOffice preview provider in the explicit allowlist.
         # Use a high fixed index (50) to avoid colliding with AIO's seeded indices (1-7, 23).
         if ! php /var/www/html/occ config:system:get enabledPreviewProviders | grep -q "Eurooffice"; then
-            php /var/www/html/occ config:system:set enabledPreviewProviders 50 --value="OCA\Eurooffice\Preview"
+            php /var/www/html/occ config:system:set enabledPreviewProviders 24 --value="OCA\Eurooffice\Preview"
         fi
     fi
 else
