@@ -218,6 +218,8 @@ Add this as a new Apache site config:
     RewriteEngine On
     ProxyPreserveHost On
     RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+    # Added to support Euro-office
+    RequestHeader set X-Forwarded-Proto "https"
     AllowEncodedSlashes NoDecode
     
     # Adjust the two lines below to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
