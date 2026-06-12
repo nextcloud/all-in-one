@@ -35,7 +35,7 @@ jobs:
           node-version: 24.15.0
 
       - name: Install dependencies
-        run: cd php/tests && npm ci
+        run: cd php/tests && npm ci --omit=optional
 
       - name: Install Playwright Browsers
         run: cd php/tests && npx playwright install --with-deps chromium
