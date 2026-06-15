@@ -14,37 +14,27 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v6
         with:
           script: |
-            const tags = await github.rest.repos.listTags({
+            // listReleases returns releases sorted by created_at descending,
+            // so the first entry (skipping drafts) is the most recent release.
+            // Note: we can't use getLatestRelease here because it deliberately
+            // skips prereleases, which is exactly what we need to detect.
+            const releases = await github.rest.repos.listReleases({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              per_page: 1
+              per_page: 100
             });
 
-            if (!tags.data || tags.data.length === 0) {
-              core.info('No tags found for this repository; skipping prerelease check.');
+            const latestRelease = (releases.data || []).find(release => !release.draft);
+
+            if (!latestRelease) {
+              core.info('No published releases found for this repository; skipping prerelease check.');
               return;
             }
 
-            const latestTag = tags.data[0].name;
-            core.info(`Latest tag found: ${latestTag}`);
+            core.info(`Most recent release found: ${latestRelease.tag_name}`);
 
-            try {
-              const { data } = await github.rest.repos.getReleaseByTag({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                tag: latestTag
-              });
-
-              if (data.prerelease) {
-                core.setFailed(`Release for tag ${latestTag} (${data.tag_name}) is a prerelease. Blocking merges to main as we need to wait for the prerelease to become stable.`);
-              } else {
-                core.info(`Release for tag ${latestTag} (${data.tag_name}) is not a prerelease.`);
-              }
-
-            } catch (err) {
-              if (err.status === 404) {
-                core.info(`No release found for tag ${latestTag}; skipping prerelease check.`);
-              } else {
-                throw err;
-              }
+            if (latestRelease.prerelease) {
+              core.setFailed(`Release for tag ${latestRelease.tag_name} is a prerelease. Blocking merges to main as we need to wait for the prerelease to become stable.`);
+            } else {
+              core.info(`Release for tag ${latestRelease.tag_name} is not a prerelease.`);
             }
