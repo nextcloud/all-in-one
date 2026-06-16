@@ -35,7 +35,7 @@
                 { "ip_binding": "", "port_number": "8040", "protocol": "tcp" },
                 { "ip_binding": "", "port_number": "8045", "protocol": "tcp" },
                 { "ip_binding": "", "port_number": "8046", "protocol": "tcp" }
-            ]
+            ],
             "environment": [
                 "TZ=%TIMEZONE%",
                 "AZURACAST_HTTP_PORT=10080",
