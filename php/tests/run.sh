@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
 if [[ "$1" = -* ]]; then
-    echo "Usage $(basename $0) [PLAYWRIGHT_TESTS_FILE]"
+    echo "Usage $(basename "$0") [PLAYWRIGHT_TESTS_FILE]"
     exit 1
 fi
 
-cd $(dirname $0)/../..
+cd "$(dirname "$0")/../.." || {
+    echo 'Cannot change to base directory, something is seriously wrong!'
+    exit 1
+}
 
 DOCO="docker compose -f ./php/tests/compose.yaml"
 
@@ -51,7 +54,7 @@ if [[ -n "$1" ]]; then
     prefix="$(realpath ./php/tests)"
     relpath="${fullpath#"$prefix"/}"
     
-    : ${SKIP_DOMAIN_VALIDATION:-false}
+    : "${SKIP_DOMAIN_VALIDATION:-false}"
     run_tests "$relpath"
 else
     SKIP_DOMAIN_VALIDATION=true
