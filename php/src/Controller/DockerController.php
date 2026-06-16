@@ -420,7 +420,7 @@ readonly class DockerController {
             <head>
                 <link rel="stylesheet" href="../../style.css?v12" media="all" />
                 <script type="text/javascript" src="../../apply-theme.js?v1"></script>
-                <script type="text/javascript" src="../../scroll-into-view.js"></script>
+                <script type="text/javascript" src="../../scroll-into-view.js?v1"></script>
             </head>
             <body>
             
