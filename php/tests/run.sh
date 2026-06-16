@@ -46,7 +46,7 @@ if [[ -n "$1" ]]; then
         echo "Error: file '$1' does not exist."
         exit 1
     fi
-    # Not using coreutil's `realpath --relative-to` here since that is not available on BSD/mac systems.
+    # Not using coreutils' `realpath --relative-to` here since that is not available on BSD/mac systems.
     fullpath="$(realpath "$1")"
     prefix="$(realpath ./php/tests)"
     relpath="${fullpath#"$prefix"/}"
