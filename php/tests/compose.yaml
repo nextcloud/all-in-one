@@ -68,6 +68,7 @@ services:
     environment:
       BASE_URL: "https://nextcloud-aio-mastercontainer:8080"
       DEBUG: "pw:api"
+      CI: "true"
     command: |-
       bash -c "
         cd tests
