@@ -11,12 +11,12 @@ Joplin Server gives you faster and better sync (less sync error) than with WebDA
 Also, deploying Joplin Server through nextcloud rather than beside it allow for automatic note backup by borg and that's wonderful.
 
 
-### Usage
-- Port 22300
+### Notes
+- Exposed Port 22300
 - Default creds : admin@localhost / admin
-- Default UI : <your_nextcloud_URL:22300>
-
-The postgreSQL is not exposed and is only used through the docker network.
+- In order to access your Joplin outside the local network, you have to set up your own reverse proxy. You can use the [Caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container that will automatically configure `joplin.$NC_DOMAIN` to redirect to your Joplin Server.
+- The postgreSQL is not exposed and is only used through the docker network.
+- See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
 ### Repository
 https://hub.docker.com/r/joplin/server
