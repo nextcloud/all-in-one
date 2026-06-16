@@ -458,8 +458,8 @@ readonly class DockerController {
             if ($message === '.') {
                 $html = "<span class='progress-indicator'></span>";
             } else {
-                // Strip ANSI codes.
-                $text = preg_replace('/\e[[][A-Za-z0-9];?[0-9]*m?/', '', $message);
+                // Strip ANSI codes. If the operation fails, use the unchanged $message as fallback.
+                $text = preg_replace('/\e[[][A-Za-z0-9];?[0-9]*m?/', '', $message) ?? $message;
                 if ($container) {
                     $text = sprintf("%s: %s", $container->displayName, $text);
                 }
