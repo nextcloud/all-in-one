@@ -169,12 +169,11 @@ readonly class DockerActionManager {
     }
 
     public function GetLogs(string $id, string $since = ''): string {
-        $url = $this->BuildApiUrl(
-            sprintf(
-                'containers/%s/logs?stdout=true&stderr=true&timestamps=true&since=%s',
-                urlencode($id),
-                $since
-            ));
+        $path = sprintf('containers/%s/logs?stdout=true&stderr=true&timestamps=true', urlencode($id));
+        if ($since !== '') {
+            $path .= sprintf('&since=%s', $since);
+        }
+        $url = $this->BuildApiUrl($path);
         $responseBody = (string)$this->sendHttpRequest('GET', $url)->getBody();
 
         $response = "";
