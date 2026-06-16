@@ -11,12 +11,13 @@ use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
 use AIO\Helper\NetworkHelper;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Utils;
+use GuzzleHttp\Exception\RequestException;
 use http\Env\Response;
 
 readonly class DockerActionManager {
     private const string API_VERSION = 'v1.44';
+    private const int PULL_HEARTBEAT_INTERVAL_SECONDS = 4;
     private Client $guzzleClient;
 
     public function __construct(
@@ -570,10 +571,43 @@ readonly class DockerActionManager {
         $maxRetries = 3;
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
-                $this->sendHttpRequest('POST', $url);
+                // Use streaming so we can write heartbeat messages to the response while the
+                // image is being pulled. Without this, a long pull produces no output and a
+                // reverse proxy (nginx) can drop the connection after its read timeout expires.
+                // Once the connection is gone, PHP aborts on the next write and all consecutive
+                // containers are never started.
+                $pullResponse = $this->sendHttpRequest('POST', $url, ['stream' => true]);
+                $pullBody = $pullResponse->getBody();
+                $pullErrors = [];
+                $lastHeartbeat = time();
+                while (!$pullBody->eof()) {
+                    $line = Utils::readLine($pullBody);
+                    $event = json_decode($line, true);
+                    if (!is_array($event)) {
+                        continue;
+                    }
+                    if (isset($event['error'])) {
+                        $pullErrors[] = $event['error'];
+                    } elseif ($addToStreamingResponseBody !== null) {
+                        // Write a heartbeat at most once every 5 seconds so the reverse
+                        // proxy sees continuous data and does not close the connection.
+                        $now = time();
+                        $interval = time() - $lastHeartbeat;
+                        if ($interval >= self::PULL_HEARTBEAT_INTERVAL_SECONDS) {
+                            $addToStreamingResponseBody(".", $container);
+                            $lastHeartbeat = $now;
+                        }
+                    }
+                }
+                if ($pullErrors !== []) {
+                    throw new \Exception(implode('; ', $pullErrors));
+                }
                 break;
-            } catch (RequestException $e) {
-                $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $e->getResponse()?->getBody()->getContents();
+            } catch (\Exception $e) {
+                $errorDetails = $e instanceof RequestException
+                    ? $e->getResponse()?->getBody()->getContents()
+                    : $e->getMessage();
+                $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $errorDetails;
                 if ($attempt === $maxRetries) {
                     if ($imageIsThere === false) {
                         throw new \Exception($message);
