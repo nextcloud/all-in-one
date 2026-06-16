@@ -12,6 +12,18 @@ updates:
   - dependencies
   cooldown:
     default-days: 7
+- package-ecosystem: "github-actions"
+  directory: ".gitea/workflows"
+  schedule:
+    interval: "daily"
+    time: "12:00"
+  open-pull-requests-limit: 10
+  rebase-strategy: "disabled"
+  labels:
+  - 3. to review
+  - dependencies
+  cooldown:
+    default-days: 7
 - package-ecosystem: composer
   directory: "/php/"
   schedule:
