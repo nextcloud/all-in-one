@@ -358,7 +358,6 @@ step_generate_config() {
     chmod 0640 "$config_file"
 
     # Patch key settings in the generated config
-    local container_network="bridge"
     if ! $DOCKER_ENABLED; then
         # Host execution: disable Docker-based job containers
         sed -i 's/^  # valid_volumes:/  valid_volumes:/' "$config_file" || true

@@ -1,0 +1,8 @@
+# shellcheck configuration — applied to all scripts in this repo
+# https://www.shellcheck.net/wiki/Directive
+
+# Treat all scripts as bash unless the shebang says otherwise
+shell=bash
+
+# Minimum severity to report (style < info < warning < error)
+severity=warning

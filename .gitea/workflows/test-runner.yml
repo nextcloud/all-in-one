@@ -8,7 +8,8 @@ on:
     branches: [main]
     paths:
       - '.gitea/workflows/test-runner.yml'
-      - 'scripts/install-gitea-runner.sh'
+      - 'scripts/**.sh'
+      - '.shellcheckrc'
 
 jobs:
   # ── 1. Basic host environment ──────────────────────────────────────────────
@@ -72,12 +73,33 @@ jobs:
             fi
           done
 
-      - name: Script syntax check
-        run: |
-          echo "Checking shell scripts..."
-          find scripts/ -name "*.sh" -print0 | xargs -0 -I{} bash -n {} && echo "All scripts OK"
+  # ── 4. ShellCheck static analysis ─────────────────────────────────────────
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  # ── 4. Artifact round-trip ─────────────────────────────────────────────────
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y shellcheck
+          shellcheck --version
+
+      - name: Run shellcheck
+        run: |
+          mapfile -t scripts < <(find scripts/ -name "*.sh" | sort)
+
+          if [[ ${#scripts[@]} -eq 0 ]]; then
+            echo "No shell scripts found"
+            exit 0
+          fi
+
+          echo "Checking ${#scripts[@]} script(s)..."
+          shellcheck --format=gcc "${scripts[@]}"
+          echo "✓ All scripts passed shellcheck"
+
+  # ── 5. Artifact round-trip ─────────────────────────────────────────────────
   artifact-upload:
     name: Artifact upload
     runs-on: ubuntu-latest
@@ -114,7 +136,7 @@ jobs:
           ls -la downloaded/
           cat downloaded/runner-info.txt
 
-  # ── 5. Docker container job (skipped gracefully if Docker absent) ──────────
+  # ── 6. Docker container job (skipped gracefully if Docker absent) ──────────
   container-job:
     name: Container job
     runs-on: ubuntu-latest
@@ -135,7 +157,7 @@ jobs:
           echo "curl: $(curl --version | head -1)"
           echo "jq:   $(jq --version)"
 
-  # ── 6. Multi-step pipeline with env vars and conditionals ─────────────────
+  # ── 7. Multi-step pipeline with env vars and conditionals ─────────────────
   pipeline:
     name: Multi-step pipeline
     runs-on: ubuntu-latest
@@ -162,11 +184,11 @@ jobs:
       - name: Success marker
         run: echo "Pipeline complete ✓"
 
-  # ── 7. Summary job — fails fast if any required job failed ────────────────
+  # ── 8. Summary job — fails fast if any required job failed ────────────────
   summary:
     name: All checks passed
     runs-on: ubuntu-latest
-    needs: [host-info, matrix-labels, shell-tools, artifact-download, pipeline]
+    needs: [host-info, matrix-labels, shell-tools, shellcheck, artifact-download, pipeline]
     if: always()
     steps:
       - name: Check results

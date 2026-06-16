@@ -238,7 +238,6 @@ step_download_binary() {
     local arch
     arch="$(detect_arch)"
     local url="https://dl.gitea.com/gitea/${GITEA_VERSION}/gitea-${GITEA_VERSION}-${arch}"
-    local sig_url="${url}.asc"
 
     info "Architecture : ${arch}"
     info "Download URL : ${url}"
