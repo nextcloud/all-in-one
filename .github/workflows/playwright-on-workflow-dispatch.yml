@@ -22,12 +22,12 @@ jobs:
       - name: Run Playwright tests for initial setup
         env:
           TEST_CODE_FROM_IMAGE: yes
-        run: ./run.sh ./tests/initial-setup.spec.js
+        run: ./php/tests/run.sh ./php/tests/tests/initial-setup.spec.js
 
       - name: Run Playwright tests for backup restore
         env:
           TEST_CODE_FROM_IMAGE: yes
-        run: ./php/tests/run.sh ./tests/restore-instance.spec.js
+        run: ./php/tests/run.sh ./php/tests/tests/restore-instance.spec.js
 
       - name: Start deSEC mock and fresh development server
         run: |
