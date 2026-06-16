@@ -71,6 +71,7 @@ services:
     environment:
       BASE_URL: "https://host.docker.internal:8080"
       DEBUG: "pw:api"
+      CI: "true"
     command: |-
       bash -c "
         cd tests
