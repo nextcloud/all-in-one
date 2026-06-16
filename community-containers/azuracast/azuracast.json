@@ -10,12 +10,8 @@
             "restart": "unless-stopped",
             "ports": [
                 {
-                    "ip_binding": "%APACHE_IP_BINDING%",
-                    "port_number": "10080",
-                    "protocol": "tcp"
-                },
                 {
-                    "ip_binding": "",
+                    "ip_binding": "%APACHE_IP_BINDING%",
                     "port_number": "10443",
                     "protocol": "tcp"
                 },
