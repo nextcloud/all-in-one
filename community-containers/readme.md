@@ -40,6 +40,7 @@ flowchart TD
         DLNA(["📡  DLNA\nMedia Streaming"]):::community
         MEMTR(["📸  Memories\nVideo Transcoder"]):::community
         MKV(["💿  MakeMKV\nBlu-ray / DVD rip"]):::community
+        AZURA(["📻  AzuraCast\nRadio Station Server"]):::community
     end
 
     subgraph COMM_MONITOR["📊 Monitoring & Infra"]
