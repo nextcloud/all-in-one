@@ -31,6 +31,7 @@ flowchart TD
         STLW(["📧  Stalwart\nMail server"]):::community
         NOCO(["🗂️  NocoDB\nNo-code database"]):::community
         JSER(["🎯  Jellyseerr\nMedia request manager"]):::community
+        JOPLIN(["📝  Joplin Server\nNotes sync server"]):::community
         NOTIF(["📣  Notifications\nExternal push notify"]):::community
     end
 
