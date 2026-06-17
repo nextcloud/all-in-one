@@ -23,6 +23,7 @@ Help us to maximize the effort we can spend fixing issues and adding new feature
 
 Thanks for wanting to contribute source code to Nextcloud. That's great!
 
+Please read the [general contribution guidelines][contributing] that apply to all Nextcloud repositories, and the [AI Contribution Policy][aipolicy] if you are using AI tools.
 Please read the [Developer Manuals][devmanual] to learn how to create your first application or how to test the Nextcloud code.
 
 ### AI-assisted contributions
@@ -43,9 +44,7 @@ For the full policy including autonomous agent rules, security reports, and begi
 
 ### Tests
 
-In order to constantly increase the quality of our software we can no longer accept pull request which submit un-tested code.
-It is a must have that changed and added code segments are unit tested.
-In some areas unit testing is hard (aka almost impossible) as of today - in these areas refactoring WHILE fixing a bug is encouraged to enable unit testing.
+We are striving to increase the quality and reliability of our software by improving its test suite, and encourage to add or extend playwright test cases for every relevant code change.
 
 ### Sign your work
 
@@ -73,4 +72,5 @@ In case you are not sure how to add or update the license header correctly pleas
 [devmanual]: https://github.com/nextcloud/all-in-one/blob/main/develop.md
 [dcofile]: https://github.com/nextcloud/server/blob/master/contribute/developer-certificate-of-origin
 [applyalicense]: https://github.com/nextcloud/server/blob/master/contribute/HowToApplyALicense.md
-[aipolicy]: https://github.com/nextcloud/all-in-one/blob/main/AI_POLICY.md
+[contributing]: https://github.com/nextcloud/.github/blob/master/CONTRIBUTING.md
+[aipolicy]: https://github.com/nextcloud/.github/blob/master/AI_POLICY.md
