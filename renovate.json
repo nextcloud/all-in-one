@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+
+  "github-actions": {
+    "fileMatch": ["^\\.gitea/workflows/[^/]+\\.ya?ml$"]
+  },
+
+  "packageRules": [
+    {
+      "description": "Group all Gitea workflow action bumps into one PR",
+      "matchManagers": ["github-actions"],
+      "matchFileNames": [".gitea/workflows/**"],
+      "groupName": "gitea workflow actions",
+      "groupSlug": "gitea-actions",
+      "schedule": ["before 9am on monday"],
+      "labels": ["dependencies"],
+      "commitMessagePrefix": "chore(deps):",
+      "semanticCommits": "enabled"
+    }
+  ]
+}
