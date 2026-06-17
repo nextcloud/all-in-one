@@ -105,7 +105,7 @@ This repository covers the Nextcloud all-in-one and all its included containers 
 
 - [Local CONTRIBUTING.md](CONTRIBUTING.md)
 - [Nextcloud Contribution Guidelines](https://github.com/nextcloud/all-in-one/blob/main/CONTRIBUTING.md)
-- [AI Contribution Policy](https://github.com/nextcloud/all-in-one/blob/main/AI_POLICY.md)
+- [AI Contribution Policy](https://github.com/nextcloud/.github/blob/master/AI_POLICY.md)
 - [Developer Certificate of Origin](https://github.com/nextcloud/server/blob/master/contribute/developer-certificate-of-origin)
 - [How to Apply a License](https://github.com/nextcloud/server/blob/master/contribute/HowToApplyALicense.md)
 - [Developer Manual](https://github.com/nextcloud/all-in-one/blob/main/develop.md)
