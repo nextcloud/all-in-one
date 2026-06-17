@@ -51,7 +51,7 @@ jobs:
     runs-on: ${{ matrix.label }}
     strategy:
       matrix:
-        label: [ubuntu-latest, ubuntu-22.04, ubuntu-20.04]
+        label: [ubuntu-latest, ubuntu-22.04, ubuntu-24.04]
       fail-fast: false
     steps:
       - name: Confirm label accepted
