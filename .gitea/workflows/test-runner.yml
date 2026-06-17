@@ -184,7 +184,7 @@ jobs:
           cat artifacts/runner-info.txt
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: runner-smoke-test
           path: artifacts/
@@ -196,7 +196,7 @@ jobs:
     needs: artifact-upload
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: runner-smoke-test
           path: downloaded/

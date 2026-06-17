@@ -146,12 +146,9 @@ confirm_restore() {
 }
 
 # ── Maintenance mode ──────────────────────────────────────────────────────────
-NC_WAS_RUNNING=false
-
 maintenance_on() {
     if docker inspect "$NC_CONTAINER" &>/dev/null 2>&1 \
        && [[ "$(docker inspect -f '{{.State.Running}}' "$NC_CONTAINER" 2>/dev/null)" == "true" ]]; then
-        NC_WAS_RUNNING=true
         if [[ "$DRY_RUN" == true ]]; then
             dryrun "docker exec --user www-data $NC_CONTAINER php occ maintenance:mode --on"
         else
@@ -360,8 +357,6 @@ restore_data_dir() {
 
     local parent
     parent=$(dirname "$NC_DATA_DIR")
-    local base
-    base=$(basename "$NC_DATA_DIR")
 
     # Wipe existing data dir, then extract backup in its place
     rm -rf "${NC_DATA_DIR:?}/"
@@ -424,7 +419,7 @@ echo -e "${BOLD}Nextcloud AIO — Restore${RESET}"
 [[ "$DRY_RUN" == true ]] && echo -e "${YELLOW}  DRY-RUN mode — no changes will be made${RESET}"
 echo ""
 
-require_root
+require_root "$@"
 check_docker
 check_aio
 check_backup_dir
