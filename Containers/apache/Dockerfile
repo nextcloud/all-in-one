@@ -100,6 +100,8 @@ USER 33
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
+ENV AIO_LOG_LEVEL=warn
+
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
