@@ -4,5 +4,6 @@
 # Treat all scripts as bash unless the shebang says otherwise
 shell=bash
 
-# Minimum severity to report (style < info < warning < error)
-severity=warning
+# SC2015: A && B || C is not if-then-else — suppress for legacy scripts
+# that use this pattern intentionally (our install scripts use if-form now)
+disable=SC2015

@@ -71,7 +71,7 @@ log()    { echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"; }
 info()   { log "${GREEN}[INFO]${NC}  $*"; }
 warn()   { log "${YELLOW}[WARN]${NC}  $*"; }
 error()  { log "${RED}[ERROR]${NC} $*" >&2; }
-debug()  { $VERBOSE && log "${CYAN}[DEBUG]${NC} $*" || true; }
+debug()  { if $VERBOSE; then log "${CYAN}[DEBUG]${NC} $*"; fi; }
 header() { echo -e "\n${BOLD}${BLUE}:: $* ::${NC}"; }
 
 die() {
@@ -173,10 +173,11 @@ detect_arch() {
 }
 
 fetch_latest_runner_version() {
+    # Repo moved from go-gitea/act_runner on GitHub to gitea/runner on gitea.com (v1.0+)
     local ver
-    ver="$(curl -fsSL "https://api.github.com/repos/go-gitea/act_runner/releases/latest" \
-        | jq -r '.tag_name' | sed 's/^v//')"
-    [[ -n "$ver" && "$ver" != "null" ]] || die "Could not fetch latest act_runner version"
+    ver="$(curl -fsSL "https://gitea.com/api/v1/repos/gitea/runner/releases?limit=1" \
+        | jq -r '.[0].tag_name' | sed 's/^v//')"
+    [[ -n "$ver" && "$ver" != "null" ]] || die "Could not fetch latest runner version"
     echo "$ver"
 }
 
@@ -278,10 +279,10 @@ step_check_docker() {
 }
 
 step_download_binary() {
-    header "Downloading act_runner binary"
+    header "Downloading gitea-runner binary"
     local arch
     arch="$(detect_arch)"
-    local url="https://dl.gitea.com/act_runner/${RUNNER_VERSION}/act_runner-${RUNNER_VERSION}-${arch}"
+    local url="https://gitea.com/gitea/runner/releases/download/v${RUNNER_VERSION}/gitea-runner-${RUNNER_VERSION}-${arch}"
 
     info "Architecture : ${arch}"
     info "Download URL : ${url}"
@@ -292,7 +293,7 @@ step_download_binary() {
     fi
 
     curl -fsSL "$url" -o /tmp/act_runner-download &
-    spinner $! "Downloading act_runner-${RUNNER_VERSION}-${arch}..."
+    spinner $! "Downloading gitea-runner-${RUNNER_VERSION}-${arch}..."
     wait $!
 
     install -o root -g root -m 0755 /tmp/act_runner-download "$RUNNER_BIN"
@@ -357,14 +358,14 @@ step_generate_config() {
     chown "root:${RUNNER_GROUP}" "$config_file"
     chmod 0640 "$config_file"
 
-    # Patch key settings in the generated config
-    if ! $DOCKER_ENABLED; then
-        # Host execution: disable Docker-based job containers
-        sed -i 's/^  # valid_volumes:/  valid_volumes:/' "$config_file" || true
-    fi
-
     # Point runner's working/cache dir at RUNNER_HOME
     sed -i "s|^  work_dir:.*|  work_dir: ${RUNNER_HOME}/.work|" "$config_file" || true
+
+    # In host-exec mode, set docker_host to "-" so the runner skips the Docker
+    # ping at startup instead of failing when Docker is not available.
+    if ! $DOCKER_ENABLED; then
+        sed -i 's/^  docker_host: ""/  docker_host: "-"/' "$config_file" || true
+    fi
 
     info "Config written to ${config_file}"
 }
@@ -387,22 +388,16 @@ step_register_runner() {
         return
     fi
 
-    # Registration writes the .runner credential file into the working directory,
-    # so we run it as the runner user from RUNNER_HOME.
-    sudo -u "$RUNNER_USER" "$RUNNER_BIN" register \
-        --config "${RUNNER_CONFIG_DIR}/config.yml" \
-        --instance "$GITEA_INSTANCE_URL" \
-        --token    "$GITEA_REG_TOKEN" \
-        --name     "$RUNNER_NAME" \
-        --labels   "$RUNNER_LABELS" \
-        --no-interactive
-
-    # The .runner file lands in $PWD of the process; move it to RUNNER_HOME if needed
-    if [[ -f ".runner" && ! -f "${RUNNER_HOME}/.runner" ]]; then
-        mv ".runner" "${RUNNER_HOME}/.runner"
-        chown "${RUNNER_USER}:${RUNNER_GROUP}" "${RUNNER_HOME}/.runner"
-        chmod 0600 "${RUNNER_HOME}/.runner"
-    fi
+    # Registration writes .runner into the process CWD — run from RUNNER_HOME
+    # so the file lands where the systemd service expects it.
+    sudo -u "$RUNNER_USER" \
+        bash -c "cd '${RUNNER_HOME}' && '${RUNNER_BIN}' register \
+            --config '${RUNNER_CONFIG_DIR}/config.yml' \
+            --instance '${GITEA_INSTANCE_URL}' \
+            --token    '${GITEA_REG_TOKEN}' \
+            --name     '${RUNNER_NAME}' \
+            --labels   '${RUNNER_LABELS}' \
+            --no-interactive"
 
     info "Runner '${RUNNER_NAME}' registered successfully"
 }

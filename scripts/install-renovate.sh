@@ -72,7 +72,7 @@ log()    { echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"; }
 info()   { log "${GREEN}[INFO]${NC}  $*"; }
 warn()   { log "${YELLOW}[WARN]${NC}  $*"; }
 error()  { log "${RED}[ERROR]${NC} $*" >&2; }
-debug()  { $VERBOSE && log "${CYAN}[DEBUG]${NC} $*" || true; }
+debug()  { if $VERBOSE; then log "${CYAN}[DEBUG]${NC} $*"; fi; }
 header() { echo -e "\n${BOLD}${BLUE}:: $* ::${NC}"; }
 
 die() {

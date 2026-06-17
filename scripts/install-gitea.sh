@@ -69,7 +69,7 @@ log()    { echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"; }
 info()   { log "${GREEN}[INFO]${NC}  $*"; }
 warn()   { log "${YELLOW}[WARN]${NC}  $*"; }
 error()  { log "${RED}[ERROR]${NC} $*" >&2; }
-debug()  { $VERBOSE && log "${CYAN}[DEBUG]${NC} $*" || true; }
+debug()  { if $VERBOSE; then log "${CYAN}[DEBUG]${NC} $*"; fi; }
 header() { echo -e "\n${BOLD}${BLUE}:: $* ::${NC}"; }
 
 die() {
@@ -383,10 +383,6 @@ ADAPTER = memory
 [session]
 PROVIDER = file
 
-[picture]
-DISABLE_GRAVATAR        = false
-ENABLE_FEDERATED_AVATAR = true
-
 [openid]
 ENABLE_OPENID_SIGNIN = false
 ENABLE_OPENID_SIGNUP = false
@@ -426,6 +422,8 @@ CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 PrivateTmp=true
 ProtectSystem=full
+# Allow Gitea to write JWT_SECRET and other auto-generated values back to app.ini
+ReadWritePaths=${GITEA_CONFIG_DIR}
 
 [Install]
 WantedBy=multi-user.target

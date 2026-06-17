@@ -97,7 +97,7 @@ jobs:
           fi
 
           echo "Checking ${#scripts[@]} script(s)..."
-          shellcheck --format=gcc "${scripts[@]}"
+          shellcheck --severity=warning --format=gcc "${scripts[@]}"
           echo "✓ All scripts passed shellcheck"
 
   # ── 5. Renovate config validation ─────────────────────────────────────────
