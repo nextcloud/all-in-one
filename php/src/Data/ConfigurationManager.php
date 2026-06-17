@@ -963,10 +963,6 @@ class ConfigurationManager
         }
     }
 
-    public function isCollaboraSubscriptionEnabled() : bool {
-        return str_contains($this->collaboraAdditionalOptions, '--o:support_key=');
-    }
-
     /**
      * Provide an extra method since the corresponding attribute setter prevents setting an empty value.
      */
