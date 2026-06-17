@@ -14,7 +14,7 @@ RUN set -ex; \
         build-base; \
     go install github.com/h2non/imaginary@"$IMAGINARY_HASH";
 
-FROM alpine:3.23.4
+FROM alpine:3.24.1
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
