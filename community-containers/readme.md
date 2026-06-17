@@ -54,6 +54,7 @@ flowchart TD
     subgraph COMM_SEC["🔒 Security & Network"]
         F2B(["🚫  Fail2ban\nBrute-force protection"]):::community
         PIH(["🕳️  Pi-hole\nAd & DNS blocker"]):::community
+        DNSM(["📛  dnsmasq\nDNS & DHCP server"]):::community
         VW(["🔐  Vaultwarden\nPassword Manager"]):::community
         LDAP(["👥  LLDAP\nLight LDAP / Users"]):::community
         CADDY(["🌐  Caddy\nReverse Proxy + Geoblocking"]):::community
