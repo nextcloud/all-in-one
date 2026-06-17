@@ -14,7 +14,7 @@ This file provides instructions for AI coding agents (Claude Code, GitHub Copilo
 All contributions generated or assisted by this agent must fully comply with:
 
 - **[AI Contribution Policy](https://github.com/nextcloud/.github/blob/master/AI_POLICY.md)** - the primary reference for AI-specific rules, covering disclosure, author accountability, communication, security, licensing, code quality, and autonomous agent behavior.
-- **[Contribution Guidelines](https://github.com/nextcloud/.github/blob/master/CONTRIBUTING.md)** - covering testing requirements, the Developer Certificate of Origin (DCO), license headers, conventional commits, and translations. These apply in full to all contributions regardless of how they were produced.
+- **[Contribution Guidelines](https://github.com/nextcloud/all-in-one/blob/master/CONTRIBUTING.md)** - covering testing requirements, the Developer Certificate of Origin (DCO), license headers, conventional commits, and translations. These apply in full to all contributions regardless of how they were produced.
 
 ### What this agent must always do
 
