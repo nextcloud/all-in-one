@@ -51,11 +51,11 @@ Assisted-by: AGENT_NAME:MODEL_VERSION
 ```
 
 Common types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`, `build`, `ci`.  
-The scope should match the affected component or app (e.g. `files_sharing`, `core`, `encryption`).
+The scope should match the affected component (e.g. `AIO-interface`, `Fulltextsearch`, `Database`, `Apache`, `Mastercontainer`, `App`, `community-containers` or else).
 
 Example:
 ```
-feat(files_sharing): allow sharing with contacts
+feat(AIO-interface): allow to prune the docker system via a button
 
 Assisted-by: ClaudeCode:claude-sonnet-4-6
 ```
