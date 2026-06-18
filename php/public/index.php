@@ -111,6 +111,7 @@ $app->post('/api/auth/login', AIO\Controller\LoginController::class . ':TryLogin
 $app->get('/api/auth/getlogin', AIO\Controller\LoginController::class . ':GetTryLogin');
 $app->post('/api/auth/logout', AIO\Controller\LoginController::class . ':Logout');
 $app->post('/api/configuration', \AIO\Controller\ConfigurationController::class . ':SetConfig');
+$app->post('/api/desec/register', \AIO\Controller\DesecController::class . ':Register');
 
 // Views
 $app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {
@@ -183,6 +184,11 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->aioCommunityContainers,
         'bypass_container_update' => $bypass_container_update,
+        'desec_email' => $configurationManager->desecEmail,
+        'desec_password' => $configurationManager->desecPassword,
+        'is_desec_domain' => $configurationManager->isDesecDomain(),
+        'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
+        'desec_awaiting_verification' => $configurationManager->isDesecAwaitingVerification(),
     // Do not cache the page as it shows credentials
     ])->withHeader('Cache-Control', 'no-store');
 })->setName('profile');

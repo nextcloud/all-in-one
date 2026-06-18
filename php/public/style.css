@@ -732,6 +732,10 @@ input[type="checkbox"]:disabled:not(:checked) + label {
     font-weight: 600;
 }
 
+.inline-details {
+    display: inline;
+}
+
 /* Responsive adjustments for mobile */
 @media only screen and (max-width: 800px) {
     .office-suite-cards {
