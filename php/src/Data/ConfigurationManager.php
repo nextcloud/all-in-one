@@ -11,6 +11,8 @@ use GuzzleHttp\Exception\TransferException;
 
 class ConfigurationManager
 {
+    public const string DEDYN_SUFFIX = '.dedyn.io';
+
     private array $secrets = [];
 
     private array $config = [];
@@ -204,6 +206,72 @@ class ConfigurationManager
     public string $turnDomain {
         get => $this->get('turn_domain', '');
         set { $this->set('turn_domain', $value); }
+    }
+
+    public string $desecEmail {
+        get => $this->get('desec_email', '');
+        set { $this->set('desec_email', $value); }
+    }
+
+    /**
+     * Base URL of the deSEC API. Configurable via the 'desec_api_base' config key
+     * (configuration.json) only — intentionally NOT an environment variable — so the
+     * endpoint can be pointed at a mock during automated tests without any risk of a
+     * stray env var redirecting it in production.
+     */
+    public string $desecApiBase {
+        get => $this->get('desec_api_base', 'https://desec.io/api/v1');
+    }
+
+    /**
+     * Base URL of the deSEC dynamic-DNS update endpoint. Configurable via the
+     * 'desec_update_url' config key (configuration.json) only — see desecApiBase.
+     */
+    public string $desecUpdateUrl {
+        get => $this->get('desec_update_url', 'https://update.dedyn.io/');
+    }
+
+    public string $desecToken {
+        get {
+            $secrets = $this->get('secrets', []);
+            return isset($secrets['DESEC_TOKEN']) && is_string($secrets['DESEC_TOKEN']) ? $secrets['DESEC_TOKEN'] : '';
+        }
+        set {
+            $secrets = $this->get('secrets', []);
+            $secrets['DESEC_TOKEN'] = $value;
+            $this->set('secrets', $secrets);
+        }
+    }
+
+    public string $desecPassword {
+        get {
+            $secrets = $this->get('secrets', []);
+            return isset($secrets['DESEC_PASSWORD']) && is_string($secrets['DESEC_PASSWORD']) ? $secrets['DESEC_PASSWORD'] : '';
+        }
+        set {
+            $secrets = $this->get('secrets', []);
+            $secrets['DESEC_PASSWORD'] = $value;
+            $this->set('secrets', $secrets);
+        }
+    }
+
+    public function isDesecDomain(): bool {
+        return str_ends_with($this->domain, self::DEDYN_SUFFIX) && $this->desecToken !== '';
+    }
+
+    public function isDesecAccountRegistered(): bool {
+        return $this->desecToken !== '' && $this->desecEmail !== '' && $this->domain === '';
+    }
+
+    /**
+     * True when a new deSEC account was created (email + generated password stored) but
+     * its email has not been verified yet, so no API token could be obtained and no
+     * domain is set. Derived from the stored credentials rather than a separate flag:
+     * once verification succeeds a token is stored and isDesecAccountRegistered() takes
+     * over; once a domain is set the deSEC setup is complete.
+     */
+    public function isDesecAwaitingVerification(): bool {
+        return $this->desecToken === '' && $this->desecEmail !== '' && $this->desecPassword !== '' && $this->domain === '';
     }
 
     public string $apachePort {
@@ -1119,6 +1187,7 @@ class ConfigurationManager
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? NetworkHelper::resolveHostname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
+            'DESEC_TOKEN' => $this->desecToken,
             default => $this->getRegisteredSecret($placeholder),
         };
     }
