@@ -28,7 +28,7 @@ All open-source tools are MIT-licensed; they serve as reputation and lead-gen ve
   - `gemma-4:12b` — Gemma-4-12B-Coder-Q4_K_M (6.9G)
   - `hermes3:8b` — Hermes-3-8B (4.4G)
   - `nomic-embed-text` — mxbai-embed-large-v1-F16 (639M) — embeddings
-- Ollama at `:11434` (native port, LAN-accessible). No models currently loaded — all models migrated to llama-server.
+- Ollama v0.30.10 at `:11434` (native port, LAN-accessible). Binary: `/usr/local/bin/ollama`. Models: `/usr/share/ollama/.ollama/models/` (~325 GB, mirrors llama-server roster — 14 models). Systemd: `/etc/systemd/system/ollama.service`.
 - Services: systemd, NEXUS (:5000, not yet deployed)
 
 ## Offline Mode (Local LLM)
