@@ -1,0 +1,4 @@
+- [Home Environment](environment.md) — Workstation stack, active projects, llama-server inference stack, harness state 2026-06-22
+- [llama-server + Ollama](llama-server-migration.md) — Dual inference: llama-server :11435 (harness, 14 GGUFs), Ollama :11434 (native, no models loaded), Unsloth Studio :8888; all LAN-accessible
+- [Nextcloud AIO](nextcloud-aio.md) — Docker setup, log fixes (2026-06-15), upstream sync routine, GitHub fork config
+- [Gitea Infrastructure](gitea-infra.md) — CI runner, smoke tests, GitHub mirror sync (77 repos live), Renovate, LAN access

@@ -1,23 +1,30 @@
 ---
 name: llama-server-migration
-description: "Ollama → llama.cpp/llama-server migration — status, decisions, and deferred cleanup"
+description: "Ollama + llama-server dual inference setup — ports, paths, and harness config"
 metadata: 
   node_type: memory
   type: project
   originSessionId: d379bc26-5c8a-4252-a09c-6b6058589f91
 ---
 
-Completed 2026-06-22. Replaced Ollama with llama-server (bundled in Unsloth Studio at `~/.unsloth/llama.cpp/build/bin/llama-server`) as the local LLM inference backend. All 7 GGUF models migrated without re-downloading — Ollama stored raw GGUF blobs, copied directly.
+Originally migrated from Ollama to llama-server 2026-06-22. Ollama reinstalled 2026-06-22 — both now run concurrently on separate ports.
 
-**Why:** Finer GPU offload control, no Ollama abstraction overhead, llama-server has a mature OpenAI-compatible API, Unsloth Studio already bundled it.
+**Why:** llama-server (Unsloth) serves the fine-tuned GGUF model roster; Ollama serves as a separate model manager/server on its native port.
 
-**How to apply:** llama-server is the only local inference backend. Ollama is gone. All harness scripts and downstream tools use the OpenAI-compatible API at http://localhost:11434/v1.
+**How to apply:** Two local inference backends. llama-server API at http://localhost:11435/v1 (harness offline mode). Ollama API at http://localhost:11434 (native port, LAN-accessible). Do not confuse the ports.
+
+## Port Assignments (2026-06-22)
+| Service | Port | Bind | Systemd unit |
+|---|---|---|---|
+| Ollama | 11434 | 0.0.0.0 | `/etc/systemd/system/ollama.service` |
+| llama-server (Unsloth) | 11435 | 0.0.0.0 | `/etc/systemd/system/llama-server.service` |
+| Unsloth Studio UI | 8888 | 0.0.0.0 | `~/.config/systemd/user/unsloth-studio.service` |
 
 ## Key Paths
-- Binary: `~/.unsloth/llama.cpp/build/bin/llama-server` (tag b9739-mix-2d6bd50, CUDA 13.3)
-- Models dir: `~/.unsloth/studio/models/` (~125 GB, 7 GGUF files)
+- llama-server binary: `~/.unsloth/llama.cpp/build/bin/llama-server` (tag b9739-mix-2d6bd50, CUDA 13.3)
+- llama-server models: `~/.unsloth/studio/models/` (~125 GB, 14 GGUF files)
 - Model presets: `~/.unsloth/studio/models/presets.ini` (ctx-size and aliases per model)
-- Systemd unit: `/etc/systemd/system/llama-server.service` (runs as coreconduit, port 11434)
+- Ollama models: `/usr/share/ollama/.ollama/models/` (separate store, populated via `ollama pull`)
 
 ## Model Aliases (from presets.ini)
 14 GGUFs as of 2026-06-22. Models dir: `~/.unsloth/studio/models/`.
@@ -46,19 +53,22 @@ Completed 2026-06-22. Replaced Ollama with llama-server (bundled in Unsloth Stud
 - `.claude/ harness`: cc-mode.sh, cc-task-router.sh, cc-ctx-enforce.sh, cc-offline-setup.sh, cc-offline-backup.sh, maintain.sh, local-yield.sh, settings.local.json all rewritten
 - `pi TypeScript SDK`: overflow.test.ts, stream.test.ts, README.md, providers.md, models.md updated
 
-## Cleanup — COMPLETE (2026-06-22)
-All Ollama artifacts removed:
-- `/usr/share/ollama/` blob store — gone
-- `~/.ollama/` user config dir — gone
-- `/usr/local/bin/ollama` binary — gone
-- `/etc/systemd/system/ollama.service` — gone
+## Harness Config (offline mode → llama-server on 11435)
+- `cc-mode.sh`, `cc-task-router.sh`, `cc-offline-setup.sh`: all reference `http://localhost:11435`
+- `settings.local.json`: allowlist curl health/model checks point to 11435
+- `ANTHROPIC_BASE_URL=http://localhost:11435` when running Claude Code offline
 
-Note: Some models originally downloaded via Ollama as multi-shard blobs (e.g. mistral-small3.2-24b-instruct-2506-40k) could not be migrated — they are gone. Re-download as single GGUF if needed.
+## Ollama Setup (2026-06-22)
+- Binary: `/usr/local/bin/ollama` (v0.30.10)
+- Service fixed: `/usr/share/ollama` created, owned by `ollama:ollama`
+- `OLLAMA_HOST=0.0.0.0:11434` set in service unit so LAN can reach it
+- No models pulled yet — populate with `ollama pull <model>`
 
 ## Verification (2026-06-22)
-- `curl http://localhost:11434/health` → `{"status":"ok"}`
-- `/v1/models` → 14 aliases (7 models × ~2 aliases each)
-- Chat completion (Hermes-3-8B) → OK, GPU active
+- `curl http://localhost:11435/health` → `{"status":"ok"}` (llama-server)
+- `curl http://localhost:11434/api/tags` → Ollama (0 models initially)
+- llama-server `/v1/models` → 14 aliases across 14 GGUFs
+- Chat completion (Hermes-3-8B via llama-server) → OK, GPU active
 - Embeddings (mxbai-embed-large-v1-F16) → 1024-dim vector
 - fileforge tests: 127/127 passed
 - litellm-admin-ui tests: 7/7 passed
