@@ -37,12 +37,14 @@ Completed 2026-06-22. Replaced Ollama with llama-server (bundled in Unsloth Stud
 - `.claude/ harness`: cc-mode.sh, cc-task-router.sh, cc-ctx-enforce.sh, cc-offline-setup.sh, cc-offline-backup.sh, maintain.sh, local-yield.sh, settings.local.json all rewritten
 - `pi TypeScript SDK`: overflow.test.ts, stream.test.ts, README.md, providers.md, models.md updated
 
-## Deferred Cleanup (safe to do after 2026-06-23)
-```bash
-sudo rm -rf /usr/share/ollama/   # ~125 GB blob store
-rm -rf ~/.ollama/                 # user config dir
-```
-Ollama blob data was the original source for all 7 GGUFs. After 24h stable operation, delete.
+## Cleanup — COMPLETE (2026-06-22)
+All Ollama artifacts removed:
+- `/usr/share/ollama/` blob store — gone
+- `~/.ollama/` user config dir — gone
+- `/usr/local/bin/ollama` binary — gone
+- `/etc/systemd/system/ollama.service` — gone
+
+Note: Some models originally downloaded via Ollama as multi-shard blobs (e.g. mistral-small3.2-24b-instruct-2506-40k) could not be migrated — they are gone. Re-download as single GGUF if needed.
 
 ## Verification (2026-06-22)
 - `curl http://localhost:11434/health` → `{"status":"ok"}`
