@@ -120,6 +120,13 @@
                                     <button type="button" class="button" data-desec-open>Register free domain via deSEC</button>
                                 {% endif %}
                             </details>
+                            <div id="desec-modal" class="modal" role="dialog" aria-modal="true" aria-label="Register a free deSEC domain" hidden>
+                                <div class="modal-content">
+                                    <button type="button" class="modal-close" data-desec-close aria-label="Close">&times;</button>
+                                    <iframe id="desec-frame" title="Register a free deSEC domain"></iframe>
+                                </div>
+                            </div>
+                            <script type="text/javascript" src="desec-modal.js"></script>
                             <form method="POST" action="api/configuration" class="xhr">
                                 <input type="text" id="domain" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -142,13 +149,6 @@
                                     {% endif %}
                                     <p><strong>Hint:</strong> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.</p>
                                 </details>
-                                <div id="desec-modal" class="modal" role="dialog" aria-modal="true" aria-label="Register a free deSEC domain" hidden>
-                                    <div class="modal-content">
-                                        <button type="button" class="modal-close" data-desec-close aria-label="Close">&times;</button>
-                                        <iframe id="desec-frame" title="Register a free deSEC domain"></iframe>
-                                    </div>
-                                </div>
-                                <script type="text/javascript" src="desec-modal.js"></script>
                             {% endif %}
 
                             <h2>Restore former AIO instance from backup</h2>
