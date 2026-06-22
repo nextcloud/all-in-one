@@ -7,7 +7,7 @@
         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
         <input type="password" name="desec_password" placeholder="Existing deSEC password (only if you already had an account)" autocomplete="current-password" />
-        <input type="text" name="desec_slug" placeholder="my-nextcloud (optional)" pattern="[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?" title="Only lowercase letters, digits and hyphens (1–63 characters). No leading or trailing hyphen." />
+        <input type="text" name="desec_slug" value="{{ desec_slug|default('') }}" placeholder="my-nextcloud (optional)" pattern="[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?" title="Only lowercase letters, digits and hyphens (1–63 characters). No leading or trailing hyphen." />
         <input type="submit" value="I have verified my email – register domain" />
     </form>
 {% elseif desec_account_registered %}
@@ -15,7 +15,7 @@
     <form method="POST" action="api/desec/register" class="xhr">
         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-        <input type="text" name="desec_slug" placeholder="my-nextcloud (optional)" pattern="[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?" title="Only lowercase letters, digits and hyphens (1–63 characters). No leading or trailing hyphen." />
+        <input type="text" name="desec_slug" value="{{ desec_slug|default('') }}" placeholder="my-nextcloud (optional)" pattern="[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?" title="Only lowercase letters, digits and hyphens (1–63 characters). No leading or trailing hyphen." />
         <input type="submit" value="Register free domain via deSEC" />
     </form>
 {% else %}
@@ -26,7 +26,7 @@
         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
         <input type="email" name="desec_email" placeholder="your@email.com" required />
         <input type="password" name="desec_password" placeholder="deSEC password (only if already registered)" autocomplete="current-password" />
-        <input type="text" name="desec_slug" placeholder="my-nextcloud (optional)" pattern="[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?" title="Only lowercase letters, digits and hyphens (1–63 characters). No leading or trailing hyphen." />
+        <input type="text" name="desec_slug" value="{{ desec_slug|default('') }}" placeholder="my-nextcloud (optional)" pattern="[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?" title="Only lowercase letters, digits and hyphens (1–63 characters). No leading or trailing hyphen." />
         <input type="submit" value="Register free domain via deSEC" />
     </form>
     <p><strong>Note:</strong> By submitting this form you agree to the <a target="_blank" href="https://desec.io/terms">deSEC terms of service</a>. The registered domain and your deSEC account credentials are stored in the AIO configuration. After registration, set your router's DHCP DNS server to this machine's local IP address so LAN devices resolve the domain locally (see the <a target="_blank" href="https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq">dnsmasq documentation</a>). Alternatively adjust the hosts files on your clients so that they can reach the server using the local ip-address.</p>

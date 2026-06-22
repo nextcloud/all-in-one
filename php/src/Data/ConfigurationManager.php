@@ -214,6 +214,16 @@ class ConfigurationManager
     }
 
     /**
+     * The subdomain slug the user last requested. Persisted across the multi-step
+     * registration flow so the slug input can be pre-filled when the form re-renders
+     * (e.g. after email verification). Not a secret; cleared once a domain is set.
+     */
+    public string $desecSlug {
+        get => $this->get('desec_slug', '');
+        set { $this->set('desec_slug', $value); }
+    }
+
+    /**
      * Base URL of the deSEC API. Configurable via the 'desec_api_base' config key
      * (configuration.json) only — intentionally NOT an environment variable — so the
      * endpoint can be pointed at a mock during automated tests without any risk of a

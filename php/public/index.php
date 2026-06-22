@@ -205,6 +205,7 @@ $app->get('/desec', function (Request $request, Response $response, array $args)
         'domain' => $configurationManager->domain,
         'desec_email' => $configurationManager->desecEmail,
         'desec_password' => $configurationManager->desecPassword,
+        'desec_slug' => $configurationManager->desecSlug,
         'is_desec_domain' => $configurationManager->isDesecDomain(),
         'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
         'desec_awaiting_verification' => $configurationManager->isDesecAwaitingVerification(),

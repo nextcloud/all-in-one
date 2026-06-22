@@ -45,6 +45,10 @@ class DesecManager {
 
         $validatedSlug = $this->validateSlug($slug);
 
+        // Persist the requested slug so the form can pre-fill it when it re-renders on the
+        // next step of the flow (e.g. after email verification). Cleared once a domain is set.
+        $this->configurationManager->desecSlug = $validatedSlug;
+
         [$token, $isNewAccount] = $this->obtainToken($email, $password);
 
         // An empty token means a brand-new account was created but its email is not yet
@@ -62,6 +66,8 @@ class DesecManager {
 
         $this->configurationManager->aioCommunityContainers = ["caddy", "dnsmasq"];
         $this->configurationManager->setDomain($domain, true);
+        // Registration is complete; the stored slug is no longer needed.
+        $this->configurationManager->desecSlug = '';
         $this->updateIpIfDesecDomain();
 
         return true;
