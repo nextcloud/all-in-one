@@ -110,6 +110,16 @@
                             {% if skip_domain_validation == true %}
                                 <p><strong>Please note:</strong> The domain validation is disabled so any domain will be accepted here! Make sure you do not make a typo here as you will not be able to change it afterwards!</p>
                             {% endif %}
+                            <details>
+                                <summary>Don't have a domain? Get a free one from deSEC</summary>
+                                <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. Click the button below to start; the registration runs in a small window so you can adjust the details and complete the email verification without losing this page. Once it's done, this page reloads with your new domain configured.</p>
+                                {% if desec_awaiting_verification or desec_account_registered %}
+                                    <p>⚠️ A deSEC registration for <strong>{{ desec_email }}</strong> is already in progress but not finished yet. Click the button below to continue it.</p>
+                                    <button type="button" class="button" data-desec-open>Continue deSEC registration</button>
+                                {% else %}
+                                    <button type="button" class="button" data-desec-open>Register free domain via deSEC</button>
+                                {% endif %}
+                            </details>
                             <form method="POST" action="api/configuration" class="xhr">
                                 <input type="text" id="domain" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
                                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
@@ -131,16 +141,6 @@
                                         <p>If you run into issues with your domain being accepted, see <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#how-to-debug">these steps</a> for how to debug things.</p>
                                     {% endif %}
                                     <p><strong>Hint:</strong> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.</p>
-                                </details>
-                                <details>
-                                    <summary>Don't have a domain? Get a free one from deSEC</summary>
-                                    <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. Click the button below to start; the registration runs in a small window so you can adjust the details and complete the email verification without losing this page. Once it's done, this page reloads with your new domain configured.</p>
-                                    {% if desec_awaiting_verification or desec_account_registered %}
-                                        <p>⚠️ A deSEC registration for <strong>{{ desec_email }}</strong> is already in progress but not finished yet. Click the button below to continue it.</p>
-                                        <button type="button" class="button" data-desec-open>Continue deSEC registration</button>
-                                    {% else %}
-                                        <button type="button" class="button" data-desec-open>Register free domain via deSEC</button>
-                                    {% endif %}
                                 </details>
                                 <div id="desec-modal" class="modal" role="dialog" aria-modal="true" aria-label="Register a free deSEC domain" hidden>
                                     <div class="modal-content">
