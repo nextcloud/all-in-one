@@ -110,6 +110,16 @@
                             {% if skip_domain_validation == true %}
                                 <p><strong>Please note:</strong> The domain validation is disabled so any domain will be accepted here! Make sure you do not make a typo here as you will not be able to change it afterwards!</p>
                             {% endif %}
+                            <form method="POST" action="api/configuration" class="xhr">
+                                <input type="text" id="domain" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
+                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                {% if skip_domain_validation == true %}
+                                    <input type="hidden" name="skip_domain_validation" value="{{skip_domain_validation}}">
+                                {% endif %}
+                                <input type="submit" value="Submit domain" />
+                            </form>
+
                             <details>
                                 <summary>Don't have a domain? Get a free one from deSEC</summary>
                                 <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. Click the button below to start; the registration runs in a small window so you can adjust the details and complete the email verification without losing this page. Once it's done, this page reloads with your new domain configured.</p>
@@ -127,15 +137,7 @@
                                 </div>
                             </div>
                             <script type="text/javascript" src="desec-modal.js"></script>
-                            <form method="POST" action="api/configuration" class="xhr">
-                                <input type="text" id="domain" name="domain" value="{{ domain }}" placeholder="nextcloud.yourdomain.com"/>
-                                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                {% if skip_domain_validation == true %}
-                                    <input type="hidden" name="skip_domain_validation" value="{{skip_domain_validation}}">
-                                {% endif %}
-                                <input type="submit" value="Submit domain" />
-                            </form>
+
                             {% if skip_domain_validation == false %}
                                 <p>Make sure that this server is reachable on port 443 (port 443/tcp is open/forwarded in your firewall/router and 443/udp as well if you want to enable http3) and that you've correctly set up the DNS config for the domain that you enter (set the A record to your public ipv4-address and if you need ipv6, set the AAAA record to your public ipv6-address. A CNAME record is, of course, also possible). You should see hints on what went wrong in the top right corner if your domain is not accepted.</p>
                                 <details>
