@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { DESEC_MOCK_URL, logInToContainersPage } from './desec-helpers.js';
 
-// Exercises re-using a slug the user already owns on an existing deSEC account. This is the
+// Exercises reusing a slug the user already owns on an existing deSEC account. This is the
 // case that previously failed: deSEC answers POST /domains/ with 403 "Domain limit exceeded"
 // (the account is at its domain quota) even though the user owns the very slug they typed.
 // DesecManager now recovers by checking GET /domains/{name}/ and reusing the owned domain.

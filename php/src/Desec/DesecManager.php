@@ -258,7 +258,7 @@ class DesecManager {
      *
      * When a specific slug is requested and creation fails because the name is unavailable
      * (HTTP 400/409) or the account's domain limit is reached (HTTP 403), the domain may
-     * already belong to this very account — a user re-using a slug they registered earlier.
+     * already belong to this very account — a user reusing a slug they registered earlier.
      * In that case we reuse the existing domain instead of failing, so an existing-account
      * login can point AIO at a domain the user already owns. (deSEC returns 400 when a name
      * conflicts with another user's zone and 403 once the per-account domain limit is hit;
@@ -320,7 +320,7 @@ class DesecManager {
     /**
      * Checks whether the authenticated account already owns the given domain.
      *
-     * Used to recover from a failed creation when the user is re-using a slug they
+     * Used to recover from a failed creation when the user is reusing a slug they
      * registered earlier: GET /domains/{name}/ returns 200 only for a domain the
      * token's account owns, 404 otherwise.
      *
