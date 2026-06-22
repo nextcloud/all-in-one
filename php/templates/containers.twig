@@ -404,10 +404,18 @@
 
                         {% if is_desec_domain %}
                             <h2>deSEC account credentials</h2>
-                            <p>Your domain <strong>{{ domain }}</strong> is managed via <a target="_blank" href="https://desec.io">deSEC</a>. Below are your deSEC account credentials. You can use them to log in at <a target="_blank" href="https://desec.io">desec.io</a> to manage your domain directly.</p>
-                            <p>Email: <strong>{{ desec_email }}</strong></p>
-                            <p><details class="inline-details"><summary>Reveal deSEC password</summary><strong>{{ desec_password }}</strong></details></p>
-                            <p>Please save these credentials in a safe place.</p>
+                            {% if desec_password %}
+                                {# AIO created this account, so it generated and stored the password.
+                                   Show it so the user can log in at desec.io if they ever need to. #}
+                                <p>Your domain <strong>{{ domain }}</strong> is managed via <a target="_blank" href="https://desec.io">deSEC</a>. Below are your deSEC account credentials. You can use them to log in at <a target="_blank" href="https://desec.io">desec.io</a> to manage your domain directly.</p>
+                                <p>Email: <strong>{{ desec_email }}</strong></p>
+                                <p><details class="inline-details"><summary>Reveal deSEC password</summary><strong>{{ desec_password }}</strong></details></p>
+                                <p>Please save these credentials in a safe place.</p>
+                            {% else %}
+                                {# The user logged in with their own existing deSEC account; AIO never
+                                   stored their password, so there is nothing to reveal. #}
+                                <p>Your domain <strong>{{ domain }}</strong> is managed via your existing <a target="_blank" href="https://desec.io">deSEC</a> account (<strong>{{ desec_email }}</strong>). Log in at <a target="_blank" href="https://desec.io">desec.io</a> with your own password to manage your domain directly.</p>
+                            {% endif %}
                         {% endif %}
 
                         {% if is_backup_section_enabled == false %}

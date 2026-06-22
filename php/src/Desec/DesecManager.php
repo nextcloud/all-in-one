@@ -99,12 +99,20 @@ class DesecManager {
         if ($this->configurationManager->isDesecAwaitingVerification()) {
             $storedEmail    = $this->configurationManager->desecEmail;
             // Prefer a freshly entered password (e.g. the user changed it), else the generated one.
-            $loginPassword  = $validatedPassword !== '' ? $validatedPassword : $this->configurationManager->desecPassword;
+            $userSuppliedPassword = $validatedPassword !== '';
+            $loginPassword  = $userSuppliedPassword ? $validatedPassword : $this->configurationManager->desecPassword;
             $token          = $this->loginAfterVerification($storedEmail, $loginPassword);
             // Storing the token flips the state from "awaiting verification" to "account
             // registered" (see ConfigurationManager::isDesecAwaitingVerification()).
             $this->configurationManager->desecToken = $token;
-            return [$token, true];
+            // If the user logged in with their own password (the email already had a deSEC
+            // account, so no AIO account was created), the previously generated password is
+            // wrong and must not be persisted or later revealed. Clear it so a stored,
+            // non-empty password reliably means "AIO generated this account".
+            if ($userSuppliedPassword) {
+                $this->configurationManager->desecPassword = '';
+            }
+            return [$token, !$userSuppliedPassword];
         }
 
         $validatedEmail = $this->validateEmail($email);
