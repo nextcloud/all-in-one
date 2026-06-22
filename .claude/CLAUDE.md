@@ -13,7 +13,7 @@ All open-source tools are MIT-licensed; they serve as reputation and lead-gen ve
 - Languages: Python 3.13, JavaScript/Node 22
 - Frameworks: FastAPI, React, WebSocket
 - Databases: SQLite, ChromaDB (NEXUS RAG memory)
-- AI: llama-server (llama.cpp) local inference at `:11434` (OpenAI-compatible API). Binary: `~/.unsloth/llama.cpp/build/bin/llama-server`. Models: `~/.unsloth/studio/models/`. See `cc-mode.sh` and `cc-task-router.sh` for routing config.
+- AI: llama-server (llama.cpp) local inference at `:11435` (OpenAI-compatible API). Binary: `~/.unsloth/llama.cpp/build/bin/llama-server`. Models: `~/.unsloth/studio/models/`. See `cc-mode.sh` and `cc-task-router.sh` for routing config.
   - `qwen3-coder` — Qwen3-Coder-Next-UD-Q4_K_M (46G) — primary coding model
   - `qwen3-coder-next` — Qwen3-Coder-Next-Q4_K_M (46G)
   - `qwen3.6` / `qwen3.6:latest` — Qwen3.6-35B-A3B-UD-Q4_K_M (21G)
@@ -32,7 +32,7 @@ All open-source tools are MIT-licensed; they serve as reputation and lead-gen ve
 
 ## Offline Mode (Local LLM)
 
-When running with `ANTHROPIC_BASE_URL=http://localhost:11434` you are backed by a
+When running with `ANTHROPIC_BASE_URL=http://localhost:11435` you are backed by a
 local llama-server model (llama.cpp), NOT Claude. This changes how you must operate:
 
 ### Know Your Limits
