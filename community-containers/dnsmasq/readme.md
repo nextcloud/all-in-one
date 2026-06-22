@@ -11,7 +11,7 @@ This container is automatically enabled when you register a deSEC domain through
 ## How it works
 
 On startup the container:
-1. Detects the server's primary LAN IP address automatically.
+1. Detects the server's primary LAN IP address automatically. ⚠️ This only works on a native Linux host. On Docker Desktop (Windows/macOS) the container runs inside Docker's Linux VM, so "host network mode" does not reach the real host LAN and the detected IP will not be the machine's actual LAN IP.
 2. Configures dnsmasq to resolve `NC_DOMAIN` (and all its subdomains) to that IP.
 3. Forwards all other DNS queries to the upstream nameservers from the host's `/etc/resolv.conf`.
 4. Listens only on the LAN interface to avoid conflicts with any system DNS resolver (e.g. `systemd-resolved`).
@@ -26,6 +26,7 @@ Most routers expose this under **DHCP settings → Primary DNS** or **LAN → DN
 
 ## Notes
 
+- The automatic LAN IP detection (and host-network port 53 binding) only works on a native **Linux** host. It does **not** work on **Docker Desktop** (Windows/macOS), where containers run inside a Linux VM that is isolated from the real host LAN.
 - This container should only be used in home networks as on public servers this might cause a security risk exposing a dns server publicly
 - This container is incompatible with the pi-hole community container as both need ports 53 to work correctly. Do not enable both at the same time!
 - The container runs in **host network mode** so it can bind directly to port 53 on the LAN interface. No additional port-forwarding is required.
