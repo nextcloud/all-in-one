@@ -193,6 +193,25 @@ $app->get('/containers', function (Request $request, Response $response, array $
     ])->withHeader('Cache-Control', 'no-store');
 })->setName('profile');
 
+// Renders only the deSEC registration flow. The containers page opens this in a modal
+// iframe so the user can run the multi-step register -> verify -> domain process (adjusting
+// the inputs and re-submitting as needed) without reloading the whole page each time. Once a
+// deSEC domain is configured the view tells the parent window to reload (see desec-done.js).
+$app->get('/desec', function (Request $request, Response $response, array $args) use ($container) {
+    $view = Twig::fromRequest($request);
+    /** @var \AIO\Data\ConfigurationManager $configurationManager */
+    $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
+    return $view->render($response, 'desec.twig', [
+        'domain' => $configurationManager->domain,
+        'desec_email' => $configurationManager->desecEmail,
+        'desec_password' => $configurationManager->desecPassword,
+        'is_desec_domain' => $configurationManager->isDesecDomain(),
+        'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
+        'desec_awaiting_verification' => $configurationManager->isDesecAwaitingVerification(),
+    // Do not cache the page as it shows credentials
+    ])->withHeader('Cache-Control', 'no-store');
+})->setName('desec');
+
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */

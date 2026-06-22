@@ -3,10 +3,15 @@ import { DESEC_MOCK_URL, logInToContainersPage } from './desec-helpers.js';
 
 // Drives the real AIO interface through the full deSEC "register a free domain" flow
 // against the local mock (php/tests/desec-mock.mjs). The mastercontainer must be started
-// with SKIP_DOMAIN_VALIDATION=false (so the deSEC registration form is rendered) and its
-// configuration.json must point desec_api_base / desec_update_url at the mock (see the
+// with SKIP_DOMAIN_VALIDATION=false (so the deSEC registration entry point is rendered) and
+// its configuration.json must point desec_api_base / desec_update_url at the mock (see the
 // Playwright CI workflow). The mock's control endpoint is reachable from the test runner
 // on the host at DESEC_MOCK_URL (default http://localhost:8090).
+//
+// The registration runs inside a modal iframe (the /desec view): the multi-step
+// register -> verify -> domain flow re-renders inside the iframe so the user can adjust the
+// details and complete email verification without reloading the whole containers page. Only
+// once the domain is fully registered does the iframe reload the parent page.
 //
 // This flow ends by registering a domain, which persists in configuration.json. It is
 // therefore run as its own CI step; the deSEC state is reset (re-seeded) before the
@@ -23,33 +28,37 @@ test('deSEC register -> verify -> domain flow', async ({ page: setupPage }) => {
   const email = `e2e-${Math.floor(Math.random() * 2147483647)}@example.com`;
   const slug = `aio-e2e-${Math.floor(Math.random() * 2147483647)}`;
 
-  // Open the deSEC registration section.
+  // Open the deSEC registration entry point and launch the modal.
   await containersPage.getByText("Don't have a domain? Get a free one from deSEC").click();
+  await containersPage.getByRole('button', { name: 'Register free domain via deSEC' }).click();
+
+  // The flow lives inside the modal iframe (the /desec view).
+  const frame = containersPage.frameLocator('#desec-frame');
 
   // 1) Submit email only -> a new account is "created" (mock 202) and AIO asks the user
-  //    to verify their email. This is a normal (non-error) state transition: the page
-  //    reloads into the awaiting-verification UI, which renders inside <main> and shows
-  //    the dedicated re-submit button.
-  await containersPage.locator('input[name="desec_email"]').fill(email);
-  await containersPage.locator('input[name="desec_slug"]').first().fill(slug);
-  await containersPage.getByRole('button', { name: 'Register free domain via deSEC' }).click();
-  await expect(containersPage.getByRole('main')).toContainText('check your inbox', { timeout: 30 * 1000 });
+  //    to verify their email. This is a normal (non-error) state transition: the iframe
+  //    reloads into the awaiting-verification step inside the modal.
+  await frame.locator('input[name="desec_email"]').fill(email);
+  await frame.locator('input[name="desec_slug"]').first().fill(slug);
+  await frame.getByRole('button', { name: 'Register free domain via deSEC' }).click();
+  await expect(frame.getByText('check your inbox')).toBeVisible({ timeout: 30 * 1000 });
   await expect(
-    containersPage.getByRole('button', { name: 'I have verified my email – register domain' }),
+    frame.getByRole('button', { name: 'I have verified my email – register domain' }),
   ).toBeVisible();
 
   // 2) Re-submit BEFORE verifying -> login still fails (mock 403) -> friendly hint shown.
-  await containersPage.getByRole('button', { name: 'I have verified my email – register domain' }).click();
-  // Same as above: the failure hint is a transient toast, not <main> content.
-  await expect(containersPage.locator('.toast.error')).toContainText('Could not log in to deSEC', { timeout: 8 * 1000 });
+  //    The error is a transient toast rendered inside the iframe.
+  await frame.getByRole('button', { name: 'I have verified my email – register domain' }).click();
+  await expect(frame.locator('.toast.error')).toContainText('Could not log in to deSEC', { timeout: 8 * 1000 });
 
   // 3) Simulate the user clicking the verification link in their email.
   const verifyResponse = await fetch(`${DESEC_MOCK_URL}/__control/verify`, { method: 'POST' });
   expect(verifyResponse.status).toBe(200);
 
-  // 4) Re-submit after verification -> login succeeds, domain is registered, the deSEC
-  //    section disappears and the container-start UI appears.
-  await containersPage.getByRole('button', { name: 'I have verified my email – register domain' }).click();
+  // 4) Re-submit after verification -> login succeeds, the domain is registered and the
+  //    modal view reloads the parent page, where the deSEC entry point is gone and the
+  //    container-start UI appears.
+  await frame.getByRole('button', { name: 'I have verified my email – register domain' }).click();
   await expect(containersPage.getByRole('button', { name: 'Download and start containers' })).toBeVisible({ timeout: 60 * 1000 });
   await expect(
     containersPage.getByText("Don't have a domain? Get a free one from deSEC"),

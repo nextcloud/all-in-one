@@ -132,7 +132,23 @@
                                     {% endif %}
                                     <p><strong>Hint:</strong> If the domain validation fails but you are completely sure that you've configured everything correctly, you may skip the domain validation by following <a target="_blank" href="https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation">this documentation</a>.</p>
                                 </details>
-                                {% include 'includes/desec-register.twig' %}
+                                <details>
+                                    <summary>Don't have a domain? Get a free one from deSEC</summary>
+                                    <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. Click the button below to start; the registration runs in a small window so you can adjust the details and complete the email verification without losing this page. Once it's done, this page reloads with your new domain configured.</p>
+                                    {% if desec_awaiting_verification or desec_account_registered %}
+                                        <p>⚠️ A deSEC registration for <strong>{{ desec_email }}</strong> is already in progress but not finished yet. Click the button below to continue it.</p>
+                                        <button type="button" class="button" data-desec-open>Continue deSEC registration</button>
+                                    {% else %}
+                                        <button type="button" class="button" data-desec-open>Register free domain via deSEC</button>
+                                    {% endif %}
+                                </details>
+                                <div id="desec-modal" class="modal" role="dialog" aria-modal="true" aria-label="Register a free deSEC domain" hidden>
+                                    <div class="modal-content">
+                                        <button type="button" class="modal-close" data-desec-close aria-label="Close">&times;</button>
+                                        <iframe id="desec-frame" title="Register a free deSEC domain"></iframe>
+                                    </div>
+                                </div>
+                                <script type="text/javascript" src="desec-modal.js"></script>
                             {% endif %}
 
                             <h2>Restore former AIO instance from backup</h2>

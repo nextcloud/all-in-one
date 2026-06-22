@@ -19,11 +19,14 @@ readonly class DesecController {
             $slug     = (string)($request->getParsedBody()['desec_slug']     ?? '');
             $password = (string)($request->getParsedBody()['desec_password'] ?? '');
             // register() returns false when a new account was created and we are now awaiting
-            // the user's email verification. That is a normal state transition, not an error:
-            // reload the page (201 + Location) so the awaiting-verification UI renders and
-            // explains the next step, exactly like the fully-registered success path.
+            // the user's email verification. That is a normal state transition, not an error.
+            // The form is submitted from the /desec modal view (an iframe), so redirect back to
+            // that same view (201 + Location): the iframe re-renders the next step of the flow
+            // (awaiting verification, or the fully-registered success page, which then reloads
+            // the parent containers page). Re-rendering /desec — rather than the whole
+            // containers page — is what keeps the multi-step flow inside the modal.
             $this->desecManager->register($email, $slug, $password);
-            return $response->withStatus(201)->withHeader('Location', '.');
+            return $response->withStatus(201)->withHeader('Location', 'desec');
         } catch (\Exception $ex) {
             $response->getBody()->write($ex->getMessage());
             return $response->withStatus(422);
