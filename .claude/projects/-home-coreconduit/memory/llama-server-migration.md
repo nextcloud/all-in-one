@@ -62,7 +62,13 @@ Originally migrated from Ollama to llama-server 2026-06-22. Ollama reinstalled 2
 - Binary: `/usr/local/bin/ollama` (v0.30.10)
 - Service fixed: `/usr/share/ollama` created, owned by `ollama:ollama`
 - `OLLAMA_HOST=0.0.0.0:11434` set in service unit so LAN can reach it
-- No models pulled yet — populate with `ollama pull <model>`
+- Models store: `/usr/share/ollama/.ollama/models/` (~325 GB — full copies, not hard links)
+- All 14 GGUFs imported via `ollama create` from existing Unsloth paths (completed 2026-06-22 14:39 UTC)
+
+## Ollama Models (14/14, mirrors llama-server roster)
+hermes3:8b, gemma-4:12b, mistral-small3.2:24b, mistral-small, glm-4.7-flash,
+nomic-embed-text, deepseek-r1:32b, deepseek-r1:70b, laguna-xs.2:q4_K_M,
+llama3.3, qwen3-coder-next, qwen3-coder, qwen3:30b-a3b, qwen3.6
 
 ## Verification (2026-06-22)
 - `curl http://localhost:11435/health` → `{"status":"ok"}` (llama-server)
