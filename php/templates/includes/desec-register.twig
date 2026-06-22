@@ -3,7 +3,6 @@
 {% if desec_awaiting_verification %}
     <p>⚠️ A deSEC account for <strong>{{ desec_email }}</strong> was requested but it could not be used yet. Please check your inbox: if deSEC sent you a verification email, click the link inside, then click the button below to finish setting up your domain.</p>
     <p>If this email address already had a deSEC account, no new account was created and no verification email was sent. In that case, enter your existing deSEC password below and try again to log in with it.</p>
-    <p>Your deSEC login credentials (for <a target="_blank" href="https://desec.io">desec.io</a>): Email: <strong>{{ desec_email }}</strong>. <details class="inline-details"><summary>Reveal deSEC password</summary><strong>{{ desec_password }}</strong></details>. Please save these in a safe place.</p>
     <form method="POST" action="api/desec/register" class="xhr">
         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -13,7 +12,6 @@
     </form>
 {% elseif desec_account_registered %}
     <p>Your deSEC account (<strong>{{ desec_email }}</strong>) was registered successfully but the domain could not be registered. Please enter a desired subdomain slug (the part before <code>.dedyn.io</code>) and try again, or leave it blank for a random one.</p>
-    <p>Your deSEC login credentials (for <a target="_blank" href="https://desec.io">desec.io</a>): Email: <strong>{{ desec_email }}</strong>. <details class="inline-details"><summary>Reveal deSEC password</summary><strong>{{ desec_password }}</strong></details>. Please save these in a safe place.</p>
     <form method="POST" action="api/desec/register" class="xhr">
         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">

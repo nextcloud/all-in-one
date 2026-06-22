@@ -350,6 +350,9 @@
                             <p>Restore or Backup currently running. Cannot start the containers until Restore or Backup is complete.</p>
                         {% else %}
                             {% if was_start_button_clicked == false %}
+                                {% if is_desec_domain == true %}
+                                    {% include 'includes/desec-domain-notice.twig' %}
+                                {% endif %}
                                 <p>Clicking on the button below will download all docker containers and start them. This can take a long time depending on your internet connection. Since the overall size is a few GB, this can take around 5-10 min or more. Please be patient!</p>
                             {% endif %}
                             {% if is_mastercontainer_update_available == true %}
