@@ -186,6 +186,8 @@ jobs:
           if ! npx playwright test tests/desec-register.spec.js; then dump_logs; exit 1; fi
           reseed
           if ! npx playwright test tests/desec-existing.spec.js; then dump_logs; exit 1; fi
+          reseed
+          if ! npx playwright test tests/desec-existing-slug.spec.js; then dump_logs; exit 1; fi
           kill "$(cat "$GITHUB_WORKSPACE/desec-mock.pid")" || true
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

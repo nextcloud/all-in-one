@@ -256,8 +256,16 @@ class DesecManager {
      * Registers a dedyn.io domain for the authenticated account.
      * When $slug is empty a random 10-character slug is tried up to MAX_SLUG_ATTEMPTS times.
      *
+     * When a specific slug is requested and creation fails because the name is unavailable
+     * (HTTP 400/409) or the account's domain limit is reached (HTTP 403), the domain may
+     * already belong to this very account — a user re-using a slug they registered earlier.
+     * In that case we reuse the existing domain instead of failing, so an existing-account
+     * login can point AIO at a domain the user already owns. (deSEC returns 400 when a name
+     * conflicts with another user's zone and 403 once the per-account domain limit is hit;
+     * both look like a failure here even though the user owns the name.)
+     *
      * @return string the fully-qualified domain name that was registered
-     * @throws \Exception if the slug is taken, on network failure, or after exhausting random attempts
+     * @throws \Exception if the slug is taken by someone else, on network failure, or after exhausting random attempts
      */
     public function registerDomain(string $token, string $slug): string {
         $random   = $slug === '';
@@ -281,10 +289,25 @@ class DesecManager {
                 return $domain;
             }
 
-            if ($code === 409) {
-                if (!$random) {
-                    throw new \Exception('"' . $domain . '" is already taken. Please choose a different subdomain and try again.');
+            // For a user-specified slug, the name may be unavailable (400/409) or the account's
+            // domain limit may be reached (403) precisely because the user already owns this
+            // domain. Reuse it rather than failing.
+            if (!$random && ($code === 400 || $code === 403 || $code === 409)) {
+                if ($this->ownsDomain($token, $domain)) {
+                    return $domain;
                 }
+                if ($code === 403) {
+                    throw new \Exception(
+                        'Your deSEC account has reached its domain limit and "' . $domain . '" is not '
+                        . 'one of your existing domains. Remove an unused domain at desec.io, or contact '
+                        . 'deSEC support to raise the limit, then try again.'
+                    );
+                }
+                throw new \Exception('"' . $domain . '" is already taken. Please choose a different subdomain and try again.');
+            }
+
+            if ($code === 409) {
+                // Random slug collided with an existing name — try another.
                 continue;
             }
 
@@ -292,6 +315,37 @@ class DesecManager {
         }
 
         throw new \Exception('Could not register a free dedyn.io domain after ' . self::MAX_SLUG_ATTEMPTS . ' attempts. Please try again.');
+    }
+
+    /**
+     * Checks whether the authenticated account already owns the given domain.
+     *
+     * Used to recover from a failed creation when the user is re-using a slug they
+     * registered earlier: GET /domains/{name}/ returns 200 only for a domain the
+     * token's account owns, 404 otherwise.
+     *
+     * @throws \Exception on network failure or an unexpected HTTP response
+     */
+    private function ownsDomain(string $token, string $domain): bool {
+        try {
+            $res = $this->guzzleClient->get($this->configurationManager->desecApiBase . '/domains/' . $domain . '/', [
+                'headers' => ['Authorization' => 'Token ' . $token],
+            ]);
+        } catch (TransferException $e) {
+            throw new \Exception('Could not reach the deSEC API: ' . $e->getMessage());
+        }
+
+        $code = $res->getStatusCode();
+
+        if ($code === 200) {
+            return true;
+        }
+
+        if ($code === 404) {
+            return false;
+        }
+
+        throw new \Exception('Unexpected response from deSEC while checking domain ownership (HTTP ' . $code . '): ' . $res->getBody()->getContents());
     }
 
     /**
