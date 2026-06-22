@@ -20,15 +20,24 @@ Completed 2026-06-22. Replaced Ollama with llama-server (bundled in Unsloth Stud
 - Systemd unit: `/etc/systemd/system/llama-server.service` (runs as coreconduit, port 11434)
 
 ## Model Aliases (from presets.ini)
+14 GGUFs as of 2026-06-22. Models dir: `~/.unsloth/studio/models/`.
+
 | GGUF File | Aliases |
 |---|---|
-| Qwen3-Coder-Next-UD-Q4_K_M.gguf | qwen3-coder, qwen3-coder:30b-a3b-q4_K_M |
-| Mistral-Small-24B-Q4_K_M.gguf | mistral-small, mistral-small3.2:24b |
-| mxbai-embed-large-v1-F16.gguf | nomic-embed-text, mxbai-embed-large-v1-F16 |
-| DeepSeek-R1-70B-Llama-Q4_K_M.gguf | deepseek-r1:70b |
-| DeepSeek-R1-32B-Qwen-Q4_K_M.gguf | deepseek-r1:32b |
-| Gemma-4-12B-Coder-Q4_K_M.gguf | gemma-4:12b |
-| Hermes-3-8B.gguf | hermes3:8b |
+| Qwen3-Coder-Next-UD-Q4_K_M.gguf (46G) | qwen3-coder, qwen3-coder:30b-a3b-q4_K_M |
+| Qwen3-Coder-Next-Q4_K_M.gguf (46G) | qwen3-coder-next, qwen3-coder-next:q4_K_M, qwen3-coder-next:q4_K_M-32k |
+| Qwen3.6-35B-A3B-UD-Q4_K_M.gguf (21G) | qwen3.6, qwen3.6:latest |
+| Qwen3-30B-A3B-Q4_K_M.gguf (18G) | qwen3:30b-a3b, qwen3:30b-a3b-q4_K_M |
+| Llama-3.3-70B-Instruct-Q4_K_M.gguf (40G) | llama3.3, llama3.3:70b-instruct-q4_K_M |
+| DeepSeek-R1-70B-Llama-Q4_K_M.gguf (40G) | deepseek-r1:70b, deepseek-r1:70b-llama-distill-q4_K_M |
+| DeepSeek-R1-32B-Qwen-Q4_K_M.gguf (19G) | deepseek-r1:32b, deepseek-r1:32b-qwen-distill-q4_K_M |
+| Mistral-Small-24B-Q4_K_M.gguf (15G) | mistral-small, mistral-small3.2:24b, mistral-small3.2:24b-instruct-2506-q4_K_M-40k |
+| Mistral-Small-3.2-24B-Instruct-2506-Q4_K_M.gguf (14G) | mistral-small3.2:24b-instruct-2506-q4_K_M, mistral-small3.2:24b-40k |
+| GLM-4.7-Flash-Q4_K_M.gguf (18G) | glm-4.7-flash, glm-4.7-flash:latest |
+| laguna-xs2-Q4_K_M.gguf (19G) | laguna-xs, laguna-xs.2:q4_K_M |
+| Gemma-4-12B-Coder-Q4_K_M.gguf (6.9G) | gemma-4:12b |
+| Hermes-3-8B.gguf (4.4G) | hermes3:8b |
+| mxbai-embed-large-v1-F16.gguf (639M) | nomic-embed-text, nomic-embed-text:latest |
 
 ## Integration Points Updated
 - `fileforge`: `ollama` pip → `openai>=1.0`, OpenAI client against `/v1`; 127/127 tests pass
