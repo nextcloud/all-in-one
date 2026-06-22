@@ -2,9 +2,8 @@ import { test, expect } from '@playwright/test';
 import { DESEC_MOCK_URL, logInToContainersPage } from './desec-helpers.js';
 
 // Drives the real AIO interface through the full deSEC "register a free domain" flow
-// against the local mock (php/tests/desec-mock.mjs). The mastercontainer must be started
-// with SKIP_DOMAIN_VALIDATION=false (so the deSEC registration entry point is rendered) and
-// its configuration.json must point desec_api_base / desec_update_url at the mock (see the
+// against the local mock (php/tests/desec-mock.mjs). The mastercontainer's
+// configuration.json must point desec_api_base / desec_update_url at the mock (see the
 // Playwright CI workflow). The mock's control endpoint is reachable from the test runner
 // on the host at DESEC_MOCK_URL (default http://localhost:8090).
 //
