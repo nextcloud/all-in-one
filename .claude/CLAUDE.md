@@ -13,7 +13,21 @@ All open-source tools are MIT-licensed; they serve as reputation and lead-gen ve
 - Languages: Python 3.13, JavaScript/Node 22
 - Frameworks: FastAPI, React, WebSocket
 - Databases: SQLite, ChromaDB (NEXUS RAG memory)
-- AI: llama-server (llama.cpp) local inference at `:11434` (OpenAI-compatible API). Binary: `~/.unsloth/llama.cpp/build/bin/llama-server`. Models: `~/.unsloth/studio/models/`. Primary: `qwen3-coder` (Qwen3-Coder-Next-UD-Q4_K_M, 46 GB). Subagent: `mistral-small` (Mistral-Small-24B-Q4_K_M, 15 GB). Embeddings: `mxbai-embed-large-v1-F16`. See `cc-mode.sh` and `cc-task-router.sh` for routing config.
+- AI: llama-server (llama.cpp) local inference at `:11434` (OpenAI-compatible API). Binary: `~/.unsloth/llama.cpp/build/bin/llama-server`. Models: `~/.unsloth/studio/models/`. See `cc-mode.sh` and `cc-task-router.sh` for routing config.
+  - `qwen3-coder` — Qwen3-Coder-Next-UD-Q4_K_M (46G) — primary coding model
+  - `qwen3-coder-next` — Qwen3-Coder-Next-Q4_K_M (46G)
+  - `qwen3.6` / `qwen3.6:latest` — Qwen3.6-35B-A3B-UD-Q4_K_M (21G)
+  - `qwen3:30b-a3b-q4_K_M` — Qwen3-30B-A3B-Q4_K_M (18G)
+  - `llama3.3` — Llama-3.3-70B-Instruct-Q4_K_M (40G)
+  - `deepseek-r1:70b` — DeepSeek-R1-70B-Llama-Q4_K_M (40G)
+  - `deepseek-r1:32b` — DeepSeek-R1-32B-Qwen-Q4_K_M (19G)
+  - `mistral-small` / `mistral-small3.2:24b` — Mistral-Small-24B-Q4_K_M (15G) — subagent model
+  - `mistral-small3.2:24b-instruct-2506-q4_K_M` — Mistral-Small-3.2-24B-Instruct-2506-Q4_K_M (14G)
+  - `glm-4.7-flash` — GLM-4.7-Flash-Q4_K_M (18G)
+  - `laguna-xs.2:q4_K_M` — laguna-xs2-Q4_K_M (19G)
+  - `gemma-4:12b` — Gemma-4-12B-Coder-Q4_K_M (6.9G)
+  - `hermes3:8b` — Hermes-3-8B (4.4G)
+  - `nomic-embed-text` — mxbai-embed-large-v1-F16 (639M) — embeddings
 - Services: systemd, NEXUS (:5000, not yet deployed)
 
 ## Offline Mode (Local LLM)
