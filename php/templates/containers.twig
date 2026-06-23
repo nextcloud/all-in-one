@@ -122,7 +122,7 @@
 
                             <details>
                                 <summary>Don't have a domain? Get a free one from deSEC</summary>
-                                <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. Click the button below to start; the registration runs in a small window so you can adjust the details and complete the email verification without losing this page. Once it's done, this page reloads with your new domain configured.</p>
+                                <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. Click the button below to start; the registration runs in a small window so you can adjust the details and complete the email verification without losing this page. Once it's done, this page reloads with your new domain configured. (To make your instance available publicly you additionally would have to make sure that port 443 is open in your server's firewall, and – if applicable – the port is also forwarded by your router to your server. See below for more details on port forwarding.)</p>
                                 {% if desec_awaiting_verification or desec_account_registered %}
                                     <p>⚠️ A deSEC registration for <strong>{{ desec_email }}</strong> is already in progress but not finished yet. Click the button below to continue it.</p>
                                     <button type="button" class="button" data-desec-open>Continue deSEC registration</button>
