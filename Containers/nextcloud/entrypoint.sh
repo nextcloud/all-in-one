@@ -32,7 +32,7 @@ NEXTCLOUD_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
 esac)"
 export NEXTCLOUD_LOG_LEVEL
 
-# Create cert bundle
+# Create cert bundle start # Do not remove or change this line!
 if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
 
     # Enable debug mode
@@ -91,6 +91,8 @@ if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
         set +x
     fi
 fi
+
+# Create cert bundle end # Do not remove or change this line!
 
 # Adjust DATABASE_TYPE to by Nextcloud supported value
 if [ "$DATABASE_TYPE" = postgres ]; then
