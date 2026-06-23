@@ -32,7 +32,7 @@ NEXTCLOUD_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
 esac)"
 export NEXTCLOUD_LOG_LEVEL
 
-# Create cert bundle
+# Create cert bundle start # Do not remove or change this line!
 if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
 
     # Enable debug mode
