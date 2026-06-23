@@ -92,7 +92,7 @@ if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
     fi
 fi
 
-# End of cert bundle setup # Do not remove or change this line!
+# Create cert bundle end # Do not remove or change this line!
 
 # Adjust DATABASE_TYPE to by Nextcloud supported value
 if [ "$DATABASE_TYPE" = postgres ]; then
