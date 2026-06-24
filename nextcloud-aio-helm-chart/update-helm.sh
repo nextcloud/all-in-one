@@ -343,6 +343,27 @@ EOL
 # shellcheck disable=SC1083
 find ./ -name '*talk-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-talk.config"  \{} \;
 
+# Additional config for HaRP
+# The manual-install (docker) only configures HaRP with the docker backend. In the
+# helm chart HaRP needs to talk to the Kubernetes API instead, so we enable the
+# Kubernetes backend here and expose its settings via values.yaml.
+cat << EOL > /tmp/additional-harp.config
+            - name: HP_K8S_ENABLED
+              value: "true"
+            - name: HP_K8S_NAMESPACE
+              value: "{{ .Values.HARP_K8S_NAMESPACE }}"
+            - name: HP_K8S_STORAGE_CLASS
+              value: "{{ .Values.HARP_K8S_STORAGE_CLASS }}"
+            - name: HP_K8S_DEFAULT_STORAGE_SIZE
+              value: "{{ .Values.HARP_K8S_DEFAULT_STORAGE_SIZE }}"
+            - name: HP_K8S_BEARER_TOKEN_FILE
+              value: "{{ .Values.HARP_K8S_BEARER_TOKEN_FILE }}"
+            - name: HP_K8S_HOST_ALIASES
+              value: "{{ .Values.HARP_K8S_HOST_ALIASES }}"
+EOL
+# shellcheck disable=SC1083
+find ./ -name '*harp-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-harp.config"  \{} \;
+
 cat << EOL > templates/nextcloud-aio-networkpolicy.yaml
 {{- if eq .Values.NETWORK_POLICY_ENABLED "yes" }}
 # https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/04-deny-traffic-from-other-namespaces.md
@@ -443,6 +464,11 @@ MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'f
 MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
 TALK_MAX_STREAM_BITRATE: "1048576"         # This allows to adjust the max stream bitrate of the talk hpb
 TALK_MAX_SCREEN_BITRATE: "2097152"         # This allows to adjust the max stream bitrate of the talk hpb
+HARP_K8S_NAMESPACE: nextcloud-exapps        # The Kubernetes namespace that HaRP deploys ExApps (AppAPI apps) into. The namespace must already exist and the HaRP service account must be allowed to manage resources in it.
+HARP_K8S_STORAGE_CLASS:        # The storage class that HaRP uses for ExApp persistent volume claims. Leave empty to use the cluster's default storage class.
+HARP_K8S_DEFAULT_STORAGE_SIZE: 10Gi        # The default size of the persistent volume claims that HaRP creates for ExApps.
+HARP_K8S_BEARER_TOKEN_FILE: /var/run/secrets/kubernetes.io/serviceaccount/token        # Path inside the HaRP container to the bearer token that is used to authenticate against the Kubernetes API. The default is the service account token that Kubernetes mounts automatically.
+HARP_K8S_HOST_ALIASES:        # Optional. Additional host aliases (in JSON format) that HaRP sets on the ExApp pods so that they can resolve the configured hostnames. Leave empty to not set any host aliases.
 ADDITIONAL_CONFIG
 
 mv /tmp/sample.conf ../helm-chart/values.yaml
