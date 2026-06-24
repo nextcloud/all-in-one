@@ -19,6 +19,9 @@ services:
       nextcloud-aio-whiteboard:
         condition: service_started
         required: false
+      nextcloud-aio-harp:
+        condition: service_started
+        required: false
       nextcloud-aio-nextcloud:
         condition: service_started
         required: false
@@ -50,6 +53,7 @@ services:
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
       - NOTIFY_PUSH_HOST=nextcloud-aio-notify-push
       - WHITEBOARD_HOST=nextcloud-aio-whiteboard
+      - HARP_HOST=nextcloud-aio-harp
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
@@ -193,6 +197,7 @@ services:
       - IMAGINARY_SECRET
       - WHITEBOARD_SECRET
       - WHITEBOARD_ENABLED
+      - HARP_ENABLED
     stop_grace_period: 600s
     restart: unless-stopped
     shm_size: 134217728
@@ -504,6 +509,28 @@ services:
     cap_drop:
       - NET_RAW
 
+  nextcloud-aio-harp:
+    image: ghcr.io/nextcloud/nextcloud-appapi-harp:latest
+    init: true
+    expose:
+      - "8780"
+    environment:
+      - NC_INSTANCE_URL=https://${NC_DOMAIN}
+      - HP_FRP_DISABLE_TLS=true
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${WATCHTOWER_DOCKER_SOCKET_PATH}:/var/run/docker.sock:ro
+      - nextcloud_aio_harp:/certs:rw
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run/harp
+    cap_drop:
+      - NET_RAW
+    profiles:
+      - harp
+
   nextcloud-aio-whiteboard:
     image: ghcr.io/nextcloud-releases/aio-whiteboard:latest
     user: "65534"
@@ -549,6 +576,8 @@ volumes:
     name: nextcloud_aio_elasticsearch
   nextcloud_aio_eurooffice:
     name: nextcloud_aio_eurooffice
+  nextcloud_aio_harp:
+    name: nextcloud_aio_harp
   nextcloud_aio_nextcloud:
     name: nextcloud_aio_nextcloud
   nextcloud_aio_onlyoffice:
