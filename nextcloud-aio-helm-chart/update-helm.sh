@@ -356,13 +356,21 @@ cat << EOL > /tmp/additional-harp.config
               value: "{{ .Values.HARP_K8S_STORAGE_CLASS }}"
             - name: HP_K8S_DEFAULT_STORAGE_SIZE
               value: "{{ .Values.HARP_K8S_DEFAULT_STORAGE_SIZE }}"
-            - name: HP_K8S_BEARER_TOKEN_FILE
-              value: "{{ .Values.HARP_K8S_BEARER_TOKEN_FILE }}"
             - name: HP_K8S_HOST_ALIASES
               value: "{{ .Values.HARP_K8S_HOST_ALIASES }}"
 EOL
 # shellcheck disable=SC1083
 find ./ -name '*harp-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-harp.config"  \{} \;
+# HaRP authenticates against the Kubernetes API with the service account that is
+# mounted into its pod. Allow the service account name to be set via values.yaml
+# so that the user can grant it the required RBAC permissions (see the readme).
+cat << EOL > /tmp/additional-harp-sa.config
+      {{- if .Values.HARP_SERVICE_ACCOUNT_NAME }}
+      serviceAccountName: "{{ .Values.HARP_SERVICE_ACCOUNT_NAME }}"
+      {{- end }}
+EOL
+# shellcheck disable=SC1083
+find ./ -name '*harp-deployment.yaml' -exec sed -i "/^    spec:$/r /tmp/additional-harp-sa.config" \{} \;
 
 cat << EOL > templates/nextcloud-aio-networkpolicy.yaml
 {{- if eq .Values.NETWORK_POLICY_ENABLED "yes" }}
@@ -467,8 +475,8 @@ TALK_MAX_SCREEN_BITRATE: "2097152"         # This allows to adjust the max strea
 HARP_K8S_NAMESPACE: nextcloud-exapps        # The Kubernetes namespace that HaRP deploys ExApps (AppAPI apps) into. The namespace must already exist and the HaRP service account must be allowed to manage resources in it.
 HARP_K8S_STORAGE_CLASS:        # The storage class that HaRP uses for ExApp persistent volume claims. Leave empty to use the cluster's default storage class.
 HARP_K8S_DEFAULT_STORAGE_SIZE: 10Gi        # The default size of the persistent volume claims that HaRP creates for ExApps.
-HARP_K8S_BEARER_TOKEN_FILE: /var/run/secrets/kubernetes.io/serviceaccount/token        # Path inside the HaRP container to the bearer token that is used to authenticate against the Kubernetes API. The default is the service account token that Kubernetes mounts automatically.
-HARP_K8S_HOST_ALIASES:        # Optional. Additional host aliases (in JSON format) that HaRP sets on the ExApp pods so that they can resolve the configured hostnames. Leave empty to not set any host aliases.
+HARP_K8S_HOST_ALIASES:        # Optional. Additional host aliases that HaRP sets on the ExApp pods so that they can resolve the configured hostnames. Use a comma-separated list of hostname:ip pairs, e.g. 'nextcloud.example.com:10.0.0.5,collabora.example.com:10.0.0.6'. Leave empty to not set any host aliases.
+HARP_SERVICE_ACCOUNT_NAME:        # The name of the Kubernetes service account that is mounted into the HaRP pod and used to authenticate against the Kubernetes API. You need to create this service account yourself and grant it permission to manage resources (deployments, services, persistent volume claims, …) in the HARP_K8S_NAMESPACE namespace via a Role/RoleBinding. Leave empty to use the namespace's "default" service account.
 ADDITIONAL_CONFIG
 
 mv /tmp/sample.conf ../helm-chart/values.yaml
