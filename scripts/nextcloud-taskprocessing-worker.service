@@ -1,0 +1,15 @@
+[Unit]
+Description=Nextcloud AIO Task Processing Worker
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sh -c 'until /usr/bin/docker inspect -f "{{.State.Health.Status}}" nextcloud-aio-nextcloud 2>/dev/null | grep -q healthy; do sleep 5; done'
+ExecStart=/usr/bin/docker exec --user www-data nextcloud-aio-nextcloud php occ taskprocessing:worker --timeout=300 --interval=2
+Restart=always
+RestartSec=10
+SuccessExitStatus=1 2 130 143
+
+[Install]
+WantedBy=multi-user.target
