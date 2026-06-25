@@ -580,7 +580,7 @@ Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
-<img width="672" height="982" alt="grafik" src="https://github.com/user-attachments/assets/e8914a63-58d2-4a47-ac51-981d21979495" />
+<img width="475" height="880" alt="image" src="https://github.com/user-attachments/assets/3be9a83f-e721-4d12-96fa-32d1211ea559" />
 
 <img width="675" height="355" alt="grafik" src="https://github.com/user-attachments/assets/c4a006f5-f8c4-4898-9ea6-ec33ee7e5bd3" />
 
@@ -589,7 +589,7 @@ Second, see these screenshots for a working config:
 <img width="675" height="570" alt="grafik" src="https://github.com/user-attachments/assets/8ea357c2-11d5-48af-abf7-f249bc677213" />
 
 
-- The "Enable compression by upstream, not recommended" Button can stay unchecked if you don't use Collabora. (https://github.com/CollaboraOnline/online/issues/10157) <br>
+- The "Enable compression by upstream, not recommended" and "Disable URI Sanitisation, not recommended" Buttons may need to be set if you use Collabora. (https://github.com/CollaboraOnline/online/issues/10157 https://github.com/nextcloud/all-in-one/issues/834) <br>
 - You may need to check the "Disable Crowdsec Appsec" Button if you use crowdsec and uploads or downloads fail. <br>
 - You may want to enable the "Disable Request/Response Buffering" Button since it could improve uploads and downloads. <br>
 - You can check the "Send noindex header and block some user agents" Button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>
