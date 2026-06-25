@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { logInToContainersPage } from './helpers.js';
 
 test('Restore instance', async ({ page: setupPage }) => {
   test.setTimeout(10 * 60 * 1000)
@@ -11,18 +12,7 @@ test('Restore instance', async ({ page: setupPage }) => {
     borgBackupPassword,
   } = JSON.parse(readFileSync('test_data.json'))
 
-  // Extract initial password
-  await setupPage.goto('./setup');
-  const password = await setupPage.locator('#initial-password').innerText()
-  const containersPagePromise = setupPage.waitForEvent('popup');
-  await setupPage.getByRole('link', { name: 'Open Nextcloud AIO login ↗' }).click();
-  const containersPage = await containersPagePromise;
-
-  // Log in and wait for redirect
-  await containersPage.locator('#master-password').click();
-  await containersPage.locator('#master-password').fill(password);
-  await containersPage.getByRole('button', { name: 'Log in' }).click();
-  await containersPage.waitForURL('./containers');
+  const containersPage = await logInToContainersPage(setupPage);
 
   // Reject example.com (requires enabled domain validation)
   await containersPage.locator('#domain').click();
