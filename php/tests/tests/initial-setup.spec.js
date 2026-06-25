@@ -33,7 +33,6 @@ test('Initial setup', async ({ page: setupPage }) => {
   await containersPage.locator('#timezone').click();
   await containersPage.locator('#timezone').fill('Invalid time zone');
   containersPage.once('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`)
     dialog.accept()
   });
   await containersPage.getByRole('button', { name: 'Submit timezone' }).click();
@@ -43,7 +42,6 @@ test('Initial setup', async ({ page: setupPage }) => {
   await containersPage.locator('#timezone').click();
   await containersPage.locator('#timezone').fill('Europe/Berlin');
   containersPage.once('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`)
     dialog.accept()
   });
   await containersPage.getByRole('button', { name: 'Submit timezone' }).click();
@@ -64,7 +62,6 @@ test('Initial setup', async ({ page: setupPage }) => {
   await containersPage.locator('#borg_backup_host_location').fill(borgBackupLocation);
   await containersPage.getByRole('button', { name: 'Submit backup location' }).click();
   containersPage.once('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`)
     dialog.accept()
   });
   await containersPage.getByRole('button', { name: 'Create backup' }).click();
