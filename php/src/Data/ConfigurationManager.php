@@ -102,7 +102,8 @@ class ConfigurationManager
     }
 
     public bool $isEuroofficeEnabled {
-        get => $this->get('isEuroofficeEnabled', true);
+        // Only enabled if no other office suite is enabled.
+        get => !$this->isOtherOfficeThanEuroOfficeEnabled() && $this->get('isEuroofficeEnabled', true);
         set { $this->set('isEuroofficeEnabled', $value); }
     }
 
@@ -529,6 +530,12 @@ class ConfigurationManager
             return trim((string)file_get_contents($path));
         }
         return '';
+    }
+
+    // Helper function for EuroOffice to make sure that it does not
+    // get enabled on existing instances after updating the default
+    private function isOtherOfficeThanEuroOfficeEnabled() : bool {
+        return $this->isCollaboraEnabled || $this->isOnlyofficeEnabled;
     }
 
     private function isx64Platform() : bool {
