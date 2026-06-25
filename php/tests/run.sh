@@ -68,4 +68,10 @@ else
     sleep 1
     SKIP_DOMAIN_VALIDATION=false
     run_tests tests/restore-instance.spec.js
+    sleep 1
+    run_tests tests/desec-register.spec.js
+    sleep 1
+    run_tests tests/desec-existing.spec.js
+    sleep 1
+    run_tests tests/desec-existing-slug.spec.js
 fi
