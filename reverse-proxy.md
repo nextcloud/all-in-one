@@ -589,7 +589,7 @@ Second, see these screenshots for a working config:
 <img width="675" height="570" alt="grafik" src="https://github.com/user-attachments/assets/8ea357c2-11d5-48af-abf7-f249bc677213" />
 
 
-- The "Enable compression by upstream, not recommended" and "Disable URI Sanitisation, not recommended" Buttons may need to be set if you use Collabora. (https://github.com/CollaboraOnline/online/issues/10157 https://github.com/nextcloud/all-in-one/issues/834) <br>
+- The "Enable compression by upstream, not recommended" and "Disable URI Sanitisation, not recommended" buttons may need to be enabled if you use Collabora. (https://github.com/CollaboraOnline/online/issues/10157, https://github.com/nextcloud/all-in-one/issues/834) <br>
 - You may need to check the "Disable Crowdsec Appsec" Button if you use crowdsec and uploads or downloads fail. <br>
 - You may want to enable the "Disable Request/Response Buffering" Button since it could improve uploads and downloads. <br>
 - You can check the "Send noindex header and block some user agents" Button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>
