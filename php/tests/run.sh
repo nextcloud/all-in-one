@@ -33,8 +33,10 @@ run_tests() {
     sleep 1
 
     echo -e "\n 📣  Running playwright tests for ${TESTS_FILE}\n"
-    if ! $DOCO --profile $profile run --remove-orphans test-runner-$profile; then
-        for container in nextcloud-aio-{mastercontainer,borgbackup}; do
+    $DOCO --profile $profile run --remove-orphans test-runner-$profile
+    exitcode=$?
+    if test $exitcode -gt 0; then
+        for container in nextcloud-aio-{mastercontainer,borgbackup,desec-mock}; do
             if docker container list --format="{{ .Names }}" | grep -q "$container"; then
                 echo -e "\n 📣  Log output from container ${container}:\n"
                 docker logs nextcloud-aio-mastercontainer 
@@ -62,4 +64,10 @@ else
     sleep 1
     SKIP_DOMAIN_VALIDATION=false
     run_tests tests/restore-instance.spec.js
+    sleep 1
+    run_tests tests/desec-register.spec.js
+    sleep 1
+    run_tests tests/desec-existing.spec.js
+    sleep 1
+    run_tests tests/desec-existing-slug.spec.js
 fi

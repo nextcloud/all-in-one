@@ -29,64 +29,20 @@ jobs:
           TEST_CODE_FROM_IMAGE: yes
         run: ./php/tests/run.sh ./php/tests/tests/restore-instance.spec.js
 
-      - name: Start deSEC mock and fresh development server
-        run: |
-          # The deSEC flow must not touch the real deSEC API, so point it at a local mock.
-          node php/tests/desec-mock.mjs 8090 > desec-mock.log 2>&1 &
-          echo $! > desec-mock.pid
-          docker rm --force nextcloud-aio-{mastercontainer,apache,notify-push,nextcloud,redis,database,domaincheck,whiteboard,imaginary,talk,collabora,borgbackup,caddy,dnsmasq} || true
-          docker volume rm nextcloud_aio_{mastercontainer,apache,database,database_dump,nextcloud,nextcloud_data,redis,backup_cache,elasticsearch} || true
-          # The deSEC registration entry point renders regardless of SKIP_DOMAIN_VALIDATION,
-          # and the deSEC flow sets the domain with validation skipped internally, so no
-          # SKIP_DOMAIN_VALIDATION override is needed here.
-          # Mount ./php/tests so the locally-checked-out DesecManager is exercised.
-          docker run \
-            -d \
-            --init \
-            --name nextcloud-aio-mastercontainer \
-            --restart always \
-            --publish 8080:8080 \
-            --add-host host.docker.internal:host-gateway \
-            --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
-            --volume ./php/tests:/var/www/docker-aio/php/tests \
-            --volume /var/run/docker.sock:/var/run/docker.sock:ro \
-            --env APACHE_PORT=11000 \
-            ghcr.io/nextcloud-releases/all-in-one:develop
-          echo Waiting for 10 seconds for the development container to start ...
-          sleep 10
-          # Point the running interface at the deSEC mock via configuration.json (config-only,
-          # no env override). The container runs PHP and has ./php mounted, so use the helper.
-          # AIO_TEST_PASSWORD is forwarded so the helper can seed the master password too.
-          docker exec --env AIO_TEST_PASSWORD="$AIO_TEST_PASSWORD" nextcloud-aio-mastercontainer \
-            php /var/www/docker-aio/php/tests/seed-desec-mock-config.php \
-            http://host.docker.internal:8090/api/v1 http://host.docker.internal:8090/update
+      - name: Run Playwright tests for desec registration
+        env:
+          TEST_CODE_FROM_IMAGE: yes
+        run: ./php/tests/run.sh ./php/tests/tests/desec-register.spec.js
 
-      - name: Run Playwright tests for deSEC domain registration
-        run: |
-          export DEBUG=pw:api
-          export DESEC_MOCK_URL=http://localhost:8090
+      - name: Run Playwright tests for desec with existing account
+        env:
+          TEST_CODE_FROM_IMAGE: yes
+        run: ./php/tests/run.sh ./php/tests/tests/desec-existing.spec.js
 
-          # Each deSEC scenario ends by registering a domain, which persists in
-          # configuration.json and would hide the registration UI for the next scenario.
-          # Run each spec as its own step and re-seed (reset the deSEC state) in between.
-          reseed() {
-            docker exec --env AIO_TEST_PASSWORD="$AIO_TEST_PASSWORD" nextcloud-aio-mastercontainer \
-              php /var/www/docker-aio/php/tests/seed-desec-mock-config.php \
-              http://host.docker.internal:8090/api/v1 http://host.docker.internal:8090/update
-          }
-          dump_logs() {
-            docker logs nextcloud-aio-mastercontainer
-            echo "--- deSEC mock log ---"
-            cat "$GITHUB_WORKSPACE/desec-mock.log" || true
-          }
-
-          cd php/tests
-          if ! npx playwright test tests/desec-register.spec.js; then dump_logs; exit 1; fi
-          reseed
-          if ! npx playwright test tests/desec-existing.spec.js; then dump_logs; exit 1; fi
-          reseed
-          if ! npx playwright test tests/desec-existing-slug.spec.js; then dump_logs; exit 1; fi
-          kill "$(cat "$GITHUB_WORKSPACE/desec-mock.pid")" || true
+      - name: Run Playwright tests for desec with existing slug
+        env:
+          TEST_CODE_FROM_IMAGE: yes
+        run: ./php/tests/run.sh ./php/tests/tests/desec-existing-slug.spec.js
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ !cancelled() }}

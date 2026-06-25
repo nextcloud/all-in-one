@@ -18,12 +18,14 @@ services:
         composer install --no-dev
         composer clear-cache
       '
+
   app-base:
     image: ghcr.io/nextcloud-releases/all-in-one:develop${ARM64_SUFFIX-}
     pull_policy: always # Always pull so we don't risk to run into the "Update for mastercontainer" page.
     init: true
     restart: always
-    network_mode: bridge
+    # links:
+    #   - desec-mock
     ports:
       - "8080:8080"
     volumes:
@@ -35,6 +37,8 @@ services:
     environment:
       SKIP_DOMAIN_VALIDATION: ${SKIP_DOMAIN_VALIDATION-true}
       APACHE_PORT: 11000
+      DESEC_API_BASE: http://desec-mock:8090/api/v1 
+      DESEC_UPDATE_URL: http://desec-mock:8090/update
     entrypoint: bash /start.sh
 
   app-code-from-image:
@@ -57,21 +61,33 @@ services:
     profiles:
       - local-code
 
+  desec-mock:
+    image: docker.io/library/node:latest
+    volumes:
+      - ..:/app/php
+    working_dir: /app
+    command: node php/tests/desec-mock.mjs 8090 2>&1
+          
   test-runner-base:
     image: mcr.microsoft.com/playwright:v1.56.1
     volumes:
       - ..:/app
     working_dir: /app
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     ports:
       - '9323:9323' # to view test reports
+    # links:
+    #   - desec-mock
     profiles:
       - none
+    depends_on:
+      desec-mock:
+        condition: service_started
     environment:
-      BASE_URL: "https://host.docker.internal:8080"
+      BASE_URL: "https://nextcloud-aio-mastercontainer:8080"
       DEBUG: "pw:api"
       CI: "true"
+      DESEC_MOCK_URL: "http://desec-mock:8090"
+      #AIO_PASSWORD: correct horse battery staple aircraft
     command: |-
       bash -c "
         cd tests
