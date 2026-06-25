@@ -2,7 +2,7 @@
 # Usage: docker compose --profile local-code up
 #    or: docker compose --profile code-from-image up
 
-name: nextcloud-aio
+name: nextcloud-aio-test
 services:
   composer:
     image: localhost/composer:latest
