@@ -39,7 +39,7 @@ run_tests() {
         for container in nextcloud-aio-{mastercontainer,borgbackup,desec-mock}; do
             if docker container list --format="{{ .Names }}" | grep -q "$container"; then
                 echo -e "\n 📣  Log output from container ${container}:\n"
-                docker logs nextcloud-aio-mastercontainer 
+                docker logs "$container"
             fi
         done
     fi
