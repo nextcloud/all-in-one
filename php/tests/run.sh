@@ -42,6 +42,8 @@ run_tests() {
                 docker logs "$container"
             fi
         done
+        # Exit on failure so further test files don't even run.
+        exit $exitcode
     fi
 }
 
