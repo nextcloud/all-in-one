@@ -231,7 +231,7 @@ class ConfigurationManager
      * stray env var redirecting it in production.
      */
     public string $desecApiBase {
-        get => $this->get('desec_api_base', 'https://desec.io/api/v1');
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_API_BASE', 'desec_api_base', 'https://desec.io/api/v1');
     }
 
     /**
@@ -239,7 +239,7 @@ class ConfigurationManager
      * 'desec_update_url' config key (configuration.json) only — see desecApiBase.
      */
     public string $desecUpdateUrl {
-        get => $this->get('desec_update_url', 'https://update.dedyn.io/');
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_UPDATE_URL', 'desec_update_url', 'https://update.dedyn.io/');
     }
 
     public string $desecToken {
