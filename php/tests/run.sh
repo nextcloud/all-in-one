@@ -32,7 +32,7 @@ run_tests() {
     $DOCO --profile $profile down -v
     sleep 1
 
-    echo -e "\n 📣  Running playwright tests for ${TESTS_FILE}\n"
+    echo -e "\n 📣  Running playwright tests for ${TESTS_FILE} with SKIP_DOMAIN_VALIDATION=$SKIP_DOMAIN_VALIDATION and profile '$profile'\n"
     $DOCO --profile $profile run --remove-orphans test-runner-$profile
     exitcode=$?
     if test $exitcode -gt 0; then
