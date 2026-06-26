@@ -20,10 +20,6 @@ concurrency:
 
 env:
   BASE_URL: https://localhost:8080
-  # Master password seeded into configuration.json for the deSEC test. Seeding the config
-  # makes AIO consider itself already installed, so /setup no longer generates/shows a
-  # password; the seed helper writes this one and the test logs in with it directly.
-  AIO_TEST_PASSWORD: correct horse battery staple aircraft
 
 jobs:
   test:
