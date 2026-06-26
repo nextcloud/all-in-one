@@ -58,7 +58,9 @@ if [[ -n "$1" ]]; then
     prefix="$(realpath ./php/tests)"
     relpath="${fullpath#"$prefix"/}"
     
-    : "${SKIP_DOMAIN_VALIDATION:-false}"
+    if test -z "$SKIP_DOMAIN_VALIDATION"; then
+        SKIP_DOMAIN_VALIDATION=false
+    fi
     run_tests "$relpath"
 else
     SKIP_DOMAIN_VALIDATION=true
