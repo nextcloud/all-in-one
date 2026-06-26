@@ -630,7 +630,7 @@ php /var/www/html/occ config:system:set one-click-instance.link --value="https:/
 # AIO one-click settings end # Do not remove or change this line!
 php /var/www/html/occ app:enable support
 if [ -n "$SUBSCRIPTION_KEY" ] && [ -z "$(php /var/www/html/occ config:app:get support potential_subscription_key)" ]; then
-    php /var/www/html/occ config:app:set support potential_subscription_key --value="$SUBSCRIPTION_KEY"
+    php /var/www/html/occ config:app:set support potential_subscription_key --value="$SUBSCRIPTION_KEY" --sensitive
     php /var/www/html/occ config:app:delete support last_check
 fi
 if [ -n "$NEXTCLOUD_DEFAULT_QUOTA" ]; then
@@ -665,7 +665,7 @@ if [ -n "$NEXTCLOUD_SKELETON_DIRECTORY" ]; then
     fi
 fi
 if [ -n "$SERVERINFO_TOKEN" ] && [ -z "$(php /var/www/html/occ config:app:get serverinfo token)" ]; then
-    php /var/www/html/occ config:app:set serverinfo token --value="$SERVERINFO_TOKEN"
+    php /var/www/html/occ config:app:set serverinfo token --value="$SERVERINFO_TOKEN" --sensitive
 fi
 # Set maintenance window so that no warning is shown in the admin overview
 if [ -z "$NEXTCLOUD_MAINTENANCE_WINDOW" ]; then
@@ -847,8 +847,8 @@ if [ "$ONLYOFFICE_ENABLED" = 'yes' ]; then
 
         # Set OnlyOffice configuration
         php /var/www/html/occ config:system:set onlyoffice editors_check_interval --value="0" --type=integer 
-        php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
-        php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
+        php /var/www/html/occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET" --sensitive
+        php /var/www/html/occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET" --sensitive
         php /var/www/html/occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
 
         # Adjust the OnlyOffice host if using internal pattern
@@ -899,8 +899,8 @@ if [ "$EUROOFFICE_ENABLED" = 'yes' ]; then
 
         # Set EuroOffice configuration
         php /var/www/html/occ config:system:set eurooffice editors_check_interval --value="0" --type=integer 
-        php /var/www/html/occ config:system:set eurooffice jwt_secret --value="$EUROOFFICE_SECRET"
-        php /var/www/html/occ config:app:set eurooffice jwt_secret --value="$EUROOFFICE_SECRET"
+        php /var/www/html/occ config:system:set eurooffice jwt_secret --value="$EUROOFFICE_SECRET" --sensitive
+        php /var/www/html/occ config:app:set eurooffice jwt_secret --value="$EUROOFFICE_SECRET" --sensitive
         php /var/www/html/occ config:system:set eurooffice jwt_header --value="AuthorizationJwt"
 
         # Adjust the EuroOffice host if using internal pattern
@@ -979,7 +979,7 @@ if [ -d "/var/www/html/custom_apps/spreed" ]; then
         done
         # TODO: migrate to occ command if that becomes available
         RECORDING_SERVERS_STRING="{\"servers\":[{\"server\":\"http://$TALK_RECORDING_HOST:1234/\",\"verify\":true}],\"secret\":\"$RECORDING_SECRET\"}"
-        php /var/www/html/occ config:app:set spreed recording_servers --value="$RECORDING_SERVERS_STRING"
+        php /var/www/html/occ config:app:set spreed recording_servers --value="$RECORDING_SERVERS_STRING" --sensitive
     else
         if [ "$REMOVE_DISABLED_APPS" = yes ]; then
             php /var/www/html/occ config:app:delete spreed recording_servers
@@ -1028,7 +1028,7 @@ if [ "$IMAGINARY_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
     php /var/www/html/occ config:system:set enabledPreviewProviders 23 --value="OC\\Preview\\ImaginaryPDF"
     php /var/www/html/occ config:system:set preview_imaginary_url --value="http://$IMAGINARY_HOST:9000"
-    php /var/www/html/occ config:system:set preview_imaginary_key --value="$IMAGINARY_SECRET"
+    php /var/www/html/occ config:system:set preview_imaginary_key --value="$IMAGINARY_SECRET" --sensitive
 else
     if [ -n "$(php /var/www/html/occ config:system:get preview_imaginary_url)" ]; then
         php /var/www/html/occ config:system:delete enabledPreviewProviders 0
@@ -1137,7 +1137,7 @@ if [ "$WHITEBOARD_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:update whiteboard
     fi
     php /var/www/html/occ config:app:set whiteboard collabBackendUrl --value="https://$NC_DOMAIN/whiteboard"
-    php /var/www/html/occ config:app:set whiteboard jwt_secret_key --value="$WHITEBOARD_SECRET"
+    php /var/www/html/occ config:app:set whiteboard jwt_secret_key --value="$WHITEBOARD_SECRET" --sensitive
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/whiteboard" ]; then
         php /var/www/html/occ app:remove whiteboard

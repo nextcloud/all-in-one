@@ -28,7 +28,7 @@
                 "NEXTCLOUD_EXPORTER_CADDY_PASSWORD"
             ],
             "nextcloud_exec_commands": [
-                "php /var/www/html/occ config:app:set serverinfo token --value %NEXTCLOUD_EXPORTER_TOKEN%"
+                "php /var/www/html/occ config:app:set serverinfo token --value %NEXTCLOUD_EXPORTER_TOKEN% --sensitive"
             ]
         }
     ]

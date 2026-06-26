@@ -32,7 +32,7 @@
                 "php /var/www/html/occ config:system:set objectstore arguments region --value ''",
                 "php /var/www/html/occ config:system:set objectstore arguments bucket --value nextcloud",
                 "php /var/www/html/occ config:system:set objectstore arguments key --value nextcloud",
-                "php /var/www/html/occ config:system:set objectstore arguments secret --value %MINIO_ROOT_PASSWORD%",
+                "php /var/www/html/occ config:system:set objectstore arguments secret --value %MINIO_ROOT_PASSWORD% --sensitive",
                 "php /var/www/html/occ config:system:set objectstore arguments port --value 9000",
                 "php /var/www/html/occ config:system:set objectstore arguments hostname --value nextcloud-aio-minio"
             ]
