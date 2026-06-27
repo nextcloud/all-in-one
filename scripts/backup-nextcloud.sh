@@ -59,7 +59,7 @@ done
 : "${AIO_VOLUME:=nextcloud_aio_mastercontainer}"
 
 # PostgreSQL credentials (AIO defaults)
-: "${NC_DB_NAME:=nextcloud_db}"
+: "${NC_DB_NAME:=nextcloud_database}"
 : "${NC_DB_USER:=oc_nextcloud}"
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
