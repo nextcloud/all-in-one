@@ -8,8 +8,10 @@ set -euo pipefail
 CONTAINER="nextcloud-aio-nextcloud"
 TARGET="/var/www/html/custom_apps/richdocuments/lib/Service/DocumentGenerationService.php"
 
+TS=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+
 docker exec "$CONTAINER" grep -q "do not default to any other language" "$TARGET" && {
-  echo "Patch already applied — skipping."
+  echo "[$TS] Patch already applied — skipping."
   exit 0
 }
 
@@ -21,4 +23,4 @@ docker exec "$CONTAINER" sed -i \
   's/Write the CSV content in the same language as the description\./Detect the language of the description and write all CSV content in that exact language. Match the description language exactly — do not default to any other language./' \
   "$TARGET"
 
-echo "Patch applied to $TARGET"
+echo "[$TS] Patch applied to $TARGET"
