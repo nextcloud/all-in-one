@@ -538,14 +538,6 @@ class ConfigurationManager
         return $this->isCollaboraEnabled || $this->isOnlyofficeEnabled;
     }
 
-    private function isx64Platform() : bool {
-        if (php_uname('m') === 'x86_64') {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     /**
      * @throws InvalidSettingConfigurationException
      *
