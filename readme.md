@@ -361,7 +361,8 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [Mail server](#mail-server)
 - [Miscellaneous](#miscellaneous)
     - [Requirements for integrating new containers](#requirements-for-integrating-new-containers)
-    - [Update policy](#update-policy)
+    - [AIO release policy](#aio-release-policy)
+    - [Nextcloud update policy](#nextcloud-update-policy)
     - [How often are update notifications sent?](#how-often-are-update-notifications-sent)
     - [Huge docker logs](#huge-docker-logs)
 
