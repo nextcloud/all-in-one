@@ -37,8 +37,8 @@ services:
     environment:
       SKIP_DOMAIN_VALIDATION: ${SKIP_DOMAIN_VALIDATION-true}
       APACHE_PORT: 11000
-      DESEC_API_BASE: http://desec-mock:8090/api/v1 
-      DESEC_UPDATE_URL: http://desec-mock:8090/update
+      TESTING___DESEC_API_BASE: http://desec-mock:8090/api/v1 
+      TESTING___DESEC_UPDATE_URL: http://desec-mock:8090/update
     entrypoint: bash /start.sh
 
   app-code-from-image:
