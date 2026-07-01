@@ -32,6 +32,8 @@ jobs:
 
       - name: Run Playwright tests for initial setup
         run: ./php/tests/run.sh ./php/tests/tests/initial-setup.spec.js
+        env:
+          SKIP_DOMAIN_VALIDATION: 'true'
 
       - name: Run Playwright tests for backup restore
         run: ./php/tests/run.sh ./php/tests/tests/restore-instance.spec.js
