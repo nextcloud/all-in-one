@@ -68,35 +68,34 @@ services:
     working_dir: /app
     command: node php/tests/desec-mock.mjs 8090 2>&1
           
+  npm-installer:
+    image: docker.io/library/node:latest
+    volumes:
+      - ..:/app
+    working_dir: /app/tests
+    command: npm ci --omit=optional
+      
   test-runner-base:
     image: mcr.microsoft.com/playwright:v1.56.1
     volumes:
       - ..:/app
-    working_dir: /app
+    working_dir: /app/tests
     ports:
       - '9323:9323' # to view test reports
-    # links:
-    #   - desec-mock
     profiles:
       - none
     depends_on:
       desec-mock:
         condition: service_started
+      npm-installer:
+        condition: service_completed_successfully
     environment:
       BASE_URL: "https://nextcloud-aio-mastercontainer:8080"
       DEBUG: "pw:api"
       CI: "true"
       DESEC_MOCK_URL: "http://desec-mock:8090"
       #AIO_PASSWORD: correct horse battery staple aircraft
-    command: |-
-      bash -c "
-        cd tests
-        # Install dependencies
-        npm ci --omit=optional
-        # Run the initial setup tests
-        npx playwright test "${TESTS_FILE-}"
-        exit $?
-      "
+    command: npx playwright test "${TESTS_FILE-}"
 
   test-runner-code-from-image:
     extends: test-runner-base
