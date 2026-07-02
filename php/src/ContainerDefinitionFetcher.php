@@ -332,6 +332,11 @@ readonly class ContainerDefinitionFetcher {
                 $readOnlyRootFs = $entry['read_only'];
             }
 
+            $noNewPrivileges = false;
+            if (isset($entry['no_new_privileges'])) {
+                $noNewPrivileges = $entry['no_new_privileges'];
+            }
+
             $tmpfs = [];
             if (isset($entry['tmpfs'])) {
                 $tmpfs = $entry['tmpfs'];
@@ -374,6 +379,7 @@ readonly class ContainerDefinitionFetcher {
                 $backupVolumes,
                 $nextcloudExecCommands,
                 $readOnlyRootFs,
+                $noNewPrivileges,
                 $tmpfs,
                 $init,
                 $imageTag,
