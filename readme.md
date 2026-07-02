@@ -361,7 +361,8 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [Mail server](#mail-server)
 - [Miscellaneous](#miscellaneous)
     - [Requirements for integrating new containers](#requirements-for-integrating-new-containers)
-    - [Update policy](#update-policy)
+    - [AIO release policy](#aio-release-policy)
+    - [Nextcloud update policy](#nextcloud-update-policy)
     - [How often are update notifications sent?](#how-often-are-update-notifications-sent)
     - [Huge docker logs](#huge-docker-logs)
 
@@ -1301,7 +1302,15 @@ What are the requirements?
 7. No additional setup should be needed after adding the container - it should work completely out of the box.
 8. If the container requires being exposed, only subfolders are supported. So the container should not require its own (sub-)domain and must be able to run in a subfolder.
 
-### Update policy
+### AIO release policy
+
+* We release new versions of this project under the rules of [Semantic Versioning](https://semver.org/).
+* A new beta version shall be released roughly every two weeks. In urgent cases it might happen in quicker succession.
+* Each beta release gets roughly 7 days to be tested. If during that time no issues arise, the version is promoted to a final release.
+* If issues in a beta release are found they are treated with higher priority, and fixes for those issues are published in a new beta release with increased version number. For the former beta release version number no final release gets published. (We don't do multiple beta releases, or release candidates, for a version number.)
+
+
+### Nextcloud update policy
 This project values stability over new features. That means that when a new major Nextcloud update gets introduced, we will wait at least until the first patch release, e.g. `24.0.1` is out before upgrading to it. Also we will wait with the upgrade until all important apps are compatible with the new major version. Minor or patch releases for Nextcloud and all dependencies as well as all containers will be updated to new versions as soon as possible but we try to give all updates first a good test round before pushing them. That means that it can take around 2 weeks before new updates reach the `latest` channel. If you want to help testing, you can switch to the `beta` channel by following [this documentation](#how-to-switch-the-channel) which will also give you the updates earlier.
 
 ### How often are update notifications sent?
