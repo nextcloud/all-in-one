@@ -24,7 +24,7 @@
 }
 
 https://:8080 {
-    import headers.Caddyfile
+	import headers.Caddyfile
 
 	@denied {
 		path /api/auth/login /api/auth/getlogin

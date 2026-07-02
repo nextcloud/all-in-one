@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { DESEC_MOCK_URL, logInToContainersPage } from './desec-helpers.js';
+import { DESEC_MOCK_URL, logInToContainersPage } from './helpers.js';
 
 // Drives the real AIO interface through the full deSEC "register a free domain" flow
 // against the local mock (php/tests/desec-mock.mjs). The mastercontainer's

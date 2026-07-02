@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { DESEC_MOCK_URL, logInToContainersPage } from './desec-helpers.js';
+import { DESEC_MOCK_URL, logInToContainersPage } from './helpers.js';
 
 // Exercises reusing a slug the user already owns on an existing deSEC account. This is the
 // case that previously failed: deSEC answers POST /domains/ with 403 "Domain limit exceeded"
