@@ -36,7 +36,6 @@ services:
       APACHE_PORT: 11000
       TESTING___DESEC_API_BASE: http://desec-mock:8090/api/v1 
       TESTING___DESEC_UPDATE_URL: http://desec-mock:8090/update
-    entrypoint: bash /start.sh
 
   app-code-from-image:
     extends: app-base
