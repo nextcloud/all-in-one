@@ -24,7 +24,7 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260609_115915
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260702_083546
           command:
             - chmod
             - "777"
@@ -64,7 +64,7 @@ spec:
               value: "false"
             - name: xpack.security.transport.ssl.enabled
               value: "false"
-          image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20260609_115915
+          image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20260702_083546
           readinessProbe:
             exec:
               command:
