@@ -62,21 +62,21 @@ services:
       - local-code
 
   desec-mock:
-    image: docker.io/library/node:latest
+    image: docker.io/library/node:26@sha256:b46a10d964ad15136ebdf9012142131481caa0697d7a4d4eafe4bbabd818f876
     volumes:
       - ..:/app/php
     working_dir: /app
     command: node php/tests/desec-mock.mjs 8090 2>&1
           
   npm-installer:
-    image: docker.io/library/node:latest
+    image: docker.io/library/node:26@sha256:b46a10d964ad15136ebdf9012142131481caa0697d7a4d4eafe4bbabd818f876
     volumes:
       - ..:/app
     working_dir: /app/tests
     command: npm ci --omit=optional
       
   test-runner-base:
-    image: mcr.microsoft.com/playwright:v1.56.1
+    image: mcr.microsoft.com/playwright:v1.56.1@sha256:f1e7e01021efd65dd1a2c56064be399f3e4de00fd021ac561325f2bfbb2b837a
     volumes:
       - ..:/app
     working_dir: /app/tests
