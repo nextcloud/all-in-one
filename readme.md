@@ -344,6 +344,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [How to adjust borgs retention policy?](#how-to-adjust-borgs-retention-policy)
     - [How to migrate from AIO to AIO?](#how-to-migrate-from-aio-to-aio)
     - [Are remote borg backups supported?](#are-remote-borg-backups-supported)
+    - [Restoring a borg backup](#Restoring-a-borg-backup)
     - [Failure of the backup container in LXC containers](#failure-of-the-backup-container-in-lxc-containers)
     - [How to create the backup volume on Windows?](#how-to-create-the-backup-volume-on-windows)
     - [Pro-tip: Backup archives access](#pro-tip-backup-archives-access)
@@ -1047,6 +1048,12 @@ Some alternatives, which do not have all the above benefits:
 - You can find a well written guide that uses rclone and e.g. BorgBase for remote backups here: https://github.com/nextcloud/all-in-one/discussions/2247
 - Here is another one that utilizes borgmatic and BorgBase for remote backups: https://github.com/nextcloud/all-in-one/discussions/4391
 - create your own backup solution using a script and borg, borgmatic or any other to backup tool for backing up to a remote target (make sure to stop and start the AIO containers correctly following https://github.com/nextcloud/all-in-one#how-to-enable-automatic-updates-without-creating-a-backup-beforehand)
+
+---
+### Restoring a borg backup ###
+Beware that a long running restore process may be interuprted by the start of a new backup process.
+See [https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md](https://github.com/nextcloud/all-in-one/issues/8414))
+A suggested work around is to disable the daily backup, check if the restore works and afterwards enable daily backups again.
 
 ---
 
