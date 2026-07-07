@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { DESEC_MOCK_URL, logInToContainersPage } from './desec-helpers.js';
+import { DESEC_MOCK_URL, logInToContainersPage } from './helpers.js';
 
 // Exercises the deSEC "I already have a verified account" login path: supplying a valid
 // password logs straight in and registers the domain in one step (no email-verification
