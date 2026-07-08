@@ -903,13 +903,6 @@ if [ "$EUROOFFICE_ENABLED" = 'yes' ]; then
 
         # Adjust the EuroOffice host if using internal pattern
         if echo "$EUROOFFICE_HOST" | grep -q "nextcloud-.*-eurooffice"; then
-            # Set internal URLs for server-to-server calls via Docker network,
-            # bypassing the public domain which may not resolve inside containers.
-            # DocumentServerInternalUrl: NC -> EuroOffice (direct container port)
-            # StorageUrl: EuroOffice -> NC (via port 23973 which has a matching Caddy server-block)
-            APACHE_CONTAINER_HOST="${EUROOFFICE_HOST%-eurooffice}-apache"
-            php /var/www/html/occ config:app:set eurooffice DocumentServerInternalUrl --value="http://$EUROOFFICE_HOST:80/"
-            php /var/www/html/occ config:app:set eurooffice StorageUrl --value="http://$APACHE_CONTAINER_HOST.nextcloud-aio:23973/"
             EUROOFFICE_HOST="$NC_DOMAIN/eurooffice"
             export EUROOFFICE_HOST
         fi
