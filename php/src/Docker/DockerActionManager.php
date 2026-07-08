@@ -741,6 +741,10 @@ readonly class DockerActionManager {
     }
 
     public function IsMastercontainerUpdateAvailable(): bool {
+        if (getenv('SKIP_MASTERCONTAINER_UPDATE_CHECK') === 'true') {
+            return false;
+        }
+
         $imageName = $this->GetCurrentImageName();
         $containerName = 'nextcloud-aio-mastercontainer';
 
