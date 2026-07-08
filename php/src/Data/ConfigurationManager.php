@@ -932,6 +932,12 @@ class ConfigurationManager
     }
 
     public function performMigrations(): void {
+        // Only run on an already-initialised instance; on first boot there is no password
+        // yet and calling set() here would create configuration.json, which causes Setup to
+        // skip passphrase generation (CanBeInstalled() would return false).
+        if ($this->password === '') {
+            return;
+        }
         if (!$this->get('eurooffice_default_migration_v1', false)) {
             $this->isCollaboraEnabled = false;
             $this->isOnlyofficeEnabled = false;
