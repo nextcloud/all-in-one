@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.26.4-alpine3.24 AS go
+FROM golang:1.27rc2-alpine3.24 AS go
 
 ENV IMAGINARY_HASH=6a274b488759a896aff02f52afee6e50b5e3a3ee
 
