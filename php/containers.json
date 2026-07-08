@@ -723,7 +723,7 @@
     {
       "container_name": "nextcloud-aio-onlyoffice",
       "image_tag": "%AIO_CHANNEL%",
-      "display_name": "OnlyOffice",
+      "display_name": "OnlyOffice (deprecated)",
       "image": "ghcr.io/nextcloud-releases/aio-onlyoffice",
       "init": true,
       "healthcheck": {
