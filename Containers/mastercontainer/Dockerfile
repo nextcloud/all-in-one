@@ -11,7 +11,7 @@ RUN set -ex; \
     /usr/bin/caddy list-modules
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.24/fpm/Dockerfile
-FROM php:8.5.7-fpm-alpine3.24
+FROM php:8.5.8-fpm-alpine3.24
 
 EXPOSE 80
 EXPOSE 8080
