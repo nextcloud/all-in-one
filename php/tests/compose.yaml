@@ -76,6 +76,7 @@ services:
     image: mcr.microsoft.com/playwright:v1.56.1@sha256:f1e7e01021efd65dd1a2c56064be399f3e4de00fd021ac561325f2bfbb2b837a
     volumes:
       - ..:/app
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config:ro
     working_dir: /app/tests
     ports:
       - '9323:9323' # to view test reports
@@ -114,4 +115,3 @@ services:
 volumes:
   nextcloud_aio_mastercontainer:
     name: nextcloud_aio_mastercontainer
-
