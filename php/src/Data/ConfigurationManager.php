@@ -95,22 +95,9 @@ class ConfigurationManager
         set { $this->set('isClamavEnabled', $value); }
     }
 
-    public bool $isOnlyofficeEnabled {
-        // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->get('isOnlyofficeEnabled', false);
-        set { $this->set('isOnlyofficeEnabled', $value); }
-    }
-
-    public bool $isEuroofficeEnabled {
-        // Only enabled if no other office suite is enabled.
-        get => !$this->isOtherOfficeThanEuroOfficeEnabled() && $this->get('isEuroofficeEnabled', true);
-        set { $this->set('isEuroofficeEnabled', $value); }
-    }
-
-    public bool $isCollaboraEnabled {
-        // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->get('isCollaboraEnabled', false);
-        set { $this->set('isCollaboraEnabled', $value); }
+    public OfficeSuite $officeSuite {
+        get  => $this->readOfficeSuite();
+        set  { $this->writeOfficeSuite($value); }
     }
 
     public bool $isTalkEnabled {
@@ -416,6 +403,75 @@ class ConfigurationManager
         }
     }
 
+    private function has(string $key) : bool {
+        return array_key_exists($key, $this->getConfig());
+    }
+
+    private function unset(string ...$keys) : void {
+        $changed = false;
+        $this->getConfig();
+        foreach ($keys as $key) {
+            if ($this->has($key)) {
+                unset($this->config[$key]);
+                $changed = true;
+            }
+        }
+        // Only write if this isn't called in between startTransaction() and commitTransaction().
+        if ($changed && $this->noWrite !== true) {
+            $this->writeConfig();
+        }
+    }
+
+    private function writeOfficeSuite(OfficeSuite $officeSuite) : void
+    {
+        $this->set('officeSuite', $officeSuite->value);
+        // Remove the deprecated options.
+        $this->unset('isCollaboraEnabled', 'isOnlyofficeEnabled', 'isEuroofficeEnabled');
+    }
+
+    private function readOfficeSuite() : OfficeSuite
+    {
+        if ($this->has('officeSuite')) {
+            $configValue = (string) $this->get('officeSuite', '');
+            return OfficeSuite::tryFrom($configValue) ?? OfficeSuite::None;
+        }
+
+        // Check the three boolean legacy options. Convert to boolean because very old configs could have
+        // `1`/`0` or even `"1"`/`"0"`/`""` as values.
+        if (boolval($this->get('isCollaboraEnabled', false)) === true) {
+            return OfficeSuite::Collabora;
+        }
+        if (boolval($this->get('isOnlyofficeEnabled', false)) === true) {
+            return OfficeSuite::Onlyoffice;
+        }
+        if (boolval($this->get('isEuroofficeEnabled', false)) === true) {
+            return OfficeSuite::Eurooffice;
+        }
+        
+        // All offices disabled.
+        if (
+            $this->has('isCollaboraEnabled') && boolval($this->get('isCollaboraEnabled')) === false
+            && $this->has('isOnlyofficeEnabled') && boolval($this->get('isOnlyofficeEnabled')) === false
+            && (
+                // Eurooffice can be unset, which should be treated as `false`, too, because it means that
+                // the office choice wasn't ever saved after Eurooffice was introduced, but the user had
+                // previously disabled both available options, which means they want no office.
+                !$this->has('isEuroofficeEnabled')
+                || boolval($this->get('isEuroofficeEnabled')) === false
+            )
+        ) {
+            return OfficeSuite::None;
+        }
+        
+        // Default
+        return OfficeSuite::Eurooffice;
+    }
+
+    public function getOfficeSuiteString() : string
+    {
+        return $this->officeSuite->value;
+    }
+
     /**
      * This allows to assign multiple attributes without saving the config to disk in between. It must be
      * followed by a call to commitTransaction(), which then writes all changes to disk.
@@ -530,12 +586,6 @@ class ConfigurationManager
             return trim((string)file_get_contents($path));
         }
         return '';
-    }
-
-    // Helper function for EuroOffice to make sure that it does not
-    // get enabled on existing instances after updating the default
-    private function isOtherOfficeThanEuroOfficeEnabled() : bool {
-        return $this->isCollaboraEnabled || $this->isOnlyofficeEnabled;
     }
 
     /**
@@ -1164,9 +1214,9 @@ class ConfigurationManager
             'BACKUP_RESTORE_PASSWORD' => $this->borgRestorePassword,
             'CLAMAV_ENABLED' => $this->isClamavEnabled ? 'yes' : '',
             'TALK_RECORDING_ENABLED' => $this->isTalkRecordingEnabled ? 'yes' : '',
-            'ONLYOFFICE_ENABLED' => $this->isOnlyofficeEnabled ? 'yes' : '',
-            'EUROOFFICE_ENABLED' => $this->isEuroofficeEnabled ? 'yes' : '',
-            'COLLABORA_ENABLED' => $this->isCollaboraEnabled ? 'yes' : '',
+            'ONLYOFFICE_ENABLED' => $this->officeSuite === OfficeSuite::Onlyoffice ? 'yes' : '',
+            'EUROOFFICE_ENABLED' => $this->officeSuite === OfficeSuite::Eurooffice ? 'yes' : '',
+            'COLLABORA_ENABLED' => $this->officeSuite === OfficeSuite::Collabora ? 'yes' : '',
             'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
             'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? 'yes' : '',
             'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
