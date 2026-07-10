@@ -29,21 +29,23 @@ PREFIX = {
 # Matches `<prefix><imagename>:<tag>@sha256:<digest>`
 IMAGE_RE = r"{prefix}([^\s@]+:[^\s@]+)@(sha256:[a-f0-9]+)"
 
-if subprocess.run(["which", "skopeo"], capture_output=True).returncode != 0:
-    sys.exit("Error: skopeo is not installed. Install it from https://github.com/containers/skopeo#installation")
+def run(cmd):
+    """Run a command, capturing stdout/stderr. Exit with the captured stderr on failure if check is True."""
+    print(f"Running command: {' '.join(cmd)}")
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.exit(f"Error: '{' '.join(cmd)}' failed!\n\nStdout: {result.stdout}\n\nStderr: {result.stderr}\n")
+    return result
 
 
 def update_image_digest(content, full_ref, current_digest, file_path):
-    result = subprocess.run(
-        [
-            "skopeo", "inspect",
-            "--override-os", "linux",
-            "--no-tags",
-            "--format", "{{.Digest}}",
-            f"docker://{full_ref}",
-        ],
-        capture_output=True, text=True, check=True,
-    )
+    result = run([
+        "skopeo", "inspect",
+        "--override-os", "linux",
+        "--no-tags",
+        "--format", "{{.Digest}}",
+        f"docker://{full_ref}",
+    ])
     latest_digest = result.stdout.strip()
 
     msg_prefix = f"{file_path}: {full_ref}"
@@ -78,6 +80,8 @@ def update_file(file_path, prefix):
 
 
 def main():
+    run(["which", "skopeo"])
+
     for file_type, paths in FILES.items():
         for path in paths:
             update_file(path, PREFIX[file_type])
