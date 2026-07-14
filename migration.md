@@ -105,6 +105,8 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
     sudo nextcloud.occ -V
     ```
 1. Make sure that this version matches exactly the version used in Nextcloud AIO. You can find the AIO version here: [click here](https://github.com/nextcloud/all-in-one/search?l=Dockerfile&q=NEXTCLOUD_VERSION&type=). If they do not match, upgrade your snap with `sudo snap refresh nextcloud --channel=<major-version>/stable` or wait for AIO to be updated to the same version.
+
+    **Please note:** Also make sure that you will actually deploy the *current* AIO image: the correct image path is `ghcr.io/nextcloud-releases/all-in-one` — a locally cached `:latest` tag of the old `ghcr.io/nextcloud/all-in-one` path (or simply an old pull) deploys an outdated Nextcloud that then breaks this version-match requirement. Run `sudo docker pull ghcr.io/nextcloud-releases/all-in-one:latest` before comparing versions, or update the mastercontainer from the AIO interface.
 1. Update all installed Nextcloud apps to their latest versions:
     ```
     sudo nextcloud.occ app:update --all
@@ -115,14 +117,17 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
     export PASSWORDSALT=$(sudo nextcloud.occ config:system:get passwordsalt)
     export SECRET=$(sudo nextcloud.occ config:system:get secret)
     export TABLE_PREFIX=$(sudo nextcloud.occ config:system:get dbtableprefix || echo "oc_")
+    export NC_VERSION=$(sudo nextcloud.occ config:system:get version)
     export SNAP_DATA=$(sudo nextcloud.occ config:system:get datadirectory)
     # Note down SNAP_DATA — you will need it later when copying files
     echo "Snap data directory: $SNAP_DATA"
     ```
-1. Export a dump of the snap's MySQL database:
+1. Enable maintenance mode so that no further changes are written while you take the database dump, then export a dump of the snap's MySQL database:
     ```
+    sudo nextcloud.occ maintenance:mode --on
     sudo nextcloud.mysqldump > ~/mysql-dump.sql
     ```
+    **Please note:** Dumping while the instance is still serving users risks an inconsistent dump. Maintenance mode keeps the snap services running (which `nextcloud.mysqldump` needs) but blocks all client access. If you later restore the snap instead of finishing the migration, remember to run `sudo nextcloud.occ maintenance:mode --off` again.
 1. Stop the snap to prevent further writes during the migration:
     ```
     sudo snap stop nextcloud
@@ -164,9 +169,10 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
       -e POSTGRES_DB="$PG_DATABASE" \
       postgres:16
     ```
-1. Create a temporary config file for the migration container using the values retrieved in step 5:
+1. Create a temporary config directory for the migration container using the values retrieved in step 5:
     ```
-    cat > /tmp/migration-config.php << EOF
+    mkdir -p /tmp/migration-config
+    cat > /tmp/migration-config/config.php << EOF
     <?php
     \$CONFIG = array(
       'instanceid' => '$INSTANCEID',
@@ -179,32 +185,83 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
       'dbtableprefix' => '$TABLE_PREFIX',
       'dbuser' => 'nextcloud',
       'dbpassword' => '$MYSQL_PASSWORD',
+      'mysql.utf8mb4' => true,
+      'version' => '$NC_VERSION',
       'datadirectory' => '$SNAP_DATA',
       'installed' => true,
     );
     EOF
-    # occ runs as www-data inside the container and writes the new DB settings back
-    # into this file, so it must be writable by that user:
-    chmod 666 /tmp/migration-config.php
+    # occ runs as www-data inside the container and rewrites the config file,
+    # so both the directory and the file must be writable by that user:
+    chmod 777 /tmp/migration-config
+    chmod 666 /tmp/migration-config/config.php
     ```
-1. Start a temporary nextcloud/docker container and let its normal entrypoint run, then convert the database by running `occ` inside the running container. Note that the container image version must match the Nextcloud version you noted in step 2, and that `pdo_pgsql` is already included in the `nextcloud` Docker image:
+    **Please note:** A config **directory** is prepared here (and bind-mounted in the next step) instead of a single `config.php` file on purpose: Nextcloud rewrites its config atomically by writing a temporary file and renaming it over `config.php`, and renaming onto a bind-mounted single file is impossible — with a single-file mount, the conversion fails at the very end with `Configuration was not read or initialized correctly, not overwriting /var/www/html/config/config.php`.<br>
+    **Please note:** `'mysql.utf8mb4' => true` (the snap's default) is required. Without it, the conversion reads MySQL over a 3-byte-UTF-8 connection, so every 4-byte character (e.g. all emoji) is corrupted to `?` — which at best silently destroys emoji in comments, Talk messages etc. and at worst aborts the conversion with a unique constraint violation on the `oc_reactions` table (two different emoji reactions collapse into the same `?` row).<br>
+    **Please note:** `'version'` must contain the exact internal version retrieved in step 5 (e.g. `33.0.6.2`). Without it, `occ` runs in the "Nextcloud or one of the apps require upgrade - only a limited number of commands are available" state.
+1. Start a temporary nextcloud/docker container and let its normal entrypoint run. Note that the container image version must match the Nextcloud version you noted in step 2, and that `pdo_pgsql` is already included in the `nextcloud` Docker image:
     ```
     docker run -d \
       --name nextcloud-convert \
       --network nextcloud-migration \
-      -v /tmp/migration-config.php:/var/www/html/config/config.php:rw \
+      -v /tmp/migration-config:/var/www/html/config:rw \
       -v "${SNAP_DATA}:${SNAP_DATA}:rw" \
       nextcloud:${NEXTCLOUD_VERSION}-apache
 
     # Wait until the entrypoint has copied the source into /var/www/html and occ is available
     until docker exec nextcloud-convert test -f /var/www/html/occ; do sleep 1; done
+    ```
+    **Please note:** Unlike a `--entrypoint bash` override, here the image's normal entrypoint runs first. It copies the Nextcloud source from `/usr/src/nextcloud/` to `/var/www/html/` (so `occ` ends up at `/var/www/html/occ`) and reads its config from `/var/www/html/config/config.php` — which is why the config directory is bind-mounted to `/var/www/html/config`. Because we do **not** pass `NEXTCLOUD_ADMIN_USER`/`NEXTCLOUD_ADMIN_PASSWORD` or any database env vars, the entrypoint does not attempt a fresh install or an upgrade; it just stages the files and starts Apache, leaving a working `occ` for the `docker exec` steps. (Mounting the config into `/var/www/html/config` and running `/var/www/html/occ` is what avoids both the missing-`occ` error and the `Nextcloud is not installed - only a limited number of commands are available. There are no commands defined in the 'db' namespace.` error from earlier versions of this guide.)<br>
+    **Please note:** The `SNAP_DATA` directory is mounted read-write (`:rw`) because the conversion writes to the data directory. If your snap is already stopped (previous step), this is safe.
+1. Copy the image's default config snippets and the snap's third-party app code into the container:
+    ```
+    # The entrypoint skips installing its default config snippets (apps.config.php etc.)
+    # when the mounted config directory is not empty, so copy them in manually.
+    # Without apps.config.php, /var/www/html/custom_apps is not registered as an app path:
+    docker exec nextcloud-convert sh -c 'cp -n /usr/src/nextcloud/config/*.config.php /var/www/html/config/'
 
+    # Copy the code of all apps that were installed from the app store into the container:
+    docker cp /var/snap/nextcloud/current/nextcloud/extra-apps/. nextcloud-convert:/var/www/html/custom_apps/
+    docker exec nextcloud-convert chown -R www-data:www-data /var/www/html/custom_apps
+    ```
+    **Please note:** Copying the app code is **not optional** if you have any apps from the app store: `db:convert-type --all-apps` only converts the tables of apps whose code it can find. The vanilla `nextcloud` image does not contain any store apps, so without this step the tables of every store-installed app (mail, spreed/Talk, memories, richdocuments, calendar appointments, …) are **silently skipped** while the core tables convert fine — the data loss only becomes apparent after the migration. Copying the app code also clears the "Nextcloud or one of the apps require upgrade - only a limited number of commands are available" warning, because the app versions on disk then match the database.
+1. Convert the database by running `occ` inside the running container:
+    ```
     docker exec -u www-data nextcloud-convert \
       php occ db:convert-type --all-apps --password "$PG_PASSWORD" pgsql "$PG_USER" postgres-migration "$PG_DATABASE"
     ```
-    **Please note:** Unlike a `--entrypoint bash` override, here the image's normal entrypoint runs first. It copies the Nextcloud source from `/usr/src/nextcloud/` to `/var/www/html/` (so `occ` ends up at `/var/www/html/occ`) and reads its config from `/var/www/html/config/config.php` — which is why the config file is bind-mounted to that path. Because we do **not** pass `NEXTCLOUD_ADMIN_USER`/`NEXTCLOUD_ADMIN_PASSWORD` or any database env vars, the entrypoint does not attempt a fresh install or an upgrade; it just stages the files and starts Apache, leaving a working `occ` for the `docker exec` step. (Mounting the config to `/var/www/html/config/config.php` and running `/var/www/html/occ` is what avoids both the missing-`occ` error and the `Nextcloud is not installed - only a limited number of commands are available. There are no commands defined in the 'db' namespace.` error from earlier versions of this guide.)<br>
-    **Please note:** The `SNAP_DATA` directory is mounted read-write (`:rw`) because the conversion writes to the data directory. If your snap is already stopped (previous step), this is safe.<br>
-    **Please note:** Running `occ` as `www-data` (via `-u www-data`) avoids the "do not run occ as root" warning. The container itself can be stopped and removed in the cleanup step below.
+    **Please note:** Running `occ` as `www-data` (via `-u www-data`) avoids the "do not run occ as root" warning. The container itself can be stopped and removed in the cleanup step below.<br>
+    **Please note:** The conversion prints a list of tables that "will not be converted". Treat a non-trivial list as an error, not as noise: every `oc_<app>_*` table in that list means that this app's data will be missing after the migration (usually because its code is missing in the container, see the previous step). Leftover tables of apps that were uninstalled long ago are the only thing that is expected in that list.<br>
+    **Troubleshooting:** If the conversion aborts with a foreign key violation such as `SQLSTATE[23503]: Foreign key violation ... on table "oc_mail_accounts" ... Key (drafts_mailbox_id)=(...) is not present in table "oc_mail_mailboxes"`, you hit a limitation of `db:convert-type`: it creates all foreign key constraints in the target schema up front and then copies the tables in an order that can violate them. As a workaround, run the following loop in a **second terminal** (it keeps saving and then dropping the foreign key constraints in the target database so that the copy can proceed) and, while it is running, restart the conversion with the additional `--clear-schema` option. Stop the loop with `[CTRL] + [c]` once the conversion has finished:
+    ```
+    while true; do
+      docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
+        "SELECT format('ALTER TABLE %I ADD CONSTRAINT %I %s;', conrelid::regclass, conname, pg_get_constraintdef(oid)) FROM pg_constraint WHERE contype='f' AND connamespace='public'::regnamespace;" \
+        >> ~/fk-restore.sql
+      docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
+        "SELECT format('ALTER TABLE %I DROP CONSTRAINT %I;', conrelid::regclass, conname) FROM pg_constraint WHERE contype='f' AND connamespace='public'::regnamespace;" \
+        | docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" >/dev/null
+      sleep 5
+    done
+    ```
+    After the conversion has finished, restore the saved constraints:
+    ```
+    sort -u ~/fk-restore.sql | docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE"
+    ```
+    **Troubleshooting:** If, after all tables have been copied, the conversion aborts with an SQL syntax error on a `setval` statement (an empty `MAX()`/`FROM`, typically on `oc_jobs_id_seq`), all data has already been copied at that point — only the auto-increment sequences were not updated yet. Complete this last part manually. The first command also widens all sequences to `bigint`, because the conversion creates some of them with 32-bit bounds while the copied data can contain larger values:
+    ```
+    docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
+      "SELECT format('ALTER SEQUENCE %I AS bigint MAXVALUE 9223372036854775807;', relname) FROM pg_class WHERE relkind='S';" \
+      | docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE"
+    docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
+      "SELECT format('SELECT setval(%L, GREATEST(COALESCE((SELECT MAX(%I) FROM %I), 0), 1));', s.relname, a.attname, t.relname)
+       FROM pg_class s
+       JOIN pg_depend d ON d.objid = s.oid AND d.deptype = 'a'
+       JOIN pg_class t ON t.oid = d.refobjid
+       JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = d.refobjsubid
+       WHERE s.relkind = 'S';" \
+      | docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At
+    ```
 1. Export the converted PostgreSQL database:
     ```
     docker exec postgres-migration pg_dump -U "$PG_USER" "$PG_DATABASE" > ~/database-dump.sql
@@ -216,6 +273,15 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
     docker network rm nextcloud-migration
     ```
 1. You now have a `~/database-dump.sql`. Continue from step 5 of the [Migrate the files and the database](#migrate-the-files-and-the-database) procedure above. When those steps ask for your old data directory path, use the `$SNAP_DATA` value noted in step 5 (typically `/var/snap/nextcloud/common/nextcloud/data`). If you have opened a new shell session since then, you can retrieve it again with `sudo nextcloud.occ config:system:get datadirectory` (requires the snap to be running) or read it directly from `/var/snap/nextcloud/current/nextcloud/config/config.php`.
+
+    **Please note:** Nextcloud validates the data directory via a hidden `.ncdata` file (Nextcloud 32 and later; older versions used `.ocdata`). Make sure the method you use to copy the data directory includes hidden files. If the Nextcloud container refuses to start because the data directory is reported as invalid, create the marker with `sudo touch /mnt/ncdata/.ncdata` (adjust the path if you set `NEXTCLOUD_DATADIR`) and apply the same ownership as the rest of the data directory.<br>
+    **Please note:** For large data directories on slow disks, copying with `docker cp` during the downtime window can take many hours. You can instead pre-copy the bulk of the data with `sudo rsync --archive --delete --chown=33:0 --chmod=D750,F640 "$SNAP_DATA/" /path/to/target/` while the snap is still running and only run a final, quick delta-sync with the same command after stopping it. The `--chown`/`--chmod` values already match what AIO expects, which also saves the full `chown -R`/`chmod -R` pass over the data.<br>
+    **Please note:** Once the AIO instance is up and running again, running the following is a cheap sanity step after a database conversion:
+    ```
+    sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ db:add-missing-indices
+    sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ db:add-missing-columns
+    sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ db:add-missing-primary-keys
+    ```
 1. Once you have verified that the migration to AIO was successful and everything is working correctly, you can permanently remove the Nextcloud snap from your system:
     ```
     sudo snap remove --purge nextcloud
