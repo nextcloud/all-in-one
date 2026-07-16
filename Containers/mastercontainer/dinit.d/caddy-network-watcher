@@ -1,6 +1,6 @@
 type = process
-command = /start-caddy.sh /acme.Caddyfile
-run-as = www-data
+command = /caddy-network-watcher.sh
+run-as = root
 term-signal = TERM
 restart = yes
 options = shares-console
