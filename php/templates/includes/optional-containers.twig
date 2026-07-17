@@ -20,7 +20,7 @@
             name="office_suite_choice"
             value="eurooffice"
             class="office-radio"
-            {% if is_eurooffice_enabled == true %}
+            {% if office_suite == 'eurooffice' %}
                 checked="checked"
             {% endif %}
         >
@@ -49,14 +49,13 @@
                 </a>
             {% endif %}
         </label>
-        <input type="hidden" id="eurooffice" name="eurooffice" value="" data-initial-state="{% if is_eurooffice_enabled == true %}true{% else %}false{% endif %}">
         <input
             type="radio"
             id="office-collabora"
             name="office_suite_choice"
             value="collabora"
             class="office-radio"
-            {% if is_collabora_enabled == true %}
+            {% if office_suite == 'collabora' %}
                 checked="checked"
             {% endif %}
         >
@@ -86,14 +85,13 @@
                 </a>
             {% endif %}
         </label>
-        <input type="hidden" id="collabora" name="collabora" value="" data-initial-state="{% if is_collabora_enabled == true %}true{% else %}false{% endif %}">
         <input
             type="radio"
             id="office-onlyoffice"
             name="office_suite_choice"
             value="onlyoffice"
             class="office-radio"
-            {% if is_onlyoffice_enabled == true %}
+            {% if office_suite == 'onlyoffice' %}
                 checked="checked"
             {% endif %}
         >
@@ -123,7 +121,6 @@
                 </a>
             {% endif %}
         </label>
-        <input type="hidden" id="onlyoffice" name="onlyoffice" value="" data-initial-state="{% if is_onlyoffice_enabled == true %}true{% else %}false{% endif %}">
     </div>
     {% if isAnyRunning == false %}
         <div class="office-none-card">
@@ -133,7 +130,7 @@
                 name="office_suite_choice"
                 value=""
                 class="office-radio"
-                {% if is_collabora_enabled == false and is_onlyoffice_enabled == false and is_eurooffice_enabled == false %}
+                {% if office_suite == '' %}
                     checked="checked"
                 {% endif %}
             >
@@ -143,6 +140,7 @@
             </label>
         </div>
     {% endif %}
+    <input type="hidden" id="initial-office-suite" value="{{ office_suite }}">
     <input class="options-form-submit" type="submit" value="Save changes" />
     <h3>Additional Optional Containers</h3>
     <p>
@@ -270,7 +268,7 @@
     <script type="text/javascript" src="disable-containers.js?v1"></script>
 {% endif %}
 
-{% if is_collabora_enabled == true and isAnyRunning == false and was_start_button_clicked == true %}
+{% if office_suite == 'collabora' and isAnyRunning == false and was_start_button_clicked == true %}
     <h3>Nextcloud Office dictionaries</h3>
 
     {% if collabora_dictionaries == "" %}

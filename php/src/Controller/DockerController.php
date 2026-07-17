@@ -11,6 +11,7 @@ use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
+use AIO\Data\OfficeSuite;
 use Slim\Psr7\NonBufferedBody;
 
 readonly class DockerController {
@@ -299,7 +300,7 @@ readonly class DockerController {
         // This is a hack but no better solution was found for the meantime
         // Stop Collabora first to make sure it force-saves
         // See https://github.com/nextcloud/richdocuments/issues/3799
-        if ($id === self::TOP_CONTAINER && $this->configurationManager->isCollaboraEnabled) {
+        if ($id === self::TOP_CONTAINER && $this->configurationManager->officeSuite === OfficeSuite::Collabora) {
             $this->PerformRecursiveContainerStop('nextcloud-aio-collabora', false, $addToStreamingResponseBody);
         }
 

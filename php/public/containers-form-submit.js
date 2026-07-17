@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const optionsForm = document.getElementById('options-form');
     // Don't run if the expected form isn't present.
-    if (document.getElementById('options-form') === null) {
+    if (optionsForm === null) {
         return;
     }
 
@@ -20,14 +21,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const communityContainersCheckboxes = document.querySelectorAll("#community-form input[type='checkbox']");
 
     // Office suite radio buttons
-    const collaboraRadio = document.getElementById('office-collabora');
-    const onlyofficeRadio = document.getElementById('office-onlyoffice');
-    const euroofficeRadio = document.getElementById('office-eurooffice');
-    const noneRadio = document.getElementById('office-none');
-    const collaboraHidden = document.getElementById('collabora');
-    const onlyofficeHidden = document.getElementById('onlyoffice');
-    const euroofficeHidden = document.getElementById('eurooffice');
-    let initialOfficeSelection = null;
+    const officeSuiteChoiceList = optionsForm.elements['office_suite_choice'];
+    const initialOfficeSelection = document.getElementById('initial-office-suite')?.value ?? '';
 
     optionsContainersCheckboxes.forEach(checkbox => {
         initialStateOptionsContainers[checkbox.id] = checkbox.checked;  // Use checked property to capture actual initial state
@@ -36,19 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
     communityContainersCheckboxes.forEach(checkbox => {
         initialStateCommunityContainers[checkbox.id] = checkbox.checked;  // Use checked property to capture actual initial state
     });
-
-    // Store initial office suite selection
-    if (collaboraRadio && onlyofficeRadio && euroofficeRadio && noneRadio) {
-        if (collaboraRadio.checked) {
-            initialOfficeSelection = 'collabora';
-        } else if (onlyofficeRadio.checked) {
-            initialOfficeSelection = 'onlyoffice';
-        } else if (euroofficeRadio.checked) {
-            initialOfficeSelection = 'eurooffice';
-        } else {
-            initialOfficeSelection = 'none';
-        }
-    }
 
     // Function to compare current states to initial states
     function checkForOptionContainerChanges() {
@@ -60,32 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Check office suite changes and sync to hidden inputs
-        if (collaboraRadio && onlyofficeRadio && euroofficeRadio && noneRadio && collaboraHidden && onlyofficeHidden && euroofficeHidden) {
-            let currentOfficeSelection = null;
-            if (collaboraRadio.checked) {
-                currentOfficeSelection = 'collabora';
-                collaboraHidden.value = 'on';
-                onlyofficeHidden.value = '';
-                euroofficeHidden.value = '';
-            } else if (onlyofficeRadio.checked) {
-                currentOfficeSelection = 'onlyoffice';
-                collaboraHidden.value = '';
-                onlyofficeHidden.value = 'on';
-                euroofficeHidden.value = '';
-            } else if (euroofficeRadio.checked) {
-                currentOfficeSelection = 'eurooffice';
-                collaboraHidden.value = '';
-                onlyofficeHidden.value = '';
-                euroofficeHidden.value = 'on';
-            } else {
-                currentOfficeSelection = 'none';
-                collaboraHidden.value = '';
-                onlyofficeHidden.value = '';
-                euroofficeHidden.value = '';
-            }
-
-            if (currentOfficeSelection !== initialOfficeSelection) {
+        if (officeSuiteChoiceList) {
+            if (officeSuiteChoiceList.value !== initialOfficeSelection) {
                 hasChanges = true;
             }
         }
@@ -156,12 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
     handleTalkVisibility();  // Ensure talk-recording is correctly initialized
 
     // Add event listeners for office suite radio buttons
-    if (collaboraRadio && onlyofficeRadio && euroofficeRadio && noneRadio) {
-        collaboraRadio.addEventListener('change', checkForOptionContainerChanges);
-        onlyofficeRadio.addEventListener('change', checkForOptionContainerChanges);
-        euroofficeRadio.addEventListener('change', checkForOptionContainerChanges);
-        noneRadio.addEventListener('change', checkForOptionContainerChanges);
-    }
+    officeSuiteChoiceList?.forEach((elem) => elem.addEventListener('change', checkForOptionContainerChanges));
 
     // Initial call to check for changes
     checkForOptionContainerChanges();
