@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-# From https://github.com/docker-library/postgres/blob/master/18/alpine3.23/Dockerfile
+# From https://github.com/docker-library/postgres/blob/master/18/alpine3.24/Dockerfile
 FROM postgres:18.4-alpine
 
 ENV PGDATA=/var/lib/postgresql/data

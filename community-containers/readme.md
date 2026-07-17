@@ -31,6 +31,7 @@ flowchart TD
         STLW(["📧  Stalwart\nMail server"]):::community
         NOCO(["🗂️  NocoDB\nNo-code database"]):::community
         JSER(["🎯  Jellyseerr\nMedia request manager"]):::community
+        JOPLIN(["📝  Joplin Server\nNotes sync server"]):::community
         NOTIF(["📣  Notifications\nExternal push notify"]):::community
     end
 
@@ -40,6 +41,7 @@ flowchart TD
         DLNA(["📡  DLNA\nMedia Streaming"]):::community
         MEMTR(["📸  Memories\nVideo Transcoder"]):::community
         MKV(["💿  MakeMKV\nBlu-ray / DVD rip"]):::community
+        AZURA(["📻  AzuraCast\nRadio Station Server"]):::community
     end
 
     subgraph COMM_MONITOR["📊 Monitoring & Infra"]
@@ -52,6 +54,7 @@ flowchart TD
     subgraph COMM_SEC["🔒 Security & Network"]
         F2B(["🚫  Fail2ban\nBrute-force protection"]):::community
         PIH(["🕳️  Pi-hole\nAd & DNS blocker"]):::community
+        DNSM(["📛  dnsmasq\nDNS & DHCP server"]):::community
         VW(["🔐  Vaultwarden\nPassword Manager"]):::community
         LDAP(["👥  LLDAP\nLight LDAP / Users"]):::community
         CADDY(["🌐  Caddy\nReverse Proxy + Geoblocking"]):::community

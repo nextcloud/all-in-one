@@ -12,6 +12,7 @@ use AIO\Container\ContainerVolume;
 use AIO\Container\ContainerVolumes;
 use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
+use AIO\Data\OfficeSuite;
 use AIO\Docker\DockerActionManager;
 
 readonly class ContainerDefinitionFetcher {
@@ -75,19 +76,16 @@ readonly class ContainerDefinitionFetcher {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-onlyoffice') {
-                if (!$this->configurationManager->isOnlyofficeEnabled) {
+                if ($this->configurationManager->officeSuite !== OfficeSuite::Onlyoffice) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-eurooffice') {
-                if (!$this->configurationManager->isEuroofficeEnabled) {
+                if ($this->configurationManager->officeSuite !== OfficeSuite::Eurooffice) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-collabora') {
-                if (!$this->configurationManager->isCollaboraEnabled) {
+                if ($this->configurationManager->officeSuite !== OfficeSuite::Collabora) {
                     continue;
-                }
-                if ($this->configurationManager->isCollaboraSubscriptionEnabled()) {
-                    $entry['image'] = 'ghcr.io/nextcloud-releases/aio-collabora-online';
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-talk') {
                 if (!$this->configurationManager->isTalkEnabled) {
@@ -195,15 +193,15 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-onlyoffice') {
-                        if (!$this->configurationManager->isOnlyofficeEnabled) {
+                        if ($this->configurationManager->officeSuite !== OfficeSuite::Onlyoffice) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-eurooffice') {
-                        if (!$this->configurationManager->isEuroofficeEnabled) {
+                        if ($this->configurationManager->officeSuite !== OfficeSuite::Eurooffice) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-collabora') {
-                        if (!$this->configurationManager->isCollaboraEnabled) {
+                        if ($this->configurationManager->officeSuite !== OfficeSuite::Collabora) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-talk') {

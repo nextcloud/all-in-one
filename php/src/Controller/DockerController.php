@@ -6,10 +6,12 @@ namespace AIO\Controller;
 use AIO\Container\Container;
 use AIO\Container\ContainerState;
 use AIO\ContainerDefinitionFetcher;
+use AIO\Desec\DesecManager;
 use AIO\Docker\DockerActionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use AIO\Data\ConfigurationManager;
+use AIO\Data\OfficeSuite;
 use Slim\Psr7\NonBufferedBody;
 
 readonly class DockerController {
@@ -19,7 +21,8 @@ readonly class DockerController {
     public function __construct(
         private DockerActionManager           $dockerActionManager,
         private ContainerDefinitionFetcher    $containerDefinitionFetcher,
-        private ConfigurationManager $configurationManager
+        private ConfigurationManager $configurationManager,
+        private DesecManager $desecManager,
     ) {
     }
 
@@ -264,6 +267,9 @@ readonly class DockerController {
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();
 
+        // Refresh the deSEC DNS record with the current public IP before starting containers
+        $this->desecManager->updateIpIfDesecDomain();
+
         $id = self::TOP_CONTAINER;
 
         $this->PerformRecursiveContainerStart($id, $pullImage, $addToStreamingResponseBody);
@@ -294,7 +300,7 @@ readonly class DockerController {
         // This is a hack but no better solution was found for the meantime
         // Stop Collabora first to make sure it force-saves
         // See https://github.com/nextcloud/richdocuments/issues/3799
-        if ($id === self::TOP_CONTAINER && $this->configurationManager->isCollaboraEnabled) {
+        if ($id === self::TOP_CONTAINER && $this->configurationManager->officeSuite === OfficeSuite::Collabora) {
             $this->PerformRecursiveContainerStop('nextcloud-aio-collabora', false, $addToStreamingResponseBody);
         }
 
@@ -420,7 +426,7 @@ readonly class DockerController {
             <head>
                 <link rel="stylesheet" href="../../style.css?v12" media="all" />
                 <script type="text/javascript" src="../../apply-theme.js?v1"></script>
-                <script type="text/javascript" src="../../scroll-into-view.js"></script>
+                <script type="text/javascript" src="../../scroll-into-view.js?v1"></script>
             </head>
             <body>
             
@@ -428,6 +434,11 @@ readonly class DockerController {
     }
 
     private function startStreamingResponse(Response $response) : Response {
+        // Ensure the script keeps running even if the client connection drops (e.g. due to a
+        // reverse proxy read timeout during a long image pull). Without this, PHP would abort
+        // on the first write after the connection is gone, leaving only some containers started.
+        ignore_user_abort(true);
+
         $nonbufResp = $response
             ->withBody(new NonBufferedBody())
             ->withHeader('Content-Type', 'text/html; charset=utf-8')
@@ -448,12 +459,19 @@ readonly class DockerController {
         // if it'll actually pull an image), but which should not need to know anything about the
         // wanted markup or formatting.
         $addToStreamingResponseBody = function (string $message, ?Container $container = null) use ($nonbufResp) : void {
-            // Strip ANSI codes.
-            $message = preg_replace('/\e[[][A-Za-z0-9];?[0-9]*m?/', '', $message);
-            if ($container) {
-                $message = "{$container->displayName}: {$message}";
+            // If the message is a single dot we treat it as a progress indicator and send a specific, empty
+            // HTML element, which gets special treatment by the Javascript code.
+            if ($message === '.') {
+                $html = "<span class='progress-indicator'></span>";
+            } else {
+                // Strip ANSI codes. If the operation fails, use the unchanged $message as fallback.
+                $text = preg_replace('/\e[[][A-Za-z0-9];?[0-9]*m?/', '', $message) ?? $message;
+                if ($container) {
+                    $text = sprintf("%s: %s", $container->displayName, $text);
+                }
+                $html = sprintf("<div>%s</div>", htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
             }
-            $nonbufResp->getBody()->write("<div>" . htmlspecialchars("{$message}", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</div>");
+            $nonbufResp->getBody()->write($html);
         };
 
         return $addToStreamingResponseBody;

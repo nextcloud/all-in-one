@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:29.5.3-cli AS docker
+FROM docker:29.6.1-cli AS docker
 
 ARG CADDY_REMOTE_HOST_HASH=e80a9931765a8dbcbb47db415863387f0df0e1b3
 
@@ -10,8 +10,8 @@ RUN set -ex; \
     xcaddy build --with github.com/muety/caddy-remote-host@"$CADDY_REMOTE_HOST_HASH"; \
     /usr/bin/caddy list-modules
 
-# From https://github.com/docker-library/php/blob/master/8.5/alpine3.23/fpm/Dockerfile
-FROM php:8.5.7-fpm-alpine3.23
+# From https://github.com/docker-library/php/blob/master/8.5/alpine3.24/fpm/Dockerfile
+FROM php:8.5.8-fpm-alpine3.24
 
 EXPOSE 80
 EXPOSE 8080

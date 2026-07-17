@@ -108,7 +108,7 @@ To make your Nextcloud AIO instance accessible from the public Internet (not jus
 ## Configuration and Deployment
 
 > [!NOTE]
-> These instructions assume you already have a domain name pointing to your server's public IP address. If you don't have a domain yet, see the recommendations below.
+> These instructions assume you already have a domain name pointing to your server's public IP address. If you don't have a domain yet, AIO can register a free dynamic-DNS subdomain under `dedyn.io` for you via the built-in [deSEC integration](https://github.com/nextcloud/all-in-one#how-to-get-a-free-domain-via-desec) — no external setup needed. Alternatively, see the recommendations below.
 
 ### Quick overview
 
@@ -121,7 +121,7 @@ To run Nextcloud AIO behind an external reverse proxy or secure tunneling/proxyi
 The sections below provide detailed instructions for each step.
 
 > [!TIP]
-> If you don't have a domain yet, we recommend using [an approach using Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817). If you don't have an external reverse proxy yet, we recommend [Caddy](https://github.com/nextcloud/all-in-one/discussions/575).
+> If you don't have a domain yet, AIO can register a free `*.dedyn.io` subdomain for you via [deSEC](https://desec.io) directly from the AIO interface — see [How to get a free domain via deSEC](https://github.com/nextcloud/all-in-one#how-to-get-a-free-domain-via-desec). This is the recommended option. Alternatively, you can use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817). If you don't have an external reverse proxy yet, we recommend [Caddy](https://github.com/nextcloud/all-in-one/discussions/575).
 
 ### Step-by-Step Instructions
 
@@ -173,7 +173,7 @@ The process to run Nextcloud AIO behind a reverse proxy has three required steps
 
     The reverse-proxy container needs to be connected to the nextcloud containers. This can be achieved one of these 3 ways:
     1. Utilize host networking instead of docker bridge networking: Specify `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. With this setup, the default sample configurations with reverse-proxy pointing to `localhost:$APACHE_PORT` should work directly.
-    1. Connect nextcloud's external-facing containers to the reverse-proxy's docker network by specifying env variable APACHE_ADDITIONAL_NETWORK. With this setup, the reverse proxy can utilize Docker bridge network's DNS name resolution to access nextcloud at `http://nextcloud-aio-apache.nextcloud-aio:$APACHE_PORT`. ⚠️⚠️⚠️ Note, the specified network must already exist before Nextcloud AIO is started. Otherwise it will fail to start the container because the network is not existing.
+    1. Connect nextcloud's external-facing containers to the reverse-proxy's docker network by specifying env variable APACHE_ADDITIONAL_NETWORK. With this setup, the reverse proxy can utilize Docker bridge network's DNS name resolution to access nextcloud at `http://nextcloud-aio-apache:$APACHE_PORT`. ⚠️⚠️⚠️ Note, the specified network must already exist before Nextcloud AIO is started. Otherwise it will fail to start the container because the network is not existing.
     1. Connect the reverse-proxy container to the `nextcloud-aio` network by specifying it as a secondary (external) network for the reverse proxy container. With this setup also, the reverse proxy can utilize Docker bridge network's DNS name resolution to access nextcloud at `http://nextcloud-aio-apache.nextcloud-aio:$APACHE_PORT` .
 
     </details>
@@ -580,7 +580,7 @@ Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
-<img width="672" height="982" alt="grafik" src="https://github.com/user-attachments/assets/e8914a63-58d2-4a47-ac51-981d21979495" />
+<img width="475" height="880" alt="image" src="https://github.com/user-attachments/assets/3be9a83f-e721-4d12-96fa-32d1211ea559" />
 
 <img width="675" height="355" alt="grafik" src="https://github.com/user-attachments/assets/c4a006f5-f8c4-4898-9ea6-ec33ee7e5bd3" />
 
@@ -589,7 +589,7 @@ Second, see these screenshots for a working config:
 <img width="675" height="570" alt="grafik" src="https://github.com/user-attachments/assets/8ea357c2-11d5-48af-abf7-f249bc677213" />
 
 
-- The "Enable compression by upstream, not recommended" Button can stay unchecked if you don't use Collabora. (https://github.com/CollaboraOnline/online/issues/10157) <br>
+- The "Enable compression by upstream, not recommended" and "Disable URI Sanitisation, not recommended" buttons may need to be enabled if you use Collabora. (https://github.com/CollaboraOnline/online/issues/10157, https://github.com/nextcloud/all-in-one/issues/834) <br>
 - You may need to check the "Disable Crowdsec Appsec" Button if you use crowdsec and uploads or downloads fail. <br>
 - You may want to enable the "Disable Request/Response Buffering" Button since it could improve uploads and downloads. <br>
 - You can check the "Send noindex header and block some user agents" Button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>

@@ -11,6 +11,8 @@ use GuzzleHttp\Exception\TransferException;
 
 class ConfigurationManager
 {
+    public const string DEDYN_SUFFIX = '.dedyn.io';
+
     private array $secrets = [];
 
     private array $config = [];
@@ -93,21 +95,9 @@ class ConfigurationManager
         set { $this->set('isClamavEnabled', $value); }
     }
 
-    public bool $isOnlyofficeEnabled {
-        // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->get('isOnlyofficeEnabled', false);
-        set { $this->set('isOnlyofficeEnabled', $value); }
-    }
-
-    public bool $isEuroofficeEnabled {
-        get => $this->get('isEuroofficeEnabled', true);
-        set { $this->set('isEuroofficeEnabled', $value); }
-    }
-
-    public bool $isCollaboraEnabled {
-        // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->get('isCollaboraEnabled', false);
-        set { $this->set('isCollaboraEnabled', $value); }
+    public OfficeSuite $officeSuite {
+        get  => $this->readOfficeSuite();
+        set  { $this->writeOfficeSuite($value); }
     }
 
     public bool $isTalkEnabled {
@@ -204,6 +194,82 @@ class ConfigurationManager
     public string $turnDomain {
         get => $this->get('turn_domain', '');
         set { $this->set('turn_domain', $value); }
+    }
+
+    public string $desecEmail {
+        get => $this->get('desec_email', '');
+        set { $this->set('desec_email', $value); }
+    }
+
+    /**
+     * The subdomain slug the user last requested. Persisted across the multi-step
+     * registration flow so the slug input can be pre-filled when the form re-renders
+     * (e.g. after email verification). Not a secret; cleared once a domain is set.
+     */
+    public string $desecSlug {
+        get => $this->get('desec_slug', '');
+        set { $this->set('desec_slug', $value); }
+    }
+
+    /**
+     * Base URL of the deSEC API. Configurable via the 'desec_api_base' config key
+     * (configuration.json) only — intentionally NOT an environment variable — so the
+     * endpoint can be pointed at a mock during automated tests without any risk of a
+     * stray env var redirecting it in production.
+     */
+    public string $desecApiBase {
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_API_BASE', 'desec_api_base', 'https://desec.io/api/v1');
+    }
+
+    /**
+     * Base URL of the deSEC dynamic-DNS update endpoint. Configurable via the
+     * 'desec_update_url' config key (configuration.json) only — see desecApiBase.
+     */
+    public string $desecUpdateUrl {
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_UPDATE_URL', 'desec_update_url', 'https://update.dedyn.io/');
+    }
+
+    public string $desecToken {
+        get {
+            $secrets = $this->get('secrets', []);
+            return isset($secrets['DESEC_TOKEN']) && is_string($secrets['DESEC_TOKEN']) ? $secrets['DESEC_TOKEN'] : '';
+        }
+        set {
+            $secrets = $this->get('secrets', []);
+            $secrets['DESEC_TOKEN'] = $value;
+            $this->set('secrets', $secrets);
+        }
+    }
+
+    public string $desecPassword {
+        get {
+            $secrets = $this->get('secrets', []);
+            return isset($secrets['DESEC_PASSWORD']) && is_string($secrets['DESEC_PASSWORD']) ? $secrets['DESEC_PASSWORD'] : '';
+        }
+        set {
+            $secrets = $this->get('secrets', []);
+            $secrets['DESEC_PASSWORD'] = $value;
+            $this->set('secrets', $secrets);
+        }
+    }
+
+    public function isDesecDomain(): bool {
+        return str_ends_with($this->domain, self::DEDYN_SUFFIX) && $this->desecToken !== '';
+    }
+
+    public function isDesecAccountRegistered(): bool {
+        return $this->desecToken !== '' && $this->desecEmail !== '' && $this->domain === '';
+    }
+
+    /**
+     * True when a new deSEC account was created (email + generated password stored) but
+     * its email has not been verified yet, so no API token could be obtained and no
+     * domain is set. Derived from the stored credentials rather than a separate flag:
+     * once verification succeeds a token is stored and isDesecAccountRegistered() takes
+     * over; once a domain is set the deSEC setup is complete.
+     */
+    public function isDesecAwaitingVerification(): bool {
+        return $this->desecToken === '' && $this->desecEmail !== '' && $this->desecPassword !== '' && $this->domain === '';
     }
 
     public string $apachePort {
@@ -337,6 +403,75 @@ class ConfigurationManager
         }
     }
 
+    private function has(string $key) : bool {
+        return array_key_exists($key, $this->getConfig());
+    }
+
+    private function unset(string ...$keys) : void {
+        $changed = false;
+        $this->getConfig();
+        foreach ($keys as $key) {
+            if ($this->has($key)) {
+                unset($this->config[$key]);
+                $changed = true;
+            }
+        }
+        // Only write if this isn't called in between startTransaction() and commitTransaction().
+        if ($changed && $this->noWrite !== true) {
+            $this->writeConfig();
+        }
+    }
+
+    private function writeOfficeSuite(OfficeSuite $officeSuite) : void
+    {
+        $this->set('officeSuite', $officeSuite->value);
+        // Remove the deprecated options.
+        $this->unset('isCollaboraEnabled', 'isOnlyofficeEnabled', 'isEuroofficeEnabled');
+    }
+
+    private function readOfficeSuite() : OfficeSuite
+    {
+        if ($this->has('officeSuite')) {
+            $configValue = (string) $this->get('officeSuite', '');
+            return OfficeSuite::tryFrom($configValue) ?? OfficeSuite::None;
+        }
+
+        // Check the three boolean legacy options. Convert to boolean because very old configs could have
+        // `1`/`0` or even `"1"`/`"0"`/`""` as values.
+        if (boolval($this->get('isCollaboraEnabled', false)) === true) {
+            return OfficeSuite::Collabora;
+        }
+        if (boolval($this->get('isOnlyofficeEnabled', false)) === true) {
+            return OfficeSuite::Onlyoffice;
+        }
+        if (boolval($this->get('isEuroofficeEnabled', false)) === true) {
+            return OfficeSuite::Eurooffice;
+        }
+        
+        // All offices disabled.
+        if (
+            $this->has('isCollaboraEnabled') && boolval($this->get('isCollaboraEnabled')) === false
+            && $this->has('isOnlyofficeEnabled') && boolval($this->get('isOnlyofficeEnabled')) === false
+            && (
+                // Eurooffice can be unset, which should be treated as `false`, too, because it means that
+                // the office choice wasn't ever saved after Eurooffice was introduced, but the user had
+                // previously disabled both available options, which means they want no office.
+                !$this->has('isEuroofficeEnabled')
+                || boolval($this->get('isEuroofficeEnabled')) === false
+            )
+        ) {
+            return OfficeSuite::None;
+        }
+        
+        // Default
+        return OfficeSuite::Eurooffice;
+    }
+
+    public function getOfficeSuiteString() : string
+    {
+        return $this->officeSuite->value;
+    }
+
     /**
      * This allows to assign multiple attributes without saving the config to disk in between. It must be
      * followed by a call to commitTransaction(), which then writes all changes to disk.
@@ -451,14 +586,6 @@ class ConfigurationManager
             return trim((string)file_get_contents($path));
         }
         return '';
-    }
-
-    private function isx64Platform() : bool {
-        if (php_uname('m') === 'x86_64') {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -963,10 +1090,6 @@ class ConfigurationManager
         }
     }
 
-    public function isCollaboraSubscriptionEnabled() : bool {
-        return str_contains($this->collaboraAdditionalOptions, '--o:support_key=');
-    }
-
     /**
      * Provide an extra method since the corresponding attribute setter prevents setting an empty value.
      */
@@ -1091,9 +1214,9 @@ class ConfigurationManager
             'BACKUP_RESTORE_PASSWORD' => $this->borgRestorePassword,
             'CLAMAV_ENABLED' => $this->isClamavEnabled ? 'yes' : '',
             'TALK_RECORDING_ENABLED' => $this->isTalkRecordingEnabled ? 'yes' : '',
-            'ONLYOFFICE_ENABLED' => $this->isOnlyofficeEnabled ? 'yes' : '',
-            'EUROOFFICE_ENABLED' => $this->isEuroofficeEnabled ? 'yes' : '',
-            'COLLABORA_ENABLED' => $this->isCollaboraEnabled ? 'yes' : '',
+            'ONLYOFFICE_ENABLED' => $this->officeSuite === OfficeSuite::Onlyoffice ? 'yes' : '',
+            'EUROOFFICE_ENABLED' => $this->officeSuite === OfficeSuite::Eurooffice ? 'yes' : '',
+            'COLLABORA_ENABLED' => $this->officeSuite === OfficeSuite::Collabora ? 'yes' : '',
             'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
             'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? 'yes' : '',
             'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
@@ -1123,6 +1246,7 @@ class ConfigurationManager
             'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? NetworkHelper::resolveHostname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
+            'DESEC_TOKEN' => $this->desecToken,
             default => $this->getRegisteredSecret($placeholder),
         };
     }

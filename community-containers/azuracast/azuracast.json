@@ -1,0 +1,82 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-azuracast",
+            "display_name": "AzuraCast",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast",
+            "image": "ghcr.io/azuracast/azuracast",
+            "image_tag": "stable",
+            "internal_port": "10080",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "10443",
+                    "protocol": "tcp"
+                },
+                {
+                    "ip_binding": "",
+                    "port_number": "2022",
+                    "protocol": "tcp"
+                },
+                { "ip_binding": "", "port_number": "8000", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8005", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8006", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8010", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8015", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8016", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8020", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8025", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8026", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8030", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8035", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8036", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8040", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8045", "protocol": "tcp" },
+                { "ip_binding": "", "port_number": "8046", "protocol": "tcp" }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "AZURACAST_HTTP_PORT=10080",
+                "AZURACAST_HTTPS_PORT=10443",
+                "MARIADB_ROOT_PASSWORD=%AZURACAST_DB_PASSWORD%"
+            ],
+            "secrets": [
+                "AZURACAST_DB_PASSWORD"
+            ],
+            "ui_secret": "AZURACAST_DB_PASSWORD",
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_azuracast_stations",
+                    "destination": "/var/azuracast/stations",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_db",
+                    "destination": "/var/lib/mysql",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_storage",
+                    "destination": "/var/azuracast/storage",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_azuracast_backups",
+                    "destination": "/var/azuracast/backups",
+                    "writeable": true
+                },
+                {
+                    "source": "%NEXTCLOUD_MOUNT%",
+                    "destination": "%NEXTCLOUD_MOUNT%",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_azuracast_stations",
+                "nextcloud_aio_azuracast_db",
+                "nextcloud_aio_azuracast_backups"
+            ]
+        }
+    ]
+}

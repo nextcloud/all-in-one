@@ -2,7 +2,7 @@
 FROM caddy:2.11.4-alpine AS caddy
 
 # From https://github.com/docker-library/httpd/blob/master/2.4/alpine/Dockerfile
-FROM httpd:2.4.68-alpine3.23
+FROM httpd:2.4.68-alpine3.24
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
@@ -99,6 +99,8 @@ USER 33
 
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+
+ENV AIO_LOG_LEVEL=warn
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \

@@ -3,6 +3,7 @@ This container bundles the [pi-hole](https://pi-hole.net/) ad blocker and auto-c
 
 ### Notes
 - You should not run this container on a public VPS! It is only intended to run in home networks!
+- This container is incompatible with the dnsmasq community container as both need ports 53 to work correctly. Do not enable both at the same time!
 - Make sure that no dns server is already running by checking with `sudo netstat -tulpn | grep 53`. Otherwise the container will not be able to start!
 - The DHCP functionality of Pi-hole has been disabled!
 - The data of pi-hole will be automatically included in AIOs backup solution!

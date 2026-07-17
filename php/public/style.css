@@ -84,6 +84,7 @@ a:hover {
 }
 
 a.button,
+button.button,
 input[type="submit"] {
     padding: 8px 16px;
     width: auto;
@@ -100,11 +101,13 @@ input[type="submit"] {
 }
 
 a.button:focus,
+button.button:focus,
 input[type="submit"]:focus {
     outline: 2px solid var(--color-main-border);
 }
 
 a.button:hover,
+button.button:hover,
 input[type="submit"]:hover {
     background-color: var(--color-primary-element-hover);
 }
@@ -269,6 +272,7 @@ form {
 
 input[type="text"],
 input[type="password"],
+input[type="email"],
 select {
     padding-left: 8px;
     padding-right: 8px;
@@ -282,6 +286,7 @@ select {
 
 input[type="text"]:hover,
 input[type="password"]:hover,
+input[type="email"]:hover,
 select:hover {
     border: var(--border-hover) solid var(--color-main-border-hover);
 }
@@ -294,6 +299,7 @@ textarea {
 
 input[type="text"]:focus,
 input[type="password"]:focus,
+input[type="email"]:focus,
 textarea:focus,
 select:focus {
     border: 1px solid var(--color-main-border);
@@ -488,6 +494,78 @@ input[type="checkbox"]:disabled:not(:checked) + label {
     border-radius: var(--border-radius-large);
     border: solid thin rgb(192, 192, 192);
     background-color: var(--color-main-background);
+}
+
+/* deSEC registration modal (containers page) */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 3;
+    padding: 1rem;
+}
+
+.modal[hidden] {
+    display: none;
+}
+
+.modal .modal-content {
+    position: relative;
+    width: min(640px, 100%);
+    max-height: calc(100vh - 4rem);
+    background-color: var(--color-main-background);
+    border-radius: var(--border-radius-large);
+    border: solid thin rgb(192, 192, 192);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+.modal .modal-content iframe {
+    display: block;
+    width: 100%;
+    height: min(640px, calc(100vh - 4rem));
+    border: 0;
+}
+
+.modal .modal-close {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.5rem;
+    z-index: 1;
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    color: inherit;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* deSEC modal view body (desec.twig) */
+.desec-modal-body,
+.desec-modal-done {
+    padding: 1.5rem;
+}
+
+/* Stack the deSEC form controls, each on its own line, instead of letting the
+   inline-block inputs flow side by side. */
+.desec-modal-body form.xhr {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.desec-modal-body form.xhr input[type="text"],
+.desec-modal-body form.xhr input[type="email"],
+.desec-modal-body form.xhr input[type="password"] {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .overlay-iframe {
@@ -730,6 +808,10 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 #office-none:checked + .office-none-label {
     opacity: 1;
     font-weight: 600;
+}
+
+.inline-details {
+    display: inline;
 }
 
 /* Responsive adjustments for mobile */

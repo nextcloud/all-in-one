@@ -47,6 +47,7 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
         uri strip_prefix /onlyoffice
         reverse_proxy {$ONLYOFFICE_HOST}:80 {
             header_up X-Forwarded-Host {http.request.hostport}/onlyoffice
+            header_up X-Forwarded-Proto https
         }
     }
 
@@ -55,6 +56,7 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
         uri strip_prefix /eurooffice
         reverse_proxy {$EUROOFFICE_HOST}:80 {
             header_up X-Forwarded-Prefix /eurooffice
+            header_up X-Forwarded-Proto https
         }
     }
 

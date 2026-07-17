@@ -1,0 +1,28 @@
+name: update-test-container-image-references
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron: '00 5 * * *'
+
+jobs:
+  update:
+    name: Update test container image references
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - name: Install skopeo
+      run: sudo apt-get install -y skopeo
+    - name: Run update script
+      run: python3 .ci/update-test-container-image-reference.py
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v7
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "chore(tests): update test container image references"
+        signoff: true
+        title: Update test container image references
+        body: Automated update of node and playwright image digests in php/tests/compose.yaml
+        labels: dependencies, 3. to review
+        milestone: next
+        branch: update-test-container-image-references
