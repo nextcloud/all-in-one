@@ -418,7 +418,7 @@
         "CHOWN"
       ],
       "cap_drop": [
-        "ALL"
+        "NET_RAW"
       ]
     },
     {
