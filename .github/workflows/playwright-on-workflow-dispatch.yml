@@ -26,6 +26,7 @@ jobs:
 
       - name: Run Playwright tests for initial setup
         env:
+          SKIP_DOMAIN_VALIDATION: 'true'
           TEST_CODE_FROM_IMAGE: yes
         run: ./php/tests/run.sh ./php/tests/tests/initial-setup.spec.js
 
