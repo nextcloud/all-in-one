@@ -100,7 +100,7 @@ services:
     profiles:
       - code-from-image
     depends_on:
-      app:
+      app-code-from-image:
         condition: service_healthy
 
   test-runner-local-code:
