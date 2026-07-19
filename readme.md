@@ -11,6 +11,7 @@ Included are:
 - Redis & APCU for performant caching
 - PostgreSQL as database
 - Nextcloud Office (optional)
+- EuroOffice (optional)
 - High performance backend for Nextcloud Talk and TURN-server (optional)
 - Nextcloud Talk Recording-server (optional)
 - Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
@@ -118,7 +119,6 @@ flowchart TB
 
         subgraph OPT["  🧩  Optional Built-in Containers  (enable in AIO interface)  "]
             COLLA(["📄 Nextcloud Office"]):::opt
-            OO(["📄 OnlyOffice\nDocument Server"]):::opt
             EO(["📄 EuroOffice\nDocument Server"]):::opt
             TALK(["🎙️ Talk\nVideo & Voice calls"]):::opt
             TALKREC(["🎬 Talk Recording"]):::opt
