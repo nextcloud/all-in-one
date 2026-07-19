@@ -8,15 +8,7 @@
 
 name: Static analysis
 
-on:
-  pull_request:
-    paths:
-      - 'php/**'
-  push:
-    branches:
-      - main
-    paths:
-      - 'php/**'
+on: pull_request
 
 concurrency:
   group: psalm-${{ github.head_ref || github.run_id }}
@@ -36,20 +28,34 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up php
-        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # v2.37.0
+      - name: Get php version
+        id: versions
+        uses: icewind1991/nextcloud-version-matrix@8a7bac6300b2f0f3100088b297995a229558ddba # v1.3.2
+
+      - name: Check enforcement of minimum PHP version ${{ steps.versions.outputs.php-min }} in psalm.xml
+        run: grep 'phpVersion="${{ steps.versions.outputs.php-min }}' psalm.xml
+
+      - name: Set up php${{ steps.versions.outputs.php-available }}
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
-          php-version: 8.5
-          extensions: apcu
+          php-version: ${{ steps.versions.outputs.php-available }}
+          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, sqlite, pdo_sqlite
           coverage: none
           ini-file: development
-
+          # Temporary workaround for missing pcntl_* in PHP 8.3
+          ini-values: disable_functions=
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies and run psalm
+      - name: Remove nextcloud/ocp
         run: |
-          set -x
-          cd php
-          composer install
-          composer run psalm
+          composer remove nextcloud/ocp --dev --no-scripts
+
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+
+      - name: Install nextcloud/ocp:dev-${{ steps.versions.outputs.branches-max }}
+        run: composer require --dev nextcloud/ocp:dev-${{ steps.versions.outputs.branches-max }} --ignore-platform-reqs --with-dependencies
+
+      - name: Run coding standards check
+        run: composer run psalm -- --threads=1 --monochrome --no-progress --output-format=github
