@@ -3,6 +3,7 @@ This container bundles the hardware-transcoding container of memories and auto-c
 
 ### Notes
 - In order to actually enable the hardware transcoding, you need to add the following flag to AIO apart from adding this container: https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud
+- On hosts with more than one GPU you can pin the render node that should be used via the `NEXTCLOUD_DRI_DEVICE` environment variable: https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud
 - See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack
 
 ### Repository

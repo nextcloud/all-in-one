@@ -337,11 +337,16 @@ readonly class DockerActionManager {
         $devices = [];
         $groupAdd = [];
         foreach ($container->devices as $device) {
-            if ($device === '/dev/dri' && !$this->configurationManager->nextcloudEnableDriDevice) {
-                continue;
-            }
-            $devices[] = ["PathOnHost" => $device, "PathInContainer" => $device, "CgroupPermissions" => "rwm"];
             if ($device === '/dev/dri') {
+                if (!$this->configurationManager->nextcloudEnableDriDevice) {
+                    continue;
+                }
+                // Allow pinning a single render node on multi-GPU hosts (issue #8445).
+                // The selected host node is remapped to the canonical /dev/dri/renderD128
+                // inside the container so VAAPI/go-vod find it regardless of host numbering.
+                $hostDevice = $this->configurationManager->driDevice; // '/dev/dri' or '/dev/dri/renderD12x'
+                $pathInContainer = ($hostDevice === '/dev/dri') ? $hostDevice : '/dev/dri/renderD128';
+                $devices[] = ["PathOnHost" => $hostDevice, "PathInContainer" => $pathInContainer, "CgroupPermissions" => "rwm"];
                 // Add the render device's group as a supplemental group so that non-root
                 // containers (e.g. nextcloud-aio-talk-recording) can access the device.
                 // The GID is detected during mastercontainer startup when /dev/dri is bind-mounted.
@@ -349,7 +354,9 @@ readonly class DockerActionManager {
                 if ($gid !== '' && !in_array($gid, $groupAdd, true)) {
                     $groupAdd[] = $gid;
                 }
+                continue;
             }
+            $devices[] = ["PathOnHost" => $device, "PathInContainer" => $device, "CgroupPermissions" => "rwm"];
         }
 
         if (count($devices) > 0) {
