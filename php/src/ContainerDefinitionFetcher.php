@@ -115,6 +115,10 @@ readonly class ContainerDefinitionFetcher {
                 if (!$this->configurationManager->isWhiteboardEnabled) {
                     continue;
                 }
+            } elseif ($entry['container_name'] === 'nextcloud-aio-windmill') {
+                if (!$this->configurationManager->isWindmillEnabled) {
+                    continue;
+                }
             }
 
             $ports = new ContainerPorts();
@@ -230,6 +234,10 @@ readonly class ContainerDefinitionFetcher {
                         }
                     } elseif ($value === 'nextcloud-aio-whiteboard') {
                         if (!$this->configurationManager->isWhiteboardEnabled) {
+                            continue;
+                        }
+                    } elseif ($value === 'nextcloud-aio-windmill') {
+                        if (!$this->configurationManager->isWindmillEnabled) {
                             continue;
                         }
                     } else {
