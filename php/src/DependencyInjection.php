@@ -50,6 +50,10 @@ class DependencyInjection
             new \AIO\Auth\AuthManager($container->get(\AIO\Data\ConfigurationManager::class))
         );
         $container->set(
+            \AIO\Auth\RateLimiter::class,
+            new \AIO\Auth\RateLimiter()
+        );
+        $container->set(
             \AIO\Data\Setup::class,
             new \AIO\Data\Setup(
                 $container->get(\AIO\Auth\PasswordGenerator::class),
