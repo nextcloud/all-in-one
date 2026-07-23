@@ -43,6 +43,7 @@ def update_image_digest(content, full_ref, current_digest, file_path):
         "skopeo", "inspect",
         "--override-os", "linux",
         "--no-tags",
+        "--no-creds",
         "--format", "{{.Digest}}",
         f"docker://{full_ref}",
     ])
