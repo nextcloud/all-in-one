@@ -970,6 +970,9 @@
       ],
       "cap_drop": [
         "NET_RAW"
+      ],
+      "profiles": [
+        "harp"
       ]
     },
     {
