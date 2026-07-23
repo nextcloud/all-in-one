@@ -366,6 +366,18 @@ class ConfigurationManager
         get => getenv('NEXTCLOUD_DRI_GID') ?: '';
     }
 
+    public string $driDevice {
+        get {
+            $value = $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_DRI_DEVICE', 'nextcloud_dri_device', '/dev/dri');
+            // Allow only the /dev/dri dir or a single render/card node. Rejects traversal/arbitrary paths.
+            // The D modifier makes $ match end-of-string only, so a trailing newline cannot sneak through.
+            if (preg_match('#^/dev/dri(/(renderD|card)[0-9]+)?$#D', $value) !== 1) {
+                return '/dev/dri';
+            }
+            return $value;
+        }
+    }
+
     public bool $enableNvidiaGpu {
         get => $this->booleanize($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
         set { $this->set('enable_nvidia_gpu', $value); }
