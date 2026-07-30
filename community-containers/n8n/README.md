@@ -7,7 +7,7 @@ Dieser Container integriert [n8n](https://n8n.io/) in deine Nextcloud AIO-Instan
 1.  Öffne die Nextcloud AIO-Oberfläche (`https://deine-domain:8080`).
 2.  Gehe zum Bereich **Community Container**.
 3.  Suche den Container **n8n Workflow Automation** und aktiviere ihn.
-4.  Klicke auf **"Save changes"** und starte den Container über den **"Start and update containers"**-Button [citation:11].
+4.  Klicke auf **"Save changes"** und starte den Container über den **"Start and update containers"**-Button.
 
 ## 🔧 Konfiguration
 
@@ -38,4 +38,4 @@ Die persistenten Daten von n8n werden im Docker-Volume `nextcloud_aio_n8n` gespe
 *   [n8n Offizielle Webseite](https://n8n.io/)
 *   [n8n GitHub Repository](https://github.com/n8n-io/n8n)
 *   [Nextcloud AIO Community Container Dokumentation](https://github.com/nextcloud/all-in-one/tree/main/community-containers)
-*   [Anleitung: Community Container in AIO verwenden](https://nextcloud.com/de/blog/how-to-use-nextcloud-aio-using-community-containers/) [citation:11]
+*   [Anleitung: Community Container in AIO verwenden](https://nextcloud.com/de/blog/how-to-use-nextcloud-aio-using-community-containers/) 
