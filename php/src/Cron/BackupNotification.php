@@ -5,6 +5,7 @@ declare(strict_types=1);
 ini_set('memory_limit', '2048M');
 
 use DI\Container;
+use AIO\Data\DataConst;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
@@ -30,4 +31,14 @@ if ($backupExitCode === 0) {
 
 if ($backupExitCode > 0) {
     $dockerActionManager->sendNotification($nextcloudContainer, 'Daily backup failed!', 'You can get further info by looking at the backup logs in the AIO interface.');
+}
+
+// Check for container image pull failures and send notification
+$failuresFile = DataConst::GetImagePullFailuresFile();
+if (is_file($failuresFile)) {
+    $failureMessage = file_get_contents($failuresFile);
+    if ($failureMessage !== false && $failureMessage !== '') {
+        $dockerActionManager->sendNotification($nextcloudContainer, 'Container image update failed!', $failureMessage . ' The containers were started with the previously available images. Please check the docker host for issues (e.g. registry connectivity, disk space).');
+    }
+    unlink($failuresFile);
 }

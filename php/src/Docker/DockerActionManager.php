@@ -531,7 +531,7 @@ readonly class DockerActionManager {
         }
     }
 
-    public function PullImage(Container $container, bool $pullImage = true, ?\Closure $addToStreamingResponseBody = null): void {
+    public function PullImage(Container $container, bool $pullImage = true, ?\Closure $addToStreamingResponseBody = null): bool {
         // Skip database image pull if the last shutdown was not clean
         if ($container->identifier === 'nextcloud-aio-database') {
             if ($this->GetDatabasecontainerExitCode() > 0) {
@@ -551,7 +551,7 @@ readonly class DockerActionManager {
 
         // Do not continue if $pullImage is false
         if (!$pullImage) {
-            return;
+            return false;
         }
 
         $imageName = $this->BuildImageName($container);
@@ -602,7 +602,7 @@ readonly class DockerActionManager {
                 if ($pullErrors !== []) {
                     throw new \Exception(implode('; ', $pullErrors));
                 }
-                break;
+                return true;
             } catch (\Exception $e) {
                 $errorDetails = $e instanceof RequestException
                     ? $e->getResponse()?->getBody()->getContents()
@@ -613,6 +613,7 @@ readonly class DockerActionManager {
                         throw new \Exception($message);
                     } else {
                         error_log($message);
+                        return false;
                     }
                 } else {
                     error_log($message . ' Retrying...');
@@ -620,6 +621,7 @@ readonly class DockerActionManager {
                 }
             }
         }
+        return true;
     }
 
     private function isContainerUpdateAvailable(string $id): string {

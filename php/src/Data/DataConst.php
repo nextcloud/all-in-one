@@ -44,6 +44,10 @@ class DataConst {
         return self::GetDataDirectory() . '/daily_backup_running';
     }
 
+    public static function GetImagePullFailuresFile() : string {
+        return self::GetDataDirectory() . '/image_pull_failures';
+    }
+
     public static function GetBackupKeyFile() : string {
         return self::GetDataDirectory() . '/borg.config';
     }
