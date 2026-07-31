@@ -13,6 +13,15 @@ if ! [ -f "$CONFIG_FILE" ] || (! grep -q "wasStartButtonClicked.*1" "$CONFIG_FIL
     exit 0
 fi
 
+# Exit early if the backup container is currently running a restore
+if docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-borgbackup$"; then
+    if grep -q '"backup-mode".*"restore"' "$CONFIG_FILE"; then
+        echo "Backup container is running in restore mode. Exiting to not interrupt the restore..."
+        rm -f "/mnt/docker-aio-config/data/daily_backup_running"
+        exit 0
+    fi
+fi
+
 # Daily backup and backup check cannot be run at the same time
 if [ "$DAILY_BACKUP" = 1 ] && [ "$CHECK_BACKUP" = 1 ]; then
     echo "Daily backup and backup check cannot be run at the same time. Exiting..."
