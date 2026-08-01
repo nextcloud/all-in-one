@@ -1,0 +1,84 @@
+name: 'Markdown Link Check'
+
+# Verifies that all hyperlinks across the project's Markdown documentation
+# (readme.md, develop.md, migration.md, reverse-proxy.md, manual-upgrade.md,
+# multiple-instances.md, docker-ipv6-support.md, docker-rootless.md,
+# local-instance.md, CODE_OF_CONDUCT.md, ...) still resolve.
+#
+# Without this workflow, broken external links and stale intra-repo anchors
+# slip into the documentation unnoticed.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.md'
+      - '.github/workflows/markdown-link-check.yml'
+  pull_request:
+    paths:
+      - '**.md'
+      - '.github/workflows/markdown-link-check.yml'
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Mondays at 06:00 UTC to catch rot on external links.
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+
+# Avoid running multiple link-check sweeps on the same ref at once.
+concurrency:
+  group: markdown-link-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  markdown-link-check:
+    name: Check Markdown links
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69b4771b5f0d8a8a3f71d65c12e5c20c4f6 # v5
+        with:
+          python-version: '3.11'
+
+      - name: Install lychee
+        run: |
+          cargo install lychee --locked --no-default-features --features ssl-vendored
+        env:
+          CARGO_TERM_COLOR: always
+
+      - name: Run lychee link checker
+        # Skip archive.org/web.archive.org (often slow / rate-limited) and
+        # localhost / loopback references that cannot resolve from CI.
+        run: |
+          lychee \
+            --no-progress \
+            --exclude-loopback \
+            --exclude 'archive\.org' \
+            --exclude 'web\.archive\.org' \
+            --exclude 'localhost' \
+            --exclude '127\.0\.0\.1' \
+            --exclude 'nextcloud\.local' \
+            --max-concurrency 16 \
+            --timeout 30 \
+            --accept '200..=299' \
+            --retry 2 \
+            -- './*.md' \
+              '.github/**/*.md' \
+              'Containers/**/*.md' \
+              'php/**/*.md' \
+              'manual-install/**/*.md' \
+              'community-containers/**/*.md' \
+              'nextcloud-aio-helm-chart/**/*.md'
+
+      - name: Upload lychee report on failure
+        if: failure()
+        uses: actions/upload-artifact@b7e0d2c8f8a4b3a4c6f3f7e7c5b3a1a7d8c4f9c1 # v4
+        with:
+          name: lychee-link-check-report
+          path: lychee/out.md
+          if-no-files-found: ignore
