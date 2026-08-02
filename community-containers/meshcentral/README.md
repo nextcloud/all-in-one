@@ -99,7 +99,7 @@ Dieser Community-Container basiert auf einem eigenen Docker-Image, das für die 
       "sessionKey": "${MC_SESSION_KEY}",
       "cors": false,
       "login": "${MC_HOSTNAME}",
-      "newAccounts": true,
+      "newAccounts": false,
       "cookieIpCheck": true,
       "userNameIsEmail": true,
       "allowLocalLogin": true
