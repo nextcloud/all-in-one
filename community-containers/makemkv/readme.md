@@ -1,5 +1,5 @@
 ## MakeMKV
-This container bundles MakeMKV and auto-configures it for you.
+This container bundles the [MakeMKV](https://www.makemkv.com/) video converter and auto-configures it for you.
 
 ### Notes
 - This container should only be run in home networks

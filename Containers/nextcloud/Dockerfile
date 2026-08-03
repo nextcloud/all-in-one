@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.3.30-fpm-alpine3.23
+FROM php:8.3.32-fpm-alpine3.24
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=16G
@@ -8,7 +8,7 @@ ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=32.0.6
+ENV NEXTCLOUD_VERSION=33.0.7
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
@@ -114,18 +114,18 @@ RUN set -ex; \
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/server_tuning.html#enable-php-opcache and below
     { \
-        echo 'opcache.max_accelerated_files=10000'; \
+        echo 'opcache.max_accelerated_files=20000'; \
         echo 'opcache.memory_consumption=256'; \
         echo 'opcache.interned_strings_buffer=64'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
         echo 'opcache.jit=1255'; \
-        echo 'opcache.jit_buffer_size=8M'; \
+        echo 'opcache.jit_buffer_size=128M'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
     { \
         echo 'apc.enable_cli=1'; \
-        echo 'apc.shm_size=64M'; \
+        echo 'apc.shm_size=128M'; \
     } >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
     { \
@@ -135,14 +135,20 @@ RUN set -ex; \
         echo 'max_execution_time=${PHP_MAX_TIME}'; \
         echo 'max_input_time=-1'; \
         echo 'default_socket_timeout=${PHP_MAX_TIME}'; \
+        echo 'output_buffering=0'; \
+        echo 'realpath_cache_size=8M'; \
+        echo 'realpath_cache_ttl=600'; \
     } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
     { \
         echo 'session.save_handler = redis'; \
-        echo 'session.save_path = "tcp://${REDIS_HOST}:${REDIS_PORT}?database=${REDIS_DB_INDEX}${REDIS_USER_AUTH}&auth[]=${REDIS_HOST_PASSWORD}"'; \
+        echo 'session.save_path = "tcp://${REDIS_HOST}:${REDIS_PORT}?database=${REDIS_DB_INDEX}${REDIS_USER_AUTH}&auth[]=${REDIS_HOST_PASSWORD}&timeout=3.0&read_timeout=10.0"'; \
         echo 'redis.session.locking_enabled = 1'; \
         echo 'redis.session.lock_retries = -1'; \
-        echo 'redis.session.lock_wait_time = 10000'; \
+        echo '; 100ms in microseconds - prevents timeout on long requests such as large file uploads'; \
+        echo 'redis.session.lock_wait_time = 100000'; \
+        echo '; prevents stale locks from crashed workers (seconds)'; \
+        echo 'redis.session.lock_expire = 60'; \
         echo 'session.gc_maxlifetime = 86400'; \
     } > /usr/local/etc/php/conf.d/redis-session.ini; \
     \
@@ -244,6 +250,21 @@ RUN set -ex; \
 # We don't actually expect so many children but don't want to limit it artificially because people will report issues otherwise.
 # Also children will usually be terminated again after the process is done due to the ondemand setting
     sed -i 's/^pm.max_children =.*/pm.max_children = 5000/' /usr/local/etc/php-fpm.d/www.conf; \
+# With pm = ondemand, workers are killed after pm.process_idle_timeout seconds
+# of inactivity.  The upstream default is 10 s, which is aggressive: after a
+# brief quiet period (e.g. desktop-sync clients polling every few seconds), all
+# workers are reaped and the next request burst must wait for fresh forks.  On
+# a loaded host that spawn latency can push Apache past its FastCGI timeout and
+# produce a 502.  300 s (5 min) keeps a warm pool through normal sync-client
+# polling cycles while still reclaiming memory during genuinely idle periods.
+    sed -i 's/^;*pm.process_idle_timeout\s*=.*/pm.process_idle_timeout = 300s/' /usr/local/etc/php-fpm.d/www.conf; \
+# Set request_terminate_timeout so that PHP-FPM forcibly kills workers that
+# exceed the wall-clock limit.  Without this (default = 0 = disabled) a worker
+# stuck on a slow DB query, a stalled Redis connection, or a hung syscall is
+# never reaped.  Over time these zombies fill up pm.max_children, leaving no
+# free slots for legitimate requests and causing Apache to return 502 Bad
+# Gateway upstream.
+    sed -i "s|^;*request_terminate_timeout = .*|request_terminate_timeout = \${PHP_MAX_TIME}|" /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
     echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \
@@ -265,4 +286,10 @@ CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
-    org.label-schema.vendor="Nextcloud"
+    dockhand.update="false" \
+    org.opencontainers.image.title="Nextcloud for Nextcloud AIO" \
+    org.opencontainers.image.description="Nextcloud server with all required PHP extensions for Nextcloud All-in-One" \
+    org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.vendor="Nextcloud" \
+    org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"

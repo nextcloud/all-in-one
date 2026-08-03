@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM haproxy:3.3.4-alpine
+FROM haproxy:3.4.2-alpine
 
 # hadolint ignore=DL3002
 USER root
@@ -20,4 +20,10 @@ ENTRYPOINT ["/start.sh"]
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
-    org.label-schema.vendor="Nextcloud"
+    dockhand.update="false" \
+    org.opencontainers.image.title="Docker Socket Proxy for Nextcloud AIO" \
+    org.opencontainers.image.description="HAProxy-based Docker socket proxy for Nextcloud All-in-One" \
+    org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.vendor="Nextcloud" \
+    org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"

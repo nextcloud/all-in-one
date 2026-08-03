@@ -5,9 +5,14 @@ namespace AIO\Data;
 
 use AIO\Auth\PasswordGenerator;
 use AIO\Controller\DockerController;
+use AIO\Helper\NetworkHelper;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\TransferException;
 
 class ConfigurationManager
 {
+    public const string DEDYN_SUFFIX = '.dedyn.io';
+
     private array $secrets = [];
 
     private array $config = [];
@@ -15,6 +20,10 @@ class ConfigurationManager
     public string $aioPrivateKey = '';
 
     private bool $noWrite = false;
+
+    private string $dailyBackupFileCache = '';
+
+    private int $dailyBackupFileMtime = 0;
 
     public string $aioPublicKey {
         get => $this->get('AIO_TOKEN', '');
@@ -88,16 +97,9 @@ class ConfigurationManager
         set { $this->set('isClamavEnabled', $value); }
     }
 
-    public bool $isOnlyofficeEnabled {
-        // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->get('isOnlyofficeEnabled', false);
-        set { $this->set('isOnlyofficeEnabled', $value); }
-    }
-
-    public bool $isCollaboraEnabled {
-        // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->get('isCollaboraEnabled', true);
-        set { $this->set('isCollaboraEnabled', $value); }
+    public OfficeSuite $officeSuite {
+        get  => $this->readOfficeSuite();
+        set  { $this->writeOfficeSuite($value); }
     }
 
     public bool $isTalkEnabled {
@@ -196,6 +198,82 @@ class ConfigurationManager
         set { $this->set('turn_domain', $value); }
     }
 
+    public string $desecEmail {
+        get => $this->get('desec_email', '');
+        set { $this->set('desec_email', $value); }
+    }
+
+    /**
+     * The subdomain slug the user last requested. Persisted across the multi-step
+     * registration flow so the slug input can be pre-filled when the form re-renders
+     * (e.g. after email verification). Not a secret; cleared once a domain is set.
+     */
+    public string $desecSlug {
+        get => $this->get('desec_slug', '');
+        set { $this->set('desec_slug', $value); }
+    }
+
+    /**
+     * Base URL of the deSEC API. Configurable via the 'desec_api_base' config key
+     * (configuration.json) only — intentionally NOT an environment variable — so the
+     * endpoint can be pointed at a mock during automated tests without any risk of a
+     * stray env var redirecting it in production.
+     */
+    public string $desecApiBase {
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_API_BASE', 'desec_api_base', 'https://desec.io/api/v1');
+    }
+
+    /**
+     * Base URL of the deSEC dynamic-DNS update endpoint. Configurable via the
+     * 'desec_update_url' config key (configuration.json) only — see desecApiBase.
+     */
+    public string $desecUpdateUrl {
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_UPDATE_URL', 'desec_update_url', 'https://update.dedyn.io/');
+    }
+
+    public string $desecToken {
+        get {
+            $secrets = $this->get('secrets', []);
+            return isset($secrets['DESEC_TOKEN']) && is_string($secrets['DESEC_TOKEN']) ? $secrets['DESEC_TOKEN'] : '';
+        }
+        set {
+            $secrets = $this->get('secrets', []);
+            $secrets['DESEC_TOKEN'] = $value;
+            $this->set('secrets', $secrets);
+        }
+    }
+
+    public string $desecPassword {
+        get {
+            $secrets = $this->get('secrets', []);
+            return isset($secrets['DESEC_PASSWORD']) && is_string($secrets['DESEC_PASSWORD']) ? $secrets['DESEC_PASSWORD'] : '';
+        }
+        set {
+            $secrets = $this->get('secrets', []);
+            $secrets['DESEC_PASSWORD'] = $value;
+            $this->set('secrets', $secrets);
+        }
+    }
+
+    public function isDesecDomain(): bool {
+        return str_ends_with($this->domain, self::DEDYN_SUFFIX) && $this->desecToken !== '';
+    }
+
+    public function isDesecAccountRegistered(): bool {
+        return $this->desecToken !== '' && $this->desecEmail !== '' && $this->domain === '';
+    }
+
+    /**
+     * True when a new deSEC account was created (email + generated password stored) but
+     * its email has not been verified yet, so no API token could be obtained and no
+     * domain is set. Derived from the stored credentials rather than a separate flag:
+     * once verification succeeds a token is stored and isDesecAccountRegistered() takes
+     * over; once a domain is set the deSEC setup is complete.
+     */
+    public function isDesecAwaitingVerification(): bool {
+        return $this->desecToken === '' && $this->desecEmail !== '' && $this->desecPassword !== '' && $this->domain === '';
+    }
+
     public string $apachePort {
         get => $this->getEnvironmentalVariableOrConfig('APACHE_PORT', 'apache_port', '443');
         set { $this->set('apache_port', $value); }
@@ -251,6 +329,11 @@ class ConfigurationManager
         set { $this->set('docker_socket_path', $value); }
     }
 
+    public string $aioLogLevel {
+        get => $this->getEnvironmentalVariableOrConfig('AIO_LOG_LEVEL', 'aio_log_level', 'warn');
+        set { $this->set('aio_log_level', $value); }
+    }
+
     public string $trustedCacertsDir {
         get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_TRUSTED_CACERTS_DIR', 'trusted_cacerts_dir', '');
         set { $this->set('trusted_cacerts_dir', $value); }
@@ -281,6 +364,10 @@ class ConfigurationManager
         set { $this->set('nextcloud_enable_dri_device', $value); }
     }
 
+    public string $driDeviceGid {
+        get => getenv('NEXTCLOUD_DRI_GID') ?: '';
+    }
+
     public bool $enableNvidiaGpu {
         get => $this->booleanize($this->getEnvironmentalVariableOrConfig('NEXTCLOUD_ENABLE_NVIDIA_GPU', 'enable_nvidia_gpu', ''));
         set { $this->set('enable_nvidia_gpu', $value); }
@@ -296,6 +383,9 @@ class ConfigurationManager
         if ($this->config === [] && file_exists(DataConst::GetConfigFile()))
         {
             $configContent = (string)file_get_contents(DataConst::GetConfigFile());
+            if ($configContent === '') {
+                throw new \RuntimeException("The config file " . DataConst::GetConfigFile() . " is empty. It may have been truncated due to low disk space. Please restore it from a backup.");
+            }
             $this->config = json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
@@ -313,6 +403,75 @@ class ConfigurationManager
         if ($this->noWrite !== true) {
             $this->writeConfig();
         }
+    }
+
+    private function has(string $key) : bool {
+        return array_key_exists($key, $this->getConfig());
+    }
+
+    private function unset(string ...$keys) : void {
+        $changed = false;
+        $this->getConfig();
+        foreach ($keys as $key) {
+            if ($this->has($key)) {
+                unset($this->config[$key]);
+                $changed = true;
+            }
+        }
+        // Only write if this isn't called in between startTransaction() and commitTransaction().
+        if ($changed && $this->noWrite !== true) {
+            $this->writeConfig();
+        }
+    }
+
+    private function writeOfficeSuite(OfficeSuite $officeSuite) : void
+    {
+        $this->set('officeSuite', $officeSuite->value);
+        // Remove the deprecated options.
+        $this->unset('isCollaboraEnabled', 'isOnlyofficeEnabled', 'isEuroofficeEnabled');
+    }
+
+    private function readOfficeSuite() : OfficeSuite
+    {
+        if ($this->has('officeSuite')) {
+            $configValue = (string) $this->get('officeSuite', '');
+            return OfficeSuite::tryFrom($configValue) ?? OfficeSuite::None;
+        }
+
+        // Check the three boolean legacy options. Convert to boolean because very old configs could have
+        // `1`/`0` or even `"1"`/`"0"`/`""` as values.
+        if (boolval($this->get('isCollaboraEnabled', false)) === true) {
+            return OfficeSuite::Collabora;
+        }
+        if (boolval($this->get('isOnlyofficeEnabled', false)) === true) {
+            return OfficeSuite::Onlyoffice;
+        }
+        if (boolval($this->get('isEuroofficeEnabled', false)) === true) {
+            return OfficeSuite::Eurooffice;
+        }
+        
+        // All offices disabled.
+        if (
+            $this->has('isCollaboraEnabled') && boolval($this->get('isCollaboraEnabled')) === false
+            && $this->has('isOnlyofficeEnabled') && boolval($this->get('isOnlyofficeEnabled')) === false
+            && (
+                // Eurooffice can be unset, which should be treated as `false`, too, because it means that
+                // the office choice wasn't ever saved after Eurooffice was introduced, but the user had
+                // previously disabled both available options, which means they want no office.
+                !$this->has('isEuroofficeEnabled')
+                || boolval($this->get('isEuroofficeEnabled')) === false
+            )
+        ) {
+            return OfficeSuite::None;
+        }
+        
+        // Default
+        return OfficeSuite::Eurooffice;
+    }
+
+    public function getOfficeSuiteString() : string
+    {
+        return $this->officeSuite->value;
     }
 
     /**
@@ -354,7 +513,7 @@ class ConfigurationManager
     }
 
     public function getRegisteredSecret(string $secretId) : string {
-        if ($this->secrets[$secretId]) {
+        if (isset($this->secrets[$secretId])) {
             return $this->getAndGenerateSecret($secretId);
         }
         throw new \Exception("The secret " . $secretId . " was not registered. Please check if it is defined in secrets of containers.json.");
@@ -429,14 +588,6 @@ class ConfigurationManager
             return trim((string)file_get_contents($path));
         }
         return '';
-    }
-
-    private function isx64Platform() : bool {
-        if (php_uname('m') === 'x86_64') {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -521,23 +672,22 @@ class ConfigurationManager
             }
 
             // Check if response is correct
-            $ch = curl_init();
-            if ($ch === false) {
-                throw new InvalidSettingConfigurationException('Could not init curl! Please check the logs!');
-            }
             $testUrl = $protocol . $domain . ':443';
-            curl_setopt($ch, CURLOPT_URL, $testUrl);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            $response = (string)curl_exec($ch);
-            # Get rid of trailing \n
-            $response = str_replace("\n", "", $response);
+            $errorMessage = '';
+            $guzzleClient = new Client(['connect_timeout' => 10, 'timeout' => 10, 'http_errors' => false]);
+            try {
+                $guzzleResponse = $guzzleClient->get($testUrl);
+                # Get rid of trailing \n
+                $response = str_replace("\n", "", (string)$guzzleResponse->getBody());
+            } catch (TransferException $e) {
+                $response = '';
+                $errorMessage = 'The error message was: ' . $e->getMessage();
+            }
 
             if ($response !== $instanceID) {
                 error_log('The response of the connection attempt to "' . $testUrl . '" was: ' . $response);
                 error_log('Expected was: ' . $instanceID);
-                error_log('The error message was: ' . curl_error($ch));
+                error_log($errorMessage);
                 $notice = "Domain does not point to this server or the reverse proxy is not configured correctly. See the mastercontainer logs for more details. ('sudo docker logs -f nextcloud-aio-mastercontainer')";
                 if ($port === '443') {
                     $notice .= " If you should be using Cloudflare, make sure to disable the Cloudflare Proxy feature as it might block the domain validation. Same for any other firewall or service that blocks unencrypted access on port 443.";
@@ -554,7 +704,6 @@ class ConfigurationManager
         $this->set('domain', $domain);
         // Reset the borg restore password when setting the domain
         $this->borgRestorePassword = '';
-        $this->startTransaction();
         $this->commitTransaction();
     }
 
@@ -659,7 +808,7 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("Please enter your current password.");
         }
 
-        if ($currentPassword !== $this->password) {
+        if (!hash_equals($this->password, $currentPassword)) {
             throw new InvalidSettingConfigurationException("The entered current password is not correct.");
         }
 
@@ -696,7 +845,21 @@ class ConfigurationManager
         if ($df !== false && (int)$df < $size) {
             throw new InvalidSettingConfigurationException(DataConst::GetDataDirectory() . " does not have enough space for writing the config file! Not writing it back!");
         }
-        file_put_contents(DataConst::GetConfigFile(), $content);
+        // Write to a temp file first to avoid truncating the config file if the
+        // disk fills up mid-write. rename() is atomic on POSIX filesystems, so the
+        // original config is never touched until the new content is fully on disk.
+        $tempFile = DataConst::GetConfigFile() . '.tmp';
+        if (file_put_contents($tempFile, $content) === false) {
+            // The file probably wasn't created, but better check nonetheless.
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+            throw new InvalidSettingConfigurationException("Failed to write temporary config file: " . $tempFile);
+        }
+        if (!rename($tempFile, DataConst::GetConfigFile())) {
+            unlink($tempFile);
+            throw new InvalidSettingConfigurationException("Failed to rename " . $tempFile . " to " . DataConst::GetConfigFile());
+        }
         $this->config = [];
     }
 
@@ -758,23 +921,47 @@ class ConfigurationManager
             $time .= PHP_EOL;
         }
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
+        $this->dailyBackupFileCache = '';
+        $this->dailyBackupFileMtime = 0;
+    }
+
+    private function getDailyBackupFileContent() : string {
+        $file = DataConst::GetDailyBackupTimeFile();
+        if (!file_exists($file)) {
+            $this->dailyBackupFileCache = '';
+            $this->dailyBackupFileMtime = 0;
+            return '';
+        }
+        $mtime = filemtime($file);
+        if ($mtime !== false && $this->dailyBackupFileMtime === $mtime && $this->dailyBackupFileCache !== '') {
+            return $this->dailyBackupFileCache;
+        }
+        $content = file_get_contents($file);
+        if ($content === false || $content === '') {
+            return '';
+        }
+        if ($mtime !== false) {
+            $this->dailyBackupFileCache = $content;
+            $this->dailyBackupFileMtime = $mtime;
+        }
+        return $content;
     }
 
     public function getDailyBackupTime() : string {
-        if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
+        $content = $this->getDailyBackupFileContent();
+        if ($content === '') {
             return '';
         }
-        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
-        $dailyBackupFileArray = explode("\n", $dailyBackupFile);
+        $dailyBackupFileArray = explode("\n", $content);
         return $dailyBackupFileArray[0];
     }
 
     public function areAutomaticUpdatesEnabled() : bool {
-        if (!file_exists(DataConst::GetDailyBackupTimeFile())) {
+        $content = $this->getDailyBackupFileContent();
+        if ($content === '') {
             return false;
         }
-        $dailyBackupFile = (string)file_get_contents(DataConst::GetDailyBackupTimeFile());
-        $dailyBackupFileArray = explode("\n", $dailyBackupFile);
+        $dailyBackupFileArray = explode("\n", $content);
         if (isset($dailyBackupFileArray[1]) && $dailyBackupFileArray[1] === 'automaticUpdatesAreNotEnabled') {
             return false;
         } else {
@@ -786,11 +973,10 @@ class ConfigurationManager
         if (file_exists(DataConst::GetDailyBackupTimeFile())) {
             unlink(DataConst::GetDailyBackupTimeFile());
         }
+        $this->dailyBackupFileCache = '';
+        $this->dailyBackupFileMtime = 0;
     }
 
-    /**
-     * @throws InvalidSettingConfigurationException
-     */
     public function setAdditionalBackupDirectories(string $additionalBackupDirectories) : void {
         $additionalBackupDirectoriesArray = explode("\n", $additionalBackupDirectories);
         $validDirectories = '';
@@ -906,10 +1092,6 @@ class ConfigurationManager
         }
     }
 
-    public function isCollaboraSubscriptionEnabled() : bool {
-        return str_contains($this->collaboraAdditionalOptions, '--o:support_key=');
-    }
-
     /**
      * Provide an extra method since the corresponding attribute setter prevents setting an empty value.
      */
@@ -1020,6 +1202,7 @@ class ConfigurationManager
             'NC_DOMAIN' => $this->domain,
             'NC_BASE_DN' => $this->getBaseDN(),
             'AIO_TOKEN' => $this->aioPrivateKey,
+            'AIO_LOG_LEVEL' => $this->aioLogLevel,
             'BORGBACKUP_REMOTE_REPO' => $this->borgRemoteRepo,
             'BORGBACKUP_MODE' => $this->backupMode,
             'AIO_URL' => $this->aioUrl,
@@ -1033,8 +1216,9 @@ class ConfigurationManager
             'BACKUP_RESTORE_PASSWORD' => $this->borgRestorePassword,
             'CLAMAV_ENABLED' => $this->isClamavEnabled ? 'yes' : '',
             'TALK_RECORDING_ENABLED' => $this->isTalkRecordingEnabled ? 'yes' : '',
-            'ONLYOFFICE_ENABLED' => $this->isOnlyofficeEnabled ? 'yes' : '',
-            'COLLABORA_ENABLED' => $this->isCollaboraEnabled ? 'yes' : '',
+            'ONLYOFFICE_ENABLED' => $this->officeSuite === OfficeSuite::Onlyoffice ? 'yes' : '',
+            'EUROOFFICE_ENABLED' => $this->officeSuite === OfficeSuite::Eurooffice ? 'yes' : '',
+            'COLLABORA_ENABLED' => $this->officeSuite === OfficeSuite::Collabora ? 'yes' : '',
             'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
             'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? 'yes' : '',
             'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
@@ -1056,14 +1240,15 @@ class ConfigurationManager
             'NEXTCLOUD_STARTUP_APPS' => $this->getNextcloudStartupApps(),
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->nextcloudAdditionalApks,
             'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->nextcloudAdditionalPhpExtensions,
-            'INSTALL_LATEST_MAJOR' => $this->installLatestMajor ? 'yes' : '',
+            'INSTALL_LATEST_MAJOR' => ($this->installLatestMajor !== '' && $this->installLatestMajor !== 'no') ? 'yes' : '',
             'REMOVE_DISABLED_APPS' => $this->nextcloudKeepDisabledApps ? '' : 'yes',
             // Allow to get local ip-address of database container which allows to talk to it even in host mode (the container that requires this needs to be started first then)
-            'AIO_DATABASE_HOST' => gethostbyname('nextcloud-aio-database'),
+            'AIO_DATABASE_HOST' => NetworkHelper::resolveHostname('nextcloud-aio-database'),
             // Allow to get local ip-address of caddy container and add it to trusted proxies automatically
-            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? gethostbyname('nextcloud-aio-caddy') : '',
+            'CADDY_IP_ADDRESS' => in_array('caddy', $this->aioCommunityContainers, true) ? NetworkHelper::resolveHostname('nextcloud-aio-caddy') : '',
             'WHITEBOARD_ENABLED' => $this->isWhiteboardEnabled ? 'yes' : '',
             'AIO_VERSION' => $this->getAioVersion(),
+            'DESEC_TOKEN' => $this->desecToken,
             default => $this->getRegisteredSecret($placeholder),
         };
     }

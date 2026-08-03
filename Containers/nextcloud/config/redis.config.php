@@ -7,6 +7,8 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
 
   if (getenv('REDIS_HOST')) {
     $CONFIG['redis']['host'] = (string) getenv('REDIS_HOST');
+    $CONFIG['redis']['timeout'] = 3.0;
+    $CONFIG['redis']['read_timeout'] = 10.0;
   }
 
   if (getenv('REDIS_HOST_PASSWORD')) {
@@ -21,8 +23,16 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
     $CONFIG['redis']['dbindex'] = (int) getenv('REDIS_DB_INDEX');
   }
 
+  if (getenv('REDIS_PREFIX')) {
+    $CONFIG['redis']['memcache_customprefix'] = getenv('REDIS_PREFIX');
+  }
+
   if (getenv('REDIS_USER_AUTH')) {
     $CONFIG['redis']['user'] = str_replace("&auth[]=", "", getenv('REDIS_USER_AUTH'));
+  }
+
+  if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_REDIS')) {
+    $CONFIG['redis']['ssl_context']['cafile'] = '/var/www/html/data/certificates/ca-bundle.crt';
   }
 } else {
   $CONFIG = array(
@@ -52,5 +62,13 @@ if (getenv('REDIS_MODE') !== 'rediscluster') {
 
   if (getenv('REDIS_USER_AUTH')) {
     $CONFIG['redis.cluster']['user'] = str_replace("&auth[]=", "", getenv('REDIS_USER_AUTH'));
+  }
+
+  if (getenv('REDIS_PREFIX')) {
+    $CONFIG['redis.cluster']['memcache_customprefix'] = getenv('REDIS_PREFIX');
+  }
+
+  if (getenv('NEXTCLOUD_TRUSTED_CERTIFICATES_REDIS')) {
+    $CONFIG['redis.cluster']['ssl_context']['cafile'] = '/var/www/html/data/certificates/ca-bundle.crt';
   }
 }

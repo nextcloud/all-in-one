@@ -6,13 +6,13 @@
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/scrutiny",
             "image": "ghcr.io/szaimen/aio-scrutiny",
             "image_tag": "v2",
-            "internal_port": "8000",
+            "internal_port": "8001",
             "init": false,
             "restart": "unless-stopped",
             "ports": [
                 {
                   "ip_binding": "",
-                  "port_number": "8000",
+                  "port_number": "8001",
                   "protocol": "tcp"
                 }
             ],
@@ -22,8 +22,8 @@
             ],
             "environment": [
                 "TZ=%TIMEZONE%",
-                "SCRUTINY_WEB_LISTEN_PORT=8000",
-                "COLLECTOR_API_ENDPOINT=http://127.0.0.1:8000"
+                "SCRUTINY_WEB_LISTEN_PORT=8001",
+                "COLLECTOR_API_ENDPOINT=http://127.0.0.1:8001"
             ],
             "volumes": [
                 {

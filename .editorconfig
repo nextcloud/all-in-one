@@ -1,0 +1,20 @@
+# https://editorconfig.org
+
+# Tip: to find files violating the rules set out here, run `docker run --rm --volume=$PWD:/check mstruebing/editorconfig-checker`
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.yaml]
+indent_size = 2
+
+
+[*.yml]
+indent_size = 2

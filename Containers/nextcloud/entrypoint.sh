@@ -10,6 +10,10 @@ directory_empty() {
     [ -z "$(ls -A "$1/")" ]
 }
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 run_upgrade_if_needed_due_to_app_update() {
     if php /var/www/html/occ status | grep maintenance | grep -q true; then
         php /var/www/html/occ maintenance:mode --off
@@ -20,7 +24,15 @@ run_upgrade_if_needed_due_to_app_update() {
     fi
 }
 
-# Create cert bundle
+NEXTCLOUD_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
+    debug) printf '0' ;;
+    info) printf '1' ;;
+    warn) printf '2' ;;
+    error) printf '3' ;;
+esac)"
+export NEXTCLOUD_LOG_LEVEL
+
+# Create cert bundle start # Do not remove or change this line!
 if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
 
     # Enable debug mode
@@ -75,8 +87,12 @@ if env | grep -q NEXTCLOUD_TRUSTED_CERTIFICATES_; then
     cat "$CERTIFICATE_BUNDLE"
 
     # Disable debug mode
-    set +x
+    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+        set +x
+    fi
 fi
+
+# Create cert bundle end # Do not remove or change this line!
 
 # Adjust DATABASE_TYPE to by Nextcloud supported value
 if [ "$DATABASE_TYPE" = postgres ]; then
@@ -115,6 +131,11 @@ rm -f "$test_file"
 if [ -f /var/www/html/version.php ]; then
     # shellcheck disable=SC2016
     installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+    if [ -z "$installed_version" ]; then
+        echo "Could not determine the installed Nextcloud version via php -r. The PHP installation might be broken."
+        echo "Please check the container logs and your PHP installation."
+        exit 1
+    fi
 else
     installed_version="0.0.0.0"
 fi
@@ -217,7 +238,9 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 if grep -q appstoreurl /var/www/html/config/config.php; then
                     set -x
                     APPSTORE_URL="$(grep appstoreurl /var/www/html/config/config.php | grep -oP 'https://.*v[0-9]+')"
-                    set +x
+                    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+                        set +x
+                    fi
                 fi
                 # Default appstoreurl parameter in config.php defaults to 'https://apps.nextcloud.com/api/v1' so we check for the apps.json file stored in there
                 CURL_STATUS="$(curl -LI "$APPSTORE_URL"/apps.json -o /dev/null -w '%{http_code}\n' -s)"
@@ -284,7 +307,9 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                     "$SOURCE_LOCATION/custom_apps/" \
                     /var/www/html/custom_apps/
             done
-            set +x
+            if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+                set +x
+            fi
         fi
 
         # Copy these from Nextcloud archive if they don't exist yet (i.e. new install)
@@ -396,53 +421,32 @@ EOF
 
 # AIO update to latest start # Do not remove or change this line!
             if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
-                php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
-                INSTALLED_AT="$(php /var/www/html/occ config:app:get core installedat)"
-                if [ -n "${INSTALLED_AT}" ]; then
-                    # Set the installdat to 00 which will allow to skip staging and install the next major directly
-                    # shellcheck disable=SC2001
-                    INSTALLED_AT="$(echo "${INSTALLED_AT}" | sed "s|[0-9][0-9]$|00|")"
-                    php /var/www/html/occ config:app:set core installedat --value="${INSTALLED_AT}" 
-                fi
-                php /var/www/html/updater/updater.phar --no-interaction --no-backup
-                if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
-                    echo "Installation of Nextcloud failed!"
-                    touch "$NEXTCLOUD_DATA_DIR/install.failed"
+                if ! bash /upgrade-latest-major.sh; then
+                    echo "Upgrade to latest major version failed! Check the output above for details."
                     exit 1
                 fi
                 # shellcheck disable=SC2016
                 installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
-                INSTALLED_MAJOR="${installed_version%%.*}"
-                IMAGE_MAJOR="${image_version%%.*}"
-                # If a valid upgrade path, trigger the Nextcloud built-in Updater
-                if ! [ "$INSTALLED_MAJOR" -gt "$IMAGE_MAJOR" ]; then
-                    php /var/www/html/updater/updater.phar --no-interaction --no-backup
-                    if ! php /var/www/html/occ -V || php /var/www/html/occ status | grep maintenance | grep -q 'true'; then
-                        echo "Installation of Nextcloud failed!"
-                        # TODO: Add a hint here about what to do / where to look / updater.log? 
-                        touch "$NEXTCLOUD_DATA_DIR/install.failed"
-                        exit 1
-                    fi
-                    # shellcheck disable=SC2016
-                    installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
-                fi
-                php /var/www/html/occ config:system:set updatechecker --type=bool --value=true
-                php /var/www/html/occ app:enable nextcloud-aio --force
-                php /var/www/html/occ db:add-missing-columns
-                php /var/www/html/occ db:add-missing-primary-keys
-                yes | php /var/www/html/occ db:convert-filecache-bigint
             fi
 # AIO update to latest end # Do not remove or change this line!
 
             # Apply log settings
             echo "Applying default settings..."
             mkdir -p /var/www/html/data
-            php /var/www/html/occ config:system:set loglevel --value="2" --type=integer
-            php /var/www/html/occ config:system:set log_type --value="file"
-            php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
+            php /var/www/html/occ config:system:set loglevel --value="$NEXTCLOUD_LOG_LEVEL" --type=integer
+            if [ "$NEXTCLOUD_LOG_TYPE" = "errorlog" ]; then
+                php /var/www/html/occ config:system:set log_type --value="errorlog"
+                php /var/www/html/occ config:system:set log_type_audit --value="errorlog"
+                php /var/www/html/occ app:disable logreader
+            else
+                php /var/www/html/occ config:system:set log_type --value="file"
+                php /var/www/html/occ config:system:set log_type_audit --value="file"
+                php /var/www/html/occ app:enable logreader
+                php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
+                php /var/www/html/occ config:system:set logfile_audit --value="/var/www/html/data/audit.log"
+            fi
             php /var/www/html/occ config:system:set log_rotate_size --value="10485760" --type=integer
             php /var/www/html/occ app:enable admin_audit
-            php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
             php /var/www/html/occ config:system:set log.condition apps 0 --value="admin_audit"
 
             # Apply preview settings
@@ -640,8 +644,18 @@ fi
 # Adjusting log files to be stored on a volume
 echo "Adjusting log files..."
 php /var/www/html/occ config:system:set upgrade.cli-upgrade-link --value="https://github.com/nextcloud/all-in-one/discussions/2726"
-php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
-php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
+php /var/www/html/occ config:system:set loglevel --value="$NEXTCLOUD_LOG_LEVEL" --type=integer
+if [ "$NEXTCLOUD_LOG_TYPE" = "errorlog" ]; then
+    php /var/www/html/occ config:system:set log_type --value="errorlog"
+    php /var/www/html/occ config:system:set log_type_audit --value="errorlog"
+    php /var/www/html/occ app:disable logreader
+else
+    php /var/www/html/occ config:system:set log_type --value="file"
+    php /var/www/html/occ config:system:set log_type_audit --value="file"
+    php /var/www/html/occ app:enable logreader
+    php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
+    php /var/www/html/occ config:system:set logfile_audit --value="/var/www/html/data/audit.log"
+fi
 php /var/www/html/occ config:system:set updatedirectory --value="/nc-updater"
 if [ -n "$NEXTCLOUD_SKELETON_DIRECTORY" ]; then
     if [ "$NEXTCLOUD_SKELETON_DIRECTORY" = "empty" ]; then
@@ -742,7 +756,9 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     if echo "$COLLABORA_HOST" | grep -q "nextcloud-.*-collabora"; then
         COLLABORA_HOST="$NC_DOMAIN"
     fi
-    set +x
+    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+        set +x
+    fi
     # Remove richdcoumentscode if it should be incorrectly installed
     if [ -d "/var/www/html/custom_apps/richdocumentscode" ]; then
         php /var/www/html/occ app:remove richdocumentscode
@@ -853,6 +869,64 @@ else
     fi
 fi
 
+# EuroOffice
+if [ "$EUROOFFICE_ENABLED" = 'yes' ]; then
+    # Determine EuroOffice port based on host pattern
+    if echo "$EUROOFFICE_HOST" | grep -q "nextcloud-.*-eurooffice"; then
+        EUROOFFICE_PORT=80
+    else
+        EUROOFFICE_PORT=443
+    fi
+
+    count=0
+    while ! nc -z "$EUROOFFICE_HOST" "$EUROOFFICE_PORT" && [ "$count" -lt 90 ]; do
+        echo "Waiting for EuroOffice to become available..."
+        count=$((count+5))
+        sleep 5
+    done
+    if [ "$count" -ge 90 ]; then
+        bash /notify.sh "EuroOffice did not start in time!" "Skipping initialization and disabling eurooffice app."
+        php /var/www/html/occ app:disable eurooffice
+    else
+        # Install or enable EuroOffice app as needed
+        if ! [ -d "/var/www/html/custom_apps/eurooffice" ]; then
+            php /var/www/html/occ app:install eurooffice
+        elif [ "$(php /var/www/html/occ config:app:get eurooffice enabled)" != "yes" ]; then
+            php /var/www/html/occ app:enable eurooffice
+        elif [ "$SKIP_UPDATE" != 1 ]; then
+            php /var/www/html/occ app:update eurooffice
+        fi
+
+        # Set EuroOffice configuration
+        php /var/www/html/occ config:system:set eurooffice editors_check_interval --value="0" --type=integer 
+        php /var/www/html/occ config:system:set eurooffice jwt_secret --value="$EUROOFFICE_SECRET"
+        php /var/www/html/occ config:app:set eurooffice jwt_secret --value="$EUROOFFICE_SECRET"
+        php /var/www/html/occ config:system:set eurooffice jwt_header --value="AuthorizationJwt"
+
+        # Adjust the EuroOffice host if using internal pattern
+        if echo "$EUROOFFICE_HOST" | grep -q "nextcloud-.*-eurooffice"; then
+            EUROOFFICE_HOST="$NC_DOMAIN/eurooffice"
+            export EUROOFFICE_HOST
+        fi
+
+        php /var/www/html/occ config:app:set eurooffice DocumentServerUrl --value="https://$EUROOFFICE_HOST"
+
+        # Register EuroOffice preview provider in the explicit allowlist.
+        # Use a high fixed index (50) to avoid colliding with AIO's seeded indices (1-7, 23).
+        if ! php /var/www/html/occ config:system:get enabledPreviewProviders | grep -q "Eurooffice"; then
+            php /var/www/html/occ config:system:set enabledPreviewProviders 24 --value="OCA\Eurooffice\Preview"
+        fi
+    fi
+else
+    # Remove EuroOffice app if disabled and removal is requested
+    if [ "$REMOVE_DISABLED_APPS" = yes ] && \
+       [ -d "/var/www/html/custom_apps/eurooffice" ] && \
+       [ -n "$EUROOFFICE_SECRET" ] && \
+       [ "$(php /var/www/html/occ config:system:get eurooffice jwt_secret)" = "$EUROOFFICE_SECRET" ]; then
+        php /var/www/html/occ app:remove eurooffice
+    fi
+fi
+
 # Talk
 if [ "$TALK_ENABLED" = 'yes' ]; then
     set -x
@@ -863,7 +937,9 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     if [ -z "$TURN_DOMAIN" ]; then
         TURN_DOMAIN="$TALK_HOST"
     fi
-    set +x
+    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+        set +x
+    fi
     if ! [ -d "/var/www/html/custom_apps/spreed" ]; then
         php /var/www/html/occ app:install spreed
     elif [ "$(php /var/www/html/occ config:app:get spreed enabled)" != "yes" ]; then
@@ -871,16 +947,20 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update spreed
     fi
-    # Based on https://github.com/nextcloud/spreed/issues/960#issuecomment-416993435
-    if [ -z "$(php /var/www/html/occ talk:turn:list --output="plain")" ]; then
-        # shellcheck disable=SC2153
+    # Add turn server
+    # shellcheck disable=SC2153
+    if ! php /var/www/html/occ talk:turn:list --output="plain" | grep server | grep -q " $TURN_DOMAIN:$TALK_PORT"; then
         php /var/www/html/occ talk:turn:add turn "$TURN_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
     fi
+    # Add stun server
     STUN_SERVER="$(php /var/www/html/occ talk:stun:list --output="plain")"
-    if [ -z "$STUN_SERVER" ] || echo "$STUN_SERVER" | grep -oP '[a-zA-Z.:0-9]+' | grep -q "^stun.nextcloud.com:443$"; then
+    if ! echo "$STUN_SERVER" | grep -q " $TURN_DOMAIN:$TALK_PORT"; then
         php /var/www/html/occ talk:stun:add "$TURN_DOMAIN:$TALK_PORT"
+    fi
+    if [ -z "$STUN_SERVER" ] || echo "$STUN_SERVER" | grep -oP '[a-zA-Z.:0-9]+' | grep -q "^stun.nextcloud.com:443$"; then
         php /var/www/html/occ talk:stun:delete "stun.nextcloud.com:443"
     fi
+    # Add HPB
     if ! php /var/www/html/occ talk:signaling:list --output="plain" | grep -q "https://$TALK_HOST$HPB_PATH"; then
         php /var/www/html/occ talk:signaling:add "https://$TALK_HOST$HPB_PATH" "$SIGNALING_SECRET" --verify
     fi

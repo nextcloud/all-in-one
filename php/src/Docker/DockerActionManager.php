@@ -9,12 +9,15 @@ use AIO\Container\VersionState;
 use AIO\ContainerDefinitionFetcher;
 use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
+use AIO\Helper\NetworkHelper;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Exception\RequestException;
 use http\Env\Response;
 
 readonly class DockerActionManager {
     private const string API_VERSION = 'v1.44';
+    private const int PULL_HEARTBEAT_INTERVAL_SECONDS = 4;
     private Client $guzzleClient;
 
     public function __construct(
@@ -47,7 +50,7 @@ readonly class DockerActionManager {
     public function GetContainerRunningState(Container $container): ContainerState {
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->identifier)));
         try {
-            $response = $this->guzzleClient->get($url);
+            $response = $this->sendHttpRequest('GET', $url);
         } catch (RequestException $e) {
             if ($e->getCode() === 404) {
                 return ContainerState::ImageDoesNotExist;
@@ -67,7 +70,7 @@ readonly class DockerActionManager {
     public function GetContainerRestartingState(Container $container): ContainerState {
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($container->identifier)));
         try {
-            $response = $this->guzzleClient->get($url);
+            $response = $this->sendHttpRequest('GET', $url);
         } catch (RequestException $e) {
             if ($e->getCode() === 404) {
                 return ContainerState::ImageDoesNotExist;
@@ -137,7 +140,7 @@ readonly class DockerActionManager {
     public function DeleteContainer(Container $container): void {
         $url = $this->BuildApiUrl(sprintf('containers/%s?v=true', urlencode($container->identifier)));
         try {
-            $this->guzzleClient->delete($url);
+            $this->sendHttpRequest('DELETE', $url);
         } catch (RequestException $e) {
             if ($e->getCode() !== 404) {
                 throw $e;
@@ -145,23 +148,44 @@ readonly class DockerActionManager {
         }
     }
 
+    public function deleteBorgBackupConfig(): void {
+        // Delete the borgbackup container
+        $id = 'nextcloud-aio-borgbackup';
+        $borgbackupContainer = $this->containerDefinitionFetcher->GetContainerById($id);
+        $this->DeleteContainer($borgbackupContainer);
+
+        // Delete the borg cache volume
+        $url = $this->BuildApiUrl('volumes/nextcloud_aio_backup_cache');
+        try {
+            $this->sendHttpRequest('DELETE', $url);
+            error_log('nextcloud_aio_backup_cache volume deleted successfully.');
+        } catch (RequestException $e) {
+            if ($e->getCode() !== 404) {
+                error_log('Could not delete nextcloud_aio_backup_cache volume: ' . $e->getMessage());
+            }
+        }
+
+        // Clear the configuration variables and files
+        $this->configurationManager->deleteBorgBackupLocationItems();
+    }
+
     public function GetLogs(string $id, string $since = ''): string {
-        $url = $this->BuildApiUrl(
-            sprintf(
-                'containers/%s/logs?stdout=true&stderr=true&timestamps=true&since=%s',
-                urlencode($id),
-                $since
-            ));
-        $responseBody = (string)$this->guzzleClient->get($url)->getBody();
+        $path = sprintf('containers/%s/logs?stdout=true&stderr=true&timestamps=true', urlencode($id));
+        if ($since !== '') {
+            $path .= sprintf('&since=%s', $since);
+        }
+        $url = $this->BuildApiUrl($path);
+        $responseBody = (string)$this->sendHttpRequest('GET', $url)->getBody();
 
         $response = "";
         $separator = "\r\n";
         $line = strtok($responseBody, $separator);
-        $response = substr((string)$line, 8) . $separator;
+        if ($line !== false) {
+            $response = substr($line, 8) . $separator;
+        }
 
-        while ($line !== false) {
-            $line = strtok($separator);
-            $response .= substr((string)$line, 8) . $separator;
+        while (($line = strtok($separator)) !== false) {
+            $response .= substr($line, 8) . $separator;
         }
 
         return $response;
@@ -171,9 +195,9 @@ readonly class DockerActionManager {
         $url = $this->BuildApiUrl(sprintf('containers/%s/start', urlencode($container->identifier)));
         try {
             if ($addToStreamingResponseBody !== null) {
-                $addToStreamingResponseBody($container, "Starting container");
+                $addToStreamingResponseBody("Starting container", $container);
             }
-            $this->guzzleClient->post($url);
+            $this->sendHttpRequest('POST', $url);
         } catch (RequestException $e) {
             throw new \Exception("Could not start container " . $container->identifier . ": " . $e->getResponse()?->getBody()->getContents());
         }
@@ -187,12 +211,12 @@ readonly class DockerActionManager {
             ];
 
             if ($volume->name === 'nextcloud_aio_nextcloud_datadir' || $volume->name === 'nextcloud_aio_backupdir') {
-                return;
+                continue;
             }
 
             $firstChar = substr($volume->name, 0, 1);
             if (!in_array($firstChar, $forbiddenChars)) {
-                $this->guzzleClient->request(
+                $this->sendHttpRequest(
                     'POST',
                     $url,
                     [
@@ -311,15 +335,29 @@ readonly class DockerActionManager {
         }
 
         $devices = [];
+        $groupAdd = [];
         foreach ($container->devices as $device) {
             if ($device === '/dev/dri' && !$this->configurationManager->nextcloudEnableDriDevice) {
                 continue;
             }
             $devices[] = ["PathOnHost" => $device, "PathInContainer" => $device, "CgroupPermissions" => "rwm"];
+            if ($device === '/dev/dri') {
+                // Add the render device's group as a supplemental group so that non-root
+                // containers (e.g. nextcloud-aio-talk-recording) can access the device.
+                // The GID is detected during mastercontainer startup when /dev/dri is bind-mounted.
+                $gid = $this->configurationManager->driDeviceGid;
+                if ($gid !== '' && !in_array($gid, $groupAdd, true)) {
+                    $groupAdd[] = $gid;
+                }
+            }
         }
 
         if (count($devices) > 0) {
             $requestBody['HostConfig']['Devices'] = $devices;
+        }
+
+        if (count($groupAdd) > 0) {
+            $requestBody['HostConfig']['GroupAdd'] = $groupAdd;
         }
 
         if ($container->enableNvidiaGpu && $this->configurationManager->enableNvidiaGpu) {
@@ -411,6 +449,13 @@ readonly class DockerActionManager {
             //         $mounts[] = ["Type" => "bind", "Source" => $volume->name, "Target" => $volume->mountPoint, "ReadOnly" => !$volume->isWritable, "BindOptions" => [ "Propagation" => "rshared"]];
             //     }
 
+        // Special things for the jellyfin community container
+        } elseif ($container->identifier === 'nextcloud-aio-jellyfin') {
+            $lldapIp = NetworkHelper::resolveHostname('nextcloud-aio-lldap');
+            if ($lldapIp !== 'nextcloud-aio-lldap') {
+                $requestBody['HostConfig']['ExtraHosts'] = ['nextcloud-aio-lldap:' . $lldapIp];
+            }
+
         // Special things for the caddy community container
         } elseif ($container->identifier === 'nextcloud-aio-caddy') {
             $requestBody['HostConfig']['ExtraHosts'] = ['host.docker.internal:host-gateway'];
@@ -429,10 +474,18 @@ readonly class DockerActionManager {
                 // To avoid problems with whitespace or dashes in option arguments we use a regular expression
                 // that splits the string at every position where a whitespace is followed by '--o:'.
                 // The leading whitespace is removed in the split but the following characters are not.
-                // Example: "--o:example_config1='some thing' --o:example_config2=something-else" -> ["--o:example_config1='some thing'", "--o:example_config2=something-else"] 
+                // Example: "--o:example_config1='some thing' --o:example_config2=something-else" -> ["--o:example_config1='some thing'", "--o:example_config2=something-else"]
                 $regEx = '/\s+(?=--o:)/';
                 $requestBody['Cmd'] = preg_split($regEx, rtrim($this->configurationManager->collaboraAdditionalOptions));
             }
+        // Special things for the scrutiny container which should not be exposed in the containers.json
+        } elseif ($container->identifier === 'nextcloud-aio-scrutiny') {
+            // Allow it to access block devices
+            $requestBody['HostConfig']['DeviceCgroupRules'] = ["b *:* rmw"];
+        // Special things for the makemkv container which should not be exposed in the containers.json
+        } elseif ($container->identifier === 'nextcloud-aio-makemkv') {
+            // Allow it to access block devices
+            $requestBody['HostConfig']['DeviceCgroupRules'] = ["b 11:* rmw", "c 21:* rmw"];
         }
 
         if (count($mounts) > 0) {
@@ -440,16 +493,17 @@ readonly class DockerActionManager {
         }
 
         // All AIO-managed containers should not be updated externally via watchtower but gracefully by AIO's backup and update feature.
-        // Also DIUN should not send update notifications. See https://crazymax.dev/diun/providers/docker/#docker-labels 
+        // Also DIUN should not send update notifications. See https://crazymax.dev/diun/providers/docker/#docker-labels
+        // Also Dockhand should not be auto updating the containers. See https://dockhand.pro/manual/#container-labels-behavior
         // Additionally set a default org.label-schema.vendor and com.docker.compose.project
-        $requestBody['Labels'] = ["com.centurylinklabs.watchtower.enable" => "false", "wud.watch" => "false", "diun.enable" => "false", "org.label-schema.vendor" => "Nextcloud", "com.docker.compose.project" => "nextcloud-aio"];
+        $requestBody['Labels'] = ["com.centurylinklabs.watchtower.enable" => "false", "wud.watch" => "false", "diun.enable" => "false", "dockhand.update" => "false", "org.label-schema.vendor" => "Nextcloud", "com.docker.compose.project" => "nextcloud-aio"];
 
         // Containers should have a fixed host name. See https://github.com/nextcloud/all-in-one/discussions/6589
         $requestBody['Hostname'] = $container->identifier;
 
         $url = $this->BuildApiUrl('containers/create?name=' . $container->identifier);
         try {
-            $this->guzzleClient->request(
+            $this->sendHttpRequest(
                 'POST',
                 $url,
                 [
@@ -506,10 +560,10 @@ readonly class DockerActionManager {
         $imageIsThere = true;
         try {
             if ($addToStreamingResponseBody) {
-                $addToStreamingResponseBody($container, "Pulling image");
+                $addToStreamingResponseBody("Pulling image", $container);
             }
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $encodedImageName));
-            $this->guzzleClient->get($imageUrl)->getBody()->getContents();
+            $this->sendHttpRequest('GET', $imageUrl)->getBody()->getContents();
         } catch (\Throwable $e) {
             $imageIsThere = false;
         }
@@ -517,10 +571,43 @@ readonly class DockerActionManager {
         $maxRetries = 3;
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
-                $this->guzzleClient->post($url);
+                // Use streaming so we can write heartbeat messages to the response while the
+                // image is being pulled. Without this, a long pull produces no output and a
+                // reverse proxy (nginx) can drop the connection after its read timeout expires.
+                // Once the connection is gone, PHP aborts on the next write and all consecutive
+                // containers are never started.
+                $pullResponse = $this->sendHttpRequest('POST', $url, ['stream' => true]);
+                $pullBody = $pullResponse->getBody();
+                $pullErrors = [];
+                $lastHeartbeat = time();
+                while (!$pullBody->eof()) {
+                    $line = Utils::readLine($pullBody);
+                    $event = json_decode($line, true);
+                    if (!is_array($event)) {
+                        continue;
+                    }
+                    if (isset($event['error'])) {
+                        $pullErrors[] = $event['error'];
+                    } elseif ($addToStreamingResponseBody !== null) {
+                        // Write a heartbeat at most once every 5 seconds so the reverse
+                        // proxy sees continuous data and does not close the connection.
+                        $now = time();
+                        $interval = time() - $lastHeartbeat;
+                        if ($interval >= self::PULL_HEARTBEAT_INTERVAL_SECONDS) {
+                            $addToStreamingResponseBody(".", $container);
+                            $lastHeartbeat = $now;
+                        }
+                    }
+                }
+                if ($pullErrors !== []) {
+                    throw new \Exception(implode('; ', $pullErrors));
+                }
                 break;
-            } catch (RequestException $e) {
-                $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $e->getResponse()?->getBody()->getContents();
+            } catch (\Exception $e) {
+                $errorDetails = $e instanceof RequestException
+                    ? $e->getResponse()?->getBody()->getContents()
+                    : $e->getMessage();
+                $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $errorDetails;
                 if ($attempt === $maxRetries) {
                     if ($imageIsThere === false) {
                         throw new \Exception($message);
@@ -602,11 +689,11 @@ readonly class DockerActionManager {
     private function GetRepoDigestsOfContainer(string $containerName): ?array {
         try {
             $containerUrl = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
-            $containerOutput = json_decode($this->guzzleClient->get($containerUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $containerOutput = json_decode($this->sendHttpRequest('GET', $containerUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $imageName = $containerOutput['Image'];
 
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
-            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $imageOutput = json_decode($this->sendHttpRequest('GET', $imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['RepoDigests'])) {
                 error_log('RepoDigests is not set of container ' . $containerName);
@@ -650,7 +737,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
-            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $output = json_decode($this->sendHttpRequest('GET', $url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $imageNameArray = explode(':', $output['Config']['Image']);
             if (count($imageNameArray) === 2) {
                 $imageName = $imageNameArray[0];
@@ -677,7 +764,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
-            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $output = json_decode($this->sendHttpRequest('GET', $url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $tagArray = explode(':', $output['Config']['Image']);
             if (count($tagArray) === 2) {
                 $tag = $tagArray[1];
@@ -718,48 +805,69 @@ readonly class DockerActionManager {
     }
 
     public function sendNotification(Container $container, string $subject, string $message, string $file = '/notify.sh'): void {
-        if ($this->GetContainerStartingState($container) === ContainerState::Running) {
+        $this->execCommandInContainer($container, ['bash', $file, $subject, $message]);
+    }
 
-            $containerName = $container->identifier;
+    public function execCommandInContainer(Container $container, array $cmd, ?\Closure $outputCallback = null): void {
+        if ($cmd === []) {
+            throw new \InvalidArgumentException('$cmd must not be empty.');
+        }
+        foreach ($cmd as $arg) {
+            if (!is_string($arg) || $arg === '') {
+                throw new \InvalidArgumentException('Every element of $cmd must be a non-empty string.');
+            }
+        }
 
-            // schedule the exec
-            $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
-            $response = json_decode(
-                $this->guzzleClient->request(
-                    'POST',
-                    $url,
-                    [
-                        'json' => [
-                            'AttachStdout' => true,
-                            'Tty' => true,
-                            'Cmd' => [
-                                'bash',
-                                $file,
-                                $subject,
-                                $message
-                            ],
-                        ],
-                    ]
-                )->getBody()->getContents(),
-                true,
-                512, 
-                JSON_THROW_ON_ERROR,
-            );
+        if ($this->GetContainerStartingState($container) !== ContainerState::Running) {
+            return;
+        }
 
-            $id = $response['Id'];
+        $containerName = $container->identifier;
 
-            // start the exec
-            $url = $this->BuildApiUrl(sprintf('exec/%s/start', $id));
-            $this->guzzleClient->request(
+        // Create exec instance
+        $url = $this->BuildApiUrl(sprintf('containers/%s/exec', urlencode($containerName)));
+        $response = json_decode(
+            $this->sendHttpRequest(
                 'POST',
                 $url,
                 [
                     'json' => [
-                        'Detach' => false,
+                        'AttachStdout' => true,
+                        'AttachStderr' => true,
                         'Tty' => true,
+                        'Cmd' => $cmd,
                     ],
                 ]
-            );
+            )->getBody()->getContents(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR,
+        );
+
+        $execId = $response['Id'];
+
+        // Start exec
+        $url = $this->BuildApiUrl(sprintf('exec/%s/start', $execId));
+        $requestOptions = [
+            'json' => [
+                'Detach' => false,
+                'Tty' => true,
+            ],
+        ];
+        if ($outputCallback !== null) {
+            $requestOptions['stream'] = true;
+        }
+
+        $startResponse = $this->sendHttpRequest('POST', $url, $requestOptions);
+
+        if ($outputCallback !== null) {
+            $body = $startResponse->getBody();
+            while (!$body->eof()) {
+                $line = rtrim(Utils::readLine($body), "\r");;
+                if ($line !== '') {
+                    $outputCallback($line);
+                }
+            }
         }
     }
 
@@ -770,7 +878,7 @@ readonly class DockerActionManager {
         );
 
         try {
-            $this->guzzleClient->request(
+            $this->sendHttpRequest(
                 'POST',
                 $url,
                 [
@@ -791,7 +899,7 @@ readonly class DockerActionManager {
         if ($createNetwork) {
             $url = $this->BuildApiUrl('networks/create');
             try {
-                $this->guzzleClient->request(
+                $this->sendHttpRequest(
                     'POST',
                     $url,
                     [
@@ -820,7 +928,7 @@ readonly class DockerActionManager {
         }
 
         try {
-            $this->guzzleClient->request(
+            $this->sendHttpRequest(
                 'POST',
                 $url,
                 [
@@ -865,7 +973,7 @@ readonly class DockerActionManager {
         }
         $url = $this->BuildApiUrl(sprintf('containers/%s/stop?t=%s', urlencode($container->identifier), $maxShutDownTime));
         try {
-            $this->guzzleClient->post($url);
+            $this->sendHttpRequest('POST', $url);
         } catch (RequestException $e) {
             if ($e->getCode() !== 404 && $e->getCode() !== 304) {
                 throw $e;
@@ -877,7 +985,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-borgbackup';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($containerName)));
         try {
-            $response = $this->guzzleClient->get($url);
+            $response = $this->sendHttpRequest('GET', $url);
         } catch (RequestException $e) {
             if ($e->getCode() === 404) {
                 return -1;
@@ -899,7 +1007,7 @@ readonly class DockerActionManager {
         $containerName = 'nextcloud-aio-database';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', urlencode($containerName)));
         try {
-            $response = $this->guzzleClient->get($url);
+            $response = $this->sendHttpRequest('GET', $url);
         } catch (RequestException $e) {
             if ($e->getCode() === 404) {
                 return -1;
@@ -939,7 +1047,7 @@ readonly class DockerActionManager {
         $imageName = $imageName . ':' . $this->GetCurrentChannel();
         try {
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
-            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $imageOutput = json_decode($this->sendHttpRequest('GET', $imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['Created'])) {
                 error_log('Created is not set of image ' . $imageName);
@@ -983,4 +1091,84 @@ readonly class DockerActionManager {
             return $this->dockerHubManager->GetLatestDigestOfTag($imageName, $tag);
         }
     }
+
+    public function RunNextcloudUpgradeToLatestMajor(\Closure $addToStreamingResponseBody): void {
+        $container = $this->containerDefinitionFetcher->GetContainerById('nextcloud-aio-nextcloud');
+        $this->execCommandInContainer($container, ['bash', '/upgrade-latest-major.sh'], $addToStreamingResponseBody);
+    }
+
+    public function SystemPrune(?\Closure $addToStreamingResponseBody = null): void {
+        $endpoints = [
+            // Remove stopped containers
+            'containers/prune',
+            // Remove unused images
+            'images/prune',
+            // Remove unused volumes
+            'volumes/prune',
+            // Remove unused networks
+            'networks/prune',
+            // Prune build cache
+            'build/prune',
+        ];
+
+        foreach ($endpoints as $endpoint) {
+            // Special-case images prune to include the dangling filter as requested
+            if ($endpoint === 'images/prune') {
+                $filters = json_encode(['dangling' => ['false']]);
+                $url = $this->BuildApiUrl($endpoint . '?filters=' . urlencode((string) $filters));
+            } else {
+                $url = $this->BuildApiUrl($endpoint);
+            }
+
+            if ($addToStreamingResponseBody !== null) {
+                $addToStreamingResponseBody("Running $endpoint...");
+            }
+
+            try {
+                $response = $this->sendHttpRequest('POST', $url);
+                if ($addToStreamingResponseBody !== null) {
+                    $data = json_decode((string)$response->getBody(), true);
+                    $deleted = 0;
+                    foreach (['ContainersDeleted', 'ImagesDeleted', 'VolumesDeleted', 'NetworksDeleted', 'CachesDeleted'] as $key) {
+                        if (isset($data[$key]) && is_array($data[$key])) {
+                            $deleted += count($data[$key]);
+                        }
+                    }
+                    $reclaimed = $data['SpaceReclaimed'] ?? 0;
+                    $parts = [];
+                    if ($deleted > 0) {
+                        $parts[] = "$deleted item(s) deleted";
+                    }
+                    if ($reclaimed > 0) {
+                        $i = (int)floor(log($reclaimed, 1024));
+                        $parts[] = 'Space reclaimed: ' . (string)round($reclaimed / (1024 ** $i), 2) . ' ' . ['B','KB','MB','GB'][$i];
+                    }
+                    $addToStreamingResponseBody(!empty($parts) ? implode('. ', $parts) . '.' : 'Nothing to prune.');
+                }
+            } catch (RequestException $e) {
+                error_log(sprintf('Docker prune (%s) failed: %s', $endpoint, $e->getMessage()));
+                if ($addToStreamingResponseBody !== null) {
+                    $addToStreamingResponseBody('Error: ' . $e->getMessage());
+                }
+                // continue with next prune step
+            }
+        }
+
+        if ($addToStreamingResponseBody !== null) {
+            $addToStreamingResponseBody("Docker system prune completed.");
+            sleep(1);
+
+            // We automatically reload after 10s so that the output can be read or copied if necessary
+            $addToStreamingResponseBody("Automatically reloading the page after 10s.");
+            sleep(10);
+        }
+    }
+
+    protected function sendHttpRequest(string $httpMethod, string $url, array $requestOptions = []): \Psr\Http\Message\ResponseInterface {
+        if (($requestOptions['stream'] ?? null) === true) {
+            $requestOptions['proxy'] = 'unix:///var/run/docker.sock';
+        }
+        return $this->guzzleClient->request($httpMethod, $url, $requestOptions);
+    }
+
 }

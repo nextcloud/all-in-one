@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+export LOG_LEVEL="$AIO_LOG_LEVEL"
+
 # Only start container if nextcloud is accessible
 while ! nc -z "$REDIS_HOST" "$REDIS_PORT"; do
     echo "Waiting for redis to start..."

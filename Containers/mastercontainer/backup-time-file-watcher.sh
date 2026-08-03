@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 restart_process() {
     echo "Restarting cron.sh because daily backup time was set, changed or unset."
     pkill cron.sh

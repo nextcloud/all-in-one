@@ -37,6 +37,8 @@ spec:
         - env:
             - name: ADDITIONAL_TRUSTED_DOMAIN
               value: "{{ .Values.ADDITIONAL_TRUSTED_DOMAIN }}"
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: APACHE_HOST
               value: nextcloud-aio-apache
             - name: APACHE_MAX_SIZE
@@ -47,8 +49,8 @@ spec:
               value: "{{ .Values.APACHE_PORT }}"
             - name: COLLABORA_HOST
               value: nextcloud-aio-collabora
-            - name: HARP_HOST
-              value: nextcloud-aio-harp
+            - name: EUROOFFICE_HOST
+              value: nextcloud-aio-eurooffice
             - name: NC_DOMAIN
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
@@ -63,7 +65,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: ghcr.io/nextcloud-releases/aio-apache:20260218_123804
+          image: ghcr.io/nextcloud-releases/aio-apache:20260727_092405
           readinessProbe:
             exec:
               command:

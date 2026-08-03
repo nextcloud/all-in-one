@@ -30,7 +30,6 @@ See the [Community Containers documentation](https://github.com/nextcloud/all-in
 - User activity (active users hourly, daily)
 - File counts and storage usage
 - System health and database size
-- App statistics and update availability
 - Nextcloud performance metrics
 
 ### Prometheus Configuration

@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.12.4-scratch AS nats
+FROM nats:2.14.3-scratch AS nats
 FROM eturnal/eturnal:1.12.2-alpine AS eturnal
-FROM strukturag/nextcloud-spreed-signaling:2.1.0 AS signaling
-FROM alpine:3.23.3 AS janus
+FROM strukturag/nextcloud-spreed-signaling:2.1.1 AS signaling
+FROM alpine:3.24.1 AS janus
 
-ARG JANUS_VERSION=v1.4.0
+ARG JANUS_VERSION=v1.4.1
 WORKDIR /src
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -35,9 +35,10 @@ RUN set -ex; \
     make configs; \
     rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
 
-FROM alpine:3.23.3
+FROM alpine:3.24.1
 ENV ETURNAL_ETC_DIR="/conf"
-ENV SKIP_CERT_VERIFY=false
+ENV SKIP_CERT_VERIFY=false \
+    AIO_LOG_LEVEL=warn
 COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/local                          /usr/local
 COPY --from=eturnal   --chmod=777 --chown=1000:1000 /opt/eturnal                        /opt/eturnal
 COPY --from=nats      --chmod=777 --chown=1000:1000 /nats-server                        /usr/local/bin/nats-server
@@ -70,7 +71,8 @@ RUN set -ex; \
         libwebsockets \
         \
         shadow \
-        grep; \
+        grep \
+        util-linux-misc; \
     useradd --system -u 1000 eturnal; \
     apk del --no-cache \
         shadow; \
@@ -81,7 +83,9 @@ RUN set -ex; \
     touch \
         /etc/nats.conf \
         /etc/eturnal.yml; \
-    echo "listen: 127.0.0.1:4222" | tee /etc/nats.conf; \
+# write_deadline: "10s" — without a write deadline, a lagging subscriber can stall the broker indefinitely, blocking all other signaling messages.
+# max_payload: 8MB — the default is 1 MB; signaling payloads in large meetings (many participants, ICE candidates) can exceed this, causing dropped messages.
+    printf 'listen: 127.0.0.1:4222\nwrite_deadline: "10s"\nmax_payload: 8MB\n' | tee /etc/nats.conf; \
     mkdir -p \
         /var/tmp \
         /conf \
@@ -108,4 +112,10 @@ CMD ["supervisord", "-c", "/supervisord.conf"]
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
-    org.label-schema.vendor="Nextcloud"
+    dockhand.update="false" \
+    org.opencontainers.image.title="Talk for Nextcloud AIO" \
+    org.opencontainers.image.description="Nextcloud Talk with NATS, Janus, eturnal, and signaling server for Nextcloud All-in-One" \
+    org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.vendor="Nextcloud" \
+    org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"

@@ -6,7 +6,7 @@ This guide explains how to connect to Nextcloud AIO securely via HTTPS (TLS) usi
 
 - **Integrated**: AIO's built-in reverse proxy with automatic HTTPS
 - **External**: An external reverse proxy (such as Caddy or Nginx or Cloudflare Proxy)
-- **Secure tunnel**: Tunneling services for private network access or public access without port forwarding (such as Tailscale Serve or Cloudflare Tunnel)
+- **Secure tunnel**: Tunneling services for private network access or public access without port forwarding (such as Tailscale Serve, Cloudflare Tunnel, or Pangolin)
 
 ## Choosing Your Approach
 
@@ -23,6 +23,7 @@ This guide explains how to connect to Nextcloud AIO securely via HTTPS (TLS) usi
 | **Integrated** | Simple setups, single service on port 443 | Public IP, dedicated port 443 | Yes (443) |
 | **External Reverse Proxy** (including Cloudflare Proxy) | Multiple services, existing web server, or users wanting DDoS protection | Existing reverse proxy, willingness to set one up, or Cloudflare account | Yes (443) |
 | **Cloudflare Tunnel** | No port forwarding possible/desired, public access | Cloudflare account | No |
+| **Pangolin** | No port forwarding possible/desired, public or private access, self-hostable tunnel | Pangolin Cloud account or self-hosted Pangolin server | No |
 | **Tailscale Serve** | Private access (tailnet only) | Tailscale account | No |
 | **Tailscale Funnel** | Public access via Tailscale | Tailscale account | No |
 
@@ -68,29 +69,32 @@ Using an existing external reverse proxy is required in particular if port `443/
 > [!NOTE]
 > An external reverse proxy can also facilitate other routing approaches, but Nextcloud AIO only supports having its own dedicated hostname (e.g., `cloud.example.com`). You cannot run it in a subfolder like `example.com/nextcloud/`.[^shared]
 
-### Secure tunnel: Using AIO with a secure tunneling service (*Tailscale, Cloudflare*)
+### Secure tunnel: Using AIO with a secure tunneling service (*Tailscale, Cloudflare, Pangolin*)
 
-Cloudflare and Tailscale offer secure tunneling services that let you access your Nextcloud without opening ports on your firewall. 
+Cloudflare, Tailscale, and Pangolin offer secure tunneling services that let you access your Nextcloud without opening ports on your firewall. 
 
 #### Private network access
 
 For Nextcloud AIO, you can use:
 - **Cloudflare Tunnel (`cloudflared`)** - Secure outbound-only tunnels that don't require exposing ports
 - **Tailscale Serve** - Expose services privately on your Tailscale network (tailnet only)
+- **Pangolin** - WireGuard-based outbound tunnels using the Newt connector; can be used for both private and public access
 
-Both options provide private network access to your Nextcloud AIO instance.
+All three options provide private network access to your Nextcloud AIO instance.
 
 #### Public Internet access (without port forwarding)
 
 To make your Nextcloud AIO instance accessible from the public Internet (not just your private network), you can use:
 - **Cloudflare Tunnel** with public routes enabled (which combines Cloudflare Tunnel with Cloudflare's proxy features)
 - **Tailscale Funnel** - Expose services to the public Internet via Tailscale's infrastructure
+- **Pangolin** - Expose services publicly via Pangolin Cloud or a self-hosted Pangolin server
 
-**Comparison of Cloudflare and Tailscale options:**
+**Comparison of Cloudflare, Tailscale, and Pangolin options:**
 
 | Feature | Access Scope | Inbound Ports Required | Use Case |
 |---------|--------------|----------------|----------|
 | **Cloudflare Tunnel** | Public Internet | None | Public access without port forwarding |
+| **Pangolin** | Public Internet or private | None | Public or private access; self-hostable |
 | **Tailscale Serve** | Your Tailscale network only | None | Private access for you and invited users |
 | **Tailscale Funnel** | Public Internet | None | Public access through Tailscale |
 
@@ -104,7 +108,7 @@ To make your Nextcloud AIO instance accessible from the public Internet (not jus
 ## Configuration and Deployment
 
 > [!NOTE]
-> These instructions assume you already have a domain name pointing to your server's public IP address. If you don't have a domain yet, see the recommendations below.
+> These instructions assume you already have a domain name pointing to your server's public IP address. If you don't have a domain yet, AIO can register a free dynamic-DNS subdomain under `dedyn.io` for you via the built-in [deSEC integration](https://github.com/nextcloud/all-in-one#how-to-get-a-free-domain-via-desec) — no external setup needed. Alternatively, see the recommendations below.
 
 ### Quick overview
 
@@ -117,7 +121,7 @@ To run Nextcloud AIO behind an external reverse proxy or secure tunneling/proxyi
 The sections below provide detailed instructions for each step.
 
 > [!TIP]
-> If you don't have a domain yet, we recommend using [an approach using Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817). If you don't have an external reverse proxy yet, we recommend [Caddy](https://github.com/nextcloud/all-in-one/discussions/575).
+> If you don't have a domain yet, AIO can register a free `*.dedyn.io` subdomain for you via [deSEC](https://desec.io) directly from the AIO interface — see [How to get a free domain via deSEC](https://github.com/nextcloud/all-in-one#how-to-get-a-free-domain-via-desec). This is the recommended option. Alternatively, you can use [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817). If you don't have an external reverse proxy yet, we recommend [Caddy](https://github.com/nextcloud/all-in-one/discussions/575).
 
 ### Step-by-Step Instructions
 
@@ -170,7 +174,7 @@ The process to run Nextcloud AIO behind a reverse proxy has three required steps
     The reverse-proxy container needs to be connected to the nextcloud containers. This can be achieved one of these 3 ways:
     1. Utilize host networking instead of docker bridge networking: Specify `--network host` option (or `network_mode: host` for docker-compose) as setting for the reverse proxy container to connect it to the host network. If you are using a firewall on the server, you need to open ports 80 and 443 for the reverse proxy manually. With this setup, the default sample configurations with reverse-proxy pointing to `localhost:$APACHE_PORT` should work directly.
     1. Connect nextcloud's external-facing containers to the reverse-proxy's docker network by specifying env variable APACHE_ADDITIONAL_NETWORK. With this setup, the reverse proxy can utilize Docker bridge network's DNS name resolution to access nextcloud at `http://nextcloud-aio-apache:$APACHE_PORT`. ⚠️⚠️⚠️ Note, the specified network must already exist before Nextcloud AIO is started. Otherwise it will fail to start the container because the network is not existing.
-    1. Connect the reverse-proxy container to the `nextcloud-aio` network by specifying it as a secondary (external) network for the reverse proxy container. With this setup also, the reverse proxy can utilize Docker bridge network's DNS name resolution to access nextcloud at `http://nextcloud-aio-apache:$APACHE_PORT` .
+    1. Connect the reverse-proxy container to the `nextcloud-aio` network by specifying it as a secondary (external) network for the reverse proxy container. With this setup also, the reverse proxy can utilize Docker bridge network's DNS name resolution to access nextcloud at `http://nextcloud-aio-apache.nextcloud-aio:$APACHE_PORT` .
 
     </details>
 
@@ -214,6 +218,8 @@ Add this as a new Apache site config:
     RewriteEngine On
     ProxyPreserveHost On
     RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+    # Added to support Euro-office
+    RequestHeader set X-Forwarded-Proto "https"
     AllowEncodedSlashes NoDecode
     
     # Adjust the two lines below to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
@@ -252,8 +258,12 @@ Add this as a new Apache site config:
 
     # Support big file uploads
     LimitRequestBody 0
-    Timeout 86400
-    ProxyTimeout 86400
+
+    # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+    # By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not Apache.
+    # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
+    Timeout 3610
+    ProxyTimeout 3610
 </VirtualHost>
 ```
 
@@ -503,13 +513,19 @@ server {
     client_max_body_size 0;
     client_body_buffer_size 512k;
     # http3_stream_buffer_size 512k; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    proxy_read_timeout 86400s;
+
+    # The default NEXTCLOUD_MAX_TIME value is 3600 seconds.
+    # By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
+    # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
+    proxy_read_timeout 3610s;
+
 
     server_name <your-nc-domain>;
 
     location / {
         proxy_pass http://127.0.0.1:11000$request_uri; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
+        proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Port $server_port;
         proxy_set_header X-Forwarded-Scheme $scheme;
@@ -564,13 +580,21 @@ Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
-<img width="675" height="695" alt="image" src="https://github.com/user-attachments/assets/196f53f9-ff86-4da2-960e-f7b7a2ceac0c" />
+<img width="475" height="880" alt="image" src="https://github.com/user-attachments/assets/3be9a83f-e721-4d12-96fa-32d1211ea559" />
 
-<img width="675" height="355" alt="image" src="https://github.com/user-attachments/assets/8a45a6d8-fbaf-4519-86f7-c7424ed780da" />
+<img width="675" height="355" alt="grafik" src="https://github.com/user-attachments/assets/c4a006f5-f8c4-4898-9ea6-ec33ee7e5bd3" />
 
-<img width="675" height="542" alt="image" src="https://github.com/user-attachments/assets/7e880d02-0f4f-459a-a3f6-216bcb1b04ca" />
+<img width="675" height="650" alt="grafik" src="https://github.com/user-attachments/assets/a4f80ecc-c539-4972-91ed-7b078c269dd1" />
 
-<img width="675" height="570" alt="image" src="https://github.com/user-attachments/assets/2812ecc1-ecf0-44bd-9249-b76b30f8c25e" />
+<img width="675" height="570" alt="grafik" src="https://github.com/user-attachments/assets/8ea357c2-11d5-48af-abf7-f249bc677213" />
+
+
+- The "Enable compression by upstream, not recommended" and "Disable URI Sanitisation, not recommended" buttons may need to be enabled if you use Collabora. (https://github.com/CollaboraOnline/online/issues/10157, https://github.com/nextcloud/all-in-one/issues/834) <br>
+- You may need to check the "Disable Crowdsec Appsec" Button if you use crowdsec and uploads or downloads fail. <br>
+- You may want to enable the "Disable Request/Response Buffering" Button since it could improve uploads and downloads. <br>
+- You can check the "Send noindex header and block some user agents" Button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>
+- If you want/need you can also configure Auth Request/mTLS if needed or change the X-Frame-Options header if you want to embed Nextcloud.
+
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
@@ -590,18 +614,22 @@ Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
-![grafik](https://user-images.githubusercontent.com/75573284/213889707-b7841ca0-3ea7-4321-acf6-50e1c1649442.png)
+<img width="675" height="806" alt="grafik" src="https://github.com/user-attachments/assets/a7395147-62fd-415f-b04e-db92b50b1ff0" />
 
-![grafik](https://user-images.githubusercontent.com/75573284/213889724-1ab32264-3e0c-4d83-b067-9fe9d1672fb2.png)
+<img width="675" height="355" alt="grafik" src="https://github.com/user-attachments/assets/b36c79ba-7c7f-4334-a27f-89de6c11a30a" />
 
-![grafik](https://github.com/nextcloud/all-in-one/assets/24786786/fecbb5ef-d2f4-4e0f-bc4b-82207e2c2809)
+<img width="675" height="532" alt="grafik" src="https://github.com/user-attachments/assets/a3f3fa8c-9805-4c53-b573-c7428404f28c" />
 
-![grafik](https://user-images.githubusercontent.com/75573284/213889746-87dbe8c5-4d1f-492f-b251-bbf82f1510d0.png)
+<img width="675" height="570" alt="grafik" src="https://github.com/user-attachments/assets/188e6541-6805-4374-866e-8c9bf9e80693" />
+
 
 ```
-client_body_buffer_size 512k;
-proxy_read_timeout 86400s;
-client_max_body_size 0;
+# The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+# By setting proxy_read_timeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NPM. 
+# If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
+proxy_read_timeout 3610s;
+
+client_max_body_size 0; # This controls the maximum upload size, 0 means unlimited
 ```
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
@@ -645,9 +673,13 @@ const http = require('http');
 const app = express();
 const proxy = HttpProxy.createProxyServer({
 	target: 'http://localhost:11000', // Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
-	// Timeout can be changed to your liking.
-	timeout: 1000 * 60 * 3,
-	proxyTimeout: 1000 * 60 * 3,
+
+  // The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+  // By setting proxyTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not Node.js with Express.
+  // If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
+	timeout: 1000 * 3610,
+	proxyTimeout: 1000 * 3610,
+
 	// Not 100% certain whether autoRewrite is necessary, but enabling it SEEMS to make it behave more stably.
 	autoRewrite: true,
 	// Do not enable followRedirects.
@@ -709,6 +741,48 @@ httpServer.on('upgrade', (req, socket, head) => {
 ```
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
+
+</details>
+
+##### Pangolin
+
+<details>
+
+<summary>click here to expand</summary>
+
+[Pangolin](https://pangolin.net/) is an open-source, identity-based remote access platform built on WireGuard that enables secure connectivity to private resources without opening inbound firewall ports. It uses the **Newt** connector as an outbound-only WireGuard tunnel client that runs alongside AIO on your server and connects to a Pangolin server (either Pangolin Cloud or your own self-hosted instance). From AIO's perspective, Pangolin works like a reverse proxy: Pangolin handles TLS and routes public traffic through the tunnel to AIO.
+
+**Requirements:**
+- A [Pangolin Cloud](https://app.pangolin.net/) account **or** a [self-hosted Pangolin server](https://docs.pangolin.net/self-host/quick-install)
+- No open inbound ports required
+
+**Setup:**
+
+1. **Set up Pangolin**: Either sign up for a free [Pangolin Cloud](https://app.pangolin.net/) account, or [self-host Pangolin](https://docs.pangolin.net/self-host/quick-install) on a VPS with a public IP address.
+
+1. **Create a site**: In the Pangolin dashboard, create a new site for the machine that will run AIO. Follow the instructions to generate a **Newt ID** and **Newt secret** for the site.
+
+1. **Deploy Newt on the AIO host**: Run the Newt connector on the same machine as AIO. You can deploy it as a Docker container alongside AIO:
+
+    ```yaml
+    services:
+      newt:
+        image: fosrl/newt
+        restart: unless-stopped
+        environment:
+          - PANGOLIN_ENDPOINT=https://app.pangolin.net  # For Pangolin Cloud; replace with your self-hosted server URL if self-hosting
+          - NEWT_ID=<your-newt-id>
+          - NEWT_SECRET=<your-newt-secret>
+    ```
+
+    Or as a standalone binary — see the [Newt documentation](https://github.com/fosrl/newt) for details.
+
+1. **Create a resource**: In the Pangolin dashboard, create a new resource for the site. Set the target to `http://private.ip.address.of.server:11000`.<br>
+    ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the port and address to match your `APACHE_PORT` and `APACHE_IP_BINDING` settings.
+
+1. **Configure AIO**: When starting AIO, add `--env SKIP_DOMAIN_VALIDATION=true` to disable domain validation (domain validation is known to not work through Pangolin tunnels). Use the domain assigned by Pangolin as your Nextcloud domain when opening the AIO interface.
+
+1. Now continue with [point 2](#2-use-this-startup-command).
 
 </details>
 
@@ -774,7 +848,10 @@ The examples below define the dynamic configuration in YAML files. If you rather
         address: ":443" # Create an entrypoint called "https" that uses port 443
         transport:
           respondingTimeouts:
-            readTimeout: 24h # Allows uploads > 100MB; prevents connection reset due to chunking (public upload-only links)
+            # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+            # By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not Traefik.
+            # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
+            readTimeout: 3610s
         # If you want to enable HTTP/3 support, uncomment the line below
         # http3: {}
     
@@ -823,6 +900,8 @@ The examples below define the dynamic configuration in YAML files. If you rather
             hostsProxyHeaders:
               - "X-Forwarded-Host"
             referrerPolicy: "same-origin"
+            customRequestHeaders:
+              X-Forwarded-Proto: "https"
 
         https-redirect:
           redirectscheme:
@@ -864,7 +943,10 @@ The examples below define the dynamic configuration in YAML files. If you rather
         address: ":443" # Create an entrypoint called "https" that uses port 443
         transport:
           respondingTimeouts:
-            readTimeout: 24h # Allows uploads > 100MB; prevents connection reset due to chunking (public upload-only links)
+            # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
+            # By setting readTimeout 10 seconds higher than that, we make sure that always Nextcloud times out and not Traefik.
+            # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
+            readTimeout: 3610s
         http:
           # Required for Nextcloud to correctly handle encoded URL characters (%2F, %3F and %25 in this case) in newer Traefik versions (v3.6.4+).
           encodedCharacters:  
@@ -915,6 +997,8 @@ The examples below define the dynamic configuration in YAML files. If you rather
             hostsProxyHeaders:
               - "X-Forwarded-Host"
             referrerPolicy: "same-origin"
+            customRequestHeaders:
+              X-Forwarded-Proto: "https"
 
         https-redirect:
           redirectscheme:
@@ -1106,12 +1190,9 @@ After starting AIO, you should be able to access the AIO Interface via `https://
 ⚠️ **Important:** do always use an ip-address if you access this port and not a domain as HSTS might block access to it later! (It is also expected that this port uses a self-signed certificate due to security concerns which you need to accept in your browser)<br>
 Enter your domain in the AIO interface that you've used in the reverse proxy config and you should be done. Please do not forget to open/forward port `3478/TCP` and `3478/UDP` in your firewall/router for the Talk container!
 
-### 5. Optional: Configure AIO for reverse proxies that connect to nextcloud using an ip-address and not localhost nor 127.0.0.1
-If your reverse proxy connects to nextcloud using an ip-address and not localhost or 127.0.0.1<sup>*</sup> you must make the following configuration changes
+### 5. Optional: Configure AIO for reverse proxies that connect to nextcloud not using localhost nor 127.0.0.1
+If your reverse proxy connects to nextcloud not using localhost or 127.0.0.1, you must add said IP as trusted proxy to the installation. See the step below:
 
-<small>*: The IP address it uses to connect to AIO is not in a private IP range such as these: `127.0.0.0/8,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,100.64.0.0/10,fd00::/8,::1/128`</small>
-
-#### Nextcloud trusted proxies
 Add the IP it uses connect to AIO to the Nextcloud trusted_proxies like this:
 
 ```
@@ -1134,6 +1215,7 @@ If you want to also access your AIO interface publicly with a valid certificate,
 ```
 https://<your-nc-domain>:8443 {
     reverse_proxy https://localhost:8080 {
+        header_up Host {host}
         transport http {
             tls_insecure_skip_verify
         }

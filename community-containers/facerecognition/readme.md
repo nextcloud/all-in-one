@@ -1,5 +1,5 @@
 ## Facerecognition
-This container bundles the external model of facerecognition and auto-configures it for you.
+This container bundles a basic facial recognition system and auto-configures it for you.
 
 ### Notes
 - This container needs imaginary in order to analyze modern file format images. Make sure to enable imaginary in the AIO interface before adding this container.

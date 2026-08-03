@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # From https://github.com/redis/docker-library-redis/blob/release/8.2/alpine/Dockerfile
-FROM redis:8.6.1-alpine
+FROM redis:8.8.1-alpine
 
 COPY --chmod=775 start.sh /start.sh
 
@@ -23,4 +23,10 @@ ENTRYPOINT ["/start.sh"]
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
-    org.label-schema.vendor="Nextcloud"
+    dockhand.update="false" \
+    org.opencontainers.image.title="Redis for Nextcloud AIO" \
+    org.opencontainers.image.description="Redis cache server for Nextcloud All-in-One" \
+    org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.vendor="Nextcloud" \
+    org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"

@@ -1,0 +1,117 @@
+# This setup expects that you run the services via profiles!
+# Usage: docker compose --profile local-code up
+#    or: docker compose --profile code-from-image up
+
+name: nextcloud-aio-test
+services:
+  composer:
+    image: localhost/composer:latest
+    build: Containers/composer
+    pull_policy: never
+    volumes:
+      - ..:/app
+    working_dir: /app
+    command: |-
+      bash -c '
+        test -d ./data && rm -r ./data
+        test -d ./session && rm -r ./session
+        composer install --no-dev
+        composer clear-cache
+      '
+
+  app-base:
+    image: ghcr.io/nextcloud-releases/all-in-one:develop${ARM64_SUFFIX-}
+    pull_policy: always # Always pull so we don't risk to run into the "Update for mastercontainer" page.
+    init: true
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    profiles:
+      - none
+    environment:
+      SKIP_DOMAIN_VALIDATION: ${SKIP_DOMAIN_VALIDATION-true}
+      APACHE_PORT: 11000
+      TESTING___DESEC_API_BASE: http://desec-mock:8090/api/v1 
+      TESTING___DESEC_UPDATE_URL: http://desec-mock:8090/update
+    entrypoint: bash /start.sh
+
+  app-code-from-image:
+    extends: app-base
+    container_name: nextcloud-aio-mastercontainer
+    profiles:
+      - code-from-image
+
+  app-local-code:
+    extends: app-base
+    container_name: nextcloud-aio-mastercontainer
+    depends_on:
+      composer:
+        condition: service_completed_successfully
+    volumes:
+      - ..:/var/www/docker-aio/php
+      - ../../Containers/mastercontainer/internal.Caddyfile:/internal.Caddyfile
+      - ../../Containers/mastercontainer/headers.Caddyfile:/headers.Caddyfile
+      - ../../Containers/mastercontainer/start.sh:/start.sh
+    profiles:
+      - local-code
+
+  desec-mock:
+    image: docker.io/library/node:26@sha256:0473e7dc433a1310f436edee02aa79737ec78a4b345433ab0963d4a256f9ad85
+    volumes:
+      - ..:/app/php
+    working_dir: /app
+    command: node php/tests/desec-mock.mjs 8090 2>&1
+          
+  npm-installer:
+    image: docker.io/library/node:26@sha256:0473e7dc433a1310f436edee02aa79737ec78a4b345433ab0963d4a256f9ad85
+    volumes:
+      - ..:/app
+    working_dir: /app/tests
+    command: npm ci --omit=optional
+
+  test-runner-base:
+    image: mcr.microsoft.com/playwright:v1.56.1@sha256:f1e7e01021efd65dd1a2c56064be399f3e4de00fd021ac561325f2bfbb2b837a
+    volumes:
+      - ..:/app
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config:ro
+    working_dir: /app/tests
+    ports:
+      - '9323:9323' # to view test reports
+    profiles:
+      - none
+    depends_on:
+      desec-mock:
+        condition: service_started
+      npm-installer:
+        condition: service_completed_successfully
+    environment:
+      BASE_URL: "https://nextcloud-aio-mastercontainer:8080"
+      DEBUG: "pw:api"
+      CI: "true"
+      DESEC_MOCK_URL: "http://desec-mock:8090"
+    command: npx playwright test "${TESTS_FILE-}"
+
+  test-runner-code-from-image:
+    extends: test-runner-base
+    container_name: test-runner
+    profiles:
+      - code-from-image
+    depends_on:
+      app-code-from-image:
+        condition: service_healthy
+
+  test-runner-local-code:
+    extends: test-runner-base
+    container_name: test-runner
+    profiles:
+      - local-code
+    depends_on:
+      app-local-code:
+        condition: service_healthy
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer

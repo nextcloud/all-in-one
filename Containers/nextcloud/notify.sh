@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 if [[ "$EUID" = 0 ]]; then
     COMMAND=(sudo -E -u www-data php /var/www/html/occ)
 else

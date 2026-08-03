@@ -38,7 +38,7 @@ spec:
 # AIO settings start # Do not remove or change this line!
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260218_123804
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260727_092405
           command:
             - chmod
             - "777"
@@ -92,6 +92,8 @@ spec:
               value: "{{ .Values.NEXTCLOUD_PASSWORD }}"
             - name: ADMIN_USER
               value: admin
+            - name: AIO_LOG_LEVEL
+              value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: APACHE_HOST
               value: nextcloud-aio-apache
             - name: APACHE_PORT
@@ -104,6 +106,12 @@ spec:
               value: "{{ .Values.COLLABORA_ENABLED }}"
             - name: COLLABORA_HOST
               value: nextcloud-aio-collabora
+            - name: EUROOFFICE_ENABLED
+              value: "{{ .Values.EUROOFFICE_ENABLED }}"
+            - name: EUROOFFICE_HOST
+              value: nextcloud-aio-eurooffice
+            - name: EUROOFFICE_SECRET
+              value: "{{ .Values.EUROOFFICE_SECRET }}"
             - name: FULLTEXTSEARCH_ENABLED
               value: "{{ .Values.FULLTEXTSEARCH_ENABLED }}"
             - name: FULLTEXTSEARCH_HOST
@@ -190,7 +198,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: ghcr.io/nextcloud-releases/aio-nextcloud:20260218_123804
+          image: ghcr.io/nextcloud-releases/aio-nextcloud:20260727_092405
           {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context

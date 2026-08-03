@@ -1,5 +1,5 @@
 ## NPMplus
-This container contains a fork of the Nginx Proxy Manager, which is a WebUI for nginx. It will also automatically create a config and cert for AIO.
+This container contains a fork of [Nginx Proxy Manager](https://nginxproxymanager.com/), which is a WebUI for nginx. It will also automatically create a config and cert for AIO.
 
 ### Notes
 - This container is incompatible with the [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container. So make sure that you do not enable both at the same time!

@@ -1,21 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { writeFileSync } from 'node:fs'
+import { logInToContainersPage } from './helpers.js';
 
 test('Initial setup', async ({ page: setupPage }) => {
   test.setTimeout(10 * 60 * 1000)
 
-  // Extract initial password
-  await setupPage.goto('./setup');
-  const password = await setupPage.locator('#initial-password').innerText()
-  const containersPagePromise = setupPage.waitForEvent('popup');
-  await setupPage.getByRole('link', { name: 'Open Nextcloud AIO login ↗' }).click();
-  const containersPage = await containersPagePromise;
-
-  // Log in and wait for redirect
-  await containersPage.locator('#master-password').click();
-  await containersPage.locator('#master-password').fill(password);
-  await containersPage.getByRole('button', { name: 'Log in' }).click();
-  await containersPage.waitForURL('./containers');
+  const containersPage = await logInToContainersPage(setupPage);
 
   // Reject IP addresses
   await containersPage.locator('#domain').click();
@@ -43,7 +33,6 @@ test('Initial setup', async ({ page: setupPage }) => {
   await containersPage.locator('#timezone').click();
   await containersPage.locator('#timezone').fill('Invalid time zone');
   containersPage.once('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`)
     dialog.accept()
   });
   await containersPage.getByRole('button', { name: 'Submit timezone' }).click();
@@ -53,7 +42,6 @@ test('Initial setup', async ({ page: setupPage }) => {
   await containersPage.locator('#timezone').click();
   await containersPage.locator('#timezone').fill('Europe/Berlin');
   containersPage.once('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`)
     dialog.accept()
   });
   await containersPage.getByRole('button', { name: 'Submit timezone' }).click();
@@ -69,12 +57,11 @@ test('Initial setup', async ({ page: setupPage }) => {
   const initialNextcloudPassword = await containersPage.locator('#initial-nextcloud-password').innerText();
 
   // Set backup location and create backup
-  const borgBackupLocation = `/mnt/test/aio-${Math.floor(Math.random() * 2147483647)}`
+  const borgBackupLocation = `/tmp/test/aio-${Math.floor(Math.random() * 2147483647)}`
   await containersPage.locator('#borg_backup_host_location').click();
   await containersPage.locator('#borg_backup_host_location').fill(borgBackupLocation);
   await containersPage.getByRole('button', { name: 'Submit backup location' }).click();
   containersPage.once('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`)
     dialog.accept()
   });
   await containersPage.getByRole('button', { name: 'Create backup' }).click();

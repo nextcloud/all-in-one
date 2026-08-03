@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Register a free deSEC domain</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="style.css?v13" media="all" />
+        <link rel="icon" href="img/favicon.png">
+        <script type="text/javascript" src="forms.js?v2"></script>
+        <script type="text/javascript" src="click-handlers.js?v2"></script>
+        <script type="text/javascript" src="apply-theme.js"></script>
+    </head>
+    <body>
+        {% if is_desec_domain %}
+            {# The whole process finished: a deSEC domain is now configured. Tell the parent
+               window (the modal opener) to reload so the full containers page reflects the
+               new domain, then close the modal. When this view is opened directly (not in an
+               iframe) window.top === window, so we just reload ourselves. #}
+            <p class="desec-modal-done"><span class="status success"></span> Your free domain <strong>{{ domain }}</strong> was registered successfully. Finishing up…</p>
+            <script type="text/javascript" src="desec-done.js"></script>
+        {% else %}
+            <div class="desec-modal-body">
+                {% include 'includes/desec-register.twig' %}
+            </div>
+        {% endif %}
+        <div id="overlay">
+            <div class="loader"></div>
+            <iframe name="overlay-log" id="overlay-log"></iframe>
+        </div>
+    </body>
+</html>

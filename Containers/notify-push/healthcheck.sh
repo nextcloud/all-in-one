@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 if ! nc -z "$NEXTCLOUD_HOST" 9001; then
     exit 0
 fi

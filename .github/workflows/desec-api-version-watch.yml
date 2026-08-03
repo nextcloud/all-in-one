@@ -1,0 +1,74 @@
+name: deSEC API version watch
+
+# Watches the authoritative "API Versions and Roadmap" table in the desec-stack README
+# for changes (e.g. v2 going stable or v1 getting a deprecation date). The deSEC flow is
+# tested in CI against a mock (php/tests/desec-mock.mjs); this job catches upstream API
+# drift WITHOUT making automated requests to deSEC's live API (their ToS discourages that,
+# and /api/v1/ is contractually stable). It only fetches a public GitHub README.
+#
+# Runs on a schedule (and manual dispatch) only, never on PR/push, so it never blocks a
+# merge. When the table changes the run goes red — a maintainer then reviews the change,
+# updates the mock + DesecManager if the API surface changed, and updates the EXPECTED
+# heredoc below to re-green this job.
+
+on:
+  schedule:
+    # Weekly, Mondays 05:17 UTC (off the hour to avoid scheduler congestion).
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+jobs:
+  watch:
+    name: Compare deSEC API version table against baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check deSEC API version table
+        run: |
+          set -euo pipefail
+
+          # The last-reviewed state of the desec-stack README "API Versions and Roadmap"
+          # table. Whitespace is normalized to single spaces. When this job fails, review
+          # the upstream change and update this block to match (after updating the mock /
+          # DesecManager if the API surface actually changed).
+          expected() {
+            cat <<'EOF'
+          API Version | URL Prefix | Status | Support Ends
+          ----------- | ---------- | --------- | ------------
+          Version 1 | `/api/v1/` | stable | earliest 6 months after v2 is declared stable
+          Version 2 | `/api/v2/` | unstable
+          EOF
+          }
+
+          readme="$(curl -fsSL https://raw.githubusercontent.com/desec-io/desec-stack/main/README.md)"
+
+          # Extract the table: from the "API Versions and Roadmap" heading, take the block
+          # of pipe-containing lines and stop at the first pipe-less line after it begins.
+          # Then collapse runs of whitespace to a single space and trim each line.
+          current="$(printf '%s\n' "$readme" | awk '
+            /^API Versions and Roadmap[[:space:]]*$/ { insection=1; next }
+            insection {
+              if (index($0, "|") > 0) { started=1; print; next }
+              if (started) { exit }
+            }
+          ' | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//')"
+
+          if [ -z "$current" ]; then
+            echo "Could not extract the API version table from the desec-stack README."
+            echo "The README layout may have changed — review it manually:"
+            echo "  https://github.com/desec-io/desec-stack#api-versions-and-roadmap"
+            exit 1
+          fi
+
+          if diff <(expected) <(printf '%s\n' "$current"); then
+            echo "ok - deSEC API version table is unchanged."
+            exit 0
+          fi
+
+          echo
+          echo "CHANGED - the deSEC API version table differs from the reviewed baseline."
+          echo "The deSEC API version status changed (e.g. v2 going stable or v1 getting a"
+          echo "deprecation date). Review the change, update php/tests/desec-mock.mjs and"
+          echo "php/src/Desec/DesecManager.php if the API surface changed, then update the"
+          echo "EXPECTED heredoc in this workflow to match upstream."
+          exit 1

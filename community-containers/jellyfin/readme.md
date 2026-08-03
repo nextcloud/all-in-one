@@ -1,5 +1,5 @@
 ## Jellyfin
-This container bundles Jellyfin and auto-configures it for you.
+This container bundles [Jellyfin](https://jellyfin.org/) and auto-configures it for you.
 
 ### Notes
 - This container is incompatible with the [Plex](https://github.com/nextcloud/all-in-one/tree/main/community-containers/plex) community container. So make sure that you do not enable both at the same time!

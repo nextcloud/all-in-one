@@ -180,6 +180,7 @@ apt install --no-install-recommends qemu-system qemu-utils libvirt-clients libvi
     # Virtual machine #1 - "example1-com"
     https://[DOMAIN_NAME_1]:8443 {
         reverse_proxy https://[IP_ADDRESS_1]:8080 {
+            header_up Host {host}
             transport http {
                 tls_insecure_skip_verify
             }
@@ -192,6 +193,7 @@ apt install --no-install-recommends qemu-system qemu-utils libvirt-clients libvi
     # Virtual machine #2 - "example2-com"
     https://[DOMAIN_NAME_2]:8443 {
         reverse_proxy https://[IP_ADDRESS_2]:8080 {
+            header_up Host {host}
             transport http {
                 tls_insecure_skip_verify
             }

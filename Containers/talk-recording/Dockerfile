@@ -1,15 +1,16 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.14.3-alpine3.23
+FROM python:3.14.6-alpine3.24
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 ENV RECORDING_VERSION=v0.2.1
-ENV ALLOW_ALL=false
-ENV HPB_PROTOCOL=https
-ENV NC_PROTOCOL=https
-ENV SKIP_VERIFY=false
-ENV HPB_PATH=/standalone-signaling/
+ENV ALLOW_ALL=false \
+    HPB_PROTOCOL=https \
+    NC_PROTOCOL=https \
+    SKIP_VERIFY=false \
+    HPB_PATH=/standalone-signaling/ \
+    AIO_LOG_LEVEL=warn
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -19,7 +20,11 @@ RUN set -ex; \
         bash \
         xvfb \
         ffmpeg \
+        mesa-va-gallium \
         firefox \
+        font-noto-all \
+        font-noto-cjk \
+        font-noto-cjk-extra \
         bind-tools \
         netcat-openbsd \
         git \
@@ -30,6 +35,9 @@ RUN set -ex; \
         build-base \
         linux-headers \
         geckodriver; \
+    if [ "$(apk --print-arch)" = "x86_64" ]; then \
+        apk add --no-cache intel-media-driver; \
+    fi; \
     useradd -d /tmp --system recording -u 122; \
 # Give root a random password
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
@@ -59,4 +67,10 @@ CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.co
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
-    org.label-schema.vendor="Nextcloud"
+    dockhand.update="false" \
+    org.opencontainers.image.title="Talk Recording for Nextcloud AIO" \
+    org.opencontainers.image.description="Nextcloud Talk recording service for Nextcloud All-in-One" \
+    org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.vendor="Nextcloud" \
+    org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"

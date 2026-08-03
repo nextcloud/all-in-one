@@ -15,10 +15,15 @@
 }
 
 https://{$ADDITIONAL_TRUSTED_DOMAIN}:443,
-http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests, see containers.json
+http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI requests, see containers.json
 {$PROTOCOL}://{$NC_DOMAIN}:{$APACHE_PORT} {
-    header -Server
-    header -X-Powered-By
+    header {
+        Strict-Transport-Security max-age=31536000;
+
+        -Server
+        -X-Powered-By
+        -Via
+    }
 
     # Collabora
     route /browser/* {
@@ -46,6 +51,15 @@ http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests, see con
         }
     }
 
+    # EuroOffice
+    route /eurooffice/* {
+        uri strip_prefix /eurooffice
+        reverse_proxy {$EUROOFFICE_HOST}:80 {
+            header_up X-Forwarded-Prefix /eurooffice
+            header_up X-Forwarded-Proto https
+        }
+    }
+
     # Talk
     route /standalone-signaling/* {
         uri strip_prefix /standalone-signaling
@@ -65,7 +79,6 @@ http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests, see con
 
     # Nextcloud
     route {
-        header Strict-Transport-Security max-age=31536000;
         reverse_proxy 127.0.0.1:8000
     }
     redir /.well-known/carddav /remote.php/dav/ 301
@@ -74,6 +87,9 @@ http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests, see con
     # TLS options
     tls {
         issuer acme {
+            profile tlsserver
+            # Disable HTTP challenge because that would require port 80, which we don't get (it's exposed to the mastercontainer).
+            # This container by default only exposes port 443 if not configured otherwise via APACHE_PORT.
             disable_http_challenge
         }
     }

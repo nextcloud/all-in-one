@@ -20,6 +20,10 @@ case "${1}" in
 esac
 }
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 # Check if running as root user
 if [ "$EUID" != "0" ]; then
     print_red "Container does not run as root user. This is not supported."
@@ -169,7 +173,7 @@ elif ! sudo -E -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nex
     print_red "It seems like you did not give the mastercontainer volume the correct name? (The 'nextcloud_aio_mastercontainer' volume was not found.)
 Using a different name is not supported since the built-in backup solution will not work in that case!"
     exit 1
-elif ! sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer | grep -q "nextcloud_aio_mastercontainer"; then
+elif ! sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer --format '{{.Mounts}}' | grep -q " nextcloud_aio_mastercontainer "; then
     print_red "It seems like you did not attach the 'nextcloud_aio_mastercontainer' volume to the mastercontainer?
 This is not supported since the built-in backup solution will not work in that case!"
     exit 1
@@ -312,6 +316,42 @@ if [ -n "$AIO_COMMUNITY_CONTAINERS" ]; then
     print_red "You've set AIO_COMMUNITY_CONTAINERS but the option was removed.
 The community containers get managed via the AIO interface now."
 fi
+if [ -n "$NEXTCLOUD_ENABLE_DRI_DEVICE" ]; then
+    print_red "The environmental variable NEXTCLOUD_ENABLE_DRI_DEVICE is deprecated. Please mount the /dev/dri device into the mastercontainer instead and remove NEXTCLOUD_ENABLE_DRI_DEVICE. It will then be set automatically."
+fi
+
+# Automatically enable the /dev/dri device if it is mounted into the mastercontainer
+if [ -d "/dev/dri" ]; then
+    export NEXTCLOUD_ENABLE_DRI_DEVICE="true"
+    if [ -e "/dev/dri/renderD128" ]; then
+        NEXTCLOUD_DRI_GID="$(stat -c '%g' /dev/dri/renderD128)"
+        export NEXTCLOUD_DRI_GID
+    else
+        export NEXTCLOUD_DRI_GID=""
+    fi
+else
+    if [ -z "$NEXTCLOUD_ENABLE_DRI_DEVICE" ]; then
+        # Force the unset of the env if it was not externally overwritten already
+        export NEXTCLOUD_ENABLE_DRI_DEVICE="false"
+    fi
+    export NEXTCLOUD_DRI_GID=""
+fi
+
+# Log level logics
+if [ -n "$AIO_LOG_LEVEL" ] && ! echo "$AIO_LOG_LEVEL" | grep -q "^debug$\|^info$\|^warn$\|^error$"; then
+    print_red "AIO_LOG_LEVEL must be one of 'debug', 'info', 'warn' or 'error'.
+It is set to '$AIO_LOG_LEVEL'".
+    exit 1
+fi
+if [ -z "$AIO_LOG_LEVEL" ]; then
+    export AIO_LOG_LEVEL="warn"
+fi
+
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    export SUPERVISORD_STDOUT=/dev/stdout
+else
+    export SUPERVISORD_STDOUT=NONE
+fi
 
 # Check if ghcr.io is reachable
 # Solves issues like https://github.com/nextcloud/all-in-one/discussions/5268
@@ -364,7 +404,7 @@ fi
 mkdir -p /mnt/docker-aio-config/data/
 mkdir -p /mnt/docker-aio-config/session/
 mkdir -p /mnt/docker-aio-config/caddy/
-mkdir -p /mnt/docker-aio-config/certs/ 
+mkdir -p /mnt/docker-aio-config/caddy-internal/
 
 # Adjust permissions for all instances
 chmod 770 -R /mnt/docker-aio-config
@@ -372,37 +412,7 @@ chmod 777 /mnt/docker-aio-config
 chown www-data:www-data -R /mnt/docker-aio-config/data/
 chown www-data:www-data -R /mnt/docker-aio-config/session/
 chown www-data:www-data -R /mnt/docker-aio-config/caddy/
-chown root:root -R /mnt/docker-aio-config/certs/
-
-# Don't allow access to the AIO interface from the Nextcloud container
-# Probably more cosmetic than anything but at least an attempt
-if ! grep -q '# nextcloud-aio-block' /etc/apache2/httpd.conf; then
-    cat << APACHE_CONF >> /etc/apache2/httpd.conf
-# nextcloud-aio-block-start
-<Location />
-order allow,deny
-deny from nextcloud-aio-nextcloud.nextcloud-aio
-allow from all
-</Location>
-# nextcloud-aio-block-end
-APACHE_CONF
-fi
-
-# Adjust certs
-GENERATED_CERTS="/mnt/docker-aio-config/certs"
-TMP_CERTS="/etc/apache2/certs"
-mkdir -p "$GENERATED_CERTS"
-cd "$GENERATED_CERTS" || exit 1
-if ! [ -f ./ssl.crt ] && ! [ -f ./ssl.key ]; then
-    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=DE/ST=BE/L=Local/O=Dev/CN=nextcloud.local" -keyout ./ssl.key -out ./ssl.crt
-fi
-if [ -f ./ssl.crt ] && [ -f ./ssl.key ]; then
-    cd "$TMP_CERTS" || exit 1
-    rm ./ssl.crt
-    rm ./ssl.key
-    cp "$GENERATED_CERTS/ssl.crt" ./
-    cp "$GENERATED_CERTS/ssl.key" ./
-fi
+chown www-data:www-data -R /mnt/docker-aio-config/caddy-internal/
 
 print_green "Initial startup of Nextcloud All-in-One complete!
 You should be able to open the Nextcloud AIO Interface now on port 8080 of this server!
@@ -415,8 +425,11 @@ https://your-domain-that-points-to-this-server.tld:8443"
 # Set the timezone to Etc/UTC
 export TZ=Etc/UTC
 
-# Fix apache startup
-rm -f /var/run/apache2/httpd.pid
+# Remove unused certs
+rm -vrf /mnt/docker-aio-config/certs
+
+# Remove the php socket as safeguard
+rm -vf /run/php.sock
 
 # Fix caddy startup
 if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
@@ -424,10 +437,17 @@ if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
 fi
 
 # Fix the Caddyfile format
-caddy fmt --overwrite /Caddyfile
+caddy fmt --overwrite /acme.Caddyfile
+caddy fmt --overwrite /internal.Caddyfile
 
 # Fix caddy log 
 chmod 777 /root
+
+# Create Twig template cache directory (path must match TWIG_CACHE_PATH in php/public/index.php)
+mkdir -p /tmp/twig-cache
+rm -rf /tmp/twig-cache/*
+chown www-data:www-data /tmp/twig-cache
+chmod 770 /tmp/twig-cache
 
 # Start supervisord
 exec /usr/bin/supervisord -c /supervisord.conf

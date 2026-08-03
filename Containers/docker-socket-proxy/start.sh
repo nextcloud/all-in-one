@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
 # Only start container if nextcloud is accessible
 while ! nc -z "$NEXTCLOUD_HOST" 9001; do
     echo "Waiting for Nextcloud to start..."
@@ -18,6 +22,8 @@ else
     HAPROXYFILE="$(sed "s# || { src NC_IPV6_PLACEHOLDER }##g" /tmp/haproxy.cfg)"
 fi
 echo "$HAPROXYFILE" > /tmp/haproxy.cfg
-set +x
+if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+    set +x
+fi
 
 haproxy -f /tmp/haproxy.cfg -db

@@ -1,0 +1,60 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-joplin-server",
+            "image_tag": "latest",
+            "display_name": "Joplin Server",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/joplin-server",
+            "image": "joplin/server",
+            "depends_on": [
+                "nextcloud-aio-joplin-database"
+            ],
+            "internal_port": "22300",
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "22300",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "DB_CLIENT=pg",
+                "APP_BASE_URL=https://joplin.%NC_DOMAIN%",
+                "POSTGRES_PASSWORD=%JOPLIN_DB_PASSWORD%",
+                "POSTGRES_DATABASE=joplin",
+                "POSTGRES_USER=joplin",
+                "POSTGRES_PORT=5432",
+                "POSTGRES_HOST=nextcloud-aio-joplin-database"
+            ],
+            "secrets": [
+                "JOPLIN_DB_PASSWORD"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-joplin-database",
+            "image_tag": "18",
+            "display_name": "Joplin Database (PostgreSQL)",
+            "image": "postgres",
+            "internal_port": "5432",
+            "environment": [
+                "POSTGRES_PASSWORD=%JOPLIN_DB_PASSWORD%",
+                "POSTGRES_DB=joplin",
+                "POSTGRES_USER=joplin",
+                "PGDATA=/var/lib/postgresql/data"
+            ],
+            "secrets": [
+                "JOPLIN_DB_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_joplin_data",
+                    "destination": "/var/lib/postgresql/data",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_joplin_data"
+            ]
+        }
+    ]
+}

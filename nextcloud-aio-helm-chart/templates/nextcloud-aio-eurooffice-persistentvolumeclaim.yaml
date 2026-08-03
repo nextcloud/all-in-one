@@ -1,0 +1,18 @@
+{{- if eq .Values.EUROOFFICE_ENABLED "yes" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    io.kompose.service: nextcloud-aio-eurooffice
+  name: nextcloud-aio-eurooffice
+  namespace: "{{ .Values.NAMESPACE }}"
+spec:
+  {{- if .Values.STORAGE_CLASS }}
+  storageClassName: {{ .Values.STORAGE_CLASS }}
+  {{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.EUROOFFICE_STORAGE_SIZE }}
+{{- end }}

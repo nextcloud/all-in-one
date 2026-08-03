@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM alpine:3.23.3
+FROM alpine:3.24.1
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -13,6 +13,15 @@ RUN set -ex; \
     sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize 2000M|g" /etc/clamav/clamd.conf; \
 # StreamMaxLength must be synced with av_stream_max_length inside the Nextcloud files_antivirus plugin
     sed -i "s|#\?StreamMaxLength.*|StreamMaxLength 2000M|g" /etc/clamav/clamd.conf; \
+# By default clamd keeps the old signature database in RAM while loading the new one,
+# briefly doubling memory usage (~1 GB extra) during each freshclam update cycle.
+# Setting ConcurrentDatabaseReload to "no" makes clamd unload the old database first,
+# eliminating that transient peak and significantly reducing maximum RAM consumption.
+    sed -i "s|#\?ConcurrentDatabaseReload.*|ConcurrentDatabaseReload no|g" /etc/clamav/clamd.conf; \
+# The default thread pool is 10-12 threads, each reserving its own stack and scan buffers.
+# The Nextcloud antivirus plugin sends one file at a time, so 2 threads are sufficient
+# and avoids the idle per-thread memory overhead of the larger default pool.
+    sed -i "s|#\?MaxThreads.*|MaxThreads 2|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?TCPSocket|TCPSocket|g" /etc/clamav/clamd.conf; \
     sed -i "s|^LocalSocket .*|LocalSocket /tmp/clamd.sock|g" /etc/clamav/clamd.conf; \
     sed -i "s|Example| |g" /etc/clamav/clamav-milter.conf; \
@@ -34,5 +43,11 @@ ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
-    org.label-schema.vendor="Nextcloud"
+    dockhand.update="false" \
+    org.opencontainers.image.title="ClamAV for Nextcloud AIO" \
+    org.opencontainers.image.description="ClamAV antivirus scanner for Nextcloud All-in-One" \
+    org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
+    org.opencontainers.image.vendor="Nextcloud" \
+    org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"
 HEALTHCHECK --start-period=60s --retries=9 CMD /healthcheck.sh

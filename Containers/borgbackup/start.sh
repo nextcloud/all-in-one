@@ -1,5 +1,16 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+if [ "$AIO_LOG_LEVEL" = "warn" ]; then
+    BORG_LOG_LEVEL_FLAG="--warning"
+else
+    BORG_LOG_LEVEL_FLAG="--$AIO_LOG_LEVEL"
+fi
+export BORG_LOG_LEVEL_FLAG
+
 # Variables
 export MOUNT_DIR="/mnt/borgbackup"
 export BORG_BACKUP_DIRECTORY="$MOUNT_DIR/borg"  # necessary even when remote to store the aio-lockfile
@@ -48,7 +59,7 @@ fi
 rm -f "/nextcloud_aio_volumes/nextcloud_aio_database_dump/backup-is-running"
 
 # Get a list of all available borg archives
-if borg list &>/dev/null; then
+if borg "$BORG_LOG_LEVEL_FLAG" list &>/dev/null; then
     borg list | grep "nextcloud-aio" | awk -F " " '{print $1","$3,$4}' > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"
 else
     echo "" > "/nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/backup_archives.list"

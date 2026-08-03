@@ -14,7 +14,7 @@
 > - See more here https://github.com/nextcloud/tables/issues/103 
 
 ## NocoDb server
-This container bundles NocoDb without synchronization with Nextcloud.
+This container bundles [NocoDb](https://github.com/nocodb/nocodb), an online no-code database solution, without synchronization with Nextcloud.
 
 This is an alternative of **Airtable**.
 

@@ -1,6 +1,20 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+POSTGRES_LOG_MIN_MESSAGES="$(case "$AIO_LOG_LEVEL" in
+    debug) printf 'debug1' ;;
+    info) printf 'info' ;;
+    warn) printf 'warning' ;;
+    error) printf 'error' ;;
+esac)"
+export POSTGRES_LOG_MIN_MESSAGES
+
 # Variables
+GREP_STRING='Name: oc_appconfig; Type: TABLE; Schema: public; Owner:'
+export GREP_STRING
 DATADIR="/var/lib/postgresql/data"
 export DUMP_DIR="/mnt/data"
 DUMP_FILE="$DUMP_DIR/database-dump.sql"
@@ -85,13 +99,12 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     exec docker-entrypoint.sh postgres &
 
     # Wait for creation
-    while ! psql -d "postgresql://oc_$POSTGRES_USER:$POSTGRES_PASSWORD@127.0.0.1:11000/$POSTGRES_DB" -c "select now()"; do
+    while ! psql -h 127.0.0.1 -p 11000 -U "oc_$POSTGRES_USER" -d "$POSTGRES_DB" -c "select now()"; do
         echo "Waiting for the database to start."
         sleep 5
     done
 
     # Check if the line we grep for later on is there
-    GREP_STRING='Name: oc_appconfig; Type: TABLE; Schema: public; Owner:'
     if ! grep -qa "$GREP_STRING" "$DUMP_FILE"; then
         echo "The needed oc_appconfig line is not there which is unexpected."
         echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
@@ -107,8 +120,9 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         exit 1
     elif [ "$DB_OWNER" != "oc_$POSTGRES_USER" ]; then
         DIFFERENT_DB_OWNER=1
-        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-            CREATE USER "$DB_OWNER" WITH PASSWORD '$POSTGRES_PASSWORD' CREATEDB;
+        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
+            -v "pg_new_password=$POSTGRES_PASSWORD" <<-EOSQL
+            CREATE USER "$DB_OWNER" WITH PASSWORD :'pg_new_password' CREATEDB;
             ALTER DATABASE "$POSTGRES_DB" OWNER TO "$DB_OWNER";
             GRANT ALL PRIVILEGES ON DATABASE "$POSTGRES_DB" TO "$DB_OWNER";
             GRANT ALL PRIVILEGES ON SCHEMA public TO "$DB_OWNER";
@@ -151,23 +165,71 @@ fi
 # Modify postgresql.conf
 if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
     echo "Setting postgres values..."
+    PGCONF="/var/lib/postgresql/data/postgresql.conf"
 
     # Sync this with max pm.max_children and MaxRequestWorkers
     # 5000 connections is apparently the highest possible value with postgres so set it to that so that we don't run into a limit here.
     # We don't actually expect so many connections but don't want to limit it artificially because people will report issues otherwise
     # Also connections should usually be closed again after the process is done
     # If we should actually exceed this limit, it is definitely a bug in Nextcloud server or some of its apps that does not close connections correctly and not a bug in AIO
-    sed -i "s|^max_connections =.*|max_connections = 5000|" "/var/lib/postgresql/data/postgresql.conf"
+    sed -i "s|^max_connections =.*|max_connections = 5000|" "$PGCONF"
 
     # Do not log checkpoints
-    if grep -q "#log_checkpoints" /var/lib/postgresql/data/postgresql.conf; then
-        sed -i 's|#log_checkpoints.*|log_checkpoints = off|' /var/lib/postgresql/data/postgresql.conf
+    if grep -q "#log_checkpoints" "$PGCONF"; then
+        sed -i 's|#log_checkpoints.*|log_checkpoints = off|' "$PGCONF"
+    fi
+
+    if grep -q "^#\?log_min_messages" /var/lib/postgresql/data/postgresql.conf; then
+        sed -i "s|^#\?log_min_messages.*|log_min_messages = $POSTGRES_LOG_MIN_MESSAGES|" /var/lib/postgresql/data/postgresql.conf
+    else
+        echo "log_min_messages = $POSTGRES_LOG_MIN_MESSAGES" >> /var/lib/postgresql/data/postgresql.conf
     fi
 
     # Closing idling connections automatically seems to break any logic so was reverted again to default where it is disabled
-    if grep -q "^idle_session_timeout" /var/lib/postgresql/data/postgresql.conf; then
-        sed -i 's|^idle_session_timeout.*|#idle_session_timeout|' /var/lib/postgresql/data/postgresql.conf
+    if grep -q "^idle_session_timeout" "$PGCONF"; then
+        sed -i 's|^idle_session_timeout.*|#idle_session_timeout|' "$PGCONF"
     fi
+
+    # Increase shared_buffers from the 128MB default for better data caching
+    sed -i "s|^#shared_buffers = .*|shared_buffers = 256MB|" "$PGCONF"
+    sed -i "s|^shared_buffers = .*|shared_buffers = 256MB|" "$PGCONF"
+
+    # Hint to the query planner about available OS page cache (does not allocate memory)
+    sed -i "s|^#effective_cache_size = .*|effective_cache_size = 1GB|" "$PGCONF"
+    sed -i "s|^effective_cache_size = .*|effective_cache_size = 1GB|" "$PGCONF"
+
+    # Increase per-operation sort/hash memory to reduce disk spills for file listing and share queries.
+    # Note: this is allocated per sort/hash operation, not per connection, so the theoretical worst-case
+    # (max_connections × work_mem) is rarely approached in practice.
+    sed -i "s|^#work_mem = .*|work_mem = 16MB|" "$PGCONF"
+    sed -i "s|^work_mem = .*|work_mem = 16MB|" "$PGCONF"
+
+    # Increase memory for VACUUM, CREATE INDEX, and other maintenance operations
+    sed -i "s|^#maintenance_work_mem = .*|maintenance_work_mem = 256MB|" "$PGCONF"
+    sed -i "s|^maintenance_work_mem = .*|maintenance_work_mem = 256MB|" "$PGCONF"
+
+    # Increase WAL buffers to reduce WAL write latency under concurrent write load
+    sed -i "s|^#wal_buffers = .*|wal_buffers = 16MB|" "$PGCONF"
+    sed -i "s|^wal_buffers = .*|wal_buffers = 16MB|" "$PGCONF"
+
+    # Spread checkpoint I/O over a longer window to reduce spikes
+    sed -i "s|^#checkpoint_timeout = .*|checkpoint_timeout = 15min|" "$PGCONF"
+    sed -i "s|^checkpoint_timeout = .*|checkpoint_timeout = 15min|" "$PGCONF"
+
+    # Tune for SSD storage: random reads are nearly as fast as sequential reads
+    sed -i "s|^#random_page_cost = .*|random_page_cost = 1.1|" "$PGCONF"
+    sed -i "s|^random_page_cost = .*|random_page_cost = 1.1|" "$PGCONF"
+
+    # Allow the kernel to issue more concurrent I/O prefetch requests (suitable for SSDs)
+    sed -i "s|^#effective_io_concurrency = .*|effective_io_concurrency = 200|" "$PGCONF"
+    sed -i "s|^effective_io_concurrency = .*|effective_io_concurrency = 200|" "$PGCONF"
+
+    # Trigger autovacuum earlier on large Nextcloud tables (e.g. oc_filecache, oc_activity)
+    # to prevent table bloat accumulating before the default 20% threshold is reached
+    sed -i "s|^#autovacuum_vacuum_scale_factor = .*|autovacuum_vacuum_scale_factor = 0.05|" "$PGCONF"
+    sed -i "s|^autovacuum_vacuum_scale_factor = .*|autovacuum_vacuum_scale_factor = 0.05|" "$PGCONF"
+    sed -i "s|^#autovacuum_analyze_scale_factor = .*|autovacuum_analyze_scale_factor = 0.02|" "$PGCONF"
+    sed -i "s|^autovacuum_analyze_scale_factor = .*|autovacuum_analyze_scale_factor = 0.02|" "$PGCONF"
 fi
 
 do_database_dump() {
@@ -178,14 +240,24 @@ do_database_dump() {
         rm -f "$DUMP_FILE"
         mv "$DUMP_FILE.temp" "$DUMP_FILE"
         pg_ctl stop -m fast
+        if ! grep -qa "$GREP_STRING" "$DUMP_FILE"; then
+            echo "Database dump was successful but the expected grep string does not exist."
+            echo "This is not expected!"
+            echo "Please report this to https://github.com/nextcloud/all-in-one/issues."
+            exit 1
+        fi
         rm "$DUMP_DIR/export.failed"
         echo 'Database dump successful!'
-        set +x
+        if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+            set +x
+        fi
         exit 0
     else
         pg_ctl stop -m fast
         echo "Database dump unsuccessful!"
-        set +x
+        if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+            set +x
+        fi
         exit 1
     fi
 }

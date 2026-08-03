@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const optionsForm = document.getElementById('options-form');
     // Don't run if the expected form isn't present.
-    if (document.getElementById('options-form') === null) {
+    if (optionsForm === null) {
         return;
     }
 
@@ -20,12 +21,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const communityContainersCheckboxes = document.querySelectorAll("#community-form input[type='checkbox']");
 
     // Office suite radio buttons
-    const collaboraRadio = document.getElementById('office-collabora');
-    const onlyofficeRadio = document.getElementById('office-onlyoffice');
-    const noneRadio = document.getElementById('office-none');
-    const collaboraHidden = document.getElementById('collabora');
-    const onlyofficeHidden = document.getElementById('onlyoffice');
-    let initialOfficeSelection = null;
+    const officeSuiteChoiceList = optionsForm.elements['office_suite_choice'];
+    const initialOfficeSelection = document.getElementById('initial-office-suite')?.value ?? '';
 
     optionsContainersCheckboxes.forEach(checkbox => {
         initialStateOptionsContainers[checkbox.id] = checkbox.checked;  // Use checked property to capture actual initial state
@@ -34,17 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
     communityContainersCheckboxes.forEach(checkbox => {
         initialStateCommunityContainers[checkbox.id] = checkbox.checked;  // Use checked property to capture actual initial state
     });
-
-    // Store initial office suite selection
-    if (collaboraRadio && onlyofficeRadio && noneRadio) {
-        if (collaboraRadio.checked) {
-            initialOfficeSelection = 'collabora';
-        } else if (onlyofficeRadio.checked) {
-            initialOfficeSelection = 'onlyoffice';
-        } else {
-            initialOfficeSelection = 'none';
-        }
-    }
 
     // Function to compare current states to initial states
     function checkForOptionContainerChanges() {
@@ -56,24 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Check office suite changes and sync to hidden inputs
-        if (collaboraRadio && onlyofficeRadio && noneRadio && collaboraHidden && onlyofficeHidden) {
-            let currentOfficeSelection = null;
-            if (collaboraRadio.checked) {
-                currentOfficeSelection = 'collabora';
-                collaboraHidden.value = 'on';
-                onlyofficeHidden.value = '';
-            } else if (onlyofficeRadio.checked) {
-                currentOfficeSelection = 'onlyoffice';
-                collaboraHidden.value = '';
-                onlyofficeHidden.value = 'on';
-            } else {
-                currentOfficeSelection = 'none';
-                collaboraHidden.value = '';
-                onlyofficeHidden.value = '';
-            }
-
-            if (currentOfficeSelection !== initialOfficeSelection) {
+        if (officeSuiteChoiceList) {
+            if (officeSuiteChoiceList.value !== initialOfficeSelection) {
                 hasChanges = true;
             }
         }
@@ -121,10 +91,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleDockerSocketProxyWarning() {
         if (document.getElementById("docker-socket-proxy").checked) {
-            // TODO: remove the line below and uncomment the lines further down once https://github.com/nextcloud/app_api/pull/800 is included
-            alert('⚠️ Warning! Enabling this container comes with possible Security problems since you are exposing the docker socket and all its privileges to the Nextcloud container. Enable this only if you are sure what you are doing!');
-            // alert('⚠️ The docker socket proxy container is deprecated. Please use the HaRP (High-availability Reverse Proxy for Nextcloud ExApps) instead!');
-            // document.getElementById("docker-socket-proxy").checked = false
+            alert('⚠️ The docker socket proxy container is deprecated. Please use the HaRP (High-availability Reverse Proxy for Nextcloud ExApps) instead!');
+            document.getElementById("docker-socket-proxy").checked = false
         }
     }
 
@@ -146,11 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
     handleTalkVisibility();  // Ensure talk-recording is correctly initialized
 
     // Add event listeners for office suite radio buttons
-    if (collaboraRadio && onlyofficeRadio && noneRadio) {
-        collaboraRadio.addEventListener('change', checkForOptionContainerChanges);
-        onlyofficeRadio.addEventListener('change', checkForOptionContainerChanges);
-        noneRadio.addEventListener('change', checkForOptionContainerChanges);
-    }
+    officeSuiteChoiceList?.forEach((elem) => elem.addEventListener('change', checkForOptionContainerChanges));
 
     // Initial call to check for changes
     checkForOptionContainerChanges();

@@ -1,5 +1,17 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+TALK_RECORDING_LOG_LEVEL="$(case "$AIO_LOG_LEVEL" in
+    debug) printf '10' ;;
+    info) printf '20' ;;
+    warn) printf '30' ;;
+    error) printf '40' ;;
+esac)"
+export TALK_RECORDING_LOG_LEVEL
+
 # Variables
 if [ -z "$NC_DOMAIN" ]; then
     echo "You need to provide the NC_DOMAIN."
@@ -19,10 +31,37 @@ fi
 # Delete all contents on startup to start fresh
 rm -fr /tmp/{*,.*}
 
+# Detect available hardware for transcoding and build the [ffmpeg] config section accordingly
+FFMPEG_SECTION="[ffmpeg]
+# common = ffmpeg -loglevel level+warning -n
+# outputaudio = -c:a libopus
+# outputvideo = -c:v libvpx -deadline:v realtime -crf 10 -b:v 1M
+extensionaudio = .ogg
+extensionvideo = .webm"
+
+# Check for NVIDIA GPU hardware encoding (NVENC)
+if [ -e "/dev/nvidia0" ] && ffmpeg -hide_banner -encoders 2>/dev/null | grep -q "h264_nvenc"; then
+    echo "NVIDIA GPU detected, enabling h264_nvenc hardware transcoding"
+    FFMPEG_SECTION="[ffmpeg]
+outputvideo = -c:v h264_nvenc -preset p4
+outputaudio = -c:a aac
+extensionaudio = .m4a
+extensionvideo = .mp4"
+# Check for VA-API render node (Intel/AMD open source drivers)
+elif [ -r "/dev/dri/renderD128" ] && ffmpeg -hide_banner -encoders 2>/dev/null | grep -q "h264_vaapi"; then
+    echo "DRI device detected, enabling h264_vaapi hardware transcoding"
+    FFMPEG_SECTION="[ffmpeg]
+common = ffmpeg -loglevel level+warning -n -vaapi_device /dev/dri/renderD128
+outputvideo = -vf format=nv12,hwupload -c:v h264_vaapi
+outputaudio = -c:a aac
+extensionaudio = .m4a
+extensionvideo = .mp4"
+fi
+
 cat << RECORDING_CONF > "/conf/recording.conf"
 [logs]
 # 30 means Warning
-level = 30
+level = ${TALK_RECORDING_LOG_LEVEL}
 
 [http]
 listen = 0.0.0.0:1234
@@ -50,12 +89,7 @@ signalings = signaling-1
 url = ${HPB_PROTOCOL}://${HPB_DOMAIN}${HPB_PATH}
 internalsecret = ${INTERNAL_SECRET}
 
-[ffmpeg]
-# common = ffmpeg -loglevel level+warning -n
-# outputaudio = -c:a libopus
-# outputvideo = -c:v libvpx -deadline:v realtime -crf 10 -b:v 1M
-extensionaudio = .ogg
-extensionvideo = .webm
+${FFMPEG_SECTION}
 
 [recording]
 browser = firefox

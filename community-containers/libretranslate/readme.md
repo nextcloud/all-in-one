@@ -1,5 +1,5 @@
 ## LibreTranslate
-This container bundles LibreTranslate and auto-configures it for you.
+This container bundles [LibreTranslate](https://github.com/LibreTranslate/LibreTranslate) and auto-configures it for you.
 
 > [!WARNING]
 > The LibreTranslate container and app is deprecated!

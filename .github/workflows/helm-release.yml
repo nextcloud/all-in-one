@@ -10,13 +10,16 @@ on:
 
 jobs:
   release:
+    # Do not run this workflow on forked repositories, as they might not have the `gh-pages` branch created, or might
+    # want to use it for other purposes than publishing helm charts
+    if: github.repository == 'nextcloud/all-in-one'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Turnstyle
-        uses: softprops/turnstyle@e565d2d86403c5d23533937e95980570545e5586 # v2
+        uses: softprops/turnstyle@afaccda0f3c0136fb7cb4a734b9b96be03599948 # v2
         with:
           continue-after-seconds: 180
         env:
@@ -32,7 +35,7 @@ jobs:
 
       # See https://github.com/helm/chart-releaser-action/issues/6
       - name: Set up Helm
-        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
           version: v3.6.3
 

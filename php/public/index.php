@@ -10,6 +10,9 @@ ini_set('max_execution_time', '7200');
 // Log whole log messages
 ini_set('log_errors_max_len', '0');
 
+// Path for the Twig compiled-template cache (created at container startup by start.sh)
+const TWIG_CACHE_PATH = '/tmp/twig-cache';
+
 use DI\Container;
 use DI\NotFoundException;
 use Slim\Csrf\Guard;
@@ -23,13 +26,6 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $container = \AIO\DependencyInjection::GetContainer();
 $dataConst = $container->get(\AIO\Data\DataConst::class);
-ini_set('session.save_path', $dataConst->GetSessionDirectory());
-
-// Auto logout on browser close
-ini_set('session.cookie_lifetime', '0');
-
-# Keep session for 24h max
-ini_set('session.gc_maxlifetime', '86400');
 
 // Create app
 AppFactory::setContainer($container);
@@ -44,11 +40,52 @@ $container->set(Guard::class, function () use ($responseFactory) {
 });
 
 // Register Middleware To Be Executed On All Routes
-session_start();
+
+// Migrate from the old PHPSESSID cookie to the new __Host-Http-PHPSESSID cookie.
+// This is needed because the session cookie was renamed in a previous release. Without this,
+// users that were logged in before the update would be logged out after the container restarts.
+$wasAuthenticated = false;
+$oldSessionTimestamp = null;
+if (!isset($_COOKIE['__Host-Http-PHPSESSID']) && isset($_COOKIE['PHPSESSID'])) {
+    session_name('PHPSESSID');
+    if (session_start(['save_path' => $dataConst->GetSessionDirectory(), 'use_strict_mode' => true])) {
+        $wasAuthenticated = isset($_SESSION[\AIO\Auth\AuthManager::SESSION_KEY]) && $_SESSION[\AIO\Auth\AuthManager::SESSION_KEY] === true;
+        $oldSessionTimestamp = isset($_SESSION['date_time']) ? (int)$_SESSION['date_time'] : null;
+        // Do not destroy the old session: if the response carrying the new __Host-Http-PHPSESSID
+        // cookie is lost (e.g., due to a 502 during a mastercontainer update), the client can
+        // retry with the old PHPSESSID cookie and still be authenticated.
+        session_write_close();
+    }
+}
+
+session_start([
+    "name" => "__Host-Http-PHPSESSID", // Set cookie prefix to prevent other pages from overwriting this cookie. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#cookie_prefixes
+    "save_path" => $dataConst->GetSessionDirectory(), // Where to save the session files
+    "cookie_lifetime" => 0, // Delete the session cookie whenever the browser is closed. See https://www.php.net/manual/en/session.configuration.php#ini.session.cookie-lifetime
+    "gc_maxlifetime" => 86400, // Delete sessions after 24 hours. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-maxlifetime
+    "gc_probability" => 0, // Probability that the session cleanup starts. The sessions are cleaned up by a cron job instead, see /cron.sh. See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-probability
+    "gc_divisor" => 100, // gc_probability/gc_divisor = 0/100 = 0%, meaning that PHP will never run session GC itself (cron.sh handles cleanup instead). See https://www.php.net/manual/en/session.configuration.php#ini.session.gc-divisor
+    "use_strict_mode" => true, // Only allow initialized session IDs. See https://www.php.net/manual/en/session.configuration.php#ini.session.use-strict-mode
+    "cookie_secure" => true, // Only send cookies over https (not http). See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#secure
+    "cookie_httponly" => true, // Block the cookie from being read with js in the browser, will still be send for fetch request triggered by js. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly
+    "cookie_samesite" => "Lax", // Send the cookie with same-site requests and top-level cross-site navigations (e.g. redirect after token-based getlogin). "Strict" would block the session cookie on the redirect that follows a cross-site navigation, breaking the getlogin flow from Nextcloud's admin panel. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value
+]);
+
+if ($wasAuthenticated) {
+    if ($oldSessionTimestamp !== null) {
+        // Use MigrateAuthState to preserve the original login timestamp. This prevents the
+        // session deduplicator from running and keeps the old PHPSESSID session file alive,
+        // so the client can retry with the old cookie if the 502 response causes the new
+        // __Host-Http-PHPSESSID cookie to not be received.
+        $container->get(\AIO\Auth\AuthManager::class)->MigrateAuthState($oldSessionTimestamp);
+    } else {
+        $container->get(\AIO\Auth\AuthManager::class)->SetAuthState(true);
+    }
+}
 $app->add(Guard::class);
 
 // Create Twig
-$twig = Twig::create(__DIR__ . '/../templates/', ['cache' => false]);
+$twig = Twig::create(__DIR__ . '/../templates/', ['cache' => TWIG_CACHE_PATH]);
 $app->add(TwigMiddleware::create($app, $twig));
 $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 
@@ -66,11 +103,15 @@ $app->post('/api/docker/backup-check-repair', AIO\Controller\DockerController::c
 $app->post('/api/docker/backup-test', AIO\Controller\DockerController::class . ':StartBackupContainerTest');
 $app->post('/api/docker/restore', AIO\Controller\DockerController::class . ':StartBackupContainerRestore');
 $app->post('/api/docker/stop', AIO\Controller\DockerController::class . ':StopContainer');
+$app->post('/api/docker/backup-reset-location', AIO\Controller\DockerController::class . ':DeleteBorgBackupConfig');
+$app->post('/api/docker/nextcloud-upgrade-to-latest-major', AIO\Controller\DockerController::class . ':RunNextcloudUpgradeToLatestMajor');
+$app->post('/api/docker/prune', AIO\Controller\DockerController::class . ':SystemPrune');
 $app->get('/api/docker/logs', AIO\Controller\DockerController::class . ':GetLogs');
 $app->post('/api/auth/login', AIO\Controller\LoginController::class . ':TryLogin');
 $app->get('/api/auth/getlogin', AIO\Controller\LoginController::class . ':GetTryLogin');
 $app->post('/api/auth/logout', AIO\Controller\LoginController::class . ':Logout');
 $app->post('/api/configuration', \AIO\Controller\ConfigurationController::class . ':SetConfig');
+$app->post('/api/desec/register', \AIO\Controller\DesecController::class . ':Register');
 
 // Views
 $app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {
@@ -112,8 +153,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'backup_times' => $configurationManager->getBackupTimes(),
         'current_channel' => $dockerActionManager->GetCurrentChannel(),
         'is_clamav_enabled' => $configurationManager->isClamavEnabled,
-        'is_onlyoffice_enabled' => $configurationManager->isOnlyofficeEnabled,
-        'is_collabora_enabled' => $configurationManager->isCollaboraEnabled,
+        'office_suite' => $configurationManager->getOfficeSuiteString(),
         'is_talk_enabled' => $configurationManager->isTalkEnabled,
         'borg_restore_password' => $configurationManager->borgRestorePassword,
         'daily_backup_time' => $configurationManager->getDailyBackupTime(),
@@ -142,8 +182,35 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'community_containers' => $configurationManager->listAvailableCommunityContainers(),
         'community_containers_enabled' => $configurationManager->aioCommunityContainers,
         'bypass_container_update' => $bypass_container_update,
-    ]);
+        'desec_email' => $configurationManager->desecEmail,
+        'desec_password' => $configurationManager->desecPassword,
+        'is_desec_domain' => $configurationManager->isDesecDomain(),
+        'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
+        'desec_awaiting_verification' => $configurationManager->isDesecAwaitingVerification(),
+    // Do not cache the page as it shows credentials
+    ])->withHeader('Cache-Control', 'no-store');
 })->setName('profile');
+
+// Renders only the deSEC registration flow. The containers page opens this in a modal
+// iframe so the user can run the multi-step register -> verify -> domain process (adjusting
+// the inputs and re-submitting as needed) without reloading the whole page each time. Once a
+// deSEC domain is configured the view tells the parent window to reload (see desec-done.js).
+$app->get('/desec', function (Request $request, Response $response, array $args) use ($container) {
+    $view = Twig::fromRequest($request);
+    /** @var \AIO\Data\ConfigurationManager $configurationManager */
+    $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
+    return $view->render($response, 'desec.twig', [
+        'domain' => $configurationManager->domain,
+        'desec_email' => $configurationManager->desecEmail,
+        'desec_password' => $configurationManager->desecPassword,
+        'desec_slug' => $configurationManager->desecSlug,
+        'is_desec_domain' => $configurationManager->isDesecDomain(),
+        'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
+        'desec_awaiting_verification' => $configurationManager->isDesecAwaitingVerification(),
+    // Do not cache the page as it shows credentials
+    ])->withHeader('Cache-Control', 'no-store');
+})->setName('desec');
+
 $app->get('/login', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
@@ -152,6 +219,7 @@ $app->get('/login', function (Request $request, Response $response, array $args)
         'is_login_allowed' => $dockerActionManager->isLoginAllowed(),
     ]);
 });
+
 $app->get('/setup', function (Request $request, Response $response, array $args) use ($container) {
     $view = Twig::fromRequest($request);
     /** @var \AIO\Data\Setup $setup */
@@ -170,8 +238,10 @@ $app->get('/setup', function (Request $request, Response $response, array $args)
         [
             'password' => $setup->Setup(),
         ]
-    );
+    // Do not cache the page as it shows credentials
+    )->withHeader('Cache-Control', 'no-store');
 });
+
 $app->get('/log', function (Request $request, Response $response, array $args) use ($container) {
     $params = $request->getQueryParams();
     $id = $params['id'] ?? '';
@@ -179,7 +249,13 @@ $app->get('/log', function (Request $request, Response $response, array $args) u
         throw new DI\NotFoundException();
     }
     $view = Twig::fromRequest($request);
-    return $view->render($response, 'log.twig', ['id' => $id]);
+    return $view->render(
+        $response, 'log.twig', 
+        [
+            'id' => $id
+        ]
+    // Do not cache the page as it might shows credentials
+    )->withHeader('Cache-Control', 'no-store');
 });
 
 // Auth Redirector
@@ -206,6 +282,7 @@ $app->get('/', function (\Psr\Http\Message\RequestInterface $request, Response $
     }
 });
 
+// Default error handler
 $errorMiddleware = $app->addErrorMiddleware(false, true, true);
 
 // Set a custom Not Found handler, which doesn't pollute the app output with 404 errors.
@@ -215,6 +292,17 @@ $errorMiddleware->setErrorHandler(
         $response = $app->getResponseFactory()->createResponse();
         $response->getBody()->write('Not Found');
         return $response->withStatus(404);
-    });
+    }
+);
+
+// Set another custom error handler, which doesn't pollute the app output with 405 errors.
+$errorMiddleware->setErrorHandler(
+    \Slim\Exception\HttpMethodNotAllowedException::class,
+    function (Request $request, Throwable $exception, bool $displayErrorDetails) use ($app) {
+        $response = $app->getResponseFactory()->createResponse();
+        $response->getBody()->write('Method not allowed');
+        return $response->withStatus(405);
+    }
+);
 
 $app->run();

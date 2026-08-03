@@ -1,5 +1,5 @@
 ## Vaultwarden
-This container bundles vaultwarden and auto-configures it for you.
+This container bundles the [VaultWarden](https://www.vaultwarden.net/) password manager and auto-configures it for you.
 
 ### Notes
 - You need to configure a reverse proxy in order to run this container since vaultwarden needs a dedicated (sub)domain! For that, you might have a look at https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy or follow https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md and https://github.com/dani-garcia/vaultwarden/wiki/Proxy-examples. You need to point the reverse proxy at port 8812 of this server.

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    set -x
+fi
+
+export RUST_LOG="$AIO_LOG_LEVEL"
+
 if [ -z "$NEXTCLOUD_HOST" ]; then
     echo "NEXTCLOUD_HOST needs to be provided. Exiting!"
     exit 1
@@ -22,7 +28,7 @@ elif [ "$CPU_ARCH" != "x86_64" ]; then
 fi
 
 # Add warning
-if ! [ -f /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; then
+if ! [ -f /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ] && ! [ -f /var/www/html/apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; then
     echo "The notify_push binary was not found."
     echo "Most likely is DNS resolution not working correctly."
     echo "You can try to fix this by configuring a DNS server globally in dockers daemon.json."
@@ -36,11 +42,24 @@ if ! [ -f /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; t
     exit 1
 fi
 
+# Logic for ipv6 disabled servers
+BIND="::"
+if grep -q "1" /sys/module/ipv6/parameters/disable \
+|| grep -q "1" /proc/sys/net/ipv6/conf/all/disable_ipv6 \
+|| grep -q "1" /proc/sys/net/ipv6/conf/default/disable_ipv6; then
+    BIND="0.0.0.0"
+fi
+export BIND
+
 echo "notify-push was started"
 
+
+if [ -f /var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push ]; then
+    PUSH_PATH="/var/www/html/custom_apps/notify_push/bin/$CPU_ARCH/notify_push"
+else
+    PUSH_PATH="/var/www/html/apps/notify_push/bin/$CPU_ARCH/notify_push"
+fi
 # Run it
-/var/www/html/custom_apps/notify_push/bin/"$CPU_ARCH"/notify_push \
+exec "$PUSH_PATH" \
     --port 7867 \
     /var/www/html/config/config.php
-
-exec "$@"

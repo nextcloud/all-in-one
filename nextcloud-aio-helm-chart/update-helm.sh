@@ -133,7 +133,7 @@ for variable in "${DEPLOYMENTS[@]}"; do
             sed -i "/^    spec:/r /tmp/initcontainers.clamav" "$variable"
         elif echo "$variable" | grep -q "nextcloud-deployment.yaml"; then
             sed -i "/^    spec:/r /tmp/initcontainers.nextcloud" "$variable"
-        elif echo "$variable" | grep -q "fulltextsearch" || echo "$variable" | grep -q "onlyoffice" || echo "$variable" | grep -q "collabora"; then
+        elif echo "$variable" | grep -q "fulltextsearch" || echo "$variable" | grep -q "onlyoffice" || echo "$variable" | grep -q "eurooffice" || echo "$variable" | grep -q "collabora"; then
             sed -i "/^    spec:/r /tmp/initcontainers" "$variable"
         fi
         volumeNames="$(grep -A1 mountPath "$variable" | grep -v mountPath | sed 's|.*name: ||' | sed '/^--$/d')"
@@ -343,21 +343,6 @@ EOL
 # shellcheck disable=SC1083
 find ./ -name '*talk-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-talk.config"  \{} \;
 
-# Additional collabora config
-# shellcheck disable=SC1083
-find ./ -name '*collabora-deployment.yaml' -exec sed -i "s/image: ghcr.io.*/IMAGE_PLACEHOLDER/"  \{} \;
-cat << EOL > /tmp/additional-collabora.config
-          {{- if contains "--o:support_key=" (join " " (.Values.ADDITIONAL_COLLABORA_OPTIONS | default list)) }}
-          image: ghcr.io/nextcloud-releases/aio-collabora-online:$DOCKER_TAG
-          {{- else }}
-          image: ghcr.io/nextcloud-releases/aio-collabora:$DOCKER_TAG
-          {{- end }}
-EOL
-# shellcheck disable=SC1083
-find ./ -name '*collabora-deployment.yaml' -exec sed -i "/IMAGE_PLACEHOLDER/r /tmp/additional-collabora.config"  \{} \;
-# shellcheck disable=SC1083
-find ./ -name '*collabora-deployment.yaml' -exec sed -i "/IMAGE_PLACEHOLDER/d"  \{} \;
-
 cat << EOL > templates/nextcloud-aio-networkpolicy.yaml
 {{- if eq .Values.NETWORK_POLICY_ENABLED "yes" }}
 # https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/04-deny-traffic-from-other-namespaces.md
@@ -499,7 +484,7 @@ cat << EOL > /tmp/security.conf
               {{- end }}
 EOL
 # shellcheck disable=SC1083
-find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*apache-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \; 
+find ./ \( -not -name '*collabora-deployment.yaml*' -not -name '*apache-deployment.yaml*' -not -name '*onlyoffice-deployment.yaml*' -not -name '*eurooffice-deployment.yaml*' -name "*deployment.yaml" \) -exec sed -i "/^          securityContext:$/r /tmp/security.conf" \{} \;
 
 # shellcheck disable=SC1083
 find ./ -name '*collabora-deployment.yaml*' -exec sed -i "/ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER/d" \{} \;

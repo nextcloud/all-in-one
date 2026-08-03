@@ -12,6 +12,7 @@ use AIO\Container\ContainerVolume;
 use AIO\Container\ContainerVolumes;
 use AIO\Data\ConfigurationManager;
 use AIO\Data\DataConst;
+use AIO\Data\OfficeSuite;
 use AIO\Docker\DockerActionManager;
 
 readonly class ContainerDefinitionFetcher {
@@ -39,17 +40,31 @@ readonly class ContainerDefinitionFetcher {
      */
     private function GetDefinition(): array
     {
-        $data = json_decode((string)file_get_contents(DataConst::GetContainersDefinitionPath()), true, 512, JSON_THROW_ON_ERROR);
+        $containersDefinitionPath = DataConst::GetContainersDefinitionPath();
+        $cacheKey = 'containers-json-' . $containersDefinitionPath;
+        $cachedJson = apcu_fetch($cacheKey);
+        if (!is_string($cachedJson)) {
+            $cachedJson = (string)file_get_contents($containersDefinitionPath);
+            apcu_add($cacheKey, $cachedJson);
+        }
+        $data = json_decode($cachedJson, true, 512, JSON_THROW_ON_ERROR);
+
+        // We store this information for later because we need to use it to distinct between community containers and default containers.
+        $standardContainerNames = array_column($data['aio_services_v1'], 'container_name');
 
         $additionalContainerNames = [];
+        $additionalTopLevelContainerNames = [];
         foreach ($this->configurationManager->aioCommunityContainers as $communityContainer) {
             if ($communityContainer !== '') {
                 $path = DataConst::GetCommunityContainersDirectory() . '/' . $communityContainer . '/' . $communityContainer . '.json';
                 $additionalData = json_decode((string)file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
                 $data = array_merge_recursive($data, $additionalData);
+                foreach ($additionalData['aio_services_v1'] as $additionalEntry) {
+                    $additionalContainerNames[] = $additionalEntry['container_name'];
+                }
                 if (isset($additionalData['aio_services_v1'][0]['display_name']) && $additionalData['aio_services_v1'][0]['display_name'] !== '') {
-                    // Store container_name of community containers in variable for later
-                    $additionalContainerNames[] = $additionalData['aio_services_v1'][0]['container_name'];
+                    // Store main container_name of community containers in variable for later
+                    $additionalTopLevelContainerNames[] = $additionalData['aio_services_v1'][0]['container_name'];
                 }
             }
         }
@@ -61,15 +76,16 @@ readonly class ContainerDefinitionFetcher {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-onlyoffice') {
-                if (!$this->configurationManager->isOnlyofficeEnabled) {
+                if ($this->configurationManager->officeSuite !== OfficeSuite::Onlyoffice) {
+                    continue;
+                }
+            } elseif ($entry['container_name'] === 'nextcloud-aio-eurooffice') {
+                if ($this->configurationManager->officeSuite !== OfficeSuite::Eurooffice) {
                     continue;
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-collabora') {
-                if (!$this->configurationManager->isCollaboraEnabled) {
+                if ($this->configurationManager->officeSuite !== OfficeSuite::Collabora) {
                     continue;
-                }
-                if ($this->configurationManager->isCollaboraSubscriptionEnabled()) {
-                    $entry['image'] = 'ghcr.io/nextcloud-releases/aio-collabora-online';
                 }
             } elseif ($entry['container_name'] === 'nextcloud-aio-talk') {
                 if (!$this->configurationManager->isTalkEnabled) {
@@ -166,7 +182,7 @@ readonly class ContainerDefinitionFetcher {
                 if ($entry['container_name'] === 'nextcloud-aio-apache') {
                     // Add community containers first and default ones last so that aio_variables works correctly
                     $valueDependsOnTemp = [];
-                    foreach ($additionalContainerNames as $containerName) {
+                    foreach ($additionalTopLevelContainerNames as $containerName) {
                         $valueDependsOnTemp[] = $containerName;
                     }
                     $valueDependsOn = array_merge_recursive($valueDependsOnTemp, $valueDependsOn);
@@ -177,11 +193,15 @@ readonly class ContainerDefinitionFetcher {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-onlyoffice') {
-                        if (!$this->configurationManager->isOnlyofficeEnabled) {
+                        if ($this->configurationManager->officeSuite !== OfficeSuite::Onlyoffice) {
+                            continue;
+                        }
+                    } elseif ($value === 'nextcloud-aio-eurooffice') {
+                        if ($this->configurationManager->officeSuite !== OfficeSuite::Eurooffice) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-collabora') {
-                        if (!$this->configurationManager->isCollaboraEnabled) {
+                        if ($this->configurationManager->officeSuite !== OfficeSuite::Collabora) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-talk') {
@@ -210,6 +230,15 @@ readonly class ContainerDefinitionFetcher {
                         }
                     } elseif ($value === 'nextcloud-aio-whiteboard') {
                         if (!$this->configurationManager->isWhiteboardEnabled) {
+                            continue;
+                        }
+                    } else {
+                        // Skip dependencies on community containers that are not currently enabled.
+                        // Only apply this when the current entry is itself a community container,
+                        // and the dependency is not an enabled community container or a standard built-in container.
+                        if (in_array($entry['container_name'], $additionalContainerNames, true)
+                            && !in_array($value, $additionalContainerNames, true)
+                            && !in_array($value, $standardContainerNames, true)) {
                             continue;
                         }
                     }
@@ -324,6 +353,8 @@ readonly class ContainerDefinitionFetcher {
                 $documentation = $entry['documentation'];
             }
 
+            $hideFromList = $entry['hide_from_list'] ?? false;
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -349,6 +380,7 @@ readonly class ContainerDefinitionFetcher {
                 $imageTag,
                 $aioVariables,
                 $documentation,
+                $hideFromList,
                 $this->container->get(DockerActionManager::class)
             );
         }
