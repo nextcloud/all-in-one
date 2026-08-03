@@ -27,7 +27,7 @@ COPY community-containers /var/www/docker-aio/community-containers
 COPY php /var/www/docker-aio/php
 COPY --chmod=775 Containers/mastercontainer/*.sh /
 COPY --chmod=664 Containers/mastercontainer/*.Caddyfile /
-COPY --chmod=664 Containers/mastercontainer/supervisord.conf /supervisord.conf
+COPY Containers/mastercontainer/dinit.d/ /etc/dinit.d/
 
 WORKDIR /var/www/docker-aio
 
@@ -42,7 +42,7 @@ RUN set -ex; \
         util-linux-misc \
         ca-certificates \
         bash \
-        supervisor \
+        dinit \
         su-exec \
         netcat-openbsd \
         curl \
@@ -94,10 +94,7 @@ RUN set -ex; \
     chmod -R 770 /var/www/docker-aio; \
     chown -R www-data:www-data /var/www; \
     rm -r php/data; \
-    rm -r php/session; \
-    \
-    mkdir /var/log/supervisord; \
-    mkdir /var/run/supervisord;
+    rm -r php/session;
 
 # hadolint ignore=DL3048
 LABEL org.opencontainers.image.title="Nextcloud All-in-One Mastercontainer" \
