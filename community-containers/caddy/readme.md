@@ -93,9 +93,9 @@ There are 2 different approaches:
 Simple example for a custom configuration:
 
 ```
-https://testme.your-nc-domain.com:443 {
+https://subdomain.your-nc-domain.com:443 {
     # actual redirection to port 1234 of container testme
-    reverse_proxy testme:3001
+    reverse_proxy testme:1234
     # TLS options
     tls {
         issuer acme {
@@ -107,12 +107,12 @@ https://testme.your-nc-domain.com:443 {
 
 More complex example for a custom configuration:
 ```
-https://testme.your-nc-domain.com:443 {
+https://subdomain.your-nc-domain.com:443 {
 
     # Geofilter will be added by caddy in the next line, if you keep it
     # import GEOFILTER
 
-    # own IP filter for that configuration
+    # own IP filter for that configuration, only those are allowed
     @public_networks not remote_ip 11.22.33.44 192.168.1.0/24
         respond @public_networks 403 {
             close
@@ -129,6 +129,7 @@ https://testme.your-nc-domain.com:443 {
     }
 
     # own username and password for that configuration
+    # password is hashed by bcrypt algorithm
     basic_auth {
         # Username "Bob", password "hiccup"
         Bob $2a$14$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
