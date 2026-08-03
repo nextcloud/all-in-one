@@ -1,80 +1,77 @@
 # n8n Workflow Automation
 
-Dieser Container integriert [n8n](https://n8n.io/) in deine Nextcloud AIO-Instanz. n8n ist ein leistungsstarkes Tool zur Workflow-Automatisierung, mit dem du verschiedene Dienste und Anwendungen miteinander verbinden kannst.
+This container integrates [n8n](https://n8n.io/) into your Nextcloud AIO instance. n8n is a powerful workflow automation tool that allows you to connect various services and applications.
 
 ## 📦 Installation
 
-1.  Öffne die Nextcloud AIO-Oberfläche (`https://deine-domain:8080`).
-2.  Gehe zum Bereich **Community Container**.
-3.  Suche den Container **n8n Workflow Automation** und aktiviere ihn.
-4.  Klicke auf **"Save changes"** und starte den Container über den **"Start and update containers"**-Button.
+1.  Open the Nextcloud AIO interface (`https://your-domain:8080`).
+2.  Go to the **Community Container** section.
+3.  Find the container **n8n Workflow Automation** and activate it.
+4.  Click **"Save changes"** and start the container using the **"Start and update containers"** button.
 
-Nach der Installation wird der n8n-Editor automatisch unter `n8n.DEINE-DOMAIN.de` erreichbar sein – **sofern du die Subdomain in deinem Reverse-Proxy (z.B. NPMplus) korrekt eingerichtet hast**.
-
----
-
-## 🔧 Erste Einrichtung (Reverse-Proxy)
-
-Damit der n8n-Editor über HTTPS erreichbar ist, musst du in deinem Reverse-Proxy (z.B. NPMplus) einen Eintrag für die Subdomain `n8n.deine-domain.de` erstellen.
-
-**Beispiel für NPMplus (empfohlene Einstellungen):**
-
-| Feld | Wert | Erklärung |
-|------|------|-----------|
-| **Domain** | `n8n.deine-domain.de` | Die Subdomain für n8n |
-| **Forward Hostname/IP** | `nextcloud-aio-n8n` | Der Containername im AIO-Netzwerk |
-| **Forward Port** | `5678` | Der interne Port von n8n |
-| **Scheme** | `http` | n8n läuft intern mit HTTP |
-| **Force SSL** | ✅ aktivieren | Erzwingt HTTPS – **zwingend erforderlich** |
-| **Websocket Support** | ⚠️ optional | Für Echtzeit-Updates im Editor empfehlenswert, aber nicht zwingend nötig |
-
-**SSL-Zertifikat:** NPMplus besorgt automatisch ein gültiges Let's Encrypt-Zertifikat für die Subdomain – du musst nichts weiter tun.
+After installation, the n8n editor will automatically be accessible at `n8n.YOUR-DOMAIN.com` – **provided you have correctly set up the subdomain in your reverse proxy (e.g., NPMplus)**.
 
 ---
 
-## 🔧 Automatische Konfiguration (nichts eingeben!)
+## 🔧 Initial Setup (Reverse Proxy)
 
-Die folgenden Einstellungen werden von AIO **automatisch** übernommen – du musst **keine** manuellen Eingaben machen:
+To make the n8n editor accessible via HTTPS, you need to create an entry for the subdomain `n8n.your-domain.com` in your reverse proxy (e.g., NPMplus).
 
-| Variable | Wert | Erklärung |
-|----------|------|-----------|
-| `N8N_ENCRYPTION_KEY` | Automatisch generiert | Sicherer Schlüssel für Workflow-Daten |
-| `WEBHOOK_URL` | `https://DEINE-DOMAIN.de/n8n-webhook` | Basis-URL für Webhooks |
-| `N8N_EDITOR_BASE_URL` | `https://n8n.DEINE-DOMAIN.de/` | Basis-URL für den Editor |
+**Example for NPMplus (recommended settings):**
+
+| Field | Value | Explanation |
+|-------|-------|-------------|
+| **Domain** | `n8n.your-domain.com` | The subdomain for n8n |
+| **Forward Hostname/IP** | `nextcloud-aio-n8n` | The container name in the AIO network |
+| **Forward Port** | `5678` | The internal port of n8n |
+| **Scheme** | `http` | n8n runs internally with HTTP |
+| **Force SSL** | ✅ enable | Enforces HTTPS – **mandatory** |
+| **Websocket Support** | ⚠️ optional | Recommended for real-time updates in the editor, but not strictly required |
+
+**SSL Certificate:** NPMplus will automatically obtain a valid Let's Encrypt certificate for the subdomain – you don't need to do anything else.
+
+---
+
+## 🔧 Automatic Configuration (nothing to enter!)
+
+The following settings are **automatically** applied by AIO – you **do not** need to make any manual entries:
+
+| Variable | Value | Explanation |
+|----------|------|-------------|
+| `N8N_ENCRYPTION_KEY` | Automatically generated | Secure key for workflow data |
+| `WEBHOOK_URL` | `https://YOUR-DOMAIN.com/n8n-webhook` | Base URL for webhooks |
+| `N8N_EDITOR_BASE_URL` | `https://n8n.YOUR-DOMAIN.com/` | Base URL for the editor |
 
 ---
 
 ## 💾 Backup
 
-Die persistenten Daten von n8n werden im Docker-Volume `nextcloud_aio_n8n` gespeichert. Dieses Volume wird automatisch in das AIO-Backup-System integriert.
+The persistent data of n8n is stored in the Docker volume `nextcloud_aio_n8n`. This volume is automatically integrated into the AIO backup system.
 
 ---
 
-## 🔍 Wichtige Hinweise
+## 🔍 Important Notes
 
-- **Subdomain erforderlich**: Der Editor ist nur über `n8n.DEINE-DOMAIN.de` erreichbar – richte sie in deinem Reverse-Proxy ein.
-- **HTTPS Pflicht**: Der Container läuft intern mit HTTP, aber der Reverse-Proxy (NPMplus) stellt HTTPS bereit. Force SSL **muss** aktiviert sein.
-- **Interne Datenbank**: n8n verwendet eine eigene SQLite-Datenbank und verbindet sich nicht mit der Nextcloud-Datenbank.
-- **Webhooks**: Die Webhook-URL lautet `https://DEINE-DOMAIN.de/n8n-webhook` und wird automatisch von AIO konfiguriert.
+- **Subdomain required**: The editor is only accessible via `n8n.YOUR-DOMAIN.com` – set it up in your reverse proxy.
+- **HTTPS mandatory**: The container runs internally with HTTP, but the reverse proxy (NPMplus) provides HTTPS. Force SSL **must** be enabled.
+- **Internal database**: n8n uses its own SQLite database and does not connect to the Nextcloud database.
+- **Webhooks**: The webhook URL is `https://YOUR-DOMAIN.com/n8n-webhook` and is automatically configured by AIO.
 
 ---
 
-## 📚 Quellen & Weiterführende Links
+## 📚 Sources & Further Links
 
-- [n8n Offizielle Webseite](https://n8n.io/)
+- [n8n Official Website](https://n8n.io/)
 - [n8n GitHub Repository](https://github.com/n8n-io/n8n)
-- [Nextcloud AIO Community Container Dokumentation](https://github.com/nextcloud/all-in-one/tree/main/community-containers)
+- [Nextcloud AIO Community Container Documentation](https://github.com/nextcloud/all-in-one/tree/main/community-containers)
 
 ---
 
-## 🧑‍💻 Über diesen Container
+## 🧑‍💻 About This Container
 
-Dieser Community-Container wurde entwickelt und eingereicht von:
+This community container was developed and submitted by:
 
 - **c0reloop** ([GitHub](https://github.com/c0reloop)) – *Workflow Automation Integration for Nextcloud AIO*
-
-Mit der Veröffentlichung dieses Containers wird n8n als erstklassige Automatisierungslösung nahtlos in die Nextcloud AIO-Umgebung integriert. Alle Rechte am Container-Layout und der AIO-Integration liegen beim Autor.
-
 ---
 
-*Letzte Aktualisierung: Juli 2026*
+*Last updated: July 2026*
