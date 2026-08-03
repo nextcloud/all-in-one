@@ -8,7 +8,7 @@ COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
 COPY --chown=33:33 Caddyfile /Caddyfile
 COPY --chmod=664 nextcloud.conf /usr/local/apache2/conf/nextcloud.conf
-COPY --chmod=664 supervisord.conf /supervisord.conf
+COPY dinit.d/ /etc/dinit.d/
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
@@ -28,7 +28,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         bash \
-        supervisor \
+        dinit \
         tzdata \
         ca-certificates \
         bind-tools \
@@ -78,13 +78,6 @@ RUN set -ex; \
     mkdir -p /var/www; \
     chown -R www-data:www-data /var/www; \
     \
-    mkdir /var/log/supervisord; \
-    mkdir /var/run/supervisord; \
-    chown www-data:www-data /var/run/supervisord; \
-    chown www-data:www-data /var/log/supervisord; \
-    chmod 777 /var/run/supervisord; \
-    chmod 777 /var/log/supervisord; \
-    \
     chown -R www-data:www-data /usr/local/apache2; \
     chmod +r -R /usr/local/apache2; \
     mkdir -p /usr/local/apache2/logs; \
@@ -94,8 +87,10 @@ RUN set -ex; \
 
 USER www-data:www-data
 
+STOPSIGNAL SIGTERM
+
 ENTRYPOINT ["/start.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["dinit", "--system", "--container", "apache", "caddy"]
 
 ENV AIO_LOG_LEVEL=warn
 

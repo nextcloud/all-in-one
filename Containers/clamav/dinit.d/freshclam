@@ -1,0 +1,5 @@
+type = process
+command = freshclam --foreground --stdout --daemon --daemon-notify=/etc/clamav/clamd.conf
+term-signal = TERM
+restart = yes
+options = shares-console

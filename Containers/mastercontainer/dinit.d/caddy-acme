@@ -1,0 +1,6 @@
+type = process
+command = /usr/bin/caddy run --config /acme.Caddyfile
+run-as = www-data
+term-signal = TERM
+restart = yes
+options = shares-console

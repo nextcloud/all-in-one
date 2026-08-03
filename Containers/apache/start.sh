@@ -10,9 +10,9 @@ if [ -z "$NC_DOMAIN" ]; then
 fi
 
 if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
-    export SUPERVISORD_STDOUT=/dev/stdout
+    export AIO_ACCESS_LOG=/proc/self/fd/1
 else
-    export SUPERVISORD_STDOUT=NONE
+    export AIO_ACCESS_LOG=/dev/null
 fi
 
 # Need write access to /mnt/data
