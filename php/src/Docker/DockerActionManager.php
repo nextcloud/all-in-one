@@ -480,8 +480,11 @@ readonly class DockerActionManager {
             }
         // Special things for the scrutiny container which should not be exposed in the containers.json
         } elseif ($container->identifier === 'nextcloud-aio-scrutiny') {
-            // Allow it to access block devices
-            $requestBody['HostConfig']['DeviceCgroupRules'] = ["b *:* rmw"];
+            // Allow it to access block devices (e.g. /dev/sda for SATA drives) and
+            // character devices (needed for NVMe drives: smartctl reads their SMART data
+            // via admin passthrough ioctls on the NVMe controller character device
+            // /dev/nvme0 and not via the block device /dev/nvme0n1)
+            $requestBody['HostConfig']['DeviceCgroupRules'] = ["b *:* rmw", "c *:* rmw"];
         // Special things for the makemkv container which should not be exposed in the containers.json
         } elseif ($container->identifier === 'nextcloud-aio-makemkv') {
             // Allow it to access block devices
