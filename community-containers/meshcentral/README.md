@@ -1,73 +1,73 @@
 # MeshCentral (Remote Management)
 
-Dieser Container integriert [MeshCentral](https://meshcentral.com/) in deine Nextcloud AIO-Instanz. MeshCentral ist eine Open-Source-Remote-Management-Lösung, mit der du Computer über das Internet verwalten und fernsteuern kannst.
+This container integrates [MeshCentral](https://meshcentral.com/) into your Nextcloud AIO instance. MeshCentral is an open-source remote management solution that allows you to manage and control computers over the internet.
 
 ## 📦 Installation
 
-1.  Öffne die Nextcloud AIO-Oberfläche (`https://deine-domain:8080`).
-2.  Gehe zum Bereich **Community Container**.
-3.  Suche den Container **MeshCentral (Remote Management)** und aktiviere ihn.
-4.  Klicke auf **"Save changes"** und starte den Container über den **"Start and update containers"**-Button.
+1.  Open the Nextcloud AIO interface (`https://your-domain:8080`).
+2.  Go to the **Community Container** section.
+3.  Find the container **MeshCentral (Remote Management)** and activate it.
+4.  Click **"Save changes"** and start the container using the **"Start and update containers"** button.
 
-Nach der Installation wird die MeshCentral-Weboberfläche automatisch unter `meshcentral.DEINE-DOMAIN.de` erreichbar sein – **sofern du die Subdomain in deinem Reverse-Proxy (z.B. NPMplus) korrekt eingerichtet hast**.
-
----
-
-## 🔧 Erste Einrichtung (Reverse-Proxy)
-
-Damit die MeshCentral-Weboberfläche über HTTPS erreichbar ist, musst du in deinem Reverse-Proxy (z.B. NPMplus) einen Eintrag für die Subdomain `meshcentral.deine-domain.de` erstellen.
-
-**Beispiel für NPMplus (empfohlene Einstellungen):**
-
-| Feld | Wert | Erklärung |
-|------|------|-----------|
-| **Domain** | `meshcentral.deine-domain.de` | Die Subdomain für MeshCentral |
-| **Forward Hostname/IP** | `nextcloud-aio-meshcentral` | Der Containername im AIO-Netzwerk |
-| **Forward Port** | `4430` | Der interne Port von MeshCentral |
-| **Scheme** | `https` | MeshCentral läuft intern mit HTTPS |
-| **Force SSL** | ✅ aktivieren | Erzwingt HTTPS – **zwingend erforderlich** |
-| **Websocket Support** | ✅ aktivieren | **Erforderlich** für die Agenten-Kommunikation |
-
-**SSL-Zertifikat:** NPMplus besorgt automatisch ein gültiges Let's Encrypt-Zertifikat für die Subdomain – du musst nichts weiter tun.
+After installation, the MeshCentral web interface will automatically be accessible at `meshcentral.YOUR-DOMAIN.com` – **provided you have correctly set up the subdomain in your reverse proxy (e.g., NPMplus)**.
 
 ---
 
-## 🔧 Automatische Konfiguration (nichts eingeben!)
+## 🔧 Initial Setup (Reverse Proxy)
 
-Die folgenden Einstellungen werden von AIO **automatisch** übernommen – du musst **keine** manuellen Eingaben machen:
+To make the MeshCentral web interface accessible via HTTPS, you need to create an entry for the subdomain `meshcentral.your-domain.com` in your reverse proxy (e.g., NPMplus).
 
-| Variable | Wert | Erklärung |
-|----------|------|-----------|
-| `MC_HOSTNAME` | `meshcentral.DEINE-DOMAIN.de` | Der Hostname für MeshCentral |
-| `MC_SESSION_KEY` | Automatisch generiert | Sicherer Schlüssel für Sitzungen |
-| `MC_PORT` | `4430` | Interner Port, auf dem MeshCentral lauscht |
+**Example for NPMplus (recommended settings):**
+
+| Field | Value | Explanation |
+|-------|-------|-------------|
+| **Domain** | `meshcentral.your-domain.com` | The subdomain for MeshCentral |
+| **Forward Hostname/IP** | `nextcloud-aio-meshcentral` | The container name in the AIO network |
+| **Forward Port** | `4430` | The internal port of MeshCentral |
+| **Scheme** | `https` | MeshCentral runs internally with HTTPS |
+| **Force SSL** | ✅ enable | Enforces HTTPS – **mandatory** |
+| **Websocket Support** | ✅ enable | **Required** for agent communication |
+
+**SSL Certificate:** NPMplus will automatically obtain a valid Let's Encrypt certificate for the subdomain – you don't need to do anything else.
+
+---
+
+## 🔧 Automatic Configuration (nothing to enter!)
+
+The following settings are **automatically** applied by AIO – you **do not** need to make any manual entries:
+
+| Variable | Value | Explanation |
+|----------|------|-------------|
+| `MC_HOSTNAME` | `meshcentral.YOUR-DOMAIN.com` | The hostname for MeshCentral |
+| `MC_SESSION_KEY` | Automatically generated | Secure key for sessions |
+| `MC_PORT` | `4430` | Internal port MeshCentral listens on |
 
 ---
 
 ## 💾 Backup
 
-Die persistenten Daten von MeshCentral werden in den Docker-Volumes `nextcloud_aio_meshcentral_data` und `nextcloud_aio_meshcentral_files` gespeichert. Diese Volumes werden automatisch in das AIO-Backup-System integriert.
+The persistent data of MeshCentral is stored in the Docker volumes `nextcloud_aio_meshcentral_data` and `nextcloud_aio_meshcentral_files`. These volumes are automatically integrated into the AIO backup system.
 
 ---
 
-## 🔍 Wichtige Hinweise
+## 🔍 Important Notes
 
-- **Subdomain erforderlich**: Die Weboberfläche ist nur über `meshcentral.DEINE-DOMAIN.de` erreichbar – richte sie in deinem Reverse-Proxy ein.
-- **HTTPS Pflicht**: Der Container läuft intern mit HTTPS, und der Reverse-Proxy (bei mir NPMplus) leitet die Verbindung weiter. `Scheme` muss auf `https` gesetzt sein.
-- **Websocket Support**: **Muss aktiviert sein**, da die MeshCentral-Agenten für die Echtzeit-Kommunikation WebSockets verwenden.
-- **Agenten**: Die Agenten (Clients) verbinden sich automatisch über die gleiche Domain. Der von der Weboberfläche bereitgestellte Installationsbefehl funktioniert ohne manuelle Änderungen.
+- **Subdomain required**: The web interface is only accessible via `meshcentral.YOUR-DOMAIN.com` – set it up in your reverse proxy.
+- **HTTPS mandatory**: The container runs internally with HTTPS, and the reverse proxy (NPMplus) forwards the connection. `Scheme` must be set to `https`.
+- **Websocket Support**: **Must be enabled**, as MeshCentral agents use WebSockets for real-time communication.
+- **Agents**: The agents (clients) automatically connect via the same domain. The installation command provided by the web interface works without manual changes.
 
 ---
 
-## 🛠️ Über dieses Image
+## 🛠️ About This Image
 
-Dieser Community-Container basiert auf einem eigenen Docker-Image, das für die Integration in Nextcloud AIO optimiert wurde.
+This community container is based on a custom Docker image optimized for integration into Nextcloud AIO.
 
-- **Basis-Image**: [`vegardit/meshcentral:latest`](https://hub.docker.com/r/vegardit/meshcentral) – das offizielle MeshCentral-Image
-- **Anpassungen**: Das Image enthält eine vorkonfigurierte `config.json`-Vorlage, die beim Start automatisch die AIO-spezifischen Platzhalter (`%NC_DOMAIN%`, `%MC_SESSION_KEY%`) durch die tatsächlichen Werte ersetzt.
-- **Quellcode**: Das Dockerfile und die Konfigurationsvorlage sind auf [GitHub](https://github.com/c0reloop/meshcentral-aio) einsehbar.
+- **Base Image**: [`vegardit/meshcentral:latest`](https://hub.docker.com/r/vegardit/meshcentral) – the official MeshCentral image
+- **Customizations**: The image contains a preconfigured `config.json` template that automatically replaces AIO-specific placeholders (`%NC_DOMAIN%`, `%MC_SESSION_KEY%`) with actual values at startup.
+- **Source Code**: The Dockerfile and configuration template are available on [GitHub](https://github.com/c0reloop/meshcentral-aio).
 
-**Die Konfigurationsvorlage (`my-config-template.json`):**
+**The configuration template (`my-config-template.json`):**
 
 ```json
 {
@@ -106,27 +106,3 @@ Dieser Community-Container basiert auf einem eigenen Docker-Image, das für die 
     }
   }
 }
-```
-
-**Warum ein eigenes Image?**  
-Die offizielle MeshCentral-Instanz unterstützt keine automatische Konfiguration über Umgebungsvariablen. Dieses Image wurde entwickelt, um die nahtlose Integration in AIO zu ermöglichen, indem es eine Template-Datei verwendet, die beim Start die korrekte `config.json` generiert.
-
----
-
-## 📚 Quellen & Weiterführende Links
-
-- [MeshCentral Offizielle Webseite](https://meshcentral.com/)
-- [MeshCentral GitHub Repository](https://github.com/Ylianst/MeshCentral)
-- [Nextcloud AIO Community Container Dokumentation](https://github.com/nextcloud/all-in-one/tree/main/community-containers)
-
----
-
-## 🧑‍💻 Über diesen Container
-
-Dieser Community-Container wurde entwickelt und eingereicht von:
-
-- **c0reloop** ([GitHub](https://github.com/c0reloop)) – *Remote Management Integration for Nextcloud AIO*
-
----
-
-*Letzte Aktualisierung: August 2026*
