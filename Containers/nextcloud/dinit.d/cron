@@ -3,4 +3,4 @@ command = /cron.sh
 run-as = www-data
 term-signal = TERM
 restart = yes
-options = shares-console
+options = shares-console signal-process-only
