@@ -36,7 +36,8 @@
                 }
             ],
             "secrets": [
-                "NEXTCLOUD_EXPORTER_CADDY_PASSWORD"
+                "NEXTCLOUD_EXPORTER_CADDY_PASSWORD",
+                "NEXTCLOUD_GLANCES_CADDY_PASSWORD"
             ],
             "aio_variables": [
                 "apache_ip_binding=@INTERNAL",
