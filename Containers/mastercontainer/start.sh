@@ -323,8 +323,19 @@ fi
 # Automatically enable the /dev/dri device if it is mounted into the mastercontainer
 if [ -d "/dev/dri" ]; then
     export NEXTCLOUD_ENABLE_DRI_DEVICE="true"
-    if [ -e "/dev/dri/renderD128" ]; then
-        NEXTCLOUD_DRI_GID="$(stat -c '%g' /dev/dri/renderD128)"
+    # Allow pinning a single render node on multi-GPU hosts (issue #8445).
+    # Validate the optional user selection and fall back to /dev/dri otherwise.
+    DRI_NODE="/dev/dri/renderD128"
+    if [ -n "$NEXTCLOUD_DRI_DEVICE" ] && [ "$NEXTCLOUD_DRI_DEVICE" != "/dev/dri" ]; then
+        if echo "$NEXTCLOUD_DRI_DEVICE" | grep -qE '^/dev/dri/(renderD|card)[0-9]+$' && [ -e "$NEXTCLOUD_DRI_DEVICE" ]; then
+            DRI_NODE="$NEXTCLOUD_DRI_DEVICE"
+        else
+            print_red "NEXTCLOUD_DRI_DEVICE='$NEXTCLOUD_DRI_DEVICE' is invalid or not present; falling back to /dev/dri."
+            export NEXTCLOUD_DRI_DEVICE="/dev/dri"
+        fi
+    fi
+    if [ -e "$DRI_NODE" ]; then
+        NEXTCLOUD_DRI_GID="$(stat -c '%g' "$DRI_NODE")"
         export NEXTCLOUD_DRI_GID
     else
         export NEXTCLOUD_DRI_GID=""

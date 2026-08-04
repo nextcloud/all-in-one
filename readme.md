@@ -664,6 +664,8 @@ In order to use that, you need to pass the `/dev/dri` device into the mastercont
 
 With this device in place, the AIO mastercontainer automatically detects the `/dev/dri` device, enables hardware acceleration for the relevant containers and passes the correct render device group to the talk-recording container so that VA-API hardware transcoding (`h264_vaapi`) is used when recording calls.
 
+By default the whole `/dev/dri` directory (all render nodes) is passed into the containers that benefit from it. On hosts with more than one GPU the kernel may assign the render node number (e.g. `renderD128`) to a different GPU after a reboot, which can cause transcoding to use the wrong GPU. To pin a specific render node, add `--env NEXTCLOUD_DRI_DEVICE=/dev/dri/renderD129` (adjust the node to the GPU you want) to the docker run command of the mastercontainer. Only the selected node is then passed through, and it is always exposed as `/dev/dri/renderD128` inside the containers so that VA-API keeps working regardless of the host's numbering. An invalid or missing value falls back to passing the whole `/dev/dri` directory.
+
 #### With proprietary drivers for Nvidia :warning: BETA
 
 > [!WARNING]
