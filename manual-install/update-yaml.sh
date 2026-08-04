@@ -92,6 +92,7 @@ sed -i 's|NEXTCLOUD_TRUSTED_CACERTS_DIR=|NEXTCLOUD_TRUSTED_CACERTS_DIR=/usr/loca
 sed -i 's|UPDATE_NEXTCLOUD_APPS=|UPDATE_NEXTCLOUD_APPS="no"          # When setting to "yes" (with quotes), it will automatically update all installed Nextcloud apps upon container startup on saturdays.|' sample.conf
 sed -i 's|APACHE_PORT=|APACHE_PORT=443          # Changing this to a different value than 443 will allow you to run it behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else).|' sample.conf
 sed -i 's|APACHE_IP_BINDING=|APACHE_IP_BINDING=0.0.0.0          # This can be changed to e.g. 127.0.0.1 if you want to run AIO behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) and if that is running on the same host and using localhost to connect|' sample.conf
+sed -i 's|WATCHTOWER_DOCKER_SOCKET_PATH=|WATCHTOWER_DOCKER_SOCKET_PATH=/var/run/docker.sock          # This can be changed depending on where the docker socket is located on your host|' sample.conf
 sed -i 's|TALK_PORT=|TALK_PORT=3478          # This allows to adjust the port that the talk container is using. It should be set to something higher than 1024! Otherwise it might not work!|' sample.conf
 sed -i 's|NC_DOMAIN=|NC_DOMAIN=yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.|' sample.conf
 sed -i 's|NEXTCLOUD_PASSWORD=|NEXTCLOUD_PASSWORD=          # TODO! This is the password of the initially created Nextcloud admin with username "admin".|' sample.conf

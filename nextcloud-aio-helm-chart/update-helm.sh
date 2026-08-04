@@ -44,6 +44,7 @@ sed -i "s|- \${TALK_PORT}|- $TALK_PORT|" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
 sed -i "s|\${ADDITIONAL_COLLABORA_OPTIONS}|ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER|" latest.yml
 sed -i "/name: nextcloud-aio/,$ d" latest.yml
+sed -i "/WATCHTOWER_DOCKER_SOCKET_PATH/d" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
 sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name: nextcloud_aio_nextcloud_trusted_cacerts" latest.yml
@@ -432,6 +433,7 @@ sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
 sed -i '/^APACHE_IP_BINDING/d' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
+sed -i "/WATCHTOWER_DOCKER_SOCKET_PATH/d" /tmp/sample.conf
 sed -i 's/ yes / "yes" /' /tmp/sample.conf
 sed -i 's/ no / "no" /' /tmp/sample.conf
 sed -i 's/"no" authentication/no authentication/' /tmp/sample.conf
