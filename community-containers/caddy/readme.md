@@ -60,7 +60,7 @@ This container configures subdomains for a number of community containers.
 
 
 
-## custom configuration
+## Custom configuration
 
 It is possible to add configuration for even more services and subdomains. 
 
