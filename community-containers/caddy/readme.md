@@ -11,9 +11,6 @@ This container bundles [caddy](https://caddyserver.com/) and auto-configures it 
 
 This container configures subdomains for a number of community containers. 
 
-> [!Note]
-> - You need to set the correct CNAME or A/AAAA DNS records for your domain to get this working.
-
 | Container                                                                                                           | Subdomain                        | Geoblocking | IP Allow List | Authentication |
 |---------------------------------------------------------------------------------------------------------------------|----------------------------------|-------------|---------------|----------------|
 | [azuracast](https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast)                       | `radio.your-nc-domain.com`       | ✅           |               |                |
@@ -26,6 +23,16 @@ This container configures subdomains for a number of community containers.
 | [seerr](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr)                          | `requests.your-nc-domain.com`    | ✅           |               |                |
 | [stalwart](https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart)                         | `mail.your-nc-domain.com`        | ✅           | ✅            |                |
 | [vaultwarden](https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden)                   | `bw.your-nc-domain.com`          | ✅           | ✅            |                |
+
+
+> [!Important]
+> You need to set the correct DNS records for this to work!
+> 
+> Example:
+>  - your domain is your-nc-domain.com,
+>  - you want to use the stalwart container
+>  - so you need to set CNAME or A/AAAA DNS records for the subdomains mail.your-nc-domain.com to point to your nextcloud AIO server
+>  - caddy will do the rest and make stalwart available without any additional configuration
 
 
 ## Geoblocking
