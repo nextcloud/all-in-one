@@ -795,7 +795,15 @@
           "source": "nextcloud_aio_eurooffice",
           "destination": "/var/lib/euro-office",
           "writeable": true
+        },
+        {
+          "source": "nextcloud_aio_eurooffice_data",
+          "destination": "/var/www/euro-office/Data",
+          "writeable": true
         }
+      ],
+      "backup_volumes": [
+        "nextcloud_aio_eurooffice_data"
       ],
       "secrets": [
         "EUROOFFICE_SECRET"
