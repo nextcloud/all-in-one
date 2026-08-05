@@ -29,10 +29,9 @@ This container configures subdomains for a number of community containers.
 > You need to set the correct DNS records for this to work!
 > 
 > Example:
->  - your domain is your-nc-domain.com,
->  - you want to use the stalwart container
->  - so you need to set CNAME or A/AAAA DNS records for the subdomains mail.your-nc-domain.com to point to your nextcloud AIO server
->  - caddy will do the rest and make stalwart available without any additional configuration
+> - Your domain is your-nc-domain.com and you want to use the vaultwarden container.
+> - Then you need to set CNAME record for the subdomain bw.your-nc-domain.com to point at your main your-nc-domain.com.
+> - Alternatively, you can configure the A/AAAA records of your-nc-domain.com to point at the public IP-address of your Nextcloud AIO server.
 
 
 ## Geoblocking
