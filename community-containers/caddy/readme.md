@@ -11,6 +11,15 @@ This container bundles [caddy](https://caddyserver.com/) and auto-configures it 
 
 This container configures subdomains for a number of community containers. 
 
+> [!Important]
+> You need to set the correct DNS records for this to work
+> 
+> Example:
+> - Your domain is `your-nc-domain.com` and you want to use the vaultwarden container.
+> - Then you need to set CNAME record for the subdomain `bw.your-nc-domain.com` to point to your main domain `your-nc-domain.com`.
+> - Alternatively, you can configure the A/AAAA records of `bw.your-nc-domain.com` to point to the public IP-address of your Nextcloud AIO server.
+
+
 | Container                                                                                                           | Subdomain                        | Geoblocking | IP Allow List | Authentication |
 |---------------------------------------------------------------------------------------------------------------------|----------------------------------|-------------|---------------|----------------|
 | [azuracast](https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast)                       | `radio.your-nc-domain.com`       | ✅           |               |                |
@@ -23,16 +32,6 @@ This container configures subdomains for a number of community containers.
 | [seerr](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr)                          | `requests.your-nc-domain.com`    | ✅           |               |                |
 | [stalwart](https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart)                         | `mail.your-nc-domain.com`        | ✅           | ✅            |                |
 | [vaultwarden](https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden)                   | `bw.your-nc-domain.com`          | ✅           | ✅            |                |
-
-
-> [!Important]
-> You need to set the correct DNS records for this to work!
-> 
-> Example:
-> - Your domain is your-nc-domain.com and you want to use the vaultwarden container.
-> - Then you need to set CNAME record for the subdomain bw.your-nc-domain.com to point at your main your-nc-domain.com.
-> - Alternatively, you can configure the A/AAAA records of your-nc-domain.com to point at the public IP-address of your Nextcloud AIO server.
-
 
 ## Geoblocking
 
