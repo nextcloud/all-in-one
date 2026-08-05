@@ -6,6 +6,7 @@
             "display_name": "Joplin Server",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/joplin-server",
             "image": "joplin/server",
+            "restart": "unless-stopped",
             "depends_on": [
                 "nextcloud-aio-joplin-database"
             ],
@@ -35,6 +36,7 @@
             "image_tag": "18",
             "display_name": "Joplin Database (PostgreSQL)",
             "image": "postgres",
+            "restart": "unless-stopped",
             "internal_port": "5432",
             "environment": [
                 "POSTGRES_PASSWORD=%JOPLIN_DB_PASSWORD%",
