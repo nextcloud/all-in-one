@@ -47,7 +47,7 @@ RUN set -ex; \
             -e 's/^#\(LoadModule .*mod_authz_core.so\)/\1/' \
             -e 's/^#\(LoadModule .*mod_alias.so\)/\1/' \
             -e 's/^#\(LoadModule .*mod_mpm_event.so\)/\1/' \
-            -e 's/^#\(LoadModule .*mod_brotli.so\)/\1/' \
+            -e 's/^#\(LoadModule .*mod_reqtimeout.so\)/\1/' \
             -e 's/\(LoadModule .*mod_mpm_worker.so\)/#\1/' \
             -e 's/\(LoadModule .*mod_mpm_prefork.so\)/#\1/' \
             -e 's/\(ScriptAlias \)/#\1/' \

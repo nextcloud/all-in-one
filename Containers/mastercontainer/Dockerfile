@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:29.6.2-cli AS docker
+FROM docker:29.7.0-cli AS docker
 
 ARG CADDY_REMOTE_HOST_HASH=e80a9931765a8dbcbb47db415863387f0df0e1b3
 
@@ -11,7 +11,7 @@ RUN set -ex; \
     /usr/bin/caddy list-modules
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.24/fpm/Dockerfile
-FROM php:8.5.8-fpm-alpine3.24
+FROM php:8.5.9-fpm-alpine3.24
 
 EXPOSE 80
 EXPOSE 8080
@@ -31,7 +31,7 @@ COPY --chmod=664 Containers/mastercontainer/supervisord.conf /supervisord.conf
 
 WORKDIR /var/www/docker-aio
 
-# hadolint ignore=SC2086,DL3047,DL3003,DL3004
+# hadolint ignore=SC2086,DL3047,DL3003
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
@@ -43,7 +43,7 @@ RUN set -ex; \
         ca-certificates \
         bash \
         supervisor \
-        sudo \
+        su-exec \
         netcat-openbsd \
         curl \
         grep; \
@@ -87,8 +87,8 @@ RUN set -ex; \
     rm -r ./php/tests; \
     chown www-data:www-data -R /var/www/docker-aio; \
     cd php; \
-    sudo -E -u www-data composer install --no-dev; \
-    sudo -E -u www-data composer clear-cache; \
+    su-exec www-data composer install --no-dev; \
+    su-exec www-data composer clear-cache; \
     cd ..; \
     rm -f /usr/local/bin/composer; \
     chmod -R 770 /var/www/docker-aio; \

@@ -68,7 +68,16 @@ Starting with v11 of AIO, the management of Community Containers is done via the
 ⚠️⚠️⚠️ Please review the folder for documentation on each of the containers before adding them! Not reviewing the documentation for each of them first might break starting the AIO containers because some containers are not compatible with each other and more.
 
 ## How to add containers?
-Simply submit a PR by creating a new folder in this directory: https://github.com/nextcloud/all-in-one/tree/main/community-containers with the name of your container. It must include a json file with the same name and with correct syntax and a readme.md with additional information. You might get inspired by caddy, fail2ban, local-ai, libretranslate, plex, pi-hole or vaultwarden (subfolders in this directory). For a full-blown example of the json file, see https://github.com/nextcloud/all-in-one/blob/main/php/containers.json. The json-schema that it validates against can be found here: https://github.com/nextcloud/all-in-one/blob/main/php/containers-schema.json.
+Simply submit a PR by creating a new folder in this directory: https://github.com/nextcloud/all-in-one/tree/main/community-containers with the name of your container. It must include a json file with the same name and with correct syntax and a readme.md with additional information. You might get inspired by caddy, fail2ban, local-ai, libretranslate, plex, pi-hole or vaultwarden (subfolders in this directory). For a full-blown example of the json file, see https://github.com/nextcloud/all-in-one/blob/main/php/containers.json. 
+
+### How to test new containers in your own installation?
+
+1. Validate your JSON file against standard validators as well as the specific json-schema: https://github.com/nextcloud/all-in-one/blob/main/php/containers-schema.json
+2. create a folder with all files somewhere, e.g. /root
+3. put your container's folder there, e.g. `new-container`
+4. copy this folder to your container: `docker cp /root/new-container nextcloud-aio-mastercontainer:/var/www/docker-aio/community-containers/`
+5. restart mastercontainer `docker restart nextcloud-aio-mastercontainer`
+6. open you AIO interface and you should see your community container
 
 ### Is there a list of ideas for new community containers?
 Yes, see [this list](https://github.com/nextcloud/all-in-one/issues/5251) for already existing ideas for new community containers. Feel free to pick one up and add it to this folder by following the instructions above.

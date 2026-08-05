@@ -436,7 +436,7 @@ if [ "$BORG_MODE" = restore ]; then
         #
         # Older backups may still contain files we've since excluded, so we have to exclude on extract as well.
         cd /  # borg extract has no destination arg and extracts to CWD
-        if ! borg "$BORG_LOG_LEVEL_FLAG" extract "::$SELECTED_ARCHIVE" --progress --exclude-from /borg_excludes "${ADDITIONAL_BORG_EXCLUDES[@]}" --pattern '+nextcloud_aio_volumes/**'
+        if ! borg "$BORG_LOG_LEVEL_FLAG" extract "::$SELECTED_ARCHIVE" --progress --noxattrs --exclude-from /borg_excludes "${ADDITIONAL_BORG_EXCLUDES[@]}" --pattern '+nextcloud_aio_volumes/**'
         then
             RESTORE_FAILED=1
             echo "Failed to extract backup archive."
