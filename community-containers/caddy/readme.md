@@ -38,7 +38,7 @@ This container bundles [caddy](https://caddyserver.com/) and auto-configures it 
 - Some containers have randomly created access passwords for additional security
 - Those secrets will be shown in the AIO interface after installation
 
-## supported community containers
+## Supported community containers
 
 This container configures subdomains for a number of community containers. 
 
