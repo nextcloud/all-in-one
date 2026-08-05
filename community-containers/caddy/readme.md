@@ -138,7 +138,7 @@ https://subdomain.your-nc-domain.com:443 {
 ```
 
 
-## running caddy behind a proxy
+## Running caddy behind a proxy
 
 - The container also supports the proxy protocol inside caddy. That means that you can run a supported web server in front of port 443/tcp and use the proxy protocol.
 - You can enable this by configuring the `APACHE_IP_BINDING` environmental variable for the mastercontainer and set it to an ip-address from which the protocol shall be accepted.
