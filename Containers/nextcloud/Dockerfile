@@ -234,7 +234,7 @@ RUN set -ex; \
         git \
         postgresql-client \
         tzdata \
-        sudo \
+        su-exec \
         grep \
         nodejs \
         bind-tools \

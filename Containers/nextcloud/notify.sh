@@ -5,7 +5,7 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
 fi
 
 if [[ "$EUID" = 0 ]]; then
-    COMMAND=(sudo -E -u www-data php /var/www/html/occ)
+    COMMAND=(su-exec www-data php /var/www/html/occ)
 else
     COMMAND=(php /var/www/html/occ)
 fi
