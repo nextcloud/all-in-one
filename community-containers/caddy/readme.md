@@ -7,6 +7,27 @@ This container bundles [caddy](https://caddyserver.com/) and auto-configures it 
 > - Make sure that no other service is using port 443/tcp on your host as otherwise the containers will fail to start. You can check this with `sudo netstat -tulpn | grep 443` before installing this container
 > - the default `admin` user needs to be present, i.e. it can not be deleted because caddy configuration can be done there. 
 
+## Supported community containers
+
+This container configures subdomains for a number of community containers. 
+
+> [!Note]
+> - You need to set the correct CNAME or A/AAAA DNS records for your domain to get this working.
+
+| Container                                                                                                           | Subdomain                        | Geoblocking | IP Allow List | Authentication |
+|---------------------------------------------------------------------------------------------------------------------|----------------------------------|-------------|---------------|----------------|
+| [azuracast](https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast)                       | `radio.your-nc-domain.com`       | ✅           |               |                |
+| [jellyfin](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin)                         | `media.your-nc-domain.com`       | ✅           |               |                |
+| [joplin-server](https://github.com/nextcloud/all-in-one/tree/main/community-containers/joplin-server)               | `joplin.your-nc-domain.com`      | ✅           |               |                |
+| [lldap](https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap)                               | `ldap.your-nc-domain.com`        | ✅           | ✅            |                |
+| [LocalAI](https://github.com/nextcloud/all-in-one/tree/main/community-containers/local-ai)                          | `ai.your-nc-domain.com`          | ✅           |               |                |
+| [nextcloud-exporter](https://github.com/nextcloud/all-in-one/tree/main/community-containers/nextcloud-exporter)     | `metrics.your-nc-domain.com`     | ✅           |               | ✅             |
+| [nocodb](https://github.com/nextcloud/all-in-one/tree/main/community-containers/nocodb)                             | `tables.your-nc-domain.com`      | ✅           |               |                |
+| [seerr](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr)                          | `requests.your-nc-domain.com`    | ✅           |               |                |
+| [stalwart](https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart)                         | `mail.your-nc-domain.com`        | ✅           | ✅            |                |
+| [vaultwarden](https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden)                   | `bw.your-nc-domain.com`          | ✅           | ✅            |                |
+
+
 ## Geoblocking
 
  - After the container was started the first time, log in as default `admin` user. You should see a new `nextcloud-aio-caddy` folder and inside there an `allowed-countries.txt` file
@@ -37,28 +58,6 @@ This container bundles [caddy](https://caddyserver.com/) and auto-configures it 
 
 - Some containers have randomly created access passwords for additional security
 - Those secrets will be shown in the AIO interface after installation
-
-## Supported community containers
-
-This container configures subdomains for a number of community containers. 
-
-> [!Note]
-> - You need to set the correct CNAME or A/AAAA DNS records for your domain to get this working.
-
-| Container                                                                                                           | Subdomain                        | Geoblocking | IP Allow List | Authentication |
-|---------------------------------------------------------------------------------------------------------------------|----------------------------------|-------------|---------------|----------------|
-| [azuracast](https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast)                       | `radio.your-nc-domain.com`       | ✅           |               |                |
-| [jellyfin](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin)                         | `media.your-nc-domain.com`       | ✅           |               |                |
-| [joplin-server](https://github.com/nextcloud/all-in-one/tree/main/community-containers/joplin-server)               | `joplin.your-nc-domain.com`      | ✅           |               |                |
-| [lldap](https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap)                               | `ldap.your-nc-domain.com`        | ✅           | ✅            |                |
-| [LocalAI](https://github.com/nextcloud/all-in-one/tree/main/community-containers/local-ai)                          | `ai.your-nc-domain.com`          | ✅           |               |                |
-| [nextcloud-exporter](https://github.com/nextcloud/all-in-one/tree/main/community-containers/nextcloud-exporter)     | `metrics.your-nc-domain.com`     | ✅           |               | ✅             |
-| [nocodb](https://github.com/nextcloud/all-in-one/tree/main/community-containers/nocodb)                             | `tables.your-nc-domain.com`      | ✅           |               |                |
-| [seerr](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr)                          | `requests.your-nc-domain.com`    | ✅           |               |                |
-| [stalwart](https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart)                         | `mail.your-nc-domain.com`        | ✅           | ✅            |                |
-| [vaultwarden](https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden)                   | `bw.your-nc-domain.com`          | ✅           | ✅            |                |
-
-
 
 ## Custom configuration
 
