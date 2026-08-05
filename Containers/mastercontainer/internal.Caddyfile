@@ -26,11 +26,21 @@
 https://:8080 {
     import headers.Caddyfile
 
-	@denied {
+	@denied-host {
 		path /api/auth/login /api/auth/getlogin
 		remote_host nextcloud-aio-nextcloud
 	}
-	abort @denied
+	abort @denied-host
+
+	# The gateway ip of the nextcloud-aio network is used as source address by containers
+	# that reach the mastercontainer via the host, so it needs to be blocked as well.
+	# The variable gets set in start.sh and falls back to localhost if the network
+	# does not exist yet. In that case it gets applied on the next container restart.
+	@denied-gateway {
+		path /api/auth/login /api/auth/getlogin
+		remote_ip {$DOCKER_NETWORK_GATEWAY}
+	}
+	abort @denied-gateway
 
 	root * /var/www/docker-aio/php/public
 	php_fastcgi unix//run/php.sock

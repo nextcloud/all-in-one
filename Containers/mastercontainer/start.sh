@@ -436,6 +436,20 @@ if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
     rm -rf /mnt/docker-aio-config/caddy/locks/*
 fi
 
+# Get the gateway ip of the nextcloud-aio network which is used by the Caddyfiles.
+# Containers that reach the mastercontainer via the host use it as source address,
+# so it needs to be blocked in addition to the nextcloud container itself.
+# A network can have multiple gateways (e.g. one for IPv4 and one for IPv6), so get them all.
+# remote_ip accepts multiple space separated values.
+DOCKER_NETWORK_GATEWAY="$(su-exec www-data docker network inspect nextcloud-aio --format '{{range .IPAM.Config}}{{if .Gateway}}{{.Gateway}} {{end}}{{end}}' 2>/dev/null | sed 's| *$||')"
+if [ -z "$DOCKER_NETWORK_GATEWAY" ]; then
+    # The network gets created by the php code when the containers get started for the first time,
+    # so it might not exist yet. Fall back to localhost which is a no-op for the matcher and
+    # apply the actual gateway ip on the next container restart.
+    DOCKER_NETWORK_GATEWAY="127.0.0.1"
+fi
+export DOCKER_NETWORK_GATEWAY
+
 # Fix the Caddyfile format
 caddy fmt --overwrite /acme.Caddyfile
 caddy fmt --overwrite /internal.Caddyfile
