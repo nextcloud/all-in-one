@@ -2,7 +2,7 @@
 FROM haproxy:3.4.3-alpine
 
 # hadolint ignore=DL3002
-USER root
+USER root:root
 ENV NEXTCLOUD_HOST=nextcloud-aio-nextcloud
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -17,7 +17,7 @@ COPY --chmod=775 *.sh /
 COPY --chmod=664 haproxy.cfg /haproxy.cfg
 
 ENTRYPOINT ["/start.sh"]
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

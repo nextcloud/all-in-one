@@ -8,6 +8,7 @@ COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=775 init-user-db.sh /docker-entrypoint-initdb.d/init-user-db.sh
 
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
@@ -43,10 +44,10 @@ RUN set -ex; \
 
 VOLUME /mnt/data
 
-USER 999
+USER postgres:postgres
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

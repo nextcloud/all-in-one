@@ -4,6 +4,7 @@ FROM redis:8.8.1-alpine
 
 COPY --chmod=775 start.sh /start.sh
 
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache openssl bash; \
@@ -17,10 +18,10 @@ RUN set -ex; \
 
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
-USER 999
+USER redis:redis
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \
