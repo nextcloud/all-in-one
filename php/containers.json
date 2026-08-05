@@ -795,7 +795,15 @@
           "source": "nextcloud_aio_eurooffice",
           "destination": "/var/lib/euro-office",
           "writeable": true
+        },
+        {
+          "source": "nextcloud_aio_eurooffice_data",
+          "destination": "/var/www/euro-office/Data",
+          "writeable": true
         }
+      ],
+      "backup_volumes": [
+        "nextcloud_aio_eurooffice_data"
       ],
       "secrets": [
         "EUROOFFICE_SECRET"
@@ -933,14 +941,22 @@
     },
     {
       "container_name": "nextcloud-aio-harp",
-      "image_tag": "release",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "HaRP",
-      "image": "ghcr.io/nextcloud/nextcloud-appapi-harp",
+      "image": "ghcr.io/nextcloud-releases/aio-harp",
       "init": true,
       "internal_port": "8780",
       "expose": [
         "8780"
       ],
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "10s",
+        "timeout": "10s",
+        "start_interval": "5s",
+        "retries": 9
+      },
       "environment": [
         "HP_SHARED_KEY=%HP_SHARED_KEY%",
         "NC_INSTANCE_URL=https://%NC_DOMAIN%",
@@ -970,6 +986,9 @@
       ],
       "cap_drop": [
         "NET_RAW"
+      ],
+      "profiles": [
+        "harp"
       ]
     },
     {
