@@ -49,22 +49,33 @@ readonly class DockerController {
         $this->dockerActionManager->ConnectContainerToNetwork($container);
     }
 
-    private function PerformRecursiveImagePull(string $id) : void {
+    /**
+     * @param string $id
+     * @param string[] $failures Accumulated failure messages (passed by reference)
+     */
+    private function PerformRecursiveImagePull(string $id, array &$failures = []) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         // Pull all dependencies first and then itself
         foreach($container->dependsOn as $dependency) {
-            $this->PerformRecursiveImagePull($dependency);
+            $this->PerformRecursiveImagePull($dependency, $failures);
         }
 
-        $this->dockerActionManager->PullImage($container, true);
+        if (!$this->dockerActionManager->PullImage($container, true)) {
+            $failures[] = $container->containerName;
+        }
     }
 
-    public function PullAllContainerImages(): void {
+    /**
+     * @return string[] List of container names that failed to pull (empty on full success)
+     */
+    public function PullAllContainerImages(): array {
 
         $id = self::TOP_CONTAINER;
 
-        $this->PerformRecursiveImagePull($id);
+        $failures = [];
+        $this->PerformRecursiveImagePull($id, $failures);
+        return $failures;
     }
 
     public function GetLogs(Request $request, Response $response, array $args) : Response

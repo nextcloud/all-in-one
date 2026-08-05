@@ -71,7 +71,9 @@ fi
 # Update container images to reduce downtime later on
 if [ "$AUTOMATIC_UPDATES" = 1 ]; then
     echo "Updating container images..."
-    sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/PullContainerImages.php
+    if ! sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/PullContainerImages.php; then
+        echo "WARNING: Some container image pulls failed! A notification will be sent after the backup completes."
+    fi
 fi
 
 # Stop containers if required
@@ -131,6 +133,22 @@ if [ "$DAILY_BACKUP" = 1 ] && ([ "$AUTOMATIC_UPDATES" = 1 ] || [ "$START_CONTAIN
         done
     fi
     echo "Sending backup notification..."
+    sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/BackupNotification.php
+# Send pull failure notification even without daily backup
+elif [ "$AUTOMATIC_UPDATES" = 1 ] && [ -f "/mnt/docker-aio-config/data/image_pull_failures" ]; then
+    if ! docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-nextcloud$"; then
+        echo "Something seems to be wrong: Nextcloud should be started at this step."
+    else
+        while docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-nextcloud$" && ! nc -z nextcloud-aio-nextcloud 9000; do
+            echo "Waiting for the Nextcloud container to start"
+            sleep 30
+            if [ "$(docker inspect nextcloud-aio-nextcloud --format "{{.State.Restarting}}")" = "true" ]; then
+                echo "Nextcloud container restarting. Skipping this check!"
+                break
+            fi
+        done
+    fi
+    echo "Sending pull failure notification..."
     sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/BackupNotification.php
 fi
 
