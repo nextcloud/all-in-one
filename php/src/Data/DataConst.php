@@ -68,6 +68,10 @@ class DataConst {
         return (string)realpath(__DIR__ . '/../../containers.json');
     }
 
+    public static function GetBorgSshAuthErrorFile() : string {
+        return self::GetDataDirectory() . '/borg_ssh_auth_error';
+    }
+
     public static function GetAioVersionFile() : string {
         return (string)realpath(__DIR__ . '/../../templates/includes/aio-version.twig');
     }
