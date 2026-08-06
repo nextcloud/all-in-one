@@ -9,6 +9,7 @@ ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
 ENV NEXTCLOUD_VERSION=33.0.7
+# hadolint ignore=DL3064
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
@@ -27,6 +28,7 @@ VOLUME /mnt/ncdata
 VOLUME /var/www/html
 
 # Custom: change id of www-data user as it needs to be the same like on old installations
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 # hadolint ignore=SC2086,DL3003
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -279,11 +281,11 @@ RUN set -ex; \
     chmod -R 777 /nc-updater
 
 # hadolint ignore=DL3002
-USER root
+USER root:root
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

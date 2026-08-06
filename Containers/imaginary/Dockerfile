@@ -36,13 +36,13 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 ENV PORT=9000 \
     AIO_LOG_LEVEL=warn
 
-USER 65534
+USER nobody:nobody
 
 # https://github.com/h2non/imaginary#memory-issues
 ENV MALLOC_ARENA_MAX=2
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

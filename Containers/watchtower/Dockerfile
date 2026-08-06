@@ -20,7 +20,7 @@ COPY --from=go /go/bin/watchtower /watchtower
 COPY --chmod=775 start.sh /start.sh
 
 # hadolint ignore=DL3002
-USER root
+USER root:root
 
 ENV AIO_LOG_LEVEL="warn"
 
