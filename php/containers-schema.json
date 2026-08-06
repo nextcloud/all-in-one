@@ -220,7 +220,7 @@
 								},
 								"source": {
 									"type": "string",
-									"pattern": "^((nextcloud_aio_[a-z_]+)|(%[A-Z_]+%)|(/dev)|(/run/udev))$"
+									"pattern": "^((nextcloud_aio_[a-z_]+)|(%[A-Z_]+%)|(/dev)|(/run/udev)|(/var/run/docker.sock))$"
 								},
 								"writeable": {
 									"type": "boolean"
