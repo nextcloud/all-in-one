@@ -16,7 +16,7 @@ ENV AIO_URL=localhost
 COPY --chmod=775 Containers/nextcloud/*.sh /
 COPY --chmod=774 Containers/nextcloud/upgrade.exclude /upgrade.exclude
 COPY Containers/nextcloud/config/*.php /
-COPY Containers/nextcloud/supervisord.conf /supervisord.conf
+COPY Containers/nextcloud/dinit.d/ /etc/dinit.d/
 
 # AIO cloning start # Do not remove or change this line!
 COPY app /usr/src/nextcloud/apps/nextcloud-aio
@@ -186,7 +186,7 @@ RUN set -ex; \
         ffmpeg \
         procps \
         samba-client \
-        supervisor \
+        dinit \
 #       libreoffice \
     ; \
     \
@@ -218,13 +218,6 @@ RUN set -ex; \
     )"; \
     apk add --no-cache --virtual .nextcloud-phpext-rundeps $runDeps; \
     apk del .build-deps; \
-    \
-    mkdir -p \
-    /var/log/supervisord \
-    /var/run/supervisord \
-    ; \
-    chmod 777 -R /var/log/supervisord; \
-    chmod 777 -R /var/run/supervisord; \
     \
     apk add --no-cache \
         bash \
@@ -281,7 +274,7 @@ RUN set -ex; \
 # hadolint ignore=DL3002
 USER root
 ENTRYPOINT ["/start.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["dinit", "-s", "php-fpm", "cron", "taskprocessing-worker", "run-exec-commands", "is-nextcloud-online"]
 
 HEALTHCHECK CMD /healthcheck.sh
 LABEL com.centurylinklabs.watchtower.enable="false" \
