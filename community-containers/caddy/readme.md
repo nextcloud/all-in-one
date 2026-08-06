@@ -23,6 +23,7 @@ This container configures subdomains for a number of community containers.
 | Container                                                                                                           | Subdomain                        | Geoblocking | IP Allow List | Authentication |
 |---------------------------------------------------------------------------------------------------------------------|----------------------------------|-------------|---------------|----------------|
 | [azuracast](https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast)                       | `radio.your-nc-domain.com`       | ✅           |               |                |
+| [glances](https://github.com/nextcloud/all-in-one/tree/main/community-containers/glances)                           | `glances.your-nc-domain.com`     | ✅           |               | ✅             |
 | [jellyfin](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin)                         | `media.your-nc-domain.com`       | ✅           |               |                |
 | [joplin-server](https://github.com/nextcloud/all-in-one/tree/main/community-containers/joplin-server)               | `joplin.your-nc-domain.com`      | ✅           |               |                |
 | [lldap](https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap)                               | `ldap.your-nc-domain.com`        | ✅           | ✅            |                |
