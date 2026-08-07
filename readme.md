@@ -11,6 +11,7 @@ Included are:
 - Redis & APCU for performant caching
 - PostgreSQL as database
 - Nextcloud Office (optional)
+- EuroOffice (optional)
 - High performance backend for Nextcloud Talk and TURN-server (optional)
 - Nextcloud Talk Recording-server (optional)
 - Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
@@ -39,7 +40,7 @@ Included are:
 - PHP and web server timeouts set to 3600s, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud) (important for big file uploads)
 - Defaults to a max of 512 MB RAM per PHP process, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud)
 - Automatic TLS included (by using Let's Encrypt)
-- Brotli compression enabled by default for javascript, css and svg files which reduces Nextcloud load times
+- zstd/gzip compression enabled by default inside caddy inside the apache container
 - HTTP/2 and HTTP/3 enabled
 - "Pretty URLs" for Nextcloud are enabled by default (removes the index.php from all links)
 - Video previews work out of the box and when Imaginary is enabled, many recent image formats as well!
@@ -118,7 +119,6 @@ flowchart TB
 
         subgraph OPT["  🧩  Optional Built-in Containers  (enable in AIO interface)  "]
             COLLA(["📄 Nextcloud Office"]):::opt
-            OO(["📄 OnlyOffice\nDocument Server"]):::opt
             EO(["📄 EuroOffice\nDocument Server"]):::opt
             TALK(["🎙️ Talk\nVideo & Voice calls"]):::opt
             TALKREC(["🎬 Talk Recording"]):::opt
@@ -1282,7 +1282,7 @@ Netdata allows you to monitor your server using a GUI. You can install it by fol
 If you want to use the user_sql app, the easiest way is to create an additional database container and add it to the docker network `nextcloud-aio`. Then the Nextcloud container should be able to talk to the database container using its name.
 
 ### phpMyAdmin, Adminer or pgAdmin
-It is possible to install any of these to get a GUI for your AIO database. The pgAdmin container is recommended. You can get some docs on it here: https://www.pgadmin.org/docs/pgadmin4/latest/container_deployment.html. For the container to connect to the aio-database, you need to connect the container to the docker network `nextcloud-aio` and use `nextcloud-aio-database` as database host, `oc_nextcloud` as database username and the password that you get when running `sudo docker exec nextcloud-aio-nextcloud grep dbpassword config/config.php` as the password. Apart from that there is now a way for the community to add containers: https://github.com/nextcloud/all-in-one/discussions/3061#discussioncomment-7307045 **Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management
+It is possible to install any of these to get a GUI for your AIO database. The pgAdmin container is recommended. You can get some docs on it here: https://www.pgadmin.org/docs/pgadmin4/latest/container_deployment.html. For the container to connect to the aio-database, you need to connect the container to the docker network `nextcloud-aio` and use `nextcloud-aio-database` as database host, `oc_nextcloud` as database username and the password that you get when running `sudo docker exec nextcloud-aio-nextcloud grep dbpassword config/config.php` as the password. Apart from that there is now a dedicated Nextcloud app: https://github.com/nextcloud/dbdoctor. **Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management
 
 ### Mail server
 You can configure one yourself by using either of these four recommended projects: [Docker Mailserver](https://github.com/docker-mailserver/docker-mailserver/#docker-mailserver), [Mailu](https://github.com/Mailu/Mailu), [Maddy Mail Server](https://github.com/foxcpp/maddy#maddy-mail-server), [Mailcow](https://github.com/mailcow/mailcow-dockerized#mailcow-dockerized-------) or [Stalwart](https://stalw.art/). There is now a community container which allows to easily add Stalwart Mail server to AIO: https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart

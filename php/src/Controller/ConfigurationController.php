@@ -5,6 +5,7 @@ namespace AIO\Controller;
 
 use AIO\Data\ConfigurationManager;
 use AIO\Data\InvalidSettingConfigurationException;
+use AIO\Data\OfficeSuite;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -76,24 +77,10 @@ readonly class ConfigurationController {
             }
 
             if (isset($request->getParsedBody()['options-form'])) {
-                $officeSuiteChoice = $request->getParsedBody()['office_suite_choice'] ?? '';
-                
-                if ($officeSuiteChoice === 'collabora') {
-                    $this->configurationManager->isCollaboraEnabled = true;
-                    $this->configurationManager->isOnlyofficeEnabled = false;
-                    $this->configurationManager->isEuroofficeEnabled = false;
-                } elseif ($officeSuiteChoice === 'onlyoffice') {
-                    $this->configurationManager->isCollaboraEnabled = false;
-                    $this->configurationManager->isOnlyofficeEnabled = true;
-                    $this->configurationManager->isEuroofficeEnabled = false;
-                } elseif ($officeSuiteChoice === 'eurooffice') {
-                    $this->configurationManager->isCollaboraEnabled = false;
-                    $this->configurationManager->isOnlyofficeEnabled = false;
-                    $this->configurationManager->isEuroofficeEnabled = true;
-                } else {
-                    $this->configurationManager->isCollaboraEnabled = false;
-                    $this->configurationManager->isOnlyofficeEnabled = false;
-                    $this->configurationManager->isEuroofficeEnabled = false;
+                if (isset($request->getParsedBody()['office_suite_choice'])) {
+                    $inputValue = strval($request->getParsedBody()['office_suite_choice'] ?? '');
+                    $officeSuite = OfficeSuite::tryFrom($inputValue) ?? OfficeSuite::None;
+                    $this->configurationManager->officeSuite = $officeSuite;
                 }
                 $this->configurationManager->isClamavEnabled = isset($request->getParsedBody()['clamav']);
                 $this->configurationManager->isTalkEnabled = isset($request->getParsedBody()['talk']);
