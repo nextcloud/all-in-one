@@ -45,10 +45,11 @@ flowchart TD
     end
 
     subgraph COMM_MONITOR["📊 Monitoring & Infra"]
-        GLAN(["📈  Glances\nSystem monitoring"]):::community
+        GLAN(["📈  Glances\nLocal process monitoring"]):::community
         EXP(["📊  Nextcloud Exporter\nPrometheus metrics"]):::community
         SCRU(["💽  Scrutiny\nDisk health (S.M.A.R.T.)"]):::community
         CMGMT(["🐳  Container Mgmt\nDocker web console"]):::community
+        UPTIME(["🚦 Uptime Kuma\nLocal and remote System monitoring"]):::community
     end
 
     subgraph COMM_SEC["🔒 Security & Network"]
