@@ -7,7 +7,12 @@
 The data of uptime kuma will be included in AIO's backup solution automatically. 
 
 > [!CAUTION]
-> To create a backup, the container will be stopped and then restarted automatically. During that time, no monitoring takes place and there will be gaps in ping graphs. The relative availability calculation is unaffected by that. 
+> - To create a backup, the container will be stopped and then restarted automatically. During that time, no monitoring takes place and there will be gaps in ping graphs. The relative availability calculation is unaffected by that.
+> - This container reads the host's docker.sock file to monitor local containers
+> 
+> **By installing this container, you agree that you have read and understood these information.**
+
+
 ## Access to your instance
 
 Your uptime kuma instance will be available at `http://server.tld:30001`. Note that this is not encrypted and therefor strongly discouraged. 
