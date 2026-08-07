@@ -309,7 +309,7 @@
 
                         {% if has_update_available == true %}
                             {% if is_mastercontainer_update_available == false %}
-                                <p>⚠️ Container updates are available. Click on <strong>Stop containers</strong> and <strong>Start and update containers</strong> to update them. You should consider creating a backup first.</p>
+                                <p>⚠️ Container updates are available. Click on <strong>Stop containers</strong> and <strong>Update and start containers</strong> to update them. You should consider creating a backup first.</p>
                             {% endif %}
                         {% else %}
                             {% if is_mastercontainer_update_available == false %}
@@ -393,7 +393,7 @@
                                         {% if bypass_container_update == true %}
                                             <input type="hidden" name="bypass_container_update" value="true">
                                         {% endif %}
-                                        <input class="button " type="submit" value="Start and update containers" data-confirm='Start and update containers? You should consider creating a backup first.' />
+                                        <input class="button " type="submit" value="Update and start containers" data-confirm='Update and start containers? You should consider creating a backup first.' />
                                     </form>
                                 {% endif %}
                             {% endif %}

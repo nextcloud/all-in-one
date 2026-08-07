@@ -13,7 +13,7 @@ For the below to work, you need a backup archive of an AIO instance and the loca
         - [ ] Clicking on either option should show a window prompt that lets you cancel the operation
         - [ ] Clicking on the integrity check option should check the integrity and report that the backup integrity is good after a while which should then only show the option to choose the backup archive that should be restored
         - [ ] Choosing the restore option should finally restore your files.
-        - [ ] After waiting a while it should reload the page and should show the usual container interface again with the state of your containers (stopped) and the option to start and update the containers again.
+        - [ ] After waiting a while it should reload the page and should show the usual container interface again with the state of your containers (stopped) and the option to update and start the containers again.
 - [ ] Next, check restoring from a remote backup location via SSH. The remote borg repo URL must contain both `@` and `:`. The restore process works as follows:
     1. You enter a remote borg repo URL (e.g. `ssh://user@host:port/path/to/repo` or `user@host:/path/to/repo`) and the backup password.
     2. On the first connection attempt, a SSH key pair is generated automatically and the public key is displayed.
@@ -28,9 +28,9 @@ For the below to work, you need a backup archive of an AIO instance and the loca
         - [ ] Clicking on either option should show a window prompt that lets you cancel the operation
         - [ ] Clicking on the integrity check option should check the integrity and report that the backup integrity is good after a while which should then only show the option to choose the backup archive that should be restored
         - [ ] Choosing the restore option should finally restore your files.
-        - [ ] After waiting a while it should reload the page and should show the usual container interface again with the state of your containers (stopped) and the option to start and update the containers again.
+        - [ ] After waiting a while it should reload the page and should show the usual container interface again with the state of your containers (stopped) and the option to update and start the containers again.
 
-- [ ] Clicking on `Start and update containers` should show a window prompt that you should create a backup. Canceling should cancel the operation, confirming should reveal the big spinner again.
+- [ ] Clicking on `Update and start containers` should show a window prompt that you should create a backup. Canceling should cancel the operation, confirming should reveal the big spinner again.
 - [ ] After waiting a bit, all containers should be green and your instance should be fully functional again
 
 You can now continue with [020-backup-and-restore.md](./020-backup-and-restore.md)
