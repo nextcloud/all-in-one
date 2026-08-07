@@ -802,9 +802,6 @@
           "writeable": true
         }
       ],
-      "backup_volumes": [
-        "nextcloud_aio_eurooffice_data"
-      ],
       "secrets": [
         "EUROOFFICE_SECRET"
       ],
