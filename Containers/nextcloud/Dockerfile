@@ -228,6 +228,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         bash \
+        brotli \
         netcat-openbsd \
         openssl \
         gnupg \
@@ -268,6 +269,8 @@ RUN set -ex; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     \
     echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \
+    \
+    find /usr/src/nextcloud/apps /usr/src/nextcloud/core /usr/src/nextcloud/dist \( -name "*.js" -o -name "*.mjs" -o -name "*.css" -o -name "*.html" -o -name "*.svg" -o -name "*.ico" \) -type f -print0 | xargs -r0 -P "$(nproc)" -n 1 brotli -q 11; \
     \
     chown www-data:root -R /usr/src && \
     chmod 777 -R /usr/local/etc/php/conf.d && \
