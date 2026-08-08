@@ -223,6 +223,7 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
             mv /usr/src/tmp/nextcloud "$SOURCE_LOCATION"
             rm -r /usr/src/tmp
             rm -r /usr/src/temp-nextcloud
+            find "$SOURCE_LOCATION/apps" "$SOURCE_LOCATION/core" "$SOURCE_LOCATION/dist" \( -name "*.js" -o -name "*.mjs" -o -name "*.css" -o -name "*.html" -o -name "*.svg" -o -name "*.ico" \) -type f -print0 | xargs -r0 -P "$(nproc)" -n 1 brotli -q 11;
             # shellcheck disable=SC2016
             image_version="$(php -r "require '$SOURCE_LOCATION/version.php'; echo implode('.', \$OC_Version);")"
             IMAGE_MAJOR="${image_version%%.*}"

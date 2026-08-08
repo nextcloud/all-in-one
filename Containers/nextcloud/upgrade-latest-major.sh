@@ -36,6 +36,7 @@ if ! $PHP_CLI -r "version_compare(getenv('INSTALLED_MAJOR'), getenv('IMAGE_MAJOR
         exit 1
     fi
 fi
+find /var/www/html/apps /var/www/html/core /var/www/html/dist \( -name "*.js" -o -name "*.mjs" -o -name "*.css" -o -name "*.html" -o -name "*.svg" -o -name "*.ico" \) -type f -print0 | xargs -r0 -P "$(nproc)" -n 1 brotli -q 11;
 $PHP_CLI /var/www/html/occ config:system:set updatechecker --type=bool --value=true
 $PHP_CLI /var/www/html/occ app:enable nextcloud-aio --force
 $PHP_CLI /var/www/html/occ db:add-missing-columns
