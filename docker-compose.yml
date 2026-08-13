@@ -20,7 +20,7 @@ services:
     image: valkey/valkey:9-alpine
     container_name: nextcloud-redis
     restart: unless-stopped
-    command: ["valkey-server", "--requirepass", "${REDIS_PASSWORD}"]
+    command: ["valkey-server", "--requirepass", "${VALKEY_PASSWORD}"]
     volumes:
       - redis_data:/data
     networks:
@@ -81,7 +81,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       REDIS_HOST: redis
-      REDIS_HOST_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_HOST_PASSWORD: ${VALKEY_PASSWORD}
       NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER}
       NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
       NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_TRUSTED_DOMAINS}
