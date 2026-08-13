@@ -1,0 +1,121 @@
+services:
+  db:
+    image: postgres:18.4-alpine
+    container_name: nextcloud-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      # postgres 18+ images store data in a major-version-named subdirectory
+      # (pg_ctlcluster-style, for pg_upgrade --link support) and expect the volume
+      # mounted one level up at /var/lib/postgresql, not at the old .../data path.
+      # Mounting at .../data on 18+ makes the entrypoint refuse to start.
+      - db_data:/var/lib/postgresql
+    networks:
+      - internal
+
+  redis:
+    image: valkey/valkey:9-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    command: ["valkey-server", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+
+  # S3 provider for Nextcloud's primary storage. quay.io/ceph/demo bundles a
+  # single-node mon+osd+rgw cluster in one container -- dev/local use only,
+  # no redundancy, no backups configured (per project decision).
+  ceph-demo:
+    # Pinned by digest, not tag: quay.io/ceph/demo has no commit-pinned tag for the
+    # devel variant (only moving "latest-*-devel" tags), and the tag this compose file
+    # previously referenced ("latest-master-devel") doesn't exist -- there's no "master"
+    # release, only "main".
+    #
+    # Pinned to quincy (not main/squid): the main/squid-devel build's demo entrypoint
+    # (/opt/ceph-container/bin/demo) runs `ceph mgr module enable restful` under `set -e`
+    # as part of first-boot bootstrap; that build has dropped the deprecated `restful`
+    # mgr module, so the command fails, the script dies before writing its
+    # I_AM_A_DEMO marker files, and the container crash-loops forever on every restart
+    # (detect_ceph_files finds leftover state with no marker and refuses to proceed).
+    # quincy-devel still ships /usr/share/ceph/mgr/restful, so bootstrap completes and
+    # the container survives restarts as intended. This digest is what
+    # "latest-quincy-devel" pointed to as of 2024-12-10; re-check
+    # https://quay.io/repository/ceph/demo?tab=tags to bump it.
+    image: quay.io/ceph/demo@sha256:d4307fa1f54a3782b915dc3a59f006ce8298e197a1b3f549c0e23a0725fbffe3
+    container_name: nextcloud-ceph-demo
+    restart: unless-stopped
+    environment:
+      MON_IP: 172.28.0.20
+      CEPH_PUBLIC_NETWORK: 172.28.0.0/24
+      CEPH_DEMO_UID: ${CEPH_DEMO_UID}
+      CEPH_DEMO_ACCESS_KEY: ${CEPH_DEMO_ACCESS_KEY}
+      CEPH_DEMO_SECRET_KEY: ${CEPH_DEMO_SECRET_KEY}
+      CEPH_DEMO_BUCKET: ${CEPH_DEMO_BUCKET}
+    volumes:
+      - ceph_data:/var/lib/ceph
+    networks:
+      internal:
+        ipv4_address: 172.28.0.20
+    ports:
+      # RGW (S3) endpoint, host-side only for debugging/bucket checks.
+      # Confirm the actual in-container RGW port from `docker compose logs ceph-demo`
+      # on first boot -- adjust the right side of this mapping if it differs from 8080.
+      # Left side is 18080, not 8080: something else on this host already holds 8080.
+      - "127.0.0.1:18080:8080"
+
+  nextcloud:
+    image: nextcloud:29-apache
+    container_name: nextcloud-app
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+      - ceph-demo
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_HOST_PASSWORD: ${REDIS_PASSWORD}
+      NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER}
+      NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
+      NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_TRUSTED_DOMAINS}
+      # Primary storage = S3 (Ceph RGW), read natively by the official image's
+      # entrypoint on first run -- no manual config.php edit needed.
+      # Must be the ceph-demo container's IP, not its bare hostname: RGW misparses a
+      # dot-less Host header ("ceph-demo") as an implicit virtual-hosted-style bucket
+      # name, so every path-style S3 request 404s with NoSuchBucket. Confirmed with
+      # s3cmd directly against RGW -- same request succeeds by IP, fails by hostname.
+      OBJECTSTORE_S3_HOST: 172.28.0.20
+      OBJECTSTORE_S3_PORT: "8080"
+      OBJECTSTORE_S3_SSL: "false"
+      OBJECTSTORE_S3_USEPATH_STYLE: "true"
+      OBJECTSTORE_S3_BUCKET: ${CEPH_DEMO_BUCKET}
+      OBJECTSTORE_S3_KEY: ${CEPH_DEMO_ACCESS_KEY}
+      OBJECTSTORE_S3_SECRET: ${CEPH_DEMO_SECRET_KEY}
+      OBJECTSTORE_S3_AUTOCREATE: "true"
+    volumes:
+      - nextcloud_html:/var/www/html
+    networks:
+      - internal
+    ports:
+      # Existing host nginx reverse-proxies to this. Not exposed beyond localhost.
+      - "127.0.0.1:11000:80"
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+
+volumes:
+  db_data:
+  redis_data:
+  ceph_data:
+  nextcloud_html:
