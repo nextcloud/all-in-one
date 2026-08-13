@@ -1,17 +1,43 @@
 # Sample vhost for the EXISTING host nginx (not part of the compose stack).
-# Drop into your nginx sites config, adjust server_name and TLS to match
-# whatever local hostname was decided, then reload nginx.
+# Drop into your nginx sites config, adjust server_name and cert paths to match
+# whatever local hostname/cert was decided, then reload nginx.
+#
+# HTTPS is required here, not optional: Nextcloud AIO hardcodes
+# OVERWRITEPROTOCOL=https on the nextcloud container (see docker-compose.yml), so it
+# always generates/expects https:// URLs regardless of what actually reaches it.
+# If this nginx only terminates plain HTTP, Nextcloud will still think it's on
+# HTTPS and you'll get broken asset URLs, redirect loops, and CSRF/cookie failures.
+# nginx-to-AIO-apache-container traffic itself stays plain HTTP on 127.0.0.1:11000
+# (matching AIO's own reverse-proxy examples) -- only the browser-facing side needs
+# real TLS, and a self-signed cert is fine for local dev. See SETUP.md for how to
+# generate one.
 
 server {
     listen 80;
     server_name nextcloud.local;   # <-- replace with the chosen local hostname
+
+    # Redirect everything to HTTPS -- Nextcloud AIO assumes HTTPS-only.
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name nextcloud.local;   # <-- replace with the chosen local hostname
+
+    # Self-signed cert for local dev -- see SETUP.md for the openssl command to
+    # generate these. Swap for a real cert (e.g. Let's Encrypt) outside local dev.
+    ssl_certificate     /etc/nginx/certs/nextcloud.local.crt;
+    ssl_certificate_key /etc/nginx/certs/nextcloud.local.key;
 
     location / {
         proxy_pass http://127.0.0.1:11000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        # Nextcloud AIO expects this to say "https" even though the hop to
+        # 127.0.0.1:11000 below is plain HTTP -- the browser-facing connection is
+        # what matters here.
+        proxy_set_header X-Forwarded-Proto https;
 
         client_max_body_size 0;
         proxy_read_timeout 3600s;

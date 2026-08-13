@@ -1,53 +1,101 @@
 # Setup steps
 
-1. `cp .env.example .env` and fill in real values (passwords, hostname, S3 keys).
-2. `docker compose up -d`
-   - The `ceph-demo` image is already pinned by digest in `docker-compose.yml`
-     (not `:latest`) — see the comment above that line for why, and re-check
-     https://quay.io/repository/ceph/demo?tab=tags before bumping it.
-   - Host port `18080` is used for `ceph-demo`'s RGW instead of the default `8080`,
-     because something else commonly holds `8080` on a dev machine. If `18080` is
-     also taken on yours, change the left side of that port mapping only — internal
-     container-to-container traffic still uses `8080` regardless.
-3. `docker compose logs nextcloud` — confirm it installed cleanly and picked up
-   the S3 object store (look for object store setup lines, no S3 connection errors).
-4. Point the existing host nginx at it using `nginx-nextcloud.conf.sample` as a
-   starting point, reload nginx.
-5. Visit the configured hostname, log in with NEXTCLOUD_ADMIN_USER / PASSWORD.
+This is Nextcloud AIO ("manual install" method) with all optional features enabled:
+Talk, Talk Recording, Collabora, OnlyOffice, EuroOffice, ClamAV, Imaginary,
+Fulltextsearch, Whiteboard. No external storage backend (S3/Ceph) is involved —
+AIO's own containers handle everything. See the header comment in
+`docker-compose.yml` for why (AIO's S3 support is its own bundled Minio container,
+not a way to plug in an external S3 endpoint).
+
+1. `cp .env.example .env` and fill in real values — all the `change-me` secrets need
+   unique, good passwords (avoid `@` and `:` in them), and `NC_DOMAIN` needs to be
+   the hostname you'll actually use.
+   - **On macOS + Docker Desktop**, also change `NEXTCLOUD_MOUNT` and
+     `NEXTCLOUD_TRUSTED_CACERTS_DIR` away from their upstream defaults (`/mnt/` and
+     `/usr/local/share/ca-certificates/...`). Docker Desktop only bind-mounts paths
+     under locations it shares (your home directory, `/Volumes`, `/private`,
+     `/tmp`) — anything else fails on first `up` with `mounts denied`. Point both
+     at absolute paths under this checkout instead, e.g.
+     `/path/to/this/repo/host-mounts/mount`, and `mkdir -p` them first. Linux hosts
+     don't have this restriction and can keep the upstream defaults.
+
+2. Generate a self-signed TLS cert for that hostname (swap for a real cert outside
+   local dev):
+   ```sh
+   sudo mkdir -p /etc/nginx/certs
+   sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+     -keyout /etc/nginx/certs/nextcloud.local.key \
+     -out /etc/nginx/certs/nextcloud.local.crt \
+     -subj "/CN=nextcloud.local"
+   ```
+   Adjust the filenames/CN if you chose a different `NC_DOMAIN`.
+
+3. Point the existing host nginx at it using `nginx-nextcloud.conf.sample` as a
+   starting point (update `server_name` and the cert paths to match), reload nginx.
+   Read the comment at the top of that file — HTTPS here isn't optional, AIO assumes
+   it unconditionally.
+
+4. Bring the stack up with every optional profile enabled:
+   ```sh
+   docker compose --profile collabora --profile talk --profile talk-recording \
+     --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
+     --profile fulltextsearch --profile whiteboard up -d
+   ```
+   First boot pulls a lot of images (Collabora, Elasticsearch for Fulltextsearch,
+   OnlyOffice, EuroOffice, ClamAV's virus DB, etc.) — expect this to take a while
+   and use several GB of disk/RAM. Always pass the same `--profile` flags on
+   subsequent `up`/`down` calls, or Compose will stop containers it thinks you no
+   longer want.
+
+5. `docker compose logs nextcloud-aio-nextcloud` — confirm it installed cleanly.
+   `docker compose ps` — all containers should reach a healthy state eventually
+   (Collabora and ClamAV take the longest to pass their healthcheck on first boot).
+
+6. Add an entry for `NC_DOMAIN` to your machine's `/etc/hosts` pointing at
+   `127.0.0.1` (it's not real DNS — nothing else will resolve it), then visit
+   `https://<NC_DOMAIN>`, log in with `admin` / `NEXTCLOUD_PASSWORD` from `.env`.
 
 ## Verifying it actually works
 
-Checking that Nextcloud installed isn't enough on its own — the S3 storage backend
-can be silently misconfigured (wrong host, unreachable bucket) while Nextcloud still
-reports healthy. Confirm with a real file round-trip:
-
 ```sh
-# 1. Nextcloud is installed and responding
-curl http://127.0.0.1:11000/status.php
+# 1. Nextcloud is installed and responding (adjust hostname to your NC_DOMAIN)
+curl -k https://nextcloud.local/status.php
 # expect: "installed":true
 
 # 2. Upload a file through the real API a user would hit
 echo "test file" > /tmp/test.txt
-curl -u admin:<NEXTCLOUD_ADMIN_PASSWORD> -T /tmp/test.txt \
-  http://127.0.0.1:11000/remote.php/dav/files/admin/test.txt
+curl -k -u admin:<NEXTCLOUD_PASSWORD> -T /tmp/test.txt \
+  https://nextcloud.local/remote.php/dav/files/admin/test.txt
 # expect: HTTP 201
 
 # 3. Read it back
-curl -u admin:<NEXTCLOUD_ADMIN_PASSWORD> \
-  http://127.0.0.1:11000/remote.php/dav/files/admin/test.txt
+curl -k -u admin:<NEXTCLOUD_PASSWORD> \
+  https://nextcloud.local/remote.php/dav/files/admin/test.txt
 # expect: HTTP 200, body "test file"
-```
 
-If step 2 or 3 fails, check `docker compose logs nextcloud` for
-`StorageNotAvailableException` — that's the object-store connection failing, not a
-Nextcloud problem. The comments in `docker-compose.yml` document the specific
-gotchas already worked around here (RGW hostname parsing, image pinning, port
-conflicts) — worth checking if a symptom looks familiar before re-diagnosing it.
+# 4. Confirm the optional apps actually got enabled, not just the containers started
+docker compose exec -u www-data nextcloud-aio-nextcloud php occ app:list --enabled | \
+  grep -iE "talk|richdocuments|onlyoffice|files_fulltextsearch|files_antivirus"
+```
+(`-k` skips cert validation for the self-signed cert — drop it once you're on a
+real one.)
+
+If step 2 or 3 fails, check `docker compose logs nextcloud-aio-nextcloud` and
+`docker compose logs nextcloud-aio-apache`. If step 4 shows an app missing despite
+its container being healthy, check that its `*_ENABLED` var in `.env` is `"yes"`
+(with quotes) and that you passed its `--profile` flag on `up`.
 
 ## Known limitations (accepted for this stage)
 
-- Single-node Ceph demo container: no redundancy. Losing this container's
-  volume loses all files.
-- No backup solution configured.
-- Self-signed/no TLS handled here — assumes nginx (or you) handles that
-  separately if needed for the chosen local hostname.
+- No backup solution configured (AIO has an optional Backup container; not enabled
+  here).
+- Self-signed cert generated manually above — swap for a real one (e.g. Let's
+  Encrypt) outside local dev.
+- All state lives in named Docker volumes (`nextcloud_aio_*`) with no redundancy —
+  losing them loses everything.
+- `NC_DOMAIN` being a fake/local-only hostname (not real DNS) means every container
+  that needs to resolve it has to be told about it explicitly. The `talk` service
+  already has an `extra_hosts` entry for this (its WebRTC/TURN server otherwise
+  crash-loops with "Invalid TURN address") — if a real domain with real DNS
+  replaces `NC_DOMAIN` later, that `extra_hosts` line becomes unnecessary but
+  harmless.
