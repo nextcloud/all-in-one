@@ -7,6 +7,15 @@ AIO's own containers handle everything. See the header comment in
 `docker-compose.yml` for why (AIO's S3 support is its own bundled Minio container,
 not a way to plug in an external S3 endpoint).
 
+All 14 images are pinned to tag `20260805_083533`, which bundles Nextcloud 33.0.7
+(per Anirban's request — confirmed by inspecting the image's baked-in
+`NEXTCLOUD_VERSION` before pinning, since AIO's own tags don't carry Nextcloud
+version numbers). AIO has never shipped a 34.x build; 33.0.7 is the newest version
+it actually provides. `NEXTCLOUD_STARTUP_APPS` also includes `integration_google`
+and `integration_onedrive` so both come pre-installed on a fresh install — each
+still needs its own OAuth app (Google Cloud Console / Azure AD) registered and
+configured in Nextcloud's admin settings before it actually connects to anything.
+
 1. `cp .env.example .env` and fill in real values — all the `change-me` secrets need
    unique, good passwords (avoid `@` and `:` in them), and `NC_DOMAIN` needs to be
    the hostname you'll actually use.

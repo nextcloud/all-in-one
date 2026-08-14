@@ -19,6 +19,14 @@
 #     --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
 #     --profile fulltextsearch --profile whiteboard up -d
 #
+# Image tags are pinned to 20260805_083533 (per Anirban's request to use Nextcloud
+# 33.0.7 specifically) instead of :latest -- confirmed by inspecting each image's
+# baked-in NEXTCLOUD_VERSION env var before pinning, since AIO's own tags don't carry
+# Nextcloud version numbers. Note AIO has never shipped a 34.x build; 33.0.7 is the
+# newest version AIO actually provides as of this pin. Bump this tag intentionally
+# (and re-verify NEXTCLOUD_VERSION on the new tag) rather than switching back to
+# :latest, or the whole stack will drift out of sync across the 14 images.
+#
 # See SETUP.md for the full setup/testing flow and required .env values.
 
 services:
@@ -45,7 +53,7 @@ services:
       nextcloud-aio-nextcloud:
         condition: service_started
         required: false
-    image: ghcr.io/nextcloud-releases/aio-apache:latest
+    image: ghcr.io/nextcloud-releases/aio-apache:20260805_083533
     user: "33"
     init: true
     healthcheck:
@@ -95,7 +103,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-database:
-    image: ghcr.io/nextcloud-releases/aio-postgresql:latest
+    image: ghcr.io/nextcloud-releases/aio-postgresql:20260805_083533
     user: "999"
     init: true
     healthcheck:
@@ -146,7 +154,7 @@ services:
       nextcloud-aio-imaginary:
         condition: service_started
         required: false
-    image: ghcr.io/nextcloud-releases/aio-nextcloud:latest
+    image: ghcr.io/nextcloud-releases/aio-nextcloud:20260805_083533
     init: true
     healthcheck:
       start_period: 0s
@@ -230,7 +238,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-notify-push:
-    image: ghcr.io/nextcloud-releases/aio-notify-push:latest
+    image: ghcr.io/nextcloud-releases/aio-notify-push:20260805_083533
     user: "33"
     init: true
     healthcheck:
@@ -254,7 +262,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-redis:
-    image: ghcr.io/nextcloud-releases/aio-redis:latest
+    image: ghcr.io/nextcloud-releases/aio-redis:20260805_083533
     user: "999"
     init: true
     healthcheck:
@@ -279,7 +287,7 @@ services:
 
   nextcloud-aio-collabora:
     command: ${ADDITIONAL_COLLABORA_OPTIONS}
-    image: ghcr.io/nextcloud-releases/aio-collabora:latest
+    image: ghcr.io/nextcloud-releases/aio-collabora:20260805_083533
     init: true
     healthcheck:
       start_period: 60s
@@ -313,7 +321,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-talk:
-    image: ghcr.io/nextcloud-releases/aio-talk:latest
+    image: ghcr.io/nextcloud-releases/aio-talk:20260805_083533
     user: "1000"
     init: true
     healthcheck:
@@ -361,7 +369,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-talk-recording:
-    image: ghcr.io/nextcloud-releases/aio-talk-recording:latest
+    image: ghcr.io/nextcloud-releases/aio-talk-recording:20260805_083533
     user: "122"
     init: true
     healthcheck:
@@ -392,7 +400,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-clamav:
-    image: ghcr.io/nextcloud-releases/aio-clamav:latest
+    image: ghcr.io/nextcloud-releases/aio-clamav:20260805_083533
     user: "100"
     init: false
     healthcheck:
@@ -424,7 +432,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-onlyoffice:
-    image: ghcr.io/nextcloud-releases/aio-onlyoffice:latest
+    image: ghcr.io/nextcloud-releases/aio-onlyoffice:20260805_083533
     init: true
     healthcheck:
       start_period: 60s
@@ -451,7 +459,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-eurooffice:
-    image: ghcr.io/nextcloud-releases/aio-eurooffice:latest
+    image: ghcr.io/nextcloud-releases/aio-eurooffice:20260805_083533
     init: true
     healthcheck:
       start_period: 60s
@@ -478,7 +486,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-imaginary:
-    image: ghcr.io/nextcloud-releases/aio-imaginary:latest
+    image: ghcr.io/nextcloud-releases/aio-imaginary:20260805_083533
     user: "65534"
     init: true
     healthcheck:
@@ -506,7 +514,7 @@ services:
       - /tmp
 
   nextcloud-aio-fulltextsearch:
-    image: ghcr.io/nextcloud-releases/aio-fulltextsearch:latest
+    image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20260805_083533
     init: false
     healthcheck:
       start_period: 60s
@@ -542,7 +550,7 @@ services:
       - NET_RAW
 
   nextcloud-aio-whiteboard:
-    image: ghcr.io/nextcloud-releases/aio-whiteboard:latest
+    image: ghcr.io/nextcloud-releases/aio-whiteboard:20260805_083533
     user: "65534"
     init: true
     healthcheck:
