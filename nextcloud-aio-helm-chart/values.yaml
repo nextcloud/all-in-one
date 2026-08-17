@@ -17,6 +17,7 @@ CLAMAV_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the 
 COLLABORA_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 EUROOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 FULLTEXTSEARCH_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
+HARP_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 IMAGINARY_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 ONLYOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 TALK_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
@@ -49,6 +50,8 @@ DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volum
 DATABASE_DUMP_STORAGE_SIZE: 1Gi       # You can change the size of the database-dump volume that default to 1Gi with this value
 ELASTICSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the elasticsearch volume that default to 1Gi with this value
 EUROOFFICE_STORAGE_SIZE: 1Gi       # You can change the size of the eurooffice volume that default to 1Gi with this value
+EUROOFFICE_DATA_STORAGE_SIZE: 1Gi       # You can change the size of the eurooffice-data volume that default to 1Gi with this value
+HARP_STORAGE_SIZE: 1Gi       # You can change the size of the harp volume that default to 1Gi with this value
 NEXTCLOUD_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud volume that default to 1Gi with this value
 NEXTCLOUD_DATA_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud-data volume that default to 1Gi with this value
 NEXTCLOUD_TRUSTED_CACERTS_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud-trusted-cacerts volume that default to 1Gi with this value
@@ -77,3 +80,8 @@ MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'f
 MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
 TALK_MAX_STREAM_BITRATE: "1048576"         # This allows to adjust the max stream bitrate of the talk hpb
 TALK_MAX_SCREEN_BITRATE: "2097152"         # This allows to adjust the max stream bitrate of the talk hpb
+HARP_K8S_NAMESPACE: nextcloud-exapps        # The Kubernetes namespace that HaRP deploys ExApps (AppAPI apps) into. The namespace must already exist and the HaRP service account must be allowed to manage resources in it.
+HARP_K8S_STORAGE_CLASS:        # The storage class that HaRP uses for ExApp persistent volume claims. Leave empty to use the cluster's default storage class.
+HARP_K8S_DEFAULT_STORAGE_SIZE: 10Gi        # The default size of the persistent volume claims that HaRP creates for ExApps.
+HARP_K8S_HOST_ALIASES:        # Optional. Additional host aliases that HaRP sets on the ExApp pods so that they can resolve the configured hostnames. Use a comma-separated list of hostname:ip pairs, e.g. 'nextcloud.example.com:10.0.0.5,collabora.example.com:10.0.0.6'. Leave empty to not set any host aliases.
+HARP_SERVICE_ACCOUNT_NAME:        # The name of the Kubernetes service account that is mounted into the HaRP pod and used to authenticate against the Kubernetes API. You need to create this service account yourself and grant it permission to manage resources (deployments, services, persistent volume claims, …) in the HARP_K8S_NAMESPACE namespace via a Role/RoleBinding. Leave empty to use the namespace's "default" service account.

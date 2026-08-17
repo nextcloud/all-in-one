@@ -24,12 +24,15 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260805_083533
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260817_082005
           command:
             - chmod
             - "777"
             - /nextcloud-aio-eurooffice
+            - /nextcloud-aio-eurooffice-data
           volumeMounts:
+            - name: nextcloud-aio-eurooffice-data
+              mountPath: /nextcloud-aio-eurooffice-data
             - name: nextcloud-aio-eurooffice
               mountPath: /nextcloud-aio-eurooffice
       containers:
@@ -46,7 +49,7 @@ spec:
               value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-eurooffice:20260805_083533
+          image: ghcr.io/nextcloud-releases/aio-eurooffice:20260817_082005
           readinessProbe:
             exec:
               command:
@@ -70,8 +73,13 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/euro-office
               name: nextcloud-aio-eurooffice
+            - mountPath: /var/www/euro-office/Data
+              name: nextcloud-aio-eurooffice-data
       volumes:
         - name: nextcloud-aio-eurooffice
           persistentVolumeClaim:
             claimName: nextcloud-aio-eurooffice
+        - name: nextcloud-aio-eurooffice-data
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-eurooffice-data
 {{- end }}
