@@ -5,7 +5,7 @@ This container bundles [caddy](https://caddyserver.com/) and auto-configures it 
 > [!Caution]
 > - This container is incompatible with the [npmplus](https://github.com/nextcloud/all-in-one/tree/main/community-containers/npmplus) community container. So make sure that you do not enable both at the same time!
 > - Make sure that no other service is using port 443/tcp on your host as otherwise the containers will fail to start. You can check this with `sudo netstat -tulpn | grep 443` before installing this container
-> - the default `admin` user needs to be present, i.e. it can not be deleted because caddy configuration can be done there. 
+> - the default `admin` Nextcloud user needs to be present, i.e. it can not be deleted because caddy configuration can be done there. 
 
 ## Supported community containers
 
