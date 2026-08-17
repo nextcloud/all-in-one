@@ -1,0 +1,6 @@
+type = process
+command = php -S 127.0.0.1:9876 /var/www/docker-aio/php/domain-validator.php
+run-as = www-data
+term-signal = TERM
+restart = yes
+options = shares-console
