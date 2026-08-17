@@ -509,6 +509,12 @@ find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec se
 # shellcheck disable=SC1083
 find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 
+# Additional case for Eurooffice-data
+# shellcheck disable=SC1083
+find ./ -name "*nextcloud-aio-eurooffice-data-persistentvolumeclaim.yaml" -exec sed -i "1i\\{{- if eq .Values.EUROOFFICE_ENABLED \"yes\" }}" \{} \; 
+# shellcheck disable=SC1083
+find ./ -name "*nextcloud-aio-eurooffice-data-persistentvolumeclaim.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
+
 cat << EOL > /tmp/security.conf
             # The items below only work in container context
             allowPrivilegeEscalation: false
