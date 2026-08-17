@@ -9,7 +9,7 @@ This container bundles [caddy](https://caddyserver.com/) and auto-configures it 
 
 ## Supported community containers
 
-This container configures subdomains for a number of community containers. 
+This container creates Let's Encrypr certificates for subdomains of `your-nc-domain.com` for a number of community containers. 
 
 > [!Important]
 > You need to set the correct DNS records for this to work
