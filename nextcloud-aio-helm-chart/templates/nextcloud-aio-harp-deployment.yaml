@@ -1,0 +1,72 @@
+{{- if eq .Values.HARP_ENABLED "yes" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.version: 1.38.0 (a8f5d1cbd)
+  labels:
+    io.kompose.service: nextcloud-aio-harp
+  name: nextcloud-aio-harp
+  namespace: "{{ .Values.NAMESPACE }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nextcloud-aio-harp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.version: 1.38.0 (a8f5d1cbd)
+      labels:
+        io.kompose.service: nextcloud-aio-harp
+    spec:
+      {{- if .Values.HARP_SERVICE_ACCOUNT_NAME }}
+      serviceAccountName: "{{ .Values.HARP_SERVICE_ACCOUNT_NAME }}"
+      {{- end }}
+      containers:
+        - env:
+            - name: HP_K8S_ENABLED
+              value: "true"
+            - name: HP_K8S_NAMESPACE
+              value: "{{ .Values.HARP_K8S_NAMESPACE }}"
+            - name: HP_K8S_STORAGE_CLASS
+              value: "{{ .Values.HARP_K8S_STORAGE_CLASS }}"
+            - name: HP_K8S_DEFAULT_STORAGE_SIZE
+              value: "{{ .Values.HARP_K8S_DEFAULT_STORAGE_SIZE }}"
+            - name: HP_K8S_HOST_ALIASES
+              value: "{{ .Values.HARP_K8S_HOST_ALIASES }}"
+            - name: HP_FRP_DISABLE_TLS
+              value: "true"
+            - name: NC_INSTANCE_URL
+              value: https://{{ .Values.NC_DOMAIN }}
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+          image: ghcr.io/nextcloud-releases/aio-harp:20260817_082005
+          readinessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 9
+            periodSeconds: 10
+            timeoutSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 9
+            periodSeconds: 10
+            timeoutSeconds: 10
+          name: nextcloud-aio-harp
+          ports:
+            - containerPort: 8780
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /certs
+              name: nextcloud-aio-harp
+      volumes:
+        - name: nextcloud-aio-harp
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-harp
+{{- end }}
