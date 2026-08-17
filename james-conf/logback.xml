@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+        <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+                <resetJUL>true</resetJUL>
+        </contextListener>
+
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+                <encoder>
+                        <pattern>%d{HH:mm:ss.SSS} %highlight([%-5level]) %logger{15} - %msg%n%rEx</pattern>
+                        <immediateFlush>false</immediateFlush>
+                </encoder>
+        </appender>
+
+        <appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>/logs/james.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+                    <fileNamePattern>/logs/james.%i.log.tar.gz</fileNamePattern>
+                    <minIndex>1</minIndex>
+                    <maxIndex>3</maxIndex>
+                </rollingPolicy>
+
+                <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                    <maxFileSize>100MB</maxFileSize>
+                </triggeringPolicy>
+
+                <encoder>
+                        <pattern>%d{HH:mm:ss.SSS} [%-5level] %logger{15} - %msg%n%rEx</pattern>
+                        <immediateFlush>false</immediateFlush>
+                </encoder>
+        </appender>
+        <root level="WARN">
+                <appender-ref ref="CONSOLE" />
+                <appender-ref ref="LOG_FILE" />
+        </root>
+
+        <logger name="org.apache.james" level="INFO" />
+
+</configuration>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one   
+  or more contributor license agreements.  See the NOTICE file 
+  distributed with this work for additional information        
+  regarding copyright ownership.  The ASF licenses this file   
+  to you under the Apache License, Version 2.0 (the            
+  "License"); you may not use this file except in compliance   
+  with the License.  You may obtain a copy of the License at   
+                                                               
+    http://www.apache.org/licenses/LICENSE-2.0                 
+                                                               
+  Unless required by applicable law or agreed to in writing,   
+  software distributed under the License is distributed on an  
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       
+  KIND, either express or implied.  See the License for the    
+  specific language governing permissions and limitations      
+  under the License.                                           
+ -->
+
+<!-- Read https://james.apache.org/server/config-smtp-lmtp.html#LMTP_Configuration for further details -->
+
+<lmtpservers>
+
+    <lmtpserver enabled="false">
+        <jmxName>lmtpserver</jmxName>
+        <!-- LMTP should not be reachable from outside your network so bind it to loopback-->
+        <bind>127.0.0.1:24</bind>
+        <connectionBacklog>200</connectionBacklog>
+        <connectiontimeout>1200</connectiontimeout>
+        <!-- Set the maximum simultaneous incoming connections for this service -->
+        <connectionLimit>0</connectionLimit>
+        <!-- Set the maximum simultaneous incoming connections per IP for this service -->
+        <connectionLimitPerIP>0</connectionLimitPerIP>
+        <!--  This sets the maximum allowed message size (in kilobytes) for this -->
+        <!--  LMTP service. If unspecified, the value defaults to 0, which means no limit. -->
+        <maxmessagesize>0</maxmessagesize>
+        <handlerchain>
+            <handler class="org.apache.james.lmtpserver.CoreCmdHandlerLoader"/>
+        </handlerchain>
+    </lmtpserver>
+
+</lmtpservers>

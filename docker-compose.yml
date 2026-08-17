@@ -14,10 +14,10 @@
 #
 # All optional profiles are enabled per Anirban's request: collabora, talk,
 # talk-recording, clamav, onlyoffice, eurooffice, imaginary, fulltextsearch,
-# whiteboard. Bring the stack up with:
+# whiteboard, ollama, james. Bring the stack up with:
 #   docker compose --profile collabora --profile talk --profile talk-recording \
 #     --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
-#     --profile fulltextsearch --profile whiteboard up -d
+#     --profile fulltextsearch --profile whiteboard --profile ollama --profile james up -d
 #
 # Image tags are pinned to 20260805_083533 (per Anirban's request to use Nextcloud
 # 33.0.7 specifically) instead of :latest -- confirmed by inspecting each image's
@@ -581,6 +581,57 @@ services:
     cap_drop:
       - NET_RAW
 
+  # Not part of upstream AIO -- added per Anirban's request for a local-testing AI
+  # assistant, without paying for or depending on a commercial LLM API in dev.
+  # Nextcloud's `integration_openai` app talks to any OpenAI-API-compatible backend,
+  # and Ollama exposes exactly that at /v1, so no Nextcloud-side code is needed --
+  # only admin config (see SETUP.md). Swap this for a real OpenAI/Anthropic key in
+  # `integration_openai`'s settings when deploying to a server; nothing else changes.
+  # No GPU passthrough under Docker Desktop on Mac -- this runs on CPU, so keep to
+  # small models (see OLLAMA_MODEL in .env).
+  nextcloud-aio-ollama:
+    image: ollama/ollama:0.32.1
+    init: true
+    healthcheck:
+      start_period: 30s
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_interval: 5s
+      retries: 5
+    expose:
+      - "11434"
+    environment:
+      - TZ=${TIMEZONE}
+      - OLLAMA_HOST=0.0.0.0:11434
+    volumes:
+      - nextcloud_aio_ollama:/root/.ollama:rw
+    restart: unless-stopped
+    profiles:
+      - ollama
+
+  # Not part of upstream AIO -- added per Anirban's request so Nextcloud can send
+  # transactional email (invites, password resets, share notifications) in local
+  # dev without a real mail provider. Outbound relay only: no MX records, no
+  # inbound mail, no mailbox management. james-conf/ is the container's stock
+  # config with only domainlist.xml's defaultDomain and the TLS keystore changed
+  # -- see SETUP.md for keystore generation and the AddDomain/AddUser CLI calls.
+  # Port 587 (STARTTLS, SMTP AUTH required) is the one Nextcloud actually uses;
+  # 25 and 465 come from James's stock config and are left as-is, unused here.
+  nextcloud-aio-james:
+    image: apache/james:jpa-3.8.2
+    init: true
+    expose:
+      - "587"
+    volumes:
+      - ./james-conf:/root/conf:rw
+      - nextcloud_aio_james_var:/root/var:rw
+    environment:
+      - TZ=${TIMEZONE}
+    restart: unless-stopped
+    profiles:
+      - james
+
 volumes:
   nextcloud_aio_apache:
     name: nextcloud_aio_apache
@@ -604,6 +655,10 @@ volumes:
     name: nextcloud_aio_talk_recording
   nextcloud_aio_nextcloud_data:
     name: nextcloud_aio_nextcloud_data
+  nextcloud_aio_ollama:
+    name: nextcloud_aio_ollama
+  nextcloud_aio_james_var:
+    name: nextcloud_aio_james_var
 
 networks:
   default:
