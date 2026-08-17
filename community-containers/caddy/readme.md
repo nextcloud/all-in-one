@@ -36,7 +36,7 @@ This container creates Let's Encrypt certificates for subdomains of `your-nc-dom
 
 ## Geoblocking
 
- - After the container was started the first time, log in as default `admin` user. You should see a new `nextcloud-aio-caddy` folder and inside there an `allowed-countries.txt` file
+ - After the container was started the first time, log in in Nextcloud as default `admin` user. You should see a new `nextcloud-aio-caddy` folder in the files app and inside there an `allowed-countries.txt` file
  - In there you can adjust the allowed country codes for caddy by adding them to the first line, e.g. `IT FR` would allow access from italy and france.
  - Additionally, in order to activate this config, you need to get an account at https://dev.maxmind.com/geoip/geolite2-free-geolocation-data
  - download the `GeoLite2-Country.mmdb` from there and upload it with this exact name into the `nextcloud-aio-caddy` folder.
