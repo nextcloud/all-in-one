@@ -475,6 +475,7 @@ MAIL_DOMAIN:         # (not set by default): Set a different domain for the emai
 TALK_MAX_STREAM_BITRATE: "1048576"         # This allows to adjust the max stream bitrate of the talk hpb
 TALK_MAX_SCREEN_BITRATE: "2097152"         # This allows to adjust the max stream bitrate of the talk hpb
 HARP_K8S_NAMESPACE: nextcloud-exapps        # The Kubernetes namespace that HaRP deploys ExApps (AppAPI apps) into. The namespace must already exist and the HaRP service account must be allowed to manage resources in it.
+# HP_SHARED_KEY:           # This allows to set the shared key for HaRP which is getting set at the very top of this values.yaml file.
 HARP_K8S_STORAGE_CLASS:        # The storage class that HaRP uses for ExApp persistent volume claims. Leave empty to use the cluster's default storage class.
 HARP_K8S_DEFAULT_STORAGE_SIZE: 10Gi        # The default size of the persistent volume claims that HaRP creates for ExApps.
 HARP_K8S_HOST_ALIASES:        # Optional. Additional host aliases that HaRP sets on the ExApp pods so that they can resolve the configured hostnames. Use a comma-separated list of hostname:ip pairs, e.g. 'nextcloud.example.com:10.0.0.5,collabora.example.com:10.0.0.6'. Leave empty to not set any host aliases.
