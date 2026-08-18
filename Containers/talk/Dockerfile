@@ -4,42 +4,22 @@ FROM eturnal/eturnal:1.12.2-alpine AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:2.1.1 AS signaling
 FROM alpine:3.24.1 AS janus
 
-ARG JANUS_VERSION=v1.4.1
-WORKDIR /src
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache \
-        ca-certificates \
-        git \
-        autoconf \
-        automake \
-        build-base \
-        pkgconfig \
-        libtool \
-        util-linux \
-        glib-dev \
-        zlib-dev \
-        openssl-dev \
-        jansson-dev \
-        libnice-dev \
-        libconfig-dev \
-        libsrtp-dev \
-        libusrsctp-dev \
-        gengetopt-dev \
-        libwebsockets-dev; \
-    git clone --recursive https://github.com/meetecho/janus-gateway --depth=1 --single-branch --branch "$JANUS_VERSION" /src; \
-    /src/autogen.sh; \
-    /src/configure --disable-rabbitmq --disable-mqtt --disable-boringssl; \
-    make; \
-    make install; \
-    make configs; \
-    rename -v ".jcfg.sample" ".jcfg" /usr/local/etc/janus/*.jcfg.sample
+    apk add --no-cache janus-gateway; \
+    mv /etc/janus/janus.transport.websockets.jcfg.sample /etc/janus/janus.transport.websockets.jcfg; \
+    mv /etc/janus/janus.plugin.videoroom.jcfg.sample /etc/janus/janus.plugin.videoroom.jcfg; \
+    sed -i '/^room-1234:/,/^}/d' /etc/janus/janus.plugin.videoroom.jcfg
 
 FROM alpine:3.24.1
 ENV ETURNAL_ETC_DIR="/conf"
 ENV SKIP_CERT_VERIFY=false \
     AIO_LOG_LEVEL=warn
-COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/local                          /usr/local
+COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/bin/janus /usr/bin/janus
+COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/lib/janus/plugins/libjanus_videoroom.so* /usr/lib/janus/plugins/
+COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/lib/janus/transports/libjanus_websockets.so* /usr/lib/janus/transports/
+COPY --from=janus     --chmod=777 --chown=1000:1000 /etc/janus/janus.jcfg.sample /etc/janus/janus.plugin.videoroom.jcfg /etc/janus/janus.transport.websockets.jcfg /etc/janus/
+
 COPY --from=eturnal   --chmod=777 --chown=1000:1000 /opt/eturnal                        /opt/eturnal
 COPY --from=nats      --chmod=777 --chown=1000:1000 /nats-server                        /usr/local/bin/nats-server
 COPY --from=signaling --chmod=777 --chown=1000:1000 /usr/bin/nextcloud-spreed-signaling /usr/local/bin/nextcloud-spreed-signaling
@@ -60,14 +40,12 @@ RUN set -ex; \
         netcat-openbsd \
         \
         glib \
-        zlib \
-        libssl3 \
-        libcrypto3 \
-        jansson \
-        libnice \
         libconfig \
-        libsrtp \
+        libnice \
+        jansson \
         libusrsctp \
+        libsrtp \
+        libcurl \
         libwebsockets \
         \
         shadow \
@@ -92,7 +70,7 @@ RUN set -ex; \
         /var/lib/turn \
         /var/log/supervisord \
         /var/run/supervisord \
-        /usr/local/lib/janus/loggers; \
+        /usr/lib/janus/loggers; \
     chown eturnal:eturnal -R \
         /etc/nats.conf \
         /var/log/supervisord \
