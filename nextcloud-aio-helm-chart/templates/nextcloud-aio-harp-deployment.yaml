@@ -39,6 +39,8 @@ spec:
               value: "{{ .Values.HARP_K8S_HOST_ALIASES }}"
             - name: HP_FRP_DISABLE_TLS
               value: "true"
+            - name: HP_SHARED_KEY
+              value: "{{ .Values.HP_SHARED_KEY }}"
             - name: NC_INSTANCE_URL
               value: https://{{ .Values.NC_DOMAIN }}
             - name: TZ

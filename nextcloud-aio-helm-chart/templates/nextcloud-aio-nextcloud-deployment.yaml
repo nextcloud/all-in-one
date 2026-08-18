@@ -128,6 +128,8 @@ spec:
               value: elastic
             - name: HARP_ENABLED
               value: "{{ .Values.HARP_ENABLED }}"
+            - name: HP_SHARED_KEY
+              value: "{{ .Values.HP_SHARED_KEY }}"
             - name: IMAGINARY_ENABLED
               value: "{{ .Values.IMAGINARY_ENABLED }}"
             - name: IMAGINARY_HOST
