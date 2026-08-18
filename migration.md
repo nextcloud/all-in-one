@@ -142,11 +142,11 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
     ```
 1. Create a Docker network for the temporary migration containers:
     ```
-    docker network create nextcloud-migration
+    sudo docker network create nextcloud-migration
     ```
 1. Start a temporary MySQL container and import the snap database dump into it:
     ```
-    docker run -d \
+    sudo docker run -d \
       --name mysql-migration \
       --network nextcloud-migration \
       -e MYSQL_ROOT_PASSWORD="mysql-root-temp" \
@@ -158,13 +158,13 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
     # real credentials: the container answers on its socket while it is still initialising,
     # at which point the nextcloud user does not exist yet and the import fails with
     # "ERROR 1045 (28000): Access denied for user 'nextcloud'@'localhost'".
-    until docker exec mysql-migration mysqladmin ping -h 127.0.0.1 -u nextcloud -p"$MYSQL_PASSWORD" --silent 2>/dev/null; do sleep 1; done
-    docker exec -i mysql-migration mysql -u nextcloud -p"$MYSQL_PASSWORD" nextcloud < ~/mysql-dump.sql
+    until sudo docker exec mysql-migration mysqladmin ping -h 127.0.0.1 -u nextcloud -p"$MYSQL_PASSWORD" --silent 2>/dev/null; do sleep 1; done
+    sudo docker exec -i mysql-migration mysql -u nextcloud -p"$MYSQL_PASSWORD" nextcloud < ~/mysql-dump.sql
     ```
     The `--skip-log-bin` flag is required. The snap dump contains `CREATE` statements without `SET sql_log_bin`, which a non-root user cannot import while binary logging is on — the import stops with `ERROR 1419 (HY000) ... You do not have the SUPER privilege and binary logging is enabled`. Turning the binary log off on this throwaway container avoids it.
 1. Start a temporary PostgreSQL container as the migration target:
     ```
-    docker run -d \
+    sudo docker run -d \
       --name postgres-migration \
       --network nextcloud-migration \
       -e POSTGRES_USER="$PG_USER" \
@@ -206,7 +206,7 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
     Two of the values above are easy to overlook. `'mysql.utf8mb4' => true` (the snap's default) makes the conversion read MySQL over a 4-byte UTF-8 connection; without it every emoji turns into `?`, which quietly destroys emoji in comments and Talk messages, and can also abort the conversion with a unique constraint violation on `oc_reactions` once two reactions collapse into the same row. And `'version'` has to be the exact internal version from step 5 (e.g. `33.0.6.2`), otherwise `occ` starts up in the "only a limited number of commands are available" state.
 1. Start a temporary nextcloud/docker container and let its normal entrypoint run. Note that the container image version must match the Nextcloud version you noted in step 2, and that `pdo_pgsql` is already included in the `nextcloud` Docker image:
     ```
-    docker run -d \
+    sudo docker run -d \
       --name nextcloud-convert \
       --network nextcloud-migration \
       -v /tmp/migration-config:/var/www/html/config:rw \
@@ -216,7 +216,7 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
     # Wait until the entrypoint has finished staging the source into /var/www/html.
     # Run occ rather than just checking that the file is there: it shows up early during
     # the copy, while the rest of the tree it needs is still missing.
-    until docker exec -u www-data nextcloud-convert php occ status >/dev/null 2>&1; do sleep 1; done
+    until sudo docker exec -u www-data nextcloud-convert php occ status >/dev/null 2>&1; do sleep 1; done
     ```
     The image's normal entrypoint runs here instead of an `--entrypoint bash` override. It copies the Nextcloud source from `/usr/src/nextcloud/` to `/var/www/html/`, so that `occ` ends up at `/var/www/html/occ` and finds its config in the directory mounted at `/var/www/html/config`. Since neither `NEXTCLOUD_ADMIN_USER`/`NEXTCLOUD_ADMIN_PASSWORD` nor any database variables are passed, the entrypoint does not try to install or upgrade anything; it only stages the files and starts Apache. The data directory is mounted read-write because the conversion writes to it, which is safe now that the snap is stopped.
 1. Copy the image's default config snippets and the snap's third-party app code into the container:
@@ -224,16 +224,16 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
     # The entrypoint skips installing its default config snippets (apps.config.php etc.)
     # when the mounted config directory is not empty, so copy them in manually.
     # Without apps.config.php, /var/www/html/custom_apps is not registered as an app path:
-    docker exec nextcloud-convert sh -c 'cp -n /usr/src/nextcloud/config/*.config.php /var/www/html/config/'
+    sudo docker exec nextcloud-convert sh -c 'cp -n /usr/src/nextcloud/config/*.config.php /var/www/html/config/'
 
     # Copy the code of all apps that were installed from the app store into the container:
-    docker cp /var/snap/nextcloud/current/nextcloud/extra-apps/. nextcloud-convert:/var/www/html/custom_apps/
-    docker exec nextcloud-convert chown -R www-data:www-data /var/www/html/custom_apps
+    sudo docker cp /var/snap/nextcloud/current/nextcloud/extra-apps/. nextcloud-convert:/var/www/html/custom_apps/
+    sudo docker exec nextcloud-convert chown -R www-data:www-data /var/www/html/custom_apps
     ```
     Do not skip the app code if you use any apps from the app store. `db:convert-type --all-apps` creates the target schema only for apps whose code it can find, and the plain `nextcloud` image ships none of the store apps. Their tables are then passed over without a word while the core tables convert normally, so the missing data — mail, Talk, memories, richdocuments, calendar appointments, … — only shows up once the migration is done. Having the app code in place also settles the "only a limited number of commands are available" warning, since the app versions on disk then match the ones in the database.
 1. Convert the database by running `occ` inside the running container:
     ```
-    docker exec -u www-data nextcloud-convert \
+    sudo docker exec -u www-data nextcloud-convert \
       php occ db:convert-type --all-apps --password "$PG_PASSWORD" pgsql "$PG_USER" postgres-migration "$PG_DATABASE"
     ```
     `occ` has to run as `www-data` here, since that is the user the config directory was handed to in step 12.
@@ -243,42 +243,44 @@ This procedure covers steps 1–3 of the regular migration above (version matchi
     **Troubleshooting:** If the conversion aborts with a foreign key violation such as `SQLSTATE[23503]: Foreign key violation ... on table "oc_mail_accounts" ... Key (drafts_mailbox_id)=(...) is not present in table "oc_mail_mailboxes"`, you hit a limitation of `db:convert-type`: it creates all foreign key constraints in the target schema up front and then copies the tables in an order that can violate them. As a workaround, run the following loop in a **second terminal** (it keeps saving and then dropping the foreign key constraints in the target database so that the copy can proceed) and, while it is running, restart the conversion with the additional `--clear-schema` option. Stop the loop with `[CTRL] + [c]` once the conversion has finished:
     ```
     while true; do
-      docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
+      sudo docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
         "SELECT format('ALTER TABLE %I ADD CONSTRAINT %I %s;', conrelid::regclass, conname, pg_get_constraintdef(oid)) FROM pg_constraint WHERE contype='f' AND connamespace='public'::regnamespace;" \
         >> ~/fk-restore.sql
-      docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
+      sudo docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
         "SELECT format('ALTER TABLE %I DROP CONSTRAINT %I;', conrelid::regclass, conname) FROM pg_constraint WHERE contype='f' AND connamespace='public'::regnamespace;" \
-        | docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" >/dev/null
+        | sudo docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" >/dev/null
       sleep 5
     done
     ```
+    Open that second terminal with `sudo -i`. `sudo` keeps its authentication per terminal and only for a few minutes, so a plain `sudo docker` inside the loop would stop on a password prompt partway through a long conversion — and the conversion would fail as soon as the constraints stopped being dropped.
+
     After the conversion has finished, restore the saved constraints:
     ```
-    sort -u ~/fk-restore.sql | docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE"
+    sort -u ~/fk-restore.sql | sudo docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE"
     ```
     **Troubleshooting:** If the conversion aborts with an SQL syntax error on a `setval` statement (an empty `MAX()`/`FROM`, typically on `oc_jobs_id_seq`) after all tables have been copied, the data is already across and only the auto-increment sequences are left to update. Finish that part by hand with the commands below. The first one also widens every sequence to `bigint`, since the conversion creates some of them with 32-bit bounds that the copied data can exceed:
     ```
-    docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
+    sudo docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
       "SELECT format('ALTER SEQUENCE %I AS bigint MAXVALUE 9223372036854775807;', relname) FROM pg_class WHERE relkind='S';" \
-      | docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE"
-    docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
+      | sudo docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE"
+    sudo docker exec postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At -c \
       "SELECT format('SELECT setval(%L, GREATEST(COALESCE((SELECT MAX(%I) FROM %I), 0), 1));', s.relname, a.attname, t.relname)
        FROM pg_class s
        JOIN pg_depend d ON d.objid = s.oid AND d.deptype = 'a'
        JOIN pg_class t ON t.oid = d.refobjid
        JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = d.refobjsubid
        WHERE s.relkind = 'S';" \
-      | docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At
+      | sudo docker exec -i postgres-migration psql -U "$PG_USER" -d "$PG_DATABASE" -At
     ```
 1. Export the converted PostgreSQL database:
     ```
-    docker exec postgres-migration pg_dump -U "$PG_USER" "$PG_DATABASE" > ~/database-dump.sql
+    sudo docker exec postgres-migration pg_dump -U "$PG_USER" "$PG_DATABASE" > ~/database-dump.sql
     ```
     Keep the file name exactly as it is (`database-dump.sql`) — the later steps depend on it.
 1. Clean up the temporary containers and network:
     ```
-    docker rm -f nextcloud-convert mysql-migration postgres-migration
-    docker network rm nextcloud-migration
+    sudo docker rm -f nextcloud-convert mysql-migration postgres-migration
+    sudo docker network rm nextcloud-migration
     ```
 1. You now have a `~/database-dump.sql`. Continue from step 5 of the [Migrate the files and the database](#migrate-the-files-and-the-database) procedure above. When those steps ask for your old data directory path, use the `$SNAP_DATA` value noted in step 5 (typically `/var/snap/nextcloud/common/nextcloud/data`). If you have opened a new shell session since then, you can retrieve it again with `sudo nextcloud.occ config:system:get datadirectory` (requires the snap to be running) or read it directly from `/var/snap/nextcloud/current/nextcloud/config/config.php`.
 
