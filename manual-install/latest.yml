@@ -198,6 +198,7 @@ services:
       - WHITEBOARD_SECRET
       - WHITEBOARD_ENABLED
       - HARP_ENABLED
+      - HP_SHARED_KEY
     stop_grace_period: 600s
     restart: unless-stopped
     shm_size: 134217728
@@ -523,6 +524,7 @@ services:
       start_interval: 5s
       retries: 9
     environment:
+      - HP_SHARED_KEY
       - NC_INSTANCE_URL=https://${NC_DOMAIN}
       - HP_FRP_DISABLE_TLS=true
       - TZ=${TIMEZONE}
