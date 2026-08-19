@@ -32,6 +32,7 @@ This container creates Let's Encrypt certificates for subdomains of `your-nc-dom
 | [nocodb](https://github.com/nextcloud/all-in-one/tree/main/community-containers/nocodb)                             | `tables.your-nc-domain.com`      | ✅           |               |                |
 | [seerr](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr)                          | `requests.your-nc-domain.com`    | ✅           |               |                |
 | [stalwart](https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart)                         | `mail.your-nc-domain.com`        | ✅           | ✅            |                |
+| [uptime-kuma](https://github.com/nextcloud/all-in-one/tree/main/community-containers/uptime-kuma)                   | `status.your-nc-domain.com`      | ✅           | ✅            | ✅             |
 | [vaultwarden](https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden)                   | `bw.your-nc-domain.com`          | ✅           | ✅            |                |
 
 ## Geoblocking
@@ -52,9 +53,10 @@ This container creates Let's Encrypt certificates for subdomains of `your-nc-dom
  - This way you can secure administration interfaces from the external access
  - After the container was started the first time, log in as default `admin` user. You should see a new `nextcloud-aio-caddy` folder
  - put one of the following files there with the allowed IPs
-     - allowed-IPs-vaultwarden.txt
-     - allowed-IPs-stalwart.txt
      - allowed-IPs-lldap.txt
+     - allowed-IPs-stalwart.txt
+     - allowed-IPs-uptime-kuma.txt
+     - allowed-IPs-vaultwarden.txt
  - In there you can adjust the allowed IPs by adding them to the first line, e.g. `11.22.33.44 192.168.1.0/24` will allow access from those IPs
 
 > [!Warning]

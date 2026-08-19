@@ -1,0 +1,35 @@
+{
+	"aio_services_v1": [
+		{
+			"container_name": "nextcloud-aio-uptime-kuma",
+			"display_name": "Uptime Kuma Remote Monitoring",
+			"documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/uptime-kuma",
+			"image": "louislam/uptime-kuma",
+			"image_tag": "2",
+			"internal_port": "3001",
+			"restart": "unless-stopped",
+			"ports": [
+				{
+					"ip_binding": "%APACHE_IP_BINDING%",
+					"port_number": "30001",
+					"protocol": "tcp"
+				}
+			],
+			"volumes": [
+				{
+					"source": "nextcloud_aio_uptime_kuma",
+					"destination": "/app/data",
+					"writeable": true
+				},
+				{
+					"source": "/var/run/docker.sock",
+					"destination": "/var/run/docker.sock",
+					"writeable": false
+				}
+			],
+			"backup_volumes": [
+				"nextcloud_aio_uptime_kuma"
+			]
+		}
+	]
+}
