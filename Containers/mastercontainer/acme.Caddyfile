@@ -10,10 +10,16 @@
 	}
 
 	log {
-		level ERROR
+		level {$CADDY_LOG_LEVEL}
 		# We need to exclude the remote-host plugin from logging as it would spam the logs
 		# See https://github.com/nextcloud/all-in-one/pull/7006#issuecomment-4003238239 
 		exclude http.matchers.remote_host
+		# Below ERROR, caddy prints 'admin endpoint disabled' on every start, which is expected
+		# since we set `admin off` above. The on-demand TLS warning is suppressed by the `ask` below.
+		exclude admin
+		# Below ERROR, caddy warns that the `http://:80` block only listens on the HTTP port, which
+		# is expected as it merely redirects to https while `https://:8443` handles the certificates.
+		exclude http.auto_https
 	}
 
 	servers {

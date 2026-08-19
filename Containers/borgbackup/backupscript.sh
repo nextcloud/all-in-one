@@ -117,7 +117,7 @@ if [ "$BORG_MODE" = backup ]; then
         echo "sudo docker stop nextcloud-aio-database -t 1800"
         echo ""
         echo "Afterwards try to create a backup again and it should hopefully work."
-        echo "If it should still fail, feel free to report this to https://github.com/nextcloud/all-in-one/issues and post the database container logs and the borgbackup container logs into the thread. Thanks!"
+        echo "If it should still fail, feel free to report this to https://github.com/nextcloud/all-in-one/discussions/new?category=questions and post the database container logs and the borgbackup container logs into the thread. Thanks!"
         exit 1
     fi
 
@@ -436,7 +436,7 @@ if [ "$BORG_MODE" = restore ]; then
         #
         # Older backups may still contain files we've since excluded, so we have to exclude on extract as well.
         cd /  # borg extract has no destination arg and extracts to CWD
-        if ! borg "$BORG_LOG_LEVEL_FLAG" extract "::$SELECTED_ARCHIVE" --progress --exclude-from /borg_excludes "${ADDITIONAL_BORG_EXCLUDES[@]}" --pattern '+nextcloud_aio_volumes/**'
+        if ! borg "$BORG_LOG_LEVEL_FLAG" extract "::$SELECTED_ARCHIVE" --progress --noxattrs --exclude-from /borg_excludes "${ADDITIONAL_BORG_EXCLUDES[@]}" --pattern '+nextcloud_aio_volumes/**'
         then
             RESTORE_FAILED=1
             echo "Failed to extract backup archive."

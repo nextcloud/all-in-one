@@ -10,6 +10,9 @@ metadata:
   namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
+  # 2147483647 (max int32, ~68 years) effectively disables the progress deadline so that
+  # slow rollouts, e.g. large image pulls or long database upgrades, never count as failed
+  progressDeadlineSeconds: 2147483647
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-eurooffice
@@ -24,12 +27,15 @@ spec:
     spec:
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260727_092405
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260929_105435
           command:
             - chmod
             - "777"
             - /nextcloud-aio-eurooffice
+            - /nextcloud-aio-eurooffice-data
           volumeMounts:
+            - name: nextcloud-aio-eurooffice-data
+              mountPath: /nextcloud-aio-eurooffice-data
             - name: nextcloud-aio-eurooffice
               mountPath: /nextcloud-aio-eurooffice
       containers:
@@ -46,7 +52,7 @@ spec:
               value: "{{ .Values.AIO_LOG_LEVEL }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-eurooffice:20260727_092405
+          image: ghcr.io/nextcloud-releases/aio-eurooffice:20260929_105435
           readinessProbe:
             exec:
               command:
@@ -70,8 +76,13 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/euro-office
               name: nextcloud-aio-eurooffice
+            - mountPath: /var/www/euro-office/Data
+              name: nextcloud-aio-eurooffice-data
       volumes:
         - name: nextcloud-aio-eurooffice
           persistentVolumeClaim:
             claimName: nextcloud-aio-eurooffice
+        - name: nextcloud-aio-eurooffice-data
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-eurooffice-data
 {{- end }}

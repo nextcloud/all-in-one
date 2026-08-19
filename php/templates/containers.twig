@@ -27,7 +27,7 @@
             <script type="text/javascript" src="timezone.js?v1"></script>
 
             {# js for optional containers and additional containers forms #}
-            <script type="text/javascript" src="containers-form-submit.js?v8"></script>
+            <script type="text/javascript" src="containers-form-submit.js?v9"></script>
 
             {% set hasBackupLocation = borg_backup_host_location or borg_remote_repo %}
             {% set isAnyRunning = false %}
@@ -37,8 +37,8 @@
             {% set isBackupOrRestoreRunning = false %}
             {% set isApacheStarting = false %}
             {# Setting newMajorVersion to '' will hide corresponding options/elements, can be set to an integer like 26 in order to show corresponding elements. If set, also increase installLatestMajor in https://github.com/nextcloud/all-in-one/blob/main/php/src/Controller/DockerController.php #}
-            {% set newMajorVersionString = '26 Spring' %}
-            {% set oldMajorVersionString = '25 Autumn' %}
+            {% set newMajorVersionString = '26 Summer' %}
+            {% set oldMajorVersionString = '26 Spring' %}
 
             {% if is_backup_container_running == true %}
                 {% if borg_backup_mode == 'backup' or borg_backup_mode == 'restore' %}

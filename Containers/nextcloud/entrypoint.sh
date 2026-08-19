@@ -475,7 +475,11 @@ EOF
             php /var/www/html/occ config:system:set versions_retention_obligation --value="auto, 30"
             php /var/www/html/occ config:system:set activity_expire_days --value="30" --type=integer
             php /var/www/html/occ config:system:set simpleSignUpLink.shown --type=bool --value=false
-            php /var/www/html/occ config:system:set share_folder --value="/Shared"
+            if [ -z "$NEXTCLOUD_SHARE_FOLDER" ]; then
+                php /var/www/html/occ config:system:set share_folder --value="/Shared"
+            else
+                php /var/www/html/occ config:system:set share_folder --value="$NEXTCLOUD_SHARE_FOLDER"
+            fi
 
             # Install some apps by default
             if [ -n "$STARTUP_APPS" ]; then
@@ -947,6 +951,8 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update spreed
     fi
+    # We auto-renew the certs via caddy so the outdated cert warning should not be displayed
+    php /var/www/html/occ config:app:set spreed certificate_expiration_days --type=integer --value="2"
     # Add turn server
     # shellcheck disable=SC2153
     if ! php /var/www/html/occ talk:turn:list --output="plain" | grep server | grep -q " $TURN_DOMAIN:$TALK_PORT"; then

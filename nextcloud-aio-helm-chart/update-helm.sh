@@ -27,7 +27,7 @@ cp latest.yml latest.yml.backup
 
 # Additional config
 # shellcheck disable=SC1083
-sed -i -E '/^( *- )(NET_RAW|SYS_NICE|MKNOD|SYS_ADMIN|CHOWN|SYS_CHROOT|FOWNER|MAC_OVERRIDE|BLOCK_SUSPEND|AUDIT_READ)$/!s/( *- )([A-Z_]+)$/\1\2=${\2}/' latest.yml
+sed -i -E '/^( *- )(NET_RAW|SYS_NICE|MKNOD|SYS_ADMIN|CHOWN|SYS_CHROOT|FOWNER|MAC_OVERRIDE|BLOCK_SUSPEND|AUDIT_READ|CMD)$/!s/( *- )([A-Z_]+)$/\1\2=${\2}/' latest.yml
 cp sample.conf /tmp/
 sed -i 's|^|export |' /tmp/sample.conf
 # shellcheck disable=SC1091
@@ -44,6 +44,7 @@ sed -i "s|- \${TALK_PORT}|- $TALK_PORT|" latest.yml
 sed -i "s|\${NEXTCLOUD_DATADIR}|$NEXTCLOUD_DATADIR|" latest.yml
 sed -i "s|\${ADDITIONAL_COLLABORA_OPTIONS}|ADDITIONAL_COLLABORA_OPTIONS_PLACEHOLDER|" latest.yml
 sed -i "/name: nextcloud-aio/,$ d" latest.yml
+sed -i "/WATCHTOWER_DOCKER_SOCKET_PATH/d" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
 sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
 sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name: nextcloud_aio_nextcloud_trusted_cacerts" latest.yml
@@ -227,6 +228,10 @@ find ./ -name 'nextcloud-aio-nextcloud-data-persistentvolumeclaim.yaml' -exec se
 find ./ -name 'nextcloud-aio-nextcloud-data-persistentvolumeclaim.yaml' -exec sed -i "s/{{- if .Values.STORAGE_CLASS }}/{{- else if .Values.STORAGE_CLASS }}/" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "/restartPolicy:/d" \{} \;  
+# Effectively disable the progress deadline (max int32) so that slow container startups
+# are never reported as failed rollouts
+# shellcheck disable=SC1083
+find ./ -name '*deployment.yaml' -exec sed -i "/^  replicas: 1$/a\ \ # 2147483647 (max int32, ~68 years) effectively disables the progress deadline so that\n\ \ # slow rollouts, e.g. large image pulls or long database upgrades, never count as failed\n\ \ progressDeadlineSeconds: 2147483647" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;
 # shellcheck disable=SC1083
@@ -343,6 +348,36 @@ EOL
 # shellcheck disable=SC1083
 find ./ -name '*talk-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-talk.config"  \{} \;
 
+# Additional config for HaRP
+# The manual-install (docker) only configures HaRP with the docker backend. In the
+# helm chart HaRP needs to talk to the Kubernetes API instead, so we enable the
+# Kubernetes backend here and expose its settings via values.yaml.
+cat << EOL > /tmp/additional-harp.config
+            - name: HP_K8S_ENABLED
+              value: "true"
+            - name: HP_K8S_NAMESPACE
+              value: "{{ .Values.NAMESPACE }}"
+            - name: HP_K8S_STORAGE_CLASS
+              value: "{{ .Values.HARP_K8S_STORAGE_CLASS }}"
+            - name: HP_K8S_DEFAULT_STORAGE_SIZE
+              value: "{{ .Values.HARP_K8S_DEFAULT_STORAGE_SIZE }}"
+            - name: HP_K8S_HOST_ALIASES
+              value: "{{ .Values.HARP_K8S_HOST_ALIASES }}"
+EOL
+# shellcheck disable=SC1083
+find ./ -name '*harp-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-harp.config"  \{} \;
+# HaRP authenticates against the Kubernetes API with the service account that is
+# mounted into its pod. Allow the service account name to be set via values.yaml
+# so that the user can grant it the required RBAC permissions (see the readme). The
+# service account must exist in the same namespace in which HaRP runs.
+cat << EOL > /tmp/additional-harp-sa.config
+      {{- if .Values.HARP_SERVICE_ACCOUNT_NAME }}
+      serviceAccountName: "{{ .Values.HARP_SERVICE_ACCOUNT_NAME }}"
+      {{- end }}
+EOL
+# shellcheck disable=SC1083
+find ./ -name '*harp-deployment.yaml' -exec sed -i "/^    spec:$/r /tmp/additional-harp-sa.config" \{} \;
+
 cat << EOL > templates/nextcloud-aio-networkpolicy.yaml
 {{- if eq .Values.NETWORK_POLICY_ENABLED "yes" }}
 # https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/04-deny-traffic-from-other-namespaces.md
@@ -397,17 +432,13 @@ sed -i "s|^version:.*|version: $AIO_VERSION|" ../helm-chart/Chart.yaml
 
 # Conversion of sample.conf
 cp sample.conf /tmp/
-sed -i 's|"||g' /tmp/sample.conf
 sed -i 's|=|: |' /tmp/sample.conf
 sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
 sed -i '/^APACHE_IP_BINDING/d' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
-sed -i 's/ yes / "yes" /' /tmp/sample.conf
-sed -i 's/ no / "no" /' /tmp/sample.conf
-sed -i 's/"no" authentication/no authentication/' /tmp/sample.conf
+sed -i "/WATCHTOWER_DOCKER_SOCKET_PATH/d" /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
-sed -i 's|17179869184|"17179869184"|' /tmp/sample.conf
 # shellcheck disable=SC2129
 echo "" >> /tmp/sample.conf
 # shellcheck disable=SC2129
@@ -443,6 +474,11 @@ MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'f
 MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
 TALK_MAX_STREAM_BITRATE: "1048576"         # This allows to adjust the max stream bitrate of the talk hpb
 TALK_MAX_SCREEN_BITRATE: "2097152"         # This allows to adjust the max stream bitrate of the talk hpb
+# HP_SHARED_KEY:           # This allows to set the shared key for HaRP which is getting set at the very top of this values.yaml file.
+HARP_K8S_STORAGE_CLASS:        # The storage class that HaRP uses for ExApp persistent volume claims. Leave empty to use the cluster's default storage class.
+HARP_K8S_DEFAULT_STORAGE_SIZE: 10Gi        # The default size of the persistent volume claims that HaRP creates for ExApps.
+HARP_K8S_HOST_ALIASES:        # Optional. Additional host aliases that HaRP sets on the ExApp pods so that they can resolve the configured hostnames. Use a comma-separated list of hostname:ip pairs, e.g. 'nextcloud.example.com:10.0.0.5,collabora.example.com:10.0.0.6'. Leave empty to not set any host aliases.
+HARP_SERVICE_ACCOUNT_NAME:        # The name of the Kubernetes service account that is mounted into the HaRP pod and used to authenticate against the Kubernetes API. It must exist in the same namespace in which HaRP runs (see NAMESPACE) and you need to create it yourself and grant it permission to manage resources (deployments, services, persistent volume claims, …) in that namespace via a Role/RoleBinding. Leave empty to use the namespace's "default" service account.
 ADDITIONAL_CONFIG
 
 mv /tmp/sample.conf ../helm-chart/values.yaml
@@ -472,6 +508,12 @@ done
 find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec sed -i "1i\\{{- if eq .Values.FULLTEXTSEARCH_ENABLED \"yes\" }}" \{} \; 
 # shellcheck disable=SC1083
 find ./ -name "*nextcloud-aio-elasticsearch-persistentvolumeclaim.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
+
+# Additional case for Eurooffice-data
+# shellcheck disable=SC1083
+find ./ -name "*nextcloud-aio-eurooffice-data-persistentvolumeclaim.yaml" -exec sed -i "1i\\{{- if eq .Values.EUROOFFICE_ENABLED \"yes\" }}" \{} \; 
+# shellcheck disable=SC1083
+find ./ -name "*nextcloud-aio-eurooffice-data-persistentvolumeclaim.yaml" -exec sed -i "$ a {{- end }}" \{} \; 
 
 cat << EOL > /tmp/security.conf
             # The items below only work in container context

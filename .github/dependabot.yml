@@ -33,6 +33,7 @@ updates:
     - "/Containers/domaincheck"
     - "/Containers/eurooffice"
     - "/Containers/fulltextsearch"
+    - "/Containers/harp"
     - "/Containers/imaginary"
     - "/Containers/mastercontainer"
     - "/Containers/nextcloud"

@@ -9,6 +9,9 @@ metadata:
   namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
+  # 2147483647 (max int32, ~68 years) effectively disables the progress deadline so that
+  # slow rollouts, e.g. large image pulls or long database upgrades, never count as failed
+  progressDeadlineSeconds: 2147483647
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-apache
@@ -51,6 +54,8 @@ spec:
               value: nextcloud-aio-collabora
             - name: EUROOFFICE_HOST
               value: nextcloud-aio-eurooffice
+            - name: HARP_HOST
+              value: nextcloud-aio-harp
             - name: NC_DOMAIN
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
@@ -65,7 +70,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: ghcr.io/nextcloud-releases/aio-apache:20260727_092405
+          image: ghcr.io/nextcloud-releases/aio-apache:20260929_105435
           readinessProbe:
             exec:
               command:

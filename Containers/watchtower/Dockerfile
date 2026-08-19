@@ -1,15 +1,15 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.26.5-alpine3.24 AS go
+FROM golang:1.27.1-alpine3.24 AS go
 
-ENV WATCHTOWER_COMMIT_HASH=e48a0307b9cab185e08f6f8453ee62f937f43a06	
+ENV WATCHTOWER_COMMIT_HASH=5b31c6ec67dcd9f04239ffa636915b2647925960	
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
         build-base; \
-    go install github.com/nicholas-fedor/watchtower@$WATCHTOWER_COMMIT_HASH # v1.20.2
+    go install github.com/nicholas-fedor/watchtower@$WATCHTOWER_COMMIT_HASH # v1.22.3
 
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -20,7 +20,7 @@ COPY --from=go /go/bin/watchtower /watchtower
 COPY --chmod=775 start.sh /start.sh
 
 # hadolint ignore=DL3002
-USER root
+USER root:root
 
 ENV AIO_LOG_LEVEL="warn"
 

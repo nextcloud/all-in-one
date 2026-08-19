@@ -12,7 +12,7 @@ fi
 # Only start container if database is accessible
 # POSTGRES_HOST must be set in the containers env vars and POSTGRES_PORT has a default above
 # shellcheck disable=SC2153
-while ! sudo -E -u www-data nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
+while ! su-exec www-data nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
     echo "Waiting for database to start..."
     sleep 5
 done
@@ -29,7 +29,7 @@ fi
 # Fix false database connection on old instances
 if [ -f "/var/www/html/config/config.php" ]; then
     sleep 2
-    while ! sudo -E -u www-data env PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "select now()"; do
+    while ! su-exec www-data env PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "select now()"; do
         echo "Waiting for the database to start..."
         sleep 5
     done
@@ -62,12 +62,12 @@ if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
 fi
 
 # Check datadir permissions
-sudo -E -u www-data touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
+su-exec www-data touch "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" &>/dev/null
 if ! [ -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file" ]; then
     chown -R www-data:root "$NEXTCLOUD_DATA_DIR"
     chmod 750 -R "$NEXTCLOUD_DATA_DIR"
 fi
-sudo -E -u www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
+su-exec www-data rm -f "$NEXTCLOUD_DATA_DIR/this-is-a-test-file"
 
 # Install additional dependencies
 if [ -n "$ADDITIONAL_APKS" ]; then
@@ -153,7 +153,7 @@ if [ -n "$ADDITIONAL_PHP_EXTENSIONS" ]; then
 fi
 
 # Run original entrypoint
-if ! sudo -E -u www-data bash /entrypoint.sh; then
+if ! su-exec www-data bash /entrypoint.sh; then
     exit 1
 fi
 

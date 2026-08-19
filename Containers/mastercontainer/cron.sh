@@ -51,33 +51,33 @@ while true; do
 
     # Check for updates and send notification if yes on saturdays
     if [ "$(date +%u)" = 6 ]; then
-        sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/UpdateNotification.php
+        su-exec www-data php /var/www/docker-aio/php/src/Cron/UpdateNotification.php
     fi
 
     # Check if AIO is outdated
-    sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/OutdatedNotification.php
+    su-exec www-data php /var/www/docker-aio/php/src/Cron/OutdatedNotification.php
 
     # Update deSEC DNS IP record (no-op when IP is unchanged or deSEC is not configured)
-    sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/UpdateDesecIp.php
+    su-exec www-data php /var/www/docker-aio/php/src/Cron/UpdateDesecIp.php
 
     # Remove sessions older than 24h
     find "/mnt/docker-aio-config/session/" -mindepth 1 -mmin +1440 -delete
 
     # Remove nextcloud-aio-domaincheck container
-    if sudo -E -u www-data docker ps --format "{{.Names}}" --filter "status=exited" | grep -q "^nextcloud-aio-domaincheck$"; then
-        sudo -E -u www-data docker container remove nextcloud-aio-domaincheck
+    if su-exec www-data docker ps --format "{{.Names}}" --filter "status=exited" | grep -q "^nextcloud-aio-domaincheck$"; then
+        su-exec www-data docker container remove nextcloud-aio-domaincheck
     fi
 
     # Remove dangling images (support both deprecated label-schema and OCI standard vendor label)
-    sudo -E -u www-data docker image prune --filter "label=org.label-schema.vendor=Nextcloud" --force
-    sudo -E -u www-data docker image prune --filter "label=org.opencontainers.image.vendor=Nextcloud" --force
+    su-exec www-data docker image prune --filter "label=org.label-schema.vendor=Nextcloud" --force
+    su-exec www-data docker image prune --filter "label=org.opencontainers.image.vendor=Nextcloud" --force
 
     # Check for available free space
-    sudo -E -u www-data php /var/www/docker-aio/php/src/Cron/CheckFreeDiskSpace.php
+    su-exec www-data php /var/www/docker-aio/php/src/Cron/CheckFreeDiskSpace.php
 
     # Remove mastercontainer from default bridge network
-    if sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer  --format "{{.NetworkSettings.Networks}}" | grep -q "bridge"; then
-        sudo -E -u www-data docker network disconnect bridge nextcloud-aio-mastercontainer
+    if su-exec www-data docker inspect nextcloud-aio-mastercontainer  --format "{{.NetworkSettings.Networks}}" | grep -q "bridge"; then
+        su-exec www-data docker network disconnect bridge nextcloud-aio-mastercontainer
     fi
 
     # Wait 60s so that the whole loop will not be executed again

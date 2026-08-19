@@ -1,0 +1,5 @@
+type = process
+command = /usr/bin/caddy run --config /tmp/Caddyfile
+term-signal = TERM
+restart = yes
+options = shares-console

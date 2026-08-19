@@ -1,0 +1,96 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-gitea",
+            "display_name": "Gitea",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/gitea",
+            "image": "ghcr.io/go-gitea/gitea",
+            "image_tag": "latest-rootless",
+            "internal_port": "3000",
+            "restart": "unless-stopped",
+            "depends_on": [
+                "nextcloud-aio-gitea-database"
+            ],
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "3000",
+                    "protocol": "tcp"
+                },
+                {
+                    "ip_binding": "",
+                    "port_number": "2222",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "GITEA__server__DOMAIN=git.%NC_DOMAIN%",
+                "GITEA__server__ROOT_URL=https://git.%NC_DOMAIN%/",
+                "GITEA__server__HTTP_PORT=3000",
+                "GITEA__server__SSH_DOMAIN=git.%NC_DOMAIN%",
+                "GITEA__server__SSH_PORT=2222",
+                "GITEA__server__SSH_LISTEN_PORT=2222",
+                "GITEA__database__DB_TYPE=postgres",
+                "GITEA__database__HOST=nextcloud-aio-gitea-database:5432",
+                "GITEA__database__NAME=gitea",
+                "GITEA__database__USER=gitea",
+                "GITEA__database__PASSWD=%GITEA_DB_PASSWORD%",
+                "GITEA__security__INSTALL_LOCK=true",
+                "GITEA__service__DISABLE_REGISTRATION=true",
+                "GITEA__log__MODE=console,file",
+                "GITEA__log__LEVEL=Info",
+                "GITEA__log__ROOT_PATH=/var/lib/gitea/log",
+                "GITEA__log__ENABLE_SSH_LOG=true"
+            ],
+            "secrets": [
+                "GITEA_DB_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_gitea",
+                    "destination": "/var/lib/gitea",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_gitea_config",
+                    "destination": "/etc/gitea",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_gitea",
+                "nextcloud_aio_gitea_config"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-gitea-database",
+            "display_name": "Gitea Database (PostgreSQL)",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/gitea",
+            "image": "postgres",
+            "image_tag": "18",
+            "internal_port": "5432",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "POSTGRES_PASSWORD=%GITEA_DB_PASSWORD%",
+                "POSTGRES_DB=gitea",
+                "POSTGRES_USER=gitea",
+                "PGDATA=/var/lib/postgresql/data"
+            ],
+            "secrets": [
+                "GITEA_DB_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_gitea_database",
+                    "destination": "/var/lib/postgresql/data",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_gitea_database"
+            ]
+        }
+    ]
+}

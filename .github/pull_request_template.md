@@ -8,6 +8,7 @@
 
 ## Summary
 - [ ] The PR was tested and verified that it works locally
+- [ ] Or will be tested after merge on a dedicated test instance (available for maintainers)
 - [ ] [Sign-off message](https://github.com/src-d/guide/blob/master/developer-community/fix-DCO.md) is added to all commits
 - [ ] Tests (playwright if possible) are included
 - [ ] Screenshots before/after for front-end changes

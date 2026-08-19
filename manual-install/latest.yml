@@ -19,6 +19,9 @@ services:
       nextcloud-aio-whiteboard:
         condition: service_started
         required: false
+      nextcloud-aio-harp:
+        condition: service_started
+        required: false
       nextcloud-aio-nextcloud:
         condition: service_started
         required: false
@@ -50,14 +53,14 @@ services:
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
       - NOTIFY_PUSH_HOST=nextcloud-aio-notify-push
       - WHITEBOARD_HOST=nextcloud-aio-whiteboard
+      - HARP_HOST=nextcloud-aio-harp
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
     restart: unless-stopped
     read_only: true
     tmpfs:
-      - /var/log/supervisord
-      - /var/run/supervisord
+      - /run
       - /usr/local/apache2/logs
       - /tmp
       - /home/www-data
@@ -193,6 +196,8 @@ services:
       - IMAGINARY_SECRET
       - WHITEBOARD_SECRET
       - WHITEBOARD_ENABLED
+      - HARP_ENABLED
+      - HP_SHARED_KEY
     stop_grace_period: 600s
     restart: unless-stopped
     shm_size: 134217728
@@ -253,7 +258,11 @@ services:
     init: true
     healthcheck:
       start_period: 60s
-      test: /healthcheck.sh
+      test:
+        - CMD
+        - /usr/bin/coolwsd
+        - --probe
+        - --use-env-vars
       interval: 30s
       timeout: 30s
       start_interval: 5s
@@ -262,7 +271,7 @@ services:
       - "9980"
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443,http://nextcloud-aio-apache.nextcloud-aio:23973
-      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:logging.level=${COLLABORA_LOG_LEVEL} --o:logging.level_startup=${COLLABORA_LOG_LEVEL} --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
       - dictionaries=${COLLABORA_DICTIONARIES}
       - AIO_LOG_LEVEL
       - TZ=${TIMEZONE}
@@ -315,8 +324,7 @@ services:
       - talk-recording
     read_only: true
     tmpfs:
-      - /var/log/supervisord
-      - /var/run/supervisord
+      - /run
       - /opt/eturnal/run
       - /conf
       - /tmp
@@ -357,7 +365,7 @@ services:
   nextcloud-aio-clamav:
     image: ghcr.io/nextcloud-releases/aio-clamav:latest
     user: "100"
-    init: false
+    init: true
     healthcheck:
       start_period: 60s
       test: /healthcheck.sh
@@ -378,11 +386,9 @@ services:
       - clamav
     read_only: true
     tmpfs:
+      - /run
       - /tmp
       - /var/log/clamav
-      - /run/clamav
-      - /var/log/supervisord
-      - /var/run/supervisord
     cap_drop:
       - NET_RAW
 
@@ -434,6 +440,7 @@ services:
       - JWT_SECRET=${EUROOFFICE_SECRET}
     volumes:
       - nextcloud_aio_eurooffice:/var/lib/euro-office:rw
+      - nextcloud_aio_eurooffice_data:/var/www/euro-office/Data:rw
     restart: unless-stopped
     profiles:
       - eurooffice
@@ -504,6 +511,36 @@ services:
     cap_drop:
       - NET_RAW
 
+  nextcloud-aio-harp:
+    image: ghcr.io/nextcloud-releases/aio-harp:latest
+    init: true
+    expose:
+      - "8780"
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 10s
+      timeout: 10s
+      start_interval: 5s
+      retries: 9
+    environment:
+      - HP_SHARED_KEY
+      - NC_INSTANCE_URL=https://${NC_DOMAIN}
+      - HP_FRP_DISABLE_TLS=true
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${WATCHTOWER_DOCKER_SOCKET_PATH}:/var/run/docker.sock:ro
+      - nextcloud_aio_harp:/certs:rw
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run/harp
+    cap_drop:
+      - NET_RAW
+    profiles:
+      - harp
+
   nextcloud-aio-whiteboard:
     image: ghcr.io/nextcloud-releases/aio-whiteboard:latest
     user: "65534"
@@ -549,6 +586,10 @@ volumes:
     name: nextcloud_aio_elasticsearch
   nextcloud_aio_eurooffice:
     name: nextcloud_aio_eurooffice
+  nextcloud_aio_eurooffice_data:
+    name: nextcloud_aio_eurooffice_data
+  nextcloud_aio_harp:
+    name: nextcloud_aio_harp
   nextcloud_aio_nextcloud:
     name: nextcloud_aio_nextcloud
   nextcloud_aio_onlyoffice:

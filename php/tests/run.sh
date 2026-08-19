@@ -36,7 +36,7 @@ run_tests() {
     exitcode=$?
     if test $exitcode -gt 0; then
         for container in nextcloud-aio-{mastercontainer,borgbackup,desec-mock}; do
-            if docker container list --format="{{ .Names }}" | grep -q "$container"; then
+            if docker container list -a --format="{{ .Names }}" | grep -q "$container"; then
                 echo -e "\n 📣  Log output from container ${container}:\n"
                 docker logs "$container"
             fi

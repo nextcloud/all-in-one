@@ -6,7 +6,11 @@ if (isset($_GET['domain']) && is_string($_GET['domain'])) {
     $domain = $_GET['domain'];
 }
 
-if (!str_contains($domain, '.')) { 
+// The internal caddy instance on port 8080 accepts any hostname as it only issues self-signed
+// certificates. It needs this endpoint to silence caddy's unprotected on-demand TLS warning.
+if (($_SERVER['REQUEST_URI'] ?? '') === '/internal' || str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/internal?')) {
+    http_response_code(200);
+} elseif (!str_contains($domain, '.')) {
     http_response_code(400);
 } elseif (str_contains($domain, '/')) { 
     http_response_code(400);

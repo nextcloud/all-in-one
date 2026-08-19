@@ -1,0 +1,5 @@
+type = process
+command = php-fpm
+term-signal = QUIT
+restart = yes
+options = shares-console

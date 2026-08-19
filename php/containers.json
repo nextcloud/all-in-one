@@ -75,8 +75,7 @@
       ],
       "read_only": true,
       "tmpfs": [
-        "/var/log/supervisord",
-        "/var/run/supervisord",
+        "/run",
         "/usr/local/apache2/logs",
         "/tmp",
         "/home/www-data"
@@ -380,7 +379,7 @@
       "init": true,
       "healthcheck": {
         "start_period": "60s",
-        "test": "/healthcheck.sh",
+        "test": ["CMD", "/usr/bin/coolwsd", "--probe", "--use-env-vars"],
         "interval": "30s",
         "timeout": "30s",
         "start_interval": "5s",
@@ -392,7 +391,7 @@
       "internal_port": "9980",
       "environment": [
         "aliasgroup1=https://%NC_DOMAIN%:443,http://nextcloud-aio-apache.nextcloud-aio:23973",
-        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false %COLLABORA_SECCOMP_POLICY% --o:remote_font_config.url=https://%NC_DOMAIN%/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+",
+        "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false %COLLABORA_SECCOMP_POLICY% --o:logging.level=%COLLABORA_LOG_LEVEL% --o:logging.level_startup=%COLLABORA_LOG_LEVEL% --o:remote_font_config.url=https://%NC_DOMAIN%/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+",
         "dictionaries=%COLLABORA_DICTIONARIES%",
         "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
@@ -482,8 +481,7 @@
       ],
       "read_only": true,
       "tmpfs": [
-        "/var/log/supervisord",
-        "/var/run/supervisord",
+        "/run",
         "/opt/eturnal/run",
         "/conf",
         "/tmp"
@@ -679,7 +677,7 @@
       "display_name": "ClamAV",
       "image": "ghcr.io/nextcloud-releases/aio-clamav",
       "user": "100",
-      "init": false,
+      "init": true,
       "healthcheck": {
         "start_period": "60s",
         "test": "/healthcheck.sh",
@@ -710,11 +708,9 @@
       ],
       "read_only": true,
       "tmpfs": [
+        "/run",
         "/tmp",
-        "/var/log/clamav",
-        "/run/clamav",
-        "/var/log/supervisord",
-        "/var/run/supervisord"
+        "/var/log/clamav"
       ],
       "cap_drop": [
         "NET_RAW"
@@ -794,6 +790,11 @@
         {
           "source": "nextcloud_aio_eurooffice",
           "destination": "/var/lib/euro-office",
+          "writeable": true
+        },
+        {
+          "source": "nextcloud_aio_eurooffice_data",
+          "destination": "/var/www/euro-office/Data",
           "writeable": true
         }
       ],
@@ -933,14 +934,22 @@
     },
     {
       "container_name": "nextcloud-aio-harp",
-      "image_tag": "release",
+      "image_tag": "%AIO_CHANNEL%",
       "display_name": "HaRP",
-      "image": "ghcr.io/nextcloud/nextcloud-appapi-harp",
+      "image": "ghcr.io/nextcloud-releases/aio-harp",
       "init": true,
       "internal_port": "8780",
       "expose": [
         "8780"
       ],
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "10s",
+        "timeout": "10s",
+        "start_interval": "5s",
+        "retries": 9
+      },
       "environment": [
         "HP_SHARED_KEY=%HP_SHARED_KEY%",
         "NC_INSTANCE_URL=https://%NC_DOMAIN%",
@@ -970,6 +979,9 @@
       ],
       "cap_drop": [
         "NET_RAW"
+      ],
+      "profiles": [
+        "harp"
       ]
     },
     {

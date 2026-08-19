@@ -1,0 +1,27 @@
+{
+    "aio_services_v1": [
+        {
+            "image": "ghcr.io/extremeshok/clamav-unofficial-sigs",
+            "image_tag": "latest",
+            "container_name": "nextcloud-aio-clamav-extended",
+            "display_name": "ClamAV with additional signatures",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/clamav-extended",
+            "internal_port": "3310",
+            "restart": "unless-stopped",
+			"nextcloud_exec_commands": [
+                "php /var/www/html/occ app:install --keep-disabled files_antivirus",
+                "php /var/www/html/occ app:enable files_antivirus",
+                "php /var/www/html/occ config:app:set files_antivirus av_mode --value='daemon'",
+                "php /var/www/html/occ config:app:set files_antivirus av_host --value='nextcloud-aio-clamav-extended'",
+                "php /var/www/html/occ config:app:set files_antivirus av_port --value='3310'"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_clamav_extended",
+                    "destination": "/var/lib/clamav",
+                    "writeable": true
+                }
+            ]
+        }
+    ]
+}

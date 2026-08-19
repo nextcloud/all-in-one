@@ -1,14 +1,18 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.3.32-fpm-alpine3.24
+FROM php:8.4.25-fpm-alpine3.24
 
 ENV PHP_MEMORY_LIMIT=512M
-ENV PHP_UPLOAD_LIMIT=16G
+ENV PHP_UPLOAD_LIMIT=1G
 ENV PHP_MAX_TIME=3600
 ENV SOURCE_LOCATION=/usr/src/nextcloud
 ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
-ENV NEXTCLOUD_VERSION=33.0.7
+ENV NEXTCLOUD_VERSION=34.0.4
+# Required to stop hadolint from complaining about potentially sensitive data in an environment variable. 
+# It might be a good idea to reconsider using and env var for this at one point,
+# but the actual value here is just a dummy and not relevant, so we silence the warning for now.
+# hadolint ignore=DL3064
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
@@ -16,7 +20,7 @@ ENV AIO_URL=localhost
 COPY --chmod=775 Containers/nextcloud/*.sh /
 COPY --chmod=774 Containers/nextcloud/upgrade.exclude /upgrade.exclude
 COPY Containers/nextcloud/config/*.php /
-COPY Containers/nextcloud/supervisord.conf /supervisord.conf
+COPY Containers/nextcloud/dinit.d/ /etc/dinit.d/
 
 # AIO cloning start # Do not remove or change this line!
 COPY app /usr/src/nextcloud/apps/nextcloud-aio
@@ -27,6 +31,7 @@ VOLUME /mnt/ncdata
 VOLUME /var/www/html
 
 # Custom: change id of www-data user as it needs to be the same like on old installations
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 # hadolint ignore=SC2086,DL3003
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -65,7 +70,7 @@ RUN set -ex; \
     ; \
     \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
-    docker-php-ext-configure ftp --with-openssl-dir=/usr; \
+    docker-php-ext-configure ftp --with-ftp-ssl; \
     docker-php-ext-configure ldap; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
@@ -119,8 +124,10 @@ RUN set -ex; \
         echo 'opcache.interned_strings_buffer=64'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
-        echo 'opcache.jit=1255'; \
-        echo 'opcache.jit_buffer_size=128M'; \
+# JIT temporarily disabled, see https://github.com/nextcloud/docker/issues/2576
+# and https://github.com/nextcloud/all-in-one/discussions/8711
+        echo 'opcache.jit=disable'; \
+        echo 'opcache.jit_buffer_size=0'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
     { \
@@ -186,7 +193,7 @@ RUN set -ex; \
         ffmpeg \
         procps \
         samba-client \
-        supervisor \
+        dinit \
 #       libreoffice \
     ; \
     \
@@ -200,15 +207,15 @@ RUN set -ex; \
         libpq-dev \
     ; \
     \
-    docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install \
         bz2 \
-        imap \
         pgsql \
         ftp \
     ; \
+# imap was removed from PHP core in 8.4, so it needs to be installed from PECL from now on
+    pecl install -D 'with-kerberos="yes" with-imap-ssl="yes"' imap-1.0.3; \
     pecl install smbclient; \
-    docker-php-ext-enable smbclient; \
+    docker-php-ext-enable imap smbclient; \
     \
     runDeps="$( \
         scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
@@ -219,13 +226,6 @@ RUN set -ex; \
     apk add --no-cache --virtual .nextcloud-phpext-rundeps $runDeps; \
     apk del .build-deps; \
     \
-    mkdir -p \
-    /var/log/supervisord \
-    /var/run/supervisord \
-    ; \
-    chmod 777 -R /var/log/supervisord; \
-    chmod 777 -R /var/run/supervisord; \
-    \
     apk add --no-cache \
         bash \
         netcat-openbsd \
@@ -234,7 +234,7 @@ RUN set -ex; \
         git \
         postgresql-client \
         tzdata \
-        sudo \
+        su-exec \
         grep \
         nodejs \
         bind-tools \
@@ -279,11 +279,13 @@ RUN set -ex; \
     chmod -R 777 /nc-updater
 
 # hadolint ignore=DL3002
-USER root
+USER root:root
+# The php-fpm base image sets STOPSIGNAL SIGQUIT, which dinit ignores, so the container would never stop gracefully
+STOPSIGNAL SIGTERM
 ENTRYPOINT ["/start.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["dinit", "--system", "--container", "php-fpm", "cron", "taskprocessing-worker", "run-exec-commands", "is-nextcloud-online"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

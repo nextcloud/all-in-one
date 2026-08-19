@@ -16,7 +16,7 @@ use Slim\Psr7\NonBufferedBody;
 
 readonly class DockerController {
     private const string TOP_CONTAINER = 'nextcloud-aio-apache';
-    private const string LATEST_MAJOR_VERSION = '34';
+    private const string LATEST_MAJOR_VERSION = '35';
 
     public function __construct(
         private DockerActionManager           $dockerActionManager,

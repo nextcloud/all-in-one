@@ -34,13 +34,13 @@ jobs:
 
       - name: run lint
         run: |
-          DOCKERFILES="$(find ./Containers -name Dockerfile)"
-          mapfile -t DOCKERFILES <<< "$DOCKERFILES"
-          for file in "${DOCKERFILES[@]}"; do
+          for file in $(find Containers -name "*Dockerfile"); do
             # DL3018 warning: Pin versions in apk add. Instead of `apk add <package>` use `apk add <package>=<version>`
-            # DL4006 warning: Set the SHELL option -o pipefail before RUN with a pipe in it. If you are using /bin/sh in an alpine image or if your shell is symlinked to busybox then consider explicitly setting your SHELL to /bin/ash, or disable this check
-            hadolint "$file" --ignore DL3018 --ignore DL4006 | tee -a ./hadolint.log
+            # DL3041 warning: Specify version with `dnf install -y <package>-<version>`.
+            # DL3066 info: Non-numeric user-id may not be resolvable by host system
+            hadolint "$file" --ignore DL3018 --ignore DL3041 --ignore DL3066 | tee -a hadolint.log
           done
-          if grep -q "DL[0-9]\+\|SC[0-9]\+" ./hadolint.log; then
+          # hadolint only prints to console if it finds issues, so the workflow needs to fail if it printed something
+          if [ -s hadolint.log ]; then
             exit 1
           fi

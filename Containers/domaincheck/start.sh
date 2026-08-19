@@ -36,6 +36,4 @@ fi
 lighttpd -tt -f /etc/lighttpd/lighttpd.conf
 
 # Run server
-lighttpd -D -f /etc/lighttpd/lighttpd.conf
-
-exec "$@"
+exec lighttpd -D -f /etc/lighttpd/lighttpd.conf

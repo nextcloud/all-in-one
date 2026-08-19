@@ -9,6 +9,9 @@ metadata:
   namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
+  # 2147483647 (max int32, ~68 years) effectively disables the progress deadline so that
+  # slow rollouts, e.g. large image pulls or long database upgrades, never count as failed
+  progressDeadlineSeconds: 2147483647
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-database
@@ -35,7 +38,7 @@ spec:
         {{- end }}
       initContainers:
         - name: init-subpath
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260727_092405
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260929_105435
           command:
             - mkdir
             - "-p"
@@ -66,7 +69,7 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-postgresql:20260727_092405
+          image: ghcr.io/nextcloud-releases/aio-postgresql:20260929_105435
           readinessProbe:
             exec:
               command:

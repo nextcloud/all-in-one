@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.26.5-alpine3.24 AS go
+FROM golang:1.27.1-alpine3.24 AS go
 
 ENV IMAGINARY_HASH=6a274b488759a896aff02f52afee6e50b5e3a3ee
 
@@ -14,7 +14,7 @@ RUN set -ex; \
         build-base; \
     go install github.com/h2non/imaginary@"$IMAGINARY_HASH";
 
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
@@ -36,13 +36,13 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 ENV PORT=9000 \
     AIO_LOG_LEVEL=warn
 
-USER 65534
+USER nobody:nobody
 
 # https://github.com/h2non/imaginary#memory-issues
 ENV MALLOC_ARENA_MAX=2
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

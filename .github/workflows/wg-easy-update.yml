@@ -1,0 +1,74 @@
+name: wg-easy-update
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '00 12 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  run_update:
+    name: update wg-easy to the latest major release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Run wg-easy-update
+      run: |
+        set -euo pipefail
+        CONTAINER_FILE="./community-containers/wireguard/wireguard.json"
+
+        # The container pins the rolling major tag, so only major bumps need a PR
+        pinned="$(jq -r '.aio_services_v1[0].image_tag' "$CONTAINER_FILE")"
+        if ! [[ "$pinned" =~ ^[0-9]+$ ]]; then
+          echo "Expected a major tag like \"15\" but found \"$pinned\"!"
+          exit 1
+        fi
+
+        # Filter out pre-releases like v16.0.0-beta.1
+        latest="$(
+          git ls-remote --tags https://github.com/wg-easy/wg-easy \
+            | cut -d/ -f3 \
+            | grep -v '\^{}' \
+            | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+            | sed -E 's/^v([0-9]+)\..*/\1/' \
+            | sort -n \
+            | tail -1
+        )"
+        if [ -z "$latest" ]; then
+          echo "Could not get the latest wg-easy version!"
+          exit 1
+        fi
+
+        if [ "$latest" -le "$pinned" ]; then
+          echo "wg-easy is up to date at v$pinned"
+          exit 0
+        fi
+
+        sed -i "s|\"image_tag\": \"$pinned\",|\"image_tag\": \"$latest\",|" "$CONTAINER_FILE"
+        if [ "$(jq -r '.aio_services_v1[0].image_tag' "$CONTAINER_FILE")" != "$latest" ]; then
+          echo "Failed to update image_tag!"
+          exit 1
+        fi
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v7
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: wg-easy-update automated change
+        signoff: true
+        title: wg-easy major update
+        body: |
+          Automated wg-easy community container update to a new major release.
+
+          :warning: Major releases may contain breaking changes. Please check the
+          [release notes](https://github.com/wg-easy/wg-easy/releases) and that the
+          `INIT_*` [setup variables](https://github.com/wg-easy/wg-easy/blob/master/docs/content/advanced/config/unattended-setup.md)
+          still work before merging.
+        labels: dependencies, 3. to review
+        milestone: next
+        branch: wg-easy-container-update

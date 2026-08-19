@@ -30,6 +30,10 @@
             "environment": [
                 "GLANCES_OPT=-w"
             ],
+            "ui_secret": "NEXTCLOUD_GLANCES_CADDY_PASSWORD",
+             "secrets": [
+                "NEXTCLOUD_GLANCES_CADDY_PASSWORD"
+            ],
             "backup_volumes": [
                 "nextcloud_aio_glances"
             ]

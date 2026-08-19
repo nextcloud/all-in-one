@@ -9,6 +9,9 @@ metadata:
   namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
+  # 2147483647 (max int32, ~68 years) effectively disables the progress deadline so that
+  # slow rollouts, e.g. large image pulls or long database upgrades, never count as failed
+  progressDeadlineSeconds: 2147483647
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-redis
@@ -41,7 +44,7 @@ spec:
               value: "{{ .Values.REDIS_PASSWORD }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-redis:20260727_092405
+          image: ghcr.io/nextcloud-releases/aio-redis:20260929_105435
           readinessProbe:
             exec:
               command:
