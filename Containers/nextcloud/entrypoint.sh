@@ -950,7 +950,7 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     # Add turn server
     # shellcheck disable=SC2153
     if ! php /var/www/html/occ talk:turn:list --output="plain" | grep server | grep -q " $TURN_DOMAIN:$TALK_PORT"; then
-        php /var/www/html/occ talk:turn:add turn "$TURN_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
+        php /var/www/html/occ talk:turn:add turn,turns "$TURN_DOMAIN:$TALK_PORT" "udp,tcp" --secret="$TURN_SECRET"
     fi
     # Add stun server
     STUN_SERVER="$(php /var/www/html/occ talk:stun:list --output="plain")"
