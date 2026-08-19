@@ -44,12 +44,7 @@ readonly class AuthManager {
         }
 
         // Prevent token replay: reject tokens that have already been used
-        $tokenHash = hash('sha256', $token);
-        $cacheKey = 'used_token_' . $tokenHash;
-        if (apcu_fetch($cacheKey) !== false) {
-            return false;
-        }
-        apcu_add($cacheKey, true, 60);
+        if (!apcu_add('used_token_' . hash('sha256', $token), true, 60)) return false;
 
         return true;
     }
