@@ -55,7 +55,7 @@ elif mountpoint -q /var/www/docker-aio/php/containers.json; then
     echo "If you need to customize things, feel free to use https://github.com/nextcloud/all-in-one/tree/main/manual-install"
     echo "See https://github.com/nextcloud/all-in-one/blob/main/manual-install/latest.yml"
     exit 1
-elif ! sudo -E -u www-data test -r /var/run/docker.sock; then
+elif ! su-exec www-data test -r /var/run/docker.sock; then
     echo "Trying to fix docker.sock permissions internally..."
     DOCKER_GROUP=$(stat -c '%G' /var/run/docker.sock)
     DOCKER_GROUP_ID=$(stat -c '%g' /var/run/docker.sock)
@@ -73,7 +73,7 @@ elif ! sudo -E -u www-data test -r /var/run/docker.sock; then
         groupadd -g "$DOCKER_GROUP_ID" docker
         usermod -aG docker www-data
     fi
-    if ! sudo -E -u www-data test -r /var/run/docker.sock; then
+    if ! su-exec www-data test -r /var/run/docker.sock; then
         print_red "Docker socket is not readable by the www-data user. Cannot continue."
         exit 1
     fi
@@ -108,8 +108,8 @@ fi
 FALLBACK_DOCKER_API_VERSION="1.41"
 
 # Check if docker info can be used
-if ! sudo -E -u www-data docker info &>/dev/null; then
-    if ! sudo -E -u www-data DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker info &>/dev/null; then
+if ! su-exec www-data docker info &>/dev/null; then
+    if ! su-exec www-data env DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker info &>/dev/null; then
         print_red "Cannot connect to the docker socket. Cannot proceed."
         echo "Did you maybe remove group read permissions for the docker socket? AIO needs them in order to access the docker socket."
         echo "If SELinux is enabled on your host, see https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled"
@@ -125,9 +125,9 @@ fi
 # Docker api version check
 # shellcheck disable=SC2001
 API_VERSION_NUMB="$(echo "$DOCKER_API_VERSION" | sed 's/\.//')"
-LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+LOCAL_API_VERSION_NUMB="$(su-exec www-data docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
 if [ -z "$LOCAL_API_VERSION_NUMB" ]; then
-    LOCAL_API_VERSION_NUMB="$(sudo -E -u www-data DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
+    LOCAL_API_VERSION_NUMB="$(su-exec www-data env DOCKER_API_VERSION="$FALLBACK_DOCKER_API_VERSION" docker version | grep -i "api version" | grep -oP '[0-9]+.[0-9]+' | head -1 | sed 's/\.//')"
 fi
 if [ -n "$LOCAL_API_VERSION_NUMB" ] && [ -n "$API_VERSION_NUMB" ]; then
     if ! [ "$LOCAL_API_VERSION_NUMB" -ge "$API_VERSION_NUMB" ]; then
@@ -143,7 +143,7 @@ else
 fi
 
 # Check Storage drivers
-STORAGE_DRIVER="$(sudo -E -u www-data docker info | grep "Storage Driver")"
+STORAGE_DRIVER="$(su-exec www-data docker info | grep "Storage Driver")"
 # Check if vfs is used: https://github.com/nextcloud/all-in-one/discussions/1467
 if echo "$STORAGE_DRIVER" | grep -q vfs; then
     echo "$STORAGE_DRIVER"
@@ -154,26 +154,26 @@ elif echo "$STORAGE_DRIVER" | grep -q fuse-overlayfs; then
 fi
 
 # Check if snap install
-if sudo -E -u www-data docker info | grep "Docker Root Dir" | grep "/var/snap/docker/"; then
+if su-exec www-data docker info | grep "Docker Root Dir" | grep "/var/snap/docker/"; then
     print_red "Warning: It looks like your installation uses docker installed via snap."
     print_red "This comes with some limitations and is disrecommended by the docker maintainers."
     print_red "See for example https://github.com/nextcloud/all-in-one/discussions/4890#discussioncomment-10386752"
 fi
 
 # Check if startup command was executed correctly
-if ! sudo -E -u www-data docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-mastercontainer$"; then
+if ! su-exec www-data docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-mastercontainer$"; then
     print_red "It seems like you did not give the mastercontainer the correct name? (The 'nextcloud-aio-mastercontainer' container was not found.)
 Using a different name is not supported since mastercontainer updates will not work in that case!
 If you are on docker swarm and try to run AIO, see https://github.com/nextcloud/all-in-one#can-i-run-this-with-docker-swarm"
     exit 1
-elif sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer --format "{{.Config.Image}}" | grep -q '@'; then
+elif su-exec www-data docker inspect nextcloud-aio-mastercontainer --format "{{.Config.Image}}" | grep -q '@'; then
     print_red "It seems like you used a hash for the mastercontainer image tag. This is not supported!"
     exit 1
-elif ! sudo -E -u www-data docker volume ls --format "{{.Name}}" | grep -q "^nextcloud_aio_mastercontainer$"; then
+elif ! su-exec www-data docker volume ls --format "{{.Name}}" | grep -q "^nextcloud_aio_mastercontainer$"; then
     print_red "It seems like you did not give the mastercontainer volume the correct name? (The 'nextcloud_aio_mastercontainer' volume was not found.)
 Using a different name is not supported since the built-in backup solution will not work in that case!"
     exit 1
-elif ! sudo -E -u www-data docker inspect nextcloud-aio-mastercontainer --format '{{.Mounts}}' | grep -q " nextcloud_aio_mastercontainer "; then
+elif ! su-exec www-data docker inspect nextcloud-aio-mastercontainer --format '{{.Mounts}}' | grep -q " nextcloud_aio_mastercontainer "; then
     print_red "It seems like you did not attach the 'nextcloud_aio_mastercontainer' volume to the mastercontainer?
 This is not supported since the built-in backup solution will not work in that case!"
     exit 1
