@@ -60,6 +60,7 @@ RUN set -ex; \
         libxml2-dev \
         libzip-dev \
         openldap-dev \
+        openssl-dev \
         pcre-dev \
         postgresql-dev \
     ; \
@@ -70,6 +71,7 @@ RUN set -ex; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
         exif \
+        ftp \
         gd \
         gmp \
         intl \
@@ -205,7 +207,6 @@ RUN set -ex; \
         bz2 \
         imap \
         pgsql \
-        ftp \
     ; \
     pecl install smbclient; \
     docker-php-ext-enable smbclient; \
