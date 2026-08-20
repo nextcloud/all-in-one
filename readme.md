@@ -36,6 +36,7 @@ Nextcloud AIO includes the following core services, commonly used features, and 
 - Whiteboard (optional)
 - Docker Socket Proxy for the [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi) (optional; required when using the App API)
 - [Community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers) (optional)
+> Community-maintained add-ons may have separate support, update, security, and compatibility considerations.
 
 <details>
 <summary>Additional capabilities</summary>
@@ -44,14 +45,15 @@ Nextcloud AIO includes the following core services, commonly used features, and 
 - Easy updates for all included containers, Nextcloud, and its apps
 - Update and backup notifications
 - Daily backups and instance restoration through the AIO interface when the backup solution is enabled
-- Easy restoration and recovery: restore the whole instance onto a new AIO instance using only the saved archive and its password when the backup solution is enabled- Unattended automatic updates (optional)
+- Easy restoration and recovery: restore the whole instance onto a new AIO instance using the only saved archive and the backup encryption key
+- Unattended automatic updates (optional)
 - PHP-FPM with a performance-optimized configuration, including memory-tuned process management and workers, OPcache, and JIT
-- A+ rating in the [Nextcloud Security Scanner](https://scan.nextcloud.com/)
-- Automatic TLS certificates through Let's Encrypt
-- HTTP/2, HTTP/3, and HTTP compression
+- Security-optimized configuration designed to achieve an A+ result in the [Nextcloud Security Scanner](https://scan.nextcloud.com/)
+- Automatic TLS certificates through Let's Encrypt when using the built-in reverse proxy
+- HTTP/2, HTTP/3, and HTTP compression enabled by default
 - Support for [reverse proxies](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md), [Cloudflare Tunnel](https://github.com/nextcloud/all-in-one#how-to-run-nextcloud-behind-a-cloudflare-tunnel), and [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817)
 - Video previews out of the box, with additional image formats supported by Imaginary
-- Support for large public-link uploads up to 10 GB, with adjustable limits
+- Support for large public-link uploads with adjustable limits
 - PHP memory limits, web-server execution timeouts, and upload limits tuned to support large file uploads, with adjustable limits
 - Adjustable Nextcloud data-directory location
 - Optional access to additional host storage
@@ -63,17 +65,17 @@ Nextcloud AIO includes the following core services, commonly used features, and 
 - LDAP support as a Nextcloud user backend
 - Migration from existing Nextcloud installations to AIO and from AIO to other deployment methods
 - Optional Fail2Ban, phpMyAdmin, Adminer, pgAdmin, and mail server integrations
-- Local installations without public Internet access
-- A single domain can be used for all included services, avoiding the complexity of configuring a separate domain for each service
+- Local installations without public Internet access, with dedicated documentation
+- A single domain can be used for the integrated AIO services, avoiding the complexity of configuring a separate domain for each service
 - Free dynamic-DNS domain registration through [deSEC](https://desec.io) directly from the AIO interface
 - IPv6 and Docker rootless support
-- Support for Docker Compose, Docker Swarm, and Kubernetes
+- Support for Docker Compose, with dedicated deployment paths for Docker Swarm and Kubernetes
 - Support for multiple AIO instances on one server
 - Container logs accessible through the AIO interface
 - Most included containers are Alpine-based (good for security and size)
 - Security-focused container defaults, including isolated networks, non-root containers (where possible), read-only root filesystems, and minimal exposed ports
-- Configurable local and remote BorgBackup repositories
-- Backup and restoration of additional Docker volumes and host paths
+- Configurable local and remote BorgBackup repositories when the backup solution is enabled
+- Backup and restoration of additional Docker volumes and host paths when the backup solution is enabled
 - External scripting for updates and backups
 - The Nextcloud installation remains writable, allowing you to apply patches when needed instead of waiting for the next release
 
