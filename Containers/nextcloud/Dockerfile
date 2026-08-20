@@ -9,6 +9,7 @@ ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
 ENV NEXTCLOUD_VERSION=33.0.8
+# hadolint ignore=DL3064
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
 # AIO settings end # Do not remove or change this line!
