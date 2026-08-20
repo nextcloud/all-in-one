@@ -20,7 +20,7 @@ RUN set -ex; \
 USER 33
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

@@ -109,7 +109,7 @@ USER 1000
 ENTRYPOINT ["/start.sh"]
 CMD ["supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

@@ -42,7 +42,7 @@ USER 65534
 ENV MALLOC_ARENA_MAX=2
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

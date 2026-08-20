@@ -64,7 +64,7 @@ USER 122
 ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.conf"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

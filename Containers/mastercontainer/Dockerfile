@@ -115,4 +115,4 @@ USER root
 
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
