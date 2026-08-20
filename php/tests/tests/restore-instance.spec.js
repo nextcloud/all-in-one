@@ -58,12 +58,12 @@ test('Restore instance', async ({ page: setupPage }) => {
 
   // Verify a successful backup restore
   await expect(containersPage.getByRole('main')).toContainText('Last restore successful!', { timeout: 3 * 60 * 1000 });
-  await expect(containersPage.getByRole('main')).toContainText('⚠️ Container updates are available. Click on Stop containers and Start and update containers to update them. You should consider creating a backup first.');
+  await expect(containersPage.getByRole('main')).toContainText('⚠️ Container updates are available. Click on Stop containers and Update and start containers to update them. You should consider creating a backup first.');
   containersPage.once('dialog', dialog => {
     console.log(`Dialog message: ${dialog.message()}`)
     dialog.accept()
   });
-  await containersPage.getByRole('button', { name: 'Start and update containers' }).click();
+  await containersPage.getByRole('button', { name: 'Update and start containers' }).click();
   await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 8 * 60 * 1000 });
   await expect(containersPage.getByRole('main')).toContainText(initialNextcloudPassword);
 
