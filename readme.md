@@ -1,93 +1,148 @@
-# Nextcloud All-in-One
+# Nextcloud All-in-One (AIO)
+
+## Introduction
+
+Nextcloud AIO is an official [installation method](https://docs.nextcloud.com/server/latest/admin_manual/installation/source_installation.html#installation-on-linux) provided by [Nextcloud GmbH](https://nextcloud.com/all-in-one/). It simplifies deployment and maintenance by bundling core services, commonly used features, and optional add-ons into a pre-tuned containerized stack.
 
 > [!NOTE]
-> Nextcloud AIO is actively looking for contributors. See [the forum post](https://help.nextcloud.com/t/nextcloud-aio-is-looking-for-contributors/205234).
+> Nextcloud AIO is maintained by Nextcloud GmbH in collaboration with the Nextcloud community. The project is always looking for new contributors. See [the forum post](https://help.nextcloud.com/t/nextcloud-aio-is-looking-for-contributors/205234).
 
-The official Nextcloud installation method. Nextcloud AIO provides easy deployment and maintenance with most features included in this one Nextcloud instance. 
+## Who is it for?
 
-Included are:
+Nextcloud AIO is intended for deployments ranging from small self-hosted installations to medium-sized organizations.
+
+Installations with fewer than 100 users can use AIO without a licensing fee, but no support or service-level agreement (SLA) is included.
+
+For deployments with 100 to 999 users, Nextcloud GmbH offers Nextcloud Enterprise services specifically for AIO, including support, an SLA, security information, and other Enterprise benefits.
+
+For deployments with 1,000 or more users, other deployment methods may be more appropriate. Please contact Nextcloud GmbH for guidance. AIO may still be useful for evaluating Nextcloud and its ecosystem. (Keep in mind these figures are approximate).
+
+## Features
+
+Nextcloud AIO includes the following core services, commonly used features, and optional add-ons:
+
 - Nextcloud
-- High performance backend for Nextcloud Files (Client Push)
-- Redis & APCU for performant caching
-- PostgreSQL as database
+- High-performance backend for Nextcloud Files (Client Push)
+- Redis for distributed caching and file locking, and APCu for local caching
+- PostgreSQL database
 - Nextcloud Office (optional)
 - EuroOffice (optional)
-- High performance backend for Nextcloud Talk and TURN-server (optional)
-- Nextcloud Talk Recording-server (optional)
-- Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
-- Imaginary (optional, for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
-- ClamAV (optional, Antivirus backend for Nextcloud)
-- Fulltextsearch (optional)
+- High-performance backend for Nextcloud Talk and TURN server (optional)
+- Nextcloud Talk Recording server (optional)
+- Backup solution based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup) (optional)
+- Imaginary for previews of HEIC, HEIF, Illustrator, PDF, SVG, TIFF, and WebP files (optional)
+- ClamAV antivirus backend (optional)
+- Full-text search (optional)
 - Whiteboard (optional)
-- Docker Socket Proxy (optional, needed for [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi))
-- [Community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers)
-<details><summary>And much more:</summary>
+- Docker Socket Proxy for the [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi) (optional; required when using the App API)
+- [Community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers) (optional)
 
-- Simple web interface included that enables easy installation and maintenance
-- [Easy updates included](https://github.com/nextcloud/all-in-one#how-to-update-the-containers)
-- Update and backup notifications included
-- Daily backups can be enabled from the AIO interface which also allows updating all containers, Nextcloud and its apps afterwards automatically
-- Instance restore from backup archive via the AIO interface included (you only need the archive and the password in order to restore the whole instance on a new AIO instance)
-- APCu as local cache
-- Redis as distributed cache and for file locking
-- Postgresql as database
-- PHP-FPM with performance-optimized config (e.g. Opcache and JIT enabled by default)
-- A+ security in Nextcloud security scan
-- Ready to be used behind existing [Reverse proxies](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
-- Can be used behind [Cloudflare Tunnel](https://github.com/nextcloud/all-in-one#how-to-run-nextcloud-behind-a-cloudflare-tunnel)
-- Can be used via [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817)
-- Ready for big file uploads up to 10 GB on public links, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud) (logged in users can upload much bigger files using the webinterface or the mobile/desktop clients since chunking is used in that case)
-- PHP and web server timeouts set to 3600s, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud) (important for big file uploads)
-- Defaults to a max of 512 MB RAM per PHP process, [adjustable](https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud)
-- Automatic TLS included (by using Let's Encrypt)
-- zstd/gzip compression enabled by default inside caddy inside the apache container
-- HTTP/2 and HTTP/3 enabled
-- "Pretty URLs" for Nextcloud are enabled by default (removes the index.php from all links)
-- Video previews work out of the box and when Imaginary is enabled, many recent image formats as well!
-- Only one domain and not multiple domains are required for everything to work (usually you would need to have one domain for each service which is much more complex)
-- [Adjustable location](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) of Nextcloud's datadir (e.g. good for easy file-sharing with host system on Windows and MacOS)
-- By default confined (good for security) but can [allow access to additional storages](https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host) in order to enable the usage of the local external storage feature
-- Possibility included to [adjust default installed Nextcloud apps](https://github.com/nextcloud/all-in-one#how-to-change-the-nextcloud-apps-that-are-installed-on-the-first-startup)
-- Nextcloud installation is not read only - that means you can apply patches if you should need them (instead of having to wait for the next release for them getting applied)
-- `ffmpeg`, `smbclient` and `nodejs` are included by default
-- Possibility included to [permanently add additional OS packages into the Nextcloud container](https://github.com/nextcloud/all-in-one#how-to-change-the-nextcloud-apps-that-are-installed-on-the-first-startup) without having to build your own Docker image
-- Possibility included to [permanently add additional PHP extensions into the Nextcloud container](https://github.com/nextcloud/all-in-one#how-to-add-php-extensions-permanently-to-the-nextcloud-container) without having to build your own Docker image
-- Possibility included to [pass the needed device for hardware transcoding](https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud) to the Nextcloud container
-- Possibility included to [store all docker related files on a separate drive](https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive)
-- [LDAP can be used as user backend for Nextcloud](https://github.com/nextcloud/all-in-one/tree/main#ldap)
-- Migration from any former Nextcloud installation to AIO is possible. See [this documentation](https://github.com/nextcloud/all-in-one/blob/main/migration.md). 
-- Migration in the other direction (e.g. from AIO to a VM-based installation) is also possible.
-- [Fail2Ban can be added](https://github.com/nextcloud/all-in-one#fail2ban)
-- [phpMyAdmin, Adminer or pgAdmin can be added](https://github.com/nextcloud/all-in-one#phpmyadmin-adminer-or-pgadmin)
-- [Mail server can be added](https://github.com/nextcloud/all-in-one#mail-server)
-- Nextcloud can be [accessed locally via the domain](https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally)
-- Can [be installed locally](https://github.com/nextcloud/all-in-one/blob/main/local-instance.md) (if you don't want or cannot make the instance publicly reachable)
-- Free [deSEC](https://desec.io) dynamic-DNS domain (`*.dedyn.io`) can be registered directly from the AIO interface — no external domain needed
-- [IPv6-ready](https://github.com/nextcloud/all-in-one/blob/main/docker-ipv6-support.md)
-- Can be used with [Docker rootless](https://github.com/nextcloud/all-in-one/blob/main/docker-rootless.md) (good for additional security)
-- Runs on all platforms Docker supports (e.g. also on Windows and Macos)
-- Included containers easy to debug by having the possibility to check their logs directly from the AIO interface
-- [Docker-compose ready](./compose.yaml)
-- Can be installed [without a container having access to the docker socket](https://github.com/nextcloud/all-in-one/tree/main/manual-install)
-- Can be installed with [Docker Swarm](https://github.com/nextcloud/all-in-one#can-i-run-this-with-docker-swarm)
-- Can be installed with [Kubernetes](https://github.com/nextcloud/all-in-one/tree/main/nextcloud-aio-helm-chart)
-- Almost all included containers Alpine Linux based (good for security and size)
-- Many of the included containers run as non-root user (good for security)
-- Many of the included containers have a read-only root-FS (good for security)
-- Included containers run in its own docker network (good for security) and only really necessary ports are exposed on the host
-- [Multiple instances on one server](https://github.com/nextcloud/all-in-one/blob/main/multiple-instances.md) are doable without having to deal with VMs
-- Adjustable backup path or remote borg repository from the AIO interface (good to put the backups e.g. on a different drive if using a local backup path)
-- Possibility included to also back up external Docker Volumes or Host paths (can be used for host backups)
-- Borg backup can be completely managed from the AIO interface, including backup creation, backup restore, backup integrity check and integrity-repair
-- Other forms of [remote backup](https://github.com/nextcloud/all-in-one#are-remote-borg-backups-supported) are indirectly possible
-- Updates and backups can be [run from an external script](https://github.com/nextcloud/all-in-one#how-to-stopstartupdate-containers-or-trigger-the-daily-backup-from-a-script-externally). See [this documentation](https://github.com/nextcloud/all-in-one#how-to-enable-automatic-updates-without-creating-a-backup-beforehand) for a complete example.
+<details>
+<summary>Additional capabilities</summary>
+
+- Web interface for installation and maintenance
+- Easy updates for all included containers, Nextcloud, and its apps
+- Update and backup notifications
+- Daily backups and instance restoration through the AIO interface when the backup solution is enabled
+- Easy restoration and recovery: restore the whole instance onto a new AIO instance using only the saved archive and its password when the backup solution is enabled- Unattended automatic updates (optional)
+- PHP-FPM with a performance-optimized configuration, including memory-tuned process management and workers, OPcache, and JIT
+- A+ rating in the [Nextcloud Security Scanner](https://scan.nextcloud.com/)
+- Automatic TLS certificates through Let's Encrypt
+- HTTP/2, HTTP/3, and HTTP compression
+- Support for [reverse proxies](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md), [Cloudflare Tunnel](https://github.com/nextcloud/all-in-one#how-to-run-nextcloud-behind-a-cloudflare-tunnel), and [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817)
+- Video previews out of the box, with additional image formats supported by Imaginary
+- Support for large public-link uploads up to 10 GB, with adjustable limits
+- PHP memory limits, web-server execution timeouts, and upload limits tuned to support large file uploads, with adjustable limits
+- Adjustable Nextcloud data-directory location
+- Optional access to additional host storage
+- "Pretty URLs" that remove `index.php` from URLs
+- Customizable default Nextcloud apps
+- `ffmpeg`, `smbclient`, and `nodejs` are included by default as dependencies for some apps and optional features
+- Support for installing additional OS packages and PHP extensions in the Nextcloud container via environment variables, with changes persisting across container upgrades without requiring custom images
+- Hardware/device passthrough support for hardware transcoding
+- LDAP support as a Nextcloud user backend
+- Migration from existing Nextcloud installations to AIO and from AIO to other deployment methods
+- Optional Fail2Ban, phpMyAdmin, Adminer, pgAdmin, and mail server integrations
+- Local installations without public Internet access
+- A single domain can be used for all included services, avoiding the complexity of configuring a separate domain for each service
+- Free dynamic-DNS domain registration through [deSEC](https://desec.io) directly from the AIO interface
+- IPv6 and Docker rootless support
+- Support for Docker Compose, Docker Swarm, and Kubernetes
+- Support for multiple AIO instances on one server
+- Container logs accessible through the AIO interface
+- Most included containers are Alpine-based (good for security and size)
+- Security-focused container defaults, including isolated networks, non-root containers (where possible), read-only root filesystems, and minimal exposed ports
+- Configurable local and remote BorgBackup repositories
+- Backup and restoration of additional Docker volumes and host paths
+- External scripting for updates and backups
+- The Nextcloud installation remains writable, allowing you to apply patches when needed instead of waiting for the next release
 
 </details>
 
 ## Screenshots
+
 | First setup | After installation |
 |---|---|
 | ![image](https://github.com/user-attachments/assets/6ef5d7b5-86f2-402c-bc6c-b633af2ca7dd) | ![image](https://github.com/user-attachments/assets/939d0fdf-436f-433d-82d3-27548263a040) |
+
+## How does it work?
+
+### Stack orchestration
+
+Nextcloud AIO uses a dedicated `mastercontainer` to orchestrate the other containers in the Nextcloud stack. Similar to tools such as Portainer, the mastercontainer communicates with the Docker daemon through the Docker socket to create, configure, update, and manage the containers required for the installation.
+
+This allows AIO to be started with a single container and a single command while keeping the individual services isolated in containers. The AIO interface provides a central place to install and maintain the stack, enable optional components, disable unwanted components, manage updates and backups, and inspect container logs.
+
+### Automatic HTTPS
+
+AIO includes a built-in reverse proxy that can provide automatic HTTPS certificates through Let's Encrypt. This makes it possible to expose a Nextcloud instance securely without installing and configuring a separate web server or reverse proxy.
+
+The built-in reverse proxy can be disabled when you prefer to use an existing reverse proxy or a secure tunneling service. For those configurations, see [Using a reverse proxy or secure tunnel to access Nextcloud AIO](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md).
+
+### Pre-tested and pre-tuned integration
+
+AIO combines HTTPS, PostgreSQL, Nextcloud’s optional high-performance backends, preview generation through Imaginary, Office, Talk, updates, backups, and restoration into an integrated stack. These components are tested and performance-tuned to work together with minimal manual configuration.
+
+### Add-ons and Community Containers
+
+AIO includes optional containers designed to integrate with the AIO stack, making it easy to add functionality through the AIO interface. The project also provides documentation for using various third-party tools and integrations with AIO.
+
+[Community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers) are maintained by the Nextcloud community and may have separate support, update, and security considerations.
+
+### Customization
+
+While not every aspect of Nextcloud AIO is as configurable as in a manual installation, AIO still provides several customization options. These include environment variables, storage configuration, packages and PHP extensions installed in the Nextcloud container, default Nextcloud apps, and other settings. See the FAQ for details.
+
+## Core Requirements
+
+A Nextcloud AIO deployment requires:
+
+- **A supported host platform**
+  - A popular, well-supported Linux distribution is recommended.
+  - Platform-specific guidance is also available for macOS, Windows, Unraid, Synology DSM, and TrueNAS SCALE.
+
+- **A compatible container runtime**
+  - A suitable Docker or OCI-compatible container environment is required.
+  - Docker rootless mode is optionally supported.
+  - Kubernetes and Docker Swarm deployments are supported through dedicated documentation.
+  - Manual installation is available for specialized scenarios but has additional caveats and trade-offs.
+  - Podman is not officially supported, although community-provided approaches may exist.
+
+- **A domain or subdomain**
+  - Use a dedicated domain or subdomain for Nextcloud; subdirectories are not supported.
+  - A public domain is not required for local installations or some reverse-proxy and tunneling configurations.
+  - If you do not have a domain, you can register a free dynamic-DNS domain through the built-in [deSEC integration](https://desec.io) or use Tailscale.
+  - Follow the [reverse-proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) when using an external reverse proxy.
+
+- **A supported CPU architecture**
+  - Supported architectures include `amd64`/`x86_64` and `arm64`/`aarch64`.
+
+- **Sufficient storage**
+  - Use storage suitable for frequent database and filesystem operations.
+  - SSD storage is recommended for best performance. HDD storage can work but is slower, while SD cards are not recommended.
+  - Object storage, such as S3-compatible storage, may also be used for user files as either *primary storage* or *external storage*.
+
+The information above is only a summary. See the FAQ for detailed requirements, caveats, and platform-specific guidance.
 
 ## Architecture overview
 
@@ -253,7 +308,7 @@ https://your-domain-that-points-to-this-server.tld:8443
 > [!TIP]
 > Don't have a domain yet? AIO can register a free dynamic-DNS subdomain under `dedyn.io` for you via [deSEC](https://desec.io) — no external setup needed. Look for the **"Don't have a domain? Get a free one from deSEC"** section on the AIO interface when you are asked to enter your domain. AIO will automatically register the domain, keep the DNS record up to date, and enable the [Caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container as a reverse proxy as well as the [dnsmasq](https://github.com/nextcloud/all-in-one/tree/main/community-containers/dnsmasq) container for local DNS resolution.
 
-# FAQ
+## FAQ
 - [TOC](#faq)
     - [Where can I find additional documentation?](#where-can-i-find-additional-documentation)
     - [How does it work?](#how-does-it-work)
