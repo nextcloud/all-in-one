@@ -21,63 +21,93 @@ For deployments with 1,000 or more users, other deployment methods may be more a
 
 Nextcloud AIO includes the following core services, commonly used features, and optional add-ons:
 
-- Nextcloud
-- High-performance backend for Nextcloud Files (Client Push)
-- Redis for distributed caching and file locking, and APCu for local caching
+**Core platform**
+
+- Nextcloud Server
 - PostgreSQL database
+- Redis for distributed caching and file locking, and APCu for local caching
+- High-performance backend for Nextcloud Files (Client Push)
+
+**Collaboration and media**
+
 - Nextcloud Office (optional)
 - EuroOffice (optional)
 - High-performance backend for Nextcloud Talk and TURN server (optional)
 - Nextcloud Talk Recording server (optional)
-- Backup solution based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup) (optional)
 - Imaginary for previews of HEIC, HEIF, Illustrator, PDF, SVG, TIFF, and WebP files (optional)
+- Whiteboard (optional)
+
+**Backup, security, and search**
+
+- Backup solution based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup) (optional)
 - ClamAV antivirus backend (optional)
 - Full-text search (optional)
-- Whiteboard (optional)
+
+**Integrations and extensions**
+
 - Docker Socket Proxy for the [Nextcloud App API](https://github.com/cloud-py-api/app_api#nextcloud-appapi) (optional; required when using the App API)
 - [Community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers) (optional)
+
 > Community-maintained add-ons may have separate support, update, security, and compatibility considerations.
 
 <details>
-<summary>Additional capabilities</summary>
+<summary>And much more (click to expand for additional capabilities):</summary>
+
+**Management and maintenance**
 
 - Web interface for installation and maintenance
 - Easy updates for all included containers, Nextcloud, and its apps
 - Update and backup notifications
-- Daily backups and instance restoration through the AIO interface when the backup solution is enabled
-- Easy restoration and recovery: restore the whole instance onto a new AIO instance using the only saved archive and the backup encryption key
 - Unattended automatic updates (optional)
+- Container logs accessible through the AIO interface
+- External scripting for updates and backups
+
+**Backup and recovery**
+
+- Daily backups and instance restoration through the AIO interface when the backup solution is enabled
+- Easy restoration and recovery: restore the whole instance onto a new AIO instance using the saved archive, its password, and the backup encryption key
+- Configurable local and remote BorgBackup repositories when the backup solution is enabled
+- Backup and restoration of additional Docker volumes and host paths when the backup solution is enabled
+
+**Performance and media**
+
 - PHP-FPM with a performance-optimized configuration, including memory-tuned process management and workers, OPcache, and JIT
-- Security-optimized configuration designed to achieve an A+ result in the [Nextcloud Security Scanner](https://scan.nextcloud.com/)
+- Video previews out of the box, with additional image formats supported by Imaginary
+- PHP memory limits, web-server execution timeouts, and upload limits tuned to support large file uploads, with adjustable limits
+- Support for large public-link uploads with adjustable limits
+- Hardware/device passthrough support for hardware transcoding
+- `ffmpeg`, `smbclient`, and `nodejs` included by default as dependencies for some apps and optional features
+
+**Networking and access**
+
 - Automatic TLS certificates through Let's Encrypt when using the built-in reverse proxy
 - HTTP/2, HTTP/3, and HTTP compression enabled by default
 - Support for [reverse proxies](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md), [Cloudflare Tunnel](https://github.com/nextcloud/all-in-one#how-to-run-nextcloud-behind-a-cloudflare-tunnel), and [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817)
-- Video previews out of the box, with additional image formats supported by Imaginary
-- Support for large public-link uploads with adjustable limits
-- PHP memory limits, web-server execution timeouts, and upload limits tuned to support large file uploads, with adjustable limits
-- Adjustable Nextcloud data-directory location
-- Optional access to additional host storage
-- "Pretty URLs" that remove `index.php` from URLs
-- Customizable default Nextcloud apps
-- `ffmpeg`, `smbclient`, and `nodejs` are included by default as dependencies for some apps and optional features
-- Support for installing additional OS packages and PHP extensions in the Nextcloud container via environment variables, with changes persisting across container upgrades without requiring custom images
-- Hardware/device passthrough support for hardware transcoding
-- LDAP support as a Nextcloud user backend
-- Migration from existing Nextcloud installations to AIO and from AIO to other deployment methods
-- Optional Fail2Ban, phpMyAdmin, Adminer, pgAdmin, and mail server integrations
 - Local installations without public Internet access, with dedicated documentation
 - A single domain can be used for the integrated AIO services, avoiding the complexity of configuring a separate domain for each service
 - Free dynamic-DNS domain registration through [deSEC](https://desec.io) directly from the AIO interface
-- IPv6 and Docker rootless support
+- IPv6 support
+
+**Customization and migration**
+
+- Adjustable Nextcloud data-directory location
+- Optional access to additional host storage
+- “Pretty URLs” that remove `index.php` from URLs
+- Customizable default Nextcloud apps
+- Support for installing additional OS packages and PHP extensions in the Nextcloud container via environment variables, with changes persisting across container upgrades without requiring custom images
+- The Nextcloud installation remains writable, allowing you to apply patches when needed instead of waiting for the next release
+- LDAP support as a Nextcloud user backend
+- Migration from existing Nextcloud installations to AIO and from AIO to other deployment methods
+
+**Security and deployment**
+
+- Security-optimized configuration designed to achieve an A+ result in the [Nextcloud Security Scanner](https://scan.nextcloud.com/)
+- Security-focused container defaults, including isolated networks, non-root containers where possible, read-only root filesystems, and minimal exposed ports
+- Most included containers are Alpine-based, reducing image size and attack surface
+- Docker rootless support
 - Support for Docker Compose, with dedicated deployment paths for Docker Swarm and Kubernetes
 - Support for multiple AIO instances on one server
-- Container logs accessible through the AIO interface
-- Most included containers are Alpine-based (good for security and size)
-- Security-focused container defaults, including isolated networks, non-root containers (where possible), read-only root filesystems, and minimal exposed ports
-- Configurable local and remote BorgBackup repositories when the backup solution is enabled
-- Backup and restoration of additional Docker volumes and host paths when the backup solution is enabled
-- External scripting for updates and backups
-- The Nextcloud installation remains writable, allowing you to apply patches when needed instead of waiting for the next release
+- Optional Fail2Ban, phpMyAdmin, Adminer, pgAdmin, and mail server integrations
 
 </details>
 
