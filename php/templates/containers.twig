@@ -17,6 +17,7 @@
 
     <div class="container">
         <main>
+            {{ include('includes/notifications.twig') }}
             {% set aio_version = include('includes/aio-version.twig') %}
             <h1>Nextcloud AIO v{{ aio_version }}</h1>
 
@@ -649,6 +650,38 @@
                                     </form>
                                     <p>The new passphrase needs to be at least 24 characters long. Allowed characters are the <a target="_blank" href="https://en.wikipedia.org/wiki/Latin_alphabet#/media/File:Abecedarium.png"><strong>latin characters</strong></a> <strong>a-z</strong>, <strong>A-Z</strong>, <strong>0-9</strong> and <strong>spaces</strong>.</p>
                                 </details>
+                                <h2 id="two-factor-auth-setup">Two-factor authentication (TOTP)</h2>
+                                <details>
+                                    {% if is_two_factor_auth_enabled == true %}
+                                        <summary>Click here to disable the authenticator-app second factor</summary>
+                                    {% else %}
+                                        <summary>Click here to set up an authenticator-app second factor</summary>
+                                    {% endif %}
+                                    {% if is_two_factor_auth_enabled == true %}
+                                        <p><span class="status success"></span> Two-factor authentication is currently <strong>enabled</strong>. It will be asked for in addition to your passphrase on every login.</p>
+                                        <p>To disable it, enter a current code from your authenticator app:</p>
+                                        <form method="POST" action="api/configuration" class="xhr">
+                                            <input type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" name="totp_code" placeholder="Authenticator code">
+                                            <input type="hidden" name="disable_totp" value="yes">
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input type="submit" value="Disable two-factor authentication">
+                                        </form>
+                                    {% else %}
+                                        <p>Scan this QR code with an authenticator app (or add the secret manually), then enter a code it generates to confirm and enable the second factor:</p>
+                                        <div id="totp-qr" data-otpauth="{{ totp_setup_uri }}"></div>
+                                        <p>Secret: <strong id="totp-setup-secret">{{ totp_setup_secret }}</strong></p>
+                                        <form method="POST" action="api/configuration" class="xhr">
+                                            <input type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" name="totp_code" placeholder="Authenticator code">
+                                            <input type="hidden" name="totp_secret" value="{{ totp_setup_secret }}">
+                                            <input type="hidden" name="enable_totp" value="yes">
+                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                                            <input type="submit" value="Enable two-factor authentication">
+                                        </form>
+                                        <p>If you lose access to your authenticator app, you can recover access by resetting the AIO instance as described in the documentation.</p>
+                                    {% endif %}
+                                </details>
                             {% endif %}
                         {% endif %}
                     {% endif %}
@@ -695,6 +728,8 @@
         {% endif %}
 
         <script type="text/javascript" src="base_path.js"></script>
+        <script type="text/javascript" src="vendor-qrcode.js"></script>
+        <script type="text/javascript" src="totp-qr.js"></script>
 
         </main>
     </div>

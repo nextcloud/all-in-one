@@ -22,6 +22,13 @@
     --color-disabled: #d3d3d3; /* light gray background for disabled checkboxes */
     --color-border-disabled: #a9a9a9; /* darker gray border for disabled checkboxes */
     --color-text-disabled: #a9a9a9; /* matching label text color for disabled checkboxes */
+    --color-notice-background: #e9f7ee; /* friendly light green for notices */
+    --color-notice-border: var(--color-success);
+    --color-notice-text: #1c4e2b;
+    --color-warning-background: #fff4e0; /* orange-leaning yellow (amber) for warnings */
+    --color-warning-border: #e6960b;
+    --color-warning-text: #824d00;
+    --color-marker-highlight: #fdf39a; /* light yellow text-marker highlight */
     --border: .5px;
     --border-hover: 2px;
     --border-radius: 7px;
@@ -63,6 +70,13 @@ Note: Unfortunately, it's not possible to calculate this dynamically using CSS v
     --color-primary-element-light-hover:#1e2d35;
     --color-primary-element-light-text:#99d3f9;
     --color-loader: var(--color-border-maxcontrast);
+    --color-notice-background: #16261b;
+    --color-notice-text: #a6e3b8;
+    --color-warning-background: #2c2210;
+    --color-warning-border: #eaa13a;
+    --color-warning-text: #f3c877;
+    /* Translucent so the light headline text stays readable over the marker. */
+    --color-marker-highlight: rgba(255, 224, 130, 0.28);
     --border-hover: var(--border);
 }
 
@@ -193,6 +207,36 @@ div.toast {
     border-radius: var(--border-radius);
     background: var(--color-main-background) none;
     color: var(--color-main-text);
+}
+
+/* Flash notifications shown at the top of the page (see NotificationService). */
+.notification {
+    border: 2px solid;
+    border-radius: var(--border-radius);
+    padding: 12px 16px;
+    margin: 0 0 20px 0;
+    box-sizing: border-box;
+}
+
+.notification--notice {
+    background-color: var(--color-notice-background);
+    border-color: var(--color-notice-border);
+    color: var(--color-notice-text);
+}
+
+.notification--warning {
+    background-color: var(--color-warning-background);
+    border-color: var(--color-warning-border);
+    color: var(--color-warning-text);
+}
+
+/* Highlight any headline that is the URL anchor target (e.g. the 2FA section
+   reached from the "enabling it below" link) like a text marker on paper: a light
+   yellow band whose transparent top makes it sit a little low, as if swiped by a
+   highlighter. Constrained to the text width via fit-content. */
+h2:target {
+    width: fit-content;
+    background-image: linear-gradient(transparent 35%, var(--color-marker-highlight) 35%);
 }
 
 .nextcloud-logo {

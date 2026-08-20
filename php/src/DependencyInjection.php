@@ -46,8 +46,19 @@ class DependencyInjection
             new \AIO\Auth\PasswordGenerator()
         );
         $container->set(
+            \AIO\Auth\TotpService::class,
+            new \AIO\Auth\TotpService()
+        );
+        $container->set(
+            \AIO\Notification\NotificationService::class,
+            new \AIO\Notification\NotificationService()
+        );
+        $container->set(
             \AIO\Auth\AuthManager::class,
-            new \AIO\Auth\AuthManager($container->get(\AIO\Data\ConfigurationManager::class))
+            new \AIO\Auth\AuthManager(
+                $container->get(\AIO\Data\ConfigurationManager::class),
+                $container->get(\AIO\Auth\TotpService::class),
+            )
         );
         $container->set(
             \AIO\Data\Setup::class,

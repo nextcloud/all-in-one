@@ -17,12 +17,15 @@
 		"slim/twig-view": "^3.3",
 		"slim/csrf": "^1.3",
 		"ext-apcu": "*",
-		"slim/psr7": "^1.8"
+		"slim/psr7": "^1.8",
+		"rullzer/easytotp": "^0.1.4",
+		"christian-riesen/base32": "^1.6"
 	},
 	"require-dev": {
 		"sserbin/twig-linter": "@dev",
 		"vimeo/psalm": "^6.0",
-		"wapmorgan/php-deprecation-detector": "dev-master"
+		"wapmorgan/php-deprecation-detector": "dev-master",
+		"phpunit/phpunit": "^12"
 	},
 	"scripts": {
 		"dev": [
@@ -34,6 +37,7 @@
 		"psalm:strict": "psalm --threads=1 --show-info=true",
 		"lint": "php -l src/*.php src/**/*.php public/index.php",
 		"lint:twig": "twig-linter lint ./templates",
+		"test": "phpunit --configuration phpunit.xml",
 		"php-deprecation-detector": "phpdd scan -n -t 8.5 src/*.php src/**/*.php public/index.php"
 	}
 }

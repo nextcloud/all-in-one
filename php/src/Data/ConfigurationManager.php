@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AIO\Data;
 
 use AIO\Auth\PasswordGenerator;
+use AIO\Auth\TotpService;
 use AIO\Controller\DockerController;
 use AIO\Helper\NetworkHelper;
 use GuzzleHttp\Client;
@@ -31,6 +32,24 @@ class ConfigurationManager
     public string $password {
         get => $this->get('password', '');
         set { $this->set('password', $value); }
+    }
+
+    /**
+     * The base32 TOTP secret for the optional second factor. Its presence
+     * (non-empty) is the single source of truth for "2FA is enabled".
+     */
+    public string $twoFactorAuthSecret {
+        get => $this->get('totp_secret', '');
+        set { $this->set('totp_secret', $value); }
+    }
+
+    /**
+     * The last TOTP counter that was accepted on login. Passed back on the next
+     * verify so a code cannot be reused inside its own window. -1 = none yet.
+     */
+    public int $twoFactorAuthLastCounter {
+        get => (int) $this->get('totp_last_counter', -1);
+        set { $this->set('totp_last_counter', $value); }
     }
 
     public bool $isDockerSocketProxyEnabled {
@@ -824,6 +843,51 @@ class ConfigurationManager
 
         // All checks pass so set the password
         $this->set('password', $newPassword);
+    }
+
+    public function isTwoFactorAuthEnabled() : bool {
+        return $this->twoFactorAuthSecret !== '';
+    }
+
+    /**
+     * Enable the second factor. Requires a valid code for the freshly generated
+     * secret, so a mis-scanned secret can never lock the user out (the secret is
+     * only persisted once a code confirms it).
+     *
+     * @throws InvalidSettingConfigurationException
+     */
+    public function enableTwoFactorAuth(string $secret, string $code, TotpService $totpService) : void {
+        if ($this->isTwoFactorAuthEnabled()) {
+            throw new InvalidSettingConfigurationException("Two-factor authentication is already enabled.");
+        }
+        [$isValid, $counter] = $totpService->verify($secret, $code);
+        if (!$isValid) {
+            throw new InvalidSettingConfigurationException("The entered code is not correct. Please try again.");
+        }
+        $this->startTransaction();
+        $this->twoFactorAuthSecret = $secret;
+        $this->twoFactorAuthLastCounter = $counter ?? -1;
+        $this->commitTransaction();
+    }
+
+    /**
+     * Disable the second factor. Requires a valid current code, so a stray
+     * logged-in session cannot silently turn it off.
+     *
+     * @throws InvalidSettingConfigurationException
+     */
+    public function disableTwoFactorAuth(string $code, TotpService $totpService) : void {
+        if (!$this->isTwoFactorAuthEnabled()) {
+            return;
+        }
+        [$isValid, ] = $totpService->verify($this->twoFactorAuthSecret, $code, $this->twoFactorAuthLastCounter);
+        if (!$isValid) {
+            throw new InvalidSettingConfigurationException("The entered code is not correct. Please try again.");
+        }
+        $this->startTransaction();
+        $this->twoFactorAuthSecret = '';
+        $this->twoFactorAuthLastCounter = -1;
+        $this->commitTransaction();
     }
 
     /**

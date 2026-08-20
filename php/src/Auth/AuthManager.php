@@ -9,14 +9,77 @@ use \DateTime;
 
 readonly class AuthManager {
     public const string SESSION_KEY = 'aio_authenticated';
+    private const string PENDING_TOKEN_KEY = 'pending_getlogin_token';
 
     public function __construct(
-        private ConfigurationManager $configurationManager
+        private ConfigurationManager $configurationManager,
+        private TotpService $totpService,
     ) {
     }
 
     public function CheckCredentials(string $password) : bool {
         return hash_equals($this->configurationManager->password, $password);
+    }
+
+    public function isTwoFactorAuthEnabled() : bool {
+        return $this->configurationManager->isTwoFactorAuthEnabled();
+    }
+
+    /**
+     * Stash a token-based auto-login (getlogin) token in the session so the
+     * second-factor step of that flow can validate it once a code is submitted.
+     */
+    public function storePendingToken(string $token) : void {
+        $_SESSION[self::PENDING_TOKEN_KEY] = $token;
+    }
+
+    public function hasPendingToken() : bool {
+        return $this->getPendingToken() !== '';
+    }
+
+    /** Read the pending token without removing it, so a mistimed code can be retried. */
+    public function getPendingToken() : string {
+        $token = $_SESSION[self::PENDING_TOKEN_KEY] ?? '';
+        return is_string($token) ? $token : '';
+    }
+
+    /** Remove the pending token from the session (call once the login has succeeded). */
+    public function clearPendingToken() : void {
+        unset($_SESSION[self::PENDING_TOKEN_KEY]);
+    }
+
+    /**
+     * Validate the optional TOTP second factor WITHOUT consuming it. Returns
+     * [bool $isValid, ?int $matchedCounter]; when valid, the caller must pass
+     * $matchedCounter to commitTwoFactorAuth() once the whole login has
+     * succeeded, so a code is only burned on a successful login — a mistyped
+     * password alongside a correct code does not waste it. Returns [true, null]
+     * when 2FA is not set up, so the combined login check is uniform.
+     *
+     * @return array{0: bool, 1: int|null}
+     */
+    public function verifyTwoFactorAuthCode(string $code) : array {
+        $secret = $this->configurationManager->twoFactorAuthSecret;
+        if ($secret === '') {
+            return [true, null]; // 2FA not set up → nothing to validate
+        }
+        return $this->totpService->verify(
+            $secret,
+            $code,
+            $this->configurationManager->twoFactorAuthLastCounter,
+        );
+    }
+
+    /**
+     * Persist the accepted TOTP counter so the same code cannot be reused inside
+     * its window (RFC 6238 single-use). Call only after a fully successful login;
+     * a null counter (2FA disabled, or nothing matched) is a no-op.
+     */
+    public function commitTwoFactorAuth(?int $counter) : void {
+        if ($counter !== null) {
+            // The setter persists immediately (single write) when not batching.
+            $this->configurationManager->twoFactorAuthLastCounter = $counter;
+        }
     }
 
     public function CheckToken(string $token) : bool {
