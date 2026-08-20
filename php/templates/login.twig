@@ -8,10 +8,24 @@
             <text x="10" y="50" fill="var(--color-nextcloud-logo)" class="fallback-text">Nextcloud Logo</text>
         </svg>
         <h1>Nextcloud AIO Login</h1>
-        {% if is_login_allowed == true %}
+        {% if two_factor_auth_only == true %}
+            {# Reached via the token auto-login while 2FA is enabled: the token (held
+               in the session) is the first factor, so we only ask for the
+               authenticator code. Submitting validates the token and the code. #}
+            <p>Enter your authenticator code to finish logging in:</p>
+            <form method="POST" action="api/auth/login" class="xhr">
+                <input type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" name="totp" placeholder="Authenticator code" id="totp-code" autofocus>
+                <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+                <input type="submit" class="button" value="Log in" />
+            </form>
+        {% elseif is_login_allowed == true %}
             <p>Log in using your Nextcloud AIO passphrase:</p>
             <form method="POST" action="api/auth/login" class="xhr">
                 <input type="password" autocomplete="current-password" name="password" placeholder="Password" id="master-password" data-input-show-password>
+                {% if is_two_factor_auth_enabled == true %}
+                    <input type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" name="totp" placeholder="Authenticator code" id="totp-code">
+                {% endif %}
                 <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                 <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                 <input type="submit" class="button" value="Log in" />
