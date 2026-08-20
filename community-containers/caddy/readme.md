@@ -23,6 +23,7 @@ This container creates Let's Encrypt certificates for subdomains of `your-nc-dom
 | Container                                                                                                           | Subdomain                        | Geoblocking | IP Allow List | Authentication |
 |---------------------------------------------------------------------------------------------------------------------|----------------------------------|-------------|---------------|----------------|
 | [azuracast](https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast)                       | `radio.your-nc-domain.com`       | ✅           |               |                |
+| [gitea](https://github.com/nextcloud/all-in-one/tree/main/community-containers/gitea)                               | `git.your-nc-domain.com`         | ✅           |               |                |
 | [glances](https://github.com/nextcloud/all-in-one/tree/main/community-containers/glances)                           | `glances.your-nc-domain.com`     | ✅           |               | ✅             |
 | [jellyfin](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin)                         | `media.your-nc-domain.com`       | ✅           |               |                |
 | [joplin-server](https://github.com/nextcloud/all-in-one/tree/main/community-containers/joplin-server)               | `joplin.your-nc-domain.com`      | ✅           |               |                |
