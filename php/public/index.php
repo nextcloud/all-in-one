@@ -106,6 +106,7 @@ $app->post('/api/docker/stop', AIO\Controller\DockerController::class . ':StopCo
 $app->post('/api/docker/backup-reset-location', AIO\Controller\DockerController::class . ':DeleteBorgBackupConfig');
 $app->post('/api/docker/nextcloud-upgrade-to-latest-major', AIO\Controller\DockerController::class . ':RunNextcloudUpgradeToLatestMajor');
 $app->post('/api/docker/prune', AIO\Controller\DockerController::class . ':SystemPrune');
+$app->post('/api/docker/pull-images', AIO\Controller\DockerController::class . ':PullImages');
 $app->get('/api/docker/logs', AIO\Controller\DockerController::class . ':GetLogs');
 $app->post('/api/auth/login', AIO\Controller\LoginController::class . ':TryLogin');
 $app->get('/api/auth/getlogin', AIO\Controller\LoginController::class . ':GetTryLogin');
