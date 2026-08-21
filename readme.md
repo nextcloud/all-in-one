@@ -11,11 +11,14 @@ Nextcloud AIO is an official [installation method](https://docs.nextcloud.com/se
 
 Nextcloud AIO is intended for deployments ranging from small self-hosted installations to medium-sized organizations.
 
-Installations with fewer than 100 users can use AIO without a licensing fee, but no support or service-level agreement (SLA) is included.
+Installations with up to 100 users can use AIO free of charge, without official support or a service-level agreement (SLA).
 
-For deployments with 100 to 999 users, Nextcloud GmbH offers Nextcloud Enterprise services specifically for AIO, including support, an SLA, security information, and other Enterprise benefits.
+For deployments with more than 100 users, Nextcloud Enterprise services may be available from Nextcloud GmbH. Larger deployments may also benefit from other deployment methods, depending on workload and operational requirements. Please contact Nextcloud GmbH for current guidance.
 
-For deployments with 1,000 or more users, other deployment methods may be more appropriate. Please contact Nextcloud GmbH for guidance. AIO may still be useful for evaluating Nextcloud and its ecosystem. (Keep in mind these figures are approximate).
+AIO can also be useful for evaluating Nextcloud and its ecosystem before choosing a deployment and support model.
+
+> [!NOTE]
+> Deployment requirements vary depending on workload, enabled components, and organizational needs. Other [installation methods](https://docs.nextcloud.com/server/latest/admin_manual/installation/source_installation.html#installation-on-linux) (community supported and otherwise) may have different requirements and recommendations.
 
 ## Features
 
@@ -65,7 +68,7 @@ Nextcloud AIO includes the following core services, commonly used features, and 
 **Backup and recovery**
 
 - Daily backups and instance restoration through the AIO interface when the backup solution is enabled
-- Easy restoration and recovery: restore the whole instance onto a new AIO instance using the saved archive, its password, and the backup encryption key
+- Easy restoration and recovery: restore the whole instance onto a new AIO instance using the saved backup archive and the backup password
 - Configurable local and remote BorgBackup repositories when the backup solution is enabled
 - Backup and restoration of additional Docker volumes and host paths when the backup solution is enabled
 
@@ -83,7 +86,7 @@ Nextcloud AIO includes the following core services, commonly used features, and 
 - Automatic TLS certificates through Let's Encrypt when using the built-in reverse proxy
 - HTTP/2, HTTP/3, and HTTP compression enabled by default
 - Support for [reverse proxies](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md), [Cloudflare Tunnel](https://github.com/nextcloud/all-in-one#how-to-run-nextcloud-behind-a-cloudflare-tunnel), and [Tailscale](https://github.com/nextcloud/all-in-one/discussions/6817)
-- Local installations without public Internet access, with dedicated documentation
+- Local installations without exposing the instance to the public Internet, with dedicated documentation
 - A single domain can be used for the integrated AIO services, avoiding the complexity of configuring a separate domain for each service
 - Free dynamic-DNS domain registration through [deSEC](https://desec.io) directly from the AIO interface
 - IPv6 support
@@ -103,7 +106,7 @@ Nextcloud AIO includes the following core services, commonly used features, and 
 
 - Security-optimized configuration designed to achieve an A+ result in the [Nextcloud Security Scanner](https://scan.nextcloud.com/)
 - Security-focused container defaults, including isolated networks, non-root containers where possible, read-only root filesystems, and minimal exposed ports
-- Most included containers are Alpine-based, reducing image size and attack surface
+- Most included containers are Alpine-based, helping to keep image sizes small
 - Docker rootless support
 - Support for Docker Compose, with dedicated deployment paths for Docker Swarm and Kubernetes
 - Support for multiple AIO instances on one server
@@ -154,10 +157,8 @@ A Nextcloud AIO deployment requires:
   - Platform-specific guidance is also available for macOS, Windows, Unraid, Synology DSM, and TrueNAS SCALE.
 
 - **A compatible container runtime**
-  - A suitable Docker or OCI-compatible container environment is required.
+  - A suitable Docker environment is required for the standard installation.
   - Docker rootless mode is optionally supported.
-  - Kubernetes and Docker Swarm deployments are supported through dedicated documentation.
-  - Manual installation is available for specialized scenarios but has additional caveats and trade-offs.
   - Podman is not officially supported, although community-provided approaches may exist.
 
 - **A domain or subdomain**
@@ -343,7 +344,6 @@ flowchart TB
 ## FAQ
 - [TOC](#faq)
     - [Where can I find additional documentation?](#where-can-i-find-additional-documentation)
-    - [How does it work?](#how-does-it-work)
     - [How to contribute?](#how-to-contribute)
     - [How many users are possible?](#how-many-users-are-possible)
 - [Network](#network)
@@ -455,9 +455,6 @@ flowchart TB
 
 ### Where can I find additional documentation?
 Some of the documentation is available on [GitHub Discussions](https://github.com/nextcloud/all-in-one/discussions/categories/wiki).
-
-### How does it work?
-Nextcloud AIO is inspired by projects like Portainer that manage the docker daemon by talking to it through the docker socket directly. This concept allows a user to install only one container with a single command that does the heavy lifting of creating and managing all containers that are needed in order to provide a Nextcloud installation with most features included. It also makes updating a breeze and is not bound to the host system (and its slow updates) anymore as everything is in containers. Additionally, it is very easy to handle from a user perspective because a simple interface for managing your Nextcloud AIO installation is provided.
 
 ### How to contribute?
 See [this issue](https://github.com/nextcloud/all-in-one/issues/5251) for a list of feature requests that need help by contributors.
