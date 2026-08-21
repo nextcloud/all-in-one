@@ -7,10 +7,71 @@
             <use href="img/nextcloud-logo.svg#Nextcloud"></use>
             <text x="10" y="50" fill="var(--color-nextcloud-logo)" class="fallback-text">Nextcloud Logo</text>
         </svg>
-        <h1>All-in-One setup</h1>
-        <p>The official Nextcloud installation method. Nextcloud All-in-One provides easy deployment and maintenance with most features included in this one Nextcloud instance.</p>
-        <p>⚠️ <strong>Please note down the passphrase to access the AIO interface and don't lose it!</strong></p>
-        <strong>Passphrase</strong><br/><span id="initial-password" class="monospace">{{ password }}</span><br>
-        <a href="." class="button" target="_blank">Open Nextcloud AIO login ↗</a>
+
+        <h1>Nextcloud All-in-One setup</h1>
+
+        <p>
+            Nextcloud All-in-One is an official installation method provided by
+            Nextcloud GmbH designed to streamline deployment and maintenance.
+            It bundles core services, popular features, otherwise complex to
+            deploy extra functionality, and optional add-ons into a pre-tuned,
+            containerized stack.
+        </p>
+
+        <p>
+            <strong>Save this passphrase securely.</strong>
+            You need it to access the Nextcloud All-in-One interface.
+        </p>
+
+        <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+            <strong id="initial-password-label">Passphrase</strong><br>
+
+            <span
+                id="initial-password"
+                class="monospace"
+                aria-labelledby="initial-password-label"
+                style="display: inline-block; padding: 0.25rem 0.5rem; background-color: rgba(0,0,0,0.05); border-radius: 4px;"
+            >{{ password }}</span>
+
+            <button
+                type="button"
+                onclick="copyInitialPassword(this)"
+                style="margin-left: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.85rem; cursor: pointer;"
+            >
+                Copy passphrase
+            </button>
+
+            <span id="copy-status" role="status" aria-live="polite"></span>
+        </div>
+
+        <a href="." class="button" target="_blank" rel="noopener">
+            Open the Nextcloud All-in-One interface ↗
+        </a>
     </div>
+
+    <script>
+        async function copyInitialPassword(button) {
+            const passwordElement = document.getElementById('initial-password');
+            const statusElement = document.getElementById('copy-status');
+            const originalText = button.textContent.trim();
+
+            try {
+                if (!navigator.clipboard || !window.isSecureContext) {
+                    throw new Error('Clipboard API unavailable');
+                }
+
+                await navigator.clipboard.writeText(passwordElement.textContent);
+                button.textContent = 'Passphrase copied';
+                statusElement.textContent = 'Passphrase copied';
+            } catch {
+                button.textContent = 'Copy failed';
+                statusElement.textContent = 'Copy failed. Please select and copy the passphrase manually.';
+            }
+
+            setTimeout(() => {
+                button.textContent = originalText;
+                statusElement.textContent = '';
+            }, 3000);
+        }
+    </script>
 {% endblock %}
