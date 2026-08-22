@@ -45,7 +45,6 @@ sed -i 's|- ip_binding: |- |' containers.yml
 sed -i '/AIO_TOKEN/d' containers.yml
 sed -i '/AIO_URL/d' containers.yml
 sed -i '/DOCKER_SOCKET_PROXY_ENABLED/d' containers.yml
-sed -i '/HP_SHARED_KEY/d' containers.yml
 sed -i '/ADDITIONAL_TRUSTED_PROXY/d' containers.yml
 sed -i '/TURN_DOMAIN/d' containers.yml
 sed -i '/NC_AIO_VERSION/d' containers.yml

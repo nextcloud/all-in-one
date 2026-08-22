@@ -51,6 +51,8 @@ spec:
               value: nextcloud-aio-collabora
             - name: EUROOFFICE_HOST
               value: nextcloud-aio-eurooffice
+            - name: HARP_HOST
+              value: nextcloud-aio-harp
             - name: NC_DOMAIN
               value: "{{ .Values.NC_DOMAIN }}"
             - name: NEXTCLOUD_HOST
@@ -65,7 +67,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: ghcr.io/nextcloud-releases/aio-apache:20260805_083533
+          image: ghcr.io/nextcloud-releases/aio-apache:20260817_082005
           readinessProbe:
             exec:
               command:
