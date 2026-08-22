@@ -40,6 +40,7 @@ jobs:
             # DL3066 info: Non-numeric user-id may not be resolvable by host system
             hadolint "$file" --ignore DL3018 --ignore DL3041 --ignore DL3066 | tee -a hadolint.log
           done
+          # hadolint only prints to console if it finds issues, so the workflow needs to fail if it printed something
           if [ -s hadolint.log ]; then
             exit 1
           fi
