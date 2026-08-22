@@ -9,6 +9,9 @@ ENV REDIS_DB_INDEX=0
 
 # AIO settings start # Do not remove or change this line!
 ENV NEXTCLOUD_VERSION=33.0.7
+# Required to stop hadolint from complaining about potentially sensitive data in an environment variable. 
+# It might be a good idea to reconsider using and env var for this at one point,
+# but the actual value here is just a dummy and not relevant, so we silence the warning for now.
 # hadolint ignore=DL3064
 ENV AIO_TOKEN=123456
 ENV AIO_URL=localhost
