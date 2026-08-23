@@ -57,6 +57,9 @@ while true; do
     # Check if AIO is outdated
     su-exec www-data php /var/www/docker-aio/php/src/Cron/OutdatedNotification.php
 
+    # Nag admins to enable two-factor authentication if it is not set up yet
+    su-exec www-data php /var/www/docker-aio/php/src/Cron/TwoFactorAuthNotification.php
+
     # Update deSEC DNS IP record (no-op when IP is unchanged or deSEC is not configured)
     su-exec www-data php /var/www/docker-aio/php/src/Cron/UpdateDesecIp.php
 

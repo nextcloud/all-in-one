@@ -1,0 +1,15 @@
+{# Renders queued flash notifications at the top of the page. Each entry has a
+   `type` (`notice` | `warning`) and a `temporary` flag; temporary ones are
+   auto-dismissed client-side by notifications.js. #}
+{% for notification in notifications|default([]) %}
+    <div class="notification notification--{{ notification.type }}{% if notification.temporary %} notification--temporary{% endif %}" role="alert">
+        {%- if notification.link is defined and notification.link -%}
+            {# The message carries a `{link}` placeholder that is replaced by an anchor.
+               Both surrounding text parts stay auto-escaped, so this is XSS-safe. #}
+            {%- set parts = notification.message|split('{link}', 2) -%}
+            {{ parts[0] }}<a href="{{ notification.link.href }}">{{ notification.link.text }}</a>{{ parts[1]|default('') }}
+        {%- else -%}
+            {{ notification.message }}
+        {%- endif -%}
+    </div>
+{% endfor %}

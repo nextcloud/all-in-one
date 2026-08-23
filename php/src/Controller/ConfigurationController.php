@@ -3,15 +3,20 @@ declare(strict_types=1);
 
 namespace AIO\Controller;
 
+use AIO\Auth\TotpService;
 use AIO\Data\ConfigurationManager;
 use AIO\Data\InvalidSettingConfigurationException;
 use AIO\Data\OfficeSuite;
+use AIO\Notification\NotificationType;
+use AIO\Notification\NotificationService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 readonly class ConfigurationController {
     public function __construct(
         private ConfigurationManager $configurationManager,
+        private TotpService $totpService,
+        private NotificationService $notificationService,
     ) {
     }
 
@@ -122,6 +127,19 @@ readonly class ConfigurationController {
             if (isset($request->getParsedBody()['collabora_additional_options'])) {
                 $additionalCollaboraOptions = $request->getParsedBody()['collabora_additional_options'] ?? '';
                 $this->configurationManager->collaboraAdditionalOptions = $additionalCollaboraOptions;
+            }
+
+            if (isset($request->getParsedBody()['enable_totp'])) {
+                $secret = $request->getParsedBody()['totp_secret'] ?? '';
+                $code = $request->getParsedBody()['totp_code'] ?? '';
+                $this->configurationManager->enableTwoFactorAuth($secret, $code, $this->totpService);
+                $this->notificationService->add('Two-factor authentication has been enabled.', NotificationType::Notice, true);
+            }
+
+            if (isset($request->getParsedBody()['disable_totp'])) {
+                $code = $request->getParsedBody()['totp_code'] ?? '';
+                $this->configurationManager->disableTwoFactorAuth($code, $this->totpService);
+                $this->notificationService->add('Two-factor authentication has been disabled.', NotificationType::Notice, true);
             }
 
             return $response->withStatus(201)->withHeader('Location', '.');

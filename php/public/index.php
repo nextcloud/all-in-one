@@ -123,8 +123,29 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
     /** @var \AIO\Controller\DockerController $dockerController */
     $dockerController = $container->get(\AIO\Controller\DockerController::class);
+    /** @var \AIO\Auth\TotpService $totpService */
+    $totpService = $container->get(\AIO\Auth\TotpService::class);
+    /** @var \AIO\Notification\NotificationService $notificationService */
+    $notificationService = $container->get(\AIO\Notification\NotificationService::class);
     $dockerActionManager->ConnectMasterContainerToNetwork();
     $dockerController->StartDomaincheckContainer();
+
+    // A fresh candidate secret for the (optional) two-factor setup. It is stateless:
+    // carried in a hidden form field and only persisted once a code confirms it, so a
+    // page reload simply produces a new candidate. Only used while 2FA is disabled.
+    $totpSetupSecret = $totpService->generateSecret();
+
+    // Show any one-time flash notifications and, as long as 2FA is not enabled, a
+    // permanent warning nagging the user to set it up.
+    $notifications = $notificationService->consume();
+    if (!$configurationManager->isTwoFactorAuthEnabled()) {
+        $notifications[] = [
+            'message' => 'Two-factor authentication is not set up. We strongly recommend {link} to better protect access to the AIO interface with a second factor.',
+            'type' => \AIO\Notification\NotificationType::Warning->value,
+            'temporary' => false,
+            'link' => ['href' => '#two-factor-auth-setup', 'text' => 'enabling it below'],
+        ];
+    }
 
     // Check if bypass_mastercontainer_update is provided on the URL, a special developer mode to bypass a mastercontainer update and use local image.
     $params = $request->getQueryParams();
@@ -187,6 +208,15 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_desec_domain' => $configurationManager->isDesecDomain(),
         'desec_account_registered' => $configurationManager->isDesecAccountRegistered(),
         'desec_awaiting_verification' => $configurationManager->isDesecAwaitingVerification(),
+        'is_two_factor_auth_enabled' => $configurationManager->isTwoFactorAuthEnabled(),
+        'totp_setup_secret' => $totpSetupSecret,
+        'totp_setup_uri' => $totpService->getProvisioningUri(
+            $totpSetupSecret,
+            $configurationManager->domain !== '' ? $configurationManager->domain : 'admin',
+            'Nextcloud AIO',
+        ),
+        // One-time flash notifications plus, while 2FA is off, a permanent nag to set it up.
+        'notifications' => $notifications,
     // Do not cache the page as it shows credentials
     ])->withHeader('Cache-Control', 'no-store');
 })->setName('profile');
@@ -215,8 +245,16 @@ $app->get('/login', function (Request $request, Response $response, array $args)
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
     $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Data\ConfigurationManager $configurationManager */
+    $configurationManager = $container->get(\AIO\Data\ConfigurationManager::class);
+    /** @var \AIO\Auth\AuthManager $authManager */
+    $authManager = $container->get(\AIO\Auth\AuthManager::class);
     return $view->render($response, 'login.twig', [
         'is_login_allowed' => $dockerActionManager->isLoginAllowed(),
+        'is_two_factor_auth_enabled' => $configurationManager->isTwoFactorAuthEnabled(),
+        // A pending token means we're in the second-factor step of the auto-login:
+        // show only the code field (the token is the first factor, held in session).
+        'two_factor_auth_only' => $authManager->hasPendingToken(),
     ]);
 });
 
