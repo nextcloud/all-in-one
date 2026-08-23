@@ -7,14 +7,7 @@ COPY --chmod=775 start.sh /start.sh
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache openssl bash; \
-    \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    apk --no-cache del openssl; \
-    \
-# Get rid of unused binaries
-    rm -f /usr/local/bin/gosu;
+    apk add --no-cache bash
 
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 

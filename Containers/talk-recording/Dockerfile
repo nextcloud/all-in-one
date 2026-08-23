@@ -32,7 +32,6 @@ RUN set -ex; \
         wget \
         shadow \
         pulseaudio \
-        openssl \
         build-base \
         linux-headers \
         geckodriver; \
@@ -40,8 +39,7 @@ RUN set -ex; \
         apk add --no-cache intel-media-driver; \
     fi; \
     useradd -d /tmp --system recording -u 122; \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    \
     git clone --recursive https://github.com/nextcloud/nextcloud-talk-recording --depth=1 --single-branch --branch "$RECORDING_VERSION" /src; \
     python3 -m pip install --no-cache-dir /src; \
     rm -rf /src; \
@@ -55,7 +53,6 @@ RUN set -ex; \
         git \
         wget \
         shadow \
-        openssl \
         build-base \
         linux-headers;
 
