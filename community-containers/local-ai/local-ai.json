@@ -15,7 +15,7 @@
                 "LOCALAI_CONFIG_DIR=/configuration",
                 "LOCALAI_MODEL_PATH=/models",
                 "LOCALAI_BACKEND_PATH=/backends",
-                "HEALTHCHECK_ENDPOINT=http://localhost:10078/readyz"
+                "HEALTHCHECK_ENDPOINT=http://127.0.0.1:10078/readyz"
             ],
             "ports": [
                 {
