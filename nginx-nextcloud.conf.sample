@@ -11,6 +11,33 @@
 # (matching AIO's own reverse-proxy examples) -- only the browser-facing side needs
 # real TLS, and a self-signed cert is fine for local dev. See SETUP.md for how to
 # generate one.
+#
+# TWO http{}-level settings this vhost depends on -- put them in the main nginx.conf,
+# not here, since they are not valid inside a server/location block:
+#
+#   # Temp dirs must be writable by the user the nginx WORKER runs as. Homebrew's
+#   # defaults under var/run/nginx/ get created owned by "nobody" mode 0700, while a
+#   # brew-services nginx runs as the invoking user -- so every buffered request body
+#   # and buffered upstream response fails with EACCES. That surfaces as HTTP 500 on
+#   # file uploads and as truncated/failed JS assets (breaking the OnlyOffice and
+#   # EurOffice editors), with "Permission denied" in nginx's error log.
+#   client_body_temp_path /usr/local/var/run/nginx/tmp/client_body;
+#   proxy_temp_path       /usr/local/var/run/nginx/tmp/proxy;
+#   fastcgi_temp_path     /usr/local/var/run/nginx/tmp/fastcgi;
+#   scgi_temp_path        /usr/local/var/run/nginx/tmp/scgi;
+#   uwsgi_temp_path       /usr/local/var/run/nginx/tmp/uwsgi;
+#
+#   # Needed by the Connection header below.
+#   map $http_upgrade $connection_upgrade {
+#       default upgrade;
+#       ''      keep-alive;
+#   }
+#
+# Also avoid a `.local` hostname on macOS: the OS routes `.local` to mDNS/Bonjour and
+# blocks for the full 5s multicast timeout on every lookup that mDNS cannot answer,
+# even when the name is in /etc/hosts. That is a flat 5s penalty per new connection,
+# which reads as "uploads are incredibly slow". Use `.test` (or any non-mDNS name)
+# instead. Verify with: curl -o /dev/null -w '%{time_namelookup}\n' https://<host>/
 
 server {
     listen 80;
@@ -42,8 +69,20 @@ server {
         client_max_body_size 0;
         proxy_read_timeout 3600s;
 
+        # Stream request bodies and upstream responses straight through instead of
+        # spooling them to disk first, as AIO's reverse-proxy docs recommend. With
+        # buffering on, a large PUT is written to disk in full before Nextcloud sees
+        # a byte of it, so uploads stall -- and they fail outright if the temp dirs
+        # above are not writable.
+        proxy_request_buffering off;
+        proxy_buffering off;
+
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+        # Only forward an upgrade when the client actually asked for one. A bare
+        # `Connection: upgrade` on every request stops normal requests from being
+        # kept alive, so each one opens a fresh connection (and pays a fresh DNS
+        # lookup). Needs the map in nginx.conf -- see the header comment.
+        proxy_set_header Connection $connection_upgrade;
     }
 }

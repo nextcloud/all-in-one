@@ -7,3 +7,8 @@ james-conf/keystore
 # not something we configure, regenerates fine on a fresh container.
 james-conf/jmxremote.access
 james-conf/jmxremote.password
+.gstack/
+# Host bind-mount targets: NEXTCLOUD_MOUNT's external-storage dir and the generated
+# self-signed cert that SETUP.md drops in trusted-cacerts/. Both are per-machine
+# runtime state, same treatment as james-conf/keystore and the nginx cert above.
+host-mounts/

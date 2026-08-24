@@ -14,10 +14,11 @@
 #
 # All optional profiles are enabled per Anirban's request: collabora, talk,
 # talk-recording, clamav, onlyoffice, eurooffice, imaginary, fulltextsearch,
-# whiteboard, ollama, james. Bring the stack up with:
+# whiteboard, ollama, james, context-chat. Bring the stack up with:
 #   docker compose --profile collabora --profile talk --profile talk-recording \
 #     --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
-#     --profile fulltextsearch --profile whiteboard --profile ollama --profile james up -d
+#     --profile fulltextsearch --profile whiteboard --profile ollama --profile james \
+#     --profile context-chat up -d
 #
 # Image tags are pinned to 20260805_083533 (per Anirban's request to use Nextcloud
 # 33.0.7 specifically) instead of :latest -- confirmed by inspecting each image's
@@ -91,6 +92,10 @@ services:
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
+      # Apache serves app static assets (js/css) directly off disk, so the
+      # user_limit_guard custom app's bind mount below needs to be layered in
+      # here too, read-only -- see the matching mount on nextcloud-aio-nextcloud.
+      - ./nextcloud-custom-apps/user_limit_guard:/var/www/html/custom_apps/user_limit_guard:ro
     restart: unless-stopped
     read_only: true
     tmpfs:
@@ -166,11 +171,34 @@ services:
     expose:
       - "9000"
       - "9001"
+    # This image auto-adds "127.0.0.1 NC_DOMAIN" to /etc/hosts, assuming stock AIO's
+    # shared-netns setup with Apache. In this split-container topology that points
+    # nowhere, so internal calls to https://${NC_DOMAIN} (e.g. Talk signaling) hang
+    # for ~10s and fail. host-gateway routes them into the host nginx instead --
+    # same fix already applied to nextcloud-aio-talk below.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:rw
       - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
       - ${NEXTCLOUD_MOUNT}:${NEXTCLOUD_MOUNT}:rw
       - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
+      # Bind-mounted as a single subdirectory (not the whole custom_apps dir)
+      # so it doesn't shadow the Google/OneDrive integration apps that already
+      # live under custom_apps in the named volume -- see SETUP.md for the
+      # one-time `occ app:enable` step this still needs.
+      - ./nextcloud-custom-apps/user_limit_guard:/var/www/html/custom_apps/user_limit_guard:rw
+      # LOCAL PATCH (pairs with context-chat-patches/doc_loader.py on the backend):
+      # context_chat 5.4.0's MIMETYPES allowlist omits legacy binary .xls
+      # (application/vnd.ms-excel), so those files were never queued for indexing at
+      # all. Both gates have to list the mimetype -- this one controls what Nextcloud
+      # sends, doc_loader.py's map controls how the backend parses it. Patching only
+      # the backend is not enough.
+      #
+      # Single-file mount so the rest of the app still comes from the volume. The file
+      # header records the upstream sha256; re-diff after any context_chat update, or
+      # this shadows the new version.
+      - ./context-chat-patches/Application.php:/var/www/html/custom_apps/context_chat/lib/AppInfo/Application.php:ro
     environment:
       - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
       - POSTGRES_HOST=nextcloud-aio-database
@@ -231,11 +259,49 @@ services:
       - IMAGINARY_SECRET
       - WHITEBOARD_SECRET
       - WHITEBOARD_ENABLED
+      # Read by the user_limit_guard custom app (see nextcloud-custom-apps/) --
+      # blank/unset disables enforcement entirely. Only needs to be visible to
+      # this container since it's where PHP-FPM actually executes app code.
+      - NC_USER_LIMIT
     stop_grace_period: 600s
     restart: unless-stopped
     shm_size: 134217728
     cap_drop:
       - NET_RAW
+
+  # One-shot: waits for Nextcloud to finish installing, then applies DEFAULT_QUOTA
+  # (see .env) to every user via occ. Runs on every `up` but occ config:app:set is
+  # idempotent, so re-running it with the same value is a no-op. Skips entirely if
+  # DEFAULT_QUOTA is blank. Bypasses the image's own entrypoint on purpose -- this
+  # only needs php+occ against the shared /var/www/html volume, not the full AIO
+  # startup sequence.
+  nextcloud-aio-post-install:
+    image: ghcr.io/nextcloud-releases/aio-nextcloud:20260805_083533
+    depends_on:
+      nextcloud-aio-nextcloud:
+        condition: service_started
+    volumes:
+      - nextcloud_aio_nextcloud:/var/www/html:rw
+      - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
+    environment:
+      - DEFAULT_QUOTA
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -z "$$DEFAULT_QUOTA" ]; then
+          echo "DEFAULT_QUOTA not set, skipping quota configuration."
+          exit 0
+        fi
+        until php /var/www/html/occ status 2>/dev/null | grep -q "installed: true"; do
+          echo "Waiting for Nextcloud install to finish..."
+          sleep 5
+        done
+        php /var/www/html/occ config:app:set files default_quota --value="$$DEFAULT_QUOTA"
+        for user in $$(php /var/www/html/occ user:list | sed -n 's/^  - \([^:]*\):.*/\1/p'); do
+          php /var/www/html/occ user:setting "$$user" files quota "$$DEFAULT_QUOTA"
+        done
+        echo "Default quota set to $$DEFAULT_QUOTA for all users."
+    restart: "no"
 
   nextcloud-aio-notify-push:
     image: ghcr.io/nextcloud-releases/aio-notify-push:20260805_083533
@@ -450,8 +516,31 @@ services:
       - JWT_ENABLED=true
       - JWT_HEADER=AuthorizationJwt
       - JWT_SECRET=${ONLYOFFICE_SECRET}
+      - NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/${NC_DOMAIN}.crt
+    # See nextcloud-aio-nextcloud above -- OnlyOffice calls back to https://${NC_DOMAIN}
+    # to fetch/save documents and can't resolve it without this.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
+    # The AIO office images ship no CA-trust logic of their own, unlike
+    # nextcloud-aio-nextcloud (whose /start.sh runs update-ca-certificates when
+    # TRUSTED_CACERTS_DIR is set). Without the mount + update below, the document
+    # server cannot verify the local self-signed cert when it fetches or saves a
+    # document from https://${NC_DOMAIN}, and the editor dies with "Download
+    # failed" / "The document could not be saved".
+    #
+    # NODE_EXTRA_CA_CERTS is required *on top of* the system store: docservice and
+    # converter are pkg-bundled Node binaries, and Node validates against its own
+    # baked-in CA list rather than the OS one, so update-ca-certificates alone does
+    # not reach them. It expects one file, hence the ${NC_DOMAIN}.crt naming
+    # convention for the cert dropped in NEXTCLOUD_TRUSTED_CACERTS_DIR.
+    #
+    # The cert must also carry a subjectAltName. A CN-only cert is rejected outright
+    # by Node/OpenSSL regardless of whether the CA is trusted -- see SETUP.md for the
+    # openssl invocation that generates one correctly.
+    entrypoint: ["/bin/sh", "-c", "update-ca-certificates || true; exec /app/ds/run-document-server.sh"]
     volumes:
       - nextcloud_aio_onlyoffice:/var/lib/onlyoffice:rw
+      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     restart: unless-stopped
     profiles:
       - onlyoffice
@@ -477,8 +566,30 @@ services:
       - JWT_ENABLED=true
       - JWT_HEADER=AuthorizationJwt
       - JWT_SECRET=${EUROOFFICE_SECRET}
+      - NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/${NC_DOMAIN}.crt
+    # See nextcloud-aio-nextcloud above -- same callback-URL resolution issue.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
+    # The AIO office images ship no CA-trust logic of their own, unlike
+    # nextcloud-aio-nextcloud (whose /start.sh runs update-ca-certificates when
+    # TRUSTED_CACERTS_DIR is set). Without the mount + update below, the document
+    # server cannot verify the local self-signed cert when it fetches or saves a
+    # document from https://${NC_DOMAIN}, and the editor dies with "Download
+    # failed" / "The document could not be saved".
+    #
+    # NODE_EXTRA_CA_CERTS is required *on top of* the system store: docservice and
+    # converter are pkg-bundled Node binaries, and Node validates against its own
+    # baked-in CA list rather than the OS one, so update-ca-certificates alone does
+    # not reach them. It expects one file, hence the ${NC_DOMAIN}.crt naming
+    # convention for the cert dropped in NEXTCLOUD_TRUSTED_CACERTS_DIR.
+    #
+    # The cert must also carry a subjectAltName. A CN-only cert is rejected outright
+    # by Node/OpenSSL regardless of whether the CA is trusted -- see SETUP.md for the
+    # openssl invocation that generates one correctly.
+    entrypoint: ["/bin/sh", "-c", "update-ca-certificates || true; exec /entrypoint.sh"]
     volumes:
       - nextcloud_aio_eurooffice:/var/lib/euro-office:rw
+      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     restart: unless-stopped
     profiles:
       - eurooffice
@@ -574,6 +685,10 @@ services:
       - REDIS_PORT=6379
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
       - BACKUP_DIR=/tmp
+    # See nextcloud-aio-nextcloud above -- Whiteboard also calls back to
+    # https://${NC_DOMAIN} and can't resolve it without this.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
     restart: unless-stopped
     profiles:
       - whiteboard
@@ -632,6 +747,69 @@ services:
     profiles:
       - james
 
+  # Not part of upstream AIO -- Context Chat (Q&A over Nextcloud files) requires
+  # AppAPI's "Deploy Daemon" infra, which this manual-install compose file has none
+  # of (no docker socket anywhere in this file, on purpose). Rather than add docker
+  # socket access to spin ExApp containers up/down automatically, this runs
+  # context_chat_backend as a plain compose service like Ollama/James above, and
+  # registers it with AppAPI as a "manual-install" deploy daemon -- Nextcloud only
+  # ever talks to it over HTTP on the shared bridge network, never manages its
+  # lifecycle. See SETUP.md for the AppAPI/occ registration steps this still needs.
+  # Version pinned to 5.4.1 (latest non-beta release, confirmed on ghcr.io) --
+  # context_chat (the PHP app installed inside nextcloud-aio-nextcloud) must be
+  # installed at a matching 5.4.x major.minor.
+  # CPU-only path needs ~12GB RAM and 4+ AVX2-capable cores per Nextcloud's own
+  # docs -- on Docker Desktop for Mac, raise the VM's memory allocation before
+  # enabling this profile, or the container OOMs during model load.
+  nextcloud-aio-context-chat-backend:
+    image: ghcr.io/nextcloud-releases/context_chat_backend:5.4.1
+    init: true
+    expose:
+      - "10034"
+    environment:
+      - APP_ID=context_chat_backend
+      - APP_HOST=0.0.0.0
+      - APP_PORT=10034
+      - APP_SECRET=${CONTEXT_CHAT_BACKEND_SECRET}
+      - APP_DISPLAY_NAME=Context Chat Backend
+      - APP_VERSION=5.4.1
+      - AA_VERSION=3.0.0
+      - APP_PERSISTENT_STORAGE=/persistent_storage
+      # Plain HTTP straight to the apache container on the shared bridge network --
+      # NC_DOMAIN only resolves via the *host's* /etc/hosts, and the host nginx that
+      # terminates TLS for it isn't part of this docker network at all, so this
+      # container can't reach "https://${NC_DOMAIN}" for its status/capability
+      # callbacks. Collabora's aliasgroup1 does the same direct-to-apache-container
+      # thing elsewhere in this file.
+      - NEXTCLOUD_URL=http://nextcloud-aio-apache:${APACHE_PORT}
+      - CC_DOWNLOAD_MODELS_FROM_HF=true
+      - TZ=${TIMEZONE}
+    volumes:
+      - nextcloud_aio_context_chat_backend:/persistent_storage:rw
+      # LOCAL PATCH: upstream 5.4.1's doc_loader.py omits the legacy binary .xls
+      # mimetype (application/vnd.ms-excel) from its loader map, so .xls files fell
+      # through to decode_source()'s raw UTF-8 fallback and got indexed as binary
+      # garbage rather than failing loudly. The patched copy adds that one mimetype,
+      # pointed at the existing _load_xlsx (pandas read_excel reads BIFF via xlrd,
+      # already present in the image -- no new dependency).
+      #
+      # Mounted as a single file so nothing else in the app is shadowed. See the
+      # header of that file for the upstream sha256 it was forked from, and re-diff
+      # it against the image's own copy whenever the context_chat_backend tag is
+      # bumped -- a silent upstream refactor here would revert the fix or break
+      # imports.
+      - ./context-chat-patches/doc_loader.py:/app/context_chat_backend/chain/ingest/doc_loader.py:ro
+      # Same patch, second gate. types.py's validate_type() rejects any files-provider
+      # source whose mimetype is absent from SUPPORTED_MIMETYPES *before* any loader
+      # runs, and logs it only as the generic "No valid files or providers found in the
+      # current batch". All three gates must agree for a format to work: this list, the
+      # doc_loader.py parser map above, and context_chat's own MIMETYPES in
+      # Application.php on the nextcloud-aio-nextcloud service.
+      - ./context-chat-patches/mimetype_list.py:/app/context_chat_backend/mimetype_list.py:ro
+    restart: unless-stopped
+    profiles:
+      - context-chat
+
 volumes:
   nextcloud_aio_apache:
     name: nextcloud_aio_apache
@@ -659,6 +837,8 @@ volumes:
     name: nextcloud_aio_ollama
   nextcloud_aio_james_var:
     name: nextcloud_aio_james_var
+  nextcloud_aio_context_chat_backend:
+    name: nextcloud_aio_context_chat_backend
 
 networks:
   default:
