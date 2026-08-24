@@ -29,15 +29,53 @@ configured in Nextcloud's admin settings before it actually connects to anything
      don't have this restriction and can keep the upstream defaults.
 
 2. Generate a self-signed TLS cert for that hostname (swap for a real cert outside
-   local dev):
+   local dev). It **must** carry a `subjectAltName`: a CN-only cert is rejected
+   outright by Node/OpenSSL clients even once the CA is trusted, and the office
+   containers then fail to fetch documents with "Download failed" / "The document
+   could not be saved". `CA:TRUE` lets the cert act as its own trust anchor, which is
+   what makes it installable in the container trust stores in step 4a.
    ```sh
    sudo mkdir -p /etc/nginx/certs
-   sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+   cat > /tmp/nc-san.cnf <<'EOF'
+   [req]
+   distinguished_name = dn
+   x509_extensions = v3
+   prompt = no
+   [dn]
+   CN = nextcloud.local
+   [v3]
+   subjectAltName = DNS:nextcloud.local, DNS:localhost, IP:127.0.0.1
+   basicConstraints = critical, CA:TRUE
+   keyUsage = critical, digitalSignature, keyEncipherment, keyCertSign
+   extendedKeyUsage = serverAuth
+   EOF
+   sudo openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes \
      -keyout /etc/nginx/certs/nextcloud.local.key \
      -out /etc/nginx/certs/nextcloud.local.crt \
-     -subj "/CN=nextcloud.local"
+     -config /tmp/nc-san.cnf
    ```
-   Adjust the filenames/CN if you chose a different `NC_DOMAIN`.
+   Adjust the filenames/CN/SAN if you chose a different `NC_DOMAIN`. Verify with:
+   ```sh
+   openssl x509 -in /etc/nginx/certs/nextcloud.local.crt -noout -ext subjectAltName
+   ```
+   If that prints "No extensions in certificate", the cert is wrong -- regenerate it.
+
+   Avoid a `.local` hostname for `NC_DOMAIN` on macOS. The OS routes `.local` through
+   mDNS/Bonjour and blocks for the full 5s multicast timeout on every lookup mDNS
+   cannot answer, even with the name in `/etc/hosts`, so every new connection pays a
+   flat 5s penalty. A `.test` name avoids it. Check with:
+   `curl -o /dev/null -w '%{time_namelookup}\n' https://<host>/`
+
+2a. Copy the cert into `NEXTCLOUD_TRUSTED_CACERTS_DIR` (see `.env`), named
+   `<NC_DOMAIN>.crt`. The compose file mounts that directory into the containers that
+   call back to Nextcloud over HTTPS, and `nextcloud-aio-onlyoffice` /
+   `nextcloud-aio-eurooffice` additionally point `NODE_EXTRA_CA_CERTS` at that exact
+   filename -- so the name has to match `NC_DOMAIN`:
+   ```sh
+   cp /etc/nginx/certs/nextcloud.local.crt host-mounts/trusted-cacerts/nextcloud.local.crt
+   ```
+   Re-copy this and recreate those containers whenever the cert is regenerated, or the
+   office editors will start failing with "Download failed".
 
 3. Point the existing host nginx at it using `nginx-nextcloud.conf.sample` as a
    starting point (update `server_name` and the cert paths to match), reload nginx.
@@ -94,6 +132,30 @@ If step 2 or 3 fails, check `docker compose logs nextcloud-aio-nextcloud` and
 its container being healthy, check that its `*_ENABLED` var in `.env` is `"yes"`
 (with quotes) and that you passed its `--profile` flag on `up`.
 
+## Stopping the stack
+
+Always pass the same `--profile` flags used on `up`, or Compose only touches the
+non-profiled services and leaves the rest running.
+
+Stop and remove the containers, keeping all data (named volumes persist):
+```sh
+docker compose --profile collabora --profile talk --profile talk-recording \
+  --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
+  --profile fulltextsearch --profile whiteboard --profile ollama --profile james \
+  --profile context-chat down
+```
+
+Or just stop them (containers stick around, slightly faster to bring back with `up`):
+```sh
+docker compose --profile collabora --profile talk --profile talk-recording \
+  --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
+  --profile fulltextsearch --profile whiteboard --profile ollama --profile james \
+  --profile context-chat stop
+```
+
+Avoid `down -v` unless you actually want to wipe all data — it deletes the named
+volumes too.
+
 ## Local AI assistant (Ollama)
 
 Per Anirban's request: a free, local LLM backend for Nextcloud's Assistant app, for
@@ -136,6 +198,84 @@ Transcribe/Text-to-speech are visible in the Assistant UI but won't work — eac
 needs its own separate provider config (`translation_provider_enabled`,
 `t2i_provider_enabled`, `stt_provider_enabled`/`tts_provider_enabled` plus a model
 capable of that task) which isn't set up here.
+
+## Context Chat (Q&A over Nextcloud documents)
+
+Lets the Assistant app answer questions using the content of a user's own files as
+context, instead of just the bare LLM. This is separate infrastructure from the
+Ollama wiring above: it needs AppAPI (Nextcloud's framework for running external-app
+"ExApps") plus a running `context_chat_backend` container that does the actual
+embedding/retrieval, reusing the existing Ollama model as its text-to-text provider.
+
+Real Nextcloud AIO (the mastercontainer version) gives AppAPI a Docker socket so it
+can spin ExApp containers up/down itself. This repo deliberately doesn't do that —
+no container here has docker socket access. Instead, `context_chat_backend` runs as
+a normal profile-gated service like Ollama/James above (`nextcloud-aio-context-chat-backend`
+in `docker-compose.yml`), and gets registered with AppAPI as a **manual-install**
+deploy daemon: Nextcloud only ever calls it over plain HTTP on the shared bridge
+network, it never starts/stops/manages the container.
+
+**Hardware**: the CPU-only embedding path needs ~12GB RAM and 4+ AVX2-capable cores
+(per Nextcloud's own docs) on top of whatever the rest of this stack is already
+using. On Docker Desktop for Mac, raise the VM's memory allocation (Settings →
+Resources) before enabling this profile, or the container OOMs during model
+download/load. There's no GPU passthrough here, same limitation as Ollama above.
+
+1. Bring up the container (add `--profile context-chat` to the `docker compose up`
+   command), then install AppAPI and the `context_chat` PHP app (must match the
+   backend's version at the major.minor level — both are pinned to the `5.4.x`
+   line here):
+   ```sh
+   CT=nextcloud-aio-nextcloud
+   docker compose exec -u www-data $CT php occ app:install app_api
+   docker compose exec -u www-data $CT php occ app:install context_chat
+   ```
+2. Register a manual-install deploy daemon. `nextcloud-aio-context-chat-backend`
+   (the container's own hostname on the compose network) is what Nextcloud will
+   actually connect to — AppAPI combines this host with the port from the ExApp
+   registration below to build the URL it calls:
+   ```sh
+   docker compose exec -u www-data $CT php occ app_api:daemon:register \
+     manual_install "Manual Install" manual-install http \
+     nextcloud-aio-context-chat-backend "https://${NC_DOMAIN}"
+   ```
+3. Register the backend as an ExApp against that daemon. The `secret` here MUST
+   match `CONTEXT_CHAT_BACKEND_SECRET` in `.env` exactly — it's the shared HMAC key
+   the two sides use to authenticate each other:
+   ```sh
+   SECRET=$(grep "^CONTEXT_CHAT_BACKEND_SECRET=" .env | cut -d= -f2-)
+   docker compose exec -u www-data $CT php occ app_api:app:register \
+     context_chat_backend manual_install --wait-finish --json-info \
+     "{\"id\":\"context_chat_backend\",\"name\":\"Context Chat Backend\",\"daemon_config_name\":\"manual_install\",\"version\":\"5.4.1\",\"secret\":\"$SECRET\",\"port\":10034}"
+   ```
+   This blocks until the backend responds to a heartbeat and finishes its `/init`
+   step (downloading embedding models from Hugging Face on first run — can take a
+   while). If it times out, check `docker compose logs nextcloud-aio-context-chat-backend`
+   first; a heartbeat failure almost always means the two containers can't reach
+   each other on the compose network, not a config typo.
+4. Confirm it's live, then let Nextcloud's normal background job cron (already
+   running for this instance) do the initial indexing of existing files:
+   ```sh
+   docker compose exec -u www-data $CT php occ app_api:app:list
+   docker compose exec -u www-data $CT php occ app:list --enabled | grep -i context_chat
+   ```
+5. Test in the UI: Assistant app → a task type that shows "Context Chat" as an
+   available Q&A option. Indexing runs in the background, so a freshly uploaded
+   file may not be queryable for a few minutes.
+
+**Known gaps to expect when testing this** (confirmed against `context_chat_backend`'s
+source, not just its docs):
+- Legacy binary `.xls` isn't in its file-loader map (only `.xlsx`/`.xlsm`/`.ods` are)
+  — expect it to fail to parse.
+- Scanned/rasterized PDFs have no OCR step in the pipeline — pypdf only pulls an
+  existing text layer, so a scanned PDF indexes as empty/unsearchable even though
+  the upload itself succeeds.
+- Non-file content only shows up if the source app implements Context Chat's
+  `IContentProvider` interface — as of this writing only Mail and Bookmarks do
+  upstream. Polls does not, so "ask Context Chat about poll results" isn't
+  possible against a stock Polls install.
+- Create/edit-in-place/delete on indexed files IS expected to work: the PHP app
+  syncs those changes to the backend via an internal actions queue for reindexing.
 
 ## Outbound email (Apache James)
 
@@ -206,6 +346,84 @@ James's untouched defaults and aren't used here.
    ```
    A successful send shows `Successfully spooled mail ... from nextcloud@nextcloud.local`
    followed by `Local delivered mail ... successfully`.
+
+## Document signing (LibreSign)
+
+Digital signatures on PDFs, backed by LibreSign's own certificate authority (CFSSL) —
+each signer gets a personal certificate/private key issued by that CA, protected by a
+signature password they set themselves under Personal settings.
+
+LibreSign's binaries (JSignPdf, PDFtk, CFSSL) need a JVM plus a few native tools that
+aren't in the base image, so they're added via `NEXTCLOUD_ADDITIONAL_APKS` in `.env`:
+`ghostscript` (PDF rendering), `openjdk17-jre-headless` (bare `openjdk` isn't a valid
+Alpine package — use a versioned one), and `poppler-utils` (`pdfinfo`/`pdfsig`, used
+for signature validation and page dimension detection). These install fresh on every
+container start since they live in the container's root filesystem, not a persisted
+volume — no rebuild needed, just restart `nextcloud-aio-nextcloud` after editing
+`.env`.
+
+1. Install the app and download its signing binaries (needs the packages above
+   already present — restart the container first if you just added them):
+   ```sh
+   CT=nextcloud-aio-nextcloud
+   docker compose exec $CT php occ app:install libresign
+   docker compose exec $CT php occ libresign:install --all --architecture=x86_64
+   docker compose exec $CT php occ config:app:set libresign certificate_engine --value=cfssl
+   ```
+2. Generate the root certificate authority. This identity gets embedded in every
+   document signed from here on — regenerating it later invalidates certificates
+   already issued to users, so use real org details, not placeholders, before any
+   non-throwaway use:
+   ```sh
+   docker compose exec $CT php occ libresign:configure:cfssl \
+     --cn="<team/org name>" -o="<organization>" -c="<country code, e.g. IN>"
+   ```
+3. Verify everything resolved correctly:
+   ```sh
+   docker compose exec $CT php occ libresign:configure:check
+   ```
+   All rows should show `success` — if `poppler` shows `info`/not-working right after
+   adding the apk package, the check result was cached from before the restart; just
+   re-run it.
+4. Each user who wants to sign sets their own signature password once, under Personal
+   settings → LibreSign, which issues them a personal certificate from the root CA.
+   From there, requesting/completing a signature works from a file's context menu in
+   the Files app.
+
+## User limit enforcement (user_limit_guard)
+
+Custom Nextcloud PHP app (not from the app store — lives in this repo at
+`nextcloud-custom-apps/user_limit_guard`, bind-mounted into both
+`nextcloud-aio-nextcloud` and `nextcloud-aio-apache` under
+`custom_apps/user_limit_guard`) that caps the total number of user accounts at
+the `NC_USER_LIMIT` value in `.env`.
+
+- Listens on `OCP\User\Events\BeforeUserCreatedEvent` and throws a
+  `HintException` once the account count would reach the limit. That event
+  fires from `IUserManager::createUser()`, the single code path shared by the
+  Settings → Users web UI, `occ user:add`, and the provisioning API — so all
+  three are blocked the same way, and the web UI surfaces the exception's hint
+  text as an error toast.
+- Shows the number of remaining free user slots in the bottom-left corner of
+  Settings → Users (or "Unlimited users" if `NC_USER_LIMIT` is blank/unset).
+- The bind mount only shadows the `user_limit_guard` subdirectory of
+  `custom_apps`, not the whole directory, so it doesn't hide the
+  `integration_google`/`integration_onedrive` apps already installed there.
+
+Enable it once per instance (the bind mount alone doesn't register the app
+with Nextcloud):
+```sh
+docker compose exec -u www-data nextcloud-aio-nextcloud php occ app:enable user_limit_guard
+```
+
+Set the limit in `.env` and restart the `nextcloud-aio-nextcloud` container to
+pick it up (it's read live via `getenv()` on every check, not cached):
+```sh
+# .env
+NC_USER_LIMIT=25
+```
+Leave it blank to disable enforcement entirely — the free-slot badge then
+reads "Unlimited users".
 
 ## Known limitations (accepted for this stage)
 
