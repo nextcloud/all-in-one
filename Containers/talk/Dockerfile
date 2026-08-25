@@ -56,9 +56,6 @@ RUN set -ex; \
     apk del --no-cache \
         shadow; \
     \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    \
     touch \
         /etc/nats.conf \
         /etc/eturnal.yml; \

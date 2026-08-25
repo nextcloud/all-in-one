@@ -13,7 +13,6 @@ RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
         bash \
-        openssl \
         shadow \
         netcat-openbsd \
         grep; \
@@ -34,10 +33,6 @@ RUN set -ex; \
     \
     mkdir /mnt/data; \
     chown postgres:postgres /mnt/data; \
-    \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    apk --no-cache del openssl; \
     \
 # Get rid of unused binaries
     rm -f /usr/local/bin/gosu /usr/local/bin/su-exec;

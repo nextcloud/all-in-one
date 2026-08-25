@@ -11,12 +11,7 @@ RUN set -ex; \
         ca-certificates \
         netcat-openbsd \
         tzdata \
-        bash \
-        openssl; \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    apk del --no-cache \
-        openssl; \
+        bash; \
     delgroup www-data; \
     addgroup -g 33 -S www-data; \
     adduser -u 33 -S -D -G www-data -H -s /sbin/nologin www-data;
