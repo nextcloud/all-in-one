@@ -33,6 +33,7 @@ flowchart TD
         JSER(["🎯  Jellyseerr\nMedia request manager"]):::community
         JOPLIN(["📝  Joplin Server\nNotes sync server"]):::community
         NOTIF(["📣  Notifications\nExternal push notify"]):::community
+        GITEA(["🍵  Gitea\nSelf-hosted Git service"]):::community
     end
 
     subgraph COMM_MEDIA["🎬 Media"]
