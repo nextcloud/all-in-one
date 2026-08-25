@@ -5,11 +5,11 @@ This container bundles [caddy](https://caddyserver.com/) and auto-configures it 
 > [!Caution]
 > - This container is incompatible with the [npmplus](https://github.com/nextcloud/all-in-one/tree/main/community-containers/npmplus) community container. So make sure that you do not enable both at the same time!
 > - Make sure that no other service is using port 443/tcp on your host as otherwise the containers will fail to start. You can check this with `sudo netstat -tulpn | grep 443` before installing this container
-> - the default `admin` user needs to be present, i.e. it can not be deleted because caddy configuration can be done there. 
+> - the default `admin` Nextcloud user needs to be present, i.e. it can not be deleted because caddy configuration can be done there. 
 
 ## Supported community containers
 
-This container configures subdomains for a number of community containers. 
+This container creates Let's Encrypt certificates for subdomains of `your-nc-domain.com` for a number of community containers. 
 
 > [!Important]
 > You need to set the correct DNS records for this to work
@@ -23,6 +23,7 @@ This container configures subdomains for a number of community containers.
 | Container                                                                                                           | Subdomain                        | Geoblocking | IP Allow List | Authentication |
 |---------------------------------------------------------------------------------------------------------------------|----------------------------------|-------------|---------------|----------------|
 | [azuracast](https://github.com/nextcloud/all-in-one/tree/main/community-containers/azuracast)                       | `radio.your-nc-domain.com`       | ✅           |               |                |
+| [glances](https://github.com/nextcloud/all-in-one/tree/main/community-containers/glances)                           | `glances.your-nc-domain.com`     | ✅           |               | ✅             |
 | [jellyfin](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin)                         | `media.your-nc-domain.com`       | ✅           |               |                |
 | [joplin-server](https://github.com/nextcloud/all-in-one/tree/main/community-containers/joplin-server)               | `joplin.your-nc-domain.com`      | ✅           |               |                |
 | [lldap](https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap)                               | `ldap.your-nc-domain.com`        | ✅           | ✅            |                |
@@ -36,7 +37,7 @@ This container configures subdomains for a number of community containers.
 
 ## Geoblocking
 
- - After the container was started the first time, log in as default `admin` user. You should see a new `nextcloud-aio-caddy` folder and inside there an `allowed-countries.txt` file
+ - After the container was started the first time, log in in Nextcloud as default `admin` user. You should see a new `nextcloud-aio-caddy` folder in the files app and inside there an `allowed-countries.txt` file
  - In there you can adjust the allowed country codes for caddy by adding them to the first line, e.g. `IT FR` would allow access from italy and france.
  - Additionally, in order to activate this config, you need to get an account at https://dev.maxmind.com/geoip/geolite2-free-geolocation-data
  - download the `GeoLite2-Country.mmdb` from there and upload it with this exact name into the `nextcloud-aio-caddy` folder.
