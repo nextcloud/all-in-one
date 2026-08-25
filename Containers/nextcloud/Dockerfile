@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.3.33-fpm-alpine3.24
+FROM php:8.4.24-fpm-alpine3.24
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=16G
@@ -70,7 +70,7 @@ RUN set -ex; \
     ; \
     \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
-    docker-php-ext-configure ftp --with-openssl-dir=/usr; \
+    docker-php-ext-configure ftp --with-ftp-ssl; \
     docker-php-ext-configure ldap; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
@@ -205,15 +205,15 @@ RUN set -ex; \
         libpq-dev \
     ; \
     \
-    docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install \
         bz2 \
-        imap \
         pgsql \
         ftp \
     ; \
+# imap was removed from PHP core in 8.4, so it needs to be installed from PECL from now on
+    pecl install -D 'with-kerberos="yes" with-imap-ssl="yes"' imap-1.0.3; \
     pecl install smbclient; \
-    docker-php-ext-enable smbclient; \
+    docker-php-ext-enable imap smbclient; \
     \
     runDeps="$( \
         scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
