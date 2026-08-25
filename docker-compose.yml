@@ -372,6 +372,15 @@ services:
       - TZ=${TIMEZONE}
       - server_name=${NC_DOMAIN}
       - DONT_GEN_SSL_CERT=1
+    # This image auto-adds "127.0.0.1 NC_DOMAIN" to /etc/hosts, assuming stock AIO's
+    # shared-netns setup with Apache (same as nextcloud-aio-nextcloud/talk/onlyoffice/
+    # eurooffice/whiteboard above). In this split-container topology that points at
+    # Collabora's own loopback instead of Apache, so its WOPI CheckFileInfo callback to
+    # https://${NC_DOMAIN} times out ("Unauthorized WOPI host" / "CheckFileInfo failed"
+    # in coolwsd logs) even though wopi_url/aliasgroup1 are both configured correctly.
+    # host-gateway routes it into the host nginx instead, same fix as the others.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
     restart: unless-stopped
     profiles:
       - collabora
