@@ -1,0 +1,24 @@
+#user-limit-guard-free-count {
+	position: fixed;
+	left: 12px;
+	bottom: 50px;
+	z-index: 500;
+	padding: 6px 12px;
+	border-radius: var(--border-radius-pill, 16px);
+	background-color: var(--color-main-background, #fff);
+	color: var(--color-text-maxcontrast, #767676);
+	border: 1px solid var(--color-border, #e0e0e0);
+	font-size: 12px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	pointer-events: none;
+}
+
+/* Below Nextcloud's ~768px breakpoint, the app navigation rail collapses into
+   the top header instead of sitting to the left, so a fixed bottom-left badge
+   would otherwise overlap that header. Move it out of the way there. */
+@media (max-width: 768px) {
+	#user-limit-guard-free-count {
+		left: 50%;
+		transform: translateX(-50%);
+	}
+}

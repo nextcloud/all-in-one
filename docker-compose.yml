@@ -1,0 +1,854 @@
+# Nextcloud AIO ("manual install" method), all optional features enabled.
+#
+# This replaces the previous hand-built Nextcloud + Ceph S3 stack entirely. AIO's
+# built-in S3 support is its own bundled Minio container, with no documented way to
+# point it at an external S3/Ceph endpoint -- so Ceph is no longer part of this setup
+# (confirmed via the official AIO docs before making this change).
+#
+# This is AIO's official "manual install" compose file (as opposed to the
+# mastercontainer + Docker-socket-managed approach): every service is defined here
+# directly, optional features are toggled via `docker compose --profile ... up -d`
+# instead of AIO's own web UI wizard. Source: https://github.com/nextcloud/all-in-one/
+# blob/main/manual-install/latest.yml -- re-diff against that file before upgrading,
+# rather than hand-editing service definitions here.
+#
+# All optional profiles are enabled per Anirban's request: collabora, talk,
+# talk-recording, clamav, onlyoffice, eurooffice, imaginary, fulltextsearch,
+# whiteboard, ollama, james, context-chat. Bring the stack up with:
+#   docker compose --profile collabora --profile talk --profile talk-recording \
+#     --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
+#     --profile fulltextsearch --profile whiteboard --profile ollama --profile james \
+#     --profile context-chat up -d
+#
+# Image tags are pinned to 20260805_083533 (per Anirban's request to use Nextcloud
+# 33.0.7 specifically) instead of :latest -- confirmed by inspecting each image's
+# baked-in NEXTCLOUD_VERSION env var before pinning, since AIO's own tags don't carry
+# Nextcloud version numbers. Note AIO has never shipped a 34.x build; 33.0.7 is the
+# newest version AIO actually provides as of this pin. Bump this tag intentionally
+# (and re-verify NEXTCLOUD_VERSION on the new tag) rather than switching back to
+# :latest, or the whole stack will drift out of sync across the 14 images.
+#
+# See SETUP.md for the full setup/testing flow and required .env values.
+
+services:
+  nextcloud-aio-apache:
+    depends_on:
+      nextcloud-aio-onlyoffice:
+        condition: service_started
+        required: false
+      nextcloud-aio-eurooffice:
+        condition: service_started
+        required: false
+      nextcloud-aio-collabora:
+        condition: service_started
+        required: false
+      nextcloud-aio-talk:
+        condition: service_started
+        required: false
+      nextcloud-aio-notify-push:
+        condition: service_started
+        required: false
+      nextcloud-aio-whiteboard:
+        condition: service_started
+        required: false
+      nextcloud-aio-nextcloud:
+        condition: service_started
+        required: false
+    image: ghcr.io/nextcloud-releases/aio-apache:20260805_083533
+    user: "33"
+    init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
+    ports:
+      # Bound to localhost only -- the existing host nginx reverse-proxies to this,
+      # same as the previous stack. AIO hardcodes OVERWRITEPROTOCOL=https on the
+      # nextcloud container (see nextcloud-aio-nextcloud below), so nginx must
+      # actually terminate HTTPS (self-signed is fine for local dev) -- plain HTTP
+      # proxying like the old nginx-nextcloud.conf.sample will cause Nextcloud to
+      # think it's on HTTPS when it isn't. See nginx-nextcloud.conf.sample and
+      # SETUP.md for the updated nginx config this requires.
+      - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/tcp
+      - ${APACHE_IP_BINDING}:${APACHE_PORT}:${APACHE_PORT}/udp
+    environment:
+      - NC_DOMAIN
+      - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
+      - APACHE_HOST=nextcloud-aio-apache
+      - COLLABORA_HOST=nextcloud-aio-collabora
+      - TALK_HOST=nextcloud-aio-talk
+      - APACHE_PORT
+      - AIO_LOG_LEVEL
+      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
+      - EUROOFFICE_HOST=nextcloud-aio-eurooffice
+      - TZ=${TIMEZONE}
+      - APACHE_MAX_SIZE
+      - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
+      - NOTIFY_PUSH_HOST=nextcloud-aio-notify-push
+      - WHITEBOARD_HOST=nextcloud-aio-whiteboard
+    volumes:
+      - nextcloud_aio_nextcloud:/var/www/html:ro
+      - nextcloud_aio_apache:/mnt/data:rw
+      # Apache serves app static assets (js/css) directly off disk, so the
+      # user_limit_guard custom app's bind mount below needs to be layered in
+      # here too, read-only -- see the matching mount on nextcloud-aio-nextcloud.
+      - ./nextcloud-custom-apps/user_limit_guard:/var/www/html/custom_apps/user_limit_guard:ro
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/log/supervisord
+      - /var/run/supervisord
+      - /usr/local/apache2/logs
+      - /tmp
+      - /home/www-data
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-database:
+    image: ghcr.io/nextcloud-releases/aio-postgresql:20260805_083533
+    user: "999"
+    init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
+    expose:
+      - "5432"
+    volumes:
+      - nextcloud_aio_database:/var/lib/postgresql/data:rw
+      - nextcloud_aio_database_dump:/mnt/data:rw
+    environment:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=nextcloud_database
+      - POSTGRES_USER=nextcloud
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+      - PGTZ=${TIMEZONE}
+    stop_grace_period: 1800s
+    restart: unless-stopped
+    shm_size: 268435456
+    read_only: true
+    tmpfs:
+      - /var/run/postgresql
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-nextcloud:
+    depends_on:
+      nextcloud-aio-database:
+        condition: service_started
+        required: false
+      nextcloud-aio-redis:
+        condition: service_started
+        required: false
+      nextcloud-aio-clamav:
+        condition: service_started
+        required: false
+      nextcloud-aio-fulltextsearch:
+        condition: service_started
+        required: false
+      nextcloud-aio-talk-recording:
+        condition: service_started
+        required: false
+      nextcloud-aio-imaginary:
+        condition: service_started
+        required: false
+    image: ghcr.io/nextcloud-releases/aio-nextcloud:20260805_083533
+    init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
+    expose:
+      - "9000"
+      - "9001"
+    # This image auto-adds "127.0.0.1 NC_DOMAIN" to /etc/hosts, assuming stock AIO's
+    # shared-netns setup with Apache. In this split-container topology that points
+    # nowhere, so internal calls to https://${NC_DOMAIN} (e.g. Talk signaling) hang
+    # for ~10s and fail. host-gateway routes them into the host nginx instead --
+    # same fix already applied to nextcloud-aio-talk below.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
+    volumes:
+      - nextcloud_aio_nextcloud:/var/www/html:rw
+      - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
+      - ${NEXTCLOUD_MOUNT}:${NEXTCLOUD_MOUNT}:rw
+      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
+      # Bind-mounted as a single subdirectory (not the whole custom_apps dir)
+      # so it doesn't shadow the Google/OneDrive integration apps that already
+      # live under custom_apps in the named volume -- see SETUP.md for the
+      # one-time `occ app:enable` step this still needs.
+      - ./nextcloud-custom-apps/user_limit_guard:/var/www/html/custom_apps/user_limit_guard:rw
+      # LOCAL PATCH (pairs with context-chat-patches/doc_loader.py on the backend):
+      # context_chat 5.4.0's MIMETYPES allowlist omits legacy binary .xls
+      # (application/vnd.ms-excel), so those files were never queued for indexing at
+      # all. Both gates have to list the mimetype -- this one controls what Nextcloud
+      # sends, doc_loader.py's map controls how the backend parses it. Patching only
+      # the backend is not enough.
+      #
+      # Single-file mount so the rest of the app still comes from the volume. The file
+      # header records the upstream sha256; re-diff after any context_chat update, or
+      # this shadows the new version.
+      - ./context-chat-patches/Application.php:/var/www/html/custom_apps/context_chat/lib/AppInfo/Application.php:ro
+    environment:
+      - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
+      - POSTGRES_HOST=nextcloud-aio-database
+      - POSTGRES_PORT=5432
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=nextcloud_database
+      - POSTGRES_USER=nextcloud
+      - REDIS_HOST=nextcloud-aio-redis
+      - REDIS_PORT=6379
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - APACHE_HOST=nextcloud-aio-apache
+      - APACHE_PORT
+      - NC_DOMAIN
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=${NEXTCLOUD_PASSWORD}
+      - NEXTCLOUD_DATA_DIR=/mnt/ncdata
+      - OVERWRITEHOST=${NC_DOMAIN}
+      - OVERWRITEPROTOCOL=https
+      - TURN_SECRET
+      - SIGNALING_SECRET
+      - ONLYOFFICE_SECRET
+      - EUROOFFICE_SECRET
+      - AIO_LOG_LEVEL
+      - NEXTCLOUD_MOUNT
+      - CLAMAV_ENABLED
+      - CLAMAV_HOST=nextcloud-aio-clamav
+      - ONLYOFFICE_ENABLED
+      - EUROOFFICE_ENABLED
+      - COLLABORA_ENABLED
+      - COLLABORA_HOST=nextcloud-aio-collabora
+      - TALK_ENABLED
+      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
+      - EUROOFFICE_HOST=nextcloud-aio-eurooffice
+      - UPDATE_NEXTCLOUD_APPS
+      - TZ=${TIMEZONE}
+      - TALK_PORT
+      - IMAGINARY_ENABLED
+      - IMAGINARY_HOST=nextcloud-aio-imaginary
+      - PHP_UPLOAD_LIMIT=${NEXTCLOUD_UPLOAD_LIMIT}
+      - PHP_MEMORY_LIMIT=${NEXTCLOUD_MEMORY_LIMIT}
+      - FULLTEXTSEARCH_ENABLED
+      - FULLTEXTSEARCH_HOST=nextcloud-aio-fulltextsearch
+      - FULLTEXTSEARCH_PROTOCOL=http
+      - FULLTEXTSEARCH_PORT=9200
+      - FULLTEXTSEARCH_USER=elastic
+      - FULLTEXTSEARCH_INDEX=nextcloud-aio
+      - PHP_MAX_TIME=${NEXTCLOUD_MAX_TIME}
+      - TRUSTED_CACERTS_DIR=${NEXTCLOUD_TRUSTED_CACERTS_DIR}
+      - STARTUP_APPS=${NEXTCLOUD_STARTUP_APPS}
+      - ADDITIONAL_APKS=${NEXTCLOUD_ADDITIONAL_APKS}
+      - ADDITIONAL_PHP_EXTENSIONS=${NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS}
+      - INSTALL_LATEST_MAJOR
+      - TALK_RECORDING_ENABLED
+      - RECORDING_SECRET
+      - TALK_RECORDING_HOST=nextcloud-aio-talk-recording
+      - FULLTEXTSEARCH_PASSWORD
+      - REMOVE_DISABLED_APPS
+      - IMAGINARY_SECRET
+      - WHITEBOARD_SECRET
+      - WHITEBOARD_ENABLED
+      # Read by the user_limit_guard custom app (see nextcloud-custom-apps/) --
+      # blank/unset disables enforcement entirely. Only needs to be visible to
+      # this container since it's where PHP-FPM actually executes app code.
+      - NC_USER_LIMIT
+    stop_grace_period: 600s
+    restart: unless-stopped
+    shm_size: 134217728
+    cap_drop:
+      - NET_RAW
+
+  # One-shot: waits for Nextcloud to finish installing, then applies DEFAULT_QUOTA
+  # (see .env) to every user via occ. Runs on every `up` but occ config:app:set is
+  # idempotent, so re-running it with the same value is a no-op. Skips entirely if
+  # DEFAULT_QUOTA is blank. Bypasses the image's own entrypoint on purpose -- this
+  # only needs php+occ against the shared /var/www/html volume, not the full AIO
+  # startup sequence.
+  nextcloud-aio-post-install:
+    image: ghcr.io/nextcloud-releases/aio-nextcloud:20260805_083533
+    depends_on:
+      nextcloud-aio-nextcloud:
+        condition: service_started
+    volumes:
+      - nextcloud_aio_nextcloud:/var/www/html:rw
+      - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
+    environment:
+      - DEFAULT_QUOTA
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -z "$$DEFAULT_QUOTA" ]; then
+          echo "DEFAULT_QUOTA not set, skipping quota configuration."
+          exit 0
+        fi
+        until php /var/www/html/occ status 2>/dev/null | grep -q "installed: true"; do
+          echo "Waiting for Nextcloud install to finish..."
+          sleep 5
+        done
+        php /var/www/html/occ config:app:set files default_quota --value="$$DEFAULT_QUOTA"
+        for user in $$(php /var/www/html/occ user:list | sed -n 's/^  - \([^:]*\):.*/\1/p'); do
+          php /var/www/html/occ user:setting "$$user" files quota "$$DEFAULT_QUOTA"
+        done
+        echo "Default quota set to $$DEFAULT_QUOTA for all users."
+    restart: "no"
+
+  nextcloud-aio-notify-push:
+    image: ghcr.io/nextcloud-releases/aio-notify-push:20260805_083533
+    user: "33"
+    init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
+    expose:
+      - "7867"
+    volumes:
+      - nextcloud_aio_nextcloud:/var/www/html:ro
+    environment:
+      - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-redis:
+    image: ghcr.io/nextcloud-releases/aio-redis:20260805_083533
+    user: "999"
+    init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
+    expose:
+      - "6379"
+    environment:
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+    volumes:
+      - nextcloud_aio_redis:/data:rw
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-collabora:
+    command: ${ADDITIONAL_COLLABORA_OPTIONS}
+    image: ghcr.io/nextcloud-releases/aio-collabora:20260805_083533
+    init: true
+    healthcheck:
+      start_period: 60s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 9
+    expose:
+      - "9980"
+    environment:
+      - aliasgroup1=https://${NC_DOMAIN}:443,http://nextcloud-aio-apache.nextcloud-aio:23973
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
+      - dictionaries=${COLLABORA_DICTIONARIES}
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+      - server_name=${NC_DOMAIN}
+      - DONT_GEN_SSL_CERT=1
+    # This image auto-adds "127.0.0.1 NC_DOMAIN" to /etc/hosts, assuming stock AIO's
+    # shared-netns setup with Apache (same as nextcloud-aio-nextcloud/talk/onlyoffice/
+    # eurooffice/whiteboard above). In this split-container topology that points at
+    # Collabora's own loopback instead of Apache, so its WOPI CheckFileInfo callback to
+    # https://${NC_DOMAIN} times out ("Unauthorized WOPI host" / "CheckFileInfo failed"
+    # in coolwsd logs) even though wopi_url/aliasgroup1 are both configured correctly.
+    # host-gateway routes it into the host nginx instead, same fix as the others.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
+    restart: unless-stopped
+    profiles:
+      - collabora
+    shm_size: 268435456
+    tmpfs:
+      - /tmp
+    cap_add:
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - FOWNER
+      - CHOWN
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-talk:
+    image: ghcr.io/nextcloud-releases/aio-talk:20260805_083533
+    user: "1000"
+    init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
+    ports:
+      - ${TALK_PORT}:${TALK_PORT}/tcp
+      - ${TALK_PORT}:${TALK_PORT}/udp
+    expose:
+      - "8081"
+    # NC_DOMAIN (e.g. nextcloud.local) isn't real DNS -- it only resolves via your
+    # own machine's /etc/hosts or local nginx config. Janus (the WebRTC/TURN server
+    # this container runs) needs to resolve it too, or it crash-loops with "Invalid
+    # TURN address" and never reports healthy. host-gateway maps it to this host's
+    # IP as seen from inside the container.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
+    volumes:
+      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
+    environment:
+      - NC_DOMAIN
+      - TALK_HOST=nextcloud-aio-talk
+      - TURN_SECRET
+      - SIGNALING_SECRET
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+      - TALK_PORT
+      - INTERNAL_SECRET=${TALK_INTERNAL_SECRET}
+    restart: unless-stopped
+    profiles:
+      - talk
+      - talk-recording
+    read_only: true
+    tmpfs:
+      - /var/log/supervisord
+      - /var/run/supervisord
+      - /opt/eturnal/run
+      - /conf
+      - /tmp
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-talk-recording:
+    image: ghcr.io/nextcloud-releases/aio-talk-recording:20260805_083533
+    user: "122"
+    init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
+    expose:
+      - "1234"
+    environment:
+      - NC_DOMAIN
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+      - RECORDING_SECRET
+      - INTERNAL_SECRET=${TALK_INTERNAL_SECRET}
+    volumes:
+      - nextcloud_aio_talk_recording:/tmp:rw
+    shm_size: 2147483648
+    restart: unless-stopped
+    profiles:
+      - talk-recording
+    read_only: true
+    tmpfs:
+      - /conf
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-clamav:
+    image: ghcr.io/nextcloud-releases/aio-clamav:20260805_083533
+    user: "100"
+    init: false
+    healthcheck:
+      start_period: 60s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 9
+    expose:
+      - "3310"
+    environment:
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+      - MAX_SIZE=${NEXTCLOUD_UPLOAD_LIMIT}
+    volumes:
+      - nextcloud_aio_clamav:/var/lib/clamav:rw
+    restart: unless-stopped
+    profiles:
+      - clamav
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/log/clamav
+      - /run/clamav
+      - /var/log/supervisord
+      - /var/run/supervisord
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-onlyoffice:
+    image: ghcr.io/nextcloud-releases/aio-onlyoffice:20260805_083533
+    init: true
+    healthcheck:
+      start_period: 60s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 9
+    expose:
+      - "80"
+    environment:
+      - AIO_LOG_LEVEL
+      - LOG_LEVEL=${AIO_LOG_LEVEL}
+      - TZ=${TIMEZONE}
+      - JWT_ENABLED=true
+      - JWT_HEADER=AuthorizationJwt
+      - JWT_SECRET=${ONLYOFFICE_SECRET}
+      - NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/${NC_DOMAIN}.crt
+    # See nextcloud-aio-nextcloud above -- OnlyOffice calls back to https://${NC_DOMAIN}
+    # to fetch/save documents and can't resolve it without this.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
+    # The AIO office images ship no CA-trust logic of their own, unlike
+    # nextcloud-aio-nextcloud (whose /start.sh runs update-ca-certificates when
+    # TRUSTED_CACERTS_DIR is set). Without the mount + update below, the document
+    # server cannot verify the local self-signed cert when it fetches or saves a
+    # document from https://${NC_DOMAIN}, and the editor dies with "Download
+    # failed" / "The document could not be saved".
+    #
+    # NODE_EXTRA_CA_CERTS is required *on top of* the system store: docservice and
+    # converter are pkg-bundled Node binaries, and Node validates against its own
+    # baked-in CA list rather than the OS one, so update-ca-certificates alone does
+    # not reach them. It expects one file, hence the ${NC_DOMAIN}.crt naming
+    # convention for the cert dropped in NEXTCLOUD_TRUSTED_CACERTS_DIR.
+    #
+    # The cert must also carry a subjectAltName. A CN-only cert is rejected outright
+    # by Node/OpenSSL regardless of whether the CA is trusted -- see SETUP.md for the
+    # openssl invocation that generates one correctly.
+    entrypoint: ["/bin/sh", "-c", "update-ca-certificates || true; exec /app/ds/run-document-server.sh"]
+    volumes:
+      - nextcloud_aio_onlyoffice:/var/lib/onlyoffice:rw
+      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
+    restart: unless-stopped
+    profiles:
+      - onlyoffice
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-eurooffice:
+    image: ghcr.io/nextcloud-releases/aio-eurooffice:20260805_083533
+    init: true
+    healthcheck:
+      start_period: 60s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 9
+    expose:
+      - "80"
+    environment:
+      - AIO_LOG_LEVEL
+      - LOG_LEVEL=${AIO_LOG_LEVEL}
+      - TZ=${TIMEZONE}
+      - JWT_ENABLED=true
+      - JWT_HEADER=AuthorizationJwt
+      - JWT_SECRET=${EUROOFFICE_SECRET}
+      - NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/${NC_DOMAIN}.crt
+    # See nextcloud-aio-nextcloud above -- same callback-URL resolution issue.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
+    # The AIO office images ship no CA-trust logic of their own, unlike
+    # nextcloud-aio-nextcloud (whose /start.sh runs update-ca-certificates when
+    # TRUSTED_CACERTS_DIR is set). Without the mount + update below, the document
+    # server cannot verify the local self-signed cert when it fetches or saves a
+    # document from https://${NC_DOMAIN}, and the editor dies with "Download
+    # failed" / "The document could not be saved".
+    #
+    # NODE_EXTRA_CA_CERTS is required *on top of* the system store: docservice and
+    # converter are pkg-bundled Node binaries, and Node validates against its own
+    # baked-in CA list rather than the OS one, so update-ca-certificates alone does
+    # not reach them. It expects one file, hence the ${NC_DOMAIN}.crt naming
+    # convention for the cert dropped in NEXTCLOUD_TRUSTED_CACERTS_DIR.
+    #
+    # The cert must also carry a subjectAltName. A CN-only cert is rejected outright
+    # by Node/OpenSSL regardless of whether the CA is trusted -- see SETUP.md for the
+    # openssl invocation that generates one correctly.
+    entrypoint: ["/bin/sh", "-c", "update-ca-certificates || true; exec /entrypoint.sh"]
+    volumes:
+      - nextcloud_aio_eurooffice:/var/lib/euro-office:rw
+      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
+    restart: unless-stopped
+    profiles:
+      - eurooffice
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-imaginary:
+    image: ghcr.io/nextcloud-releases/aio-imaginary:20260805_083533
+    user: "65534"
+    init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
+    expose:
+      - "9000"
+    environment:
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+      - IMAGINARY_SECRET
+    restart: unless-stopped
+    cap_add:
+      - SYS_NICE
+    cap_drop:
+      - NET_RAW
+    profiles:
+      - imaginary
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  nextcloud-aio-fulltextsearch:
+    image: ghcr.io/nextcloud-releases/aio-fulltextsearch:20260805_083533
+    init: false
+    healthcheck:
+      start_period: 60s
+      test: /healthcheck.sh
+      interval: 10s
+      timeout: 5s
+      start_interval: 5s
+      retries: 5
+    expose:
+      - "9200"
+    environment:
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+      - ES_JAVA_OPTS=${FULLTEXTSEARCH_JAVA_OPTIONS}
+      - bootstrap.memory_lock=false
+      - cluster.name=nextcloud-aio
+      - discovery.type=single-node
+      - http.port=9200
+      - xpack.license.self_generated.type=basic
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - indices.fielddata.cache.size=20%
+      - indices.memory.index_buffer_size=20%
+      - thread_pool.write.queue_size=1000
+      - ELASTIC_PASSWORD=${FULLTEXTSEARCH_PASSWORD}
+    volumes:
+      - nextcloud_aio_elasticsearch:/usr/share/elasticsearch/data:rw
+    restart: unless-stopped
+    profiles:
+      - fulltextsearch
+    cap_drop:
+      - NET_RAW
+
+  nextcloud-aio-whiteboard:
+    image: ghcr.io/nextcloud-releases/aio-whiteboard:20260805_083533
+    user: "65534"
+    init: true
+    healthcheck:
+      start_period: 0s
+      test: /healthcheck.sh
+      interval: 30s
+      timeout: 30s
+      start_interval: 5s
+      retries: 3
+    expose:
+      - "3002"
+    tmpfs:
+      - /tmp
+    environment:
+      - AIO_LOG_LEVEL
+      - TZ=${TIMEZONE}
+      - NEXTCLOUD_URL=https://${NC_DOMAIN}
+      - JWT_SECRET_KEY=${WHITEBOARD_SECRET}
+      - STORAGE_STRATEGY=redis
+      - REDIS_HOST=nextcloud-aio-redis
+      - REDIS_PORT=6379
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - BACKUP_DIR=/tmp
+    # See nextcloud-aio-nextcloud above -- Whiteboard also calls back to
+    # https://${NC_DOMAIN} and can't resolve it without this.
+    extra_hosts:
+      - "${NC_DOMAIN}:host-gateway"
+    restart: unless-stopped
+    profiles:
+      - whiteboard
+    read_only: true
+    cap_drop:
+      - NET_RAW
+
+  # Not part of upstream AIO -- added per Anirban's request for a local-testing AI
+  # assistant, without paying for or depending on a commercial LLM API in dev.
+  # Nextcloud's `integration_openai` app talks to any OpenAI-API-compatible backend,
+  # and Ollama exposes exactly that at /v1, so no Nextcloud-side code is needed --
+  # only admin config (see SETUP.md). Swap this for a real OpenAI/Anthropic key in
+  # `integration_openai`'s settings when deploying to a server; nothing else changes.
+  # No GPU passthrough under Docker Desktop on Mac -- this runs on CPU, so keep to
+  # small models (see OLLAMA_MODEL in .env).
+  nextcloud-aio-ollama:
+    image: ollama/ollama:0.32.1
+    init: true
+    healthcheck:
+      start_period: 30s
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_interval: 5s
+      retries: 5
+    expose:
+      - "11434"
+    environment:
+      - TZ=${TIMEZONE}
+      - OLLAMA_HOST=0.0.0.0:11434
+    volumes:
+      - nextcloud_aio_ollama:/root/.ollama:rw
+    restart: unless-stopped
+    profiles:
+      - ollama
+
+  # Not part of upstream AIO -- added per Anirban's request so Nextcloud can send
+  # transactional email (invites, password resets, share notifications) in local
+  # dev without a real mail provider. Outbound relay only: no MX records, no
+  # inbound mail, no mailbox management. james-conf/ is the container's stock
+  # config with only domainlist.xml's defaultDomain and the TLS keystore changed
+  # -- see SETUP.md for keystore generation and the AddDomain/AddUser CLI calls.
+  # Port 587 (STARTTLS, SMTP AUTH required) is the one Nextcloud actually uses;
+  # 25 and 465 come from James's stock config and are left as-is, unused here.
+  nextcloud-aio-james:
+    image: apache/james:jpa-3.8.2
+    init: true
+    expose:
+      - "587"
+    volumes:
+      - ./james-conf:/root/conf:rw
+      - nextcloud_aio_james_var:/root/var:rw
+    environment:
+      - TZ=${TIMEZONE}
+    restart: unless-stopped
+    profiles:
+      - james
+
+  # Not part of upstream AIO -- Context Chat (Q&A over Nextcloud files) requires
+  # AppAPI's "Deploy Daemon" infra, which this manual-install compose file has none
+  # of (no docker socket anywhere in this file, on purpose). Rather than add docker
+  # socket access to spin ExApp containers up/down automatically, this runs
+  # context_chat_backend as a plain compose service like Ollama/James above, and
+  # registers it with AppAPI as a "manual-install" deploy daemon -- Nextcloud only
+  # ever talks to it over HTTP on the shared bridge network, never manages its
+  # lifecycle. See SETUP.md for the AppAPI/occ registration steps this still needs.
+  # Version pinned to 5.4.1 (latest non-beta release, confirmed on ghcr.io) --
+  # context_chat (the PHP app installed inside nextcloud-aio-nextcloud) must be
+  # installed at a matching 5.4.x major.minor.
+  # CPU-only path needs ~12GB RAM and 4+ AVX2-capable cores per Nextcloud's own
+  # docs -- on Docker Desktop for Mac, raise the VM's memory allocation before
+  # enabling this profile, or the container OOMs during model load.
+  nextcloud-aio-context-chat-backend:
+    image: ghcr.io/nextcloud-releases/context_chat_backend:5.4.1
+    init: true
+    expose:
+      - "10034"
+    environment:
+      - APP_ID=context_chat_backend
+      - APP_HOST=0.0.0.0
+      - APP_PORT=10034
+      - APP_SECRET=${CONTEXT_CHAT_BACKEND_SECRET}
+      - APP_DISPLAY_NAME=Context Chat Backend
+      - APP_VERSION=5.4.1
+      - AA_VERSION=3.0.0
+      - APP_PERSISTENT_STORAGE=/persistent_storage
+      # Plain HTTP straight to the apache container on the shared bridge network --
+      # NC_DOMAIN only resolves via the *host's* /etc/hosts, and the host nginx that
+      # terminates TLS for it isn't part of this docker network at all, so this
+      # container can't reach "https://${NC_DOMAIN}" for its status/capability
+      # callbacks. Collabora's aliasgroup1 does the same direct-to-apache-container
+      # thing elsewhere in this file.
+      - NEXTCLOUD_URL=http://nextcloud-aio-apache:${APACHE_PORT}
+      - CC_DOWNLOAD_MODELS_FROM_HF=true
+      - TZ=${TIMEZONE}
+    volumes:
+      - nextcloud_aio_context_chat_backend:/persistent_storage:rw
+      # LOCAL PATCH: upstream 5.4.1's doc_loader.py omits the legacy binary .xls
+      # mimetype (application/vnd.ms-excel) from its loader map, so .xls files fell
+      # through to decode_source()'s raw UTF-8 fallback and got indexed as binary
+      # garbage rather than failing loudly. The patched copy adds that one mimetype,
+      # pointed at the existing _load_xlsx (pandas read_excel reads BIFF via xlrd,
+      # already present in the image -- no new dependency).
+      #
+      # Mounted as a single file so nothing else in the app is shadowed. See the
+      # header of that file for the upstream sha256 it was forked from, and re-diff
+      # it against the image's own copy whenever the context_chat_backend tag is
+      # bumped -- a silent upstream refactor here would revert the fix or break
+      # imports.
+      - ./context-chat-patches/doc_loader.py:/app/context_chat_backend/chain/ingest/doc_loader.py:ro
+      # Same patch, second gate. types.py's validate_type() rejects any files-provider
+      # source whose mimetype is absent from SUPPORTED_MIMETYPES *before* any loader
+      # runs, and logs it only as the generic "No valid files or providers found in the
+      # current batch". All three gates must agree for a format to work: this list, the
+      # doc_loader.py parser map above, and context_chat's own MIMETYPES in
+      # Application.php on the nextcloud-aio-nextcloud service.
+      - ./context-chat-patches/mimetype_list.py:/app/context_chat_backend/mimetype_list.py:ro
+    restart: unless-stopped
+    profiles:
+      - context-chat
+
+volumes:
+  nextcloud_aio_apache:
+    name: nextcloud_aio_apache
+  nextcloud_aio_clamav:
+    name: nextcloud_aio_clamav
+  nextcloud_aio_database:
+    name: nextcloud_aio_database
+  nextcloud_aio_database_dump:
+    name: nextcloud_aio_database_dump
+  nextcloud_aio_elasticsearch:
+    name: nextcloud_aio_elasticsearch
+  nextcloud_aio_eurooffice:
+    name: nextcloud_aio_eurooffice
+  nextcloud_aio_nextcloud:
+    name: nextcloud_aio_nextcloud
+  nextcloud_aio_onlyoffice:
+    name: nextcloud_aio_onlyoffice
+  nextcloud_aio_redis:
+    name: nextcloud_aio_redis
+  nextcloud_aio_talk_recording:
+    name: nextcloud_aio_talk_recording
+  nextcloud_aio_nextcloud_data:
+    name: nextcloud_aio_nextcloud_data
+  nextcloud_aio_ollama:
+    name: nextcloud_aio_ollama
+  nextcloud_aio_james_var:
+    name: nextcloud_aio_james_var
+  nextcloud_aio_context_chat_backend:
+    name: nextcloud_aio_context_chat_backend
+
+networks:
+  default:
+    driver: bridge
