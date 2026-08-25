@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:latest
 FROM golang:1.26.6-alpine3.24 AS go
 
-ENV WATCHTOWER_COMMIT_HASH=dcc6e4acd3bd798c46b21bb4e70870f2dca6675d	
+ENV WATCHTOWER_COMMIT_HASH=773dec918fd60cde503085d73caed8b104fcad44	
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
         build-base; \
-    go install github.com/nicholas-fedor/watchtower@$WATCHTOWER_COMMIT_HASH # v1.20.3
+    go install github.com/nicholas-fedor/watchtower@$WATCHTOWER_COMMIT_HASH # v1.21.0
 
 FROM alpine:3.24.1
 
