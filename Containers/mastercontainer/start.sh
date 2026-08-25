@@ -352,6 +352,9 @@ if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
     sed -i 's|^options = shares-console|#options = shares-console|' /etc/dinit.d/domain-validator
 fi
 
+CADDY_LOG_LEVEL="$(echo "$AIO_LOG_LEVEL" | tr '[:lower:]' '[:upper:]')"
+export CADDY_LOG_LEVEL
+
 # Check if ghcr.io is reachable
 # Solves issues like https://github.com/nextcloud/all-in-one/discussions/5268
 if ! curl --no-progress-meter https://ghcr.io/v2/ >/dev/null; then

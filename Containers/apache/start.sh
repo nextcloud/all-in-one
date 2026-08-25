@@ -9,6 +9,8 @@ if [ -z "$NC_DOMAIN" ]; then
     exit 1
 fi
 
+CADDY_LOG_LEVEL="$(echo "$AIO_LOG_LEVEL" | tr '[:lower:]' '[:upper:]')"
+export CADDY_LOG_LEVEL
 if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     export AIO_ACCESS_LOG=/proc/self/fd/1
 else
@@ -63,6 +65,13 @@ else
     CADDYFILE="$(sed "s|# trusted_proxies placeholder|trusted_proxies static $IPv4_ADDRESS|" /tmp/Caddyfile)"
 fi
 echo "$CADDYFILE" > /tmp/Caddyfile
+
+# In case of reverse proxies the APACHE_PORT listener is plain http, so limit it to h1 to avoid
+# caddy warning that HTTP/2 and HTTP/3 were skipped. See the Caddyfile for further details.
+if [ "$APACHE_PORT" != '443' ]; then
+    CADDYFILE="$(sed "s|# apache-port protocols placeholder|servers :$APACHE_PORT {\n\t\tprotocols h1\n\t}|" /tmp/Caddyfile)"
+    echo "$CADDYFILE" > /tmp/Caddyfile
+fi
 
 # Remove additional domain if not given
 if [ -z "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
