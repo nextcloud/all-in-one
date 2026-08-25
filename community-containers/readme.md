@@ -60,6 +60,7 @@ flowchart TD
         LDAP(["👥  LLDAP\nLight LDAP / Users"]):::community
         CADDY(["🌐  Caddy\nReverse Proxy + Geoblocking"]):::community
         NPMPLUS(["🌐  NPMplus\nNginx Proxy Manager"]):::community
+        WG(["🔑  WireGuard Easy\nVPN server with web UI"]):::community
     end
 ```
 

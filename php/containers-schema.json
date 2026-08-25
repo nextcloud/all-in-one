@@ -38,6 +38,13 @@
 							"pattern": "^[A-Z_]+$"
 						}
 					},
+					"sysctls": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"pattern": "^net\\.(ipv4|ipv6|mptcp|unix)\\.[a-z0-9_.]+=[a-zA-Z0-9_.:/ -]+$"
+						}
+					},
 					"depends_on": {
 						"type": "array",
 						"items": {
@@ -220,7 +227,7 @@
 								},
 								"source": {
 									"type": "string",
-									"pattern": "^((nextcloud_aio_[a-z_]+)|(%[A-Z_]+%)|(/dev)|(/run/udev))$"
+									"pattern": "^((nextcloud_aio_[a-z_]+)|(%[A-Z_]+%)|(/dev)|(/run/udev)|(/lib/modules))$"
 								},
 								"writeable": {
 									"type": "boolean"
