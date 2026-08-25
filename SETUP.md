@@ -82,17 +82,33 @@ configured in Nextcloud's admin settings before it actually connects to anything
    Read the comment at the top of that file — HTTPS here isn't optional, AIO assumes
    it unconditionally.
 
-4. Bring the stack up with every optional profile enabled:
+4. Bring the stack up with every optional profile enabled. `.env`/`.env.example`
+   set `COMPOSE_PROFILES` to the full profile list, so Compose applies it to every
+   command automatically — no `--profile` flags needed for `up`, `down`, `stop`, or
+   `ps`:
    ```sh
-   docker compose --profile collabora --profile talk --profile talk-recording \
-     --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
-     --profile fulltextsearch --profile whiteboard up -d
+   docker compose up -d
    ```
    First boot pulls a lot of images (Collabora, Elasticsearch for Fulltextsearch,
    OnlyOffice, EuroOffice, ClamAV's virus DB, etc.) — expect this to take a while
-   and use several GB of disk/RAM. Always pass the same `--profile` flags on
-   subsequent `up`/`down` calls, or Compose will stop containers it thinks you no
-   longer want.
+   and use several GB of disk/RAM.
+
+   **If `COMPOSE_PROFILES` isn't set** (e.g. a shell that doesn't load `.env`), pass
+   the flags explicitly and keep them identical across every `up`/`down`/`stop` call:
+   ```sh
+   docker compose --profile collabora --profile talk --profile talk-recording \
+     --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
+     --profile fulltextsearch --profile whiteboard --profile ollama --profile james \
+     --profile context-chat up -d
+   ```
+   A command missing some of these flags doesn't just skip those services — Compose
+   treats them as outside the stack entirely for that command. This is not
+   theoretical: a bare `docker compose down -v` run without any profile flags once
+   deleted the volumes for the four always-on services (Nextcloud, database, redis,
+   apache) while silently leaving every profiled service's volume untouched,
+   forcing a full reinstall of Talk/OnlyOffice/Context Chat/etc. See **Stopping the
+   stack** below — never run `down -v` on this repo unless you actually intend to
+   destroy all data.
 
 5. `docker compose logs nextcloud-aio-nextcloud` — confirm it installed cleanly.
    `docker compose ps` — all containers should reach a healthy state eventually
@@ -134,27 +150,32 @@ its container being healthy, check that its `*_ENABLED` var in `.env` is `"yes"`
 
 ## Stopping the stack
 
-Always pass the same `--profile` flags used on `up`, or Compose only touches the
-non-profiled services and leaves the rest running.
+With `COMPOSE_PROFILES` set in `.env` (see step 4 above), plain `docker compose`
+commands already apply to every service. If you're running without it loaded,
+pass the same explicit `--profile` flags used on `up` to every command below, or
+Compose only touches the non-profiled services and leaves the rest running.
 
 Stop and remove the containers, keeping all data (named volumes persist):
 ```sh
-docker compose --profile collabora --profile talk --profile talk-recording \
-  --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
-  --profile fulltextsearch --profile whiteboard --profile ollama --profile james \
-  --profile context-chat down
+docker compose down
 ```
 
 Or just stop them (containers stick around, slightly faster to bring back with `up`):
 ```sh
-docker compose --profile collabora --profile talk --profile talk-recording \
-  --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
-  --profile fulltextsearch --profile whiteboard --profile ollama --profile james \
-  --profile context-chat stop
+docker compose stop
 ```
 
-Avoid `down -v` unless you actually want to wipe all data — it deletes the named
-volumes too.
+**Never run `docker compose down -v`** unless you deliberately want to destroy
+every named volume — Nextcloud's install, its database, all uploaded files, the
+Context Chat embeddings, everything. There is no per-service confirmation prompt.
+If you genuinely need to wipe and reinstall from scratch, running it *with*
+`COMPOSE_PROFILES` set (or the full explicit `--profile` list) at least makes it
+destroy everything consistently instead of silently destroying an inconsistent
+subset — which is what happened on 2026-08-25: a flagless `down -v` deleted only
+the always-on services' volumes (Nextcloud/database/redis/apache), leaving every
+profiled service (Ollama, Context Chat's embeddings, ClamAV's virus DB, Talk,
+OnlyOffice, ...) running against data from a Nextcloud install that no longer
+existed, and required manually reinstalling every optional app from scratch.
 
 ## Local AI assistant (Ollama)
 
