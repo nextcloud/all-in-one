@@ -14,6 +14,7 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 VOLUME /mnt/data
 
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
@@ -95,14 +96,14 @@ RUN set -ex; \
     echo "root:$(openssl rand -base64 12)" | chpasswd; \
     apk --no-cache del openssl
 
-USER 33
+USER www-data:www-data
 
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 ENV AIO_LOG_LEVEL=warn
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

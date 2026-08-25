@@ -13,10 +13,10 @@ COPY --chown=www-data:www-data lighttpd.conf /lighttpd.conf
 
 COPY --chmod=775 start.sh /start.sh
 
-USER www-data
+USER www-data:www-data
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD nc -z 127.0.0.1 $APACHE_PORT || exit 1
+HEALTHCHECK CMD ["/bin/sh", "-c", "nc -z 127.0.0.1 $APACHE_PORT || exit 1"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

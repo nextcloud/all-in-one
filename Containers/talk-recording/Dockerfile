@@ -12,6 +12,7 @@ ENV ALLOW_ALL=false \
     HPB_PATH=/standalone-signaling/ \
     AIO_LOG_LEVEL=warn
 
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
@@ -60,11 +61,11 @@ RUN set -ex; \
 
 VOLUME /tmp
 WORKDIR /tmp
-USER 122
+USER recording:recording
 ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.conf"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

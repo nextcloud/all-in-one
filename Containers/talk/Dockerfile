@@ -48,6 +48,7 @@ COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=664 supervisord.conf /supervisord.conf
 
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
@@ -105,11 +106,11 @@ RUN set -ex; \
     ln -s /opt/eturnal/bin/stun /usr/local/bin/stun; \
     ln -s /opt/eturnal/bin/eturnalctl /usr/local/bin/eturnalctl
 
-USER 1000
+USER eturnal:eturnal
 ENTRYPOINT ["/start.sh"]
 CMD ["supervisord", "-c", "/supervisord.conf"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \
