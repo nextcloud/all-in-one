@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:29.7.0-cli AS docker
+FROM docker:29.7.2-cli AS docker
 
 ARG CADDY_REMOTE_HOST_HASH=e80a9931765a8dbcbb47db415863387f0df0e1b3
 
@@ -31,7 +31,8 @@ COPY --chmod=664 Containers/mastercontainer/supervisord.conf /supervisord.conf
 
 WORKDIR /var/www/docker-aio
 
-# hadolint ignore=SC2086,DL3047,DL3003
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
+# hadolint ignore=SC2086,DL3003
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
@@ -111,8 +112,8 @@ LABEL org.opencontainers.image.title="Nextcloud All-in-One Mastercontainer" \
     com.docker.compose.project="nextcloud-aio"
 
 # hadolint ignore=DL3002
-USER root
+USER root:root
 
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]

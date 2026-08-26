@@ -14,6 +14,7 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 VOLUME /mnt/data
 
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
@@ -30,7 +31,6 @@ RUN set -ex; \
         supervisor \
         tzdata \
         ca-certificates \
-        openssl \
         bind-tools \
         netcat-openbsd; \
     \
@@ -90,19 +90,16 @@ RUN set -ex; \
     mkdir -p /usr/local/apache2/logs; \
     chmod 777 -R /home/www-data; \
     chmod 777 -R /usr/local/apache2/logs; \
-    rm -rf /usr/local/apache2/cgi-bin/; \
-    \
-    echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    apk --no-cache del openssl
+    rm -rf /usr/local/apache2/cgi-bin/
 
-USER 33
+USER www-data:www-data
 
 ENTRYPOINT ["/start.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
 ENV AIO_LOG_LEVEL=warn
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

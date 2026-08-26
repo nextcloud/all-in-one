@@ -2,15 +2,15 @@
 # From a file located probably somewhere here: https://github.com/CollaboraOnline/online/blob/master/docker/from-packages/Dockerfile
 FROM collabora/code:26.04.2.1.1
 
-USER root
+USER root:root
 ARG DEBIAN_FRONTEND=noninteractive
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
-USER 1001
+USER cool:cool
 
-HEALTHCHECK --start-period=60s --retries=9 CMD /healthcheck.sh
+HEALTHCHECK --start-period=60s --retries=9 CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

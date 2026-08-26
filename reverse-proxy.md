@@ -214,7 +214,6 @@ Add this as a new Apache site config:
 <VirtualHost *:443>
     ServerName <your-nc-domain>
 
-    # Reverse proxy based on https://httpd.apache.org/docs/current/mod/mod_proxy_wstunnel.html
     RewriteEngine On
     ProxyPreserveHost On
     RequestHeader set X-Real-IP %{REMOTE_ADDR}s
@@ -223,13 +222,8 @@ Add this as a new Apache site config:
     AllowEncodedSlashes NoDecode
     
     # Adjust the two lines below to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
-    ProxyPass / http://localhost:11000/ nocanon
+    ProxyPass / http://localhost:11000/ nocanon upgrade=websocket
     ProxyPassReverse / http://localhost:11000/
-    
-    RewriteCond %{HTTP:Upgrade} websocket [NC]
-    RewriteCond %{HTTP:Connection} upgrade [NC]
-    RewriteCond %{THE_REQUEST} "^[a-zA-Z]+ /(.*) HTTP/\d+(\.\d+)?$"
-    RewriteRule .? "ws://localhost:11000/%1" [P,L,UnsafeAllow3F] # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
     # Enable h2, h2c and http1.1
     Protocols h2 h2c http/1.1
@@ -270,7 +264,17 @@ Add this as a new Apache site config:
 ⚠️ **Please note:** Look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
 
 To make the config work you can run the following command:
-`sudo a2enmod rewrite proxy proxy_http proxy_wstunnel ssl headers http2`
+`sudo a2enmod rewrite proxy proxy_http ssl headers http2`
+
+The `upgrade=websocket` parameter requires Apache 2.4.47 or later. On older versions, replace it with the following block, which needs `proxy_wstunnel` enabled additionally:
+
+```
+    RewriteEngine On
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteCond %{HTTP:Connection} upgrade [NC]
+    RewriteCond %{THE_REQUEST} "^[a-zA-Z]+ /(.*) HTTP/\d+(\.\d+)?$"
+    RewriteRule .? "ws://localhost:11000/%1" [P,L,NE,UnsafeAllow3F] # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
+```
 
 </details>
 

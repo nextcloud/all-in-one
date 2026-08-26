@@ -229,6 +229,24 @@ readonly class DockerActionManager {
         }
     }
 
+    /**
+     * Whether the aio network is ipv6 enabled. If it is not, ipv6 sysctls must not
+     * be applied to containers since setting them fails on hosts whose kernel was
+     * booted with ipv6.disable=1.
+     */
+    private function IsIpv6EnabledOnNetwork(string $network = 'nextcloud-aio'): bool {
+        $url = $this->BuildApiUrl(sprintf('networks/%s', urlencode($network)));
+        try {
+            $response = $this->sendHttpRequest('GET', $url);
+        } catch (RequestException $e) {
+            return false;
+        }
+
+        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        return ($responseBody['EnableIPv6'] ?? false) === true;
+    }
+
     public function CreateContainer(Container $container): void {
         $volumes = [];
         foreach ($container->volumes->GetVolumes() as $volume) {
@@ -399,6 +417,28 @@ readonly class DockerActionManager {
         $capAdds = $container->capAdd;
         if (count($capAdds) > 0) {
             $requestBody['HostConfig']['CapAdd'] = $capAdds;
+        }
+
+        // Only namespaced sysctls can be set per container. The schema restricts
+        // these to net.ipv4/net.ipv6/net.mptcp/net.unix which live in the network
+        // namespace. Non-namespaced ones like vm.overcommit_memory (redis),
+        // vm.max_map_count (fulltextsearch) and net.core.rmem_max (apache) must
+        // still be set on the host. See the linked discussions in the docs.
+        $sysctls = [];
+        $isIpv6Enabled = count($container->sysctls) > 0 && $this->IsIpv6EnabledOnNetwork();
+        foreach ($container->sysctls as $sysctl) {
+            // Setting net.ipv6.* fails if the host kernel was booted with ipv6.disable=1
+            // and has no effect if the aio network itself is not ipv6 enabled.
+            if (!$isIpv6Enabled && str_starts_with($sysctl, 'net.ipv6.')) {
+                continue;
+            }
+            $sysctlParts = explode('=', $sysctl, 2);
+            if (count($sysctlParts) === 2) {
+                $sysctls[$sysctlParts[0]] = $sysctlParts[1];
+            }
+        }
+        if (count($sysctls) > 0) {
+            $requestBody['HostConfig']['Sysctls'] = $sysctls;
         }
 
         // Disable arp spoofing
