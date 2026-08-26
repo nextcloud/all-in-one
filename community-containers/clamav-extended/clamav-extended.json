@@ -4,7 +4,7 @@
             "image": "ghcr.io/extremeshok/clamav-unofficial-sigs",
             "image_tag": "latest",
             "container_name": "nextcloud-aio-clamav-extended",
-            "display_name": "ClamAV antivirus backend with enhanced detection via additional signatures (needs ~1GB additional RAM)",
+            "display_name": "ClamAV with additional signatures",
             "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/clamav-extended",
             "internal_port": "3310",
             "restart": "unless-stopped",
