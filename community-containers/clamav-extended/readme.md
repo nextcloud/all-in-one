@@ -2,6 +2,11 @@
 
 This container is a drop-in replacement for the official AIO ClamAV container with enhanced detection via additional signatures. The [container image](https://github.com/extremeshok/clamav-unofficial-sigs) is built on the official ClamAV image (the published multi-arch image uses clamav/clamav-debian:stable, the only official variant with amd64 and arm64 manifests), so it always carries a current ClamAV for signature integrity testing.
 
+
+## Installation
+
+Add and start the container in the Nextcloud AIO interface. No configuration needs to be done by you. 
+
 > [!Warning]
 > - Only use either the official ClamAV container OR this extended one. Running both at the same time is not possible.
 > - Running this container needs about 1GB of additional RAM - like the official ClamAV container as well
@@ -20,3 +25,9 @@ After installation, the [files_antivirus app](https://apps.nextcloud.com/apps/fi
 ## Testing your setup
 
 The easiest way to test if this is working at all is to create a text file and paste the [EICAR test string](https://en.wikipedia.org/wiki/EICAR_test_file) into it. The file should not be saved and a nextcloud log entry should be created.
+
+### Repository
+https://github.com/extremeshok/clamav-unofficial-sigs
+
+### Maintainer
+https://github.com/derStephan
