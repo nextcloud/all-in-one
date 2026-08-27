@@ -30,6 +30,7 @@ readonly class Container {
         /** @var string[] */
         public array                         $sysctls,
         public int                           $shmSize,
+        public int                           $cpuShares,
         public bool                          $apparmorUnconfined,
         /** @var string[] */
         public array                         $backupVolumes,
@@ -41,6 +42,7 @@ readonly class Container {
         public AioVariables                  $aioVariables,
         public string                        $documentation,
         public bool                          $hideFromList,
+        public int                           $oomScoreAdj,
         private DockerActionManager           $dockerActionManager
     ) {
     }
