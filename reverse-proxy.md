@@ -480,9 +480,21 @@ Add the below template to your Nginx config.
 **Note:** please check your Nginx version by running: `nginx -v` and adjust the lines marked with version notes to fit your version.
 
 ```
+#quic_bpf on; # improves HTTP/3 / QUIC - supported on nginx v1.25.0+, if nginx runs as a docker container you need to give it the BPF, PERFMON and NET_ADMIN caps - breaks nginx config reloads - needs to be set in the main nginx config block (outside location, server and http block)
+```
+```
+pcre_jit on;
+worker_processes auto;
+worker_cpu_affinity auto;
+
 map $http_upgrade $connection_upgrade {
     default upgrade;
-    '' close;
+    "" "";
+}
+
+upstream nextcloud {
+  #keepalive 32 local; # for nginx versions below v1.29.7
+  server 127.0.0.1:11000; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 }
 
 server {
@@ -496,53 +508,24 @@ server {
         return 301 https://$host$request_uri;
     }
 
-    listen 443 ssl http2;      # for nginx versions below v1.25.1
-    listen [::]:443 ssl http2; # for nginx versions below v1.25.1 - comment to disable IPv6
+    listen 443 ssl;      # for nginx v1.25.1+
+    listen [::]:443 ssl; # for nginx v1.25.1+ - comment to disable IPv6
+    http2 on;            # for nginx v1.25.1+
 
-    # listen 443 ssl;      # for nginx v1.25.1+
-    # listen [::]:443 ssl; # for nginx v1.25.1+ - keep comment to disable IPv6
-    # http2 on;            # uncomment to enable HTTP/2 - supported on nginx v1.25.1+
+    #listen 443 ssl http2;      # for nginx versions below v1.25.1
+    #listen [::]:443 ssl http2; # for nginx versions below v1.25.1 - keep comment to disable IPv6
 
-    # listen 443 quic reuseport;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport
-    # listen [::]:443 quic reuseport;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport - keep comment to disable IPv6
-    # http3 on;                                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # quic_gso on;                              # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    # quic_bpf on;                              # improves  HTTP/3 / QUIC - supported on nginx v1.25.0+, if nginx runs as a docker container you need to give it privileged permission to use this option
-    # add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    #listen 443 quic reuseport;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport
+    #listen [::]:443 quic reuseport;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport - keep comment to disable IPv6
+    #http3 on;                                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    #quic_gso on;                              # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - broken for connections over wireguard tunnels
+    #quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    #add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
 
-    proxy_buffering off;
-    proxy_request_buffering off;
-
-    client_max_body_size 0;
-    client_body_buffer_size 512k;
-    # http3_stream_buffer_size 512k; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-
-    # The default NEXTCLOUD_MAX_TIME value is 3600 seconds.
-    # By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
-    # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
-    proxy_read_timeout 3610s;
-
+    client_body_buffer_size 1m;
+    #http3_stream_buffer_size 1m; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
 
     server_name <your-nc-domain>;
-
-    location / {
-        proxy_pass http://127.0.0.1:11000$request_uri; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
-
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Port $server_port;
-        proxy_set_header X-Forwarded-Scheme $scheme;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header Host $host;
-        proxy_set_header Early-Data $ssl_early_data;
-
-        # Websocket
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $connection_upgrade;
-    }
 
     # If running nginx on a subdomain (eg. nextcloud.example.com) of a domain that already has an wildcard ssl certificate from certbot on this machine, 
     # the <your-nc-domain> in the below lines should be replaced with just the domain (eg. example.com), not the subdomain. 
@@ -550,20 +533,43 @@ server {
     ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
     ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
 
-    ssl_dhparam /etc/dhparam; # curl -L https://ssl-config.mozilla.org/ffdhe2048.txt -o /etc/dhparam
+    proxy_buffering off;
+    proxy_request_buffering off;
+    proxy_socket_keepalive on;
 
-    ssl_early_data on;
-    ssl_session_timeout 1d;
-    ssl_session_cache shared:SSL:10m;
+    # The default NEXTCLOUD_MAX_TIME value is 3600 seconds.
+    # By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
+    # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
+    proxy_read_timeout 3610s;
+
+    location / {
+        proxy_pass http://nextcloud;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # Websockets
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
 
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ecdh_curve x25519:x448:secp521r1:secp384r1:secp256r1;
+    ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:HTTPS:10m;
 
-    ssl_prefer_server_ciphers on;
-    ssl_conf_command Options PrioritizeChaCha;
-    ssl_ciphers TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256;
+    sendfile on;
+    aio threads;
+    aio_write on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    client_max_body_size 0;
+    reset_timedout_connection on;
 }
-
 ```
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
