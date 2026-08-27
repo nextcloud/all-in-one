@@ -77,7 +77,7 @@ RUN set -ex; \
 
 USER eturnal:eturnal
 ENTRYPOINT ["/start.sh"]
-CMD ["dinit", "--system", "--container", "nats-server", "eturnal", "janus", "signaling"]
+CMD ["dinit", "--system", "--container", "--socket-path", "/tmp/dinitctl", "nats-server", "eturnal", "janus", "signaling"]
 
 HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \

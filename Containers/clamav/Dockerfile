@@ -40,7 +40,7 @@ RUN set -ex; \
     freshclam --foreground --stdout
 VOLUME /var/lib/clamav
 ENTRYPOINT ["/start.sh"]
-CMD ["dinit", "--system", "--container", "freshclam", "clamd", "milter"]
+CMD ["dinit", "--system", "--container", "--socket-path", "/tmp/dinitctl", "freshclam", "clamd", "milter"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \
