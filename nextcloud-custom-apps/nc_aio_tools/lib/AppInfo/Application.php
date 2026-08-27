@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace OCA\UserLimitGuard\AppInfo;
+namespace OCA\NcAioTools\AppInfo;
 
-use OCA\UserLimitGuard\Listener\EnforceUserLimitListener;
-use OCA\UserLimitGuard\Listener\UserCountAuditListener;
-use OCA\UserLimitGuard\Listener\UsersPageAssetsListener;
+use OCA\NcAioTools\Listener\EnforceUserLimitListener;
+use OCA\NcAioTools\Listener\UserCountAuditListener;
+use OCA\NcAioTools\Listener\UsersPageAssetsListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -17,7 +17,7 @@ use OCP\User\Events\UserCreatedEvent;
 use OCP\User\Events\UserDeletedEvent;
 
 class Application extends App implements IBootstrap {
-	public const APP_ID = 'user_limit_guard';
+	public const APP_ID = 'nc_aio_tools';
 
 	public function __construct() {
 		parent::__construct(self::APP_ID);

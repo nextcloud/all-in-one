@@ -1,4 +1,4 @@
-#user-limit-guard-free-count {
+#nc-aio-tools-free-count {
 	position: fixed;
 	left: 12px;
 	bottom: 50px;
@@ -17,7 +17,7 @@
    the top header instead of sitting to the left, so a fixed bottom-left badge
    would otherwise overlap that header. Move it out of the way there. */
 @media (max-width: 768px) {
-	#user-limit-guard-free-count {
+	#nc-aio-tools-free-count {
 		left: 50%;
 		transform: translateX(-50%);
 	}

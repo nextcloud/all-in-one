@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
-    <id>user_limit_guard</id>
-    <name>User Limit Guard</name>
+    <id>nc_aio_tools</id>
+    <name>Nextcloud AIO Tools</name>
     <summary>Caps total user accounts at the NC_USER_LIMIT environment variable.</summary>
     <description>Blocks new user creation -- from the web UI, occ user:add, and the
 provisioning API alike, since all three share the same createUser() code path --
@@ -13,7 +13,7 @@ to disable enforcement entirely.</description>
     <version>1.0.0</version>
     <licence>agpl</licence>
     <author>Anirban</author>
-    <namespace>UserLimitGuard</namespace>
+    <namespace>NcAioTools</namespace>
     <category>organization</category>
     <bugs>https://github.com/nextcloud/server/issues</bugs>
     <dependencies>

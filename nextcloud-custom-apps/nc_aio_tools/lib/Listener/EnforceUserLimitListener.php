@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OCA\UserLimitGuard\Listener;
+namespace OCA\NcAioTools\Listener;
 
-use OCA\UserLimitGuard\Service\UserLimitService;
+use OCA\NcAioTools\Service\UserLimitService;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\HintException;
@@ -28,11 +28,11 @@ class EnforceUserLimitListener implements IEventListener {
 			return;
 		}
 
-		$limit = $this->limitService->getLimit();
-		if ($limit === null) {
+		if ($this->limitService->isUnlimited()) {
 			return;
 		}
 
+		$limit = $this->limitService->getLimit();
 		if ($this->limitService->getUserCount() >= $limit) {
 			throw new HintException(
 				sprintf(

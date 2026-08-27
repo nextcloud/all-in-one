@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OCA\UserLimitGuard\Listener;
+namespace OCA\NcAioTools\Listener;
 
-use OCA\UserLimitGuard\AppInfo\Application;
-use OCA\UserLimitGuard\Service\UserLimitService;
+use OCA\NcAioTools\AppInfo\Application;
+use OCA\NcAioTools\Service\UserLimitService;
 use OCP\AppFramework\Http\Events\BeforeTemplateRenderedEvent;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\EventDispatcher\Event;
@@ -37,7 +37,11 @@ class UsersPageAssetsListener implements IEventListener {
 			return;
 		}
 
+		// Two values rather than a sentinel: PHP_INT_MAX does not survive a
+		// round trip through JSON/JS number precision, so the unlimited case
+		// travels as its own boolean instead of something JS has to detect.
 		$this->initialState->provideInitialState('freeUsers', $this->limitService->getFreeSlots());
+		$this->initialState->provideInitialState('unlimited', $this->limitService->isUnlimited());
 
 		Util::addScript(Application::APP_ID, 'users-free-count');
 		Util::addStyle(Application::APP_ID, 'users-free-count');

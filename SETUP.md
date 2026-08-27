@@ -1,11 +1,13 @@
 # Setup steps
 
 This is Nextcloud AIO ("manual install" method) with all optional features enabled:
-Talk, Talk Recording, Collabora, OnlyOffice, EuroOffice, ClamAV, Imaginary,
-Fulltextsearch, Whiteboard. No external storage backend (S3/Ceph) is involved —
-AIO's own containers handle everything. See the header comment in
-`docker-compose.yml` for why (AIO's S3 support is its own bundled Minio container,
-not a way to plug in an external S3 endpoint).
+Talk, Talk Recording, Collabora, ClamAV, Imaginary, Fulltextsearch, Whiteboard.
+Collabora is the only office editor — AIO's OnlyOffice and EuroOffice containers
+were removed at Anirban's request (PR #1 review), along with their volumes,
+secrets, and `*_ENABLED`/`*_HOST` env vars. No external storage backend (S3/Ceph)
+is involved — AIO's own containers handle everything. See **Object storage (S3)**
+below for what that would take, and note AIO's own "S3 support" means its bundled
+MinIO container for backups, not primary storage on an external endpoint.
 
 All 14 images are pinned to tag `20260805_083533`, which bundles Nextcloud 33.0.7
 (per Anirban's request — confirmed by inspecting the image's baked-in
@@ -68,14 +70,12 @@ configured in Nextcloud's admin settings before it actually connects to anything
 
 2a. Copy the cert into `NEXTCLOUD_TRUSTED_CACERTS_DIR` (see `.env`), named
    `<NC_DOMAIN>.crt`. The compose file mounts that directory into the containers that
-   call back to Nextcloud over HTTPS, and `nextcloud-aio-onlyoffice` /
-   `nextcloud-aio-eurooffice` additionally point `NODE_EXTRA_CA_CERTS` at that exact
-   filename -- so the name has to match `NC_DOMAIN`:
+   call back to Nextcloud over HTTPS -- so the name has to match `NC_DOMAIN`:
    ```sh
    cp /etc/nginx/certs/nextcloud.local.crt host-mounts/trusted-cacerts/nextcloud.local.crt
    ```
-   Re-copy this and recreate those containers whenever the cert is regenerated, or the
-   office editors will start failing with "Download failed".
+   Re-copy this and recreate those containers whenever the cert is regenerated, or
+   Collabora will start failing with "Download failed".
 
 3. Point the existing host nginx at it using `nginx-nextcloud.conf.sample` as a
    starting point (update `server_name` and the cert paths to match), reload nginx.
@@ -90,15 +90,15 @@ configured in Nextcloud's admin settings before it actually connects to anything
    docker compose up -d
    ```
    First boot pulls a lot of images (Collabora, Elasticsearch for Fulltextsearch,
-   OnlyOffice, EuroOffice, ClamAV's virus DB, etc.) — expect this to take a while
-   and use several GB of disk/RAM.
+   ClamAV's virus DB, etc.) — expect this to take a while and use several GB of
+   disk/RAM.
 
    **If `COMPOSE_PROFILES` isn't set** (e.g. a shell that doesn't load `.env`), pass
    the flags explicitly and keep them identical across every `up`/`down`/`stop` call:
    ```sh
    docker compose --profile collabora --profile talk --profile talk-recording \
-     --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
-     --profile fulltextsearch --profile whiteboard --profile ollama --profile james \
+     --profile clamav --profile imaginary --profile fulltextsearch \
+     --profile whiteboard --profile ollama --profile james \
      --profile context-chat up -d
    ```
    A command missing some of these flags doesn't just skip those services — Compose
@@ -106,7 +106,7 @@ configured in Nextcloud's admin settings before it actually connects to anything
    theoretical: a bare `docker compose down -v` run without any profile flags once
    deleted the volumes for the four always-on services (Nextcloud, database, redis,
    apache) while silently leaving every profiled service's volume untouched,
-   forcing a full reinstall of Talk/OnlyOffice/Context Chat/etc. See **Stopping the
+   forcing a full reinstall of Talk/Collabora/Context Chat/etc. See **Stopping the
    stack** below — never run `down -v` on this repo unless you actually intend to
    destroy all data.
 
@@ -138,7 +138,7 @@ curl -k -u admin:<NEXTCLOUD_PASSWORD> \
 
 # 4. Confirm the optional apps actually got enabled, not just the containers started
 docker compose exec -u www-data nextcloud-aio-nextcloud php occ app:list --enabled | \
-  grep -iE "talk|richdocuments|onlyoffice|files_fulltextsearch|files_antivirus"
+  grep -iE "talk|richdocuments|files_fulltextsearch|files_antivirus"
 ```
 (`-k` skips cert validation for the self-signed cert — drop it once you're on a
 real one.)
@@ -174,7 +174,7 @@ destroy everything consistently instead of silently destroying an inconsistent
 subset — which is what happened on 2026-08-25: a flagless `down -v` deleted only
 the always-on services' volumes (Nextcloud/database/redis/apache), leaving every
 profiled service (Ollama, Context Chat's embeddings, ClamAV's virus DB, Talk,
-OnlyOffice, ...) running against data from a Nextcloud install that no longer
+Collabora, ...) running against data from a Nextcloud install that no longer
 existed, and required manually reinstalling every optional app from scratch.
 
 ## Local AI assistant (Ollama)
@@ -411,12 +411,12 @@ volume — no rebuild needed, just restart `nextcloud-aio-nextcloud` after editi
    From there, requesting/completing a signature works from a file's context menu in
    the Files app.
 
-## User limit enforcement (user_limit_guard)
+## User limit enforcement (Nextcloud AIO Tools)
 
 Custom Nextcloud PHP app (not from the app store — lives in this repo at
-`nextcloud-custom-apps/user_limit_guard`, bind-mounted into both
+`nextcloud-custom-apps/nc_aio_tools`, bind-mounted into both
 `nextcloud-aio-nextcloud` and `nextcloud-aio-apache` under
-`custom_apps/user_limit_guard`) that caps the total number of user accounts at
+`custom_apps/nc_aio_tools`) that caps the total number of user accounts at
 the `NC_USER_LIMIT` value in `.env`.
 
 - Listens on `OCP\User\Events\BeforeUserCreatedEvent` and throws a
@@ -427,14 +427,14 @@ the `NC_USER_LIMIT` value in `.env`.
   text as an error toast.
 - Shows the number of remaining free user slots in the bottom-left corner of
   Settings → Users (or "Unlimited users" if `NC_USER_LIMIT` is blank/unset).
-- The bind mount only shadows the `user_limit_guard` subdirectory of
+- The bind mount only shadows the `nc_aio_tools` subdirectory of
   `custom_apps`, not the whole directory, so it doesn't hide the
   `integration_google`/`integration_onedrive` apps already installed there.
 
 Enable it once per instance (the bind mount alone doesn't register the app
 with Nextcloud):
 ```sh
-docker compose exec -u www-data nextcloud-aio-nextcloud php occ app:enable user_limit_guard
+docker compose exec -u www-data nextcloud-aio-nextcloud php occ app:enable nc_aio_tools
 ```
 
 Set the limit in `.env` and restart the `nextcloud-aio-nextcloud` container to
@@ -445,6 +445,30 @@ NC_USER_LIMIT=25
 ```
 Leave it blank to disable enforcement entirely — the free-slot badge then
 reads "Unlimited users".
+
+## Object storage (S3) — where it does and doesn't apply
+
+Everything in this stack currently stores files on local disk (named Docker
+volumes). Three separate places came up in review; they are not three separate
+decisions:
+
+- **Nextcloud primary storage** (`NEXTCLOUD_DATADIR` → `/mnt/ncdata`). The only
+  real decision. Nextcloud supports S3 as primary object storage, but AIO exposes
+  no env var for it — it is an `objectstore` block written into `config.php`, and
+  it is chosen at *install* time. Switching an install that already holds files is
+  a data migration, not a config change. Placeholders for the values it needs are
+  in `.env.example` under **Optional: S3 primary object storage**, commented out
+  and unused until someone provides a bucket (or a MinIO container is added here).
+- **Talk recordings** (`nextcloud_aio_talk_recording:/tmp`). Not a storage choice.
+  The recorder writes an interim file to that volume, then uploads the finished
+  recording into Nextcloud through the normal API — so recordings land wherever
+  Nextcloud files land. Point Nextcloud at S3 and recordings follow automatically.
+- **Whiteboard backup** (`BACKUP_DIR=/tmp`). A crash-recovery dump of in-progress
+  boards, not user-visible file storage. Upstream `nextcloud/whiteboard` supports a
+  filesystem path only; there is no S3 option to switch on.
+
+Note this is unrelated to AIO's own "S3 support", which means AIO's bundled MinIO
+container for *backups*, not primary storage on an external endpoint.
 
 ## Known limitations (accepted for this stage)
 

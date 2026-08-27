@@ -12,26 +12,13 @@
                 </encoder>
         </appender>
 
-        <appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-                <file>/logs/james.log</file>
-                <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-                    <fileNamePattern>/logs/james.%i.log.tar.gz</fileNamePattern>
-                    <minIndex>1</minIndex>
-                    <maxIndex>3</maxIndex>
-                </rollingPolicy>
-
-                <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-                    <maxFileSize>100MB</maxFileSize>
-                </triggeringPolicy>
-
-                <encoder>
-                        <pattern>%d{HH:mm:ss.SSS} [%-5level] %logger{15} - %msg%n%rEx</pattern>
-                        <immediateFlush>false</immediateFlush>
-                </encoder>
-        </appender>
+        <!-- LOCAL CHANGE from James's stock logback.xml: the RollingFileAppender
+             writing to /logs/james.log is removed and only CONSOLE is attached to
+             the root logger, so everything goes to stdout and `docker compose logs`
+             is the single place to read James output. Nothing collects or rotates
+             a file inside this container. -->
         <root level="WARN">
                 <appender-ref ref="CONSOLE" />
-                <appender-ref ref="LOG_FILE" />
         </root>
 
         <logger name="org.apache.james" level="INFO" />

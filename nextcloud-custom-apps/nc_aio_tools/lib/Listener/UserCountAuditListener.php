@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OCA\UserLimitGuard\Listener;
+namespace OCA\NcAioTools\Listener;
 
-use OCA\UserLimitGuard\Service\UserLimitService;
+use OCA\NcAioTools\Service\UserLimitService;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\User\Events\UserCreatedEvent;
@@ -35,15 +35,16 @@ class UserCountAuditListener implements IEventListener {
 	}
 
 	private function log(string $action, string $uid): void {
-		$freeSlots = $this->limitService->getFreeSlots();
 		$this->logger->info(
 			sprintf(
-				'user_limit_guard: user "%s" %s, %s free slot(s) remaining',
+				'nc_aio_tools: user "%s" %s, %s free slot(s) remaining',
 				$uid,
 				$action,
-				$freeSlots === null ? 'unlimited' : (string)$freeSlots
+				$this->limitService->isUnlimited()
+					? 'unlimited'
+					: (string)$this->limitService->getFreeSlots()
 			),
-			['app' => 'user_limit_guard']
+			['app' => 'nc_aio_tools']
 		);
 	}
 }

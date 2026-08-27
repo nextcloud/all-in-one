@@ -12,12 +12,16 @@
 # blob/main/manual-install/latest.yml -- re-diff against that file before upgrading,
 # rather than hand-editing service definitions here.
 #
-# All optional profiles are enabled per Anirban's request: collabora, talk,
-# talk-recording, clamav, onlyoffice, eurooffice, imaginary, fulltextsearch,
-# whiteboard, ollama, james, context-chat. Bring the stack up with:
+# Optional profiles enabled per Anirban's request: collabora, talk, talk-recording,
+# clamav, imaginary, fulltextsearch, whiteboard, ollama, james, context-chat.
+# Collabora is the only office editor -- OnlyOffice and EuroOffice were removed at
+# Anirban's request (PR #1 review), so upstream AIO's aio-onlyoffice/aio-eurooffice
+# services, their volumes, secrets, and *_ENABLED/*_HOST env vars are all absent
+# here on purpose. Re-add them from upstream's latest.yml if that ever reverses.
+# Bring the stack up with:
 #   docker compose --profile collabora --profile talk --profile talk-recording \
-#     --profile clamav --profile onlyoffice --profile eurooffice --profile imaginary \
-#     --profile fulltextsearch --profile whiteboard --profile ollama --profile james \
+#     --profile clamav --profile imaginary --profile fulltextsearch \
+#     --profile whiteboard --profile ollama --profile james \
 #     --profile context-chat up -d
 #
 # Image tags are pinned to 20260805_083533 (per Anirban's request to use Nextcloud
@@ -33,12 +37,6 @@
 services:
   nextcloud-aio-apache:
     depends_on:
-      nextcloud-aio-onlyoffice:
-        condition: service_started
-        required: false
-      nextcloud-aio-eurooffice:
-        condition: service_started
-        required: false
       nextcloud-aio-collabora:
         condition: service_started
         required: false
@@ -82,8 +80,6 @@ services:
       - TALK_HOST=nextcloud-aio-talk
       - APACHE_PORT
       - AIO_LOG_LEVEL
-      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
-      - EUROOFFICE_HOST=nextcloud-aio-eurooffice
       - TZ=${TIMEZONE}
       - APACHE_MAX_SIZE
       - APACHE_MAX_TIME=${NEXTCLOUD_MAX_TIME}
@@ -93,9 +89,9 @@ services:
       - nextcloud_aio_nextcloud:/var/www/html:ro
       - nextcloud_aio_apache:/mnt/data:rw
       # Apache serves app static assets (js/css) directly off disk, so the
-      # user_limit_guard custom app's bind mount below needs to be layered in
+      # nc_aio_tools custom app's bind mount below needs to be layered in
       # here too, read-only -- see the matching mount on nextcloud-aio-nextcloud.
-      - ./nextcloud-custom-apps/user_limit_guard:/var/www/html/custom_apps/user_limit_guard:ro
+      - ./nextcloud-custom-apps/nc_aio_tools:/var/www/html/custom_apps/nc_aio_tools:ro
     restart: unless-stopped
     read_only: true
     tmpfs:
@@ -125,8 +121,8 @@ services:
       - nextcloud_aio_database_dump:/mnt/data:rw
     environment:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=nextcloud_database
-      - POSTGRES_USER=nextcloud
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
       - AIO_LOG_LEVEL
       - TZ=${TIMEZONE}
       - PGTZ=${TIMEZONE}
@@ -187,7 +183,7 @@ services:
       # so it doesn't shadow the Google/OneDrive integration apps that already
       # live under custom_apps in the named volume -- see SETUP.md for the
       # one-time `occ app:enable` step this still needs.
-      - ./nextcloud-custom-apps/user_limit_guard:/var/www/html/custom_apps/user_limit_guard:rw
+      - ./nextcloud-custom-apps/nc_aio_tools:/var/www/html/custom_apps/nc_aio_tools:rw
       # LOCAL PATCH (pairs with context-chat-patches/doc_loader.py on the backend):
       # context_chat 5.4.0's MIMETYPES allowlist omits legacy binary .xls
       # (application/vnd.ms-excel), so those files were never queued for indexing at
@@ -204,8 +200,8 @@ services:
       - POSTGRES_HOST=nextcloud-aio-database
       - POSTGRES_PORT=5432
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=nextcloud_database
-      - POSTGRES_USER=nextcloud
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
       - REDIS_HOST=nextcloud-aio-redis
       - REDIS_PORT=6379
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
@@ -219,19 +215,13 @@ services:
       - OVERWRITEPROTOCOL=https
       - TURN_SECRET
       - SIGNALING_SECRET
-      - ONLYOFFICE_SECRET
-      - EUROOFFICE_SECRET
       - AIO_LOG_LEVEL
       - NEXTCLOUD_MOUNT
       - CLAMAV_ENABLED
       - CLAMAV_HOST=nextcloud-aio-clamav
-      - ONLYOFFICE_ENABLED
-      - EUROOFFICE_ENABLED
       - COLLABORA_ENABLED
       - COLLABORA_HOST=nextcloud-aio-collabora
       - TALK_ENABLED
-      - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
-      - EUROOFFICE_HOST=nextcloud-aio-eurooffice
       - UPDATE_NEXTCLOUD_APPS
       - TZ=${TIMEZONE}
       - TALK_PORT
@@ -243,8 +233,8 @@ services:
       - FULLTEXTSEARCH_HOST=nextcloud-aio-fulltextsearch
       - FULLTEXTSEARCH_PROTOCOL=http
       - FULLTEXTSEARCH_PORT=9200
-      - FULLTEXTSEARCH_USER=elastic
-      - FULLTEXTSEARCH_INDEX=nextcloud-aio
+      - FULLTEXTSEARCH_USER
+      - FULLTEXTSEARCH_INDEX
       - PHP_MAX_TIME=${NEXTCLOUD_MAX_TIME}
       - TRUSTED_CACERTS_DIR=${NEXTCLOUD_TRUSTED_CACERTS_DIR}
       - STARTUP_APPS=${NEXTCLOUD_STARTUP_APPS}
@@ -259,7 +249,7 @@ services:
       - IMAGINARY_SECRET
       - WHITEBOARD_SECRET
       - WHITEBOARD_ENABLED
-      # Read by the user_limit_guard custom app (see nextcloud-custom-apps/) --
+      # Read by the nc_aio_tools custom app (see nextcloud-custom-apps/) --
       # blank/unset disables enforcement entirely. Only needs to be visible to
       # this container since it's where PHP-FPM actually executes app code.
       - NC_USER_LIMIT
@@ -373,9 +363,9 @@ services:
       - server_name=${NC_DOMAIN}
       - DONT_GEN_SSL_CERT=1
     # This image auto-adds "127.0.0.1 NC_DOMAIN" to /etc/hosts, assuming stock AIO's
-    # shared-netns setup with Apache (same as nextcloud-aio-nextcloud/talk/onlyoffice/
-    # eurooffice/whiteboard above). In this split-container topology that points at
-    # Collabora's own loopback instead of Apache, so its WOPI CheckFileInfo callback to
+    # shared-netns setup with Apache (same as nextcloud-aio-nextcloud/talk/whiteboard
+    # above). In this split-container topology that points at Collabora's own
+    # loopback instead of Apache, so its WOPI CheckFileInfo callback to
     # https://${NC_DOMAIN} times out ("Unauthorized WOPI host" / "CheckFileInfo failed"
     # in coolwsd logs) even though wopi_url/aliasgroup1 are both configured correctly.
     # host-gateway routes it into the host nginx instead, same fix as the others.
@@ -503,105 +493,6 @@ services:
       - /run/clamav
       - /var/log/supervisord
       - /var/run/supervisord
-    cap_drop:
-      - NET_RAW
-
-  nextcloud-aio-onlyoffice:
-    image: ghcr.io/nextcloud-releases/aio-onlyoffice:20260805_083533
-    init: true
-    healthcheck:
-      start_period: 60s
-      test: /healthcheck.sh
-      interval: 30s
-      timeout: 30s
-      start_interval: 5s
-      retries: 9
-    expose:
-      - "80"
-    environment:
-      - AIO_LOG_LEVEL
-      - LOG_LEVEL=${AIO_LOG_LEVEL}
-      - TZ=${TIMEZONE}
-      - JWT_ENABLED=true
-      - JWT_HEADER=AuthorizationJwt
-      - JWT_SECRET=${ONLYOFFICE_SECRET}
-      - NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/${NC_DOMAIN}.crt
-    # See nextcloud-aio-nextcloud above -- OnlyOffice calls back to https://${NC_DOMAIN}
-    # to fetch/save documents and can't resolve it without this.
-    extra_hosts:
-      - "${NC_DOMAIN}:host-gateway"
-    # The AIO office images ship no CA-trust logic of their own, unlike
-    # nextcloud-aio-nextcloud (whose /start.sh runs update-ca-certificates when
-    # TRUSTED_CACERTS_DIR is set). Without the mount + update below, the document
-    # server cannot verify the local self-signed cert when it fetches or saves a
-    # document from https://${NC_DOMAIN}, and the editor dies with "Download
-    # failed" / "The document could not be saved".
-    #
-    # NODE_EXTRA_CA_CERTS is required *on top of* the system store: docservice and
-    # converter are pkg-bundled Node binaries, and Node validates against its own
-    # baked-in CA list rather than the OS one, so update-ca-certificates alone does
-    # not reach them. It expects one file, hence the ${NC_DOMAIN}.crt naming
-    # convention for the cert dropped in NEXTCLOUD_TRUSTED_CACERTS_DIR.
-    #
-    # The cert must also carry a subjectAltName. A CN-only cert is rejected outright
-    # by Node/OpenSSL regardless of whether the CA is trusted -- see SETUP.md for the
-    # openssl invocation that generates one correctly.
-    entrypoint: ["/bin/sh", "-c", "update-ca-certificates || true; exec /app/ds/run-document-server.sh"]
-    volumes:
-      - nextcloud_aio_onlyoffice:/var/lib/onlyoffice:rw
-      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
-    restart: unless-stopped
-    profiles:
-      - onlyoffice
-    cap_drop:
-      - NET_RAW
-
-  nextcloud-aio-eurooffice:
-    image: ghcr.io/nextcloud-releases/aio-eurooffice:20260805_083533
-    init: true
-    healthcheck:
-      start_period: 60s
-      test: /healthcheck.sh
-      interval: 30s
-      timeout: 30s
-      start_interval: 5s
-      retries: 9
-    expose:
-      - "80"
-    environment:
-      - AIO_LOG_LEVEL
-      - LOG_LEVEL=${AIO_LOG_LEVEL}
-      - TZ=${TIMEZONE}
-      - JWT_ENABLED=true
-      - JWT_HEADER=AuthorizationJwt
-      - JWT_SECRET=${EUROOFFICE_SECRET}
-      - NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/${NC_DOMAIN}.crt
-    # See nextcloud-aio-nextcloud above -- same callback-URL resolution issue.
-    extra_hosts:
-      - "${NC_DOMAIN}:host-gateway"
-    # The AIO office images ship no CA-trust logic of their own, unlike
-    # nextcloud-aio-nextcloud (whose /start.sh runs update-ca-certificates when
-    # TRUSTED_CACERTS_DIR is set). Without the mount + update below, the document
-    # server cannot verify the local self-signed cert when it fetches or saves a
-    # document from https://${NC_DOMAIN}, and the editor dies with "Download
-    # failed" / "The document could not be saved".
-    #
-    # NODE_EXTRA_CA_CERTS is required *on top of* the system store: docservice and
-    # converter are pkg-bundled Node binaries, and Node validates against its own
-    # baked-in CA list rather than the OS one, so update-ca-certificates alone does
-    # not reach them. It expects one file, hence the ${NC_DOMAIN}.crt naming
-    # convention for the cert dropped in NEXTCLOUD_TRUSTED_CACERTS_DIR.
-    #
-    # The cert must also carry a subjectAltName. A CN-only cert is rejected outright
-    # by Node/OpenSSL regardless of whether the CA is trusted -- see SETUP.md for the
-    # openssl invocation that generates one correctly.
-    entrypoint: ["/bin/sh", "-c", "update-ca-certificates || true; exec /entrypoint.sh"]
-    volumes:
-      - nextcloud_aio_eurooffice:/var/lib/euro-office:rw
-      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
-    restart: unless-stopped
-    profiles:
-      - eurooffice
     cap_drop:
       - NET_RAW
 
@@ -830,12 +721,8 @@ volumes:
     name: nextcloud_aio_database_dump
   nextcloud_aio_elasticsearch:
     name: nextcloud_aio_elasticsearch
-  nextcloud_aio_eurooffice:
-    name: nextcloud_aio_eurooffice
   nextcloud_aio_nextcloud:
     name: nextcloud_aio_nextcloud
-  nextcloud_aio_onlyoffice:
-    name: nextcloud_aio_onlyoffice
   nextcloud_aio_redis:
     name: nextcloud_aio_redis
   nextcloud_aio_talk_recording:
