@@ -40,7 +40,7 @@
         keytool -genkey -alias james -keyalg RSA -keystore /path/to/james/conf/keystore
          -->
        <keystore>file://conf/keystore</keystore>
-       <secret>james72laBalle</secret>
+       <secret>${env:JAMES_KEYSTORE_SECRET}</secret>
        <provider>org.bouncycastle.jce.provider.BouncyCastleProvider</provider>
        <!-- The algorithm is optional and only needs to be specified when using something other
         than the Sun JCE provider - You could use IbmX509 with IBM Java runtime. -->

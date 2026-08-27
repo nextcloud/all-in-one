@@ -32,7 +32,7 @@
              -->
             <keystore>file://conf/keystore</keystore>
             <keystoreType>PKCS12</keystoreType>
-            <secret>james72laBalle</secret>
+            <secret>${env:JAMES_KEYSTORE_SECRET}</secret>
             <provider>org.bouncycastle.jce.provider.BouncyCastleProvider</provider>
             <algorithm>SunX509</algorithm>
 
@@ -40,7 +40,7 @@
             <!-- <privateKey>file://conf/private.key</privateKey> -->
             <!-- <certificates>file://conf/certs.self-signed.csr</certificates> -->
             <!-- An optional secret might be specified for the private key -->
-            <!-- <secret>james72laBalle</secret> -->
+            <!-- <secret>${env:JAMES_KEYSTORE_SECRET}</secret> -->
         </tls>
         <connectiontimeout>360</connectiontimeout>
         <connectionLimit>0</connectionLimit>
@@ -70,7 +70,7 @@
              -->
             <keystore>file://conf/keystore</keystore>
             <keystoreType>PKCS12</keystoreType>
-            <secret>james72laBalle</secret>
+            <secret>${env:JAMES_KEYSTORE_SECRET}</secret>
             <provider>org.bouncycastle.jce.provider.BouncyCastleProvider</provider>
             <algorithm>SunX509</algorithm>
 
@@ -78,7 +78,7 @@
             <!-- <privateKey>file://conf/private.key</privateKey> -->
             <!-- <certificates>file://conf/certs.self-signed.csr</certificates> -->
             <!-- An optional secret might be specified for the private key -->
-            <!-- <secret>james72laBalle</secret> -->
+            <!-- <secret>${env:JAMES_KEYSTORE_SECRET}</secret> -->
         </tls>
         <connectiontimeout>360</connectiontimeout>
         <connectionLimit>0</connectionLimit>
@@ -118,7 +118,7 @@
              -->
             <keystore>file://conf/keystore</keystore>
             <keystoreType>PKCS12</keystoreType>
-            <secret>james72laBalle</secret>
+            <secret>${env:JAMES_KEYSTORE_SECRET}</secret>
             <provider>org.bouncycastle.jce.provider.BouncyCastleProvider</provider>
             <algorithm>SunX509</algorithm>
 
@@ -126,7 +126,7 @@
             <!-- <privateKey>file://conf/private.key</privateKey> -->
             <!-- <certificates>file://conf/certs.self-signed.csr</certificates> -->
             <!-- An optional secret might be specified for the private key -->
-            <!-- <secret>james72laBalle</secret> -->
+            <!-- <secret>${env:JAMES_KEYSTORE_SECRET}</secret> -->
         </tls>
         <connectiontimeout>360</connectiontimeout>
         <connectionLimit>0</connectionLimit>

@@ -184,6 +184,11 @@ services:
       # live under custom_apps in the named volume -- see SETUP.md for the
       # one-time `occ app:enable` step this still needs.
       - ./nextcloud-custom-apps/nc_aio_tools:/var/www/html/custom_apps/nc_aio_tools:rw
+      # Custom occ commands, run through AIO's own NEXTCLOUD_EXEC_COMMANDS hook
+      # (see the env var below and the comments in the script itself). Replaces
+      # both the former nextcloud-aio-post-install one-shot service and the manual
+      # one-time `occ app:enable nc_aio_tools` step.
+      - ./nextcloud-exec-commands.sh:/nextcloud-exec-commands.sh:ro
       # LOCAL PATCH (pairs with context-chat-patches/doc_loader.py on the backend):
       # context_chat 5.4.0's MIMETYPES allowlist omits legacy binary .xls
       # (application/vnd.ms-excel), so those files were never queued for indexing at
@@ -253,6 +258,27 @@ services:
       # blank/unset disables enforcement entirely. Only needs to be visible to
       # this container since it's where PHP-FPM actually executes app code.
       - NC_USER_LIMIT
+      # AIO's supported hook for custom occ commands: /run-exec-commands.sh runs
+      # this once Apache is reachable. Setting it REPLACES AIO's built-in
+      # else-branch (which activates Collabora's config), so the script re-does
+      # that call itself -- do not point this elsewhere without reading it.
+      - NEXTCLOUD_EXEC_COMMANDS=bash /nextcloud-exec-commands.sh
+      # Consumed by the exec-commands script above, not by AIO itself.
+      - DEFAULT_QUOTA
+      # Primary object storage. AIO ships /var/www/html/config/s3.config.php, which
+      # activates the objectstore block only when OBJECTSTORE_S3_BUCKET is non-empty
+      # -- so leaving the bucket blank keeps everything on local disk. This is an
+      # INSTALL-TIME choice: setting it on an instance that already holds files does
+      # not migrate them. See SETUP.md.
+      - OBJECTSTORE_S3_BUCKET
+      - OBJECTSTORE_S3_KEY
+      - OBJECTSTORE_S3_SECRET
+      - OBJECTSTORE_S3_REGION
+      - OBJECTSTORE_S3_HOST
+      - OBJECTSTORE_S3_PORT
+      - OBJECTSTORE_S3_SSL
+      - OBJECTSTORE_S3_USEPATH_STYLE
+      - OBJECTSTORE_S3_AUTOCREATE
     stop_grace_period: 600s
     restart: unless-stopped
     shm_size: 134217728
@@ -265,34 +291,6 @@ services:
   # DEFAULT_QUOTA is blank. Bypasses the image's own entrypoint on purpose -- this
   # only needs php+occ against the shared /var/www/html volume, not the full AIO
   # startup sequence.
-  nextcloud-aio-post-install:
-    image: ghcr.io/nextcloud-releases/aio-nextcloud:20260805_083533
-    depends_on:
-      nextcloud-aio-nextcloud:
-        condition: service_started
-    volumes:
-      - nextcloud_aio_nextcloud:/var/www/html:rw
-      - ${NEXTCLOUD_DATADIR}:/mnt/ncdata:rw
-    environment:
-      - DEFAULT_QUOTA
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        if [ -z "$$DEFAULT_QUOTA" ]; then
-          echo "DEFAULT_QUOTA not set, skipping quota configuration."
-          exit 0
-        fi
-        until php /var/www/html/occ status 2>/dev/null | grep -q "installed: true"; do
-          echo "Waiting for Nextcloud install to finish..."
-          sleep 5
-        done
-        php /var/www/html/occ config:app:set files default_quota --value="$$DEFAULT_QUOTA"
-        for user in $$(php /var/www/html/occ user:list | sed -n 's/^  - \([^:]*\):.*/\1/p'); do
-          php /var/www/html/occ user:setting "$$user" files quota "$$DEFAULT_QUOTA"
-        done
-        echo "Default quota set to $$DEFAULT_QUOTA for all users."
-    restart: "no"
-
   nextcloud-aio-notify-push:
     image: ghcr.io/nextcloud-releases/aio-notify-push:20260805_083533
     user: "33"
@@ -633,9 +631,46 @@ services:
   # -- see SETUP.md for keystore generation and the AddDomain/AddUser CLI calls.
   # Port 587 (STARTTLS, SMTP AUTH required) is the one Nextcloud actually uses;
   # 25 and 465 come from James's stock config and are left as-is, unused here.
+  # Creates James's PostgreSQL database on the shared nextcloud-aio-database server.
+  # One-shot, idempotent, exits 0 whether or not the database already existed --
+  # Postgres has no CREATE DATABASE IF NOT EXISTS, hence the pg_database probe.
+  # Uses the same image as the database service so no extra image is pulled.
+  nextcloud-aio-james-db-init:
+    image: ghcr.io/nextcloud-releases/aio-postgresql:20260805_083533
+    depends_on:
+      nextcloud-aio-database:
+        condition: service_healthy
+    environment:
+      - PGHOST=nextcloud-aio-database
+      - PGPORT=5432
+      - PGUSER=${DATABASE_USER}
+      - PGPASSWORD=${DATABASE_PASSWORD}
+      - PGDATABASE=${DATABASE_NAME}
+      - JAMES_DB_NAME
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        if psql -tAc "SELECT 1 FROM pg_database WHERE datname='$$JAMES_DB_NAME'" | grep -q 1; then
+          echo "Database $$JAMES_DB_NAME already exists, nothing to do."
+        else
+          echo "Creating database $$JAMES_DB_NAME..."
+          psql -c "CREATE DATABASE \"$$JAMES_DB_NAME\""
+        fi
+    restart: "no"
+    profiles:
+      - james
+
   nextcloud-aio-james:
-    image: apache/james:jpa-3.8.2
+    # Built, not pulled -- the stock image ships no PostgreSQL JDBC driver.
+    # See james-image/Dockerfile for why this cannot be done with a bind mount.
+    build:
+      context: ./james-image
+    image: nextcloud-aio-james-postgres:jpa-3.8.2
     init: true
+    depends_on:
+      nextcloud-aio-james-db-init:
+        condition: service_completed_successfully
     expose:
       - "587"
     volumes:
@@ -643,6 +678,15 @@ services:
       - nextcloud_aio_james_var:/root/var:rw
     environment:
       - TZ=${TIMEZONE}
+      # James config files are read through commons-configuration2, so ${env:VAR}
+      # in them resolves against the container environment. Keeps the TLS keystore
+      # password and the database credentials out of the committed XML/properties.
+      - JAMES_KEYSTORE_SECRET
+      - JAMES_DB_HOST=nextcloud-aio-database
+      - JAMES_DB_PORT=5432
+      - JAMES_DB_NAME
+      - JAMES_DB_USER=${DATABASE_USER}
+      - JAMES_DB_PASSWORD=${DATABASE_PASSWORD}
     restart: unless-stopped
     profiles:
       - james

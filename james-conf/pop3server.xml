@@ -31,14 +31,14 @@
              -->
             <keystore>file://conf/keystore</keystore>
             <keystoreType>PKCS12</keystoreType>
-            <secret>james72laBalle</secret>
+            <secret>${env:JAMES_KEYSTORE_SECRET}</secret>
             <provider>org.bouncycastle.jce.provider.BouncyCastleProvider</provider>
 
             <!-- Alternatively TLS keys can be supplied via PEM files -->
             <!-- <privateKey>file://conf/private.key</privateKey> -->
             <!-- <certificates>file://conf/certs.self-signed.csr</certificates> -->
             <!-- An optional secret might be specified for the private key -->
-            <!-- <secret>james72laBalle</secret> -->
+            <!-- <secret>${env:JAMES_KEYSTORE_SECRET}</secret> -->
         </tls>
         <connectiontimeout>1200</connectiontimeout>
         <connectionLimit>0</connectionLimit>

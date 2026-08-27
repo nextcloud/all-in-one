@@ -305,12 +305,30 @@ email (invites, password resets, share notifications) in local dev. This is an
 outbound relay only — no MX records, no inbound mail, no mailbox management beyond
 the one relay account and the one test recipient below.
 
-`james-conf/` in this repo is Apache James's stock `jpa-3.8.2` config with only two
-changes: `domainlist.xml`'s `defaultDomain` (set to `NC_DOMAIN`), and a
-`keystore` file for TLS (gitignored — generated below, like the nginx cert). James's
+`james-conf/` in this repo is Apache James's stock `jpa-3.8.2` config. James's
 default config already has a `587` listener with `startTLS` + mandatory SMTP AUTH
 enabled out of the box — that's the one Nextcloud uses; ports `25`/`465` are
 James's untouched defaults and aren't used here.
+
+Deviations from stock, all marked with a `LOCAL CHANGE` comment in the file itself:
+
+| File | Change | Why |
+|---|---|---|
+| `domainlist.xml` | `defaultDomain` set to `NC_DOMAIN` | Needed for the relay account's domain. |
+| `keystore` | Generated, gitignored | TLS on 587. Step 1 below. |
+| `james-database.properties` | PostgreSQL instead of embedded Derby | Anirban's request. Uses its own database on the same server Nextcloud uses. |
+| `logback.xml` | `RollingFileAppender` removed | stdout only, so `docker compose logs` is the one place to read James output. |
+| `webadmin.properties` | `enabled=false` | Stock James binds an **unauthenticated** admin REST API on `0.0.0.0:8000`. Nothing here uses it; provisioning goes through `james-cli` over JMX. This also retires `jwt_publickey`, which shipped as James's public *demo* keypair. |
+| `smtpserver.xml`, `imapserver.xml`, `pop3server.xml`, `managesieveserver.xml` | keystore password → `${env:JAMES_KEYSTORE_SECRET}` | James reads config through commons-configuration2, so `${env:VAR}` resolves against the container environment. No secret in git. |
+
+**`nextcloud-aio-james` is the only built image in this stack.** `apache/james:jpa-3.8.2`
+bundles just `derby-10.14.2.0.jar`, and OpenJPA resolves JDBC drivers off the JVM
+classpath (`/root/libs/*`). `/root/extensions-jars` is not a substitute — James loads
+that with a separate Guice classloader for mailets, so a driver there is invisible to
+`DriverManager`. `james-image/Dockerfile` therefore adds the PostgreSQL driver to
+`/root/libs`. There is no `apache/james:postgres-3.8.x` to switch to instead; upstream's
+postgres distribution starts at `postgres-3.9.0` and is a different app with a
+different config layout.
 
 1. Generate the keystore (skip if `james-conf/keystore` already exists):
    ```sh
@@ -320,17 +338,29 @@ James's untouched defaults and aren't used here.
      -name james -out james-conf/keystore -password pass:james72laBalle
    rm -f /tmp/james-key.pem /tmp/james-cert.pem
    ```
-   (`james72laBalle` is the secret already referenced for this keystore in
-   `james-conf/smtpserver.xml`'s stock config — change both together if you want a
-   different one.)
-2. Bring up the container (add `--profile james`), then add the mail domain and the
-   relay account James will authenticate as (password from `.env`'s
-   `JAMES_SMTP_PASSWORD`):
+   The password must match `.env`'s `JAMES_KEYSTORE_SECRET`. `james72laBalle` is
+   the value James's own docs use in their `keytool` example, which is why it is the
+   default here. Change both together, or James refuses to start with
+   `java.io.IOException: keystore password was incorrect`.
+2. Build the image and bring up the container (add `--profile james`). The
+   `nextcloud-aio-james-db-init` one-shot creates James's database on
+   `nextcloud-aio-database` first; it is idempotent and exits 0 if the database is
+   already there.
+   ```sh
+   docker compose build nextcloud-aio-james
+   docker compose up -d nextcloud-aio-james
+   ```
+   Then add the mail domain and the relay account James authenticates as (password
+   from `.env`'s `JAMES_SMTP_PASSWORD`):
    ```sh
    JAMES_SMTP_PASSWORD=$(grep "^JAMES_SMTP_PASSWORD=" .env | cut -d= -f2-)
    docker compose exec nextcloud-aio-james james-cli AddDomain nextcloud.local
    docker compose exec nextcloud-aio-james james-cli AddUser "nextcloud@nextcloud.local" "$JAMES_SMTP_PASSWORD"
    ```
+   **Accounts live in the database, so anyone who used the earlier Derby-backed
+   config has to re-run these two commands after switching.** Derby data is not
+   migrated. A missing recipient shows up as `550 5.1.1 Unknown user: ...` in
+   `nextcloud.log`, after a successful STARTTLS + AUTH.
 3. Point Nextcloud at it:
    ```sh
    CT=nextcloud-aio-nextcloud
@@ -431,8 +461,10 @@ the `NC_USER_LIMIT` value in `.env`.
   `custom_apps`, not the whole directory, so it doesn't hide the
   `integration_google`/`integration_onedrive` apps already installed there.
 
-Enable it once per instance (the bind mount alone doesn't register the app
-with Nextcloud):
+No manual enable step is needed. `nextcloud-exec-commands.sh` runs
+`occ app:enable nc_aio_tools` on every container start (idempotent), through AIO's
+`NEXTCLOUD_EXEC_COMMANDS` hook — see **Custom occ commands** below. To enable it by
+hand anyway:
 ```sh
 docker compose exec -u www-data nextcloud-aio-nextcloud php occ app:enable nc_aio_tools
 ```
@@ -446,29 +478,71 @@ NC_USER_LIMIT=25
 Leave it blank to disable enforcement entirely — the free-slot badge then
 reads "Unlimited users".
 
-## Object storage (S3) — where it does and doesn't apply
+## Custom occ commands (NEXTCLOUD_EXEC_COMMANDS)
 
-Everything in this stack currently stores files on local disk (named Docker
-volumes). Three separate places came up in review; they are not three separate
-decisions:
+AIO's nextcloud image runs `/run-exec-commands.sh` as a supervisord program. Once
+Apache is reachable it executes whatever `NEXTCLOUD_EXEC_COMMANDS` contains. That is
+upstream's supported hook for custom occ work, so this repo uses it instead of forking
+[AIO's entrypoint.sh](https://github.com/nextcloud/all-in-one/blob/main/Containers/nextcloud/entrypoint.sh)
+or layering a custom nextcloud image.
 
-- **Nextcloud primary storage** (`NEXTCLOUD_DATADIR` → `/mnt/ncdata`). The only
-  real decision. Nextcloud supports S3 as primary object storage, but AIO exposes
-  no env var for it — it is an `objectstore` block written into `config.php`, and
-  it is chosen at *install* time. Switching an install that already holds files is
-  a data migration, not a config change. Placeholders for the values it needs are
-  in `.env.example` under **Optional: S3 primary object storage**, commented out
-  and unused until someone provides a bucket (or a MinIO container is added here).
-- **Talk recordings** (`nextcloud_aio_talk_recording:/tmp`). Not a storage choice.
+`docker-compose.yml` sets `NEXTCLOUD_EXEC_COMMANDS=bash /nextcloud-exec-commands.sh`
+and bind-mounts `nextcloud-exec-commands.sh` read-only, rather than inlining a shell
+script into a YAML string, so the script stays reviewable and diffable. It runs as
+`www-data` on **every** container start and is idempotent. It currently:
+
+1. Waits for the install/upgrade to finish (AIO waits for Apache, not for occ to be usable).
+2. Runs `occ richdocuments:activate-config` when `COLLABORA_ENABLED=yes`.
+3. Runs `occ app:enable nc_aio_tools` if not already enabled.
+4. Applies `DEFAULT_QUOTA` to the `files` app default and to every existing account.
+
+Steps 3 and 4 replace, respectively, a manual one-time `occ app:enable` and the former
+`nextcloud-aio-post-install` one-shot service, both of which are gone.
+
+> **Do not drop step 2.** AIO's `run-exec-commands.sh` activates Collabora's config only
+> in its `else` branch, i.e. only when `NEXTCLOUD_EXEC_COMMANDS` is *unset*. Setting the
+> variable takes over the whole hook, so omitting that call silently breaks Collabora's
+> WOPI config on every restart.
+
+## Object storage (S3)
+
+Nextcloud's user files live on local disk by default (`NEXTCLOUD_DATADIR` →
+`/mnt/ncdata`). AIO's nextcloud image ships `/var/www/html/config/s3.config.php`,
+which builds the `objectstore` block from `OBJECTSTORE_S3_*` environment variables and
+activates it **only when `OBJECTSTORE_S3_BUCKET` is non-empty**. Those variables are
+passed through in `docker-compose.yml`, so switching to S3 is a matter of filling them
+in — no custom config.php, no patching.
+
+```sh
+# .env -- leave OBJECTSTORE_S3_BUCKET empty to stay on local disk
+OBJECTSTORE_S3_BUCKET=nextcloud
+OBJECTSTORE_S3_KEY=...
+OBJECTSTORE_S3_SECRET=...
+OBJECTSTORE_S3_REGION=us-east-1
+OBJECTSTORE_S3_HOST=            # set for non-AWS endpoints (MinIO, Wasabi, Ceph)
+OBJECTSTORE_S3_PORT=
+OBJECTSTORE_S3_SSL=true
+OBJECTSTORE_S3_USEPATH_STYLE=false   # true for MinIO and most self-hosted gateways
+OBJECTSTORE_S3_AUTOCREATE=true
+```
+
+**This is an install-time decision.** It sets *primary* object storage, so on a fresh
+install everything goes to the bucket, but pointing an instance that already holds
+files at a bucket does not move them — Nextcloud will simply stop finding the old ones.
+Migrating an existing instance is a separate data-migration exercise, not a config flip.
+
+Two related questions from the review that are *not* separate decisions:
+
+- **Talk recordings** (`nextcloud_aio_talk_recording:/tmp`) are not a storage choice.
   The recorder writes an interim file to that volume, then uploads the finished
-  recording into Nextcloud through the normal API — so recordings land wherever
-  Nextcloud files land. Point Nextcloud at S3 and recordings follow automatically.
-- **Whiteboard backup** (`BACKUP_DIR=/tmp`). A crash-recovery dump of in-progress
+  recording into Nextcloud over the normal API, so it lands wherever Nextcloud files
+  land. Point Nextcloud at S3 and recordings follow automatically.
+- **Whiteboard backup** (`BACKUP_DIR=/tmp`) is a crash-recovery dump of in-progress
   boards, not user-visible file storage. Upstream `nextcloud/whiteboard` supports a
-  filesystem path only; there is no S3 option to switch on.
+  filesystem path only; there is no S3 option to enable.
 
-Note this is unrelated to AIO's own "S3 support", which means AIO's bundled MinIO
-container for *backups*, not primary storage on an external endpoint.
+Note this is unrelated to AIO's own "S3 support", which refers to its bundled MinIO
+container for *backups*.
 
 ## Known limitations (accepted for this stage)
 
