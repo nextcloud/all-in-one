@@ -50,4 +50,20 @@ if [ -n "${DEFAULT_QUOTA:-}" ]; then
     done
 fi
 
+# ClamAV scan limits (Anirban's request: 100 MB).
+#
+# NOTE: the MAX_SIZE env var on nextcloud-aio-clamav is INERT -- that image's
+# /start.sh never reads it, and its clamd.conf ships hardcoded 2000M values. The
+# limits Nextcloud actually enforces are these two files_antivirus app settings, so
+# this is the only place setting them has any effect.
+#   av_max_file_size     -- files larger than this are skipped entirely (-1 = no cap)
+#   av_stream_max_length -- how much of a file is streamed to clamd
+# Both are bytes. Files above the cap are accepted by Nextcloud WITHOUT being
+# scanned, so raising it trades throughput for coverage.
+if [ -n "${CLAMAV_MAX_FILE_SIZE:-}" ]; then
+    echo "exec-commands: capping ClamAV scanning at ${CLAMAV_MAX_FILE_SIZE} bytes..."
+    occ config:app:set files_antivirus av_max_file_size --value="$CLAMAV_MAX_FILE_SIZE"
+    occ config:app:set files_antivirus av_stream_max_length --value="$CLAMAV_MAX_FILE_SIZE"
+fi
+
 echo "exec-commands: done."

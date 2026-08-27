@@ -2,12 +2,19 @@
 
 This is Nextcloud AIO ("manual install" method) with all optional features enabled:
 Talk, Talk Recording, Collabora, ClamAV, Imaginary, Fulltextsearch, Whiteboard.
-Collabora is the only office editor — AIO's OnlyOffice and EuroOffice containers
-were removed at Anirban's request (PR #1 review), along with their volumes,
-secrets, and `*_ENABLED`/`*_HOST` env vars. No external storage backend (S3/Ceph)
-is involved — AIO's own containers handle everything. See **Object storage (S3)**
-below for what that would take, and note AIO's own "S3 support" means its bundled
-MinIO container for backups, not primary storage on an external endpoint.
+
+**Office editors:** Collabora is the only one active. `nextcloud-aio-onlyoffice` and
+`nextcloud-aio-eurooffice` are still defined in `docker-compose.yml` but disabled —
+their profiles are out of `COMPOSE_PROFILES` and `ONLYOFFICE_ENABLED` /
+`EUROOFFICE_ENABLED` are `"no"`, so neither container starts. Both keep the cert-trust
+configuration they need (`NODE_EXTRA_CA_CERTS` plus an `update-ca-certificates`
+entrypoint wrapper), so enabling one is a matter of flipping its env var to `"yes"`
+and adding its profile — nothing else. Note the env var alone only tells Nextcloud to
+use the editor; without the profile the container never starts and documents fail to
+open.
+
+Files live on local disk by default. S3 primary storage is wired and switchable — see
+**Object storage (S3)** below.
 
 All 14 images are pinned to tag `20260805_083533`, which bundles Nextcloud 33.0.7
 (per Anirban's request — confirmed by inspecting the image's baked-in
@@ -70,12 +77,18 @@ configured in Nextcloud's admin settings before it actually connects to anything
 
 2a. Copy the cert into `NEXTCLOUD_TRUSTED_CACERTS_DIR` (see `.env`), named
    `<NC_DOMAIN>.crt`. The compose file mounts that directory into the containers that
-   call back to Nextcloud over HTTPS -- so the name has to match `NC_DOMAIN`:
+   call back to Nextcloud over HTTPS. `nextcloud-aio-onlyoffice` and
+   `nextcloud-aio-eurooffice` additionally point `NODE_EXTRA_CA_CERTS` at that exact
+   filename (their document servers are pkg-bundled Node binaries, which validate
+   against Node's own baked-in CA list rather than the OS store), so the name has to
+   match `NC_DOMAIN`:
    ```sh
    cp /etc/nginx/certs/nextcloud.local.crt host-mounts/trusted-cacerts/nextcloud.local.crt
    ```
-   Re-copy this and recreate those containers whenever the cert is regenerated, or
-   Collabora will start failing with "Download failed".
+   The cert must also carry a `subjectAltName`; a CN-only cert is rejected outright by
+   Node/OpenSSL even when the CA is trusted. Re-copy this and recreate the affected
+   containers whenever the cert is regenerated, or the editors start failing with
+   "Download failed" / "The document could not be saved".
 
 3. Point the existing host nginx at it using `nginx-nextcloud.conf.sample` as a
    starting point (update `server_name` and the cert paths to match), reload nginx.
@@ -91,7 +104,7 @@ configured in Nextcloud's admin settings before it actually connects to anything
    ```
    First boot pulls a lot of images (Collabora, Elasticsearch for Fulltextsearch,
    ClamAV's virus DB, etc.) — expect this to take a while and use several GB of
-   disk/RAM.
+   disk/RAM. OnlyOffice and EuroOffice are not pulled unless you add their profiles.
 
    **If `COMPOSE_PROFILES` isn't set** (e.g. a shell that doesn't load `.env`), pass
    the flags explicitly and keep them identical across every `up`/`down`/`stop` call:
@@ -100,6 +113,10 @@ configured in Nextcloud's admin settings before it actually connects to anything
      --profile clamav --profile imaginary --profile fulltextsearch \
      --profile whiteboard --profile ollama --profile james \
      --profile context-chat up -d
+   ```
+   Add `--profile onlyoffice --profile eurooffice` (and set their `*_ENABLED` vars to
+   `"yes"`) only if you actually want those editors; they are off by default.
+   ```sh
    ```
    A command missing some of these flags doesn't just skip those services — Compose
    treats them as outside the stack entirely for that command. This is not
@@ -503,6 +520,27 @@ Steps 3 and 4 replace, respectively, a manual one-time `occ app:enable` and the 
 > in its `else` branch, i.e. only when `NEXTCLOUD_EXEC_COMMANDS` is *unset*. Setting the
 > variable takes over the whole hook, so omitting that call silently breaks Collabora's
 > WOPI config on every restart.
+
+## Antivirus scan limits (ClamAV)
+
+`CLAMAV_MAX_FILE_SIZE` in `.env` caps what ClamAV scans, in bytes. Default `104857600`
+(100 MB). It is applied by `nextcloud-exec-commands.sh` to two `files_antivirus`
+settings:
+
+| Setting | Meaning |
+|---|---|
+| `av_max_file_size` | Files larger than this are skipped entirely. `-1` means no cap. |
+| `av_stream_max_length` | How much of a file is streamed to clamd. |
+
+> **The `MAX_SIZE` env var on `nextcloud-aio-clamav` does nothing.** That image's
+> `/start.sh` never reads it, and its `clamd.conf` ships hardcoded `2000M` values. It
+> is left in place because it comes from upstream AIO's compose file, but the limits
+> Nextcloud actually enforces are the two app settings above. Verified by grepping the
+> running container.
+
+Files **above** the cap are accepted by Nextcloud **without being scanned**, so this
+trades coverage for throughput. `av_infected_action` is `only_log`, meaning detections
+are logged rather than blocked — worth revisiting before any real deployment.
 
 ## Object storage (S3)
 
