@@ -347,10 +347,9 @@ if [ -z "$AIO_LOG_LEVEL" ]; then
     export AIO_LOG_LEVEL="warn"
 fi
 
-if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
-    export SUPERVISORD_STDOUT=/dev/stdout
-else
-    export SUPERVISORD_STDOUT=NONE
+if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+    sed -i 's|access.log = /proc/self/fd/1|access.log = /dev/null|' /usr/local/etc/php-fpm.d/docker.conf
+    sed -i 's|^options = shares-console|#options = shares-console|' /etc/dinit.d/domain-validator
 fi
 
 # Check if ghcr.io is reachable
@@ -449,5 +448,5 @@ rm -rf /tmp/twig-cache/*
 chown www-data:www-data /tmp/twig-cache
 chmod 770 /tmp/twig-cache
 
-# Start supervisord
-exec /usr/bin/supervisord -c /supervisord.conf
+# Start dinit
+exec dinit --system --container php-fpm caddy-internal caddy-acme cron backup-time-file-watcher session-deduplicator domain-validator

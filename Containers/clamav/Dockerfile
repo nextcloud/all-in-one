@@ -3,9 +3,9 @@ FROM alpine:3.24.1
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache tzdata clamav clamav-milter supervisor bash; \
-    mkdir -p /tmp /var/lib/clamav /run/clamav /var/log/supervisord /var/run/supervisord; \
-    chmod 777 -R /tmp /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
+    apk add --no-cache tzdata clamav clamav-milter dinit bash; \
+    mkdir -p /tmp /var/lib/clamav; \
+    chmod 777 -R /tmp /var/log/clamav; \
     chown -R clamav:clamav /var/lib/clamav; \
     sed -i "s|#\?MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?MaxScanSize.*|MaxScanSize 2000M|g" /etc/clamav/clamd.conf; \
@@ -33,14 +33,14 @@ RUN set -ex; \
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
-COPY --chmod=664 supervisord.conf /supervisord.conf
+COPY dinit.d/ /etc/dinit.d/
 
 USER clamav:clamav
 RUN set -ex; \
     freshclam --foreground --stdout
 VOLUME /var/lib/clamav
 ENTRYPOINT ["/start.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["dinit", "--system", "--container", "freshclam", "clamd", "milter"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

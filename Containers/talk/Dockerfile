@@ -26,7 +26,7 @@ COPY --from=signaling --chmod=777 --chown=1000:1000 /usr/bin/nextcloud-spreed-si
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
-COPY --chmod=664 supervisord.conf /supervisord.conf
+COPY dinit.d/ /etc/dinit.d/
 
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
@@ -36,7 +36,7 @@ RUN set -ex; \
         tzdata \
         bash \
         openssl \
-        supervisor \
+        dinit \
         bind-tools \
         netcat-openbsd \
         \
@@ -66,24 +66,18 @@ RUN set -ex; \
         /var/tmp \
         /conf \
         /var/lib/turn \
-        /var/log/supervisord \
-        /var/run/supervisord \
         /usr/lib/janus/loggers; \
     chown eturnal:eturnal -R \
-        /etc/nats.conf \
-        /var/log/supervisord \
-        /var/run/supervisord; \
+        /etc/nats.conf; \
     chmod 777 -R \
         /tmp \
-        /conf \
-        /var/run/supervisord \
-        /var/log/supervisord; \
+        /conf; \
     ln -s /opt/eturnal/bin/stun /usr/local/bin/stun; \
     ln -s /opt/eturnal/bin/eturnalctl /usr/local/bin/eturnalctl
 
 USER eturnal:eturnal
 ENTRYPOINT ["/start.sh"]
-CMD ["supervisord", "-c", "/supervisord.conf"]
+CMD ["dinit", "--system", "--container", "nats-server", "eturnal", "janus", "signaling"]
 
 HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
