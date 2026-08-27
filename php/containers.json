@@ -82,7 +82,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": -100
     },
     {
       "container_name": "nextcloud-aio-database",
@@ -139,7 +140,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": -300
     },
     {
       "container_name": "nextcloud-aio-nextcloud",
@@ -284,7 +286,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": -100
     },
     {
       "container_name": "nextcloud-aio-notify-push",
@@ -325,7 +328,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 100
     },
     {
       "container_name": "nextcloud-aio-redis",
@@ -368,7 +372,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": -300
     },
     {
       "container_name": "nextcloud-aio-collabora",
@@ -418,7 +423,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 300
     },
     {
       "container_name": "nextcloud-aio-talk",
@@ -488,7 +494,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 300
     },
     {
       "container_name": "nextcloud-aio-talk-recording",
@@ -542,7 +549,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 300
     },
     {
       "container_name": "nextcloud-aio-borgbackup",
@@ -613,7 +621,8 @@
       "tmpfs": [
         "/tmp",
         "/nextcloud_aio_volumes"
-      ]
+      ],
+      "oom_score_adj": -300
     },
     {
       "container_name": "nextcloud-aio-watchtower",
@@ -636,7 +645,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": -300
     },
     {
       "container_name": "nextcloud-aio-domaincheck",
@@ -669,7 +679,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 300
     },
     {
       "container_name": "nextcloud-aio-clamav",
@@ -714,7 +725,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 300
     },
     {
       "container_name": "nextcloud-aio-onlyoffice",
@@ -758,7 +770,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 300
     },
     {
       "container_name": "nextcloud-aio-eurooffice",
@@ -807,7 +820,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 300
     },
     {
       "container_name": "nextcloud-aio-imaginary",
@@ -849,7 +863,8 @@
       ],
       "secrets": [
         "IMAGINARY_SECRET"
-      ]
+      ],
+      "oom_score_adj": 300
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
@@ -903,7 +918,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 300
     },
     {
       "container_name": "nextcloud-aio-docker-socket-proxy",
@@ -930,7 +946,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 100
     },
     {
       "container_name": "nextcloud-aio-harp",
@@ -982,7 +999,8 @@
       ],
       "profiles": [
         "harp"
-      ]
+      ],
+      "oom_score_adj": 100
     },
     {
       "container_name": "nextcloud-aio-whiteboard",
@@ -1028,7 +1046,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "oom_score_adj": 300
     }
   ]
 }

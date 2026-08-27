@@ -41,6 +41,7 @@ readonly class Container {
         public AioVariables                  $aioVariables,
         public string                        $documentation,
         public bool                          $hideFromList,
+        public int                           $oomScoreAdj,
         private DockerActionManager           $dockerActionManager
     ) {
     }

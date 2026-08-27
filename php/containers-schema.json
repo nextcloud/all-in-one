@@ -214,6 +214,11 @@
 							"pattern": "^/[a-z/_0-9-:]+$"
 						}
 					},
+					"oom_score_adj": {
+						"type": "integer",
+						"minimum": -500,
+						"maximum": 500
+					},
 					"volumes": {
 						"type": "array",
 						"items": {
