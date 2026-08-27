@@ -1,11 +1,10 @@
 # ClamAV extended community container
 
 This container is a drop-in replacement for the official AIO ClamAV container with enhanced detection via additional signatures. The [container image](https://github.com/extremeshok/clamav-unofficial-sigs) is built on the official ClamAV image (the published multi-arch image uses clamav/clamav-debian:stable, the only official variant with amd64 and arm64 manifests), so it always carries a current ClamAV for signature integrity testing.
-
-
+ 
 ## Installation
 
-Add and start the container in the Nextcloud AIO interface. No configuration needs to be done by you. 
+See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack. Add and start the container in the Nextcloud AIO interface. No configuration needs to be done by you. 
 
 > [!Warning]
 > - Only use either the official ClamAV container OR this extended one. Running both at the same time is not possible.
