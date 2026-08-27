@@ -318,6 +318,11 @@ readonly class ContainerDefinitionFetcher {
                 $shmSize = $entry['shm_size'];
             }
 
+            $cpuShares = 512;
+            if (isset($entry['cpu_shares'])) {
+                $cpuShares = $entry['cpu_shares'];
+            }
+
             $apparmorUnconfined = false;
             if (isset($entry['apparmor_unconfined'])) {
                 $apparmorUnconfined = $entry['apparmor_unconfined'];
@@ -382,6 +387,7 @@ readonly class ContainerDefinitionFetcher {
                 $capAdd,
                 $sysctls,
                 $shmSize,
+                $cpuShares,
                 $apparmorUnconfined,
                 $backupVolumes,
                 $nextcloudExecCommands,

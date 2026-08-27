@@ -148,6 +148,11 @@
 					"shm_size": {
 						"type": "integer"
 					},
+					"cpu_shares": {
+						"type": "integer",
+						"minimum": 512,
+						"maximum": 2048
+					},
 					"secrets": {
 						"type": "array",
 						"items": {

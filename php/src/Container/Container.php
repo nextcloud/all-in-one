@@ -30,6 +30,7 @@ readonly class Container {
         /** @var string[] */
         public array                         $sysctls,
         public int                           $shmSize,
+        public int                           $cpuShares,
         public bool                          $apparmorUnconfined,
         /** @var string[] */
         public array                         $backupVolumes,
