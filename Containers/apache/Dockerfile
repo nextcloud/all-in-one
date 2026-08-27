@@ -90,7 +90,7 @@ USER www-data:www-data
 STOPSIGNAL SIGTERM
 
 ENTRYPOINT ["/start.sh"]
-CMD ["dinit", "--system", "--container", "apache", "caddy"]
+CMD ["dinit", "--system", "--container", "--socket-path", "/tmp/dinitctl", "apache", "caddy"]
 
 ENV AIO_LOG_LEVEL=warn
 
