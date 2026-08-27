@@ -30,7 +30,7 @@ spec:
             - name: HP_K8S_ENABLED
               value: "true"
             - name: HP_K8S_NAMESPACE
-              value: "{{ .Values.HARP_K8S_NAMESPACE }}"
+              value: "{{ .Values.NAMESPACE }}"
             - name: HP_K8S_STORAGE_CLASS
               value: "{{ .Values.HARP_K8S_STORAGE_CLASS }}"
             - name: HP_K8S_DEFAULT_STORAGE_SIZE
