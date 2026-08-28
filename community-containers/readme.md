@@ -33,6 +33,7 @@ flowchart TD
         JSER(["🎯  Jellyseerr\nMedia request manager"]):::community
         JOPLIN(["📝  Joplin Server\nNotes sync server"]):::community
         NOTIF(["📣  Notifications\nExternal push notify"]):::community
+        GITEA(["🍵  Gitea\nSelf-hosted Git service"]):::community
     end
 
     subgraph COMM_MEDIA["🎬 Media"]
@@ -59,6 +60,7 @@ flowchart TD
         LDAP(["👥  LLDAP\nLight LDAP / Users"]):::community
         CADDY(["🌐  Caddy\nReverse Proxy + Geoblocking"]):::community
         NPMPLUS(["🌐  NPMplus\nNginx Proxy Manager"]):::community
+        WG(["🔑  WireGuard Easy\nVPN server with web UI"]):::community
     end
 ```
 

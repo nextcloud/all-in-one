@@ -12,6 +12,7 @@ ENV ALLOW_ALL=false \
     HPB_PATH=/standalone-signaling/ \
     AIO_LOG_LEVEL=warn
 
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
@@ -31,7 +32,6 @@ RUN set -ex; \
         wget \
         shadow \
         pulseaudio \
-        openssl \
         build-base \
         linux-headers \
         geckodriver; \
@@ -39,8 +39,7 @@ RUN set -ex; \
         apk add --no-cache intel-media-driver; \
     fi; \
     useradd -d /tmp --system recording -u 122; \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd; \
+    \
     git clone --recursive https://github.com/nextcloud/nextcloud-talk-recording --depth=1 --single-branch --branch "$RECORDING_VERSION" /src; \
     python3 -m pip install --no-cache-dir /src; \
     rm -rf /src; \
@@ -54,17 +53,16 @@ RUN set -ex; \
         git \
         wget \
         shadow \
-        openssl \
         build-base \
         linux-headers;
 
 VOLUME /tmp
 WORKDIR /tmp
-USER 122
+USER recording:recording
 ENTRYPOINT ["/start.sh"]
 CMD ["python", "-m", "nextcloud.talk.recording", "--config", "/conf/recording.conf"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

@@ -1,10 +1,9 @@
 # syntax=docker/dockerfile:latest
 # Probably from here https://github.com/elastic/dockerfiles/blob/9.3/elasticsearch/Dockerfile
-FROM elasticsearch:9.5.1
+FROM elasticsearch:9.5.2
 
-USER root
+USER root:root
 
-# hadolint ignore=DL3041
 RUN set -ex; \
     \
     microdnf update -y; \
@@ -18,7 +17,7 @@ COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 USER 1000:0
 
-HEALTHCHECK --interval=10s --timeout=5s --start-period=1m --retries=5 CMD /healthcheck.sh
+HEALTHCHECK --interval=10s --timeout=5s --start-period=1m --retries=5 CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

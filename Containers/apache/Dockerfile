@@ -8,12 +8,13 @@ COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
 COPY --chown=33:33 Caddyfile /Caddyfile
 COPY --chmod=664 nextcloud.conf /usr/local/apache2/conf/nextcloud.conf
-COPY --chmod=664 supervisord.conf /supervisord.conf
+COPY dinit.d/ /etc/dinit.d/
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 VOLUME /mnt/data
 
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
@@ -27,10 +28,9 @@ RUN set -ex; \
     \
     apk add --no-cache \
         bash \
-        supervisor \
+        dinit \
         tzdata \
         ca-certificates \
-        openssl \
         bind-tools \
         netcat-openbsd; \
     \
@@ -78,31 +78,23 @@ RUN set -ex; \
     mkdir -p /var/www; \
     chown -R www-data:www-data /var/www; \
     \
-    mkdir /var/log/supervisord; \
-    mkdir /var/run/supervisord; \
-    chown www-data:www-data /var/run/supervisord; \
-    chown www-data:www-data /var/log/supervisord; \
-    chmod 777 /var/run/supervisord; \
-    chmod 777 /var/log/supervisord; \
-    \
     chown -R www-data:www-data /usr/local/apache2; \
     chmod +r -R /usr/local/apache2; \
     mkdir -p /usr/local/apache2/logs; \
     chmod 777 -R /home/www-data; \
     chmod 777 -R /usr/local/apache2/logs; \
-    rm -rf /usr/local/apache2/cgi-bin/; \
-    \
-    echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    apk --no-cache del openssl
+    rm -rf /usr/local/apache2/cgi-bin/
 
-USER 33
+USER www-data:www-data
+
+STOPSIGNAL SIGTERM
 
 ENTRYPOINT ["/start.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["dinit", "--system", "--container", "--socket-path", "/tmp/dinitctl", "apache", "caddy"]
 
 ENV AIO_LOG_LEVEL=warn
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

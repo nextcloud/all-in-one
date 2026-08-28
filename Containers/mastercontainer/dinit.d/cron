@@ -1,0 +1,5 @@
+type = process
+command = /cron.sh
+term-signal = TERM
+restart = yes
+options = shares-console

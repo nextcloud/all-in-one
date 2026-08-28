@@ -3,10 +3,10 @@ FROM alpine:3.24.1
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
-    apk add --no-cache tzdata clamav clamav-milter supervisor bash; \
-    mkdir -p /tmp /var/lib/clamav /run/clamav /var/log/supervisord /var/run/supervisord; \
-    chmod 777 -R /tmp /run/clamav /var/log/clamav /var/log/supervisord /var/run/supervisord; \
-    chown -R 100:100 /var/lib/clamav; \
+    apk add --no-cache tzdata clamav clamav-milter dinit bash; \
+    mkdir -p /tmp /var/lib/clamav; \
+    chmod 777 -R /tmp /var/log/clamav; \
+    chown -R clamav:clamav /var/lib/clamav; \
     sed -i "s|#\?MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?MaxScanSize.*|MaxScanSize 2000M|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?MaxFileSize.*|MaxFileSize 2000M|g" /etc/clamav/clamd.conf; \
@@ -24,23 +24,26 @@ RUN set -ex; \
     sed -i "s|#\?MaxThreads.*|MaxThreads 2|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?TCPSocket|TCPSocket|g" /etc/clamav/clamd.conf; \
     sed -i "s|^LocalSocket .*|LocalSocket /tmp/clamd.sock|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?PidFile .*|PidFile /tmp/clamd.pid|g" /etc/clamav/clamd.conf; \
+    sed -i "s|#\?PidFile .*|PidFile /tmp/freshclam.pid|g" /etc/clamav/freshclam.conf; \
     sed -i "s|Example| |g" /etc/clamav/clamav-milter.conf; \
     sed -i "s|#\?MilterSocket inet:7357|MilterSocket inet:7357|g" /etc/clamav/clamav-milter.conf; \
     sed -i "s|#\?ClamdSocket unix:/run/clamav/clamd.sock|ClamdSocket unix:/tmp/clamd.sock|g" /etc/clamav/clamav-milter.conf; \
+    sed -i "s|#\?PidFile .*|PidFile /tmp/clamav-milter.pid|g" /etc/clamav/clamav-milter.conf; \
     sed -i "s|#\?OnInfected Quarantine|OnInfected Reject|g" /etc/clamav/clamav-milter.conf; \
     sed -i "s|#\?AddHeader Replace|AddHeader Add|g" /etc/clamav/clamav-milter.conf; \
     sed -i "s|#\?Foreground yes|Foreground yes|g" /etc/clamav/clamav-milter.conf
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
-COPY --chmod=664 supervisord.conf /supervisord.conf
+COPY dinit.d/ /etc/dinit.d/
 
-USER 100
+USER clamav:clamav
 RUN set -ex; \
     freshclam --foreground --stdout
 VOLUME /var/lib/clamav
 ENTRYPOINT ["/start.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["dinit", "--system", "--container", "--socket-path", "/tmp/dinitctl", "freshclam", "clamd", "milter"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \
@@ -50,4 +53,4 @@ LABEL com.centurylinklabs.watchtower.enable="false" \
     org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
     org.opencontainers.image.vendor="Nextcloud" \
     org.opencontainers.image.documentation="https://github.com/nextcloud/all-in-one/blob/main/readme.md"
-HEALTHCHECK --start-period=60s --retries=9 CMD /healthcheck.sh
+HEALTHCHECK --start-period=60s --retries=9 CMD ["/healthcheck.sh"]

@@ -2,7 +2,7 @@
 # Probably from this file: https://github.com/nextcloud/whiteboard/blob/main/Dockerfile
 FROM ghcr.io/nextcloud-releases/whiteboard:v1.5.9
 
-USER root
+USER root:root
 RUN set -ex; \
     apk add --no-cache bash jq; \
     chmod 777 -R /tmp; \
@@ -11,12 +11,12 @@ RUN set -ex; \
         printf '%s\n' '#!/bin/sh' "exec /usr/lib/chromium/chrome_crashpad_handler.real --no-periodic-tasks --database=\"\${CRASHPAD_DATABASE:-/tmp/chrome-crashpad}\" \"\$@\"" >/usr/lib/chromium/chrome_crashpad_handler; \
         chmod +x /usr/lib/chromium/chrome_crashpad_handler; \
     fi
-USER 65534
+USER nobody:nobody
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 
 WORKDIR /tmp
 

@@ -17,7 +17,14 @@ if [ -n "${INSTALLED_AT}" ]; then
     INSTALLED_AT="$(echo "${INSTALLED_AT}" | sed "s|[0-9][0-9]$|00|")"
     $PHP_CLI /var/www/html/occ config:app:set core installedat --value="${INSTALLED_AT}"
 fi
+
+# Make sure updater channel is set to "stable"
+$PHP_CLI /var/www/html/occ config:system:set update_channel --value="stable"
+
+# Run the update
 $PHP_CLI /var/www/html/updater/updater.phar --no-interaction --no-backup
+
+# Do some tests
 if ! $PHP_CLI /var/www/html/occ -V || $PHP_CLI /var/www/html/occ status | grep maintenance | grep -q 'true'; then
     echo "Installation of Nextcloud failed!"
     touch "$NEXTCLOUD_DATA_DIR/install.failed"

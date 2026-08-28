@@ -8,11 +8,11 @@ COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 COPY --chmod=775 init-user-db.sh /docker-entrypoint-initdb.d/init-user-db.sh
 
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache \
         bash \
-        openssl \
         shadow \
         netcat-openbsd \
         grep; \
@@ -34,19 +34,15 @@ RUN set -ex; \
     mkdir /mnt/data; \
     chown postgres:postgres /mnt/data; \
     \
-# Give root a random password
-    echo "root:$(openssl rand -base64 12)" | chpasswd; \
-    apk --no-cache del openssl; \
-    \
 # Get rid of unused binaries
     rm -f /usr/local/bin/gosu /usr/local/bin/su-exec;
 
 VOLUME /mnt/data
 
-USER 999
+USER postgres:postgres
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

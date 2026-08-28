@@ -30,7 +30,7 @@ spec:
             - name: HP_K8S_ENABLED
               value: "true"
             - name: HP_K8S_NAMESPACE
-              value: "{{ .Values.HARP_K8S_NAMESPACE }}"
+              value: "{{ .Values.NAMESPACE }}"
             - name: HP_K8S_STORAGE_CLASS
               value: "{{ .Values.HARP_K8S_STORAGE_CLASS }}"
             - name: HP_K8S_DEFAULT_STORAGE_SIZE
@@ -45,7 +45,7 @@ spec:
               value: https://{{ .Values.NC_DOMAIN }}
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-harp:20260817_082005
+          image: ghcr.io/nextcloud-releases/aio-harp:20260825_084538
           readinessProbe:
             exec:
               command:

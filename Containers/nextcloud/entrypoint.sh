@@ -947,6 +947,8 @@ if [ "$TALK_ENABLED" = 'yes' ]; then
     elif [ "$SKIP_UPDATE" != 1 ]; then
         php /var/www/html/occ app:update spreed
     fi
+    # We auto-renew the certs via caddy so the outdated cert warning should not be displayed
+    php /var/www/html/occ config:app:set spreed certificate_expiration_days --type=integer --value="2"
     # Add turn server
     # shellcheck disable=SC2153
     if ! php /var/www/html/occ talk:turn:list --output="plain" | grep server | grep -q " $TURN_DOMAIN:$TALK_PORT"; then

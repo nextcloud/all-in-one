@@ -26,5 +26,3 @@ else
     echo "'CONTAINER_TO_UPDATE' is not set. Cannot update anything."
     exit 1
 fi
-
-exec "$@"
