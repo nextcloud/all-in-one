@@ -50,6 +50,38 @@ if [ -n "${DEFAULT_QUOTA:-}" ]; then
     done
 fi
 
+# Default apps, in Anirban's stated priority order (PR #1 review). These have to be
+# enabled for the custom styling to apply to them.
+#
+# Two mechanisms, deliberately both:
+#   NEXTCLOUD_STARTUP_APPS installs these on a FRESH install only -- AIO runs that
+#   list once, on first startup, so it does nothing for an instance that already
+#   exists. This loop is what makes the set hold on every start, and it also
+#   re-enables anything an admin turned off by accident.
+#
+# app:enable is a no-op when the app is already on, so this stays quiet in the
+# normal case. Apps absent from disk are reported and skipped rather than failing
+# the whole hook -- mail and previewgenerator come from the app store and need
+# `occ app:install`, which needs outbound network and is NOT done here on purpose
+# (a hook that reaches the internet on every container start is its own problem).
+if [ -n "${NEXTCLOUD_DEFAULT_APPS:-}" ]; then
+    for app in $(echo "$NEXTCLOUD_DEFAULT_APPS" | tr ',' ' '); do
+        if ! occ app:list --enabled | grep -q "^  - ${app}:"; then
+            if occ app:enable "$app" >/dev/null 2>&1; then
+                echo "exec-commands: enabled ${app}"
+            else
+                echo "exec-commands: ${app} not present on disk, skipping (occ app:install ${app} to add it)"
+            fi
+        fi
+    done
+
+    # Landing page. `defaultapp` is a comma-separated fallback chain, first ENABLED
+    # entry wins, so the same priority order works directly. Note this only controls
+    # where users land: the order of icons in the top bar is a per-user setting
+    # (core/apporder) with no admin-level default, so it cannot be set from here.
+    occ config:system:set defaultapp --value="$NEXTCLOUD_DEFAULT_APPS"
+fi
+
 # ClamAV scan limits (Anirban's request: 100 MB).
 #
 # NOTE: the MAX_SIZE env var on nextcloud-aio-clamav is INERT -- that image's

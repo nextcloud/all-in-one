@@ -285,6 +285,7 @@ services:
       # Consumed by the exec-commands script above, not by AIO itself.
       - DEFAULT_QUOTA
       - CLAMAV_MAX_FILE_SIZE
+      - NEXTCLOUD_DEFAULT_APPS
       # Primary object storage. AIO ships /var/www/html/config/s3.config.php, which
       # activates the objectstore block only when OBJECTSTORE_S3_BUCKET is non-empty
       # -- so leaving the bucket blank keeps everything on local disk. This is an
