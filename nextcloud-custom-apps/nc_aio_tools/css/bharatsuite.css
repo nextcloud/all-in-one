@@ -146,6 +146,19 @@ body.theme--dark {
 	--color-info:                  #6f9ad6;
 	--bs-card:                     #1a232c;
 
+	/**
+	 * App icons ship as white SVGs and Nextcloud inverts them to black through
+	 * this variable, which theming derives from its *static* background_color --
+	 * a light paper -- so it stays invert(100%) in dark mode too. Black icons on
+	 * a cream header are right; the same icons on the ink header rendered at
+	 * rgb(4,5,7) against rgb(18,25,31), which is why the header looked empty.
+	 *
+	 * Same root cause as the header wordmark, one variable along: the invert has
+	 * to follow the colour scheme, not the theming setting.
+	 */
+	--background-image-invert-if-bright: no;
+	--background-invert-if-bright: no;
+
 	/* theming's dark.css redeclares these two at [data-theme-dark]. Anything our
 	   dark block leaves out silently reverts to stock: the typeface fell back to
 	   system-ui, and the page ground stayed the light `background_color` while the
@@ -185,6 +198,19 @@ body.theme--dark {
 		--color-warning:               #e8933f;
 		--color-info:                  #6f9ad6;
 		--bs-card:                     #1a232c;
+
+		/**
+		 * App icons ship as white SVGs and Nextcloud inverts them to black through
+		 * this variable, which theming derives from its *static* background_color --
+		 * a light paper -- so it stays invert(100%) in dark mode too. Black icons on
+		 * a cream header are right; the same icons on the ink header rendered at
+		 * rgb(4,5,7) against rgb(18,25,31), which is why the header looked empty.
+		 *
+		 * Same root cause as the header wordmark, one variable along: the invert has
+		 * to follow the colour scheme, not the theming setting.
+		 */
+		--background-image-invert-if-bright: no;
+		--background-invert-if-bright: no;
 
 		/* theming's dark.css redeclares these two at [data-theme-dark]. Anything our
 		   dark block leaves out silently reverts to stock: the typeface fell back to
