@@ -26,7 +26,28 @@
 	src: url('../fonts/inter-var.woff2') format('woff2-variations');
 }
 
-:root:root {
+/**
+ * The light palette, declared at BOTH levels on purpose.
+ *
+ * :root:root alone is not enough and the reason is easy to miss. It matches
+ * <html>, while theming declares its own light palette on `body[data-theme-light]`
+ * -- so every element inside <body> inherited theming's values, not ours. The page
+ * still looked right, because the page ground is painted on the root canvas; what
+ * broke was everything that paints --color-main-background explicitly. Popovers,
+ * action menus, dialogs and cards were all rendering at stock #ffffff on a paper
+ * page, which is what made the Assistant modal and the Mail card look like holes
+ * cut in the background.
+ *
+ * The dark blocks never had this problem because they were written against the
+ * body from the start. The body selectors below are (0,1,1) and beat theming's
+ * (0,1,0); the dark blocks come later at equal specificity, so they still win when
+ * they apply.
+ */
+:root:root,
+body[data-themes],
+body[data-theme-light],
+body[data-theme-default],
+body[data-theme-light-highcontrast] {
 	/* -- BharatSuite palette (Notifiled) ------------------------------------- */
 	--bs-paper:        #f2efe9;
 	--bs-surface:      #f8f6f1;
@@ -64,8 +85,18 @@
 	--color-background-hover:      var(--bs-surface-sunk);
 	--color-background-dark:       var(--bs-surface-sunk);
 	--color-background-darker:     var(--bs-n300);
-	--color-background-plain:      var(--bs-blue-700);
-	--color-background-plain-text: #ffffff;
+	/**
+	 * The "plain" ground is what Nextcloud paints the header and the login page
+	 * with. Stock Nextcloud makes it the primary colour; the mockups make it the
+	 * paper, with the header separated by a hairline instead of a fill.
+	 *
+	 * This was deep blue until the body-level fix above landed, and nothing showed
+	 * it, because theming's own value was winning on <body> the whole time. The
+	 * moment our tokens actually reached the body the header turned blue and ate
+	 * the wordmark: "Bharat" is #23508c on a #1c4478 header.
+	 */
+	--color-background-plain:      var(--bs-paper);
+	--color-background-plain-text: var(--bs-ink);
 
 	/* -- Text ----------------------------------------------------------------- */
 	--color-main-text:             var(--bs-ink);
