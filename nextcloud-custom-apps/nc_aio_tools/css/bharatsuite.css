@@ -310,9 +310,29 @@ body.theme--dark {
 	padding-inline-start: 172px;
 }
 
-/* The mockups separate the header from the page with a hairline, not a shadow. */
-#header {
+/**
+ * The mockups separate the header from the page with a hairline, not a shadow.
+ *
+ * Scoped away from .header-guest. On the login screen #header is not a bar across
+ * the top -- it is the 700px block that holds the wordmark -- so an unscoped rule
+ * drew a rule straight across the page behind the sign-in card.
+ */
+#header:not(.header-guest) {
 	border-bottom: 1px solid var(--color-border);
+}
+
+/**
+ * App menu labels: all or nothing.
+ *
+ * Nextcloud measures each entry and tags only the ones that overflow with
+ * --truncated, which leaves a ragged row where some apps read in full and others
+ * are clipped to "Conta..." and "Calen...". Hiding the label on just those entries
+ * makes it worse, so the test is on the menu: if any label would be clipped, none
+ * are shown and the row falls back to icons. When they all fit, the header reads
+ * as the text navigation the mockups show.
+ */
+.app-menu:has(.app-menu-entry--truncated) .app-menu-entry__label {
+	display: none;
 }
 
 /* -- Type and focus, global ------------------------------------------------ */
@@ -459,4 +479,162 @@ h1, h2, h3,
 .files-list__row.files-list__row--active,
 tr.files-list__row[data-cy-files-list-row][aria-selected='true'] {
 	background-color: var(--color-primary-element-light);
+}
+
+
+/* -- Login ----------------------------------------------------------------- */
+
+/**
+ * The sign-in card is stock .guest-box: the page's own colour at 80% alpha, held
+ * up by a drop shadow. That reads on Nextcloud's photographic login background,
+ * but on a flat paper ground it is a shadow around nothing. The mockups use a
+ * distinct surface with a hairline, so the card is given the same treatment as
+ * the dashboard's, plus the Notifiled --shadow-sm.
+ */
+#body-login .guest-box.login-box {
+	background-color: var(--bs-card);
+	border: 1px solid var(--color-border);
+	box-shadow: 0 1px 2px #16202b14;
+}
+
+/**
+ * The footer carries .guest-box too, which turned the product name into a floating
+ * pill. It is a caption, not a card.
+ */
+#body-login footer.guest-box {
+	background: none;
+	border: 0;
+	box-shadow: none;
+}
+
+
+/* -- Assistant ------------------------------------------------------------- */
+
+/**
+ * The Assistant is the only app that shipped its own palette: a purple-to-blue
+ * gradient on the selected task pill, the title, the icons and the bubbles. It is
+ * the one place in the interface where a colour outside the BharatSuite palette
+ * appears at full strength.
+ *
+ * It is also, happily, declared as tokens rather than painted inline, so this is a
+ * four-line reassignment rather than a fight with `background: ... !important` on
+ * a Vue scoped selector. Two of the four are gradients upstream; a solid colour
+ * substitutes cleanly, including for the title, which is background-clip: text.
+ *
+ * The selector has to be on the *body*, not :root. Nextcloud declares these at
+ * `:root` and again at `[data-theme-light]` / `[data-theme-dark]`, and the latter
+ * match the body -- so a :root declaration on <html> is simply overridden for
+ * everything inside it. `body[data-themes]` outranks a bare attribute selector and
+ * matches every theme Nextcloud stamps.
+ */
+body[data-themes] {
+	/**
+	 * Three of these must stay *gradients*, not colours. They are consumed as
+	 * `background-image`, and a bare colour there is invalid: it computes to
+	 * `none`. On the title that is not a harmless no-op -- the text is painted by
+	 * background-clip: text over a transparent fill, so losing the image renders
+	 * the heading invisible rather than saffron. Matching upstream's structure and
+	 * changing only the hue is what keeps the substitution safe.
+	 */
+	--color-element-assistant:
+		linear-gradient(214deg, #cf6d14 12%, #b85f12 39%, #8c450f 86%);
+	--color-element-assistant-icon:
+		linear-gradient(214deg, #cf6d14 15%, #b85f12 40%, #8c450f 80%);
+	--color-border-assistant:
+		linear-gradient(125deg, #cf6d14 50%, #8c450f 125%);
+	/**
+	 * Upstream this is #F6F5FF -- a lavender so pale it reads as white. The
+	 * analogous choice is the card surface, not a saffron tint: it paints the
+	 * whole conversation sidebar, and at --color-primary-element-light that panel
+	 * came out a solid warm block in light and a saturated brown one in dark.
+	 */
+	--color-background-assistant: var(--bs-card);
+}
+
+/**
+ * The dialog is white because the Assistant renders through PrimeVue, which ships
+ * its own surface scale independent of Nextcloud's. Overriding `background-color`
+ * on the dialog does not hold -- the content pane inside paints over it -- so the
+ * substitution goes at PrimeVue's own tokens, one level up from either fight.
+ */
+.assistant-modal.assistant-modal {
+	/**
+	 * Inside the modal the Assistant reuses Nextcloud's own app layout -- an
+	 * .app-navigation sidebar beside .app-content -- but the dialog subtree
+	 * redefines --color-main-background as white, so both panes resolved to a
+	 * white that had nothing to do with the page behind them.
+	 *
+	 * Reasserting the variable is the whole fix for the dialog and the content
+	 * pane, because .app-content already paints from it. Pinning it to the card
+	 * surface rather than the page ground is deliberate: a dialog should read as
+	 * sitting above the page, not cut out of it.
+	 */
+	--color-main-background: var(--bs-card);
+}
+
+.assistant-modal.assistant-modal.assistant-modal .app-navigation {
+	/**
+	 * The sidebar is the exception: the Assistant paints it from
+	 * --color-primary-element-light, which is a saffron wash in light and a solid
+	 * brown block in dark. The mockups keep this panel neutral and let only the
+	 * selected conversation carry the accent.
+	 *
+	 * Tripled because the rule being replaced is `.container[data-v-HASH]
+	 * .app-navigation` -- exactly as specific as a doubled class, so a tie went to
+	 * source order until the third one broke it.
+	 */
+	background-color: var(--bs-card);
+}
+
+
+/* -- Mail ------------------------------------------------------------------ */
+
+/**
+ * Mail derives a full-bleed radial gradient on its setup screen from
+ * --color-primary. At Nextcloud's blue that is a soft wash; at saffron it is a
+ * metre-wide orange blob behind the account form. The mockups put this screen on
+ * the plain paper ground.
+ */
+.setup--themed.setup--themed.setup--themed {
+	/**
+	 * Mail's own rule is `.setup--themed[data-v-HASH]`, which is a class and an
+	 * attribute. Repeating the class is the ancestor-independent way past it --
+	 * the same device as `:root:root` above -- and unlike naming the hash it does
+	 * not break when Mail is rebuilt. The gradient is derived from
+	 * --color-primary-element, so there is no token to reassign here: saffron is
+	 * correct everywhere else it is used.
+	 */
+	background-image: none;
+	background-color: var(--color-main-background);
+}
+
+
+/* -- Talk ------------------------------------------------------------------ */
+
+/**
+ * Talk ships three decorative renders on its home screen in its own bright blue.
+ * They are the loudest thing in the app and, in dark mode, the only thing that
+ * glares.
+ *
+ * Deliberately a wash rather than a recolour. A hue rotation would turn them
+ * saffron and match the palette exactly, but these are Talk's artwork, not ours,
+ * and pushing someone else's illustrations through 190 degrees is the kind of
+ * change that looks clever and ages badly. The values are the mockup pack's own
+ * `.washed` treatment; dark gets a brightness step as well, because saturation
+ * alone does not stop a bright blue glowing on an ink ground.
+ */
+.dashboard-section__bar img,
+.dashboard-section__bar.image-container img {
+	filter: saturate(0.72) contrast(0.94);
+}
+
+body[data-theme-dark] .dashboard-section__bar img,
+body[data-theme-dark-highcontrast] .dashboard-section__bar img {
+	filter: saturate(0.6) brightness(0.72) contrast(0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+	body[data-theme-default] .dashboard-section__bar img {
+		filter: saturate(0.6) brightness(0.72) contrast(0.95);
+	}
 }
