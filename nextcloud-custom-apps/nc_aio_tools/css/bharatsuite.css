@@ -1,0 +1,224 @@
+/**
+ * BharatSuite theme layer for Nextcloud 33.
+ *
+ * Tokens come from bharatsuite-notifiled.css in Anirban's mockup pack, confirmed as
+ * canonical on 2026-08-29. Nothing here restyles individual components: it maps the
+ * BharatSuite palette onto the CSS variables Nextcloud already drives its whole
+ * interface from, so every app is restyled at once and upgrades stay safe.
+ *
+ * Loaded on every page, login included, by BrandingAssetsListener.
+ *
+ * Deliberately NOT overridden:
+ *   --default-clickable-area  Notifiled specifies 34px against Nextcloud's 44px.
+ *                             44px is an accessibility floor for touch targets; the
+ *                             mockups are desktop-only, so shrinking it would trade a
+ *                             real usability property for a visual one.
+ *   --header-height           Changing it shifts every fixed-position calculation in
+ *                             core and in apps. Not worth it for 6px.
+ */
+
+/* ---- Inter, self-hosted. Substitute for Geist, which is not open source. -------- */
+@font-face {
+	font-family: 'BharatSuite Sans';
+	font-style: normal;
+	font-weight: 100 900;           /* variable: one file covers every weight */
+	font-display: swap;
+	src: url('../fonts/inter-var.woff2') format('woff2-variations');
+}
+
+:root:root {
+	/* -- BharatSuite palette (Notifiled) ------------------------------------- */
+	--bs-paper:        #f2efe9;
+	--bs-surface:      #f8f6f1;
+	--bs-surface-sunk: #ece8e0;
+	--bs-ink:          #16202b;
+
+	--bs-saffron:      #cf6d14;
+	--bs-saffron-600:  #ae5711;
+	--bs-saffron-100:  #fbf1e6;
+	--bs-saffron-200:  #f4ddc2;
+
+	--bs-green:        #1c7a53;
+	--bs-green-100:    #e9f3ee;
+
+	--bs-blue:         #23508c;
+	--bs-blue-700:     #1c4478;
+	--bs-blue-100:     #eaeef5;
+
+	--bs-n300:         #ddd8cd;
+	--bs-n400:         #b9b5ab;
+	--bs-n500:         #8d8b83;
+	--bs-n600:         #6a6f74;
+	--bs-n700:         #4a5560;
+
+	/* -- Nextcloud surfaces --------------------------------------------------- */
+	--color-main-background:       var(--bs-paper);
+	--color-main-background-rgb:   242, 239, 233;
+	--color-main-background-blur:  #f2efe9cc;
+	--color-background-hover:      var(--bs-surface-sunk);
+	--color-background-dark:       var(--bs-surface-sunk);
+	--color-background-darker:     var(--bs-n300);
+	--color-background-plain:      var(--bs-blue-700);
+	--color-background-plain-text: #ffffff;
+
+	/* -- Text ----------------------------------------------------------------- */
+	--color-main-text:             var(--bs-ink);
+	--color-text-light:            var(--bs-n700);
+	--color-text-lighter:          var(--bs-n500);
+	--color-text-maxcontrast:      var(--bs-n600);
+
+	/* -- Primary. Saffron is the action colour throughout the mockups. --------- */
+	--color-primary:                    var(--bs-saffron);
+	--color-primary-text:               #ffffff;
+	--color-primary-element:            var(--bs-saffron);
+	--color-primary-element-text:       #ffffff;
+	--color-primary-element-hover:      var(--bs-saffron-600);
+	--color-primary-element-light:      var(--bs-saffron-100);
+	--color-primary-element-light-hover: var(--bs-saffron-200);
+	--color-primary-element-light-text: var(--bs-saffron-600);
+
+	/* -- Borders. Notifiled uses hairlines, not filled dividers. --------------- */
+	--color-border:             #16202b1f;
+	--color-border-dark:        #16202b33;
+	--color-border-maxcontrast: var(--bs-n500);
+
+	/* -- Status --------------------------------------------------------------- */
+	--color-success:       var(--bs-green);
+	--color-border-success: var(--bs-green);
+	--color-warning:       var(--bs-saffron);
+	--color-info:          var(--bs-blue);
+
+	/* -- Geometry, from the Notifiled scale ------------------------------------ */
+	--border-radius-small:           4px;
+	--border-radius:                 8px;
+	--border-radius-element:         8px;
+	--border-radius-large:           12px;
+	--border-radius-container:       12px;
+	--border-radius-container-large: 16px;
+
+	/* -- Type ------------------------------------------------------------------ */
+	--font-face: 'BharatSuite Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+		Roboto, Helvetica, Arial, sans-serif;
+}
+
+/**
+ * Dark theme. Nextcloud stamps these on <body>, so the selectors have to match all
+ * three of its modes: explicit dark, and the two automatic ones.
+ *
+ * The palette inverts around the same hues rather than being naively lightened:
+ * ink becomes the ground, paper becomes the text, and saffron/green/blue lift a step
+ * so they keep their contrast against a dark surface.
+ */
+body[data-theme-dark],
+body[data-theme-dark-highcontrast],
+body.theme--dark {
+	--color-main-background:       #12191f;
+	--color-main-background-rgb:   18, 25, 31;
+	--color-main-background-blur:  #12191fcc;
+	--color-background-hover:      #222d38;
+	--color-background-dark:       #1a232c;
+	--color-background-darker:     #222d38;
+
+	--color-main-text:             #eee9e0;
+	--color-text-light:            #a9b3bd;
+	--color-text-lighter:          #78838e;
+	--color-text-maxcontrast:      #a9b3bd;
+
+	--color-primary:               #e8933f;
+	--color-primary-element:       #e8933f;
+	--color-primary-element-text:  #16202b;
+	--color-primary-element-hover: #cf6d14;
+	--color-primary-element-light: #3a2410;
+	--color-primary-element-light-text: #e8933f;
+
+	--color-border:                #eee9e024;
+	--color-border-dark:           #eee9e03d;
+	--color-border-maxcontrast:    #78838e;
+
+	--color-success:               #45ad81;
+	--color-warning:               #e8933f;
+	--color-info:                  #6f9ad6;
+}
+
+@media (prefers-color-scheme: dark) {
+	body[data-theme-default] {
+		--color-main-background:       #12191f;
+		--color-main-background-rgb:   18, 25, 31;
+		--color-main-background-blur:  #12191fcc;
+		--color-background-hover:      #222d38;
+		--color-background-dark:       #1a232c;
+		--color-background-darker:     #222d38;
+
+		--color-main-text:             #eee9e0;
+		--color-text-light:            #a9b3bd;
+		--color-text-lighter:          #78838e;
+		--color-text-maxcontrast:      #a9b3bd;
+
+		--color-primary:               #e8933f;
+		--color-primary-element:       #e8933f;
+		--color-primary-element-text:  #16202b;
+		--color-primary-element-hover: #cf6d14;
+		--color-primary-element-light: #3a2410;
+		--color-primary-element-light-text: #e8933f;
+
+		--color-border:                #eee9e024;
+		--color-border-dark:           #eee9e03d;
+		--color-border-maxcontrast:    #78838e;
+
+		--color-success:               #45ad81;
+		--color-warning:               #e8933f;
+		--color-info:                  #6f9ad6;
+	}
+}
+
+/**
+ * Brand marks are NOT set here, deliberately.
+ *
+ * A relative url() inside a custom property resolves against the stylesheet that
+ * USES the variable, not the one that declares it. Nextcloud consumes --image-logo
+ * from core/css/guest.css, so '../img/logo.svg' resolved to /core/img/logo.svg --
+ * a path that does not exist, so the login page rendered no logo at all rather than
+ * failing loudly.
+ *
+ * BrandingAssetsListener emits them instead, as absolute URLs from IURLGenerator,
+ * which also survives Nextcloud being installed in a subdirectory.
+ */
+
+/**
+ * Login screen ground.
+ *
+ * core/css/guest.css paints the login body with --color-background-plain, which the
+ * theming app pins to its static `background_color` setting on a body[data-theme-*]
+ * selector. That beats a :root declaration on specificity, and it does not follow the
+ * colour scheme -- so without this the ground stays light in dark mode while the card
+ * and the logo both go dark. The logo is the visible casualty: the dark variant's
+ * "Suite" is paper-coloured and vanishes against a paper ground.
+ *
+ * An #id selector outranks theming's, so re-pointing these two at our own tokens
+ * makes the whole login screen follow one theme instead of two.
+ *
+ * The login page is always LIGHT, by design and by Nextcloud's own construction: its
+ * body carries only id="body-login" and data-themes, never a data-theme-* state,
+ * because there is no signed-in user whose preference could be read. So only the base
+ * block above applies here and the dark blocks never match. This matches the sign-in
+ * screen in the mockups, which is light.
+ */
+#body-login {
+	--color-background-plain:      var(--color-main-background);
+	--color-background-plain-text: var(--color-main-text);
+}
+
+/* -- The tricolour rule that opens every mockup screen ------------------------- */
+#header::before {
+	content: '';
+	position: absolute;
+	inset: 0 0 auto 0;
+	height: 3px;
+	z-index: 3;
+	background: linear-gradient(
+		90deg,
+		var(--bs-saffron) 0 33.33%,
+		#ffffff 33.33% 66.66%,
+		var(--bs-green) 66.66%
+	);
+}

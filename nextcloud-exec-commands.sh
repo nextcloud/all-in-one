@@ -82,6 +82,37 @@ if [ -n "${NEXTCLOUD_DEFAULT_APPS:-}" ]; then
     occ config:system:set defaultapp --value="$NEXTCLOUD_DEFAULT_APPS"
 fi
 
+# BharatSuite branding.
+#
+# Only the text and colour keys go through occ -- `theming:config` accepts name, url,
+# imprintUrl, privacyUrl, slogan, color, primary_color, background_color and
+# disable-user-theming, and rejects the image keys even though it prints them. The
+# logo, header logo and favicon are therefore NOT set here: they are served from the
+# nc_aio_tools app and assigned to Nextcloud's own --image-logo / --image-logoheader
+# variables in css/bharatsuite.css, which keeps them in version control instead of
+# inside a Docker volume.
+#
+# BRANDING_SLOGAN is intentionally allowed to be empty: an unset slogan renders
+# nothing, which is correct until real copy exists. Do not put placeholder text here,
+# it shows on the login screen.
+if [ -n "${BRANDING_NAME:-}" ]; then
+    echo "exec-commands: applying ${BRANDING_NAME} branding..."
+    occ theming:config name "$BRANDING_NAME"
+    [ -n "${BRANDING_PRIMARY_COLOR:-}" ] && occ theming:config primary_color "$BRANDING_PRIMARY_COLOR"
+    [ -n "${BRANDING_BACKGROUND_COLOR:-}" ] && occ theming:config background_color "$BRANDING_BACKGROUND_COLOR"
+    [ -n "${BRANDING_URL:-}" ] && occ theming:config url "$BRANDING_URL"
+    # Blank the slogan by SETTING an empty string, never by --reset. ThemingDefaults
+    # ::getSlogan() falls back to Nextcloud's own default when the key is absent, so
+    # resetting puts "a safe home for all your data" back on the login screen.
+    occ theming:config slogan "${BRANDING_SLOGAN:-}"
+
+    # Login background. Without this the stock Nextcloud blue artwork stays, whatever
+    # the colours are set to: theming only paints the plain background_color when
+    # backgroundMime is the literal 'backgroundColor'. There is no theming:config key
+    # for it, hence config:app:set.
+    occ config:app:set theming backgroundMime --value=backgroundColor >/dev/null
+fi
+
 # ClamAV scan limits (Anirban's request: 100 MB).
 #
 # NOTE: the MAX_SIZE env var on nextcloud-aio-clamav is INERT -- that image's
