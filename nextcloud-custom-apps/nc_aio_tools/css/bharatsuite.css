@@ -347,20 +347,6 @@ body.theme--dark {
 	border-bottom: 1px solid var(--color-border);
 }
 
-/**
- * App menu labels: all or nothing.
- *
- * Nextcloud measures each entry and tags only the ones that overflow with
- * --truncated, which leaves a ragged row where some apps read in full and others
- * are clipped to "Conta..." and "Calen...". Hiding the label on just those entries
- * makes it worse, so the test is on the menu: if any label would be clipped, none
- * are shown and the row falls back to icons. When they all fit, the header reads
- * as the text navigation the mockups show.
- */
-.app-menu:has(.app-menu-entry--truncated) .app-menu-entry__label {
-	display: none;
-}
-
 /* -- Type and focus, global ------------------------------------------------ */
 
 /**
