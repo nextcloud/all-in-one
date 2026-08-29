@@ -512,6 +512,8 @@ script into a YAML string, so the script stays reviewable and diffable. It runs 
 2. Runs `occ richdocuments:activate-config` when `COLLABORA_ENABLED=yes`.
 3. Runs `occ app:enable nc_aio_tools` if not already enabled.
 4. Applies `DEFAULT_QUOTA` to the `files` app default and to every existing account.
+5. Enables every app in `NEXTCLOUD_DEFAULT_APPS` and sets `defaultapp` to that list.
+6. Applies `CLAMAV_MAX_FILE_SIZE` to the `files_antivirus` scan limits.
 
 Steps 3 and 4 replace, respectively, a manual one-time `occ app:enable` and the former
 `nextcloud-aio-post-install` one-shot service, both of which are gone.
@@ -520,6 +522,34 @@ Steps 3 and 4 replace, respectively, a manual one-time `occ app:enable` and the 
 > in its `else` branch, i.e. only when `NEXTCLOUD_EXEC_COMMANDS` is *unset*. Setting the
 > variable takes over the whole hook, so omitting that call silently breaks Collabora's
 > WOPI config on every restart.
+
+## Default apps
+
+`NEXTCLOUD_DEFAULT_APPS` in `.env` lists the apps that must be enabled, in Anirban's
+priority order (PR #1 review). The custom styling only applies to apps that are on.
+
+```
+dashboard,files,assistant,context_chat,richdocuments,mail,spreed,previewgenerator
+```
+
+`nextcloud-exec-commands.sh` enables each one on every container start and sets the
+same list as `defaultapp`, whose first **enabled** entry decides where users land after
+login. `NEXTCLOUD_STARTUP_APPS` is not enough by itself: AIO runs that list once, on a
+fresh install only, so it does nothing for an instance that already exists.
+
+Two limits worth knowing:
+
+- **`mail` and `previewgenerator` come from the app store, not the image.** The hook
+  enables them but will not download them, since fetching from the internet on every
+  container start is not something a startup hook should do. Run
+  `occ app:install mail previewgenerator` once per instance; the hook reports and skips
+  apps it can't find rather than failing.
+- **This does not set the order of icons in the top bar.** That is a per-user setting
+  (`core`/`apporder` in `NavigationManager`) and Nextcloud exposes no admin-level
+  default for it, so the priority order applies to the landing page only.
+
+`previewgenerator` also does nothing until `occ preview:generate-all` has been run once
+and a cron job keeps it topped up — installing it only registers the commands.
 
 ## Antivirus scan limits (ClamAV)
 

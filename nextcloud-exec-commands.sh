@@ -50,6 +50,69 @@ if [ -n "${DEFAULT_QUOTA:-}" ]; then
     done
 fi
 
+# Default apps, in Anirban's stated priority order (PR #1 review). These have to be
+# enabled for the custom styling to apply to them.
+#
+# Two mechanisms, deliberately both:
+#   NEXTCLOUD_STARTUP_APPS installs these on a FRESH install only -- AIO runs that
+#   list once, on first startup, so it does nothing for an instance that already
+#   exists. This loop is what makes the set hold on every start, and it also
+#   re-enables anything an admin turned off by accident.
+#
+# app:enable is a no-op when the app is already on, so this stays quiet in the
+# normal case. Apps absent from disk are reported and skipped rather than failing
+# the whole hook -- mail and previewgenerator come from the app store and need
+# `occ app:install`, which needs outbound network and is NOT done here on purpose
+# (a hook that reaches the internet on every container start is its own problem).
+if [ -n "${NEXTCLOUD_DEFAULT_APPS:-}" ]; then
+    for app in $(echo "$NEXTCLOUD_DEFAULT_APPS" | tr ',' ' '); do
+        if ! occ app:list --enabled | grep -q "^  - ${app}:"; then
+            if occ app:enable "$app" >/dev/null 2>&1; then
+                echo "exec-commands: enabled ${app}"
+            else
+                echo "exec-commands: ${app} not present on disk, skipping (occ app:install ${app} to add it)"
+            fi
+        fi
+    done
+
+    # Landing page. `defaultapp` is a comma-separated fallback chain, first ENABLED
+    # entry wins, so the same priority order works directly. Note this only controls
+    # where users land: the order of icons in the top bar is a per-user setting
+    # (core/apporder) with no admin-level default, so it cannot be set from here.
+    occ config:system:set defaultapp --value="$NEXTCLOUD_DEFAULT_APPS"
+fi
+
+# BharatSuite branding.
+#
+# Only the text and colour keys go through occ -- `theming:config` accepts name, url,
+# imprintUrl, privacyUrl, slogan, color, primary_color, background_color and
+# disable-user-theming, and rejects the image keys even though it prints them. The
+# logo, header logo and favicon are therefore NOT set here: they are served from the
+# nc_aio_tools app and assigned to Nextcloud's own --image-logo / --image-logoheader
+# variables in css/bharatsuite.css, which keeps them in version control instead of
+# inside a Docker volume.
+#
+# BRANDING_SLOGAN is intentionally allowed to be empty: an unset slogan renders
+# nothing, which is correct until real copy exists. Do not put placeholder text here,
+# it shows on the login screen.
+if [ -n "${BRANDING_NAME:-}" ]; then
+    echo "exec-commands: applying ${BRANDING_NAME} branding..."
+    occ theming:config name "$BRANDING_NAME"
+    [ -n "${BRANDING_PRIMARY_COLOR:-}" ] && occ theming:config primary_color "$BRANDING_PRIMARY_COLOR"
+    [ -n "${BRANDING_BACKGROUND_COLOR:-}" ] && occ theming:config background_color "$BRANDING_BACKGROUND_COLOR"
+    [ -n "${BRANDING_URL:-}" ] && occ theming:config url "$BRANDING_URL"
+    # Blank the slogan by SETTING an empty string, never by --reset. ThemingDefaults
+    # ::getSlogan() falls back to Nextcloud's own default when the key is absent, so
+    # resetting puts "a safe home for all your data" back on the login screen.
+    occ theming:config slogan "${BRANDING_SLOGAN:-}"
+
+    # Login background. Without this the stock Nextcloud blue artwork stays, whatever
+    # the colours are set to: theming only paints the plain background_color when
+    # backgroundMime is the literal 'backgroundColor'. There is no theming:config key
+    # for it, hence config:app:set.
+    occ config:app:set theming backgroundMime --value=backgroundColor >/dev/null
+fi
+
 # ClamAV scan limits (Anirban's request: 100 MB).
 #
 # NOTE: the MAX_SIZE env var on nextcloud-aio-clamav is INERT -- that image's

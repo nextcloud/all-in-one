@@ -1,0 +1,683 @@
+/**
+ * BharatSuite theme layer for Nextcloud 33.
+ *
+ * Tokens come from bharatsuite-notifiled.css in Anirban's mockup pack, confirmed as
+ * canonical on 2026-08-29. Nothing here restyles individual components: it maps the
+ * BharatSuite palette onto the CSS variables Nextcloud already drives its whole
+ * interface from, so every app is restyled at once and upgrades stay safe.
+ *
+ * Loaded on every page, login included, by BrandingAssetsListener.
+ *
+ * Deliberately NOT overridden:
+ *   --default-clickable-area  Notifiled specifies 34px against Nextcloud's 44px.
+ *                             44px is an accessibility floor for touch targets; the
+ *                             mockups are desktop-only, so shrinking it would trade a
+ *                             real usability property for a visual one.
+ *   --header-height           Changing it shifts every fixed-position calculation in
+ *                             core and in apps. Not worth it for 6px.
+ */
+
+/* ---- Inter, self-hosted. Substitute for Geist, which is not open source. -------- */
+@font-face {
+	font-family: 'BharatSuite Sans';
+	font-style: normal;
+	font-weight: 100 900;           /* variable: one file covers every weight */
+	font-display: swap;
+	src: url('../fonts/inter-var.woff2') format('woff2-variations');
+}
+
+/**
+ * The light palette, declared at BOTH levels on purpose.
+ *
+ * :root:root alone is not enough and the reason is easy to miss. It matches
+ * <html>, while theming declares its own light palette on `body[data-theme-light]`
+ * -- so every element inside <body> inherited theming's values, not ours. The page
+ * still looked right, because the page ground is painted on the root canvas; what
+ * broke was everything that paints --color-main-background explicitly. Popovers,
+ * action menus, dialogs and cards were all rendering at stock #ffffff on a paper
+ * page, which is what made the Assistant modal and the Mail card look like holes
+ * cut in the background.
+ *
+ * The dark blocks never had this problem because they were written against the
+ * body from the start. The body selectors below are (0,1,1) and beat theming's
+ * (0,1,0); the dark blocks come later at equal specificity, so they still win when
+ * they apply.
+ */
+:root:root,
+body[data-themes],
+body[data-theme-light],
+body[data-theme-default],
+body[data-theme-light-highcontrast] {
+	/* -- BharatSuite palette (Notifiled) ------------------------------------- */
+	--bs-paper:        #f2efe9;
+	--bs-surface:      #f8f6f1;
+
+	/* Card surface. Declared per theme because it has to sit one step away from
+	   the ground in each -- lighter than paper in light, lighter than ink in dark.
+	   No Nextcloud token moves in that direction in both, so using one (or worse,
+	   a fixed literal) leaves the dashboard's cards light on a dark page. */
+	--bs-card:         #f8f6f1;
+	--bs-surface-sunk: #ece8e0;
+	--bs-ink:          #16202b;
+
+	--bs-saffron:      #cf6d14;
+	--bs-saffron-600:  #ae5711;
+	--bs-saffron-100:  #fbf1e6;
+	--bs-saffron-200:  #f4ddc2;
+
+	--bs-green:        #1c7a53;
+	--bs-green-100:    #e9f3ee;
+
+	--bs-blue:         #23508c;
+	--bs-blue-700:     #1c4478;
+	--bs-blue-100:     #eaeef5;
+
+	--bs-n300:         #ddd8cd;
+	--bs-n400:         #b9b5ab;
+	--bs-n500:         #8d8b83;
+	--bs-n600:         #6a6f74;
+	--bs-n700:         #4a5560;
+
+	/* -- Nextcloud surfaces --------------------------------------------------- */
+	--color-main-background:       var(--bs-paper);
+	--color-main-background-rgb:   242, 239, 233;
+	--color-main-background-blur:  #f2efe9cc;
+	--color-background-hover:      var(--bs-surface-sunk);
+	--color-background-dark:       var(--bs-surface-sunk);
+	--color-background-darker:     var(--bs-n300);
+	/**
+	 * The "plain" ground is what Nextcloud paints the header and the login page
+	 * with. Stock Nextcloud makes it the primary colour; the mockups make it the
+	 * paper, with the header separated by a hairline instead of a fill.
+	 *
+	 * This was deep blue until the body-level fix above landed, and nothing showed
+	 * it, because theming's own value was winning on <body> the whole time. The
+	 * moment our tokens actually reached the body the header turned blue and ate
+	 * the wordmark: "Bharat" is #23508c on a #1c4478 header.
+	 */
+	--color-background-plain:      var(--bs-paper);
+	--color-background-plain-text: var(--bs-ink);
+
+	/* -- Text ----------------------------------------------------------------- */
+	--color-main-text:             var(--bs-ink);
+	--color-text-light:            var(--bs-n700);
+	--color-text-lighter:          var(--bs-n500);
+	--color-text-maxcontrast:      var(--bs-n600);
+
+	/* -- Primary. Saffron is the action colour throughout the mockups. --------- */
+	--color-primary:                    var(--bs-saffron);
+	--color-primary-text:               #ffffff;
+	--color-primary-element:            var(--bs-saffron);
+	--color-primary-element-text:       #ffffff;
+	--color-primary-element-hover:      var(--bs-saffron-600);
+	--color-primary-element-light:      var(--bs-saffron-100);
+	--color-primary-element-light-hover: var(--bs-saffron-200);
+	--color-primary-element-light-text: var(--bs-saffron-600);
+
+	/* -- Borders. Notifiled uses hairlines, not filled dividers. --------------- */
+	--color-border:             #16202b1f;
+	--color-border-dark:        #16202b33;
+	--color-border-maxcontrast: var(--bs-n500);
+
+	/* -- Status --------------------------------------------------------------- */
+	--color-success:       var(--bs-green);
+	--color-border-success: var(--bs-green);
+	--color-warning:       var(--bs-saffron);
+	--color-info:          var(--bs-blue);
+
+	/* -- Geometry, from the Notifiled scale ------------------------------------ */
+	--border-radius-small:           4px;
+	--border-radius:                 8px;
+	--border-radius-element:         8px;
+	--border-radius-large:           12px;
+	--border-radius-container:       12px;
+	--border-radius-container-large: 16px;
+
+	/* -- Type ------------------------------------------------------------------ */
+	--font-face: 'BharatSuite Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+		Roboto, Helvetica, Arial, sans-serif;
+}
+
+/**
+ * Dark theme. Nextcloud stamps these on <body>, so the selectors have to match all
+ * three of its modes: explicit dark, and the two automatic ones.
+ *
+ * The palette inverts around the same hues rather than being naively lightened:
+ * ink becomes the ground, paper becomes the text, and saffron/green/blue lift a step
+ * so they keep their contrast against a dark surface.
+ */
+body[data-theme-dark],
+body[data-theme-dark-highcontrast],
+body.theme--dark {
+	--color-main-background:       #12191f;
+	--color-main-background-rgb:   18, 25, 31;
+	--color-main-background-blur:  #12191fcc;
+	--color-background-hover:      #222d38;
+	--color-background-dark:       #1a232c;
+	--color-background-darker:     #222d38;
+
+	--color-main-text:             #eee9e0;
+	--color-text-light:            #a9b3bd;
+	--color-text-lighter:          #78838e;
+	--color-text-maxcontrast:      #a9b3bd;
+
+	--color-primary:               #e8933f;
+	--color-primary-element:       #e8933f;
+	--color-primary-element-text:  #16202b;
+	--color-primary-element-hover: #cf6d14;
+	--color-primary-element-light: #3a2410;
+	--color-primary-element-light-text: #e8933f;
+
+	--color-border:                #eee9e024;
+	--color-border-dark:           #eee9e03d;
+	--color-border-maxcontrast:    #78838e;
+
+	--color-success:               #45ad81;
+	--color-warning:               #e8933f;
+	--color-info:                  #6f9ad6;
+	--bs-card:                     #1a232c;
+
+	/**
+	 * App icons ship as white SVGs and Nextcloud inverts them to black through
+	 * this variable, which theming derives from its *static* background_color --
+	 * a light paper -- so it stays invert(100%) in dark mode too. Black icons on
+	 * a cream header are right; the same icons on the ink header rendered at
+	 * rgb(4,5,7) against rgb(18,25,31), which is why the header looked empty.
+	 *
+	 * Same root cause as the header wordmark, one variable along: the invert has
+	 * to follow the colour scheme, not the theming setting.
+	 */
+	--background-image-invert-if-bright: no;
+	--background-invert-if-bright: no;
+
+	/* theming's dark.css redeclares these two at [data-theme-dark]. Anything our
+	   dark block leaves out silently reverts to stock: the typeface fell back to
+	   system-ui, and the page ground stayed the light `background_color` while the
+	   panels went dark, splitting the page across two themes. */
+	--font-face: 'BharatSuite Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+		Roboto, Helvetica, Arial, sans-serif;
+	--color-background-plain:      #12191f;
+	--color-background-plain-text: #eee9e0;
+}
+
+@media (prefers-color-scheme: dark) {
+	body[data-theme-default] {
+		--color-main-background:       #12191f;
+		--color-main-background-rgb:   18, 25, 31;
+		--color-main-background-blur:  #12191fcc;
+		--color-background-hover:      #222d38;
+		--color-background-dark:       #1a232c;
+		--color-background-darker:     #222d38;
+
+		--color-main-text:             #eee9e0;
+		--color-text-light:            #a9b3bd;
+		--color-text-lighter:          #78838e;
+		--color-text-maxcontrast:      #a9b3bd;
+
+		--color-primary:               #e8933f;
+		--color-primary-element:       #e8933f;
+		--color-primary-element-text:  #16202b;
+		--color-primary-element-hover: #cf6d14;
+		--color-primary-element-light: #3a2410;
+		--color-primary-element-light-text: #e8933f;
+
+		--color-border:                #eee9e024;
+		--color-border-dark:           #eee9e03d;
+		--color-border-maxcontrast:    #78838e;
+
+		--color-success:               #45ad81;
+		--color-warning:               #e8933f;
+		--color-info:                  #6f9ad6;
+		--bs-card:                     #1a232c;
+
+		/**
+		 * App icons ship as white SVGs and Nextcloud inverts them to black through
+		 * this variable, which theming derives from its *static* background_color --
+		 * a light paper -- so it stays invert(100%) in dark mode too. Black icons on
+		 * a cream header are right; the same icons on the ink header rendered at
+		 * rgb(4,5,7) against rgb(18,25,31), which is why the header looked empty.
+		 *
+		 * Same root cause as the header wordmark, one variable along: the invert has
+		 * to follow the colour scheme, not the theming setting.
+		 */
+		--background-image-invert-if-bright: no;
+		--background-invert-if-bright: no;
+
+		/* theming's dark.css redeclares these two at [data-theme-dark]. Anything our
+		   dark block leaves out silently reverts to stock: the typeface fell back to
+		   system-ui, and the page ground stayed the light `background_color` while the
+		   panels went dark, splitting the page across two themes. */
+		--font-face: 'BharatSuite Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+			Roboto, Helvetica, Arial, sans-serif;
+		--color-background-plain:      #12191f;
+		--color-background-plain-text: #eee9e0;
+	}
+}
+
+/**
+ * Brand marks are NOT set here, deliberately.
+ *
+ * A relative url() inside a custom property resolves against the stylesheet that
+ * USES the variable, not the one that declares it. Nextcloud consumes --image-logo
+ * from core/css/guest.css, so '../img/logo.svg' resolved to /core/img/logo.svg --
+ * a path that does not exist, so the login page rendered no logo at all rather than
+ * failing loudly.
+ *
+ * BrandingAssetsListener emits them instead, as absolute URLs from IURLGenerator,
+ * which also survives Nextcloud being installed in a subdirectory.
+ */
+
+/**
+ * Login screen ground.
+ *
+ * core/css/guest.css paints the login body with --color-background-plain, which the
+ * theming app pins to its static `background_color` setting on a body[data-theme-*]
+ * selector. That beats a :root declaration on specificity, and it does not follow the
+ * colour scheme -- so without this the ground stays light in dark mode while the card
+ * and the logo both go dark. The logo is the visible casualty: the dark variant's
+ * "Suite" is paper-coloured and vanishes against a paper ground.
+ *
+ * An #id selector outranks theming's, so re-pointing these two at our own tokens
+ * makes the whole login screen follow one theme instead of two.
+ *
+ * The login page is always LIGHT, by design and by Nextcloud's own construction: its
+ * body carries only id="body-login" and data-themes, never a data-theme-* state,
+ * because there is no signed-in user whose preference could be read. So only the base
+ * block above applies here and the dark blocks never match. This matches the sign-in
+ * screen in the mockups, which is light.
+ */
+#body-login {
+	--color-background-plain:      var(--color-main-background);
+	--color-background-plain-text: var(--color-main-text);
+}
+
+/**
+ * The tricolour rule that opens every mockup screen.
+ *
+ * Hung off the body rather than off #header. As a child of #header the rule was
+ * painted correctly on every app except the Dashboard, which lays a full-bleed
+ * background over the header's stacking context and swallowed it -- the computed
+ * style said the pseudo-element was there, and the pixels at y=0 were still paper.
+ * Fixed to the viewport on the body, it is above every app's chrome by
+ * construction and does not depend on how any one app stacks itself.
+ */
+#body-user::before,
+#body-login::before,
+#body-settings::before,
+#body-public::before {
+	content: '';
+	position: fixed;
+	inset: 0 0 auto 0;
+	height: 3px;
+	z-index: 9999;
+	pointer-events: none;
+	background: linear-gradient(
+		90deg,
+		var(--bs-saffron) 0 33.33%,
+		#ffffff 33.33% 66.66%,
+		var(--bs-green) 66.66%
+	);
+}
+
+
+/* ===========================================================================
+ * Component layer
+ *
+ * Everything above is tokens: reassign a variable, and Nextcloud restyles itself.
+ * Below are the places where the mockups differ from what Nextcloud draws from
+ * those tokens, and no variable exists to express the difference.
+ *
+ * The rule for this layer is Anirban's: match the look and feel without fighting
+ * Nextcloud. Each block re-skins an element Nextcloud already renders. None moves
+ * anything, changes a layout mode, or depends on markup a minor release is likely
+ * to reshuffle.
+ * ======================================================================== */
+
+
+/* -- Header ---------------------------------------------------------------- */
+
+/**
+ * Nextcloud inverts the logo, because its stock header is a saturated primary
+ * colour and the mark has to read as white on it. Our header is paper, so the
+ * invert turned the wordmark's blue into pale orange on cream -- the "washed out
+ * logo" was this filter, not the SVG.
+ *
+ * Both variants of the mark are already colour-correct for their own ground, so
+ * the filter has nothing left to do.
+ */
+#header #nextcloud .logo {
+	/**
+	 * Nextcloud sets `filter: var(--image-logoheader-custom,
+	 * var(--background-image-invert-if-bright))` on the header mark, so a bright
+	 * ground inverts it -- which is right for the stock white logo and wrong for
+	 * ours, turning the wordmark's blue into pale orange on cream. The first
+	 * variable is the escape hatch core provides for exactly this case, so no
+	 * override of the filter itself is needed.
+	 */
+	--image-logoheader-custom: none;
+
+	/**
+	 * Core sizes the mark for a 62px square icon. A wordmark needs the width, and
+	 * #nextcloud's leading padding has to clear it -- core pairs 62px with 86px.
+	 */
+	width: 148px;
+}
+
+#header #nextcloud {
+	padding-inline-start: 172px;
+}
+
+/**
+ * The mockups separate the header from the page with a hairline, not a shadow.
+ *
+ * Scoped away from .header-guest. On the login screen #header is not a bar across
+ * the top -- it is the 700px block that holds the wordmark -- so an unscoped rule
+ * drew a rule straight across the page behind the sign-in card.
+ */
+#header:not(.header-guest) {
+	border-bottom: 1px solid var(--color-border);
+}
+
+/* -- Type and focus, global ------------------------------------------------ */
+
+/**
+ * The Notifiled display setting is tight: -0.05em. At Nextcloud's heading sizes
+ * that is the single change that most makes the interface read as BharatSuite
+ * rather than as a recoloured Nextcloud.
+ */
+h1, h2, h3,
+.app-navigation-caption__name {
+	letter-spacing: -0.03em;
+}
+
+/**
+ * Saffron focus ring, straight from the mockup's .btn:focus-visible. Nextcloud's
+ * own focus styling is a primary-coloured inset box-shadow, which the token layer
+ * already turns saffron; this adds the outer ring the mockups use and keeps it
+ * visible against both grounds.
+ */
+:focus-visible {
+	outline: 2px solid var(--color-primary-element);
+	outline-offset: 2px;
+}
+
+
+/* -- Dashboard ------------------------------------------------------------- */
+
+/**
+ * Mockup cards are hairline-bordered surfaces on the paper ground. Nextcloud
+ * draws borderless translucent panels that rely on a photographic background for
+ * separation -- with a flat colour behind them they read as floating blocks.
+ */
+#app-dashboard .panel {
+	background-color: var(--bs-card);
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-container);
+	box-shadow: none;
+}
+
+/**
+ * Panel titles become the mockup's micro-label: uppercase, tracked, muted, with
+ * the icon dropped to match. Set on the h2 rather than the header so the panel's
+ * own action buttons keep their normal sizing.
+ */
+#app-dashboard .panel--header h2 {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--color-text-maxcontrast);
+}
+
+#app-dashboard .panel--header h2 img,
+#app-dashboard .panel--header h2 svg,
+#app-dashboard .panel--header h2 .panel--icon {
+	width: 16px;
+	height: 16px;
+	opacity: 0.7;
+}
+
+/**
+ * The greeting is the page's display type in the mockups: left-aligned against
+ * the first card, not centred over the grid.
+ *
+ * Core's own rule is `#app-dashboard > h2[data-v-HASH]`, so an id and a class-level
+ * selector tie with it and lose on source order. `:not([hidden])` adds the one
+ * point of specificity that settles it, and unlike the [data-v-*] hash it does not
+ * change when Nextcloud rebuilds.
+ */
+#app-dashboard > h2:first-of-type:not([hidden]) {
+	font-size: 34px;
+	font-weight: 600;
+	letter-spacing: -0.05em;
+	text-align: start;
+}
+
+/**
+ * ...and the grid moves with it. Nextcloud centres the widget row, which leaves the
+ * heading orphaned at the page edge while the first card floats 100px in -- and the
+ * offset is not a constant, it falls out of how many widgets are enabled. The
+ * mockups lay the cards out from the left, so aligning the row to the same origin
+ * as the heading is both the closer match and the only stable one.
+ */
+#app-dashboard .panels {
+	justify-content: flex-start;
+}
+
+
+/* -- Files ----------------------------------------------------------------- */
+
+/**
+ * Nextcloud fills the selected navigation entry with solid primary. At saffron
+ * that is a heavy bar down the sidebar; the mockups use a soft tint with ink
+ * text and a saffron rule at the leading edge, so the accent marks the row
+ * without becoming the loudest thing on the screen.
+ *
+ * The rule is an inset shadow rather than a border so it does not shift the row.
+ */
+#app-navigation-vue .app-navigation-entry.active,
+#app-navigation-vue .app-navigation-entry.active:hover {
+	/**
+	 * !important is load-bearing here and cannot be avoided: the rule this
+	 * replaces is Vue scoped CSS that already carries !important. Matching it
+	 * needs both the flag and more specificity, which the id ancestor supplies --
+	 * deliberately, rather than by copying the [data-v-*] hash, which changes on
+	 * every Nextcloud build.
+	 */
+	background-color: var(--color-primary-element-light) !important;
+	box-shadow: inset 3px 0 0 var(--color-primary-element);
+}
+
+#app-navigation-vue .app-navigation-entry.active .app-navigation-entry-link,
+#app-navigation-vue .app-navigation-entry.active .app-navigation-entry-link * {
+	color: var(--color-main-text);
+}
+
+/* The icon is what carries the accent once the fill is gone. */
+#app-navigation-vue .app-navigation-entry.active .app-navigation-entry-icon,
+#app-navigation-vue .app-navigation-entry.active svg {
+	color: var(--color-primary-element);
+}
+
+/* Column headers get the same micro-label treatment as the dashboard panels. */
+.files-list__column,
+.files-list__row-head .files-list__column button {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--color-text-maxcontrast);
+}
+
+/* The header row is a hairline, matching the mockup's table rule. */
+.files-list__row-head {
+	border-bottom: 1px solid var(--color-border);
+}
+
+/**
+ * Selected rows use the same saffron tint as the active navigation entry, so
+ * "this one" means one colour everywhere in the app.
+ */
+.files-list__row--active,
+.files-list__row.files-list__row--active,
+tr.files-list__row[data-cy-files-list-row][aria-selected='true'] {
+	background-color: var(--color-primary-element-light);
+}
+
+
+/* -- Login ----------------------------------------------------------------- */
+
+/**
+ * The sign-in card is stock .guest-box: the page's own colour at 80% alpha, held
+ * up by a drop shadow. That reads on Nextcloud's photographic login background,
+ * but on a flat paper ground it is a shadow around nothing. The mockups use a
+ * distinct surface with a hairline, so the card is given the same treatment as
+ * the dashboard's, plus the Notifiled --shadow-sm.
+ */
+#body-login .guest-box.login-box {
+	background-color: var(--bs-card);
+	border: 1px solid var(--color-border);
+	box-shadow: 0 1px 2px #16202b14;
+}
+
+/**
+ * The footer carries .guest-box too, which turned the product name into a floating
+ * pill. It is a caption, not a card.
+ */
+#body-login footer.guest-box {
+	background: none;
+	border: 0;
+	box-shadow: none;
+}
+
+
+/* -- Assistant ------------------------------------------------------------- */
+
+/**
+ * The Assistant is the only app that shipped its own palette: a purple-to-blue
+ * gradient on the selected task pill, the title, the icons and the bubbles. It is
+ * the one place in the interface where a colour outside the BharatSuite palette
+ * appears at full strength.
+ *
+ * It is also, happily, declared as tokens rather than painted inline, so this is a
+ * four-line reassignment rather than a fight with `background: ... !important` on
+ * a Vue scoped selector. Two of the four are gradients upstream; a solid colour
+ * substitutes cleanly, including for the title, which is background-clip: text.
+ *
+ * The selector has to be on the *body*, not :root. Nextcloud declares these at
+ * `:root` and again at `[data-theme-light]` / `[data-theme-dark]`, and the latter
+ * match the body -- so a :root declaration on <html> is simply overridden for
+ * everything inside it. `body[data-themes]` outranks a bare attribute selector and
+ * matches every theme Nextcloud stamps.
+ */
+body[data-themes] {
+	/**
+	 * Three of these must stay *gradients*, not colours. They are consumed as
+	 * `background-image`, and a bare colour there is invalid: it computes to
+	 * `none`. On the title that is not a harmless no-op -- the text is painted by
+	 * background-clip: text over a transparent fill, so losing the image renders
+	 * the heading invisible rather than saffron. Matching upstream's structure and
+	 * changing only the hue is what keeps the substitution safe.
+	 */
+	--color-element-assistant:
+		linear-gradient(214deg, #cf6d14 12%, #b85f12 39%, #8c450f 86%);
+	--color-element-assistant-icon:
+		linear-gradient(214deg, #cf6d14 15%, #b85f12 40%, #8c450f 80%);
+	--color-border-assistant:
+		linear-gradient(125deg, #cf6d14 50%, #8c450f 125%);
+	/**
+	 * Upstream this is #F6F5FF -- a lavender so pale it reads as white. The
+	 * analogous choice is the card surface, not a saffron tint: it paints the
+	 * whole conversation sidebar, and at --color-primary-element-light that panel
+	 * came out a solid warm block in light and a saturated brown one in dark.
+	 */
+	--color-background-assistant: var(--bs-card);
+}
+
+/**
+ * The dialog is white because the Assistant renders through PrimeVue, which ships
+ * its own surface scale independent of Nextcloud's. Overriding `background-color`
+ * on the dialog does not hold -- the content pane inside paints over it -- so the
+ * substitution goes at PrimeVue's own tokens, one level up from either fight.
+ */
+.assistant-modal.assistant-modal {
+	/**
+	 * Inside the modal the Assistant reuses Nextcloud's own app layout -- an
+	 * .app-navigation sidebar beside .app-content -- but the dialog subtree
+	 * redefines --color-main-background as white, so both panes resolved to a
+	 * white that had nothing to do with the page behind them.
+	 *
+	 * Reasserting the variable is the whole fix for the dialog and the content
+	 * pane, because .app-content already paints from it. Pinning it to the card
+	 * surface rather than the page ground is deliberate: a dialog should read as
+	 * sitting above the page, not cut out of it.
+	 */
+	--color-main-background: var(--bs-card);
+}
+
+.assistant-modal.assistant-modal.assistant-modal .app-navigation {
+	/**
+	 * The sidebar is the exception: the Assistant paints it from
+	 * --color-primary-element-light, which is a saffron wash in light and a solid
+	 * brown block in dark. The mockups keep this panel neutral and let only the
+	 * selected conversation carry the accent.
+	 *
+	 * Tripled because the rule being replaced is `.container[data-v-HASH]
+	 * .app-navigation` -- exactly as specific as a doubled class, so a tie went to
+	 * source order until the third one broke it.
+	 */
+	background-color: var(--bs-card);
+}
+
+
+/* -- Mail ------------------------------------------------------------------ */
+
+/**
+ * Mail derives a full-bleed radial gradient on its setup screen from
+ * --color-primary. At Nextcloud's blue that is a soft wash; at saffron it is a
+ * metre-wide orange blob behind the account form. The mockups put this screen on
+ * the plain paper ground.
+ */
+.setup--themed.setup--themed.setup--themed {
+	/**
+	 * Mail's own rule is `.setup--themed[data-v-HASH]`, which is a class and an
+	 * attribute. Repeating the class is the ancestor-independent way past it --
+	 * the same device as `:root:root` above -- and unlike naming the hash it does
+	 * not break when Mail is rebuilt. The gradient is derived from
+	 * --color-primary-element, so there is no token to reassign here: saffron is
+	 * correct everywhere else it is used.
+	 */
+	background-image: none;
+	background-color: var(--color-main-background);
+}
+
+
+/* -- Talk ------------------------------------------------------------------ */
+
+/**
+ * Talk ships three decorative renders on its home screen in its own bright blue.
+ * They are the loudest thing in the app and, in dark mode, the only thing that
+ * glares.
+ *
+ * Deliberately a wash rather than a recolour. A hue rotation would turn them
+ * saffron and match the palette exactly, but these are Talk's artwork, not ours,
+ * and pushing someone else's illustrations through 190 degrees is the kind of
+ * change that looks clever and ages badly. The values are the mockup pack's own
+ * `.washed` treatment; dark gets a brightness step as well, because saturation
+ * alone does not stop a bright blue glowing on an ink ground.
+ */
+.dashboard-section__bar img,
+.dashboard-section__bar.image-container img {
+	filter: saturate(0.72) contrast(0.94);
+}
+
+body[data-theme-dark] .dashboard-section__bar img,
+body[data-theme-dark-highcontrast] .dashboard-section__bar img {
+	filter: saturate(0.6) brightness(0.72) contrast(0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+	body[data-theme-default] .dashboard-section__bar img {
+		filter: saturate(0.6) brightness(0.72) contrast(0.95);
+	}
+}
