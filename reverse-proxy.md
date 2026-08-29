@@ -480,95 +480,104 @@ Add the below template to your Nginx config.
 **Note:** please check your Nginx version by running: `nginx -v` and adjust the lines marked with version notes to fit your version.
 
 ```
+pcre_jit on;              # needs to be set in the main nginx config block (outside location, server and http block)
+worker_processes auto;    # needs to be set in the main nginx config block (outside location, server and http block)
+worker_cpu_affinity auto; # needs to be set in the main nginx config block (outside location, server and http block)
+
 #quic_bpf on; # improves HTTP/3 / QUIC - supported on nginx v1.25.0+, if nginx runs as a docker container you need to give it the BPF, PERFMON and NET_ADMIN caps - breaks nginx config reloads - needs to be set in the main nginx config block (outside location, server and http block)
-```
-```
-pcre_jit on;
-worker_processes auto;
-worker_cpu_affinity auto;
 
-map $http_upgrade $connection_upgrade {
-    default upgrade;
-    "" "";
-}
+http {
+    sendfile on;
+    aio threads;
+    aio_write on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    server_tokens off;
+    reset_timedout_connection on;
 
-upstream nextcloud {
-  #keepalive 32 local; # for nginx versions below v1.29.7
-  server 127.0.0.1:11000; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
-}
+    # uncomment and set the trusted IPs if a second reverse proxy (or cloudflare) runs in front of nginx
+    #real_ip_recursive on;
+    #real_ip_header X-Forwarded-For;
+    #set_real_ip_from unix:;
+    #set_real_ip_from 127.0.0.0/8;
+    #set_real_ip_from ::1/128;
+    #set_real_ip_from ...;
 
-server {
-    listen 80;
-    listen [::]:80;            # comment to disable IPv6
-
-    if ($scheme = "http") {
-        return 301 https://$host$request_uri;
-    }
-    if ($http_x_forwarded_proto = "http") {
-        return 301 https://$host$request_uri;
-    }
-
-    listen 443 ssl;      # for nginx v1.25.1+
-    listen [::]:443 ssl; # for nginx v1.25.1+ - comment to disable IPv6
-    http2 on;            # for nginx v1.25.1+
-
-    #listen 443 ssl http2;      # for nginx versions below v1.25.1
-    #listen [::]:443 ssl http2; # for nginx versions below v1.25.1 - keep comment to disable IPv6
-
-    #listen 443 quic reuseport;       # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport
-    #listen [::]:443 quic reuseport;  # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on port 443 with enabled reuseport - keep comment to disable IPv6
-    #http3 on;                                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    #quic_gso on;                              # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - broken for connections over wireguard tunnels
-    #quic_retry on;                            # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    #add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-
-    client_body_buffer_size 1m;
+    http2 on;                     # for nginx v1.25.1+
+    #http3 on;                    # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+    #quic_gso on;                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - broken for connections over wireguard tunnels
+    #quic_retry on;               # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
     #http3_stream_buffer_size 1m; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-
-    server_name <your-nc-domain>;
-
-    # If running nginx on a subdomain (eg. nextcloud.example.com) of a domain that already has an wildcard ssl certificate from certbot on this machine, 
-    # the <your-nc-domain> in the below lines should be replaced with just the domain (eg. example.com), not the subdomain. 
-    # In this case the subdomain should already be secured without additional actions
-    ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
-    ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
-
-    proxy_buffering off;
-    proxy_request_buffering off;
-    proxy_socket_keepalive on;
-
-    # The default NEXTCLOUD_MAX_TIME value is 3600 seconds.
-    # By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
-    # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
-    proxy_read_timeout 3610s;
-
-    location / {
-        proxy_pass http://nextcloud;
-
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-        # Websockets
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $connection_upgrade;
-    }
+    client_body_buffer_size 1m;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256;
     ssl_session_timeout 1d;
     ssl_session_cache shared:HTTPS:10m;
 
-    sendfile on;
-    aio threads;
-    aio_write on;
-    tcp_nopush on;
-    tcp_nodelay on;
-    client_max_body_size 0;
-    reset_timedout_connection on;
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        "" "";
+    }
+
+    upstream nextcloud {
+      keepalive 32 local;     # for nginx versions below v1.29.7
+      server 127.0.0.1:11000; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
+    }
+
+    server {
+        listen 0.0.0.0:80 bind reuseport deferred multipath so_keepalive=on; # please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
+        listen [::]:80 bind reuseport deferred multipath so_keepalive=on;    # comment to disable IPv6 - please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on these options ip and port with this enabled 
+
+        if ($scheme = "http") {
+            return 301 https://$host$request_uri;
+        }
+        if ($http_x_forwarded_proto = "http") {
+            return 301 https://$host$request_uri;
+        }
+
+        listen 0.0.0.0:443 ssl bind reuseport deferred multipath so_keepalive=on; # for nginx v1.25.1+ - please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
+        listen [::]:443 ssl bind reuseport deferred multipath so_keepalive=on;    # for nginx v1.25.1+ - comment to disable IPv6 - please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
+
+        #listen 0.0.0.0:443 ssl http2 bind reuseport deferred multipath so_keepalive=on; # for nginx versions below v1.25.1 - please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
+        #listen [::]:443 ssl http2 bind reuseport deferred multipath so_keepalive=on;    # for nginx versions below v1.25.1 - keep comment to disable IPv6 - please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
+
+        #listen 0.0.0.0:443 quic reuseport;                # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on this ip and port 443 with this enabled
+        #listen [::]:443 quic reuseport;           # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on this ip and port 443 with this enabled reuseport - keep comment to disable IPv6
+        #add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
+
+        server_name <your-nc-domain>;
+
+        # If running nginx on a subdomain (eg. nextcloud.example.com) of a domain that already has an wildcard ssl certificate from certbot on this machine, 
+        # the <your-nc-domain> in the below lines should be replaced with just the domain (eg. example.com), not the subdomain. 
+        # In this case the subdomain should already be secured without additional actions
+        ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
+        ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
+
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_socket_keepalive on;
+        client_max_body_size 0;
+
+        # The default NEXTCLOUD_MAX_TIME value is 3600 seconds.
+        # By setting it 10 seconds higher than that, we make sure that always Nextcloud times out and not NGINX.
+        # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
+        proxy_read_timeout 3610s;
+
+        location / {
+            proxy_pass http://nextcloud;
+
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+            # Websockets
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        }
 }
 ```
 
