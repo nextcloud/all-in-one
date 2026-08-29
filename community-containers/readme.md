@@ -13,6 +13,7 @@ flowchart TD
     classDef group     fill:#FEF9E7,stroke:#F39C12,color:#333
 
     subgraph COMM_AI["🤖 AI & Language"]
+        ASTRO(["🧭  Astrolabe\nAssistant agent for your data"]):::community
         LAI(["🧠  Local AI\nPrivate AI assistant"]):::community
         LT(["✏️  LanguageTool\nSpell & grammar check"]):::community
         LTRANS(["🌐  LibreTranslate\nTranslation engine"]):::community
