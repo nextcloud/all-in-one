@@ -28,9 +28,22 @@ done
 # else-branch, i.e. only when NEXTCLOUD_EXEC_COMMANDS is unset. Setting that var
 # takes over the whole hook, so this call has to be repeated here or Collabora
 # silently loses its WOPI config on every start.
+#
+# Guarded on the app actually being installed, and non-fatal either way. This script
+# runs under `set -e`, and `richdocuments:activate-config` fails hard with "There are
+# no commands defined in the richdocuments namespace" whenever COLLABORA_ENABLED is
+# "yes" but the app is not on the instance -- on a first boot before it installs, or
+# if the env var is set without the collabora profile. That failure used to abort the
+# whole script, so the default apps, landing page, ClamAV limits, App Store setting
+# and branding below all silently never ran, with nothing in the logs but the
+# Collabora error. Anything added here should be similarly tolerant.
 if [ "${COLLABORA_ENABLED:-}" = "yes" ]; then
-    echo "exec-commands: activating Collabora config..."
-    occ richdocuments:activate-config
+    if occ app:list --enabled | grep -q 'richdocuments'; then
+        echo "exec-commands: activating Collabora config..."
+        occ richdocuments:activate-config || echo "exec-commands: WARNING: richdocuments:activate-config failed, continuing"
+    else
+        echo "exec-commands: COLLABORA_ENABLED=yes but richdocuments is not installed, skipping its config"
+    fi
 fi
 
 # The nc_aio_tools bind mount only puts the app on disk; Nextcloud still has to be
@@ -80,6 +93,23 @@ if [ -n "${NEXTCLOUD_DEFAULT_APPS:-}" ]; then
     # where users land: the order of icons in the top bar is a per-user setting
     # (core/apporder) with no admin-level default, so it cannot be set from here.
     occ config:system:set defaultapp --value="$NEXTCLOUD_DEFAULT_APPS"
+fi
+
+# App Store, off by default (Anirban's request). This hides the "Apps" admin section
+# and stops the server reaching out to apps.nextcloud.com, so the only apps on the
+# instance are the ones this compose file ships. Note it does not disable or remove
+# anything already installed, and updates to installed apps stop arriving too -- with
+# the store off, `occ app:update` has no source to pull from, so app upgrades become
+# part of bumping the image tag rather than something an admin does in the UI.
+#
+# Set NEXTCLOUD_APPSTORE_ENABLED=yes in .env to put it back. Installing an app while
+# it is off means turning it on, installing, and turning it off again.
+if [ "${NEXTCLOUD_APPSTORE_ENABLED:-no}" = "yes" ]; then
+    echo "exec-commands: App Store enabled"
+    occ config:system:set appstoreenabled --value=true --type=boolean
+else
+    echo "exec-commands: disabling the App Store..."
+    occ config:system:set appstoreenabled --value=false --type=boolean
 fi
 
 # BharatSuite branding.
