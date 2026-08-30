@@ -13,8 +13,9 @@ and adding its profile — nothing else. Note the env var alone only tells Nextc
 use the editor; without the profile the container never starts and documents fail to
 open.
 
-Files live on local disk by default. S3 primary storage is wired and switchable — see
-**Object storage (S3)** below.
+User files live in S3, served by a self-hosted single-node Ceph cluster in this same
+project — see **Object storage (S3 on self-hosted Ceph)** below for how it is wired
+and how to go back to local disk.
 
 All 14 images are pinned to tag `20260805_083533`, which bundles Nextcloud 33.0.7
 (per Anirban's request — confirmed by inspecting the image's baked-in
@@ -572,26 +573,92 @@ Files **above** the cap are accepted by Nextcloud **without being scanned**, so 
 trades coverage for throughput. `av_infected_action` is `only_log`, meaning detections
 are logged rather than blocked — worth revisiting before any real deployment.
 
-## Object storage (S3)
+## Object storage (S3 on self-hosted Ceph)
 
-Nextcloud's user files live on local disk by default (`NEXTCLOUD_DATADIR` →
-`/mnt/ncdata`). AIO's nextcloud image ships `/var/www/html/config/s3.config.php`,
-which builds the `objectstore` block from `OBJECTSTORE_S3_*` environment variables and
-activates it **only when `OBJECTSTORE_S3_BUCKET` is non-empty**. Those variables are
-passed through in `docker-compose.yml`, so switching to S3 is a matter of filling them
-in — no custom config.php, no patching.
+Nextcloud's user files live in an S3 bucket served by the `nextcloud-aio-ceph`
+service, not on local disk. AIO's nextcloud image ships
+`/var/www/html/config/s3.config.php`, which builds the `objectstore` block from
+`OBJECTSTORE_S3_*` environment variables and activates it **only when
+`OBJECTSTORE_S3_BUCKET` is non-empty**. Those variables are passed through in
+`docker-compose.yml`, so this needs no custom config.php and no patching.
+
+`quay.io/ceph/demo` runs a whole single-node cluster — mon, mgr, osd, rgw — in one
+container, and creates the RGW user and the bucket itself on first boot from the same
+`OBJECTSTORE_S3_KEY` / `_SECRET` / `_BUCKET` that Nextcloud authenticates with. There
+is nothing to provision by hand and no credentials to obtain from anywhere.
 
 ```sh
-# .env -- leave OBJECTSTORE_S3_BUCKET empty to stay on local disk
+# .env -- shipped defaults, already pointing at the Ceph in this project
 OBJECTSTORE_S3_BUCKET=nextcloud
-OBJECTSTORE_S3_KEY=...
-OBJECTSTORE_S3_SECRET=...
-OBJECTSTORE_S3_REGION=us-east-1
-OBJECTSTORE_S3_HOST=            # set for non-AWS endpoints (MinIO, Wasabi, Ceph)
-OBJECTSTORE_S3_PORT=
-OBJECTSTORE_S3_SSL=true
-OBJECTSTORE_S3_USEPATH_STYLE=false   # true for MinIO and most self-hosted gateways
+OBJECTSTORE_S3_KEY=change-me         # Ceph CREATES the RGW user with these
+OBJECTSTORE_S3_SECRET=change-me
+OBJECTSTORE_S3_REGION=us-east-1      # RGW ignores it; the S3 client demands a value
+OBJECTSTORE_S3_HOST=nextcloud-aio-ceph
+OBJECTSTORE_S3_PORT=8080
+OBJECTSTORE_S3_SSL=false             # internal bridge network only, never published
+OBJECTSTORE_S3_USEPATH_STYLE=true    # required for RGW
 OBJECTSTORE_S3_AUTOCREATE=true
+CEPH_SUBNET=172.28.0.0/24
+CEPH_IP=172.28.0.20
+```
+
+`ceph` is in `COMPOSE_PROFILES`. To go back to local disk instead, blank
+`OBJECTSTORE_S3_BUCKET` and drop `ceph` from that list, on a fresh install.
+
+Points worth knowing before changing any of this:
+
+- **The keys are not issued by anyone.** The container creates an RGW user from
+  whatever `OBJECTSTORE_S3_KEY`/`_SECRET` hold on the first boot. Editing them later
+  does not rename that user, it only stops Nextcloud authenticating.
+- **`CEPH_IP` is fixed on purpose.** Ceph writes the mon address into its monmap and
+  into `/etc/ceph/ceph.conf` at bootstrap and never reconciles a changed one, so a
+  Compose-assigned address would break the cluster the first time container start
+  order changed. That is also why the bridge network has an explicit subnet. If
+  `172.28.0.0/24` collides with a VPN or LAN route, change `CEPH_SUBNET` and
+  `CEPH_IP` together — an already-bootstrapped cluster has the old address on disk
+  and has to be recreated.
+- **`OBJECTSTORE_S3_HOST` is the service name, and that only works because of
+  `RGW_NAME`.** RGW reads a dot-less `Host:` header as a virtual-hosted-style bucket
+  name and answers every path-style request with `NoSuchBucket`. The hand-built stack
+  that preceded this one had to hardcode the container's IP for exactly that reason.
+  Pinning `RGW_NAME` to the same hostname puts it in `rgw dns name`, so RGW knows the
+  header names itself. Change one and change the other.
+- **Resource cost.** The image is ~1.9 GB and the cluster wants roughly 1-2 GB of RAM
+  on top of the rest of the stack. On Docker Desktop, raise the VM's memory before
+  running this alongside `fulltextsearch`, `ollama` and `context-chat`.
+- **The image comes from an archived project.** `github.com/ceph/ceph-container` went
+  read-only in December 2024, and Ceph's current Containerfile has no demo/all-in-one
+  entrypoint, so this is the last build that exists: Ceph 19.2.0 squid, pinned by
+  digest. Fine for a dev S3 endpoint, but it will not track Ceph releases. Pointing
+  `OBJECTSTORE_S3_HOST` at a real cluster is a host/port/credentials change and
+  nothing else.
+- **`DEMO_DAEMONS=osd,rgw` is load-bearing.** At `all` the entrypoint also runs
+  `bootstrap_rest_api`, which calls `ceph mgr module enable restful` under `set -e`;
+  squid dropped that mgr module, so the script dies before writing its `I_AM_A_DEMO`
+  marker files and the container crash-loops forever afterwards. Do not widen it
+  without re-testing a restart.
+- **Single-OSD tuning.** `CEPH_ARGS` sets `osd_pool_default_size=1` because one OSD
+  cannot hold the entrypoint's hardcoded two replicas, which would otherwise leave
+  every pool permanently `active+undersized+degraded`. It has to be `CEPH_ARGS` and
+  not `ceph config set`: a value in `ceph.conf` outranks the mon config database, so
+  new pools keep coming up at size 2. `ceph -s` should read `HEALTH_OK`.
+
+Checking it end to end, once the stack is up:
+
+```sh
+docker compose exec nextcloud-aio-ceph ceph -s
+# expect: health: HEALTH_OK, "rgw: 1 daemon active"
+
+docker compose exec -u www-data nextcloud-aio-nextcloud \
+  php /var/www/html/occ config:system:get objectstore
+# expect: class \OC\Files\ObjectStore\S3, bucket nextcloud, hostname nextcloud-aio-ceph
+
+# upload a file the way a user would, then confirm the bytes are really in Ceph
+curl -u admin:PASSWORD -T /tmp/probe.txt \
+  https://$NC_DOMAIN/remote.php/dav/files/admin/probe.txt
+docker compose exec nextcloud-aio-ceph \
+  radosgw-admin bucket stats --bucket=nextcloud | grep num_objects
+# expect: the count goes up, and /mnt/ncdata holds no file bodies
 ```
 
 **This is an install-time decision.** It sets *primary* object storage, so on a fresh
@@ -619,7 +686,8 @@ container for *backups*.
 - Self-signed cert generated manually above — swap for a real one (e.g. Let's
   Encrypt) outside local dev.
 - All state lives in named Docker volumes (`nextcloud_aio_*`) with no redundancy —
-  losing them loses everything.
+  losing them loses everything. That now includes user files, which live in Ceph:
+  one OSD, one replica, `nextcloud_aio_ceph_var`.
 - `NC_DOMAIN` being a fake/local-only hostname (not real DNS) means every container
   that needs to resolve it has to be told about it explicitly. The `talk` service
   already has an `extra_hosts` entry for this (its WebRTC/TURN server otherwise

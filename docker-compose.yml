@@ -1,9 +1,11 @@
 # Nextcloud AIO ("manual install" method), all optional features enabled.
 #
-# This replaces the previous hand-built Nextcloud + Ceph S3 stack entirely. AIO's
-# built-in S3 support is its own bundled Minio container, with no documented way to
-# point it at an external S3/Ceph endpoint -- so Ceph is no longer part of this setup
-# (confirmed via the official AIO docs before making this change).
+# This replaces the previous hand-built Nextcloud + Ceph S3 stack. Ceph is still
+# here, as the nextcloud-aio-ceph service on the "ceph" profile, providing S3
+# primary storage through RGW. An earlier version of this header claimed AIO had no
+# way to use an external S3 endpoint; that was wrong. AIO's *bundled* Minio is for
+# its own backups, but the nextcloud image also ships config/s3.config.php, which
+# builds Nextcloud's objectstore from OBJECTSTORE_S3_* and is endpoint-agnostic.
 #
 # This is AIO's official "manual install" compose file (as opposed to the
 # mastercontainer + Docker-socket-managed approach): every service is defined here
@@ -14,11 +16,11 @@
 #
 # Profiles enabled by default per Anirban's request: collabora, talk,
 # talk-recording, clamav, imaginary, fulltextsearch, whiteboard, ollama, james,
-# context-chat. Bring the stack up with:
+# context-chat, ceph. Bring the stack up with:
 #   docker compose --profile collabora --profile talk --profile talk-recording \
 #     --profile clamav --profile imaginary --profile fulltextsearch \
 #     --profile whiteboard --profile ollama --profile james \
-#     --profile context-chat up -d
+#     --profile context-chat --profile ceph up -d
 #
 # OFFICE EDITORS: Collabora is the only one enabled. nextcloud-aio-onlyoffice and
 # nextcloud-aio-eurooffice are defined below but OFF by default -- their profiles
@@ -167,6 +169,14 @@ services:
         required: false
       nextcloud-aio-imaginary:
         condition: service_started
+        required: false
+      # service_healthy, not service_started, and the only dependency here that
+      # needs it: with S3 primary storage Nextcloud writes to the bucket during
+      # first-run installation, so RGW must be serving and the bucket must exist
+      # before this container starts, not merely be booting. required:false keeps
+      # the stack working with the ceph profile off (local disk).
+      nextcloud-aio-ceph:
+        condition: service_healthy
         required: false
     image: ghcr.io/nextcloud-releases/aio-nextcloud:20260805_083533
     init: true
@@ -879,6 +889,112 @@ services:
     profiles:
       - context-chat
 
+  # Self-hosted S3 for Nextcloud's primary storage, per Anirban's request on PR #1
+  # ("use self hosted ceph"). quay.io/ceph/demo packs a whole single-node cluster --
+  # mon, mgr, osd, rgw -- into one container and, given the CEPH_DEMO_* variables
+  # below, creates the RGW user and the bucket on first boot. Dev/local only: one
+  # OSD, no redundancy, no backups.
+  #
+  # The image is ~1.9 GB and the cluster wants roughly 1-2 GB of RAM on top of the
+  # rest of the stack. On Docker Desktop, check the VM's memory allocation before
+  # enabling this alongside fulltextsearch/ollama/context-chat.
+  #
+  # THE IMAGE IS FROM AN ARCHIVED PROJECT. github.com/ceph/ceph-container was made
+  # read-only in Dec 2024 and Ceph moved to a plain Containerfile in the main repo
+  # with no demo/all-in-one entrypoint, so nothing newer than these images exists and
+  # nothing replaces them. That is fine for a dev S3 endpoint (this is Ceph 19.2.0
+  # squid, the last release it was built for) but it will not track Ceph releases.
+  # A real deployment points OBJECTSTORE_S3_HOST at a real cluster instead; nothing
+  # else in this file changes.
+  nextcloud-aio-ceph:
+    # Pinned by digest, not tag: "latest-squid" is a moving tag on a dead project.
+    # This is what it pointed at on 2024-12-02, ceph 19.2.0.
+    # A hand-built Ceph stack preceded the AIO migration and pinned the *quincy*
+    # digest instead, because the demo entrypoint runs `ceph mgr module enable
+    # restful` under `set -e` and squid dropped that mgr module -- the script died
+    # before writing its I_AM_A_DEMO marker files and the container crash-looped
+    # forever on restart. That call lives in bootstrap_rest_api, which only runs
+    # when DEMO_DAEMONS is "all", so limiting DEMO_DAEMONS below skips it and squid
+    # works. Do not widen DEMO_DAEMONS to "all" without re-testing a restart.
+    image: quay.io/ceph/demo@sha256:522483cf07cfce6386b8e18a3edfa88a1b32c688dee231d0a6962b1513557723
+    # MON_NAME, MGR_NAME and RGW_NAME all default to $HOSTNAME, which in Compose is
+    # the random container id. Their on-disk state directories are named after them,
+    # so without a fixed hostname a `docker compose down && up` leaves a mon data dir
+    # the new container does not recognise. It also fixes `rgw dns name` -- see the
+    # OBJECTSTORE_S3_HOST note in .env.example for why that one matters.
+    hostname: nextcloud-aio-ceph
+    init: true
+    expose:
+      - "8080"
+    networks:
+      default:
+        ipv4_address: ${CEPH_IP:-172.28.0.20}
+    environment:
+      - TZ=${TIMEZONE}
+      # mon and mgr always start; this is everything else. Deliberately NOT "all":
+      # that adds mds, nfs, rbd-mirror, crash and rest_api, none of which S3 needs,
+      # and rest_api is the one that breaks squid (see the image note above).
+      - DEMO_DAEMONS=osd,rgw
+      # The mon's own address, which is why this service has a static IP. Ceph bakes
+      # it into the monmap and into the persisted /etc/ceph/ceph.conf at bootstrap,
+      # and the entrypoint does nothing to reconcile a changed address on a later
+      # start (it logs "Existing mon, trying to rejoin cluster..." and then starts a
+      # mon whose recorded address no longer exists). A Compose-assigned dynamic IP
+      # is not stable across `down && up`, so the cluster would break the first time
+      # container start order changed. The older releases' NETWORK_AUTO_DETECT would
+      # have solved this without a static IP, but the squid image's flattened
+      # entrypoint has dropped it entirely: the variable is read nowhere and the
+      # container exits with "CEPH_PUBLIC_NETWORK must be defined".
+      - MON_IP=${CEPH_IP:-172.28.0.20}
+      - CEPH_PUBLIC_NETWORK=${CEPH_SUBNET:-172.28.0.0/24}
+      # One OSD cannot hold two replicas, and the entrypoint hardcodes
+      # "osd pool default size = 2" into the ceph.conf it generates, so out of the
+      # box every pool sits permanently active+undersized+degraded at 50% and
+      # `ceph -s` never comes back clean -- which buries any real warning. It cannot
+      # be fixed with `ceph config set`: a value in ceph.conf outranks the mon config
+      # database, so new pools keep coming up at size 2 (verified). CEPH_ARGS is read
+      # by every Ceph binary as extra command-line arguments, and the command line
+      # outranks ceph.conf, so this is the one lever that reaches the mon before it
+      # creates the first pool. mon_warn_on_pool_no_redundancy then turns off the
+      # "pool(s) have no replicas configured" notice, which is a statement of intent
+      # here rather than a problem: HEALTH_OK now means something again.
+      - CEPH_ARGS=--osd-pool-default-size=1 --osd-pool-default-min-size=1 --mon-warn-on-pool-no-redundancy=false
+      - RGW_NAME=nextcloud-aio-ceph
+      - RGW_FRONTEND_PORT=8080
+      - OSD_COUNT=1
+      # Same values Nextcloud authenticates with, from one place in .env: the demo
+      # entrypoint CREATES this user and bucket from them on first boot rather than
+      # having them handed to it.
+      - CEPH_DEMO_UID=nextcloud
+      - CEPH_DEMO_ACCESS_KEY=${OBJECTSTORE_S3_KEY}
+      - CEPH_DEMO_SECRET_KEY=${OBJECTSTORE_S3_SECRET}
+      - CEPH_DEMO_BUCKET=${OBJECTSTORE_S3_BUCKET}
+    volumes:
+      - nextcloud_aio_ceph_etc:/etc/ceph:rw
+      - nextcloud_aio_ceph_var:/var/lib/ceph:rw
+      # Not a scratch directory despite the name. The entrypoint records the demo
+      # user it created in /opt/ceph-container/tmp/ceph-demo-user and uses that file
+      # as its "already done" guard; lose it and the next start re-runs
+      # `radosgw-admin user create` for a uid that exists, which fails under `set -e`
+      # and kills the container. The volume is seeded from the image on first use, so
+      # the sree.tar.gz that also lives here survives.
+      - nextcloud_aio_ceph_tmp:/opt/ceph-container/tmp:rw
+    # Bucket-level, not just "is the port open": this only passes once RGW is
+    # serving AND the bucket exists, which is exactly the state Nextcloud needs
+    # before it initialises its object store. Bootstrapping a cluster from cold
+    # takes a while, hence the long start_period.
+    healthcheck:
+      test: ["CMD-SHELL", "radosgw-admin bucket stats --bucket=\"$$CEPH_DEMO_BUCKET\" > /dev/null 2>&1"]
+      start_period: 180s
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    profiles:
+      - ceph
+    cap_drop:
+      - NET_RAW
+
 volumes:
   nextcloud_aio_apache:
     name: nextcloud_aio_apache
@@ -908,7 +1024,28 @@ volumes:
     name: nextcloud_aio_james_var
   nextcloud_aio_context_chat_backend:
     name: nextcloud_aio_context_chat_backend
+  nextcloud_aio_ceph_etc:
+    name: nextcloud_aio_ceph_etc
+  nextcloud_aio_ceph_var:
+    name: nextcloud_aio_ceph_var
+  nextcloud_aio_ceph_tmp:
+    name: nextcloud_aio_ceph_tmp
 
 networks:
   default:
     driver: bridge
+    # Explicit subnet only so nextcloud-aio-ceph can hold a fixed address in it --
+    # see the MON_IP comment on that service. Every other service still gets a
+    # Compose-assigned IP, just from this range instead of a Docker-chosen one.
+    # Change CEPH_SUBNET/CEPH_IP together in .env if this range collides with a VPN
+    # or LAN route on the host.
+    #
+    # These two are the only variables in this file with inline defaults. Everything
+    # else must come from .env, but an .env written before Ceph existed would leave
+    # these blank, and Compose accepts a blank subnet and a blank ipv4_address
+    # without complaint -- the stack would come up with the ceph container on a
+    # Compose-assigned address, which is the exact failure the fixed IP exists to
+    # prevent. The defaults make an older .env keep working instead.
+    ipam:
+      config:
+        - subnet: ${CEPH_SUBNET:-172.28.0.0/24}
