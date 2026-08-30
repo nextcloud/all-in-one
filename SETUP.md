@@ -339,14 +339,20 @@ Deviations from stock, all marked with a `LOCAL CHANGE` comment in the file itse
 | `webadmin.properties` | `enabled=false` | Stock James binds an **unauthenticated** admin REST API on `0.0.0.0:8000`. Nothing here uses it; provisioning goes through `james-cli` over JMX. This also retires `jwt_publickey`, which shipped as James's public *demo* keypair. |
 | `smtpserver.xml`, `imapserver.xml`, `pop3server.xml`, `managesieveserver.xml` | keystore password → `${env:JAMES_KEYSTORE_SECRET}` | James reads config through commons-configuration2, so `${env:VAR}` resolves against the container environment. No secret in git. |
 
-**`nextcloud-aio-james` is the only built image in this stack.** `apache/james:jpa-3.8.2`
+**The PostgreSQL driver is mounted in, not baked into an image.** `apache/james:jpa-3.8.2`
 bundles just `derby-10.14.2.0.jar`, and OpenJPA resolves JDBC drivers off the JVM
-classpath (`/root/libs/*`). `/root/extensions-jars` is not a substitute — James loads
-that with a separate Guice classloader for mailets, so a driver there is invisible to
-`DriverManager`. `james-image/Dockerfile` therefore adds the PostgreSQL driver to
-`/root/libs`. There is no `apache/james:postgres-3.8.x` to switch to instead; upstream's
-postgres distribution starts at `postgres-3.9.0` and is a different app with a
-different config layout.
+classpath, which the image's own `/root/jib-classpath-file` gives as
+`/root/resources:/root/classes:/root/libs/*`. That last entry is a wildcard, so
+`james-libs/postgresql-42.7.4.jar` is bind-mounted to `/root/libs/postgresql.jar` and
+picked up with no build step. It has to be mounted as a single *file*: mounting the
+directory would hide the 281 jars the image ships there and James would not start.
+`/root/extensions-jars` is not an alternative location either — James loads that with a
+separate Guice classloader for mailets, so a driver there is invisible to
+`DriverManager`. See `james-libs/README.md` for the jar's provenance and checksums.
+
+There is no `apache/james:postgres-3.8.x` to switch to instead; upstream's postgres
+distribution starts at `postgres-3.9.0` and is a different app with a different config
+layout. Every image in this stack is now pulled, none are built.
 
 1. Generate the keystore (skip if `james-conf/keystore` already exists):
    ```sh
@@ -554,8 +560,8 @@ and a cron job keeps it topped up — installing it only registers the commands.
 
 ## Antivirus scan limits (ClamAV)
 
-`CLAMAV_MAX_FILE_SIZE` in `.env` caps what ClamAV scans, in bytes. Default `104857600`
-(100 MB). It is applied by `nextcloud-exec-commands.sh` to two `files_antivirus`
+`CLAMAV_MAX_FILE_SIZE` in `.env` caps what ClamAV scans, in bytes. Default `10485760`
+(10 MB). It is applied by `nextcloud-exec-commands.sh` to two `files_antivirus`
 settings:
 
 | Setting | Meaning |

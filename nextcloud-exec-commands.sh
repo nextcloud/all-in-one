@@ -113,7 +113,7 @@ if [ -n "${BRANDING_NAME:-}" ]; then
     occ config:app:set theming backgroundMime --value=backgroundColor >/dev/null
 fi
 
-# ClamAV scan limits (Anirban's request: 100 MB).
+# ClamAV scan limits (Anirban's request: 10 MB).
 #
 # NOTE: the MAX_SIZE env var on nextcloud-aio-clamav is INERT -- that image's
 # /start.sh never reads it, and its clamd.conf ships hardcoded 2000M values. The

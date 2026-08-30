@@ -797,11 +797,10 @@ services:
       - james
 
   nextcloud-aio-james:
-    # Built, not pulled -- the stock image ships no PostgreSQL JDBC driver.
-    # See james-image/Dockerfile for why this cannot be done with a bind mount.
-    build:
-      context: ./james-image
-    image: nextcloud-aio-james-postgres:jpa-3.8.2
+    # Stock upstream image, no build step (Anirban's request on PR #1). James runs on
+    # PostgreSQL rather than the embedded Derby it defaults to, which needs the JDBC
+    # driver on the classpath -- see the volume mount below and james-libs/README.md.
+    image: apache/james:jpa-3.8.2
     init: true
     depends_on:
       nextcloud-aio-james-db-init:
@@ -811,6 +810,16 @@ services:
     volumes:
       - ./james-conf:/root/conf:rw
       - nextcloud_aio_james_var:/root/var:rw
+      # The PostgreSQL JDBC driver. The image bundles only Derby, and OpenJPA resolves
+      # drivers off the JVM classpath, which is `/root/libs/*` per the image's own
+      # /root/jib-classpath-file. That wildcard is what makes a mount work here.
+      #
+      # Mounted as a single FILE, not a directory: mounting ./james-libs over
+      # /root/libs would hide the 281 jars the image ships there and James would not
+      # start. Note /root/extensions-jars is not an alternative location -- James
+      # loads it with a separate Guice classloader for mailets, where a JDBC driver is
+      # invisible to DriverManager.
+      - ./james-libs/postgresql-42.7.4.jar:/root/libs/postgresql.jar:ro
     environment:
       - TZ=${TIMEZONE}
       # James config files are read through commons-configuration2, so ${env:VAR}
