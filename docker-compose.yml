@@ -302,6 +302,10 @@ services:
       - BRANDING_URL
       - BRANDING_PRIMARY_COLOR
       - BRANDING_BACKGROUND_COLOR
+      # The residency badge in the header bar. Read by nc_aio_tools directly (see
+      # BrandingAssetsListener), not by theming:config, so it must be visible to
+      # this container: PHP-FPM is where app code executes.
+      - BRANDING_RESIDENCY_LABEL
       # Primary object storage. AIO ships /var/www/html/config/s3.config.php, which
       # activates the objectstore block only when OBJECTSTORE_S3_BUCKET is non-empty
       # -- so leaving the bucket blank keeps everything on local disk. This is an

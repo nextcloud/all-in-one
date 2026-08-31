@@ -1,29 +1,34 @@
 /**
  * BharatSuite theme layer for Nextcloud 33.
  *
- * Tokens come from the "Organic" design system in the mockup pack
- * (_ds/organic-*/styles.css plus theme.json), which Anirban made authoritative over
- * the earlier bharatsuite-notifiled.css on 2026-08-31. Nothing here restyles
- * individual components: it maps the BharatSuite palette onto the CSS variables
- * Nextcloud already drives its whole interface from, so every app is restyled at
- * once and upgrades stay safe.
+ * THE SPEC IS TWO FILES, NOT ONE, and reading only the first is the mistake this
+ * file was built on until 2026-08-31:
  *
- * TWO PLACES THIS DELIBERATELY DOES NOT FOLLOW THE DESIGN SYSTEM, both because the
- * system has nothing to say about them rather than to disagree with it:
+ *   _ds/organic-*/styles.css   The Organic design system. Structure, type, spacing,
+ *                              radii and the shape language. Authoritative for
+ *                              everything that is not a colour.
  *
- *   Status colours. Organic defines a ground, a text colour and two brand accents
- *                   with tonal ramps, and no semantic colours at all. Its second
- *                   accent is a sage green (#7a8a5e) which is a brand tint, not a
- *                   success signal -- pressed into --color-success it would be
- *                   almost indistinguishable from a neutral. So --bs-green and
- *                   --bs-blue keep their own values and stay mapped to
- *                   --color-success and --color-info.
+ *   bharatsuite-theme.css      The BharatSuite retint of Organic, and authoritative
+ *                              for colour. Its own header states the relationship:
+ *                              "Organic tokens retinted to saffron / blue / white /
+ *                              green. Load AFTER the design system stylesheet.
+ *                              Structure, type, radii and spacing are unchanged."
  *
- *   Shape.          Organic asks for 28px containers and 999px pill buttons. The
- *                   dashboard and files mockups this is meant to match show neither
- *                   -- their buttons are ~8px. Following the readme here would move
- *                   AWAY from the screens, so the radius scale below is unchanged
- *                   pending a decision on which wins.
+ * Organic's raw palette is a terracotta accent (#c67139) and a sage second accent
+ * (#7a8a5e) on a cream ground. Those are the reference system's colours, NOT
+ * BharatSuite's. The retint replaces all three roles: saffron #e58f2b is the single
+ * action colour, India green #1ea36c means verified or in-country, deep blue #163f85
+ * owns the chrome, and white is the working surface. Shipping Organic's raw tokens
+ * produced a dull terracotta-on-cream interface that read as a recoloured Nextcloud
+ * rather than as BharatSuite, which is exactly the review that sent this back.
+ *
+ * Nothing here restyles individual components: it maps the retinted palette onto the
+ * CSS variables Nextcloud already drives its whole interface from, so every app is
+ * restyled at once and upgrades stay safe.
+ *
+ * Shape follows Organic, per the mockup pack's own note on the Organic screens:
+ * "Re-skinned with pill navigation, 16 to 28px radii and air." The 4/8/12/16 scale
+ * this file used before came from bharatsuite-notifiled.css, the superseded track.
  *
  * Loaded on every page, login included, by BrandingAssetsListener.
  *
@@ -116,52 +121,75 @@ body[data-themes],
 body[data-theme-light],
 body[data-theme-default],
 body[data-theme-light-highcontrast] {
-	/* -- BharatSuite palette (Notifiled) ------------------------------------- */
-	--bs-paper:        #f5ead8;
-	--bs-surface:      #f9f4ed;
+	/* -- BharatSuite palette, from bharatsuite-theme.css ---------------------- */
+	--bs-paper:        #faf5ec;
+	--bs-surface:      #ffffff;
 
 	/* Card surface. Declared per theme because it has to sit one step away from
 	   the ground in each -- lighter than paper in light, lighter than ink in dark.
 	   No Nextcloud token moves in that direction in both, so using one (or worse,
 	   a fixed literal) leaves the dashboard's cards light on a dark page. */
-	--bs-card:         #f9f4ed;
-	--bs-surface-sunk: #eee7db;
+	--bs-card:         #ffffff;
+	--bs-surface-sunk: #f1e8d7;
 	--bs-ink:          #201e1d;
 
-	--bs-saffron:      #c67139;
-	--bs-saffron-600:  #b2622d;
-	--bs-saffron-100:  #fff2eb;
-	--bs-saffron-200:  #ffe1d0;
+	/* Saffron: the ONLY action colour. Ramp from bharatsuite-theme.css. */
+	--bs-saffron:      #e58f2b;
+	--bs-saffron-600:  #c47214;
+	--bs-saffron-700:  #98570d;
+	--bs-saffron-100:  #fff4e3;
+	--bs-saffron-200:  #ffe6c2;
 
-	--bs-green:        #1c7a53;
-	--bs-green-100:    #e9f3ee;
+	/* India green: verified, sovereign, in-country. */
+	--bs-green:        #1ea36c;
+	--bs-green-600:    #148256;
+	--bs-green-100:    #e7f7ef;
 
-	--bs-blue:         #23508c;
-	--bs-blue-700:     #1c4478;
-	--bs-blue-100:     #eaeef5;
+	/* Deep blue: chrome, navigation, trust. 500 is the readable step for links
+	   and info text; the base is the header fill and too dark for either. */
+	--bs-blue:         #163f85;
+	--bs-blue-500:     #3a6fce;
+	--bs-blue-400:     #6f9ae5;
+	--bs-blue-100:     #eaf1fd;
 
+	/* Neutrals stay Organic's: the retint does not redefine them, and their warmth
+	   is what keeps white cards from looking clinical on the cream ground. */
 	--bs-n300:         #dcd3c4;
 	--bs-n400:         #c0b6a5;
 	--bs-n500:         #a19786;
 	--bs-n600:         #82796a;
 	--bs-n700:         #645c50;
 
+	/**
+	 * The chrome fill: the header bar, and the only place deep blue appears at full
+	 * strength. Named separately from --bs-blue because the dark theme needs a
+	 * deeper step (a #163f85 bar glows against a #1a1714 page) while everything
+	 * else blue stays put.
+	 */
+	--bs-chrome:       var(--bs-blue);
+
+	/* The tricolour device, named as the design system names it. */
+	--bs-tricolour: linear-gradient(90deg,
+		var(--bs-saffron) 0 33.33%, #ffffff 33.33% 66.66%, var(--bs-green) 66.66%);
+
 	/* -- Nextcloud surfaces --------------------------------------------------- */
 	--color-main-background:       var(--bs-paper);
-	--color-main-background-rgb:   242, 239, 233;
-	--color-main-background-blur:  #f2efe9cc;
+	--color-main-background-rgb:   250, 245, 236;
+	--color-main-background-blur:  #faf5eccc;
 	--color-background-hover:      var(--bs-surface-sunk);
 	--color-background-dark:       var(--bs-surface-sunk);
 	--color-background-darker:     var(--bs-n300);
 	/**
-	 * The "plain" ground is what Nextcloud paints the header and the login page
-	 * with. Stock Nextcloud makes it the primary colour; the mockups make it the
-	 * paper, with the header separated by a hairline instead of a fill.
+	 * The "plain" ground, and NOT the way to draw the navy header.
 	 *
-	 * This was deep blue until the body-level fix above landed, and nothing showed
-	 * it, because theming's own value was winning on <body> the whole time. The
-	 * moment our tokens actually reached the body the header turned blue and ate
-	 * the wordmark: "Bharat" is #23508c on a #1c4478 header.
+	 * Core reads it as `background-color: var(--color-background-plain, #0082c9)`,
+	 * and measuring the live page shows why that matters: the declaration lands on
+	 * <body>, while #header, #content and .app-content are all transparent. Setting
+	 * this to the chrome blue turned the entire page ground navy and left the app
+	 * content floating on it, not a 50px bar. The bar is painted on #header itself,
+	 * in the header block further down.
+	 *
+	 * So this stays paper, which is also what the login page needs.
 	 */
 	--color-background-plain:      var(--bs-paper);
 	--color-background-plain-text: var(--bs-ink);
@@ -182,24 +210,38 @@ body[data-theme-light-highcontrast] {
 	--color-primary-element-light-hover: var(--bs-saffron-200);
 	--color-primary-element-light-text: var(--bs-saffron-600);
 
-	/* -- Borders. Notifiled uses hairlines, not filled dividers. --------------- */
-	--color-border:             #16202b1f;
-	--color-border-dark:        #16202b33;
+	/* -- Borders. Hairlines, not filled dividers. Organic's --color-divider is
+	      color-mix(in srgb, #201e1d 16%, transparent); these are that, and one
+	      step up, expressed as ink alphas so they need no color-mix support. ---- */
+	--color-border:             #201e1d29;
+	--color-border-dark:        #201e1d3d;
 	--color-border-maxcontrast: var(--bs-n500);
 
 	/* -- Status --------------------------------------------------------------- */
 	--color-success:       var(--bs-green);
 	--color-border-success: var(--bs-green);
 	--color-warning:       var(--bs-saffron);
-	--color-info:          var(--bs-blue);
+	--color-info:          var(--bs-blue-500);
 
-	/* -- Geometry, from the Notifiled scale ------------------------------------ */
-	--border-radius-small:           4px;
-	--border-radius:                 8px;
-	--border-radius-element:         8px;
-	--border-radius-large:           12px;
-	--border-radius-container:       12px;
-	--border-radius-container-large: 16px;
+	/**
+	 * -- Geometry, from Organic --------------------------------------------------
+	 *
+	 * Organic's scale is --radius-sm 8px / --radius-md 16px / --radius-lg 28px, and
+	 * its readme is explicit: "Over-round: --radius-lg for containers,
+	 * border-radius: 999px for buttons and inputs." The Organic mockup screens say
+	 * the same for the shell: "pill navigation, 16 to 28px radii and air."
+	 *
+	 * --border-radius-element is the one Nextcloud puts on buttons, inputs and
+	 * navigation entries, so the pill goes there and nowhere else; making the
+	 * containers pills too would round off panel corners into circles.
+	 */
+	--border-radius-small:           8px;
+	--border-radius:                 16px;
+	--border-radius-element:         999px;
+	--border-radius-large:           16px;
+	--border-radius-container:       16px;
+	--border-radius-container-large: 28px;
+	--border-radius-pill:            999px;
 
 	/* -- Type ------------------------------------------------------------------ */
 	--font-face: 'BharatSuite Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
@@ -211,39 +253,45 @@ body[data-theme-light-highcontrast] {
  * three of its modes: explicit dark, and the two automatic ones.
  *
  * The palette inverts around the same hues rather than being naively lightened:
- * ink becomes the ground, paper becomes the text, and saffron/green/blue lift a step
- * so they keep their contrast against a dark surface.
+ * ink becomes the ground, paper becomes the text, and saffron/green/blue lift one
+ * ramp step so they keep their contrast against a dark surface -- which is what
+ * Organic's readme asks for ("--color-accent-400 on a dark one").
+ *
+ * WARM, not slate. These values were derived from Notifiled's #16202b, a blue ink,
+ * and the result read as a different product from the light theme. The ground is now
+ * the palette's own ink deepened, and the neutrals are Organic's.
  */
 body[data-theme-dark],
 body[data-theme-dark-highcontrast],
 body.theme--dark {
-	--color-main-background:       #12191f;
-	--color-main-background-rgb:   18, 25, 31;
-	--color-main-background-blur:  #12191fcc;
-	--color-background-hover:      #222d38;
-	--color-background-dark:       #1a232c;
-	--color-background-darker:     #222d38;
+	--color-main-background:       #1a1714;
+	--color-main-background-rgb:   26, 23, 20;
+	--color-main-background-blur:  #1a1714cc;
+	--color-background-hover:      #302b25;
+	--color-background-dark:       #24211c;
+	--color-background-darker:     #302b25;
 
-	--color-main-text:             #eee9e0;
-	--color-text-light:            #a9b3bd;
-	--color-text-lighter:          #78838e;
-	--color-text-maxcontrast:      #a9b3bd;
+	--color-main-text:             #f5efe3;
+	--color-text-light:            #c0b6a5;
+	--color-text-lighter:          #a19786;
+	--color-text-maxcontrast:      #c0b6a5;
 
-	--color-primary:               #e8933f;
-	--color-primary-element:       #e8933f;
-	--color-primary-element-text:  #16202b;
-	--color-primary-element-hover: #cf6d14;
-	--color-primary-element-light: #3a2410;
-	--color-primary-element-light-text: #e8933f;
+	--color-primary:               #f2ae5d;
+	--color-primary-element:       #f2ae5d;
+	--color-primary-element-text:  #201e1d;
+	--color-primary-element-hover: #e58f2b;
+	--color-primary-element-light: #442705;
+	--color-primary-element-light-text: #f2ae5d;
 
-	--color-border:                #eee9e024;
-	--color-border-dark:           #eee9e03d;
-	--color-border-maxcontrast:    #78838e;
+	--color-border:                #f5efe324;
+	--color-border-dark:           #f5efe33d;
+	--color-border-maxcontrast:    #a19786;
 
-	--color-success:               #45ad81;
-	--color-warning:               #e8933f;
-	--color-info:                  #6f9ad6;
-	--bs-card:                     #1a232c;
+	--color-success:               #5fc495;
+	--color-warning:               #f2ae5d;
+	--color-info:                  #6f9ae5;
+	--bs-card:                     #24211c;
+	--bs-chrome:                   #0e2c60;  /* accent-3-800: the bar, minus the glow */
 
 	/**
 	 * App icons ship as white SVGs and Nextcloud inverts them to black through
@@ -261,42 +309,49 @@ body.theme--dark {
 	/* theming's dark.css redeclares these two at [data-theme-dark]. Anything our
 	   dark block leaves out silently reverts to stock: the typeface fell back to
 	   system-ui, and the page ground stayed the light `background_color` while the
-	   panels went dark, splitting the page across two themes. */
+	   panels went dark, splitting the page across two themes.
+	
+	   --color-background-plain is the GROUND here, matching --color-main-background,
+	   exactly as it is the paper in light. It was briefly the raised #24211c, on the
+	   theory that the bar should sit above the page. Wrong twice over: the bar paints
+	   itself now, and this token lands on <body>, so it lifted the whole page to the
+	   card colour and left the dashboard's cards invisible against it. */
 	--font-face: 'BharatSuite Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
 		Roboto, Helvetica, Arial, sans-serif;
-	--color-background-plain:      #12191f;
-	--color-background-plain-text: #eee9e0;
+	--color-background-plain:      #1a1714;
+	--color-background-plain-text: #f5efe3;
 }
 
 @media (prefers-color-scheme: dark) {
 	body[data-theme-default] {
-		--color-main-background:       #12191f;
-		--color-main-background-rgb:   18, 25, 31;
-		--color-main-background-blur:  #12191fcc;
-		--color-background-hover:      #222d38;
-		--color-background-dark:       #1a232c;
-		--color-background-darker:     #222d38;
+		--color-main-background:       #1a1714;
+		--color-main-background-rgb:   26, 23, 20;
+		--color-main-background-blur:  #1a1714cc;
+		--color-background-hover:      #302b25;
+		--color-background-dark:       #24211c;
+		--color-background-darker:     #302b25;
 
-		--color-main-text:             #eee9e0;
-		--color-text-light:            #a9b3bd;
-		--color-text-lighter:          #78838e;
-		--color-text-maxcontrast:      #a9b3bd;
+		--color-main-text:             #f5efe3;
+		--color-text-light:            #c0b6a5;
+		--color-text-lighter:          #a19786;
+		--color-text-maxcontrast:      #c0b6a5;
 
-		--color-primary:               #e8933f;
-		--color-primary-element:       #e8933f;
-		--color-primary-element-text:  #16202b;
-		--color-primary-element-hover: #cf6d14;
-		--color-primary-element-light: #3a2410;
-		--color-primary-element-light-text: #e8933f;
+		--color-primary:               #f2ae5d;
+		--color-primary-element:       #f2ae5d;
+		--color-primary-element-text:  #201e1d;
+		--color-primary-element-hover: #e58f2b;
+		--color-primary-element-light: #442705;
+		--color-primary-element-light-text: #f2ae5d;
 
-		--color-border:                #eee9e024;
-		--color-border-dark:           #eee9e03d;
-		--color-border-maxcontrast:    #78838e;
+		--color-border:                #f5efe324;
+		--color-border-dark:           #f5efe33d;
+		--color-border-maxcontrast:    #a19786;
 
-		--color-success:               #45ad81;
-		--color-warning:               #e8933f;
-		--color-info:                  #6f9ad6;
-		--bs-card:                     #1a232c;
+		--color-success:               #5fc495;
+		--color-warning:               #f2ae5d;
+		--color-info:                  #6f9ae5;
+		--bs-card:                     #24211c;
+	--bs-chrome:                   #0e2c60;  /* accent-3-800: the bar, minus the glow */
 
 		/**
 		 * App icons ship as white SVGs and Nextcloud inverts them to black through
@@ -314,11 +369,17 @@ body.theme--dark {
 		/* theming's dark.css redeclares these two at [data-theme-dark]. Anything our
 		   dark block leaves out silently reverts to stock: the typeface fell back to
 		   system-ui, and the page ground stayed the light `background_color` while the
-		   panels went dark, splitting the page across two themes. */
+		   panels went dark, splitting the page across two themes.
+		
+		   --color-background-plain is the GROUND here, matching --color-main-background,
+		   exactly as it is the paper in light. It was briefly the raised #24211c, on the
+		   theory that the bar should sit above the page. Wrong twice over: the bar paints
+		   itself now, and this token lands on <body>, so it lifted the whole page to the
+		   card colour and left the dashboard's cards invisible against it. */
 		--font-face: 'BharatSuite Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
 			Roboto, Helvetica, Arial, sans-serif;
-		--color-background-plain:      #12191f;
-		--color-background-plain-text: #eee9e0;
+		--color-background-plain:      #1a1714;
+		--color-background-plain-text: #f5efe3;
 	}
 }
 
@@ -436,14 +497,161 @@ body.theme--dark {
 }
 
 /**
- * The mockups separate the header from the page with a hairline, not a shadow.
+ * THE NAVY BAR. The single most visible thing in this file.
  *
- * Scoped away from .header-guest. On the login screen #header is not a bar across
- * the top -- it is the 700px block that holds the wordmark -- so an unscoped rule
- * drew a rule straight across the page behind the sign-in card.
+ * Every Organic mockup screen puts the app chrome on a full-width deep blue bar:
+ * wordmark at the left, pill navigation beside it, search and account at the right.
+ * Nextcloud leaves #header transparent and lets the body ground show through, so
+ * the fill goes here.
+ *
+ * Painted on #header rather than through --color-background-plain deliberately:
+ * that token lands on <body>, and using it turned the whole page navy with the app
+ * content floating on top. See the note beside it above.
+ *
+ * --color-background-plain-text is redeclared rather than --color-main-text,
+ * because the header also contains the notification, contacts and account
+ * popovers. Those are light panels that paint their text from --color-main-text;
+ * overriding it here would have made their content white on white. The
+ * "plain-text" token is precisely "text sitting on the plain ground", which is the
+ * bar and nothing else.
+ *
+ * Scoped away from .header-guest: on the login screen #header is not a bar across
+ * the top, it is the 700px block that holds the wordmark, so an unscoped rule
+ * painted a navy slab behind the sign-in card.
  */
 #header:not(.header-guest) {
-	border-bottom: 1px solid var(--color-border);
+	/**
+	 * !important is load-bearing and cannot be avoided. apps/dashboard/css/dashboard.css
+	 * ships `#header{background:rgba(0,0,0,0) !important}` so the Dashboard's own
+	 * full-bleed background and scroll fade can show through the bar. Without the flag
+	 * the bar was navy in every app and transparent on the Dashboard, which is the one
+	 * page most likely to be screenshotted.
+	 *
+	 * Matching an !important declaration needs the flag plus at least equal
+	 * specificity: theirs is (1,0,0), the :not() here makes ours (1,1,0).
+	 *
+	 * Deliberately still losing to `#body-user.theme--highcontrast #header`, which is
+	 * also (1,1,0) !important and declared in the same file. An accessibility theme
+	 * should outrank a brand colour, so the tie going to source order is the right
+	 * outcome rather than something to escalate past.
+	 */
+	background-color: var(--bs-chrome) !important;
+	--color-background-plain-text: #ffffff;
+
+	/**
+	 * The app-menu icons ship as white SVGs, and core paints them with
+	 * `.app-menu-icon__icon { filter: var(--background-image-invert-if-bright) }`.
+	 * Theming derives that from its static background_color, which is the cream
+	 * paper, so it stays invert(100%) and every icon in the bar computed to
+	 * filter: invert(1) -- black on navy.
+	 *
+	 * --background-image-invert-if-bright is the one that matters here, NOT
+	 * --primary-invert-if-bright. Both exist, both were invert(100%), and setting
+	 * only the primary one changed nothing: the measured rule on the icon reads the
+	 * background-image variable. Both are set, because core uses the primary one on
+	 * other header chrome and the reasoning is identical for it.
+	 *
+	 * `no` is core's own sentinel for "do not inject a filter": it is not a valid
+	 * <filter-value>, so the declaration is invalid at computed-value time and
+	 * filter falls back to none. Same device as the dark block above, which needed
+	 * it for the same reason one theme earlier.
+	 *
+	 * Safe for the whole header even though the notification, contacts and account
+	 * popovers live inside it: those draw their icons as inline SVG on currentColor
+	 * and never read either variable. Verified against the open account menu.
+	 */
+	--background-image-invert-if-bright: no;
+	--background-invert-if-bright: no;
+	--primary-invert-if-bright: no;
+}
+
+/**
+ * The Dashboard's scroll fade: a 70px dark gradient it slides down over the top of
+ * the page as you scroll, to keep the header legible against a photograph. Against a
+ * solid navy bar it is a grey smear across the wordmark, and there is nothing left
+ * for it to do.
+ */
+#body-user #header::before {
+	display: none;
+}
+
+/**
+ * Pill navigation, per the Organic shell note: "Re-skinned with pill navigation,
+ * 16 to 28px radii and air."
+ *
+ * Nextcloud's app menu is icon-only at 46px square, and marks the current app with
+ * a 10x5px white dash from an ::before on the <li>. The mockups mark it with a
+ * filled pill instead, so the dash goes and the link itself becomes the pill. At
+ * 46px square a 999px radius is a circle, which is the honest translation of a
+ * pill for an icon with no label beside it.
+ *
+ * White at low alpha rather than a palette colour: the bar is a single flat navy,
+ * and a tint of the bar itself stays correct whichever step --bs-chrome is on.
+ */
+#header .app-menu-entry__link {
+	border-radius: var(--border-radius-pill);
+}
+
+#header .app-menu-entry:hover .app-menu-entry__link {
+	background-color: #ffffff1f;
+}
+
+#header .app-menu-entry--active .app-menu-entry__link {
+	background-color: #ffffff2e;
+}
+
+/* The dash the pill replaces. */
+#header .app-menu-entry--active::before {
+	display: none;
+}
+
+/**
+ * The residency badge: the green "IN . Mumbai" pill the mockups carry in the bar on
+ * every screen, next to the account menu.
+ *
+ * A ::before on .header-end rather than injected markup. The badge is decoration
+ * with no behaviour, .header-end is already a flex row, and a pseudo-element cannot
+ * be reshuffled by a Nextcloud release the way an injected node's neighbours can.
+ *
+ * The label is emitted by BrandingAssetsListener from BRANDING_RESIDENCY_LABEL. It
+ * is deliberately NOT derived from the S3 endpoint: a Ceph zone name says where the
+ * bucket is, not which jurisdiction the operator is claiming, and this pill is a
+ * claim. Unset, `content` resolves to `none` and nothing renders at all, which is
+ * the right default for an operator who has not made the claim.
+ */
+.header-end::before {
+	/**
+	 * Set by js/residency-badge.js, not by the server-side <style> the rest of this
+	 * theme's dynamic values go through. Util::addHeader escapes its text, so a CSS
+	 * string literal emitted that way arrives as `&quot;IN . Mumbai&quot;` and the
+	 * semicolon inside the entity terminates the declaration early -- the variable
+	 * resolved to the token `&quot` and `content` fell back to `none`. Setting the
+	 * property from JS through CSSStyleDeclaration.setProperty never passes through
+	 * HTML escaping at all.
+	 *
+	 * Unset, this resolves to `none` and the pseudo-element does not render, which is
+	 * the correct default for an operator making no residency claim.
+	 */
+	content: var(--bs-residency-label, none);
+	align-self: center;
+	flex: none;
+	margin-inline-end: var(--default-grid-baseline, 4px);
+	padding: 3px 10px;
+	border-radius: var(--border-radius-pill);
+	background-color: var(--bs-green);
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	white-space: nowrap;
+}
+
+/* Narrow viewports: the bar runs out of room long before the pill is the problem,
+   but it is the least load-bearing thing in it, so it goes first. */
+@media (max-width: 1024px) {
+	.header-end::before {
+		content: none;
+	}
 }
 
 /* -- Type and focus, global ------------------------------------------------ */
@@ -537,11 +745,9 @@ h1, h2, h3,
 
 /**
  * Nextcloud fills the selected navigation entry with solid primary. At saffron
- * that is a heavy bar down the sidebar; the mockups use a soft tint with ink
- * text and a saffron rule at the leading edge, so the accent marks the row
- * without becoming the loudest thing on the screen.
- *
- * The rule is an inset shadow rather than a border so it does not shift the row.
+ * that is a heavy bar down the sidebar; the Organic screens mark it with a soft
+ * tinted pill, ink text and a coloured icon, so the accent says "this one"
+ * without becoming the loudest thing on the page.
  */
 #app-navigation-vue .app-navigation-entry.active,
 #app-navigation-vue .app-navigation-entry.active:hover {
@@ -551,9 +757,15 @@ h1, h2, h3,
 	 * needs both the flag and more specificity, which the id ancestor supplies --
 	 * deliberately, rather than by copying the [data-v-*] hash, which changes on
 	 * every Nextcloud build.
+	 *
+	 * NO LEADING RULE. This used to carry `box-shadow: inset 3px 0 0` for the
+	 * saffron edge the earlier mockups showed. Once --border-radius-element became
+	 * Organic's 999px the entry is a pill, and a 3px inset edge on a pill renders
+	 * as a crescent hooking around the left cap rather than a straight rule. The
+	 * Organic screens mark the active entry with the tint and a coloured icon and
+	 * nothing else, which is also what survives the shape change.
 	 */
 	background-color: var(--color-primary-element-light) !important;
-	box-shadow: inset 3px 0 0 var(--color-primary-element);
 }
 
 #app-navigation-vue .app-navigation-entry.active .app-navigation-entry-link,
@@ -605,7 +817,7 @@ tr.files-list__row[data-cy-files-list-row][aria-selected='true'] {
 #body-login .guest-box.login-box {
 	background-color: var(--bs-card);
 	border: 1px solid var(--color-border);
-	box-shadow: 0 1px 2px #16202b14;
+	box-shadow: 0 1px 2px #201e1d14;
 }
 
 /**
@@ -648,11 +860,11 @@ body[data-themes] {
 	 * changing only the hue is what keeps the substitution safe.
 	 */
 	--color-element-assistant:
-		linear-gradient(214deg, #cf6d14 12%, #b85f12 39%, #8c450f 86%);
+		linear-gradient(214deg, #e58f2b 12%, #c47214 39%, #98570d 86%);
 	--color-element-assistant-icon:
-		linear-gradient(214deg, #cf6d14 15%, #b85f12 40%, #8c450f 80%);
+		linear-gradient(214deg, #e58f2b 15%, #c47214 40%, #98570d 80%);
 	--color-border-assistant:
-		linear-gradient(125deg, #cf6d14 50%, #8c450f 125%);
+		linear-gradient(125deg, #e58f2b 50%, #98570d 125%);
 	/**
 	 * Upstream this is #F6F5FF -- a lavender so pale it reads as white. The
 	 * analogous choice is the card surface, not a saffron tint: it paints the

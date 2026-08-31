@@ -28,6 +28,12 @@ use OCP\Util;
  * not at parse time.
  */
 class BrandingAssetsListener implements IEventListener {
+	/**
+	 * Set on the nextcloud container in docker-compose.yml. Blank or unset means the
+	 * operator is making no residency claim, and no badge is rendered.
+	 */
+	private const ENV_RESIDENCY_LABEL = 'BRANDING_RESIDENCY_LABEL';
+
 	public function __construct(
 		private IURLGenerator $urlGenerator,
 	) {
@@ -47,21 +53,36 @@ class BrandingAssetsListener implements IEventListener {
 		// it, so '../img/logo.svg' silently became '/core/img/logo.svg'. Absolute
 		// URLs from IURLGenerator are unambiguous and survive a subdirectory install.
 		//
-		// Two variants: the wordmark's "Suite" is ink and disappears on a dark ground,
-		// so the dark theme gets a version with "Suite" in paper. The selectors mirror
-		// Nextcloud's three theme states.
-		$light = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo.svg');
-		$dark  = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo-dark.svg');
+		// THREE variants, because the mark sits on three different grounds.
+		//
+		//   logo.svg         Two-tone, for the paper ground: blue "Bharat", ink
+		//                    "Suite". This is the login screen and the light page.
+		//   logo-dark.svg    "Suite" in paper and "Bharat" a lighter blue, for the
+		//                    dark theme's warm ink ground.
+		//   logo-header.svg  Both words white, for the navy header bar. Needed the
+		//                    moment the bar went deep blue: "Bharat" in logo.svg is
+		//                    #163f85 and the bar is #163f85, so the light variant
+		//                    lost half the wordmark into the fill.
+		//
+		// --image-logo and --image-logoheader are separate tokens in core precisely
+		// so the two grounds can differ, which is what makes this a token swap
+		// rather than a second stylesheet.
+		$light  = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo.svg');
+		$dark   = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo-dark.svg');
+		$header = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo-header.svg');
 
 		Util::addHeader('style', ['type' => 'text/css'], sprintf(
-			':root:root{--image-logo:url(%1$s);--image-logoheader:url(%1$s)}'
+			':root:root{--image-logo:url(%1$s);--image-logoheader:url(%3$s)}'
 			. 'body[data-theme-dark],body[data-theme-dark-highcontrast]'
-			. '{--image-logo:url(%2$s);--image-logoheader:url(%2$s)}'
+			. '{--image-logo:url(%2$s);--image-logoheader:url(%3$s)}'
 			. '@media(prefers-color-scheme:dark){body[data-theme-default]'
-			. '{--image-logo:url(%2$s);--image-logoheader:url(%2$s)}}',
+			. '{--image-logo:url(%2$s);--image-logoheader:url(%3$s)}}',
 			$light,
-			$dark
+			$dark,
+			$header
 		));
+
+		$this->emitResidencyLabel();
 
 		// The favicon is the one brand mark with no CSS variable behind it, so it
 		// has to go in as a real <link>. Declared after core's own, which wins on
@@ -71,5 +92,54 @@ class BrandingAssetsListener implements IEventListener {
 			'type' => 'image/svg+xml',
 			'href' => $this->urlGenerator->linkTo(Application::APP_ID, 'img/favicon.svg'),
 		]);
+	}
+
+	/**
+	 * The residency badge in the header bar.
+	 *
+	 * Every mockup screen carries a green pill in the chrome reading "IN . Mumbai",
+	 * and the design notes are explicit that this is the point: "Residency is a
+	 * column, not a footer claim." The pill itself is drawn in bharatsuite.css off
+	 * .header-end::before; all this does is supply the text.
+	 *
+	 * Read from the environment rather than derived from the S3 endpoint. A Ceph
+	 * zone name says where a bucket is, not which jurisdiction the operator is
+	 * claiming, and this pill is a claim -- so it is the operator's to make, and an
+	 * operator who has not made it should get no badge rather than a guess. Unset
+	 * or blank emits nothing at all, and `content: var(--bs-residency-label, none)`
+	 * then resolves to `none`, so the pseudo-element does not render.
+	 *
+	 * A <meta> plus a script, NOT the inline <style> the logo variants above use.
+	 * Util::addHeader() escapes its text for HTML, and `content` needs a quoted CSS
+	 * string, so the style route emitted
+	 *
+	 *     :root:root{--bs-residency-label:&quot;IN . Mumbai&quot;}
+	 *
+	 * where the semicolon inside the entity terminated the declaration and the value
+	 * became the token `&quot`. CSS has no unquoted form for `content`, so there is
+	 * no way to emit this as a stylesheet through that API. In an ATTRIBUTE the same
+	 * escaping is exactly what is wanted -- it round-trips any text unchanged -- so
+	 * the label goes in a meta tag and js/residency-badge.js moves it into the custom
+	 * property, where it never passes through markup at all.
+	 */
+	private function emitResidencyLabel(): void {
+		$label = trim((string)getenv(self::ENV_RESIDENCY_LABEL));
+		if ($label === '') {
+			return;
+		}
+
+		// A newline in a <meta content> attribute is legal but arrives normalised in
+		// unhelpful ways, and this is a one-line badge, so collapse them here.
+		$label = trim(str_replace(["\r", "\n", "\t"], ' ', $label));
+		if ($label === '') {
+			return;
+		}
+
+		Util::addHeader('meta', [
+			'name'    => 'bharatsuite-residency',
+			'content' => $label,
+		]);
+
+		Util::addScript(Application::APP_ID, 'residency-badge');
 	}
 }
