@@ -422,6 +422,81 @@ layout. Every image in this stack is now pulled, none are built.
    A successful send shows `Successfully spooled mail ... from nextcloud@nextcloud.local`
    followed by `Local delivered mail ... successfully`.
 
+### Getting mail out of the machine: the Mailtrap relay
+
+Steps 1-4 above only prove Nextcloud can hand a message to James, and that James can
+deliver it to a mailbox on *itself* (`admin@nextcloud.local`). Anything addressed
+outside `NC_DOMAIN` goes to the `relay` processor, and that is where it stops without
+the configuration below.
+
+**Why a relay at all.** James's `RemoteDelivery` can look up a recipient's MX record
+and deliver straight to it, no provider involved, and that is what it does when
+`JAMES_GATEWAY_HOST` is blank. It will not work here:
+
+- Outbound port 25 is blocked by nearly every ISP, and by AWS, GCP and Azure by
+  default.
+- `nextcloud.local` is not a real domain, so receiving servers reject the sender.
+- No reverse DNS, SPF, DKIM or DMARC, and no sending reputation, so anything that did
+  get through is spam-filed.
+
+Direct delivery becomes realistic only on a host with a stable public IP, port 25
+opened, reverse DNS matching James's HELO name, and a real domain carrying SPF, DKIM
+and DMARC records. Until then, relay through a provider.
+
+**Mailtrap Sandbox** is the right provider for dev: it accepts everything, delivers to
+no real inbox, and shows each message in a web viewer with the raw source and a
+spam/deliverability report. No domain to verify, no risk of mailing a real person by
+accident from test data.
+
+1. Sign up at <https://mailtrap.io> (the free tier is enough).
+2. In the left sidebar open **Email Testing → Sandboxes** — *not* Email Sending, which
+   is the product that delivers real mail.
+3. Click your sandbox (there is a default one, "My Sandbox").
+4. Open the **Integration** tab and choose **SMTP** (some accounts label the dropdown
+   "Integrations"; either way pick the plain SMTP credentials, not a framework
+   snippet).
+5. Copy **Username** and **Password**. These are per-sandbox, machine-generated, and
+   are *not* your Mailtrap account login. The panel shows the matching Host and Port,
+   which should agree with the defaults already in `.env.example`:
+   `sandbox.smtp.mailtrap.io` and one of 25, 465, 587 or 2525.
+6. Put them in `.env`:
+   ```sh
+   JAMES_GATEWAY_HOST=sandbox.smtp.mailtrap.io
+   JAMES_GATEWAY_PORT=587
+   JAMES_GATEWAY_USER=<Username from the Integration tab>
+   JAMES_GATEWAY_PASSWORD=<Password from the Integration tab>
+   ```
+   Use 587, not 465. Mailtrap offers STARTTLS on all four ports and this config uses
+   `startTLS`; 465 is implicit TLS and would need `sslEnable` instead.
+7. Restart James so it re-reads the config, then send to an address outside
+   `NC_DOMAIN`:
+   ```sh
+   docker compose up -d --force-recreate nextcloud-aio-james
+   docker compose exec -u www-data nextcloud-aio-nextcloud \
+     php occ user:setting admin settings email someone@example.com
+   ```
+   Trigger the "Forgot password?" flow, then watch both ends:
+   ```sh
+   docker compose logs nextcloud-aio-james --tail=30
+   ```
+   A successful relay logs `Successfully spooled mail` and then a `RemoteDelivery`
+   line naming `sandbox.smtp.mailtrap.io`. The message appears in the Mailtrap
+   sandbox inbox within a few seconds.
+
+**Reading failures.** They are specific enough to act on:
+
+| Log line | Cause |
+|---|---|
+| `535 5.7.0 Invalid credentials` | Username or password wrong, or the account login used instead of the sandbox's own credentials. |
+| `UnknownHostException: sandbox.smtp.mailtrap.io` | No DNS from the container. |
+| `Connection timed out` on 25 | The ISP is blocking it. Use 587. |
+| `javax.net.ssl` handshake errors | Port 465 with `startTLS`. Use 587, or switch the config to `sslEnable`. |
+| Nothing at all in the James log | The mail never left Nextcloud. That is steps 1-4 above, not the relay. |
+
+Note the credentials never enter git: `mailetcontainer.xml` holds `${env:...}`
+references, which James resolves through commons-configuration2 the same way
+`smtpserver.xml` resolves the keystore password.
+
 ## Document signing (LibreSign)
 
 Digital signatures on PDFs, backed by LibreSign's own certificate authority (CFSSL) —

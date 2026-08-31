@@ -832,6 +832,13 @@ services:
       - JAMES_DB_NAME
       - JAMES_DB_USER=${DATABASE_USER}
       - JAMES_DB_PASSWORD=${DATABASE_PASSWORD}
+      # Outbound relay. Read by mailetcontainer.xml's RemoteDelivery mailet through
+      # ${env:...}; blank JAMES_GATEWAY_HOST disables the gateway and falls back to
+      # direct MX delivery, which does not work from a laptop. See SETUP.md.
+      - JAMES_GATEWAY_HOST
+      - JAMES_GATEWAY_PORT
+      - JAMES_GATEWAY_USER
+      - JAMES_GATEWAY_PASSWORD
     restart: unless-stopped
     profiles:
       - james

@@ -92,6 +92,30 @@
                 <deliveryThreads>10</deliveryThreads>
                 <sendpartial>true</sendpartial>
                 <bounceProcessor>bounces</bounceProcessor>
+                <!-- LOCAL CHANGE: relay through an external SMTP provider (Mailtrap by
+                     default) instead of delivering to recipients' mail servers directly.
+                     See SETUP.md "Outbound email" for how to get the credentials.
+
+                     Blank JAMES_GATEWAY_HOST turns this whole block off: James checks
+                     `gateway != null && !gateway.isBlank()` and falls back to direct MX
+                     delivery when it is empty. Direct delivery does not work from a
+                     laptop or most cloud hosts (outbound port 25 is blocked, and mail
+                     from an IP with no reverse DNS, SPF or DKIM is rejected), so the
+                     gateway is the working path and direct delivery is the fallback in
+                     name only.
+
+                     ${env:VAR} is resolved by James through commons-configuration2, the
+                     same as in smtpserver.xml. Verified for THIS file specifically,
+                     since it is loaded by the mailet container rather than the protocol
+                     stack. The provider password therefore stays in .env, never here. -->
+                <gateway>${env:JAMES_GATEWAY_HOST}</gateway>
+                <gatewayPort>${env:JAMES_GATEWAY_PORT}</gatewayPort>
+                <gatewayUsername>${env:JAMES_GATEWAY_USER}</gatewayUsername>
+                <gatewayPassword>${env:JAMES_GATEWAY_PASSWORD}</gatewayPassword>
+                <!-- Mailtrap offers STARTTLS on every port it listens on. Keep this on
+                     for any real provider: without it the credentials above cross the
+                     network in clear text. -->
+                <startTLS>true</startTLS>
             </mailet>
         </processor>
 
