@@ -1,10 +1,29 @@
 /**
  * BharatSuite theme layer for Nextcloud 33.
  *
- * Tokens come from bharatsuite-notifiled.css in Anirban's mockup pack, confirmed as
- * canonical on 2026-08-29. Nothing here restyles individual components: it maps the
- * BharatSuite palette onto the CSS variables Nextcloud already drives its whole
- * interface from, so every app is restyled at once and upgrades stay safe.
+ * Tokens come from the "Organic" design system in the mockup pack
+ * (_ds/organic-*/styles.css plus theme.json), which Anirban made authoritative over
+ * the earlier bharatsuite-notifiled.css on 2026-08-31. Nothing here restyles
+ * individual components: it maps the BharatSuite palette onto the CSS variables
+ * Nextcloud already drives its whole interface from, so every app is restyled at
+ * once and upgrades stay safe.
+ *
+ * TWO PLACES THIS DELIBERATELY DOES NOT FOLLOW THE DESIGN SYSTEM, both because the
+ * system has nothing to say about them rather than to disagree with it:
+ *
+ *   Status colours. Organic defines a ground, a text colour and two brand accents
+ *                   with tonal ramps, and no semantic colours at all. Its second
+ *                   accent is a sage green (#7a8a5e) which is a brand tint, not a
+ *                   success signal -- pressed into --color-success it would be
+ *                   almost indistinguishable from a neutral. So --bs-green and
+ *                   --bs-blue keep their own values and stay mapped to
+ *                   --color-success and --color-info.
+ *
+ *   Shape.          Organic asks for 28px containers and 999px pill buttons. The
+ *                   dashboard and files mockups this is meant to match show neither
+ *                   -- their buttons are ~8px. Following the readme here would move
+ *                   AWAY from the screens, so the radius scale below is unchanged
+ *                   pending a decision on which wins.
  *
  * Loaded on every page, login included, by BrandingAssetsListener.
  *
@@ -17,13 +36,62 @@
  *                             core and in apps. Not worth it for 6px.
  */
 
-/* ---- Inter, self-hosted. Substitute for Geist, which is not open source. -------- */
+/* ---- Organic's two faces, self-hosted --------------------------------------------
+ *
+ * Figtree for body text, Caprasimo for display headings, per the Organic design
+ * system. Both are SIL OFL.
+ *
+ * SELF-HOSTED, NOT @import'd. _ds/styles.css pulls these from
+ * fonts.googleapis.com, which cannot ship in this product: BharatSuite's whole
+ * claim is that data stays in Indian regions, and a Google Fonts @import makes
+ * every page load of every user report their IP to a US CDN. It is also a hard
+ * dependency on outbound internet from a stack meant to run self-hosted. The
+ * files are 53 KB in total.
+ *
+ * Two subsets each, latin and latin-ext, with the unicode-range Google serves them
+ * under, so a page of plain English downloads only the 41 KB latin pair. Neither
+ * face covers Devanagari; scripts outside these ranges fall through to the system
+ * stack, which is the same behaviour as before this change.
+ */
 @font-face {
 	font-family: 'BharatSuite Sans';
 	font-style: normal;
-	font-weight: 100 900;           /* variable: one file covers every weight */
+	font-weight: 300 900;           /* variable: one file covers every weight */
 	font-display: swap;
-	src: url('../fonts/inter-var.woff2') format('woff2-variations');
+	src: url('../fonts/figtree-latin.woff2') format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+		U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+		U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: 'BharatSuite Sans';
+	font-style: normal;
+	font-weight: 300 900;
+	font-display: swap;
+	src: url('../fonts/figtree-latin-ext.woff2') format('woff2');
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+		U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+		U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+	font-family: 'BharatSuite Display';
+	font-style: normal;
+	font-weight: 400;               /* Caprasimo ships one weight only */
+	font-display: swap;
+	src: url('../fonts/caprasimo-latin.woff2') format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+		U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+		U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: 'BharatSuite Display';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../fonts/caprasimo-latin-ext.woff2') format('woff2');
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+		U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+		U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 /**
@@ -49,21 +117,21 @@ body[data-theme-light],
 body[data-theme-default],
 body[data-theme-light-highcontrast] {
 	/* -- BharatSuite palette (Notifiled) ------------------------------------- */
-	--bs-paper:        #f2efe9;
-	--bs-surface:      #f8f6f1;
+	--bs-paper:        #f5ead8;
+	--bs-surface:      #f9f4ed;
 
 	/* Card surface. Declared per theme because it has to sit one step away from
 	   the ground in each -- lighter than paper in light, lighter than ink in dark.
 	   No Nextcloud token moves in that direction in both, so using one (or worse,
 	   a fixed literal) leaves the dashboard's cards light on a dark page. */
-	--bs-card:         #f8f6f1;
-	--bs-surface-sunk: #ece8e0;
-	--bs-ink:          #16202b;
+	--bs-card:         #f9f4ed;
+	--bs-surface-sunk: #eee7db;
+	--bs-ink:          #201e1d;
 
-	--bs-saffron:      #cf6d14;
-	--bs-saffron-600:  #ae5711;
-	--bs-saffron-100:  #fbf1e6;
-	--bs-saffron-200:  #f4ddc2;
+	--bs-saffron:      #c67139;
+	--bs-saffron-600:  #b2622d;
+	--bs-saffron-100:  #fff2eb;
+	--bs-saffron-200:  #ffe1d0;
 
 	--bs-green:        #1c7a53;
 	--bs-green-100:    #e9f3ee;
@@ -72,11 +140,11 @@ body[data-theme-light-highcontrast] {
 	--bs-blue-700:     #1c4478;
 	--bs-blue-100:     #eaeef5;
 
-	--bs-n300:         #ddd8cd;
-	--bs-n400:         #b9b5ab;
-	--bs-n500:         #8d8b83;
-	--bs-n600:         #6a6f74;
-	--bs-n700:         #4a5560;
+	--bs-n300:         #dcd3c4;
+	--bs-n400:         #c0b6a5;
+	--bs-n500:         #a19786;
+	--bs-n600:         #82796a;
+	--bs-n700:         #645c50;
 
 	/* -- Nextcloud surfaces --------------------------------------------------- */
 	--color-main-background:       var(--bs-paper);
@@ -680,4 +748,40 @@ body[data-theme-dark-highcontrast] .dashboard-section__bar img {
 	body[data-theme-default] .dashboard-section__bar img {
 		filter: saturate(0.6) brightness(0.72) contrast(0.95);
 	}
+}
+
+/**
+ * Caprasimo on page and section titles only.
+ *
+ * Nextcloud has ONE typeface variable, --font-face, and it is the body face. There
+ * is no heading equivalent, so the display face has to be applied by selector.
+ *
+ * h1 and h2 only, deliberately. Caprasimo is a heavy display face at a single
+ * weight; Nextcloud uses h3-h6 for small dense labels inside settings panels,
+ * sidebars and dialogs, where display type reads as a mistake rather than as
+ * branding. Titles get the character, chrome stays legible.
+ *
+ * font-synthesis:none stops the browser faking a bold from the single 400 weight
+ * when a heading also carries font-weight:bold, which smears the letterforms.
+ *
+ * PREFIXED WITH `body` FOR SPECIFICITY, and it does not work without it. Everything
+ * else in this file reassigns Nextcloud's CSS variables, which are resolved at use
+ * time, so load order never mattered -- see the note at the top of the file. This is
+ * the first rule here to declare a real property, and it is loaded SECOND, before
+ * core. core/css/guest.css then ships a reset:
+ *
+ *     html,body,div,...,h1,h2,h3,h4,h5,h6,p,... { font-family:inherit; outline:0; ... }
+ *
+ * A bare `h2` selector ties that reset on specificity (0,0,1), so the later
+ * stylesheet won and every heading inherited the body face again. It looked exactly
+ * like the font had failed to load. `body h2` is (0,0,2) and wins on merit rather
+ * than on order, which also keeps it working if the load order ever changes.
+ */
+body h1,
+body h2,
+.app-content h1,
+.app-content h2 {
+	font-family: 'BharatSuite Display', var(--font-face);
+	font-synthesis: none;
+	letter-spacing: -0.01em;
 }
