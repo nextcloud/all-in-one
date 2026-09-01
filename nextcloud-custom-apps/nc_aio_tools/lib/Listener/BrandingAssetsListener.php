@@ -47,6 +47,13 @@ class BrandingAssetsListener implements IEventListener {
 
 		Util::addStyle(Application::APP_ID, 'bharatsuite');
 
+		// Builds screen 1b's static panel grid in place of the stock Dashboard
+		// widgets. Loaded unconditionally, like the stylesheet itself, rather
+		// than gated on the route: the script's own first line is `if
+		// (!document.getElementById('app-dashboard')) return`, so it is a no-op
+		// everywhere except the one page it targets.
+		Util::addScript(Application::APP_ID, 'dashboard-panels');
+
 		// Brand marks have to be emitted here rather than declared in the stylesheet.
 		// A relative url() inside a custom property resolves against the stylesheet
 		// that USES the variable -- core/css/guest.css -- not the one that declares
@@ -85,6 +92,14 @@ class BrandingAssetsListener implements IEventListener {
 		));
 
 		$this->emitResidencyLabel();
+
+		// The two-panel marketing split (screen 1a) only exists on the login
+		// screen -- there is no equivalent slot on any app page -- so the
+		// script that builds it is loaded here rather than unconditionally
+		// above with bharatsuite.css itself.
+		if ($event instanceof BeforeLoginTemplateRenderedEvent) {
+			Util::addScript(Application::APP_ID, 'login-marketing');
+		}
 
 		// The favicon is the one brand mark with no CSS variable behind it, so it
 		// has to go in as a real <link>. Declared after core's own, which wins on
