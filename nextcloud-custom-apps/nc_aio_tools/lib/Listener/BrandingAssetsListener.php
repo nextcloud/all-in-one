@@ -53,33 +53,35 @@ class BrandingAssetsListener implements IEventListener {
 		// it, so '../img/logo.svg' silently became '/core/img/logo.svg'. Absolute
 		// URLs from IURLGenerator are unambiguous and survive a subdirectory install.
 		//
-		// THREE variants, because the mark sits on three different grounds.
+		// TWO variants, one per ground.
 		//
-		//   logo.svg         Two-tone, for the paper ground: blue "Bharat", ink
-		//                    "Suite". This is the login screen and the light page.
-		//   logo-dark.svg    "Suite" in paper and "Bharat" a lighter blue, for the
-		//                    dark theme's warm ink ground.
-		//   logo-header.svg  Both words white, for the navy header bar. Needed the
-		//                    moment the bar went deep blue: "Bharat" in logo.svg is
-		//                    #163f85 and the bar is #163f85, so the light variant
-		//                    lost half the wordmark into the fill.
+		//   logo.svg       Two-tone, for the paper ground: blue "Bharat" (#1c4478),
+		//                  ink "Suite", saffron slash. The login screen, the light
+		//                  page, and the light header bar.
+		//   logo-dark.svg  "Suite" in paper and "Bharat" a lighter blue, for the dark
+		//                  theme's ink ground and its lifted header bar.
 		//
-		// --image-logo and --image-logoheader are separate tokens in core precisely
-		// so the two grounds can differ, which is what makes this a token swap
-		// rather than a second stylesheet.
-		$light  = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo.svg');
-		$dark   = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo-dark.svg');
-		$header = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo-header.svg');
+		// There used to be a third, logo-header.svg, with both words in white. It
+		// existed only because the header bar was deep blue: "Bharat" in logo.svg was
+		// #163f85 and so was the bar, so the light variant lost half the wordmark
+		// into the fill. The bar is paper again in the shipped mockup track, so the
+		// wordmark on it is the ordinary light mark and the third file is gone.
+		//
+		// --image-logoheader still has to be set alongside --image-logo rather than
+		// left to default: core falls back to its own white mark, not to --image-logo.
+		// The two tokens are separate precisely so the grounds can differ; here they
+		// simply agree.
+		$light = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo.svg');
+		$dark  = $this->urlGenerator->linkTo(Application::APP_ID, 'img/logo-dark.svg');
 
 		Util::addHeader('style', ['type' => 'text/css'], sprintf(
-			':root:root{--image-logo:url(%1$s);--image-logoheader:url(%3$s)}'
+			':root:root{--image-logo:url(%1$s);--image-logoheader:url(%1$s)}'
 			. 'body[data-theme-dark],body[data-theme-dark-highcontrast]'
-			. '{--image-logo:url(%2$s);--image-logoheader:url(%3$s)}'
+			. '{--image-logo:url(%2$s);--image-logoheader:url(%2$s)}'
 			. '@media(prefers-color-scheme:dark){body[data-theme-default]'
-			. '{--image-logo:url(%2$s);--image-logoheader:url(%3$s)}}',
+			. '{--image-logo:url(%2$s);--image-logoheader:url(%2$s)}}',
 			$light,
-			$dark,
-			$header
+			$dark
 		));
 
 		$this->emitResidencyLabel();
