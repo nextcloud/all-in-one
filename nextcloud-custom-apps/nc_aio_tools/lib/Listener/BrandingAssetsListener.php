@@ -54,6 +54,26 @@ class BrandingAssetsListener implements IEventListener {
 		// everywhere except the one page it targets.
 		Util::addScript(Application::APP_ID, 'dashboard-panels');
 
+		// Opens the Assistant modal (the header sparkle icon) already maximised.
+		// Same unconditional-load reasoning as dashboard-panels above: the script
+		// no-ops everywhere until that specific dialog actually appears.
+		Util::addScript(Application::APP_ID, 'assistant-fullscreen');
+
+		// Reskins the standalone /apps/assistant/ page (screen 2h): the sidebar's
+		// MODEL section and privacy note, the eyebrow and policy badges above the
+		// thread, right-aligned user bubbles, and the Send button. Same
+		// unconditional-load, self-guarding pattern as dashboard-panels above --
+		// every mount function no-ops until the standalone page's own
+		// .assistant-wrapper exists.
+		Util::addScript(Application::APP_ID, 'assistant-chat');
+
+		// Screen 1c's Workspaces nav section and file detail rail. Same
+		// unconditional-load, self-guarding pattern as dashboard-panels above:
+		// each script's own first line is an element lookup that returns
+		// early everywhere except the Files app.
+		Util::addScript(Application::APP_ID, 'files-workspaces');
+		Util::addScript(Application::APP_ID, 'files-detail-rail');
+
 		// Brand marks have to be emitted here rather than declared in the stylesheet.
 		// A relative url() inside a custom property resolves against the stylesheet
 		// that USES the variable -- core/css/guest.css -- not the one that declares

@@ -731,19 +731,40 @@ body.theme--dark {
 
 #header #unified-search .header-menu__trigger {
 	/**
-	 * !important on the two width properties, and it is load-bearing. The trigger is
+	 * !important on all four sizing properties, and it is load-bearing. The trigger is
 	 * an NcButton carrying `button-vue--icon-only`, whose square geometry is declared
 	 * with the flag -- measured on the live page, the button computed to 50x50 with
 	 * `padding`, `background` and `border-radius` from this very rule applied, so the
 	 * override was losing on the flag alone rather than on specificity.
 	 *
+	 * height/min-height need the same !important as width/min-width: without it the
+	 * box stayed a 50px square vertically too, flush against the header's top and
+	 * bottom edges instead of sitting as a centred 34px pill -- the mismatch the
+	 * mockup's labelled field never has, since NcButton's scoped rule sets both axes.
+	 *
 	 * `overflow: visible` matters just as much: the button ships `overflow: hidden`,
 	 * so the generated label was being produced correctly and then clipped to the
 	 * 50px square -- a grey stub with no text, which is what the first attempt shipped.
+	 *
+	 * `position: absolute; top: 50%; transform: translateY(-50%)`: the immediate
+	 * parent, `#unified-search.header-menu`, is core's plain `display: block` (not
+	 * flex), so shrinking the button to 34px in normal flow just left it sitting at
+	 * the parent's top edge with all 16px of slack pushed below it, not split evenly
+	 * -- height alone does not centre a block child. That parent already carries
+	 * `position: relative` from core, so it is a ready-made containing block; no
+	 * All four need !important too -- NcButton's scoped rule sets its own
+	 * `position: relative` and wins the same way it won width/height, so the
+	 * unqualified versions of these silently no-op just like the first attempt at
+	 * height did.
 	 */
 	width: 150px !important;
 	min-width: 150px !important;
-	height: 34px;
+	height: 34px !important;
+	min-height: 34px !important;
+	position: absolute !important;
+	top: 50% !important;
+	left: 0 !important;
+	transform: translateY(-50%) !important;
 	overflow: visible;
 	box-sizing: border-box;
 	padding: 0 12px;
@@ -914,6 +935,21 @@ button.primary,
  * it.
  */
 #header #unified-search .header-menu__trigger::after {
+	font-family: var(--font-face);
+}
+
+/**
+ * The Assistant page's task-type row (screen 2h) -- "Chat with AI", "Work with
+ * text", "Context Chat", "Translate", etc. -- is a second exception. Nextcloud's
+ * own task-type picker, so the global button rule above caught it same as every
+ * other NcButton, but set in the mono face these read as controls rather than the
+ * plain-prose labels they are, and sat oddly next to the conversation list in the
+ * pane beside them, which core renders in the body face. Matching that -- not the
+ * bold/mono treatment every other button in the pack gets -- reads as one list of
+ * words in two panes rather than a button bar bolted onto a sidebar.
+ */
+.assistant-form .task-type-select .button-vue.button-vue.button-vue,
+.assistant-form .task-type-select .button-vue.button-vue .button-vue__text {
 	font-family: var(--font-face);
 }
 
@@ -1128,14 +1164,23 @@ h1, h2, h3,
  * copy and layout exactly; wiring individual cards to live data (Mail, Calendar,
  * Activity) is its own follow-up, tracked separately from this visual pass.
  *
- * The rules above this point (.panel, .panel--header, the h2 sizing) are left in
- * place as a fallback rather than deleted: they keep the stock widgets looking
- * reasonably branded for the instant before the script mounts, and for the case
- * where it fails to load at all -- .bs-dash-mounted only hides them once the
- * replacement grid actually exists, never unconditionally.
+ * UNCONDITIONAL, not gated on a class the script adds once it sees the grid.
+ * That was the first cut, and it flashed: the widgets are rendered by Vue,
+ * async, well after this stylesheet has already been parsed and applied, so a
+ * script-added class always loses the race and lands one frame after the
+ * stock panels have already painted. This stylesheet blocks rendering before
+ * Vue's bundle even runs, so hiding unconditionally here means the widgets are
+ * never visible to begin with -- there is no frame for them to paint into.
+ *
+ * The rules above this point (.panel, .panel--header, the h2 sizing) are left
+ * in place regardless: dashboard-panels.js re-parents that same h2, and if the
+ * script fails to load, this rule still hides the stock grid, so those rules
+ * no longer have anything to fall back onto -- they are dead weight now, kept
+ * only because deleting working CSS outside this task's scope isn't worth the
+ * risk of a rebase conflict with whatever else is mid-flight on this branch.
  */
-#app-dashboard.bs-dash-mounted .panels,
-#app-dashboard.bs-dash-mounted > .footer {
+#app-dashboard .panels,
+#app-dashboard > .footer {
 	display: none;
 }
 
@@ -1568,6 +1613,297 @@ tr.files-list__row[data-cy-files-list-row][aria-selected='true'] {
 	background-color: var(--color-primary-element-light);
 }
 
+/**
+ * Files list container styling - the main table area sits on a card surface
+ * with hairline borders matching the mockup's treatment.
+ */
+#app-content-vue.app-files .files-list {
+	background-color: var(--bs-card);
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-container);
+	box-shadow: 0 1px 2px #16202b14;
+}
+
+/**
+ * Files table rows - ensure proper spacing and borders between items.
+ * Each row has a subtle bottom border creating visual separation.
+ */
+.files-list__row {
+	border-bottom: 1px solid var(--color-border);
+}
+
+.files-list__row:last-child {
+	border-bottom: none;
+}
+
+/**
+ * File name and details styling - tighten up typography to match mockup.
+ */
+.files-list__row-name {
+	font-size: 13.5px;
+	font-weight: 500;
+	color: var(--color-main-text);
+}
+
+/**
+ * File metadata (size, modified date) - using the muted text color.
+ */
+.files-list__row-size,
+.files-list__row-mtime {
+	font-size: 12.5px;
+	color: var(--color-text-light);
+}
+
+/**
+ * Hover state for files list rows - subtle background change on hover
+ */
+.files-list__row:hover:not(.files-list__row--active) {
+	background-color: var(--color-background-hover);
+}
+
+/**
+ * Action buttons and icons in the files list - ensure proper sizing and colors
+ */
+.files-list__row-actions button,
+.files-list__row-actions .action-item {
+	color: var(--color-text-maxcontrast);
+}
+
+.files-list__row-actions button:hover,
+.files-list__row-actions .action-item:hover {
+	color: var(--color-primary-element);
+	background-color: var(--color-background-hover);
+}
+
+/**
+ * Files breadcrumb navigation styling
+ */
+.files-list__header-share-button,
+.breadcrumb {
+	font-size: 13px;
+}
+
+/**
+ * Empty content state styling - when folder is empty
+ */
+.empty-content {
+	color: var(--color-text-light);
+}
+
+.empty-content__title {
+	font-weight: 600;
+	font-size: 16px;
+	color: var(--color-main-text);
+}
+
+.empty-content__description {
+	font-size: 14px;
+	color: var(--color-text-light);
+}
+
+/**
+ * File preview thumbnails - ensure consistent sizing
+ */
+.files-list__row-icon {
+	flex-shrink: 0;
+}
+
+/**
+ * Files app header area - containing breadcrumbs and actions
+ */
+#app-content-vue.app-files .app-content-header {
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--color-border);
+}
+
+/**
+ * Upload/New buttons in files - ensuring they follow button styling
+ */
+.app-content-header .button-vue,
+.files-list__header .button-vue {
+	font-family: var(--bs-mono);
+	font-size: 12.5px;
+	font-weight: 600;
+}
+
+/**
+ * Drag and drop overlay styling
+ */
+.files-list__drag-drop-notice {
+	background-color: var(--color-primary-element-light);
+	border: 2px dashed var(--color-primary-element);
+	border-radius: var(--border-radius-container);
+	color: var(--color-primary-element-light-text);
+}
+
+/**
+ * File selection checkbox styling
+ */
+.files-list__row-checkbox {
+	flex-shrink: 0;
+}
+
+/**
+ * Files navigation sidebar folder tree
+ */
+.app-navigation-entry__children .app-navigation-entry {
+	padding-left: 8px;
+}
+
+/**
+ * File details sidebar styling (when a file is selected)
+ */
+#app-sidebar-vue.app-sidebar {
+	border-left: 1px solid var(--color-border);
+	background-color: var(--bs-card);
+}
+
+#app-sidebar-vue .app-sidebar-header {
+	border-bottom: 1px solid var(--color-border);
+}
+
+/**
+ * Sharing dialog and file sharing UI elements
+ */
+.sharing-entry,
+.sharing-link-list {
+	border-top: 1px solid var(--color-border);
+}
+
+.sharing-entry__desc {
+	font-size: 12.5px;
+	color: var(--color-text-light);
+}
+
+/**
+ * Search results in files
+ */
+.files-list__row[data-cy-files-list-row-name*="search"] {
+	background-color: var(--bs-surface);
+}
+
+/**
+ * Context menu styling for files
+ */
+.v-popper__popper.action-item__popper {
+	background-color: var(--bs-card);
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-container);
+	box-shadow: 0 4px 12px rgba(22, 32, 43, 0.15);
+}
+
+/**
+ * Column sorting indicators
+ */
+.files-list__column button[aria-sort] {
+	color: var(--color-text-maxcontrast);
+}
+
+.files-list__column button[aria-sort]:hover {
+	color: var(--color-primary-element);
+}
+
+
+/**
+ * Workspaces, in the Files nav sidebar. Built by files-workspaces.js as a static
+ * block (Finance / Compliance / Admissions) between the nav list and the quota /
+ * settings footer -- see that script's header comment for why there is no live
+ * workspace data behind it yet.
+ */
+.bs-workspaces {
+	padding: 12px 8px 4px;
+	margin-top: 4px;
+	border-top: 1px solid var(--color-border);
+}
+
+.bs-workspaces__label {
+	padding: 0 8px 8px;
+}
+
+.bs-workspaces__list {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.bs-workspaces__item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px;
+	border-radius: var(--border-radius-element);
+	font-size: 13.5px;
+	font-weight: 500;
+}
+
+.bs-workspaces__dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	flex: none;
+}
+
+/**
+ * The file sidebar's detail rail: Owner / Region / Encryption / External links,
+ * plus the "Open activity log" button. Built by files-detail-rail.js between the
+ * sidebar header and its tab bar -- see that script's header comment for which
+ * rows are real data (Owner) versus placeholder (everything else), and for why
+ * Classification and Residency are deliberately absent here as elsewhere in Files.
+ */
+.bs-detail-rail {
+	padding: 4px 18px 18px;
+	border-bottom: 1px solid var(--color-border);
+}
+
+.bs-detail-rail__list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-bottom: 14px;
+}
+
+.bs-detail-rail__row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	font-size: 12.5px;
+}
+
+.bs-detail-rail__label {
+	color: var(--color-text-light);
+}
+
+.bs-detail-rail__value {
+	font-weight: 500;
+	color: var(--color-main-text);
+	text-align: right;
+}
+
+.bs-detail-rail__activity-btn {
+	display: block;
+	width: 100%;
+	min-height: 34px;
+	padding: 0 16px;
+	box-sizing: border-box;
+	font-family: var(--bs-mono);
+	font-size: 12.5px;
+	font-weight: 600;
+	border-radius: var(--border-radius-element);
+	border: 1px solid var(--color-border-dark);
+	background: transparent;
+	color: var(--color-main-text);
+	cursor: pointer;
+}
+
+.bs-detail-rail__activity-btn:hover {
+	border-color: var(--color-primary-element);
+	color: var(--color-primary-element-light-text);
+}
+
 
 /* -- Login ----------------------------------------------------------------- */
 
@@ -1745,12 +2081,67 @@ tr.files-list__row[data-cy-files-list-row][aria-selected='true'] {
 	 * carries the ID, so the class COUNT has to win the tie -- stacking
 	 * `.bs-login-split` alongside `.guest-box.login-box` gives this selector
 	 * one class more than that rule has.
+	 *
+	 * `text-align` and an explicit `width` fix the other stock-login habit
+	 * this screen drops: core/css/guest.css sets `body{text-align:center}`
+	 * and leaves `.guest-box` as `display:inline-block`, sized to its own
+	 * content, which is how the stock page ends up as a narrow, centred
+	 * card. `text-align` here governs the box's OWN contents, not its
+	 * position -- the box is still centred as a unit within `.wrapper` by
+	 * the inherited `text-align:center` on that ancestor, which is left
+	 * alone -- so heading, labels and links read left-aligned inside a
+	 * wider box without having to fight the centring that positions the box
+	 * itself. 420px comes from sampling the mockup's fields at 2x: they run
+	 * roughly 767 to 1192 of a 2640px frame, ~420px at 1x.
 	 */
 	#body-login.bs-login-split .guest-box.login-box {
 		background: none;
 		border: 0;
 		box-shadow: none;
 		padding: 0;
+		width: 420px;
+		text-align: start;
+	}
+
+	/**
+	 * The stock page's inputs are a fixed 266px -- core/css/guest.css's
+	 * `input[type=email],input[type=password],input[type=text]{width:266px}`,
+	 * a leftover from the pre-Vue login template. Screen 1a's fields run the
+	 * full width of the card, so this fills the 420px box above instead.
+	 * `box-sizing:border-box` keeps the field's own 2px border and 5px/10px
+	 * padding inside that 100%, rather than added on top of it.
+	 */
+	#body-login.bs-login-split input[type='text'],
+	#body-login.bs-login-split input[type='password'],
+	#body-login.bs-login-split input[type='email'] {
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	#body-login.bs-login-split .input-field,
+	#body-login.bs-login-split .input-field__main-wrapper {
+		width: 100%;
+	}
+
+	/**
+	 * "Use your organisation account.", inserted by js/login-marketing.js
+	 * right after the (renamed) "Sign in" headline.
+	 */
+	#body-login.bs-login-split .bs-login-subtitle {
+		margin: 0 0 28px;
+		font-size: 15px;
+		color: var(--color-text-light);
+	}
+
+	/**
+	 * The stock headline is a plain h2 -- core/css/guest.css's
+	 * `h2{font-size:20px;margin-bottom:12px;line-height:140%}`, sized for a
+	 * caption above a form rather than the page's one hero line. Screen 1a's
+	 * "Sign in" reads larger and sits close above its subtitle.
+	 */
+	#body-login.bs-login-split .login-form__headline {
+		font-size: 24px;
+		margin-bottom: 6px;
 	}
 
 	.bs-login-marketing {
@@ -1952,6 +2343,285 @@ body[data-themes] {
 	background-color: var(--bs-card);
 }
 
+/**
+ * The standalone /apps/assistant/ page (screen 2h). Paired with js/assistant-chat.js,
+ * which builds the markup these rules paint: the eyebrow and policy badges above the
+ * thread, the sidebar's MODEL section and privacy note, and the two message-bubble
+ * treatments. See that file's own header comment for why everything is re-mounted from
+ * one MutationObserver instead of per-event hooks.
+ */
+
+/* The "Nextcloud Assistant" wordmark + sparkle bubble above the task-type pills.
+   BharatSuite carries no "Nextcloud" branding anywhere else in the interface, and
+   this is the one place the Assistant app prints its own name rather than
+   deferring to the eyebrow below -- so it is hidden outright rather than
+   relabelled. Unscoped to page or surface: the modal (screen 2h's header sparkle
+   icon) renders the identical .assistant-bubble markup, and both should lose it.
+   Quadrupled, not bare: the Assistant's own Vue-scoped rule is
+   `.assistant-form .assistant-bubble[data-v-HASH]` at (0,3,0) -- two classes plus
+   an attribute -- so a bare `.assistant-bubble` at (0,1,0) is not close, and even
+   tripling to tie at (0,3,0) would still lose to source order, the same failure
+   mode `.assistant-modal.assistant-modal.assistant-modal` documents above. One
+   more class than the target wins outright regardless of order, without naming
+   the hash. */
+.assistant-bubble.assistant-bubble.assistant-bubble.assistant-bubble {
+	display: none;
+}
+
+/* The history list's icon slot (.app-navigation-entry-icon) renders empty --
+   assistant-chat.js's mountHistoryIcons() fills it with a clock face per entry.
+   This is NOT core's own default for the class (that rule is display:flex,
+   already sized to --default-clickable-area). The Assistant page adds its own
+   scoped override on top -- `.container[data-v-HASH] .app-navigation-list
+   .app-navigation-entry-wrapper .app-navigation-entry-link
+   .app-navigation-entry-icon { display:none }`, one per task-type form -- at
+   (0,6,0): five classes plus the scope attribute, written for the ordinary case
+   where a conversation entry never has an icon at all. It does not distinguish
+   that from "an icon was injected after the fact", so the slot stayed collapsed
+   even with an SVG inside it. Nothing short of matching that selector's own
+   specificity beats it, and the hash in `[data-v-HASH]` changes on every
+   Nextcloud build -- so !important, same as the selected-row fix above facing
+   the same kind of unbeatable Vue-scoped rule. :has(svg) keeps it scoped to
+   entries that actually got an icon, rather than reopening the slot everywhere.
+   Width and height are already correct from core's own rule; only display
+   needs restoring. The active-row rule in the navigation section above already
+   recolours it to the accent; this is only the inactive default, which
+   otherwise inherited the link's full-strength ink rather than the mockup's
+   muted grey. */
+.assistant-wrapper .app-navigation-entry-icon:has(svg) {
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	color: var(--color-text-maxcontrast);
+}
+
+/**
+ * Hovering a history entry: screen 2h picks up a green inset edge, distinct
+ * from the saffron one the "-- Files --" section's global .active rule paints
+ * for the currently-open conversation (box-shadow: inset 3px 0 0
+ * var(--color-primary-element), a few hundred lines above). :not(.active)
+ * keeps the two from fighting on the one row that is both open and moused
+ * over. Same #app-navigation-vue-id specificity and !important as that rule,
+ * and for the identical reason -- NcAppNavigationItem's own hover state is
+ * Vue-scoped CSS that outranks a bare class.
+ */
+.assistant-wrapper #app-navigation-vue .app-navigation-entry:not(.active):hover {
+	box-shadow: inset 3px 0 0 var(--bs-green) !important;
+}
+
+/**
+ * Nextcloud's own sidebar-collapse button (.app-navigation-toggle-wrapper) is
+ * `position:absolute` against .app-navigation's own right edge, deliberately
+ * overlapping `--default-clickable-area` (44px) into .app-content so there is
+ * something to click -- confirmed against core's own compiled CSS
+ * (index-Dz9VUFRU.chunk.css): `inset-inline-end:calc(0px - var(--app-navigation-padding))`.
+ * The eyebrow was rendering directly at the top bar's left edge, right under it.
+ */
+.assistant-wrapper .session-area__top-bar__title {
+	padding-inline-start: var(--default-clickable-area, 44px);
+}
+
+/* Eyebrow: "ASSISTANT · ON-PREMISE" above the conversation title. */
+.bs-assistant-eyebrow {
+	font-family: var(--bs-mono);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--bs-blue);
+	margin-bottom: 4px;
+}
+
+/* Policy badges, top-right of the thread header: outlined mono pills, one claim
+   per badge. Green for a true, permanent claim about the deployment; neutral for a
+   per-conversation one. */
+.bs-assistant-badges {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: none;
+}
+
+.bs-assistant-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 6px 12px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-small);
+	background: var(--bs-card);
+	font-family: var(--bs-mono);
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--bs-ink);
+	white-space: nowrap;
+}
+
+.bs-assistant-badge--residency {
+	border-color: var(--bs-green-400);
+	background: var(--bs-green-100);
+	color: var(--bs-green-700);
+}
+
+/**
+ * "+ New chat": a solid saffron fill with white text, not the tertiary button
+ * NcAppNavigationNew renders by default (a saffron-washed outline, same
+ * treatment the sidebar's selected-row accent used to carry before that was
+ * neutralised -- see the "-- Assistant --" section's own opening comment).
+ * Tripled past NcAppNavigationNew's own scoped `[data-v-HASH]` rule, same
+ * device as the global button rule above.
+ */
+.assistant-wrapper .app-navigation-new .button-vue.button-vue.button-vue {
+	background-color: var(--bs-saffron);
+	color: #fff;
+	border-color: transparent;
+}
+
+.assistant-wrapper .app-navigation-new .button-vue.button-vue.button-vue:hover {
+	background-color: var(--bs-saffron-600);
+}
+
+/* -- Sidebar: MODEL section ------------------------------------------------- */
+
+.bs-assistant-model {
+	margin-top: 20px;
+	padding: 0 8px;
+}
+
+.bs-assistant-model__label {
+	margin: 0 0 8px;
+	padding: 0 4px;
+}
+
+.bs-assistant-model__card {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 4px;
+	border-radius: var(--border-radius-container);
+}
+
+.bs-assistant-model__icon {
+	display: inline-flex;
+	flex: none;
+	color: var(--bs-n700);
+}
+
+.bs-assistant-model__name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 13.5px;
+	color: var(--bs-ink);
+}
+
+.bs-assistant-model__badge {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 9px;
+	border: 1px solid;
+	border-radius: var(--border-radius-small);
+	font-family: var(--bs-mono);
+	font-size: 9.5px;
+	font-weight: 700;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+}
+
+.bs-assistant-model__badge--active {
+	border-color: var(--bs-green-400);
+	background: var(--bs-green-100);
+	color: var(--bs-green-700);
+}
+
+.bs-assistant-model__badge--blocked {
+	border-color: var(--bs-saffron-400);
+	background: var(--bs-saffron-100);
+	color: var(--bs-saffron-700);
+}
+
+/* Privacy note, bottom of the sidebar: same tinted-card treatment as the dashboard's
+   Sovereignty / Recent activity cards, at the green step.
+   `.app-navigation-list` is a flex column (core's own rule) sized to the full sidebar
+   height with overflow-y:auto, so without `margin-top:auto` this card sits wherever
+   flow ends -- right under the MODEL section, with dead scrollable space below it
+   whenever the history list is short. `margin-top:auto` on a flex-column child pushes
+   it (and nothing after it, since it's the last child) to the container's own bottom
+   edge, pinning it there regardless of how many history entries precede it -- matching
+   screen 2h, where the note sits flush against the sidebar's bottom edge. */
+.bs-assistant-privacy {
+	margin: 16px 8px;
+	margin-top: auto;
+	padding: 14px 16px;
+	border: 1px solid var(--bs-green-400);
+	border-radius: var(--border-radius-container);
+	background: var(--bs-green-100);
+	color: var(--bs-green-700);
+	font-size: 12.5px;
+	line-height: 1.5;
+}
+
+/* -- Message bubbles --------------------------------------------------------
+ *
+ * The stock layout gives every turn the same left-aligned, borderless row. The
+ * screens right-align the user's own turns as peach bubbles and leave the
+ * assistant's replies as plain text beside its avatar -- so only .bs-msg-user
+ * gets a bubble at all.
+ */
+.bs-msg-user {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.bs-msg-user .message__content {
+	max-width: 640px;
+	padding: 14px 18px;
+	border-radius: var(--border-radius-container);
+	background: var(--bs-saffron-100);
+}
+
+/**
+ * .input-area__button-box is `flex-direction:column` upstream -- built for a
+ * single stacked control, the mic. Adding Send as a second child just stacked
+ * it below the mic rather than beside it. Screen 2h has no mic at all, but the
+ * brief is to keep it, only moved -- row-izing the box puts the two side by
+ * side at the input's own height instead of the mic floating above it.
+ *
+ * Tripled: upstream's own rule is `.input-area__button-box[data-v-HASH]`, a
+ * class plus an attribute selector at equal specificity to a doubled class,
+ * and that Vue-injected stylesheet loads after this one -- same device as
+ * .button-vue.button-vue.button-vue above.
+ */
+.assistant-wrapper .input-area__button-box.input-area__button-box.input-area__button-box {
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+}
+
+/**
+ * The Send button: same solid-saffron treatment as "+ New chat" above, not the
+ * bare unstyled button it was rendering as. Sits after the mic in the DOM (see
+ * assistant-chat.js's mountSend), and the row-ized box above puts that last-ness
+ * to visual use -- the mic ends up a slot to the left of Send instead of a
+ * separate row above it.
+ */
+.bs-assistant-send.button-vue.button-vue.button-vue {
+	padding: 0 20px;
+	min-height: var(--default-clickable-area, 44px);
+	border: none;
+	border-radius: var(--border-radius-element);
+	background-color: var(--bs-saffron);
+	color: #fff;
+}
+
+.bs-assistant-send.button-vue.button-vue.button-vue:hover {
+	background-color: var(--bs-saffron-600);
+}
+
 
 /* -- Mail ------------------------------------------------------------------ */
 
@@ -2002,3 +2672,164 @@ body[data-theme-dark-highcontrast] .dashboard-section__bar img {
 		filter: saturate(0.6) brightness(0.72) contrast(0.95);
 	}
 }
+
+/* ---- Login SSO and Badge Additions ---- */
+#body-login.bs-login-split {
+	background-color: #ffffff !important;
+}
+
+#body-login.bs-login-split .login-form__headline {
+	font-size: 28px !important;
+	font-weight: 700 !important;
+	letter-spacing: -0.03em;
+	color: #16202b !important;
+}
+
+#body-login.bs-login-split .input-field__label,
+#body-login.bs-login-split label[for="user"],
+#body-login.bs-login-split label[for="password"] {
+	text-transform: uppercase !important;
+	font-size: 11px !important;
+	font-weight: 700 !important;
+	letter-spacing: 1.5px !important;
+	color: #8c8a86 !important;
+}
+
+#body-login.bs-login-split .bs-sso-section {
+	margin-top: 24px;
+	margin-bottom: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+#body-login.bs-login-split button.bs-sso-button {
+	display: flex !important;
+	align-items: center !important;
+	width: 100% !important;
+	padding: 12px 16px !important;
+	background-color: #f6f5f3 !important;
+	border: 1px solid #dcdad5 !important;
+	border-radius: 8px !important;
+	font-family: inherit !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+	color: #16202b !important;
+	cursor: pointer !important;
+	transition: all 0.2s ease !important;
+	box-shadow: none !important;
+}
+
+#body-login.bs-login-split button.bs-sso-button:hover {
+	background-color: #efede9 !important;
+	border-color: #cfccce !important;
+}
+
+#body-login.bs-login-split .bs-sso-icon {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	margin-right: 16px;
+	flex-shrink: 0;
+}
+
+#body-login.bs-login-split .bs-sso-icon.org-icon {
+	background-color: #1c4478; /* Navy */
+}
+
+#body-login.bs-login-split .bs-sso-icon.digi-icon {
+	background-color: #1a7f5a; /* Green */
+}
+
+#body-login.bs-login-split .bs-login-or {
+	display: flex;
+	align-items: center;
+	text-align: center;
+	margin-top: 16px;
+	margin-bottom: 8px;
+	color: #8c8a86;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 1.5px;
+}
+
+#body-login.bs-login-split .bs-login-or::before,
+#body-login.bs-login-split .bs-login-or::after {
+	content: '';
+	flex: 1;
+	border-bottom: 1px solid #dcdad5;
+}
+
+#body-login.bs-login-split .bs-login-or span {
+	padding: 0 16px;
+}
+
+/* Remember me wrapper */
+#body-login.bs-login-split .bs-remember-wrapper {
+	display: flex !important;
+	justify-content: space-between !important;
+	align-items: center !important;
+	width: 100% !important;
+	margin-top: 16px !important;
+	margin-bottom: 16px !important;
+}
+
+#body-login.bs-login-split .bs-forgot-password {
+	color: #cf6d14 !important;
+	font-size: 14px !important;
+	font-weight: 500 !important;
+	text-decoration: none !important;
+}
+
+/* Hide original labels if data-bs-label is set and show via pseudo element */
+#body-login.bs-login-split label[for="remember_login"][data-bs-label] {
+	font-size: 0 !important;
+}
+#body-login.bs-login-split label[for="remember_login"][data-bs-label]::after {
+	content: attr(data-bs-label);
+	font-size: 14px;
+	margin-left: 8px;
+	color: #16202b;
+}
+
+/* Round Checkbox */
+#body-login.bs-login-split input[type="checkbox"] {
+	border-radius: 50% !important;
+}
+
+/* Remove SVG from Sign in button */
+#body-login.bs-login-split button[type="submit"] svg,
+#body-login.bs-login-split .login-submit svg {
+	display: none !important;
+}
+
+#body-login.bs-login-split .bs-login-badge {
+	margin-top: 32px;
+	background-color: #eaf3ed;
+	border: 1px solid #cce3d5;
+	border-radius: 8px;
+	padding: 16px;
+	display: flex;
+	align-items: center;
+	font-size: 13px;
+	color: #16202b;
+}
+
+#body-login.bs-login-split .bs-badge-dot {
+	width: 8px;
+	height: 8px;
+	background-color: #1a7f5a;
+	border-radius: 50%;
+	margin-right: 12px;
+	flex-shrink: 0;
+}
+
+#body-login.bs-login-split .bs-login-badge strong {
+	font-weight: 600;
+}
+
+/* Hide alternative logins */
+#body-login.bs-login-split .login-additional {
+	display: none !important;
+}
+
