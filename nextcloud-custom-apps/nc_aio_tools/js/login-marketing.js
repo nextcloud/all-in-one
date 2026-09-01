@@ -83,4 +83,102 @@
 
 	wrapper.parentNode.insertBefore(panel, wrapper)
 	body.classList.add('bs-login-split')
+
+	/**
+	 * Renames real, working copy to match screen 1a -- none of this touches
+	 * function or markup structure, only the words on elements that already
+	 * work exactly as before. Unlike the SSO/DigiLocker buttons the mockup
+	 * also shows, there is no missing feature here to fake: "Sign in" still
+	 * submits the same form as "Log in to BharatSuite" did, and "Work email"
+	 * still points at the same `name="user"` field.
+	 *
+	 * Each lookup is guarded rather than assumed: LoginForm.vue's class names
+	 * are internal to Nextcloud core and not a public API, so a future
+	 * version is free to rename them. If one lookup misses, the label it
+	 * would have changed just reads as stock Nextcloud copy instead --
+	 * degrading a word at a time, not failing the login page.
+	 */
+	var headline = document.querySelector('.login-form__headline')
+	if (headline) {
+		headline.textContent = 'Sign in'
+
+		var subtitle = document.createElement('p')
+		subtitle.className = 'bs-login-subtitle'
+		subtitle.textContent = 'Use your organisation account.'
+		headline.insertAdjacentElement('afterend', subtitle)
+
+		var ssoSection = document.createElement('div')
+		ssoSection.className = 'bs-sso-section'
+
+		var ssoOrg = document.createElement('button')
+		ssoOrg.type = 'button'
+		ssoOrg.className = 'bs-sso-button bs-sso-org'
+		ssoOrg.innerHTML = '<span class="bs-sso-icon org-icon"></span> Continue with organisation SSO'
+		ssoSection.appendChild(ssoOrg)
+
+		var ssoDigi = document.createElement('button')
+		ssoDigi.type = 'button'
+		ssoDigi.className = 'bs-sso-button bs-sso-digi'
+		ssoDigi.innerHTML = '<span class="bs-sso-icon digi-icon"></span> Continue with DigiLocker identity'
+		ssoSection.appendChild(ssoDigi)
+
+		var orDivider = document.createElement('div')
+		orDivider.className = 'bs-login-or'
+		orDivider.innerHTML = '<span>OR</span>'
+		ssoSection.appendChild(orDivider)
+
+		subtitle.insertAdjacentElement('afterend', ssoSection)
+	}
+
+	var emailLabel = document.querySelector('label[for="user"]')
+	if (emailLabel) {
+		emailLabel.textContent = 'Work email'
+	}
+
+	var submitButtonContainer = document.querySelector('[data-login-form-submit]')
+	if (submitButtonContainer) {
+		var submitText = submitButtonContainer.querySelector('.button-vue__text')
+		if (submitText) {
+			submitText.textContent = 'Sign in'
+		}
+
+		var loginBadge = document.createElement('div')
+		loginBadge.className = 'bs-login-badge'
+		loginBadge.innerHTML = '<span class="bs-badge-dot"></span> Connected to&nbsp;<strong>ap-south &middot; Mumbai</strong>&nbsp;&mdash; no data leaves India'
+		submitButtonContainer.insertAdjacentElement('afterend', loginBadge)
+	} else {
+		var submitText = document.querySelector('[data-login-form-submit] .button-vue__text')
+		if (submitText) {
+			submitText.textContent = 'Sign in'
+		}
+	}
+
+	// Rename "Remember me" to "Keep me signed in" and add "Forgot password"
+	var rememberLabel = document.querySelector('label[for="remember_login"]')
+	if (rememberLabel) {
+		// Change the text without destroying the checkbox if it's inside
+		var textNode = Array.from(rememberLabel.childNodes).find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim().toLowerCase() === 'remember me')
+		if (textNode) {
+			textNode.textContent = 'Keep me signed in'
+		} else {
+			// If not a text node, just append a style to hide the original and show ours
+			rememberLabel.setAttribute('data-bs-label', 'Keep me signed in')
+		}
+		
+		var rememberWrapper = rememberLabel.parentElement
+		if (rememberWrapper) {
+			rememberWrapper.classList.add('bs-remember-wrapper')
+			var forgot = document.querySelector('.lost-password-container a, a[href*="lostpassword"]')
+			if (!forgot) {
+				forgot = document.createElement('a')
+				forgot.href = '/login/flow/forgot'
+				forgot.className = 'bs-forgot-password'
+				forgot.textContent = 'Forgot password'
+				rememberWrapper.appendChild(forgot)
+			} else {
+				forgot.classList.add('bs-forgot-password')
+				rememberWrapper.appendChild(forgot)
+			}
+		}
+	}
 })()
