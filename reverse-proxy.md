@@ -548,7 +548,7 @@ http {
 
         server_name <your-nc-domain>;
 
-        # If running nginx on a subdomain (eg. nextcloud.example.com) of a domain that already has an wildcard ssl certificate from certbot on this machine, 
+        # If running nginx on a subdomain (eg. nextcloud.example.com) of a domain that already has a wildcard ssl certificate from certbot on this machine, 
         # the <your-nc-domain> in the below lines should be replaced with just the domain (eg. example.com), not the subdomain. 
         # In this case the subdomain should already be secured without additional actions
         ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
