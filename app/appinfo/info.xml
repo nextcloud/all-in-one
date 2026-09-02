@@ -5,7 +5,7 @@
 	<name>Nextcloud All-in-One</name>
 	<summary>Provides a login link for admins.</summary>
 	<description>Add a link to the admin settings that gives access to the Nextcloud All-in-One admin interface</description>
-	<version>0.8.0</version>
+	<version>0.9.0</version>
 	<licence>agpl</licence>
 	<author>Azul</author>
 	<namespace>AllInOne</namespace>
@@ -13,7 +13,7 @@
 	<category>monitoring</category>
 	<bugs>https://github.com/nextcloud/all-in-one/issues</bugs>
 	<dependencies>
-		<nextcloud min-version="33" max-version="34"/>
+		<nextcloud min-version="34" max-version="35"/>
 	</dependencies>
 
 	<settings>
