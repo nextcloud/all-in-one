@@ -521,7 +521,7 @@ http {
     }
 
     upstream nextcloud {
-      keepalive 32 local;     # for nginx versions below v1.29.7
+      keepalive 32;     # for nginx versions below v1.29.7
       server 127.0.0.1:11000; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
     }
 
