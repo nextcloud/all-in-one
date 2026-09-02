@@ -83,6 +83,7 @@ RUN set -ex; \
     mkdir -p /usr/local/apache2/logs; \
     chmod 777 -R /home/www-data; \
     chmod 777 -R /usr/local/apache2/logs; \
+    chmod 777 /run; \
     rm -rf /usr/local/apache2/cgi-bin/
 
 USER www-data:www-data
@@ -90,7 +91,7 @@ USER www-data:www-data
 STOPSIGNAL SIGTERM
 
 ENTRYPOINT ["/start.sh"]
-CMD ["dinit", "--system", "--container", "--socket-path", "/tmp/dinitctl", "apache", "caddy"]
+CMD ["dinit", "--system", "--container", "apache", "caddy"]
 
 ENV AIO_LOG_LEVEL=warn
 

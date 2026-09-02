@@ -6,6 +6,7 @@ RUN set -ex; \
     apk add --no-cache tzdata clamav clamav-milter dinit bash; \
     mkdir -p /tmp /var/lib/clamav; \
     chmod 777 -R /tmp /var/log/clamav; \
+    chmod 777 /run; \
     chown -R clamav:clamav /var/lib/clamav; \
     sed -i "s|#\?MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?MaxScanSize.*|MaxScanSize 2000M|g" /etc/clamav/clamd.conf; \
@@ -43,7 +44,7 @@ RUN set -ex; \
     freshclam --foreground --stdout
 VOLUME /var/lib/clamav
 ENTRYPOINT ["/start.sh"]
-CMD ["dinit", "--system", "--container", "--socket-path", "/tmp/dinitctl", "freshclam", "clamd", "milter"]
+CMD ["dinit", "--system", "--container", "freshclam", "clamd", "milter"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \

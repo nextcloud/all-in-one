@@ -72,12 +72,13 @@ RUN set -ex; \
     chmod 777 -R \
         /tmp \
         /conf; \
+    chmod 777 /run; \
     ln -s /opt/eturnal/bin/stun /usr/local/bin/stun; \
     ln -s /opt/eturnal/bin/eturnalctl /usr/local/bin/eturnalctl
 
 USER eturnal:eturnal
 ENTRYPOINT ["/start.sh"]
-CMD ["dinit", "--system", "--container", "--socket-path", "/tmp/dinitctl", "nats-server", "eturnal", "janus", "signaling"]
+CMD ["dinit", "--system", "--container", "nats-server", "eturnal", "janus", "signaling"]
 
 HEALTHCHECK CMD ["/healthcheck.sh"]
 LABEL com.centurylinklabs.watchtower.enable="false" \
