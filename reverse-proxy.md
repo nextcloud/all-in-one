@@ -526,12 +526,11 @@ http {
     }
 
     server {
-        listen 0.0.0.0:80 bind reuseport deferred so_keepalive=on; # for nginx versions below v1.29.7 - please remove "bind reuseport deferred so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
-        listen [::]:80 bind reuseport deferred so_keepalive=on;    # for nginx versions below v1.29.7 - comment to disable IPv6 - please remove "bind reuseport deferred so_keepalive=on" if there is already another listener on these options ip and port with this enabled
+        listen 0.0.0.0:80 bind reuseport deferred so_keepalive=on; # for nginx versions below v1.29.7 - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
+        listen [::]:80 bind reuseport deferred so_keepalive=on;    # for nginx versions below v1.29.7 - comment to disable IPv6 - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
 
-        #listen 0.0.0.0:80 bind reuseport deferred multipath so_keepalive=on; # for nginx v1.29.7+ - please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
-        #listen [::]:80 bind reuseport deferred multipath so_keepalive=on;    # for nginx v1.29.7+ - comment to disable IPv6 - please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on these options ip and port with this enabled 
-
+        #listen 0.0.0.0:80 bind reuseport deferred multipath so_keepalive=on; # for nginx v1.29.7+ - please remove "bind reuseport deferred multipath so_keepalive=on" if another listener on the same IP:port already uses these options
+        #listen [::]:80 bind reuseport deferred multipath so_keepalive=on;    # for nginx v1.29.7+ - keep comment to disable IPv6 - please remove "bind reuseport deferred multipath so_keepalive=on" if another listener on the same IP:port already uses these options
         if ($scheme = "http") {
             return 301 https://$host$request_uri;
         }
@@ -539,17 +538,17 @@ http {
             return 301 https://$host$request_uri;
         }
 
-        listen 0.0.0.0:443 ssl bind reuseport deferred so_keepalive=on; # for nginx v1.25.1+ - please remove "bind reuseport deferred so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
-        listen [::]:443 ssl bind reuseport deferred so_keepalive=on;    # for nginx v1.25.1+ - comment to disable IPv6 - please remove "bind reuseport deferred so_keepalive=on" if there is already another listener on this ip and port with these options enabled
+        listen 0.0.0.0:443 ssl bind reuseport deferred so_keepalive=on; # for nginx v1.25.1+ - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
+        listen [::]:443 ssl bind reuseport deferred so_keepalive=on;    # for nginx v1.25.1+ - comment to disable IPv6 - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
 
-        #listen 0.0.0.0:443 ssl bind reuseport deferred multipath so_keepalive=on; # for nginx v1.29.7+ - please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
-        #listen [::]:443 ssl bind reuseport deferred multipath so_keepalive=on;    # for nginx v1.29.7+ - comment to disable IPv6 - please remove "bind reuseport deferred multipath so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
+        #listen 0.0.0.0:443 ssl bind reuseport deferred multipath so_keepalive=on; # for nginx v1.29.7+ - please remove "bind reuseport deferred multipath so_keepalive=on"if another listener on the same IP:port already uses these options
+        #listen [::]:443 ssl bind reuseport deferred multipath so_keepalive=on;    # for nginx v1.29.7+ - keep comment to disable IPv6 - please remove "bind reuseport deferred multipath so_keepalive=on" if another listener on the same IP:port already uses these options
 
-        #listen 0.0.0.0:443 ssl http2 bind reuseport deferred so_keepalive=on; # for nginx versions below v1.25.1 - please remove "bind reuseport deferred so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
-        #listen [::]:443 ssl http2 bind reuseport deferred so_keepalive=on;    # for nginx versions below v1.25.1 - keep comment to disable IPv6 - please remove "bind reuseport deferred so_keepalive=on" if there is already another listener on this ip and port with these options enabled 
+        #listen 0.0.0.0:443 ssl http2 bind reuseport deferred so_keepalive=on; # for nginx versions below v1.25.1 - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
+        #listen [::]:443 ssl http2 bind reuseport deferred so_keepalive=on;    # for nginx versions below v1.25.1 - keep comment to disable IPv6 - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
 
-        #listen 0.0.0.0:443 quic reuseport;        # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on this ip and port 443 with this enabled
-        #listen [::]:443 quic reuseport;           # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if there is already another quic listener on this ip and port 443 with this enabled reuseport - keep comment to disable IPv6
+        #listen 0.0.0.0:443 quic reuseport;        # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if another quic listener on the same IP:port already uses these options
+        #listen [::]:443 quic reuseport;           # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - keep comment to disable IPv6 - please remove "reuseport "if another quic listener on the same IP:port already uses these optionst
         #add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
 
         server_name <your-nc-domain>;
