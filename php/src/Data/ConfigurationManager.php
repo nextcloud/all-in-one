@@ -897,6 +897,17 @@ class ConfigurationManager
     }
 
     /**
+     * Translates AIO's global log level into the log levels that coolwsd accepts.
+     */
+    public function getCollaboraLogLevel() : string {
+        return match ($this->aioLogLevel) {
+            'warn' => 'warning',
+            'info' => 'notice',
+            default => $this->aioLogLevel,
+        };
+    }
+
+    /**
      * @throws InvalidSettingConfigurationException
      */
     public function setDailyBackupTime(string $time, bool $enableAutomaticUpdates, bool $successNotification) : void {
@@ -1235,6 +1246,7 @@ class ConfigurationManager
             'BORGBACKUP_HOST_LOCATION' => $this->borgBackupHostLocation,
             'APACHE_MAX_SIZE' => (string)($this->getApacheMaxSize()),
             'COLLABORA_SECCOMP_POLICY' => $this->getCollaboraSeccompPolicy(),
+            'COLLABORA_LOG_LEVEL' => $this->getCollaboraLogLevel(),
             'NEXTCLOUD_STARTUP_APPS' => $this->getNextcloudStartupApps(),
             'NEXTCLOUD_ADDITIONAL_APKS' => $this->nextcloudAdditionalApks,
             'NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS' => $this->nextcloudAdditionalPhpExtensions,
