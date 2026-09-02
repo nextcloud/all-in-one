@@ -56,22 +56,25 @@ else
 fi
 echo "$CADDYFILE" > /tmp/Caddyfile
 
-# Change the trusted_proxies in case of reverse proxies
+# Determine the trusted_proxies in case of reverse proxies
 if [ "$APACHE_PORT" != '443' ]; then
     # Here the 100.64.0.0/10 range gets added which is the CGNAT range used by Tailscale nodes
     # See https://github.com/nextcloud/all-in-one/pull/6703 for reference
-    CADDYFILE="$(sed 's|# trusted_proxies placeholder|trusted_proxies static private_ranges 100.64.0.0/10|' /tmp/Caddyfile)"
+    TRUSTED_PROXIES="trusted_proxies static private_ranges 100.64.0.0/10"
 else
-    CADDYFILE="$(sed "s|# trusted_proxies placeholder|trusted_proxies static $IPv4_ADDRESS|" /tmp/Caddyfile)"
+    TRUSTED_PROXIES="trusted_proxies static $IPv4_ADDRESS"
 fi
-echo "$CADDYFILE" > /tmp/Caddyfile
 
 # In case of reverse proxies the APACHE_PORT listener is plain http, so limit it to h1 to avoid
 # caddy warning that HTTP/2 and HTTP/3 were skipped. See the Caddyfile for further details.
 if [ "$APACHE_PORT" != '443' ]; then
-    CADDYFILE="$(sed "s|# apache-port protocols placeholder|servers :$APACHE_PORT {\n\t\tprotocols h1\n\t}|" /tmp/Caddyfile)"
+    CADDYFILE="$(sed "s|# apache-port servers placeholder|servers :$APACHE_PORT {\n\t\tprotocols h1\n\t\t# trusted_proxies placeholder\n\t}|" /tmp/Caddyfile)"
     echo "$CADDYFILE" > /tmp/Caddyfile
 fi
+
+# Change all trusted_proxies placeholders, also the ones inside the scoped `servers` blocks
+CADDYFILE="$(sed "s|# trusted_proxies placeholder|$TRUSTED_PROXIES|g" /tmp/Caddyfile)"
+echo "$CADDYFILE" > /tmp/Caddyfile
 
 # Remove additional domain if not given
 if [ -z "$ADDITIONAL_TRUSTED_DOMAIN" ]; then

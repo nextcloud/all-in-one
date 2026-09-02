@@ -11,13 +11,15 @@
         # trusted_proxies placeholder
     }
 
-    # The endpoint below is plain http on purpose, so limit it to h1 to avoid caddy warning that
-    # HTTP/2 and HTTP/3 were skipped. Excluding the `http` logger would also hide acme messages.
+    # Plain http on purpose, so limit it to h1 to avoid caddy warning that HTTP/2 and HTTP/3 were
+    # skipped. Excluding the `http` logger would also hide acme messages.
     servers :23973 {
         protocols h1
+        # A scoped block overrides the address-less one above, so repeat trusted_proxies here.
+        # trusted_proxies placeholder
     }
 
-    # apache-port protocols placeholder
+    # apache-port servers placeholder
 
     log {
         level {$CADDY_LOG_LEVEL}
