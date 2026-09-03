@@ -9,15 +9,27 @@
 	}
 
 	log {
-		level ERROR
+		level {$CADDY_LOG_LEVEL}
 		# We need to exclude the remote-host plugin from logging as it would spam the logs
 		# See https://github.com/nextcloud/all-in-one/pull/7006#issuecomment-4003238239 
 		exclude http.matchers.remote_host
+		# Below ERROR, caddy prints 'admin endpoint disabled' on every start, which is expected
+		# since we set `admin off` above.
+		exclude admin
+		# Below ERROR, caddy reports that the http -> https redirects are disabled, which is
+		# expected since we set `auto_https disable_redirects` above (acme.Caddyfile handles them).
+		exclude http.auto_https
 	}
 
 	servers {
 		# Only h1 is allowed as we prevent `ERR_NETWORK_CHANGED` from happening
 		protocols h1
+	}
+
+	# This endpoint always allows as the internal issuer below only creates self-signed certificates.
+	# It is only needed to silence caddy's warning about unprotected on-demand TLS.
+	on_demand_tls {
+		ask http://127.0.0.1:9876/internal
 	}
 
 	skip_install_trust
