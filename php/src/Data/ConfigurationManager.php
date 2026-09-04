@@ -293,7 +293,7 @@ class ConfigurationManager
     }
 
     public string $nextcloudUploadLimit {
-        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_UPLOAD_LIMIT', 'nextcloud_upload_limit', '16G');
+        get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_UPLOAD_LIMIT', 'nextcloud_upload_limit', '1G');
         set { $this->set('nextcloud_upload_limit', $value); }
     }
 
