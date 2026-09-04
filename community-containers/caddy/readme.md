@@ -33,6 +33,7 @@ This container creates Let's Encrypt certificates for subdomains of `your-nc-dom
 | [nocodb](https://github.com/nextcloud/all-in-one/tree/main/community-containers/nocodb)                             | `tables.your-nc-domain.com`      | ✅           |               |                |
 | [seerr](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyseerr)                          | `requests.your-nc-domain.com`    | ✅           |               |                |
 | [stalwart](https://github.com/nextcloud/all-in-one/tree/main/community-containers/stalwart)                         | `mail.your-nc-domain.com`        | ✅           | ✅            |                |
+| [talk](https://github.com/nextcloud/all-in-one/tree/main/Containers/talk)                                           | `turn.your-nc-domain.com`        |              |               |                 |
 | [vaultwarden](https://github.com/nextcloud/all-in-one/tree/main/community-containers/vaultwarden)                   | `bw.your-nc-domain.com`          | ✅           | ✅            |                |
 
 ## Geoblocking
