@@ -1,4 +1,6 @@
 {
+    admin off
+
     auto_https disable_redirects
 
     storage file_system {
@@ -9,8 +11,21 @@
         # trusted_proxies placeholder
     }
 
+    # Plain http on purpose, so limit it to h1 to avoid caddy warning that HTTP/2 and HTTP/3 were
+    # skipped. Excluding the `http` logger would also hide acme messages.
+    servers :23973 {
+        protocols h1
+        # A scoped block overrides the address-less one above, so repeat trusted_proxies here.
+        # trusted_proxies placeholder
+    }
+
+    # apache-port servers placeholder
+
     log {
-        level ERROR
+        level {$CADDY_LOG_LEVEL}
+        # Below ERROR, caddy prints 'admin endpoint disabled' on every start, which is expected
+        # since we set `admin off` above.
+        exclude admin
     }
 }
 
