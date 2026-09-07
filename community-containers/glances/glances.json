@@ -20,11 +20,6 @@
                     "source": "nextcloud_aio_glances",
                     "destination": "/etc/glances",
                     "writeable": true
-                },
-                {
-                    "source": "%WATCHTOWER_DOCKER_SOCKET_PATH%",
-                    "destination": "/var/run/docker.sock",
-                    "writeable": false
                 }
             ],
             "environment": [

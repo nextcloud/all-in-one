@@ -1,9 +1,6 @@
 ## Glances
 This container starts [Glances](https://nicolargo.github.io/glances/), a web-based system monitoring dashboard, and auto-configures it for you.
 
-> [!CAUTION]
-> This container mounts the docker-socket from the host-system.
-
 ### Notes
 - After adding and starting the container, you can directly visit http://ip.address.of.server:61208/ and access your new Glances instance!
 - if you are using caddy community container, this will be available at `https://glances.your-server.com`, For security reasons, a password will be generated and shown in the AIO interface (if you click on showing the secret for glances). Use `glances` as user name. 
