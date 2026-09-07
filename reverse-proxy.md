@@ -238,8 +238,8 @@ Add this as a new Apache site config:
     SSLHonorCipherOrder     off
     SSLSessionTickets       off
 
-    # If running apache on a subdomain (eg. nextcloud.example.com) of a domain that already has an wildcard ssl certificate from certbot on this machine, 
-    # the <your-nc-domain> in the below lines should be replaced with just the domain (eg. example.com), not the subdomain. 
+    # If running apache on a subdomain (eg. nextcloud.example.com) of a domain that already has a wildcard ssl certificate from certbot on this machine,
+    # the <your-nc-domain> in the below lines should be replaced with just the domain (eg. example.com), not the subdomain.
     # In this case the subdomain should already be secured without additional actions
     SSLCertificateFile /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem
     SSLCertificateKeyFile /etc/letsencrypt/live/<your-nc-domain>/privkey.pem
@@ -521,8 +521,8 @@ http {
     }
 
     upstream nextcloud {
-      keepalive 32;     # for nginx versions below v1.29.7
-      server 127.0.0.1:11000; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
+        keepalive 32;           # for nginx versions below v1.29.7
+        server 127.0.0.1:11000; # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
     }
 
     server {
@@ -541,20 +541,20 @@ http {
         listen 0.0.0.0:443 ssl bind reuseport deferred so_keepalive=on; # for nginx v1.25.1+ - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
         listen [::]:443 ssl bind reuseport deferred so_keepalive=on;    # for nginx v1.25.1+ - comment to disable IPv6 - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
 
-        #listen 0.0.0.0:443 ssl bind reuseport deferred multipath so_keepalive=on; # for nginx v1.29.7+ - please remove "bind reuseport deferred multipath so_keepalive=on"if another listener on the same IP:port already uses these options
+        #listen 0.0.0.0:443 ssl bind reuseport deferred multipath so_keepalive=on; # for nginx v1.29.7+ - please remove "bind reuseport deferred multipath so_keepalive=on" if another listener on the same IP:port already uses these options
         #listen [::]:443 ssl bind reuseport deferred multipath so_keepalive=on;    # for nginx v1.29.7+ - keep comment to disable IPv6 - please remove "bind reuseport deferred multipath so_keepalive=on" if another listener on the same IP:port already uses these options
 
         #listen 0.0.0.0:443 ssl http2 bind reuseport deferred so_keepalive=on; # for nginx versions below v1.25.1 - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
         #listen [::]:443 ssl http2 bind reuseport deferred so_keepalive=on;    # for nginx versions below v1.25.1 - keep comment to disable IPv6 - please remove "bind reuseport deferred so_keepalive=on" if another listener on the same IP:port already uses these options
 
-        #listen 0.0.0.0:443 quic reuseport;        # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if another quic listener on the same IP:port already uses these options
-        #listen [::]:443 quic reuseport;           # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - keep comment to disable IPv6 - please remove "reuseport "if another quic listener on the same IP:port already uses these optionst
+        #listen 0.0.0.0:443 quic reuseport;        # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - please remove "reuseport" if another quic listener on the same IP:port already uses this option
+        #listen [::]:443 quic reuseport;           # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - keep comment to disable IPv6 - please remove "reuseport" if another quic listener on the same IP:port already uses this option
         #add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
 
         server_name <your-nc-domain>;
 
-        # If running nginx on a subdomain (eg. nextcloud.example.com) of a domain that already has a wildcard ssl certificate from certbot on this machine, 
-        # the <your-nc-domain> in the below lines should be replaced with just the domain (eg. example.com), not the subdomain. 
+        # If running nginx on a subdomain (eg. nextcloud.example.com) of a domain that already has a wildcard ssl certificate from certbot on this machine,
+        # the <your-nc-domain> in the below lines should be replaced with just the domain (eg. example.com), not the subdomain.
         # In this case the subdomain should already be secured without additional actions
         ssl_certificate /etc/letsencrypt/live/<your-nc-domain>/fullchain.pem;   # managed by certbot on host machine
         ssl_certificate_key /etc/letsencrypt/live/<your-nc-domain>/privkey.pem; # managed by certbot on host machine
@@ -583,6 +583,7 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection $connection_upgrade;
         }
+    }
 }
 ```
 
