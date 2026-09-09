@@ -9,13 +9,13 @@
 			"items": {
 				"type": "object",
 				"additionalProperties": false,
-				"minProperties": 2,
+				"minProperties": 3,
 				"required": ["image", "container_name", "image_tag"],
 				"properties": {
 					"image": {
 						"type": "string",
 						"minLength": 1,
-						"pattern": "^(ghcr.io/)?[a-z0-9/-]+$"
+						"pattern": "^(ghcr.io/)?[a-z0-9_-]+/[a-z0-9_-]+$"
 					},
 					"expose": {
 						"type": "array",
