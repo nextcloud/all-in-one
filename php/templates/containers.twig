@@ -313,15 +313,34 @@
                             {% endif %}
                         {% else %}
                             {% if is_mastercontainer_update_available == false %}
-                                <p>Your containers are up-to-date.</p>
+                                <p>Your AIO containers are up-to-date.</p>
                                 {% if newMajorVersionString != '' and isAnyRunning == true and isApacheStarting != true %}
                                     <details>
-                                    <summary>Note about <strong>Nextcloud Hub {{ newMajorVersionString }}</strong></summary>
-<p>If you haven't upgraded to Nextcloud Hub {{ newMajorVersionString }} yet and want to do that now, feel free to click the button below. ⚠️ Warning: make sure to create a backup before clicking the button as the update can go wrong and will leave your instance in a broken state!</p>
+                                        <summary>Note about <strong>Nextcloud Hub {{ newMajorVersionString }} (optional early access)</strong></summary>
+                                        <p>
+                                            If you haven't already upgraded to Nextcloud Hub {{ newMajorVersionString }} and would like to do
+                                            so before it becomes the default major version used in AIO, you may click the button below to do so.
+                                        </p>
+
+                                        <p>
+                                            If you have already upgraded your instance to the {{ newMajorVersionString }} Hub series and are
+                                            notified about a new maintenance release being available for it, clicking here will install it. Once
+                                            {{ newMajorVersionString }} Hub series is mature enough to become the default Nextcloud version in AIO,
+                                            this section will disappear and you can return to applying the latest maintenance and security fixes in
+                                            the standard AIO manner.
+                                        </p>
+
+                                        <p>
+                                            ⚠️ Please create a backup before continuing. An update can fail and leave your instance in a 
+                                            broken state.
+                                        </p>
+        
                                         <form method="POST" action="api/docker/nextcloud-upgrade-to-latest-major" target="overlay-log">
-                                            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-                                            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-                                            <input type="submit" value="Upgrade to Nextcloud Hub {{ newMajorVersionString }}" data-confirm="Upgrade to Nextcloud Hub {{ newMajorVersionString }}? You should consider creating a backup first." />
+                                            <input type="hidden" name="{{ csrf.keys.name }}" value="{{ csrf.name }}">
+                                            <input type="hidden" name="{{ csrf.keys.value }}" value="{{ csrf.value }}">
+                                            <input type="submit" 
+                                               value="Upgrade to Nextcloud Hub {{ newMajorVersionString }}" 
+                                               data-confirm="Upgrade Nextcloud to the latest Hub {{ newMajorVersionString }} release? You should consider creating a backup first." />
                                         </form>
                                     </details>
                                 {% endif %}
