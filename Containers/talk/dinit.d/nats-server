@@ -1,0 +1,5 @@
+type = process
+command = nats-server -c /etc/nats.conf
+term-signal = TERM
+restart = yes
+options = shares-console

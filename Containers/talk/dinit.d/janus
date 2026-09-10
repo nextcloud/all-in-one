@@ -1,0 +1,5 @@
+type = process
+command = janus --config=/conf/janus.jcfg --disable-colors --log-stdout --full-trickle --debug-level $JANUS_LOG_LEVEL
+term-signal = TERM
+restart = yes
+options = shares-console

@@ -26,4 +26,4 @@ if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
     set +x
 fi
 
-haproxy -f /tmp/haproxy.cfg -db
+exec haproxy -f /tmp/haproxy.cfg -db

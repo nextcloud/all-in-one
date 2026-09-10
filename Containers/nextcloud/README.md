@@ -13,9 +13,9 @@ The Nextcloud container provides the core Nextcloud application environment, inc
 ## Contents
 
 - **Dockerfile**: Instructions for building the Nextcloud container image.
-- **Entrypoint script**: The `start.sh` script is used for container initialization and runtime configuration before starting supervisord.
+- **Entrypoint script**: The `start.sh` script is used for container initialization and runtime configuration before starting dinit.
 - **Nextcloud configuration files**: Specific to running in a containerized setting and/or within AIO.
-- **Supervisor**: The `supervisord.conf` file defines the long-running services hosted within the container (php-fpm, cron, etc.).
+- **dinit**: The service description files in `dinit.d/` define the long-running services hosted within the container (php-fpm, cron, etc.).
 
 ## Usage
 

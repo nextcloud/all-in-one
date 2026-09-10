@@ -1,0 +1,5 @@
+type = process
+command = clamd --foreground --config-file=/etc/clamav/clamd.conf
+term-signal = TERM
+restart = yes
+options = shares-console

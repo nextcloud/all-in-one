@@ -1,0 +1,5 @@
+type = process
+command = httpd -DFOREGROUND
+stop-command = httpd -k graceful-stop
+restart = yes
+options = shares-console

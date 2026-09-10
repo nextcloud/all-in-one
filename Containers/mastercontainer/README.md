@@ -34,10 +34,10 @@ All-in-One stack.
 
 - **Dockerfile**: Instructions for building the mastercontainer image.
 - **Entrypoint script**: The `start.sh` script is used for container initialization and runtime
-  configuration before starting supervisord.
+  configuration before starting dinit.
 - [**Nextcloud All-in-One Controller App**](https://github.com/nextcloud/all-in-one/tree/main/php): The
   core AIO orchestrator that handles configuration and settings for the containers.
-- **Supervisor**: The `supervisord.conf` file defines the long-running services hosted within
+- **dinit**: The service description files in `dinit.d/` define the long-running services hosted within
   the container (php-fpm, cron, etc.)
 
 ## Usage

@@ -1,0 +1,6 @@
+type = process
+command = php /var/www/html/occ taskprocessing:worker --timeout 300
+run-as = www-data
+term-signal = TERM
+restart = yes
+options = shares-console

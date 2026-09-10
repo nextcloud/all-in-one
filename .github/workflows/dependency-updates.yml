@@ -44,6 +44,16 @@ jobs:
         )"
         sed -i "s|pecl install APCu.*\;|pecl install APCu-$apcu_version\;|" ./Containers/mastercontainer/Dockerfile
 
+        imap_version="$(
+          git ls-remote --tags https://github.com/php/pecl-mail-imap.git \
+            | cut -d/ -f3 \
+            | grep -viE -- 'rc|alpha|beta|\^' \
+            | sed -E 's/^v//' \
+            | sort -V \
+            | tail -1
+        )"
+        sed -i "s|\(pecl install -D 'with-kerberos=\"yes\" with-imap-ssl=\"yes\"' imap\)-.*\;|\1-$imap_version\;|" ./Containers/nextcloud/Dockerfile
+
         # CADDY_REMOTE_HOST_HASH
         CADDY_REMOTE_HOST_HASH="$(
           git ls-remote https://github.com/muety/caddy-remote-host master \

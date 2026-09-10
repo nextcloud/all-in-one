@@ -1,0 +1,6 @@
+type = process
+command = timeout 86400 nc -lk 9001
+run-as = www-data
+term-signal = TERM
+restart = yes
+options = shares-console

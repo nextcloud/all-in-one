@@ -1,6 +1,7 @@
 DATABASE_PASSWORD:           # TODO! This needs to be a unique and good password!
 EUROOFFICE_SECRET:           # TODO! This needs to be a unique and good password!
 FULLTEXTSEARCH_PASSWORD:           # TODO! This needs to be a unique and good password!
+HP_SHARED_KEY:           # TODO! This needs to be a unique and good password!
 IMAGINARY_SECRET:           # TODO! This needs to be a unique and good password!
 NC_DOMAIN: yourdomain.com          # TODO! Needs to be changed to the domain that you want to use for Nextcloud.
 NEXTCLOUD_PASSWORD:           # TODO! This is the password of the initially created Nextcloud admin with username admin.
@@ -17,6 +18,7 @@ CLAMAV_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the 
 COLLABORA_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 EUROOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 FULLTEXTSEARCH_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
+HARP_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 IMAGINARY_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 ONLYOFFICE_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 TALK_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
@@ -24,7 +26,7 @@ TALK_RECORDING_ENABLED: "no"          # Setting this to "yes" (with quotes) enab
 WHITEBOARD_ENABLED: "no"          # Setting this to "yes" (with quotes) enables the option in Nextcloud automatically.
 
 AIO_LOG_LEVEL: warn          # Allows to adjust the global AIO log level. Valid values are debug, info, warn and error.
-APACHE_MAX_SIZE: "17179869184"          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT
+APACHE_MAX_SIZE: "1073741824"          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT
 APACHE_PORT: 443          # Changing this to a different value than 443 will allow you to run it behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else).
 ADDITIONAL_COLLABORA_OPTIONS: ['--o:security.seccomp=true']          # You can add additional collabora options here by using the array syntax.
 COLLABORA_DICTIONARIES: de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru        # You can change this in order to enable other dictionaries for collabora
@@ -36,7 +38,7 @@ NEXTCLOUD_MAX_TIME: 3600          # This allows to change the upload time limit 
 NEXTCLOUD_MEMORY_LIMIT: 512M          # This allows to change the PHP memory limit of the Nextcloud container
 NEXTCLOUD_STARTUP_APPS: deck twofactor_totp tasks calendar contacts notes        # Allows to modify the Nextcloud apps that are installed on starting AIO the first time. You can also disable apps by using a hyphen in front of them. E.g. -app_api
 NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container
-NEXTCLOUD_UPLOAD_LIMIT: 16G          # This allows to change the upload limit of the Nextcloud container
+NEXTCLOUD_UPLOAD_LIMIT: 1G          # This allows to change the upload limit of the Nextcloud container
 REMOVE_DISABLED_APPS: "yes"        # Setting this to "no" keep Nextcloud apps that are disabled via their switch and not uninstall them if they should be installed in Nextcloud.
 TALK_PORT: 3478          # This allows to adjust the port that the talk container is using. It should be set to something higher than 1024! Otherwise it might not work!
 UPDATE_NEXTCLOUD_APPS: "no"          # When setting to "yes" (with quotes), it will automatically update all installed Nextcloud apps upon container startup on saturdays.
@@ -49,6 +51,8 @@ DATABASE_STORAGE_SIZE: 1Gi       # You can change the size of the database volum
 DATABASE_DUMP_STORAGE_SIZE: 1Gi       # You can change the size of the database-dump volume that default to 1Gi with this value
 ELASTICSEARCH_STORAGE_SIZE: 1Gi       # You can change the size of the elasticsearch volume that default to 1Gi with this value
 EUROOFFICE_STORAGE_SIZE: 1Gi       # You can change the size of the eurooffice volume that default to 1Gi with this value
+EUROOFFICE_DATA_STORAGE_SIZE: 1Gi       # You can change the size of the eurooffice-data volume that default to 1Gi with this value
+HARP_STORAGE_SIZE: 1Gi       # You can change the size of the harp volume that default to 1Gi with this value
 NEXTCLOUD_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud volume that default to 1Gi with this value
 NEXTCLOUD_DATA_STORAGE_SIZE: 5Gi       # You can change the size of the nextcloud-data volume that default to 1Gi with this value
 NEXTCLOUD_TRUSTED_CACERTS_STORAGE_SIZE: 1Gi       # You can change the size of the nextcloud-trusted-cacerts volume that default to 1Gi with this value
@@ -77,3 +81,8 @@ MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'f
 MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
 TALK_MAX_STREAM_BITRATE: "1048576"         # This allows to adjust the max stream bitrate of the talk hpb
 TALK_MAX_SCREEN_BITRATE: "2097152"         # This allows to adjust the max stream bitrate of the talk hpb
+# HP_SHARED_KEY:           # This allows to set the shared key for HaRP which is getting set at the very top of this values.yaml file.
+HARP_K8S_STORAGE_CLASS:        # The storage class that HaRP uses for ExApp persistent volume claims. Leave empty to use the cluster's default storage class.
+HARP_K8S_DEFAULT_STORAGE_SIZE: 10Gi        # The default size of the persistent volume claims that HaRP creates for ExApps.
+HARP_K8S_HOST_ALIASES:        # Optional. Additional host aliases that HaRP sets on the ExApp pods so that they can resolve the configured hostnames. Use a comma-separated list of hostname:ip pairs, e.g. 'nextcloud.example.com:10.0.0.5,collabora.example.com:10.0.0.6'. Leave empty to not set any host aliases.
+HARP_SERVICE_ACCOUNT_NAME:        # The name of the Kubernetes service account that is mounted into the HaRP pod and used to authenticate against the Kubernetes API. It must exist in the same namespace in which HaRP runs (see NAMESPACE) and you need to create it yourself and grant it permission to manage resources (deployments, services, persistent volume claims, …) in that namespace via a Role/RoleBinding. Leave empty to use the namespace's "default" service account.

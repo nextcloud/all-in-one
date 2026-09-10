@@ -21,7 +21,7 @@ COPY borg_excludes /
 
 ENTRYPOINT ["/start.sh"]
 # hadolint ignore=DL3002
-USER root
+USER root:root
 
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \

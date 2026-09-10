@@ -8,7 +8,7 @@ use AIO\Data\DataConst;
 use \DateTime;
 
 readonly class AuthManager {
-    public const string SESSION_KEY = 'aio_authenticated';
+    private const string SESSION_KEY = 'aio_authenticated';
 
     public function __construct(
         private ConfigurationManager $configurationManager
@@ -40,18 +40,6 @@ readonly class AuthManager {
         }
 
         $_SESSION[self::SESSION_KEY] = $isLoggedIn;
-    }
-
-    /**
-     * Migrates the authenticated state from an old session (different cookie name) to the new session.
-     * Unlike SetAuthState, this method preserves the original login timestamp and does not update
-     * the session_date_file, so the session deduplicator is not triggered. This keeps the old session
-     * file alive in case the response carrying the new cookie is lost (e.g., due to a 502 error during
-     * a mastercontainer update), allowing the client to retry with the old cookie.
-     */
-    public function MigrateAuthState(int $oldTimestamp) : void {
-        $_SESSION[self::SESSION_KEY] = true;
-        $_SESSION['date_time'] = $oldTimestamp;
     }
 
     public function IsAuthenticated() : bool {

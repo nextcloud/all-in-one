@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Docker CLI is a requirement
-FROM docker:29.7.0-cli AS docker
+FROM docker:29.7.2-cli AS docker
 
 ARG CADDY_REMOTE_HOST_HASH=e80a9931765a8dbcbb47db415863387f0df0e1b3
 
@@ -11,7 +11,7 @@ RUN set -ex; \
     /usr/bin/caddy list-modules
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.24/fpm/Dockerfile
-FROM php:8.5.9-fpm-alpine3.24
+FROM php:8.5.10-fpm-alpine3.24
 
 EXPOSE 80
 EXPOSE 8080
@@ -27,11 +27,12 @@ COPY community-containers /var/www/docker-aio/community-containers
 COPY php /var/www/docker-aio/php
 COPY --chmod=775 Containers/mastercontainer/*.sh /
 COPY --chmod=664 Containers/mastercontainer/*.Caddyfile /
-COPY --chmod=664 Containers/mastercontainer/supervisord.conf /supervisord.conf
+COPY Containers/mastercontainer/dinit.d/ /etc/dinit.d/
 
 WORKDIR /var/www/docker-aio
 
-# hadolint ignore=SC2086,DL3047,DL3003
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
+# hadolint ignore=SC2086,DL3003
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
@@ -42,7 +43,7 @@ RUN set -ex; \
         util-linux-misc \
         ca-certificates \
         bash \
-        supervisor \
+        dinit \
         su-exec \
         netcat-openbsd \
         curl \
@@ -94,10 +95,7 @@ RUN set -ex; \
     chmod -R 770 /var/www/docker-aio; \
     chown -R www-data:www-data /var/www; \
     rm -r php/data; \
-    rm -r php/session; \
-    \
-    mkdir /var/log/supervisord; \
-    mkdir /var/run/supervisord;
+    rm -r php/session;
 
 # hadolint ignore=DL3048
 LABEL org.opencontainers.image.title="Nextcloud All-in-One Mastercontainer" \
@@ -111,8 +109,8 @@ LABEL org.opencontainers.image.title="Nextcloud All-in-One Mastercontainer" \
     com.docker.compose.project="nextcloud-aio"
 
 # hadolint ignore=DL3002
-USER root
+USER root:root
 
 ENTRYPOINT ["/start.sh"]
 
-HEALTHCHECK CMD /healthcheck.sh
+HEALTHCHECK CMD ["/healthcheck.sh"]

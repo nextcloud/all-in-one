@@ -37,7 +37,7 @@ spec:
               value: --o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:remote_font_config.url=https://{{ .Values.NC_DOMAIN }}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
             - name: server_name
               value: "{{ .Values.NC_DOMAIN }}"
-          image: ghcr.io/nextcloud-releases/aio-collabora:20260805_083533
+          image: ghcr.io/nextcloud-releases/aio-collabora:20260825_084538
           readinessProbe:
             exec:
               command:

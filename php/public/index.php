@@ -40,24 +40,6 @@ $container->set(Guard::class, function () use ($responseFactory) {
 });
 
 // Register Middleware To Be Executed On All Routes
-
-// Migrate from the old PHPSESSID cookie to the new __Host-Http-PHPSESSID cookie.
-// This is needed because the session cookie was renamed in a previous release. Without this,
-// users that were logged in before the update would be logged out after the container restarts.
-$wasAuthenticated = false;
-$oldSessionTimestamp = null;
-if (!isset($_COOKIE['__Host-Http-PHPSESSID']) && isset($_COOKIE['PHPSESSID'])) {
-    session_name('PHPSESSID');
-    if (session_start(['save_path' => $dataConst->GetSessionDirectory(), 'use_strict_mode' => true])) {
-        $wasAuthenticated = isset($_SESSION[\AIO\Auth\AuthManager::SESSION_KEY]) && $_SESSION[\AIO\Auth\AuthManager::SESSION_KEY] === true;
-        $oldSessionTimestamp = isset($_SESSION['date_time']) ? (int)$_SESSION['date_time'] : null;
-        // Do not destroy the old session: if the response carrying the new __Host-Http-PHPSESSID
-        // cookie is lost (e.g., due to a 502 during a mastercontainer update), the client can
-        // retry with the old PHPSESSID cookie and still be authenticated.
-        session_write_close();
-    }
-}
-
 session_start([
     "name" => "__Host-Http-PHPSESSID", // Set cookie prefix to prevent other pages from overwriting this cookie. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#cookie_prefixes
     "save_path" => $dataConst->GetSessionDirectory(), // Where to save the session files
@@ -71,17 +53,6 @@ session_start([
     "cookie_samesite" => "Lax", // Send the cookie with same-site requests and top-level cross-site navigations (e.g. redirect after token-based getlogin). "Strict" would block the session cookie on the redirect that follows a cross-site navigation, breaking the getlogin flow from Nextcloud's admin panel. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value
 ]);
 
-if ($wasAuthenticated) {
-    if ($oldSessionTimestamp !== null) {
-        // Use MigrateAuthState to preserve the original login timestamp. This prevents the
-        // session deduplicator from running and keeps the old PHPSESSID session file alive,
-        // so the client can retry with the old cookie if the 502 response causes the new
-        // __Host-Http-PHPSESSID cookie to not be received.
-        $container->get(\AIO\Auth\AuthManager::class)->MigrateAuthState($oldSessionTimestamp);
-    } else {
-        $container->get(\AIO\Auth\AuthManager::class)->SetAuthState(true);
-    }
-}
 $app->add(Guard::class);
 
 // Create Twig

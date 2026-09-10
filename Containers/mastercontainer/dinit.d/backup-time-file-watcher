@@ -1,0 +1,5 @@
+type = process
+command = /backup-time-file-watcher.sh
+term-signal = TERM
+restart = yes
+options = shares-console

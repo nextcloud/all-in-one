@@ -180,7 +180,7 @@ fi
 # Build janus.jcfg: strip the entire nat block from the original and append a
 # clean minimal one that points at the TURN server.
 {
-    sed '/^nat:/,/^}/d' /usr/local/etc/janus/janus.jcfg
+    sed '/^nat:/,/^}/d' /etc/janus/janus.jcfg.sample
     cat << NAT_CONF
 nat: {
 	turn_server = "$TURN_DOMAIN"

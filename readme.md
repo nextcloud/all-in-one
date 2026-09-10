@@ -296,6 +296,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [How to store the files/installation on a separate drive?](#how-to-store-the-filesinstallation-on-a-separate-drive)
     - [How to limit the resource usage of AIO?](#how-to-limit-the-resource-usage-of-aio)
     - [How to allow the Nextcloud container to access directories on the host?](#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host)
+    - [How to make multiple host directories available inside the Nextcloud container?](#how-to-make-multiple-host-directories-available-inside-the-nextcloud-container)
     - [How to adjust the Talk port?](#how-to-adjust-the-talk-port)
     - [How to adjust the upload limit for Nextcloud?](#how-to-adjust-the-upload-limit-for-nextcloud)
     - [How to adjust the max execution time for Nextcloud?](#how-to-adjust-the-max-execution-time-for-nextcloud)
@@ -620,11 +621,43 @@ Be aware though that these locations will not be covered by the built-in backup 
 > [!NOTE]  
 > If you can't see the type "local storage" in the external storage admin options, a restart of the containers from the AIO interface may be required.
 
+If you want to use multiple directories that are spread across your host, see the [section below](#how-to-make-multiple-host-directories-available-inside-the-nextcloud-container).
+
+### How to make multiple host directories available inside the Nextcloud container?
+`NEXTCLOUD_MOUNT` only accepts a single path, so if the directories that you want to use in Nextcloud are spread across your host (e.g. `/srv/photos`, `/data/media` and `/opt/archive`), you cannot simply add the variable multiple times. Instead you can collect all of them below one common parent directory like `/mnt/` by using bind mounts and then hand that single parent directory to AIO with `--env NEXTCLOUD_MOUNT="/mnt/"`.
+
+⚠️ This is only needed if your directories are spread across the host. If all of them are already located below one common parent directory, simply point `NEXTCLOUD_MOUNT` at that parent directory as described in the [section above](#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host).
+
+1. Create one target directory below `/mnt/` for each source directory that you want to use in Nextcloud:
+    ```
+    sudo mkdir -p /mnt/photos /mnt/media /mnt/archive
+    ```
+1. Add one line per directory to the `/etc/fstab` file on your Linux server by using `bindfs` (needs to be installed first, e.g. with `sudo apt install bindfs`) which maps the permissions to the user that Nextcloud runs as inside the container, so that you do not need to change the permissions of the source directories themselves:
+    ```
+    /srv/photos   /mnt/photos   fuse.bindfs  force-user=33,force-group=33,allow_other  0  0
+    /data/media   /mnt/media    fuse.bindfs  force-user=33,force-group=33,allow_other  0  0
+    /opt/archive  /mnt/archive  fuse.bindfs  force-user=33,force-group=33,allow_other  0  0
+    ```
+1. Mount them directly without needing to reboot:
+    ```
+    sudo mount /mnt/photos
+    sudo mount /mnt/media
+    sudo mount /mnt/archive
+    ```
+    You can verify that everything is mounted as expected with e.g. `findmnt /mnt/photos` and by listing the content of the target directories with e.g. `ls -al /mnt/photos`.
+1. Add `--env NEXTCLOUD_MOUNT="/mnt/"` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used).
+1. Afterwards navigate to `https://your-nc-domain.com/settings/apps/disabled`, activate the external storage app, navigate to `https://your-nc-domain.com/settings/admin/externalstorages` and add one local external storage per directory. The paths inside the container are the same as on the host, so you need to enter `/mnt/photos`, `/mnt/media` and `/mnt/archive` here.
+
+> [!NOTE]  
+> Since only `/mnt/` is mounted into the Nextcloud container, you can add further directories below `/mnt/` later on without needing to recreate the mastercontainer. Simply create the new `bindfs` mount on the host and add it as local external storage in Nextcloud afterwards.
+
+Be aware though that these locations will not be covered by the built-in backup solution - but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.
+
 ### How to adjust the Talk port?
 By default will the talk container use port `3478/UDP` and `3478/TCP` for connections. This should be set to something higher than 1024! You can adjust the port by adding e.g. `--env TALK_PORT=3478` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and adjusting the port to your desired value. Best is to use a port over 1024, so e.g. 3479 to not run into this: https://github.com/nextcloud/all-in-one/discussions/2517
 
 ### How to adjust the upload limit for Nextcloud?
-By default, public uploads to Nextcloud are limited to a max of 16G (logged in users can upload much bigger files using the webinterface or the mobile/desktop clients, since chunking is used in that case). You can adjust the upload limit by providing `--env NEXTCLOUD_UPLOAD_LIMIT=16G` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. It must start with a number and end with `G` e.g. `16G`.
+By default, not-chunked uploads to Nextcloud are limited to a max of 1G (public uploads, logged in users can upload much bigger files using the webinterface or the mobile/desktop clients, since chunking is used in that case). You can adjust the upload limit by providing `--env NEXTCLOUD_UPLOAD_LIMIT=1G` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. It must start with a number and end with `G` e.g. `1G`.
 
 ### How to adjust the max execution time for Nextcloud?
 By default, uploads to Nextcloud are limited to a max of 3600s. You can adjust the upload time limit by providing `--env NEXTCLOUD_MAX_TIME=3600` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. It must be a number e.g. `3600`.
@@ -1314,7 +1347,7 @@ What are the requirements?
 This project values stability over new features. That means that when a new major Nextcloud update gets introduced, we will wait at least until the first patch release, e.g. `24.0.1` is out before upgrading to it. Also we will wait with the upgrade until all important apps are compatible with the new major version. Minor or patch releases for Nextcloud and all dependencies as well as all containers will be updated to new versions as soon as possible but we try to give all updates first a good test round before pushing them. That means that it can take around 2 weeks before new updates reach the `latest` channel. If you want to help testing, you can switch to the `beta` channel by following [this documentation](#how-to-switch-the-channel) which will also give you the updates earlier.
 
 ### How often are update notifications sent?
-AIO ships its own update notifications implementation. It checks if container updates are available. If so, it sends a notification with the title `Container updates available!` on saturdays to Nextcloud users that are part of the `admin` group. If the Nextcloud container image should be older than 90 days (~3 months) and thus badly outdated, AIO sends a notification to all Nextcloud users with the title `AIO is outdated!`. Thus admins should make sure to update the container images at least once every 3 months in order to make sure that the instance gets all security bugfixes as soon as possible.
+AIO ships its own update notifications implementation. It checks if container updates are available. If so, it sends a notification with the title `Container updates available!` on saturdays to Nextcloud users that are part of the `admin` group. If the Nextcloud container image should be older than 90 days (~3 months) and thus badly outdated, AIO sends a notification to Nextcloud users that are part of the `admin` group with the title `AIO is outdated!` every day. Thus admins should make sure to update the container images at least once every 3 months in order to make sure that the instance gets all security bugfixes as soon as possible.
 
 ### Huge docker logs
 If you should run into issues with huge docker logs, you can adjust the log size by following https://docs.docker.com/config/containers/logging/local/#usage. You can additionally reduce the verbosity of the included AIO containers by setting `AIO_LOG_LEVEL=error` on the mastercontainer. By default, AIO keeps the existing component-specific log defaults, so this should usually not be needed.

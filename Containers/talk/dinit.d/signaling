@@ -1,0 +1,7 @@
+type = process
+command = nextcloud-spreed-signaling -config /conf/signaling.conf
+term-signal = TERM
+restart = yes
+options = shares-console
+depends-on = nats-server
+depends-on = janus
