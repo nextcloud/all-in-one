@@ -20,11 +20,6 @@
 					"source": "nextcloud_aio_uptime_kuma",
 					"destination": "/app/data",
 					"writeable": true
-				},
-				{
-					"source": "/var/run/docker.sock",
-					"destination": "/var/run/docker.sock",
-					"writeable": false
 				}
 			],
 			"backup_volumes": [
