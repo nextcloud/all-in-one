@@ -4,6 +4,10 @@
 
 <img src="https://user-images.githubusercontent.com/1336778/212262296-e6205815-ad62-488c-83ec-a5b0d0689f7c.jpg" width="700" alt="Uptime Kuma Dashboard Screenshot" />
 
+## Installation
+
+See https://github.com/nextcloud/all-in-one/tree/main/community-containers#community-containers how to add it to the AIO stack. Add and start the container in the Nextcloud AIO interface. No configuration needs to be done by you. 
+
 The data of uptime kuma will be included in AIO's backup solution automatically. 
 
 > [!CAUTION]
