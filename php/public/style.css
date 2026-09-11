@@ -702,8 +702,9 @@ body.modal-open {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    /* Reserve the vendor-line slot so cards with and without one keep their
-       titles, checkmarks and feature lists on the same baseline. */
+    /* Reserve the vendor-line slot so a card without one keeps its title and
+       feature list level with the cards that have one.
+       44px = 24px title height + 4px vendor-line margin + 16px vendor line. */
     min-height: 44px;
     margin-bottom: 16px;
 }
@@ -726,6 +727,7 @@ body.modal-open {
 
 .office-checkmark {
     flex-shrink: 0;
+    align-self: center;
     display: none;
 }
 

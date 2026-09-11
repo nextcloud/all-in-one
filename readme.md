@@ -11,7 +11,7 @@ Included are:
 - Redis & APCU for performant caching
 - PostgreSQL as database
 - Collabora Online (optional)
-- Nextcloud Office (optional)
+- Nextcloud Office (optional, based on Euro-Office)
 - High performance backend for Nextcloud Talk and TURN-server (optional)
 - Nextcloud Talk Recording-server (optional)
 - Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
