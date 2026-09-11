@@ -43,12 +43,14 @@ server {
     listen 80;
     server_name nextcloud.local;   # <-- replace with the chosen local hostname
 
-    # Redirect everything to HTTPS -- Nextcloud AIO assumes HTTPS-only.
-    return 301 https://$host$request_uri;
+    # Redirect everything to HTTPS -- Nextcloud AIO assumes HTTPS-only. The port
+    # must be spelled out here whenever it isn't 443, or this redirects to 443
+    # regardless of what the server block below actually listens on.
+    return 301 https://$host:443$request_uri;   # <-- replace 443 with .env's NC_HTTPS_PORT value
 }
 
 server {
-    listen 443 ssl;
+    listen 443 ssl;   # <-- replace with .env's NC_HTTPS_PORT value
     server_name nextcloud.local;   # <-- replace with the chosen local hostname
 
     # Self-signed cert for local dev -- see SETUP.md for the openssl command to
