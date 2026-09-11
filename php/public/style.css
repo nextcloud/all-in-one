@@ -701,7 +701,10 @@ body.modal-open {
 .office-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    /* Reserve the vendor-line slot so cards with and without one keep their
+       titles, checkmarks and feature lists on the same baseline. */
+    min-height: 44px;
     margin-bottom: 16px;
 }
 
@@ -716,6 +719,7 @@ body.modal-open {
 .office-powered-by {
     margin: 4px 0 0;
     font-size: 13px;
+    line-height: 16px;
     color: var(--color-main-text);
     opacity: 0.7;
 }

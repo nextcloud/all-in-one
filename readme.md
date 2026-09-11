@@ -10,8 +10,8 @@ Included are:
 - High performance backend for Nextcloud Files (Client Push)
 - Redis & APCU for performant caching
 - PostgreSQL as database
+- Collabora Online (optional)
 - Nextcloud Office (optional)
-- EuroOffice (optional)
 - High performance backend for Nextcloud Talk and TURN-server (optional)
 - Nextcloud Talk Recording-server (optional)
 - Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
@@ -118,8 +118,8 @@ flowchart TB
         end
 
         subgraph OPT["  🧩  Optional Built-in Containers  (enable in AIO interface)  "]
-            COLLA(["📄 Nextcloud Office"]):::opt
-            EO(["📄 EuroOffice\nDocument Server"]):::opt
+            COLLA(["📄 Collabora Online"]):::opt
+            EO(["📄 Nextcloud Office\nDocument Server"]):::opt
             TALK(["🎙️ Talk\nVideo & Voice calls"]):::opt
             TALKREC(["🎬 Talk Recording"]):::opt
             FTS(["🔎 Full-text Search\n(Elasticsearch)"]):::opt
@@ -407,7 +407,7 @@ Since Cloudflare Proxy/Tunnel comes with a lot of limitations which are listed b
 - Cloudflare only supports uploading files up to 100 MB in the free plan, if you try to upload bigger files you will get an error (413 - Payload Too Large) if no chunking is used (e.g. for public uploads in the web, or if chunks are configured to be bigger than 100 MB in the clients or the web). If you need to upload bigger files, you need to disable the proxy option in your DNS settings. Note that this will both disable Cloudflare DDoS protection and Cloudflare Tunnel as these services require the proxy option to be enabled.
 - If using Cloudflare Tunnel and the Nextcloud Desktop Client [Set Chunking on Nextcloud Desktop Client](https://github.com/nextcloud/desktop/issues/4271#issuecomment-1159578065)
 - Cloudflare only allows a max timeout of 100s for requests which is not configurable. This means that any server-side processing e.g. for assembling chunks for big files during upload that take longer than 100s will simply not work. See https://github.com/nextcloud/server/issues/19223. If you need to upload big files reliably, you need to disable the proxy option in your DNS settings. Note that this will both disable Cloudflare DDoS protection and Cloudflare Tunnel as these services require the proxy option to be enabled.
-- It is known that the in AIO included collabora (Nextcloud Office) does not work out of the box behind Cloudflare. To make it work, you need to add all [Cloudflare IP-ranges](https://www.cloudflare.com/ips/) to the wopi-allowlist in `https://yourdomain.com/settings/admin/richdocuments`
+- It is known that the in AIO included Collabora Online does not work out of the box behind Cloudflare. To make it work, you need to add all [Cloudflare IP-ranges](https://www.cloudflare.com/ips/) to the wopi-allowlist in `https://yourdomain.com/settings/admin/richdocuments`
 - Cloudflare Proxy might block the Turnserver for Nextcloud Talk from working correctly. You might want to disable Cloudflare Proxy thus. See https://github.com/nextcloud/all-in-one/discussions/2463#discussioncomment-5779981
 - The built-in turn-server for Nextcloud Talk will not work behind Cloudflare Tunnel since it needs a separate port (by default 3478 or as chosen) available on the same domain. If you still want to use the feature, you will need to install your own turnserver or use a publicly available one and adjust and test your stun and turn settings in `https://yourdomain.com/settings/admin/talk`.
 - If you get an error in Nextcloud's admin overview that the HSTS header is not set correctly, you might need to enable it in Cloudflare manually.
