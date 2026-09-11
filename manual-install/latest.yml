@@ -60,8 +60,7 @@ services:
     restart: unless-stopped
     read_only: true
     tmpfs:
-      - /var/log/supervisord
-      - /var/run/supervisord
+      - /run
       - /usr/local/apache2/logs
       - /tmp
       - /home/www-data
@@ -259,7 +258,7 @@ services:
     init: true
     healthcheck:
       start_period: 60s
-      test: /healthcheck.sh
+      test: /usr/bin/coolwsd --probe --use-env-vars
       interval: 30s
       timeout: 30s
       start_interval: 5s
@@ -268,7 +267,7 @@ services:
       - "9980"
     environment:
       - aliasgroup1=https://${NC_DOMAIN}:443,http://nextcloud-aio-apache.nextcloud-aio:23973
-      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:logging.level=${COLLABORA_LOG_LEVEL} --o:logging.level_startup=${COLLABORA_LOG_LEVEL} --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
       - dictionaries=${COLLABORA_DICTIONARIES}
       - AIO_LOG_LEVEL
       - TZ=${TIMEZONE}
@@ -321,8 +320,7 @@ services:
       - talk-recording
     read_only: true
     tmpfs:
-      - /var/log/supervisord
-      - /var/run/supervisord
+      - /run
       - /opt/eturnal/run
       - /conf
       - /tmp
@@ -363,7 +361,7 @@ services:
   nextcloud-aio-clamav:
     image: ghcr.io/nextcloud-releases/aio-clamav:latest
     user: "100"
-    init: false
+    init: true
     healthcheck:
       start_period: 60s
       test: /healthcheck.sh
@@ -384,11 +382,9 @@ services:
       - clamav
     read_only: true
     tmpfs:
+      - /run
       - /tmp
       - /var/log/clamav
-      - /run/clamav
-      - /var/log/supervisord
-      - /var/run/supervisord
     cap_drop:
       - NET_RAW
 
