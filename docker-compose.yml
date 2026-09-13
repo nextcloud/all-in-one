@@ -150,8 +150,46 @@ services:
     cap_drop:
       - NET_RAW
 
+  # Permanent fix for the custom_apps root-owned bug: nextcloud-aio-nextcloud below
+  # bind-mounts a subdirectory (nc_aio_tools) and a single file three levels deep
+  # (context_chat/lib/AppInfo/Application.php) into custom_apps/. On a fresh volume,
+  # Docker auto-creates every missing path component for a bind mount, and it always
+  # does so as root -- regardless of what the eventual container runs as -- which left
+  # custom_apps (and the partial context_chat tree) root-owned and silently broke
+  # EVERY app install (is_writable() fails for www-data), not just context_chat's.
+  # Symptom: "Cannot write into 'apps' directory" and every default app reported
+  # "not present on disk, skipping" in nextcloud-exec-commands.sh's own log output,
+  # even though the apps were never actually attempted-and-failed, just blocked.
+  #
+  # Fix: create those exact paths ourselves, chowned to www-data, before
+  # nextcloud-aio-nextcloud starts. Docker only auto-creates a missing path -- if it
+  # already exists with the right owner, the later bind mount just mounts over it and
+  # leaves ownership alone. Runs once per volume lifetime; idempotent (mkdir -p +
+  # chown are both no-ops if already correct), and cheap enough to run on every
+  # `up` rather than trying to detect "already fixed".
+  nextcloud-aio-custom-apps-init:
+    image: ghcr.io/nextcloud-releases/aio-nextcloud:20260805_083533
+    entrypoint: ["/bin/sh"]
+    command:
+      - -c
+      - |
+        set -e
+        mkdir -p /var/www/html/custom_apps/nc_aio_tools
+        mkdir -p /var/www/html/custom_apps/context_chat/lib/AppInfo
+        chown www-data:www-data /var/www/html/custom_apps
+        chown www-data:www-data /var/www/html/custom_apps/nc_aio_tools
+        chown www-data:www-data /var/www/html/custom_apps/context_chat
+        chown www-data:www-data /var/www/html/custom_apps/context_chat/lib
+        chown www-data:www-data /var/www/html/custom_apps/context_chat/lib/AppInfo
+    volumes:
+      - nextcloud_aio_nextcloud:/var/www/html:rw
+    restart: "no"
+
   nextcloud-aio-nextcloud:
     depends_on:
+      nextcloud-aio-custom-apps-init:
+        condition: service_completed_successfully
+        required: true
       nextcloud-aio-database:
         condition: service_started
         required: false
