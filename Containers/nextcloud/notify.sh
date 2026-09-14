@@ -13,6 +13,10 @@ fi
 SUBJECT="$1"
 MESSAGE="$2"
 
+# The object-id is limited to 64 characters, so hash the subject to get a
+# stable identifier of fixed length that is unique per subject.
+OBJECT_ID="$(printf '%s' "$SUBJECT" | md5sum | cut -d ' ' -f1)"
+
 if [ "$("${COMMAND[@]}" config:app:get notifications enabled)" = "no" ]; then
     echo "Cannot send notification as notification app is not enabled."
     exit 1
@@ -32,7 +36,7 @@ done
 for admin in "${NC_ADMIN_USER[@]}"
 do
     echo "Posting '$SUBJECT' to: $admin"
-    "${COMMAND[@]}" notification:generate "$admin" "$NC_DOMAIN: $SUBJECT" -l "$MESSAGE" --object-type='update' --object-id="$SUBJECT"
+    "${COMMAND[@]}" notification:generate "$admin" "$NC_DOMAIN: $SUBJECT" -l "$MESSAGE" --object-type='update' --object-id="$OBJECT_ID"
 done
 
 echo "Done!"
