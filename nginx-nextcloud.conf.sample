@@ -1,6 +1,10 @@
-# Sample vhost for the EXISTING host nginx (not part of the compose stack).
-# Drop into your nginx sites config, adjust server_name and cert paths to match
-# whatever local hostname/cert was decided, then reload nginx.
+# NOT USED for local dev anymore -- docker-compose.yml ships its own
+# nextcloud-aio-nginx service (see `configs.nginx_conf` there) that does this same
+# job as a container, so there is no host-level nginx to install or reload. This
+# file is kept only as a reference for a real deployment fronted by a separately
+# managed host/LB nginx instead of the bundled container. If you do use it that
+# way: drop into your nginx sites config, adjust server_name and cert paths to
+# match, then reload nginx.
 #
 # HTTPS is required here, not optional: Nextcloud AIO hardcodes
 # OVERWRITEPROTOCOL=https on the nextcloud container (see docker-compose.yml), so it

@@ -39,13 +39,15 @@ configured in Nextcloud's admin settings before it actually connects to anything
      don't have this restriction and can keep the upstream defaults.
 
 2. Generate a self-signed TLS cert for that hostname (swap for a real cert outside
-   local dev). It **must** carry a `subjectAltName`: a CN-only cert is rejected
+   local dev), into `NGINX_CERTS_DIR` (see `.env`) -- that's what `nextcloud-aio-nginx`
+   in `docker-compose.yml` mounts and terminates HTTPS with, no host-level nginx
+   install needed. It **must** carry a `subjectAltName`: a CN-only cert is rejected
    outright by Node/OpenSSL clients even once the CA is trusted, and the office
    containers then fail to fetch documents with "Download failed" / "The document
    could not be saved". `CA:TRUE` lets the cert act as its own trust anchor, which is
    what makes it installable in the container trust stores in step 4a.
    ```sh
-   sudo mkdir -p /etc/nginx/certs
+   mkdir -p host-mounts/nginx-certs
    cat > /tmp/nc-san.cnf <<'EOF'
    [req]
    distinguished_name = dn
@@ -59,14 +61,16 @@ configured in Nextcloud's admin settings before it actually connects to anything
    keyUsage = critical, digitalSignature, keyEncipherment, keyCertSign
    extendedKeyUsage = serverAuth
    EOF
-   sudo openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes \
-     -keyout /etc/nginx/certs/nextcloud.local.key \
-     -out /etc/nginx/certs/nextcloud.local.crt \
+   openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes \
+     -keyout host-mounts/nginx-certs/nextcloud.local.key \
+     -out host-mounts/nginx-certs/nextcloud.local.crt \
      -config /tmp/nc-san.cnf
    ```
-   Adjust the filenames/CN/SAN if you chose a different `NC_DOMAIN`. Verify with:
+   Adjust the filenames/CN/SAN if you chose a different `NC_DOMAIN` -- the filenames
+   must be `<NC_DOMAIN>.crt` / `<NC_DOMAIN>.key`, that's what `nextcloud-aio-nginx`'s
+   config (`docker-compose.yml`'s `configs.nginx_conf`) looks for. Verify with:
    ```sh
-   openssl x509 -in /etc/nginx/certs/nextcloud.local.crt -noout -ext subjectAltName
+   openssl x509 -in host-mounts/nginx-certs/nextcloud.local.crt -noout -ext subjectAltName
    ```
    If that prints "No extensions in certificate", the cert is wrong -- regenerate it.
 
@@ -76,25 +80,27 @@ configured in Nextcloud's admin settings before it actually connects to anything
    flat 5s penalty. A `.test` name avoids it. Check with:
    `curl -o /dev/null -w '%{time_namelookup}\n' https://<host>/`
 
-2a. Copy the cert into `NEXTCLOUD_TRUSTED_CACERTS_DIR` (see `.env`), named
-   `<NC_DOMAIN>.crt`. The compose file mounts that directory into the containers that
-   call back to Nextcloud over HTTPS. `nextcloud-aio-onlyoffice` and
+2a. Copy the cert (not the key) into `NEXTCLOUD_TRUSTED_CACERTS_DIR` (see `.env`),
+   named `<NC_DOMAIN>.crt`. The compose file mounts that directory into the containers
+   that call back to Nextcloud over HTTPS. `nextcloud-aio-onlyoffice` and
    `nextcloud-aio-eurooffice` additionally point `NODE_EXTRA_CA_CERTS` at that exact
    filename (their document servers are pkg-bundled Node binaries, which validate
    against Node's own baked-in CA list rather than the OS store), so the name has to
    match `NC_DOMAIN`:
    ```sh
-   cp /etc/nginx/certs/nextcloud.local.crt host-mounts/trusted-cacerts/nextcloud.local.crt
+   cp host-mounts/nginx-certs/nextcloud.local.crt host-mounts/trusted-cacerts/nextcloud.local.crt
    ```
    The cert must also carry a `subjectAltName`; a CN-only cert is rejected outright by
    Node/OpenSSL even when the CA is trusted. Re-copy this and recreate the affected
    containers whenever the cert is regenerated, or the editors start failing with
    "Download failed" / "The document could not be saved".
 
-3. Point the existing host nginx at it using `nginx-nextcloud.conf.sample` as a
-   starting point (update `server_name` and the cert paths to match), reload nginx.
-   Read the comment at the top of that file — HTTPS here isn't optional, AIO assumes
-   it unconditionally.
+3. Nothing else to configure here -- `nextcloud-aio-nginx` in `docker-compose.yml`
+   picks up `NC_DOMAIN`/`NC_HTTPS_PORT`/the cert directory automatically on `up` and
+   publishes `NC_HTTPS_PORT` (443 by default) directly on the host. `nginx-nextcloud.
+   conf.sample` is no longer required for local dev; it's kept only as a starting
+   point for anyone fronting a real deployment with their own host/LB-level nginx
+   instead of the bundled container.
 
 4. Bring the stack up with every optional profile enabled. `.env`/`.env.example`
    set `COMPOSE_PROFILES` to the full profile list, so Compose applies it to every
