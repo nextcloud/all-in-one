@@ -10,6 +10,7 @@ metadata:
   namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
+  progressDeadlineSeconds: 2147483647
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-fulltextsearch

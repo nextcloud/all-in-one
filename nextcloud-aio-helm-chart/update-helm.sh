@@ -228,6 +228,10 @@ find ./ -name 'nextcloud-aio-nextcloud-data-persistentvolumeclaim.yaml' -exec se
 find ./ -name 'nextcloud-aio-nextcloud-data-persistentvolumeclaim.yaml' -exec sed -i "s/{{- if .Values.STORAGE_CLASS }}/{{- else if .Values.STORAGE_CLASS }}/" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "/restartPolicy:/d" \{} \;  
+# Effectively disable the progress deadline (max int32) so that slow container startups
+# are never reported as failed rollouts
+# shellcheck disable=SC1083
+find ./ -name '*deployment.yaml' -exec sed -i "/^  replicas: 1$/a\ \ progressDeadlineSeconds: 2147483647" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;
 # shellcheck disable=SC1083
