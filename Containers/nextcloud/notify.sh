@@ -15,7 +15,7 @@ MESSAGE="$2"
 
 # The object-id is limited to 64 characters, so hash the subject to get a
 # stable identifier of fixed length that is unique per subject.
-OBJECT_ID="$(printf '%s' "$SUBJECT" | md5sum | cut -d ' ' -f1)"
+OBJECT_ID="$(printf '%s' "$SUBJECT" | sha256sum | cut -c1-64)"
 
 if [ "$("${COMMAND[@]}" config:app:get notifications enabled)" = "no" ]; then
     echo "Cannot send notification as notification app is not enabled."
