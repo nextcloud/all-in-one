@@ -13,6 +13,10 @@ fi
 SUBJECT="$1"
 MESSAGE="$2"
 
+# The object-id is limited to 64 characters, so hash the subject to get a
+# stable identifier of fixed length that is unique per subject.
+OBJECT_ID="$(printf '%s' "$SUBJECT" | sha256sum | cut -c1-64)"
+
 if [ "$("${COMMAND[@]}" config:app:get notifications enabled)" = "no" ]; then
     echo "Cannot send notification as notification app is not enabled."
     exit 1
@@ -24,7 +28,7 @@ mapfile -t NC_USERS <<< "$NC_USERS"
 for user in "${NC_USERS[@]}"
 do
     echo "Posting '$SUBJECT' to: $user"
-    "${COMMAND[@]}" notification:generate "$user" "$NC_DOMAIN: $SUBJECT" -l "$MESSAGE" --object-type='update' --object-id="$SUBJECT"
+    "${COMMAND[@]}" notification:generate "$user" "$NC_DOMAIN: $SUBJECT" -l "$MESSAGE" --object-type='update' --object-id="$OBJECT_ID"
 done
 
 echo "Done!"
