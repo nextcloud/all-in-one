@@ -443,7 +443,7 @@ sed -i 's/ yes / "yes" /' /tmp/sample.conf
 sed -i 's/ no / "no" /' /tmp/sample.conf
 sed -i 's/"no" authentication/no authentication/' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
-sed -i 's|1073741824|"1073741824"|' /tmp/sample.conf
+sed -i 's|^APACHE_MAX_SIZE: 1073741824|APACHE_MAX_SIZE: "1073741824"|' /tmp/sample.conf
 sed -i 's|17179869184|"17179869184"|' /tmp/sample.conf
 # shellcheck disable=SC2129
 echo "" >> /tmp/sample.conf
