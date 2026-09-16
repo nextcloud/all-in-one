@@ -39,7 +39,7 @@ spec:
 # AIO settings start # Do not remove or change this line!
       initContainers:
         - name: init-volumes
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260825_084538
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260916_075031
           command:
             - chmod
             - "777"
@@ -203,7 +203,7 @@ spec:
               value: "{{ .Values.WHITEBOARD_ENABLED }}"
             - name: WHITEBOARD_SECRET
               value: "{{ .Values.WHITEBOARD_SECRET }}"
-          image: ghcr.io/nextcloud-releases/aio-nextcloud:20260825_084538
+          image: ghcr.io/nextcloud-releases/aio-nextcloud:20260916_075031
           {{- if eq (.Values.RPSS_ENABLED | default "no") "yes" }} # AIO-config - do not change this comment!
           securityContext:
             # The items below only work in container context
