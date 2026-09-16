@@ -85,7 +85,7 @@ sed -i 's|NEXTCLOUD_DATADIR=|NEXTCLOUD_DATADIR=nextcloud_aio_nextcloud_data     
 sed -i 's|NEXTCLOUD_MOUNT=|NEXTCLOUD_MOUNT=/mnt/          # This allows the Nextcloud container to access directories on the host. It must never be equal to the value of NEXTCLOUD_DATADIR!|' sample.conf
 sed -i 's|NEXTCLOUD_UPLOAD_LIMIT=|NEXTCLOUD_UPLOAD_LIMIT=1G          # This allows to change the upload limit of the Nextcloud container|' sample.conf
 sed -i 's|NEXTCLOUD_MEMORY_LIMIT=|NEXTCLOUD_MEMORY_LIMIT=512M          # This allows to change the PHP memory limit of the Nextcloud container|' sample.conf
-sed -i 's|APACHE_MAX_SIZE=|APACHE_MAX_SIZE=1073741824          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT|' sample.conf
+sed -i 's|APACHE_MAX_SIZE=|APACHE_MAX_SIZE="1073741824"          # This needs to be an integer and in sync with NEXTCLOUD_UPLOAD_LIMIT|' sample.conf
 sed -i 's|NEXTCLOUD_MAX_TIME=|NEXTCLOUD_MAX_TIME=3600          # This allows to change the upload time limit of the Nextcloud container|' sample.conf
 sed -i 's|NEXTCLOUD_TRUSTED_CACERTS_DIR=|NEXTCLOUD_TRUSTED_CACERTS_DIR=/usr/local/share/ca-certificates/my-custom-ca          # Nextcloud container will trust all the Certification Authorities, whose certificates are included in the given directory.|' sample.conf
 sed -i 's|UPDATE_NEXTCLOUD_APPS=|UPDATE_NEXTCLOUD_APPS="no"          # When setting to "yes" (with quotes), it will automatically update all installed Nextcloud apps upon container startup on saturdays.|' sample.conf
@@ -103,8 +103,8 @@ sed -i 's|FULLTEXTSEARCH_JAVA_OPTIONS=|FULLTEXTSEARCH_JAVA_OPTIONS="-Xms512M -Xm
 sed -i 's|NEXTCLOUD_STARTUP_APPS=|NEXTCLOUD_STARTUP_APPS="deck twofactor_totp tasks calendar contacts notes"        # Allows to modify the Nextcloud apps that are installed on starting AIO the first time. You can also disable apps by using a hyphen in front of them. E.g. "-app_api"|' sample.conf
 sed -i 's|NEXTCLOUD_ADDITIONAL_APKS=|NEXTCLOUD_ADDITIONAL_APKS=imagemagick        # This allows to add additional packages to the Nextcloud container permanently. Default is imagemagick but can be overwritten by modifying this value.|' sample.conf
 sed -i 's|NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=|NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS=imagick        # This allows to add additional php extensions to the Nextcloud container permanently. Default is imagick but can be overwritten by modifying this value.|' sample.conf
-sed -i 's|INSTALL_LATEST_MAJOR=|INSTALL_LATEST_MAJOR=no        # Setting this to yes will install the latest Major Nextcloud version upon the first installation|' sample.conf
-sed -i 's|REMOVE_DISABLED_APPS=|REMOVE_DISABLED_APPS=yes        # Setting this to no keep Nextcloud apps that are disabled via their switch and not uninstall them if they should be installed in Nextcloud.|' sample.conf
+sed -i 's|INSTALL_LATEST_MAJOR=|INSTALL_LATEST_MAJOR="no"        # Setting this to "yes" will install the latest Major Nextcloud version upon the first installation|' sample.conf
+sed -i 's|REMOVE_DISABLED_APPS=|REMOVE_DISABLED_APPS="yes"        # Setting this to "no" keep Nextcloud apps that are disabled via their switch and not uninstall them if they should be installed in Nextcloud.|' sample.conf
 sed -i 's|=$|=          # TODO! This needs to be a unique and good password!|' sample.conf
 
 grep  '# TODO!' sample.conf > todo.conf
