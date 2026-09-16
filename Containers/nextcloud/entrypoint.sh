@@ -475,7 +475,11 @@ EOF
             php /var/www/html/occ config:system:set versions_retention_obligation --value="auto, 30"
             php /var/www/html/occ config:system:set activity_expire_days --value="30" --type=integer
             php /var/www/html/occ config:system:set simpleSignUpLink.shown --type=bool --value=false
-            php /var/www/html/occ config:system:set share_folder --value="/Shared"
+            if [ -z "$NEXTCLOUD_SHARE_FOLDER" ]; then
+                php /var/www/html/occ config:system:set share_folder --value="/Shared"
+            else
+                php /var/www/html/occ config:system:set share_folder --value="$NEXTCLOUD_SHARE_FOLDER"
+            fi
 
             # Install some apps by default
             if [ -n "$STARTUP_APPS" ]; then
