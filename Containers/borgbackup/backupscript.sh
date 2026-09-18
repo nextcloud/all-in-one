@@ -247,10 +247,14 @@ if [ "$BORG_MODE" = backup ]; then
     fi
 
     # Compact archives
-    echo "Compacting the archives..."
-    if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
-        echo "Failed to compact archives!"
-        exit 1
+    if [ -n "$BORG_SKIP_COMPACTING" ]; then
+        echo "Skipping compacting as requested."
+    else
+        echo "Compacting the archives..."
+        if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
+            echo "Failed to compact archives!"
+            exit 1
+        fi
     fi
 
     # Back up additional directories of the host
@@ -276,10 +280,14 @@ if [ "$BORG_MODE" = backup ]; then
                 echo "Failed to prune additional docker-volumes archives!"
                 exit 1
             fi
-            echo "Compacting additional volumes..."
-            if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
-                echo "Failed to compact additional docker-volume archives!"
-                exit 1
+            if [ -n "$BORG_SKIP_COMPACTING" ]; then
+                echo "Skipping compacting additional volumes as requested."
+            else
+                echo "Compacting additional volumes..."
+                if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
+                    echo "Failed to compact additional docker-volume archives!"
+                    exit 1
+                fi
             fi
         fi
         if [ -d "/host_mounts/" ]; then
