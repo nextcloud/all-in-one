@@ -231,6 +231,7 @@ services:
         chown www-data:www-data /var/www/html/custom_apps/context_chat
         chown www-data:www-data /var/www/html/custom_apps/context_chat/lib
         chown www-data:www-data /var/www/html/custom_apps/context_chat/lib/AppInfo
+        echo "custom_apps init: directories created and chowned to www-data"
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:rw
     restart: "no"
