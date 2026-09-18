@@ -796,6 +796,11 @@
           "source": "nextcloud_aio_eurooffice_data",
           "destination": "/var/www/euro-office/Data",
           "writeable": true
+        },
+  	{
+	  "source": "nextcloud_aio_eurooffice_plugins",
+          "destination": "/var/www/euro-office/documentserver/sdkjs-plugins",
+          "writeable": true
         }
       ],
       "secrets": [
