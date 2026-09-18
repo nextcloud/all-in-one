@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
