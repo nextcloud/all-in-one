@@ -63,6 +63,29 @@ class Application extends App implements IBootstrap {
 					'name' => 'AI',
 				];
 			});
+			// logreader ships enabled by default but declares no <navigations>
+			// entry of its own, so it's otherwise reachable only by digging into
+			// Settings > Administration > Logging. Pinning it here gives it a
+			// keyboard/screen-reader-reachable entry in the app menu.
+			//
+			// This links to the settings section (/settings/admin/logging), NOT
+			// logreader's own page#index route (/apps/logreader/): that
+			// controller (apps/logreader/lib/Controller/PageController.php)
+			// never calls parent::__construct($appName, $request), so
+			// $this->appName is null and every hit 500s on
+			// `Util::addScript(null, ...)`. That's a bug in the vendored app
+			// itself (reachable only if something links to it directly, which
+			// nothing did before this), not something introduced here -- the
+			// settings route is the only working entry point into this app.
+			$navigationManager->add(function () use ($urlGenerator) {
+				return [
+					'id' => 'logreader',
+					'order' => 102,
+					'href' => $urlGenerator->linkToRoute('settings.AdminSettings.index', ['section' => 'logging']),
+					'icon' => $urlGenerator->imagePath('logreader', 'app.svg'),
+					'name' => 'Logs',
+				];
+			});
 		});
 	}
 }
