@@ -36,7 +36,7 @@ class ConfigurationManager
     public bool $isDockerSocketProxyEnabled {
         // Type-cast because old configs could have 1/0 for this key.
         get => (bool) $this->get('isDockerSocketProxyEnabled', false);
-        set { $this->set('isDockerSocketProxyEnabled', $value); }
+        set { $this->setDockerSocketProxyEnabled($value); }
     }
 
     public bool $isHarpEnabled {
@@ -407,6 +407,19 @@ class ConfigurationManager
         return array_key_exists($key, $this->getConfig());
     }
 
+    /**
+     * The docker socket proxy is deprecated in favor of HaRP. It may stay enabled where it already is, but
+     * must not get enabled anew.
+     */
+    private function setDockerSocketProxyEnabled(bool $value) : void {
+        // Read via get() because accessing the property inside its own set hook does not invoke the get
+        // hook. Type-cast because old configs could have 1/0 for this key.
+        $isEnabled = (bool) $this->get('isDockerSocketProxyEnabled', false);
+        // ANDing only ever moves the value towards false: disabling always works, while enabling is
+        // ignored unless it is already enabled.
+        $this->set('isDockerSocketProxyEnabled', ($isEnabled && $value));
+    }
+
     private function unset(string ...$keys) : void {
         $changed = false;
         $this->getConfig();
@@ -424,6 +437,11 @@ class ConfigurationManager
 
     private function writeOfficeSuite(OfficeSuite $officeSuite) : void
     {
+        // Onlyoffice is deprecated in favor of Eurooffice. It may stay selected where it already is, but must
+        // not get selected anew.
+        if ($officeSuite === OfficeSuite::Onlyoffice && $this->readOfficeSuite() !== OfficeSuite::Onlyoffice) {
+            return;
+        }
         $this->set('officeSuite', $officeSuite->value);
         // Remove the deprecated options.
         $this->unset('isCollaboraEnabled', 'isOnlyofficeEnabled', 'isEuroofficeEnabled');

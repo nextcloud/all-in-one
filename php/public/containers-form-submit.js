@@ -96,6 +96,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function handleOnlyofficeWarning() {
+        if (document.getElementById("office-onlyoffice").checked) {
+            alert('⚠️ The ONLYOFFICE container is deprecated. Please use Nextcloud Office powered by Euro-Office instead!');
+            document.getElementById("office-onlyoffice").checked = false
+        }
+    }
+
     function handleHarpWarning() {
         if (document.getElementById("harp").checked) {
             alert('⚠️ Warning! Enabling this container comes with possible Security problems since you are exposing the docker socket and all its privileges to the HaRP container. Enable this only if you are sure what you are doing!');
@@ -108,6 +115,9 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("docker-socket-proxy").addEventListener('change', handleDockerSocketProxyWarning);
     if (document.getElementById("harp")) {
         document.getElementById("harp").addEventListener('change', handleHarpWarning);
+    }
+    if (document.getElementById("office-onlyoffice")) {
+        document.getElementById("office-onlyoffice").addEventListener('change', handleOnlyofficeWarning);
     }
 
     // Initialize talk-recording visibility on page load
