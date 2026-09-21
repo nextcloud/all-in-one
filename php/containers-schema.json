@@ -129,8 +129,30 @@
 								"pattern": "^[0-9]+s$"
 							},
 							"test": {
-								"type": "string",
-								"pattern": "^.*$"
+								"oneOf": [
+									{
+										"type": "string",
+										"pattern": "^/.*$"
+									},
+									{
+										"type": "array",
+										"minItems": 2,
+										"items": [
+											{
+												"type": "string",
+												"pattern": "^CMD$"
+											},
+											{
+												"type": "string",
+												"pattern": "^/.*$"
+											}
+										],
+										"additionalItems": {
+											"type": "string",
+											"pattern": "^.*$"
+										}
+									}
+								]
 							}
 						}
 					},

@@ -258,7 +258,11 @@ services:
     init: true
     healthcheck:
       start_period: 60s
-      test: /usr/bin/coolwsd --probe --use-env-vars
+      test:
+        - CMD
+        - /usr/bin/coolwsd
+        - --probe
+        - --use-env-vars
       interval: 30s
       timeout: 30s
       start_interval: 5s

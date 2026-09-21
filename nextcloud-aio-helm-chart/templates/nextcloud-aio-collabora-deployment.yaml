@@ -44,7 +44,9 @@ spec:
           readinessProbe:
             exec:
               command:
-                - /usr/bin/coolwsd --probe --use-env-vars
+                - /usr/bin/coolwsd
+                - --probe
+                - --use-env-vars
             failureThreshold: 9
             initialDelaySeconds: 60
             periodSeconds: 30
@@ -52,7 +54,9 @@ spec:
           livenessProbe:
             exec:
               command:
-                - /usr/bin/coolwsd --probe --use-env-vars
+                - /usr/bin/coolwsd
+                - --probe
+                - --use-env-vars
             failureThreshold: 9
             initialDelaySeconds: 60
             periodSeconds: 30
