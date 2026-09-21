@@ -124,8 +124,10 @@ RUN set -ex; \
         echo 'opcache.interned_strings_buffer=64'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
-        echo 'opcache.jit=1255'; \
-        echo 'opcache.jit_buffer_size=128M'; \
+# JIT temporarily disabled, see https://github.com/nextcloud/docker/issues/2576
+# and https://github.com/nextcloud/all-in-one/discussions/8711
+        echo 'opcache.jit=disable'; \
+        echo 'opcache.jit_buffer_size=0'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
     { \
