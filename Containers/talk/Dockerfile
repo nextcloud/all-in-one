@@ -2,7 +2,7 @@
 FROM nats:2.15.0-scratch AS nats
 FROM eturnal/eturnal:1.12.2-alpine AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:2.1.1 AS signaling
-FROM alpine:3.24.1 AS janus
+FROM alpine:3.24.2 AS janus
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -11,7 +11,7 @@ RUN set -ex; \
     mv /etc/janus/janus.plugin.videoroom.jcfg.sample /etc/janus/janus.plugin.videoroom.jcfg; \
     sed -i '/^room-1234:/,/^}/d' /etc/janus/janus.plugin.videoroom.jcfg
 
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 ENV ETURNAL_ETC_DIR="/conf"
 ENV SKIP_CERT_VERIFY=false \
     AIO_LOG_LEVEL=warn
