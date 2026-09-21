@@ -231,7 +231,7 @@ find ./ -name '*deployment.yaml' -exec sed -i "/restartPolicy:/d" \{} \;
 # Effectively disable the progress deadline (max int32) so that slow container startups
 # are never reported as failed rollouts
 # shellcheck disable=SC1083
-find ./ -name '*deployment.yaml' -exec sed -i "/^  replicas: 1$/a\ \ progressDeadlineSeconds: 2147483647" \{} \;
+find ./ -name '*deployment.yaml' -exec sed -i "/^  replicas: 1$/a\ \ # 2147483647 (max int32, ~68 years) effectively disables the progress deadline so that\n\ \ # slow rollouts, e.g. large image pulls or long database upgrades, never count as failed\n\ \ progressDeadlineSeconds: 2147483647" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;
 # shellcheck disable=SC1083
