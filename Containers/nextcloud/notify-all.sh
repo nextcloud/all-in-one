@@ -23,7 +23,12 @@ if [ "$("${COMMAND[@]}" config:app:get notifications enabled)" = "no" ]; then
 fi
 
 echo "Posting notifications to all users..."
-NC_USERS=$("${COMMAND[@]}" user:list | sed 's|^  - ||g' | sed 's|:.*||')
+# 'occ user:list' only returns the first 500 users by default, so disable the limit.
+NC_USERS=$("${COMMAND[@]}" user:list --limit=0 | sed -n 's|^  - ||p' | sed 's|:.*||')
+if [ -z "$NC_USERS" ]; then
+    echo "Could not find any user to post notifications to."
+    exit 1
+fi
 mapfile -t NC_USERS <<< "$NC_USERS"
 for user in "${NC_USERS[@]}"
 do
