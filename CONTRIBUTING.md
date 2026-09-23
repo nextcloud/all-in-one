@@ -8,12 +8,11 @@ SPDX-License-Identifier: MIT
 If you have questions about how to install or use Nextcloud, please direct these to our [forum][forum].
 
 ### Guidelines
-* Please search the existing issues first, it's likely that your issue was already reported or even fixed.
-  - Go to one of the repositories, click "issues" and type any word in the top search/command bar.
-  - More info on [search syntax within github](https://help.github.com/articles/searching-issues)
+* Please search the existing issues and Discussions first, it's likely that your issue was already reported or even fixed.
+  - Go to https://github.com/nextcloud/all-in-one/discussions, and type any word in the top search/command bar.
 * __SECURITY__: Report any potential security bug to us via [our HackerOne page](https://hackerone.com/nextcloud) following our [security policy](https://nextcloud.com/security/) instead of filing an issue in our bug tracker.
 * The issues in other components should be reported in their respective repositories: You will find them in our [GitHub Organization](https://github.com/nextcloud/)
-* Report the issue using one of our templates, they include all the information we need to track down the issue.
+* Report any issues then via https://github.com/nextcloud/all-in-one/discussions/new?category=questions.
 
 Help us to maximize the effort we can spend fixing issues and adding new features, by not reporting duplicate issues.
 
@@ -34,9 +33,9 @@ Nextcloud allows contributions made with the help of AI tools. You are the autho
 
 * **Accountability:** You must be able to explain, defend, and modify every line you submit. If a reviewer asks why something works a certain way, "the AI wrote it" is not an answer.
 
-* **Communication:** PR descriptions, review comments, and issue reports must be written in your own words. This applies throughout the review process - passing reviewer feedback to an AI and posting whatever comes out is not acceptable.
+* **Communication:** PR descriptions and issue reports must be written in your own words.
 
-* **Quality:** AI output must be quality assured by the human, i.e. reviewed, cleaned up, and tested before submission. New features must be tested on a live instance by you, not by an agent. Code that has never been executed, or that shifts debugging work onto maintainers, will not be accepted.
+* **Quality:** AI output must be quality assured by the human, i.e. reviewed, cleaned up, and tested before submission.
 
 * **Licensing:** Ensure AI-generated code contains no material incompatible with the license of the repository you are contributing to.
 
