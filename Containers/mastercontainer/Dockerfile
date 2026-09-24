@@ -111,6 +111,8 @@ LABEL org.opencontainers.image.title="Nextcloud All-in-One Mastercontainer" \
 # hadolint ignore=DL3002
 USER root:root
 
+# The php-fpm base image sets STOPSIGNAL SIGQUIT, which dinit ignores, so the container would never stop gracefully
+STOPSIGNAL SIGTERM
 ENTRYPOINT ["/start.sh"]
 
 HEALTHCHECK CMD ["/healthcheck.sh"]
