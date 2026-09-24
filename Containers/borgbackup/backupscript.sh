@@ -117,7 +117,7 @@ if [ "$BORG_MODE" = backup ]; then
         echo "sudo docker stop nextcloud-aio-database -t 1800"
         echo ""
         echo "Afterwards try to create a backup again and it should hopefully work."
-        echo "If it should still fail, feel free to report this to https://github.com/nextcloud/all-in-one/issues and post the database container logs and the borgbackup container logs into the thread. Thanks!"
+        echo "If it should still fail, feel free to report this to https://github.com/nextcloud/all-in-one/discussions/new?category=questions and post the database container logs and the borgbackup container logs into the thread. Thanks!"
         exit 1
     fi
 

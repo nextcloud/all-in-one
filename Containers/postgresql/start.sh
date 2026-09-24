@@ -72,7 +72,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     # If database export was unsuccessful, skip update 
     if [ -f "$DUMP_DIR/export.failed" ]; then
         echo "Database export failed the last time. Most likely was the export time not high enough."
-        echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
+        echo "Please report this to https://github.com/nextcloud/all-in-one/discussions/new?category=questions. Thanks!"
         exit 1
     fi
 
@@ -107,7 +107,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
     # Check if the line we grep for later on is there
     if ! grep -qa "$GREP_STRING" "$DUMP_FILE"; then
         echo "The needed oc_appconfig line is not there which is unexpected."
-        echo "Please report this to https://github.com/nextcloud/all-in-one/issues. Thanks!"
+        echo "Please report this to https://github.com/nextcloud/all-in-one/discussions/new?category=questions. Thanks!"
         exit 1
     fi
 
@@ -243,7 +243,7 @@ do_database_dump() {
         if ! grep -qa "$GREP_STRING" "$DUMP_FILE"; then
             echo "Database dump was successful but the expected grep string does not exist."
             echo "This is not expected!"
-            echo "Please report this to https://github.com/nextcloud/all-in-one/issues."
+            echo "Please report this to https://github.com/nextcloud/all-in-one/discussions/new?category=questions."
             exit 1
         fi
         rm "$DUMP_DIR/export.failed"

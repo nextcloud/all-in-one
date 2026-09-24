@@ -11,7 +11,7 @@
 	<namespace>AllInOne</namespace>
 	<default_enable/>
 	<category>monitoring</category>
-	<bugs>https://github.com/nextcloud/all-in-one/issues</bugs>
+	<bugs>https://github.com/nextcloud/all-in-one/discussions/new?category=questions</bugs>
 	<dependencies>
 		<nextcloud min-version="34" max-version="35"/>
 	</dependencies>
