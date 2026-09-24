@@ -55,7 +55,12 @@ class Admin implements ISettings {
 		$lastUpdateCheckTimestamp = $this->config->getAppValue('core', 'lastupdatedat');
 		$lastUpdateCheck = $this->dateTimeFormatter->formatDateTime($lastUpdateCheckTimestamp);
 
-		$token = urlencode(getenv('AIO_TOKEN'));
+		$privateKeyBase64 = getenv('AIO_TOKEN');
+		$privateKeyBin = sodium_base642bin($privateKeyBase64, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+		$timestamp = (string) time();
+		$tokenBin = sodium_crypto_sign($timestamp, $privateKeyBin);
+		$token = sodium_bin2base64($tokenBin, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+
 		$params = [
 			'AIOLoginUrl' => 'https://' . getenv('AIO_URL') . '/api/auth/getlogin' . '?token=' . $token,
 		];

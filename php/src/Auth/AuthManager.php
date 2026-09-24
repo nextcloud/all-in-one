@@ -20,7 +20,33 @@ readonly class AuthManager {
     }
 
     public function CheckToken(string $token) : bool {
-        return hash_equals($this->configurationManager->aioToken, $token);
+        $publicKeyBase64 = $this->configurationManager->aioPublicKey;
+        if ($publicKeyBase64 === '' || $token === '') {
+            return false;
+        }
+
+        try {
+            $publicKeyBin = sodium_base642bin($publicKeyBase64, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+            $tokenBin = sodium_base642bin($token, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+        } catch (\SodiumException) {
+            return false;
+        }
+
+        $timestamp = sodium_crypto_sign_open($tokenBin, $publicKeyBin);
+
+        if ($timestamp === false) {
+            return false;
+        }
+
+        $timeElapsed = time() - (int) $timestamp;
+        if ($timeElapsed > 60 || $timeElapsed < 0) {
+            return false;
+        }
+
+        // Prevent token replay: reject tokens that have already been used
+        if (!apcu_add('used_token_' . hash('sha256', $token), true, 60)) return false;
+
+        return true;
     }
 
     public function SetAuthState(bool $isLoggedIn) : void {
