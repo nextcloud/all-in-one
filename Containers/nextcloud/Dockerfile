@@ -280,8 +280,6 @@ RUN set -ex; \
 
 # hadolint ignore=DL3002
 USER root:root
-# The php-fpm base image sets STOPSIGNAL SIGQUIT, which dinit ignores, so the container would never stop gracefully
-STOPSIGNAL SIGTERM
 ENTRYPOINT ["/start.sh"]
 CMD ["dinit", "--system", "--container", "php-fpm", "cron", "taskprocessing-worker", "run-exec-commands", "is-nextcloud-online"]
 
