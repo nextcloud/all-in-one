@@ -616,7 +616,7 @@ Second, see these screenshots for a working config:
 
 - Enabling Crowdsec Appsec may break uploads. <br>
 - The "Enable compression by upstream, not recommended" button may need to be enabled if you use Collabora. (https://github.com/CollaboraOnline/online/issues/10157) <br>
-- You can check the "Send noindex header and block some user agents" Button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>
+- You can check the "Send noindex header and block some user agents" button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>
 - If you want/need you can also configure Auth Request/mTLS if needed or change the X-Frame-Options header if you want to embed Nextcloud.
 
 
