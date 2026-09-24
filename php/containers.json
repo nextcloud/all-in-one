@@ -374,7 +374,7 @@
       "container_name": "nextcloud-aio-collabora",
       "image_tag": "%AIO_CHANNEL%",
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1358",
-      "display_name": "Nextcloud Office",
+      "display_name": "Collabora Online",
       "image": "ghcr.io/nextcloud-releases/aio-collabora",
       "init": true,
       "healthcheck": {
@@ -763,7 +763,7 @@
     {
       "container_name": "nextcloud-aio-eurooffice",
       "image_tag": "%AIO_CHANNEL%",
-      "display_name": "EuroOffice",
+      "display_name": "Nextcloud Office",
       "image": "ghcr.io/nextcloud-releases/aio-eurooffice",
       "init": true,
       "healthcheck": {
