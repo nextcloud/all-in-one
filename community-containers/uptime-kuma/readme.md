@@ -38,3 +38,10 @@ Uptime Kuma is the right choice if you want to have more than that, e.g.
 - faster checks than once per minute
 - ...
 
+## Repository
+
+https://github.com/louislam/uptime-kuma/
+
+## Maintainer of this container
+
+https://github.com/derStephan
