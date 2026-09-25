@@ -15,6 +15,9 @@ jobs:
       run: sudo apt-get install -y skopeo
     - name: Run update script
       run: python3 .ci/update-test-container-image-reference.py
+      env:
+        COMPOSE_FILES: php/tests/compose.yaml
+        DOCKERFILE_FILES: php/tests/Containers/composer/Dockerfile
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v7
       with:
