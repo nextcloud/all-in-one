@@ -1,5 +1,5 @@
 type = process
-command = /usr/bin/caddy run --config /internal.Caddyfile
+command = /start-caddy.sh /internal.Caddyfile
 run-as = www-data
 term-signal = TERM
 restart = yes

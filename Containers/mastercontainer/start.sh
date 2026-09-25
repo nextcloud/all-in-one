@@ -438,6 +438,12 @@ if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then
     rm -rf /mnt/docker-aio-config/caddy/locks/*
 fi
 
+# Write the IP subnets of AIO's own docker network to an env file that the caddy services load on (re)start
+# (see start-caddy.sh), so that the @denied blocks in *.Caddyfile can block all requests from AIO containers.
+# Run this now so Caddy has initial data to work with. make sure the file exists before caddy first starts; afterwards the
+# caddy-network-watcher keeps it up to date and restarts caddy when it changes.
+bash /resolve-caddy-network-env.sh > /dev/null
+
 # Fix the Caddyfile format
 caddy fmt --overwrite /acme.Caddyfile
 caddy fmt --overwrite /internal.Caddyfile
@@ -452,4 +458,4 @@ chown www-data:www-data /tmp/twig-cache
 chmod 770 /tmp/twig-cache
 
 # Start dinit
-exec dinit --system --container php-fpm caddy-internal caddy-acme cron backup-time-file-watcher session-deduplicator domain-validator
+exec dinit --system --container php-fpm caddy-internal caddy-acme caddy-network-watcher cron backup-time-file-watcher session-deduplicator domain-validator
