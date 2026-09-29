@@ -1,4 +1,4 @@
-FROM docker.io/library/composer:2@sha256:a5f59b9fd2faf31218632be4809dc6491761085e8064c31dc3b84378c48c248b
+FROM docker.io/library/composer:2@sha256:9715c7f69044da2a212a5fbde29ee7da24e364d426560ae6367b060236f847d7
 
 RUN pecl bundle -d /usr/src/php/ext apcu \
  && docker-php-ext-install apcu
