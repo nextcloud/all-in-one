@@ -325,7 +325,7 @@ https://your-domain-that-points-to-this-server.tld:8443
     - [Bruteforce protection FAQ](#bruteforce-protection-faq)
     - [How to switch the channel?](#how-to-switch-the-channel)
     - [How to update the containers?](#how-to-update-the-containers)
-    - [How to easily log in to the AIO interface?](#how-to-easily-log-in-to-the-aio-interface)
+    - [How to use the indirect login to the AIO interface?](#how-to-use-the-indirect-login-to-the-aio-interface)
     - [How to change the domain?](#how-to-change-the-domain)
     - [How to properly reset the instance?](#how-to-properly-reset-the-instance)
     - [Can I use a CIFS/SMB share as Nextcloud's datadir?](#can-i-use-a-cifssmb-share-as-nextclouds-datadir)
@@ -844,8 +844,10 @@ If a new `mastercontainer` update was found, you'll see a note below the `Stop c
 
 Additionally, there is a cronjob that runs once a day that checks for container and mastercontainer updates and sends a notification to all Nextcloud admins if a new update was found.
 
-### How to easily log in to the AIO interface?
-If your Nextcloud is running and you are logged in as admin in your Nextcloud, you can easily log in to the AIO interface by opening `https://yourdomain.tld/settings/admin/overview` which will show a button on top that enables you to log in to the AIO interface by just clicking on this button. 
+### How to use the indirect login to the AIO interface?
+<a name="how-to-easily-log-in-to-the-aio-interface"></a>While Nextcloud is running, the direct login (entering the AIO passphrase on the AIO login page) is blocked. The indirect login unblocks it: if you are logged in as admin in your Nextcloud, open `https://yourdomain.tld/settings/admin/overview` which will show a button on top. Clicking on this button opens the AIO login page with the direct login unblocked for your browser session, so that you can log in with your AIO passphrase.
+
+The direct login is blocked again after you logged in, after 5 minutes, or after 5 wrong passphrases. In that case, simply use the indirect login again. While the containers are stopped, the direct login is never blocked.
 
 > [!Note]
 > You can change the domain/ip-address/port of the button by simply stopping the containers, visiting the AIO interface from the correct and desired domain/ip-address/port and clicking once on `Start containers`.
