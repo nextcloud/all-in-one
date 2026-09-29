@@ -551,6 +551,11 @@ http {
         #listen [::]:443 quic reuseport;           # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - keep comment to disable IPv6 - please remove "reuseport" if another quic listener on the same IP:port already uses this option
         #add_header Alt-Svc 'h3=":443"; ma=86400'; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
 
+        # add headers
+        add_header Referrer-Policy           "no-referrer" always;
+        # If you have HSTS enabled for your domain, uncomment the next line
+        #add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+
         server_name <your-nc-domain>;
 
         # If running nginx on a subdomain (eg. nextcloud.example.com) of a domain that already has a wildcard ssl certificate from certbot on this machine,
@@ -570,16 +575,19 @@ http {
         proxy_read_timeout 3610s;
 
         location / {
-            proxy_pass http://nextcloud;
+            # change this IP according to your setup. Also change the port. 
+            # If you are using Nextcloud AIO you probably are listening on port 11000, but if you are a LAMP installation you probably are listening on port 80.
+            proxy_pass http://192.168.1.2:80$request_uri;
 
             proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Port $server_port;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
             # Websockets
-            proxy_http_version 1.1;
+            # Since NGINX 1.29.7, version 1.1 is used by default. Before 1.29.7, version 1.0 was used by default. Uncomment if you have an older version. Version 2 requires the ngx_http_v2_module and has known issues. 
+            # proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection $connection_upgrade;
         }
