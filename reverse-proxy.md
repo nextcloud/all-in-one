@@ -554,7 +554,7 @@ http {
         # add headers
         add_header Referrer-Policy           "no-referrer" always;
         # If you have HSTS enabled for your domain, uncomment the next line
-        #add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+        # add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
 
         server_name <your-nc-domain>;
 
