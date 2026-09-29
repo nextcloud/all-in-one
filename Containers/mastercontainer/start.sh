@@ -116,7 +116,7 @@ if ! su-exec www-data docker info &>/dev/null; then
         echo "If you are on TrueNas SCALE, see https://github.com/nextcloud/all-in-one#can-i-run-aio-on-truenas-scale"
         echo "On macOS, see https://github.com/nextcloud/all-in-one#how-to-run-aio-on-macos"
         echo "Another possibility might be that Docker api v$API_VERSION is not supported by your docker daemon."
-        echo "In that case, you should report this to https://github.com/nextcloud/all-in-one/issues"
+        echo "In that case, you should report this to https://github.com/nextcloud/all-in-one/discussions/new?category=questions"
         echo ""
         exit 1
     fi
