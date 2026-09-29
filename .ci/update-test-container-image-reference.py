@@ -5,20 +5,22 @@
 The script will look for matches for `<imagename>:<tag>@sha256:<digest>` in those files and update the digest,
 if a different one is found for `<imagename>:<tag>` at the registry.
 
+The files to act on are read from the environment:
+  COMPOSE_FILES     whitespace-separated list of docker compose files
+  DOCKERFILE_FILES  whitespace-separated list of Dockerfiles
+At least one of them must be set and non-empty.
+
 Requires: skopeo
 """
+import os
 import re
 import subprocess
 import sys
 
-# Change this to add more files to check.
-FILES = {
-    "compose": [
-        "php/tests/compose.yaml",
-    ],
-    "dockerfile": [
-        "php/tests/Containers/composer/Dockerfile",
-    ],
+# Environment variable holding the file list for every file type.
+ENV_VARS = {
+    "compose": "COMPOSE_FILES",
+    "dockerfile": "DOCKERFILE_FILES",
 }
 
 PREFIX = {
@@ -80,10 +82,20 @@ def update_file(file_path, prefix):
         f.write(content)
 
 
+def files_from_env():
+    """Read the files to act on from the environment, keyed by file type."""
+    files = {file_type: os.environ.get(env_var, "").split() for file_type, env_var in ENV_VARS.items()}
+
+    if not any(files.values()):
+        sys.exit(f"Error: none of {', '.join(ENV_VARS.values())} is set to a non-empty value!\n")
+
+    return files
+
+
 def main():
     run(["which", "skopeo"])
 
-    for file_type, paths in FILES.items():
+    for file_type, paths in files_from_env().items():
         for path in paths:
             update_file(path, PREFIX[file_type])
 
