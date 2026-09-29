@@ -38,7 +38,7 @@ spec:
         {{- end }}
       initContainers:
         - name: init-subpath
-          image: ghcr.io/nextcloud-releases/aio-alpine:20260916_075031
+          image: ghcr.io/nextcloud-releases/aio-alpine:20260929_105435
           command:
             - mkdir
             - "-p"
@@ -69,7 +69,7 @@ spec:
               value: nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-postgresql:20260916_075031
+          image: ghcr.io/nextcloud-releases/aio-postgresql:20260929_105435
           readinessProbe:
             exec:
               command:
