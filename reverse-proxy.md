@@ -508,7 +508,6 @@ http {
     #quic_gso on;                 # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+ - broken for connections over wireguard tunnels
     #quic_retry on;               # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
     #http3_stream_buffer_size 1m; # uncomment to enable HTTP/3 / QUIC - supported on nginx v1.25.0+
-    client_body_buffer_size 1m;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256;
