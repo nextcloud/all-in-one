@@ -28,7 +28,6 @@
             <div class="office-card-header">
                 <div>
                     <h4>Nextcloud Office</h4>
-                    <p class="office-powered-by">powered by Euro-Office</p>
                 </div>
                 <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
@@ -62,8 +61,8 @@
         <label class="office-card{{ isAnyRunning ? ' office-card-disabled' : '' }}" for="office-collabora">
             <div class="office-card-header">
                 <div>
-                    <h4>Nextcloud Office</h4>
-                    <p class="office-powered-by">powered by Collabora Online</p>
+                    <h4>Collabora Online</h4>
+                    <p class="office-powered-by">by Collabora Productivity</p>
                 </div>
                 <svg class="office-checkmark" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" fill="var(--color-nextcloud-blue)"/>
@@ -269,46 +268,46 @@
 {% endif %}
 
 {% if office_suite == 'collabora' and isAnyRunning == false and was_start_button_clicked == true %}
-    <h3>Nextcloud Office dictionaries</h3>
+    <h3>Collabora Online dictionaries</h3>
 
     {% if collabora_dictionaries == "" %}
-        <p>In order to get the correct dictionaries in Nextcloud Office, you may configure the dictionaries below:</p>
+        <p>In order to get the correct dictionaries in Collabora Online, you may configure the dictionaries below:</p>
         <form method="POST" action="api/configuration" class="xhr">
             <input type="text" name="collabora_dictionaries" placeholder="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru" />
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input type="submit" value="Submit Nextcloud Office dictionaries" />
+            <input type="submit" value="Submit Collabora Online dictionaries" />
         </form>
         <p>You need to make sure that the dictionaries that you enter are valid. An example is <strong>de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru</strong>.</p>
     {% else %}
-        <p>The dictionaries for Nextcloud Office are currently set to <strong>{{ collabora_dictionaries }}</strong>. You can reset them again by clicking on the button below.</p>
+        <p>The dictionaries for Collabora Online are currently set to <strong>{{ collabora_dictionaries }}</strong>. You can reset them again by clicking on the button below.</p>
         <form method="POST" action="api/configuration" class="xhr">
             <input type="hidden" name="delete_collabora_dictionaries" value="yes"/>
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input type="submit" value="Reset Nextcloud Office dictionaries" />
+            <input type="submit" value="Reset Collabora Online dictionaries" />
         </form>
     {% endif %}
 
-    <h3>Additional Nextcloud Office options</h3>
+    <h3>Additional Collabora Online options</h3>
 
     {% if collabora_additional_options == "" %}
-        <p>You can configure additional options for Nextcloud Office below.</p>
+        <p>You can configure additional options for Collabora Online below.</p>
         <p>(This can be used for configuring the net.content_security_policy and more. Make sure to submit the value!)</p>
         <form method="POST" action="api/configuration" class="xhr">
             <input type="text" name="collabora_additional_options" />
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input type="submit" value="Submit additional Nextcloud Office options" />
+            <input type="submit" value="Submit additional Collabora Online options" />
         </form>
         <p>You need to make sure that the options that you enter are valid. An example is <strong>--o:net.content_security_policy=frame-ancestors *.example.com:*;</strong>.</p>
     {% else %}
-        <p>The additioinal options for Nextcloud Office are currently set to <strong>{{ collabora_additional_options }}</strong>. You can reset them again by clicking on the button below.</p>
+        <p>The additional options for Collabora Online are currently set to <strong>{{ collabora_additional_options }}</strong>. You can reset them again by clicking on the button below.</p>
         <form method="POST" action="api/configuration" class="xhr">
             <input type="hidden" name="delete_collabora_additional_options" value="yes"/>
             <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
             <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-            <input type="submit" value="Reset additional Nextcloud Office options" />
+            <input type="submit" value="Reset additional Collabora Online options" />
         </form>
     {% endif %}
 {% endif %}
