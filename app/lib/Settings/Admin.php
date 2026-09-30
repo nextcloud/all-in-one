@@ -55,17 +55,24 @@ class Admin implements ISettings {
 		$lastUpdateCheckTimestamp = $this->config->getAppValue('core', 'lastupdatedat');
 		$lastUpdateCheck = $this->dateTimeFormatter->formatDateTime($lastUpdateCheckTimestamp);
 
-		$privateKeyBase64 = getenv('AIO_TOKEN');
-		$privateKeyBin = sodium_base642bin($privateKeyBase64, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
-		$timestamp = (string) time();
-		$tokenBin = sodium_crypto_sign($timestamp, $privateKeyBin);
-		$token = sodium_bin2base64($tokenBin, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
-
+		$privateKey = getenv('AIO_UNBLOCK_LOGIN_PRIVATE_KEY');
+		$query = is_string($privateKey) && $privateKey !== ''
+			? '?signature=' . self::signTimestamp(time(), $privateKey)
+			: '?token=' . urlencode(getenv('AIO_TOKEN'));
 		$params = [
-			'AIOLoginUrl' => 'https://' . getenv('AIO_URL') . '/api/auth/getlogin' . '?token=' . $token,
+			'AIOLoginUrl' => 'https://' . getenv('AIO_URL') . '/api/auth/getlogin' . $query,
 		];
 
 		return new TemplateResponse('nextcloud-aio', 'admin', $params, '');
+	}
+
+	/**
+	 * @return string the timestamp signed with the private key, url-safe base64 encoded
+	 */
+	private static function signTimestamp(int $timestamp, string $privateKeyBase64): string {
+		$privateKeyBin = sodium_base642bin($privateKeyBase64, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+		$signatureBin = sodium_crypto_sign((string)$timestamp, $privateKeyBin);
+		return sodium_bin2base64($signatureBin, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 	}
 
 	/**

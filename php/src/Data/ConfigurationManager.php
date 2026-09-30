@@ -17,7 +17,9 @@ class ConfigurationManager
 
     private array $config = [];
 
-    public string $aioPrivateKey = '';
+    // This doesn't get saved to the config because it's only needed inside the Nextcloud container, to which
+    // it gets handed via AIO_UNBLOCK_LOGIN_PRIVATE_KEY.
+    public string $aioUnblockLoginPrivateKey = '';
 
     private bool $noWrite = false;
 
@@ -25,9 +27,14 @@ class ConfigurationManager
 
     private int $dailyBackupFileMtime = 0;
 
-    public string $aioPublicKey {
+    public string $aioToken {
         get => $this->get('AIO_TOKEN', '');
         set { $this->set('AIO_TOKEN', $value); }
+    }
+
+    public string $aioUnblockLoginPublicKey {
+        get => $this->get('AIO_UNBLOCK_LOGIN_PUBLIC_KEY', '');
+        set { $this->set('AIO_UNBLOCK_LOGIN_PUBLIC_KEY', $value); }
     }
 
     public string $password {
@@ -1230,7 +1237,8 @@ class ConfigurationManager
         return match ($placeholder) {
             'NC_DOMAIN' => $this->domain,
             'NC_BASE_DN' => $this->getBaseDN(),
-            'AIO_TOKEN' => $this->aioPrivateKey,
+            'AIO_TOKEN' => $this->aioToken,
+            'AIO_UNBLOCK_LOGIN_PRIVATE_KEY' => $this->aioUnblockLoginPrivateKey,
             'AIO_LOG_LEVEL' => $this->aioLogLevel,
             'BORGBACKUP_REMOTE_REPO' => $this->borgRemoteRepo,
             'BORGBACKUP_MODE' => $this->backupMode,

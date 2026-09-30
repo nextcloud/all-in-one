@@ -36,8 +36,11 @@ readonly class LoginController {
     }
 
     public function GetTryLogin(Request $request, Response $response, array $args) : Response {
-        $token = $request->getQueryParams()['token'] ?? '';
-        if($this->authManager->CheckToken($token)) {
+        $params = $request->getQueryParams();
+        $isValid = isset($params['signature'])
+            ? $this->authManager->checkSignature((string) $params['signature'])
+            : $this->authManager->CheckToken((string) ($params['token'] ?? ''));
+        if($isValid) {
             $this->authManager->SetAuthState(true);
             return $response->withHeader('Location', '../..')->withStatus(302);
         }
