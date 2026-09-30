@@ -11,6 +11,7 @@ readonly class AuthManager {
     private const string SESSION_KEY = 'aio_authenticated';
     private const int LOGIN_UNBLOCK_SECONDS = 300;
     private const int LOGIN_UNBLOCK_MAX_FAILED_ATTEMPTS = 5;
+    private const int SIGNATURE_MAX_AGE_SECONDS = 60;
 
     public function __construct(
         private ConfigurationManager $configurationManager
@@ -22,33 +23,54 @@ readonly class AuthManager {
     }
 
     public function CheckToken(string $token) : bool {
-        $publicKeyBase64 = $this->configurationManager->aioPublicKey;
-        if ($publicKeyBase64 === '' || $token === '') {
+        $aioToken = $this->configurationManager->aioToken;
+        // Do not allow login if the token hasn't been set yet.
+        return $aioToken !== '' && hash_equals($aioToken, $token);
+    }
+
+    /** Login via a timestamp signed with the private key that was handed to the Nextcloud container. */
+    public function checkSignature(string $signature) : bool {
+        $timestamp = self::openSignedTimestamp($signature, $this->configurationManager->aioUnblockLoginPublicKey);
+        if ($timestamp === null) {
             return false;
+        }
+
+        $timeElapsed = time() - $timestamp;
+        if ($timeElapsed > self::SIGNATURE_MAX_AGE_SECONDS || $timeElapsed < 0) {
+            return false;
+        }
+
+        // Prevent replay: reject signatures that have already been used
+        return apcu_add('used_signature_' . hash('sha256', $signature), true, self::SIGNATURE_MAX_AGE_SECONDS);
+    }
+
+    /** @return array{string, string} [privateKeyBase64, publicKeyBase64] */
+    public static function generateKeyPair() : array {
+        $keypair = sodium_crypto_sign_keypair();
+        return [
+            sodium_bin2base64(sodium_crypto_sign_secretkey($keypair), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING),
+            sodium_bin2base64(sodium_crypto_sign_publickey($keypair), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING),
+        ];
+    }
+
+    /** Returns the signed timestamp, or null if the signature is malformed or invalid. */
+    public static function openSignedTimestamp(string $signature, string $publicKeyBase64) : ?int {
+        if ($publicKeyBase64 === '' || $signature === '') {
+            return null;
         }
 
         try {
             $publicKeyBin = sodium_base642bin($publicKeyBase64, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
-            $tokenBin = sodium_base642bin($token, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+            $signatureBin = sodium_base642bin($signature, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+            $timestamp = sodium_crypto_sign_open($signatureBin, $publicKeyBin);
         } catch (\SodiumException) {
-            return false;
+            return null;
         }
 
-        $timestamp = sodium_crypto_sign_open($tokenBin, $publicKeyBin);
-
-        if ($timestamp === false) {
-            return false;
+        if ($timestamp === false || !ctype_digit($timestamp)) {
+            return null;
         }
-
-        $timeElapsed = time() - (int) $timestamp;
-        if ($timeElapsed > 60 || $timeElapsed < 0) {
-            return false;
-        }
-
-        // Prevent token replay: reject tokens that have already been used
-        if (!apcu_add('used_token_' . hash('sha256', $token), true, 60)) return false;
-
-        return true;
+        return (int) $timestamp;
     }
 
     public function SetAuthState(bool $isLoggedIn) : void {
