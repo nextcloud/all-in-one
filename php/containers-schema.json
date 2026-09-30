@@ -226,6 +226,9 @@
 					"read_only": {
 						"type": "boolean"
 					},
+					"no_new_privileges": {
+						"type": "boolean"
+					},
 					"init": {
 						"type": "boolean"
 					},
