@@ -216,6 +216,7 @@
         "APACHE_HOST=nextcloud-aio-apache",
         "APACHE_PORT=%APACHE_PORT%",
         "AIO_TOKEN=%AIO_TOKEN%",
+        "AIO_UNBLOCK_LOGIN_PRIVATE_KEY=%AIO_UNBLOCK_LOGIN_PRIVATE_KEY%",
         "NC_DOMAIN=%NC_DOMAIN%",
         "ADMIN_USER=admin",
         "ADMIN_PASSWORD=%NEXTCLOUD_PASSWORD%",

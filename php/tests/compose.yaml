@@ -77,6 +77,7 @@ services:
     volumes:
       - ..:/app
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro # to read the private key from the Nextcloud container's env
     working_dir: /app/tests
     ports:
       - '9323:9323' # to view test reports
