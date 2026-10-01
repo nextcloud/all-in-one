@@ -370,6 +370,9 @@
                                         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                         <input id="base_path" type="hidden" name="base_path" value="">
+                                        {% if bypass_container_update == true %}
+                                            <input type="hidden" name="bypass_container_update" value="true">
+                                        {% endif %}
                                         {% if newMajorVersionString != '' %}
                                             <input type="checkbox" id="install_latest_major" name="install_latest_major"><label for="install_latest_major">Install Nextcloud Hub {{ newMajorVersionString }} (if unchecked, Nextcloud Hub {{ oldMajorVersionString }} will get installed)</label><br>
                                         {% endif %}
