@@ -27,6 +27,7 @@ namespace OCA\AllInOne\Settings;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IConfig;
 use OCP\IDateTimeFormatter;
+use OCP\IURLGenerator;
 use OCP\L10N\IFactory;
 use OCP\Settings\ISettings;
 
@@ -37,15 +38,19 @@ class Admin implements ISettings {
 	private $dateTimeFormatter;
 	/** @var IFactory */
 	private $l10nFactory;
+	/** @var IURLGenerator */
+	private $urlGenerator;
 
 	public function __construct(
 		IConfig $config,
 		IDateTimeFormatter $dateTimeFormatter,
-		IFactory $l10nFactory
+		IFactory $l10nFactory,
+		IURLGenerator $urlGenerator
 	) {
 		$this->config = $config;
 		$this->dateTimeFormatter = $dateTimeFormatter;
 		$this->l10nFactory = $l10nFactory;
+		$this->urlGenerator = $urlGenerator;
 	}
 
 	/**
@@ -55,24 +60,12 @@ class Admin implements ISettings {
 		$lastUpdateCheckTimestamp = $this->config->getAppValue('core', 'lastupdatedat');
 		$lastUpdateCheck = $this->dateTimeFormatter->formatDateTime($lastUpdateCheckTimestamp);
 
-		$privateKey = getenv('AIO_UNBLOCK_LOGIN_PRIVATE_KEY');
-		$query = is_string($privateKey) && $privateKey !== ''
-			? '?signature=' . self::signTimestamp(time(), $privateKey)
-			: '?token=' . urlencode(getenv('AIO_TOKEN'));
 		$params = [
-			'AIOLoginUrl' => 'https://' . getenv('AIO_URL') . '/api/auth/getlogin' . $query,
+			// Link to LoginController, which generates the signature and redirects to AIO
+			'AIOLoginUrl' => $this->urlGenerator->linkToRoute('nextcloud-aio.login.redirect'),
 		];
 
 		return new TemplateResponse('nextcloud-aio', 'admin', $params, '');
-	}
-
-	/**
-	 * @return string the timestamp signed with the private key, url-safe base64 encoded
-	 */
-	private static function signTimestamp(int $timestamp, string $privateKeyBase64): string {
-		$privateKeyBin = sodium_base642bin($privateKeyBase64, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
-		$signatureBin = sodium_crypto_sign((string)$timestamp, $privateKeyBin);
-		return sodium_bin2base64($signatureBin, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 	}
 
 	/**
