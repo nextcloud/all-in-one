@@ -1,0 +1,6 @@
+type = process
+command = /desec-ip-updater.sh
+run-as = www-data
+term-signal = TERM
+restart = yes
+options = shares-console

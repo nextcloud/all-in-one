@@ -417,9 +417,10 @@ class DesecManager {
                 'headers' => ['Authorization' => 'Token ' . $token],
             ]);
             $status = trim($res->getBody()->getContents());
-            if (str_starts_with($status, 'good') || str_starts_with($status, 'nochg')) {
+            // 'nochg' is not logged since this runs every 10 minutes and would spam the logs
+            if (str_starts_with($status, 'good')) {
                 error_log('deSEC IP update for ' . $domain . ': ' . $status);
-            } else {
+            } elseif (!str_starts_with($status, 'nochg')) {
                 error_log('deSEC IP update for ' . $domain . ' returned unexpected response: ' . $status);
             }
         } catch (\Exception $e) {
