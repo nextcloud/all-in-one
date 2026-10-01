@@ -48,9 +48,13 @@ readonly class LoginController {
 
     public function GetTryLogin(Request $request, Response $response, array $args) : Response {
         $params = $request->getQueryParams();
-        $isValid = isset($params['signature'])
-            ? $this->authManager->checkSignature((string) $params['signature'])
-            : $this->authManager->CheckToken((string) ($params['token'] ?? ''));
+
+        $isValid = false;
+        if (isset($params['signature'])) {
+            $isValid = $this->authManager->checkSignature((string) $params['signature']);
+        } else if (isset($params['token'])) {
+            $isValid = $this->authManager->CheckToken((string) $params['token']);
+        }
         if($isValid) {
             $this->authManager->UnblockLoginForSession();
             return $response->withHeader('Location', '../../login')->withStatus(302);
