@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { logInToContainersPage } from './helpers.js';
 
-test('Initial setup', async ({ page: setupPage }) => {
+test('Initial setup', async ({ page: setupPage, browser }) => {
   test.setTimeout(10 * 60 * 1000)
 
   const containersPage = await logInToContainersPage(setupPage);
@@ -51,6 +51,20 @@ test('Initial setup', async ({ page: setupPage }) => {
   await expect(containersPage.getByRole('main')).toContainText('Containers are currently starting.', { timeout: 5 * 60 * 1000 });
   await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 3 * 60 * 1000 });
   await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toHaveAttribute('href', 'https://example.com');
+
+  // While Nextcloud is running, the direct login is blocked...
+  const blockedPage = await (await browser.newContext()).newPage();
+  await blockedPage.goto('./login');
+  await expect(blockedPage.locator('body')).toContainText('The direct login is blocked since Nextcloud is running.');
+  await expect(blockedPage.locator('#master-password')).toHaveCount(0);
+
+  // ...and a valid token only unblocks the login form instead of logging in automatically
+  const { AIO_TOKEN } = JSON.parse(readFileSync('/mnt/docker-aio-config/data/configuration.json', 'utf8'));
+  const tokenPage = await (await browser.newContext()).newPage();
+  await tokenPage.goto(`./api/auth/getlogin?token=${AIO_TOKEN}`);
+  await expect(tokenPage).toHaveURL(/\/login$/);
+  await expect(tokenPage.locator('body')).toContainText('This login form is now available to you for up to 5 minutes and max. 5 attempts.');
+  await expect(tokenPage.locator('#master-password')).toBeVisible();
 
   // Extract initial nextcloud password
   await expect(containersPage.getByRole('main')).toContainText('Initial Nextcloud password:')
