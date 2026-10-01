@@ -1143,7 +1143,7 @@ if [ "$WHITEBOARD_ENABLED" = 'yes' ]; then
         php /var/www/html/occ app:update whiteboard
     fi
     php /var/www/html/occ config:app:set whiteboard collabBackendUrl --value="https://$NC_DOMAIN/whiteboard"
-    php /var/www/html/occ config:app:set whiteboard jwt_secret_key --value="$WHITEBOARD_SECRET"
+    php /var/www/html/occ config:app:set whiteboard jwt_secret_key --no-interaction --type=string --value="$WHITEBOARD_SECRET"
 else
     if [ "$REMOVE_DISABLED_APPS" = yes ] && [ -d "/var/www/html/custom_apps/whiteboard" ]; then
         php /var/www/html/occ app:remove whiteboard
