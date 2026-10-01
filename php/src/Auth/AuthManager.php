@@ -9,7 +9,7 @@ use \DateTime;
 
 readonly class AuthManager {
     private const string SESSION_KEY = 'aio_authenticated';
-    private const SIGNATURE_MAX_AGE_SECONDS = 60;
+    private const int SIGNATURE_MAX_AGE_SECONDS = 60;
 
     public function __construct(
         private ConfigurationManager $configurationManager
