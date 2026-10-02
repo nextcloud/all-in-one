@@ -7,7 +7,9 @@ name: deSEC API version watch
 # for changes (e.g. v2 going stable or v1 getting a deprecation date). The deSEC flow is
 # tested in CI against a mock (php/tests/desec-mock.mjs); this job catches upstream API
 # drift WITHOUT making automated requests to deSEC's live API (their ToS discourages that,
-# and /api/v1/ is contractually stable). It only fetches a public GitHub README.# Runs on a schedule (and manual dispatch) only, never on PR/push, so it never blocks a
+# and /api/v1/ is contractually stable). It only fetches a public GitHub README.
+#
+# Runs on a schedule (and manual dispatch) only, never on PR/push, so it never blocks a
 # merge. When the table changes the run goes red — a maintainer then reviews the change,
 # updates the mock + DesecManager if the API surface changed, and updates the EXPECTED
 # heredoc below to re-green this job.
