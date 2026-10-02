@@ -1,4 +1,7 @@
 # syntax=docker/dockerfile:latest
+
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 FROM golang:1.27.1-alpine3.24 AS go
 
 ENV WATCHTOWER_COMMIT_HASH=5b31c6ec67dcd9f04239ffa636915b2647925960	
