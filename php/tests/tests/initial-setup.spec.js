@@ -61,6 +61,7 @@ test('Initial setup', async ({ page: setupPage }) => {
   await containersPage.locator('#borg_backup_host_location').click();
   await containersPage.locator('#borg_backup_host_location').fill(borgBackupLocation);
   await containersPage.getByRole('button', { name: 'Submit backup location' }).click();
+  await expect(containersPage.locator('#borg-backup-password')).toBeVisible();
   containersPage.once('dialog', dialog => {
     dialog.accept()
   });
@@ -68,6 +69,7 @@ test('Initial setup', async ({ page: setupPage }) => {
   await expect(containersPage.getByRole('main')).toContainText('Backup container is currently running:', { timeout: 3 * 60 * 1000 });
   await expect(containersPage.getByRole('main')).toContainText('Last backup successful on', { timeout: 3 * 60 * 1000 });
   await containersPage.getByText('Click here to reveal all backup options').click();
+  await containersPage.getByText('Reveal your encryption password for backups').click();
   await expect(containersPage.locator('#borg-backup-password')).toBeVisible();
   const borgBackupPassword = await containersPage.locator('#borg-backup-password').innerText();
 
