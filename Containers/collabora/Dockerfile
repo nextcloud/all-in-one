@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # From a file located probably somewhere here: https://github.com/CollaboraOnline/online/blob/master/docker/from-packages/Dockerfile
-FROM collabora/code:26.04.4.1.1
+FROM collabora/code:26.04.4.2.1
 
 # The base image ships no shell anymore, so no start.sh wrapper can be used here.
 # ENTRYPOINT, USER and HEALTHCHECK are inherited from it on purpose.

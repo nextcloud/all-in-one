@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # From https://github.com/redis/docker-library-redis/blob/release/8.2/alpine/Dockerfile
-FROM redis:8.10.1-alpine
+FROM redis:8.10.2-alpine
 
 COPY --chmod=775 start.sh /start.sh
 

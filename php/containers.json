@@ -135,6 +135,7 @@
       ],
       "read_only": true,
       "tmpfs": [
+        "/var/lib/postgresql",
         "/var/run/postgresql"
       ],
       "cap_drop": [
