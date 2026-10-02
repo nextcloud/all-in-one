@@ -186,8 +186,11 @@ $app->get('/login', function (Request $request, Response $response, array $args)
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
     $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Auth\AuthManager $authManager */
+    $authManager = $container->get(\AIO\Auth\AuthManager::class);
     return $view->render($response, 'login.twig', [
-        'is_login_allowed' => $dockerActionManager->isLoginAllowed(),
+        'is_login_allowed' => $dockerActionManager->isLoginAllowed() || $authManager->IsLoginUnblockedForSession(),
+        'login_unblocked_notice' => $authManager->GetLoginUnblockedNotice(),
     ]);
 });
 
