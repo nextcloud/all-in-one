@@ -452,4 +452,4 @@ chown www-data:www-data /tmp/twig-cache
 chmod 770 /tmp/twig-cache
 
 # Start dinit
-exec dinit --system --container php-fpm caddy-internal caddy-acme cron backup-time-file-watcher session-deduplicator domain-validator
+exec dinit --system --container php-fpm caddy-internal caddy-acme cron backup-time-file-watcher session-deduplicator domain-validator desec-ip-updater
