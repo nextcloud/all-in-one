@@ -578,6 +578,7 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
             # Websockets
+            # Since NGINX 1.29.7, version 1.1 is used by default. Version 2 would require ngx_http_v2_module. 
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection $connection_upgrade;
