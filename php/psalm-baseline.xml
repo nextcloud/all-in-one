@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 <files psalm-version="6.17.2@dd625545733d24633e5d386a26c13004dae80e19"/>

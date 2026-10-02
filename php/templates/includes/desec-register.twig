@@ -1,3 +1,8 @@
+{#
+SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 <h2>Get a free domain from deSEC</h2>
 <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. The <strong>caddy</strong> community container will be enabled as a reverse proxy, the <strong>dnsmasq</strong> container will be enabled for local DNS resolution, and the mastercontainer will keep your DNS record up to date automatically.</p>
 {% if desec_awaiting_verification %}

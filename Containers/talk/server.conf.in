@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 [http]
 # IP and port to listen on for HTTP requests.
 # Comment line to disable the listener.
@@ -26,9 +29,7 @@ key = /etc/nginx/ssl/server.key
 
 [app]
 # Set to "true" to install pprof debug handlers. Access will only be possible
-# from IPs allowed through the "allowed_ips" option below.
-#
-# See "https://golang.org/pkg/net/http/pprof/" for further information.
+# from IPs allowed through the "allowed_ips" option below.# See "https://golang.org/pkg/net/http/pprof/" for further information.
 debug = false
 
 # Set to "true" to allow subscribing any streams. This is insecure and should
@@ -68,9 +69,7 @@ internalsecret = the-shared-secret-for-internal-clients
 
 [backend]
 # Type of backend configuration.
-# Defaults to "static".
-#
-# Possible values:
+# Defaults to "static".# Possible values:
 # - static: A comma-separated list of backends is given in the "backends" option.
 # - etcd: Backends are retrieved from an etcd cluster.
 #backendtype = static
@@ -88,14 +87,10 @@ internalsecret = the-shared-secret-for-internal-clients
 # contain a JSON document with the following entries:
 # - "urls": List of urls of the Nextcloud instance.
 # - "url": Url of the Nextcloud instance (deprecated).
-# - "secret": Shared secret for requests from and to the backend servers.
-#
-# Additional optional entries:
+# - "secret": Shared secret for requests from and to the backend servers.# Additional optional entries:
 # - "maxstreambitrate": Maximum bitrate per publishing stream (in bits per second).
 # - "maxscreenbitrate": Maximum bitrate per screensharing stream (in bits per second).
-# - "sessionlimit": Number of sessions that are allowed to connect.
-#
-# Example:
+# - "sessionlimit": Number of sessions that are allowed to connect.# Example:
 # "/signaling/backend/one" -> {"urls": ["https://nextcloud.domain1.invalid"], ...}
 # "/signaling/backend/two" -> {"urls": ["https://domain2.invalid/nextcloud"], ...}
 #backendprefix = /signaling/backend
@@ -193,9 +188,7 @@ connectionsperhost = 8
 #proxytimeout = 2
 
 # For type "proxy": type of URL configuration for proxy servers.
-# Defaults to "static".
-#
-# Possible values:
+# Defaults to "static".# Possible values:
 # - static: A space-separated list of proxy URLs is given in the "url" option.
 # - etcd: Proxy URLs are retrieved from an etcd cluster (see below).
 #urltype = static
@@ -222,9 +215,7 @@ connectionsperhost = 8
 # For url type "etcd": Key prefix of MCU proxy entries. All keys below will be
 # watched and assumed to contain a JSON document. The entry "address" from this
 # document will be used as proxy URL, other contents in the document will be
-# ignored.
-#
-# Example:
+# ignored.# Example:
 # "/signaling/proxy/server/one" -> {"address": "https://proxy1.domain.invalid"}
 # "/signaling/proxy/server/two" -> {"address": "https://proxy2.domain.invalid"}
 #keyprefix = /signaling/proxy/server
@@ -316,9 +307,7 @@ connectionsperhost = 8
 #clientca = /path/to/grpc-ca.crt
 
 # Type of GRPC target configuration.
-# Defaults to "static".
-#
-# Possible values:
+# Defaults to "static".# Possible values:
 # - static: A comma-separated list of targets is given in the "targets" option.
 # - etcd: Target URLs are retrieved from an etcd cluster.
 #targettype = static
@@ -337,9 +326,7 @@ connectionsperhost = 8
 # For target type "etcd": Key prefix of GRPC target entries. All keys below will
 # be watched and assumed to contain a JSON document. The entry "address" from
 # this document will be used as target URL, other contents in the document will
-# be ignored.
-#
-# Example:
+# be ignored.# Example:
 # "/signaling/cluster/grpc/one" -> {"address": "192.168.0.1:9090"}
 # "/signaling/cluster/grpc/two" -> {"address": "192.168.0.2:9090"}
 #targetprefix = /signaling/cluster/grpc

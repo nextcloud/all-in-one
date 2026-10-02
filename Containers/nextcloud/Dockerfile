@@ -1,4 +1,7 @@
 # syntax=docker/dockerfile:latest
+
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 FROM php:8.4.25-fpm-alpine3.24
 
 ENV PHP_MEMORY_LIMIT=512M
