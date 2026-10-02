@@ -227,6 +227,7 @@ svg:not(:has(use)) .fallback-text {
     font-size: 17px;
 }
 
+.login > form > .password-field,
 .login > form > input[type="password"],
 .login > form > input[type="text"],
 .login > form > input[type="submit"] {
@@ -303,6 +304,61 @@ input[type="email"]:focus,
 textarea:focus,
 select:focus {
     border: 1px solid var(--color-main-border);
+}
+
+/* Passphrase input with a reveal button on its right side */
+.password-field {
+    position: relative;
+    display: inline-block;
+}
+
+.login > form > .password-field {
+    display: block;
+}
+
+.password-field > input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 36px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--border-radius);
+    color: var(--color-main-text);
+    opacity: .6;
+    cursor: pointer;
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+    opacity: 1;
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid var(--color-main-border);
+}
+
+.password-toggle::before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    background-color: currentColor;
+    mask: url("img/eye.svg") center / contain no-repeat;
+}
+
+.password-toggle[aria-pressed="true"]::before {
+    mask-image: url("img/eye-off.svg");
 }
 
 /* Scroll bar for dark mode */
