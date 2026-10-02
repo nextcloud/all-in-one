@@ -569,7 +569,8 @@ http {
         proxy_read_timeout 3610s;
 
         location / {
-            proxy_pass http://nextcloud;
+            # change this according to your setup. Don't forget the port. If you are using Nextcloud AIO you probably are listening on port 11000, but if you are a LAMP installation you probably are listening on port 80.
+            proxy_pass http://192.168.1.2:80$request_uri;
 
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-Host $host;
