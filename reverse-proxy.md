@@ -605,17 +605,15 @@ Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
-<img width="596" height="965" alt="image" src="https://github.com/user-attachments/assets/71b7cad0-2b80-4432-a63b-7bb84c58763d" />
+<img width="524" height="893" alt="image" src="https://github.com/user-attachments/assets/ac258378-de39-467d-bb5b-5fad2ad6e16e" />
 
-<img width="675" height="355" alt="grafik" src="https://github.com/user-attachments/assets/c4a006f5-f8c4-4898-9ea6-ec33ee7e5bd3" />
+<img width="532" height="205" alt="image" src="https://github.com/user-attachments/assets/c171d433-3b89-4bcd-a176-53d1c27c725a" />
 
-<img width="675" height="650" alt="grafik" src="https://github.com/user-attachments/assets/a4f80ecc-c539-4972-91ed-7b078c269dd1" />
+<img width="536" height="455" alt="image" src="https://github.com/user-attachments/assets/c5419262-a771-4801-9078-b503c1e52aa9" />
 
-<img width="675" height="570" alt="grafik" src="https://github.com/user-attachments/assets/8ea357c2-11d5-48af-abf7-f249bc677213" />
+<img width="527" height="471" alt="image" src="https://github.com/user-attachments/assets/130e94db-dcea-49c0-8cd2-355cb3b48f44" />
 
-
-- Enabling Crowdsec Appsec may break uploads. <br>
-- The "Enable compression by upstream, not recommended" button may need to be enabled if you use Collabora. (https://github.com/CollaboraOnline/online/issues/10157) <br>
+- Enabling Crowdsec Appsec may break uploads and will enable buffering which could slow down uploads. <br>
 - You can check the "Send noindex header and block some user agents" button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>
 - If you want/need you can also configure Auth Request/mTLS if needed or change the X-Frame-Options header if you want to embed Nextcloud.
 
