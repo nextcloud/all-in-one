@@ -63,6 +63,30 @@ $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 // Auth Middleware
 $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
+$app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($responseFactory) : Response {
+    // allow same-origin and none
+    if (in_array($request->getHeaderLine('Sec-Fetch-Site'), ['same-origin', 'none'], true)) {
+        return $handler->handle($request);
+    }
+
+    $isDocumentNavigation = $request->getMethod() === 'GET' && $request->getHeaderLine('Sec-Fetch-Mode') === 'navigate' && $request->getHeaderLine('Sec-Fetch-Dest') === 'document';
+
+    // allow cross-origin navigations to /api/auth/getlogin (with any query params)
+    if ($isDocumentNavigation && $request->getUri()->getPath() === '/api/auth/getlogin') {
+        return $handler->handle($request);
+    }
+
+    // allow cross-origin navigations to /, /login and /containers if no query params are set
+    if ($isDocumentNavigation && in_array($request->getUri()->getPath(), ['/', '/login', '/containers'], true) && $request->getUri()->getQuery() === '') {
+        return $handler->handle($request);
+    }
+
+    // else deny
+    $response = $responseFactory->createResponse(403);
+    $response->getBody()->write('Forbidden');
+    return $response;
+});
+
 // API
 $app->post('/api/docker/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
 $app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
