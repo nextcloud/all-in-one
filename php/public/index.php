@@ -63,6 +63,15 @@ $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 // Auth Middleware
 $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
+$app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($responseFactory) : Response {
+    if (in_array($request->getHeaderLine('Sec-Fetch-Site'), ['same-origin', 'none'], true)) return $handler->handle($request);
+    $path = $request->getUri()->getPath();
+    if ($request->getMethod() === 'GET' && $request->getHeaderLine('Sec-Fetch-Mode') === 'navigate' && $request->getHeaderLine('Sec-Fetch-Dest') === 'document' && ($path === '/api/auth/getlogin' || (in_array($path, ['/', '/login', '/containers'], true) && $request->getUri()->getQuery() === ''))) return $handler->handle($request);
+    $response = $responseFactory->createResponse(403);
+    $response->getBody()->write('Forbidden');
+    return $response;
+});
+
 // API
 $app->post('/api/docker/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
 $app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
