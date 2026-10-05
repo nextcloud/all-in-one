@@ -22,6 +22,11 @@
                     "source": "nextcloud_aio_home_assistant",
                     "destination": "/config",
                     "writeable": true
+                },
+                {
+                    "source": "/run/dbus",
+                    "destination": "/run/dbus",
+                    "writeable": false
                 }
             ],
             "backup_volumes": [
