@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <title>AIO</title>
-        <link rel="stylesheet" href="style.css?v14" media="all" />
+        <link rel="stylesheet" href="style.css?v15" media="all" />
         <link rel="icon" href="img/favicon.png">
         <script type="text/javascript" src="forms.js?v2"></script>
         <script type="text/javascript" src="toggle-dark-mode.js?v2"></script>
@@ -10,6 +10,13 @@
     </head>
 
     <body>
+        {% if session_dev_flags is not empty %}
+            <div class="dev-flags-bar">
+                {% for flag, value in session_dev_flags %}
+                    <span>{{ flag }}: {{ value ? 'true' : 'false' }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
         <div class="wrapper">
             {% block body %}{% endblock %}
         </div>

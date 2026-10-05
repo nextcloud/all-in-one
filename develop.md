@@ -71,3 +71,5 @@ docker buildx build --file Containers/{container}/Dockerfile --tag ghcr.io/nextc
 1. Stop the containers using the AIO interface.
 1. Reload the AIO interface with the param `bypass_container_update` to avoid overwriting your local changes, e.g. `https://localhost:8080/containers?bypass_container_update`.
 1. Click "Start and update containers" and test your changes. Containers will not be updated, despite the button text.
+
+The params `bypass_mastercontainer_update`, `bypass_container_update` and `skip_domain_validation` are remembered in your session once used (shown in a yellow bar at the top of the page) until you log out or close the browser. Append e.g. `?bypass_container_update=false` to turn one off again.
