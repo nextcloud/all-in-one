@@ -51,6 +51,7 @@ readonly class LoginController {
     public function Logout(Request $request, Response $response, array $args) : Response
     {
         $this->authManager->SetAuthState(false);
+        unset($_SESSION['dev_flags']);
         return $response
             ->withHeader('Location', '../..')
             ->withStatus(302);
