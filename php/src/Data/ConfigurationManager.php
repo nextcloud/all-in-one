@@ -752,14 +752,14 @@ class ConfigurationManager
         if ($location !== '') {
             $isValidPath = false;
             if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
-                // Reject '//', '/./' and '/../' so that the NEXTCLOUD_DATADIR check below cannot be bypassed
-                $isValidPath = !str_contains($location, '//') && !str_contains($location . '/', '/./') && !str_contains($location . '/', '/../');
+                // Reject '//', '/./', '/../' and '/,/' so that the checks below cannot be bypassed
+                $isValidPath = !str_contains($location, '//') && !str_contains($location . '/', '/./') && !str_contains($location . '/', '/../') && !str_contains($location . '/', '/,/');
             } elseif ($location === 'nextcloud_aio_backupdir') {
                 $isValidPath = true;
             }
 
             if (!$isValidPath) {
-                throw new InvalidSettingConfigurationException("The path must start with '/', must not end with '/' and must not contain '//', '/./' or '/../'! Another option is to use the docker volume name 'nextcloud_aio_backupdir'.");
+                throw new InvalidSettingConfigurationException("The path must start with '/', must not end with '/' and must not contain '//', '/./', '/../' or '/,/'! Another option is to use the docker volume name 'nextcloud_aio_backupdir'.");
             }
 
             // Prevent backup to be contained in Nextcloud Datadir as this will delete the backup archive upon restore
@@ -768,8 +768,17 @@ class ConfigurationManager
                 throw new InvalidSettingConfigurationException("The path must not be a children of or equal to NEXTCLOUD_DATADIR, which is currently set to " . $this->nextcloudDatadirMount);
             }
 
-            if (str_starts_with($location . '/', '/var/lib/docker/')) {
-                throw new InvalidSettingConfigurationException("The path must not be a children of or equal to '/var/lib/docker'! Please use the docker volume name 'nextcloud_aio_backupdir' instead.");
+            foreach (['/var/lib/docker', '/var/snap/docker', '/var/lib/containerd'] as $dockerDir) {
+                if (str_starts_with($location . '/', $dockerDir . '/')) {
+                    throw new InvalidSettingConfigurationException("The path must not be a children of or equal to '" . $dockerDir . "'! Please use the docker volume name 'nextcloud_aio_backupdir' instead.");
+                }
+            }
+
+            // Prevent backup to be written into system directories
+            foreach (['/bin', '/boot', '/dev', '/etc', '/lib', '/lib32', '/lib64', '/libx32', '/proc', '/sbin', '/sys', '/usr'] as $systemDir) {
+                if (str_starts_with($location . '/', $systemDir . '/')) {
+                    throw new InvalidSettingConfigurationException("The path must not be a children of or equal to the system directory '" . $systemDir . "'!");
+                }
             }
 
         } else {
