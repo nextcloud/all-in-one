@@ -82,7 +82,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-database",
@@ -140,7 +141,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-nextcloud",
@@ -326,7 +328,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-redis",
@@ -369,7 +372,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-collabora",
@@ -419,7 +423,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-talk",
@@ -489,7 +494,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-talk-recording",
@@ -543,7 +549,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-borgbackup",
@@ -670,7 +677,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-clamav",
@@ -715,7 +723,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-onlyoffice",
@@ -850,7 +859,8 @@
       ],
       "secrets": [
         "IMAGINARY_SECRET"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-fulltextsearch",
@@ -904,7 +914,8 @@
       ],
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     },
     {
       "container_name": "nextcloud-aio-docker-socket-proxy",
@@ -1029,7 +1040,8 @@
       "read_only": true,
       "cap_drop": [
         "NET_RAW"
-      ]
+      ],
+      "no_new_privileges": true
     }
   ]
 }
