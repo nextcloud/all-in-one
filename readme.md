@@ -510,6 +510,9 @@ You can check this on Linux by running: `uname -m`
 - x86_64/x64/amd64
 - aarch64/arm64/armv8
 
+### Which browsers are supported?
+The AIO interface uses web features that are [Baseline "widely available"](https://web.dev/baseline), meaning they have been supported by all major browsers (Chrome, Edge, Firefox and Safari) for at least 2.5 years. Any reasonably up-to-date version of these browsers should work. Older or less common browsers might still work, too, but we don't consider it a bug if they don't.
+
 ### Disrecommended VPS providers
 - *Older* Strato VPS using Virtuozzo caused problems though ones from Q3 2023 and later should work.
   If your VPS has a `/proc/user_beancounters` file and a low `numproc` limit set in it

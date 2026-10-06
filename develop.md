@@ -71,3 +71,6 @@ docker buildx build --file Containers/{container}/Dockerfile --tag ghcr.io/nextc
 1. Stop the containers using the AIO interface.
 1. Reload the AIO interface with the param `bypass_container_update` to avoid overwriting your local changes, e.g. `https://localhost:8080/containers?bypass_container_update`.
 1. Click "Start and update containers" and test your changes. Containers will not be updated, despite the button text.
+
+## Which web features may be used in the AIO interface?
+The JavaScript, CSS and HTML in `php/public/` and `php/templates/` may only use web features that are [Baseline "widely available"](https://web.dev/baseline). Check a feature's Baseline status on [MDN](https://developer.mozilla.org/) or [caniuse.com](https://caniuse.com/) before using it.
