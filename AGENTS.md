@@ -91,7 +91,7 @@ See [HowToApplyALicense.md](https://github.com/nextcloud/server/blob/master/cont
 
 ### Browser compatibility
 
-JavaScript, CSS and HTML in the AIO interface (`php/public/`, `php/templates/`) must only use web features that are [Baseline "widely available"](https://web.dev/baseline). Do not add polyfills or transpilation for older browsers, and do not use features that are only "newly available" or not yet Baseline.
+JavaScript, CSS and HTML in the AIO interface (`php/public/`, `php/templates/`) must only use web features that are [Baseline "widely available"](https://web.dev/baseline). Do not add polyfills or transpilation for older browsers, and do not use features that are only "newly available" or not yet Baseline. Check a feature's Baseline status on [MDN](https://developer.mozilla.org/) or [caniuse.com](https://caniuse.com/) before using it.
 
 ### Security
 
