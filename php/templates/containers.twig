@@ -497,7 +497,11 @@
                                         <summary>Click here to reveal all backup options (including an option for automatic updates)</summary>
                                     {% endif %}
                                     <h3>Backup information</h3>
-                                    <p>This is your encryption password for backups: <strong id="borg-backup-password">{{ borgbackup_password }}</strong></p>
+                                    {% if has_backup_run_once == true %}
+                                        <p><details class="inline-details"><summary>Reveal your encryption password for backups</summary><strong id="borg-backup-password">{{ borgbackup_password }}</strong></details></p>
+                                    {% else %}
+                                        <p>This is your encryption password for backups: <strong id="borg-backup-password">{{ borgbackup_password }}</strong></p>
+                                    {% endif %}
                                     <p>Please save this password in a safe place. You won't be able to restore from backup if you lose this password!</p>
                                     <p>All important data from your Nextcloud AIO instance such as the database, your files and the mastercontainer's configuration files, will be backed up.</p>
                                     <p>The backup uses a tool called <a target="_blank" href="https://github.com/borgbackup/borg#what-is-borgbackup"><strong>BorgBackup</strong></a>, a well-known server backup tool that efficiently backs up your files and encrypts them on the fly.</p>
