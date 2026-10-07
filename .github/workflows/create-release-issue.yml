@@ -1,0 +1,23 @@
+name: Create release issue
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only print the issue instead of creating it
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: ./.github/scripts/create-release-issue.sh ${{ inputs.dry_run && '--dry-run' || '' }}
