@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { logInToContainersPage } from './helpers.js';
 
-test('Initial setup', async ({ page: setupPage }) => {
+test('Initial setup', async ({ page: setupPage, browser }) => {
   test.setTimeout(10 * 60 * 1000)
 
   const containersPage = await logInToContainersPage(setupPage);
@@ -51,6 +51,12 @@ test('Initial setup', async ({ page: setupPage }) => {
   await expect(containersPage.getByRole('main')).toContainText('Containers are currently starting.', { timeout: 5 * 60 * 1000 });
   await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 3 * 60 * 1000 });
   await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toHaveAttribute('href', 'https://example.com');
+
+  // While Nextcloud is running, the direct login is blocked...
+  const blockedPage = await (await browser.newContext()).newPage();
+  await blockedPage.goto('./login');
+  await expect(blockedPage.locator('body')).toContainText('The direct login is blocked since Nextcloud is running.');
+  await expect(blockedPage.locator('#master-password')).toHaveCount(0);
 
   // Extract initial nextcloud password
   await expect(containersPage.getByRole('main')).toContainText('Initial Nextcloud password:')
@@ -106,4 +112,39 @@ test('Initial setup', async ({ page: setupPage }) => {
     borgBackupLocation,
     borgBackupPassword,
   }))
+});
+
+test('Log in via token-unblocked login form', async ({ page: containersPage, browser }) => {
+  test.setTimeout(10 * 60 * 1000)
+
+  const readConfig = () => JSON.parse(readFileSync('/mnt/docker-aio-config/data/configuration.json', 'utf8'));
+  const { password } = readConfig();
+
+  // The previous test left the containers stopped, so the direct login is allowed
+  await containersPage.goto('./login');
+  await containersPage.locator('#master-password').fill(password);
+  await containersPage.getByRole('button', { name: 'Log in' }).click();
+  await containersPage.waitForURL('./containers');
+
+  // Start containers so that the direct login gets blocked
+  await containersPage.getByRole('button', { name: 'Start containers' }).click();
+  await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 5 * 60 * 1000 });
+
+  // After logging out, the login form is blocked
+  await containersPage.getByRole('button', { name: 'Log out' }).click();
+  await containersPage.waitForURL('./login');
+  await expect(containersPage.locator('body')).toContainText('The direct login is blocked since Nextcloud is running.');
+  await expect(containersPage.locator('#master-password')).toHaveCount(0);
+
+  // Starting the containers generates a new token, so read it only now
+  const { AIO_TOKEN } = readConfig();
+  const tokenPage = await (await browser.newContext()).newPage();
+  await tokenPage.goto(`./api/auth/getlogin?token=${AIO_TOKEN}`);
+  await expect(tokenPage).toHaveURL(/\/login$/);
+  await expect(tokenPage.locator('body')).toContainText('This login form is now available to you for up to 5 minutes and max. 5 attempts.');
+  await expect(tokenPage.locator('#master-password')).toBeVisible();
+  await tokenPage.locator('#master-password').fill(password);
+  await tokenPage.getByRole('button', { name: 'Log in' }).click();
+  await tokenPage.waitForURL('./containers');
+  await expect(tokenPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible();
 });
