@@ -56,6 +56,30 @@ test('Initial setup', async ({ page: setupPage }) => {
   await expect(containersPage.getByRole('main')).toContainText('Initial Nextcloud password:')
   const initialNextcloudPassword = await containersPage.locator('#initial-nextcloud-password').innerText();
 
+  // Reject backup location with relative path segments
+  await containersPage.locator('#borg_backup_host_location').click();
+  await containersPage.locator('#borg_backup_host_location').fill('/tmp/test/../aio');
+  await containersPage.getByRole('button', { name: 'Submit backup location' }).click();
+  await expect(containersPage.locator('body')).toContainText("must not contain '//', '/./', '/../' or '/,/'");
+
+  // Reject backup location with '/,/'
+  await containersPage.locator('#borg_backup_host_location').click();
+  await containersPage.locator('#borg_backup_host_location').fill('/tmp/test/,/aio');
+  await containersPage.getByRole('button', { name: 'Submit backup location' }).click();
+  await expect(containersPage.locator('body')).toContainText("must not contain '//', '/./', '/../' or '/,/'");
+
+  // Reject backup location inside /var/lib/docker
+  await containersPage.locator('#borg_backup_host_location').click();
+  await containersPage.locator('#borg_backup_host_location').fill('/var/lib/docker/volumes/aio');
+  await containersPage.getByRole('button', { name: 'Submit backup location' }).click();
+  await expect(containersPage.locator('body')).toContainText("Please use the docker volume name 'nextcloud_aio_backupdir' instead.");
+
+  // Reject backup location inside a system directory
+  await containersPage.locator('#borg_backup_host_location').click();
+  await containersPage.locator('#borg_backup_host_location').fill('/etc/aio');
+  await containersPage.getByRole('button', { name: 'Submit backup location' }).click();
+  await expect(containersPage.locator('body')).toContainText("must not be a children of or equal to the system directory '/etc'");
+
   // Set backup location and create backup
   const borgBackupLocation = `/tmp/test/aio-${Math.floor(Math.random() * 2147483647)}`
   await containersPage.locator('#borg_backup_host_location').click();

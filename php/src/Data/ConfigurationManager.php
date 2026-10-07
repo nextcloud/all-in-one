@@ -752,19 +752,33 @@ class ConfigurationManager
         if ($location !== '') {
             $isValidPath = false;
             if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
-                $isValidPath = true;
+                // Reject '//', '/./', '/../' and '/,/' so that the checks below cannot be bypassed
+                $isValidPath = !str_contains($location, '//') && !str_contains($location . '/', '/./') && !str_contains($location . '/', '/../') && !str_contains($location . '/', '/,/');
             } elseif ($location === 'nextcloud_aio_backupdir') {
                 $isValidPath = true;
             }
 
             if (!$isValidPath) {
-                throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'! Another option is to use the docker volume name 'nextcloud_aio_backupdir'.");
+                throw new InvalidSettingConfigurationException("The path must start with '/', must not end with '/' and must not contain '//', '/./', '/../' or '/,/'! Another option is to use the docker volume name 'nextcloud_aio_backupdir'.");
             }
 
             // Prevent backup to be contained in Nextcloud Datadir as this will delete the backup archive upon restore
             // See https://github.com/nextcloud/all-in-one/issues/6607
             if (str_starts_with($location . '/', rtrim($this->nextcloudDatadirMount, '/') . '/')) {
                 throw new InvalidSettingConfigurationException("The path must not be a children of or equal to NEXTCLOUD_DATADIR, which is currently set to " . $this->nextcloudDatadirMount);
+            }
+
+            foreach (['/var/lib/docker', '/var/snap/docker', '/var/lib/containerd'] as $dockerDir) {
+                if (str_starts_with($location . '/', $dockerDir . '/')) {
+                    throw new InvalidSettingConfigurationException("The path must not be a children of or equal to '" . $dockerDir . "'! Please use the docker volume name 'nextcloud_aio_backupdir' instead.");
+                }
+            }
+
+            // Prevent backup to be written into system directories
+            foreach (['/bin', '/boot', '/dev', '/etc', '/lib', '/lib32', '/lib64', '/libx32', '/proc', '/sbin', '/sys', '/usr'] as $systemDir) {
+                if (str_starts_with($location . '/', $systemDir . '/')) {
+                    throw new InvalidSettingConfigurationException("The path must not be a children of or equal to the system directory '" . $systemDir . "'!");
+                }
             }
 
         } else {
