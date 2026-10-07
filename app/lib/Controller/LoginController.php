@@ -23,9 +23,11 @@ class LoginController extends Controller {
 
 	public static function buildAioLoginUrl(): string {
 		$privateKey = getenv('AIO_UNBLOCK_LOGIN_PRIVATE_KEY');
-		$query = is_string($privateKey) && $privateKey !== ''
-			? '?signature=' . self::signTimestamp(time(), $privateKey)
-			: '?token=' . urlencode(getenv('AIO_TOKEN'));
+		if (is_string($privateKey) && $privateKey !== '') {
+			$query = '?signature=' . self::signTimestamp(time(), $privateKey);
+		} else {
+			$query = '?token=' . urlencode(getenv('AIO_TOKEN'));
+		}
 		return 'https://' . getenv('AIO_URL') . '/api/auth/getlogin' . $query;
 	}
 
