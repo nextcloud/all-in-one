@@ -130,6 +130,12 @@ test('Log in via token-unblocked login form', async ({ page: containersPage, bro
   await containersPage.getByRole('button', { name: 'Start containers' }).click();
   await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 5 * 60 * 1000 });
 
+  // After logging out, the login form is blocked
+  await containersPage.getByRole('button', { name: 'Log out' }).click();
+  await containersPage.waitForURL('./login');
+  await expect(containersPage.locator('body')).toContainText('The direct login is blocked since Nextcloud is running.');
+  await expect(containersPage.locator('#master-password')).toHaveCount(0);
+
   // Starting the containers generates a new token, so read it only now
   const { AIO_TOKEN } = readConfig();
   const tokenPage = await (await browser.newContext()).newPage();
