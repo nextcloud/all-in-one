@@ -1,5 +1,9 @@
 #!/bin/bash -ex
 
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+
 type {jq,sudo} || { echo "Commands not found. Please install them"; exit 127; }
 
 jq -c . ./php/containers.json > /tmp/containers.json

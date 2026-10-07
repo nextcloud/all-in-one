@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 deduplicate_sessions() {
     echo "Deleting duplicate sessions"
     find "/mnt/docker-aio-config/session/" -mindepth 1 -exec grep -qv "$NEW_SESSION_TIME" {} \; -delete
