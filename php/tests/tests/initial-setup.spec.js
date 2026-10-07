@@ -121,3 +121,30 @@ test('Initial setup', async ({ page: setupPage, browser }) => {
     borgBackupPassword,
   }))
 });
+
+test('Log in via token-unblocked login form', async ({ page: containersPage, browser }) => {
+  test.setTimeout(10 * 60 * 1000)
+
+  const readConfig = () => JSON.parse(readFileSync('/mnt/docker-aio-config/data/configuration.json', 'utf8'));
+  const { password } = readConfig();
+
+  // The previous test left the containers stopped, so the direct login is allowed
+  await containersPage.goto('./login');
+  await containersPage.locator('#master-password').fill(password);
+  await containersPage.getByRole('button', { name: 'Log in' }).click();
+  await containersPage.waitForURL('./containers');
+
+  // Start containers so that the direct login gets blocked
+  await containersPage.getByRole('button', { name: 'Start containers' }).click();
+  await expect(containersPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible({ timeout: 5 * 60 * 1000 });
+
+  // Starting the containers generates a new token, so read it only now
+  const { AIO_TOKEN } = readConfig();
+  const tokenPage = await (await browser.newContext()).newPage();
+  await tokenPage.goto(`./api/auth/getlogin?token=${AIO_TOKEN}`);
+  await expect(tokenPage).toHaveURL(/\/login$/);
+  await tokenPage.locator('#master-password').fill(password);
+  await tokenPage.getByRole('button', { name: 'Log in' }).click();
+  await tokenPage.waitForURL('./containers');
+  await expect(tokenPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible();
+});
