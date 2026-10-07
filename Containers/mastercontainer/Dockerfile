@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Docker CLI is a requirement
-FROM docker:29.8.1-cli AS docker
+FROM docker:29.8.2-cli AS docker
 
 ARG CADDY_REMOTE_HOST_HASH=e80a9931765a8dbcbb47db415863387f0df0e1b3
 

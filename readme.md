@@ -510,6 +510,9 @@ You can check this on Linux by running: `uname -m`
 - x86_64/x64/amd64
 - aarch64/arm64/armv8
 
+### Which browsers are supported?
+The AIO interface uses web features that are [Baseline "widely available"](https://web.dev/baseline), meaning they have been supported by all major browsers (Chrome, Edge, Firefox and Safari) for at least 2.5 years. Any reasonably up-to-date version of these browsers should work. Older or less common browsers might still work, too, but we don't consider it a bug if they don't.
+
 ### Disrecommended VPS providers
 - *Older* Strato VPS using Virtuozzo caused problems though ones from Q3 2023 and later should work.
   If your VPS has a `/proc/user_beancounters` file and a low `numproc` limit set in it
@@ -842,7 +845,9 @@ If a new `mastercontainer` update was found, you'll see a note below the `Stop c
 Additionally, there is a cronjob that runs once a day that checks for container and mastercontainer updates and sends a notification to all Nextcloud admins if a new update was found.
 
 ### How to easily log in to the AIO interface?
-If your Nextcloud is running and you are logged in as admin in your Nextcloud, you can easily log in to the AIO interface by opening `https://yourdomain.tld/settings/admin/overview` which will show a button on top that enables you to log in to the AIO interface by just clicking on this button. 
+While Nextcloud is running, the direct login (entering the AIO passphrase on the AIO login page) is blocked. The indirect login unblocks it: if you are logged in as admin in your Nextcloud, open `https://yourdomain.tld/settings/admin/overview` which will show a button on top. Clicking on this button opens the AIO login page with the direct login unblocked for your browser session, so that you can log in with your AIO passphrase.
+
+The direct login is blocked again after you logged in, after 5 minutes, or after 5 wrong passphrases. In that case, simply use the indirect login again. While the containers are stopped, the direct login is never blocked.
 
 > [!Note]
 > You can change the domain/ip-address/port of the button by simply stopping the containers, visiting the AIO interface from the correct and desired domain/ip-address/port and clicking once on `Start containers`.
