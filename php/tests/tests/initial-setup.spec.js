@@ -58,14 +58,6 @@ test('Initial setup', async ({ page: setupPage, browser }) => {
   await expect(blockedPage.locator('body')).toContainText('The direct login is blocked since Nextcloud is running.');
   await expect(blockedPage.locator('#master-password')).toHaveCount(0);
 
-  // ...and a valid token only unblocks the login form instead of logging in automatically
-  const { AIO_TOKEN } = JSON.parse(readFileSync('/mnt/docker-aio-config/data/configuration.json', 'utf8'));
-  const tokenPage = await (await browser.newContext()).newPage();
-  await tokenPage.goto(`./api/auth/getlogin?token=${AIO_TOKEN}`);
-  await expect(tokenPage).toHaveURL(/\/login$/);
-  await expect(tokenPage.locator('body')).toContainText('This login form is now available to you for up to 5 minutes and max. 5 attempts.');
-  await expect(tokenPage.locator('#master-password')).toBeVisible();
-
   // Extract initial nextcloud password
   await expect(containersPage.getByRole('main')).toContainText('Initial Nextcloud password:')
   const initialNextcloudPassword = await containersPage.locator('#initial-nextcloud-password').innerText();
@@ -143,6 +135,8 @@ test('Log in via token-unblocked login form', async ({ page: containersPage, bro
   const tokenPage = await (await browser.newContext()).newPage();
   await tokenPage.goto(`./api/auth/getlogin?token=${AIO_TOKEN}`);
   await expect(tokenPage).toHaveURL(/\/login$/);
+  await expect(tokenPage.locator('body')).toContainText('This login form is now available to you for up to 5 minutes and max. 5 attempts.');
+  await expect(tokenPage.locator('#master-password')).toBeVisible();
   await tokenPage.locator('#master-password').fill(password);
   await tokenPage.getByRole('button', { name: 'Log in' }).click();
   await tokenPage.waitForURL('./containers');
