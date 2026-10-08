@@ -156,12 +156,12 @@ test('Log in via token-unblocked login form', async ({ page: containersPage, bro
   await signaturePage.goto('./login');
   await expect(containersPage.locator('body')).toContainText('The direct login is blocked since Nextcloud is running.');
   await expect(signaturePage.locator('#master-password')).toHaveCount(0);
-  # Check that a request to the API with a valid signature redirects to the unblocked login.
+  // Check that a request to the API with a valid signature redirects to the unblocked login.
   await signaturePage.goto(`./api/auth/getlogin?signature=${signTimestamp(await getUnblockLoginPrivateKey())}`);
   await expect(signaturePage).toHaveURL(/\/login$/);
   await expect(signaturePage.locator('body')).toContainText('This login form is now available to you for up to 5 minutes and max. 5 attempts.');
   await expect(tokenPage.locator('#master-password')).toBeVisible();
-  # Check that the login actually works.
+  // Check that the login actually works.
   await signaturePage.locator('#master-password').fill(password);
   await signaturePage.getByRole('button', { name: 'Log in' }).click();
   await signaturePage.waitForURL('./containers');
