@@ -81,19 +81,3 @@ jobs:
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Enable GitHub auto merge
-      - name: Auto merge
-        uses: alexwilson/enable-github-automerge-action@2c32e18a76e0726ffe7a573bfff2d42a20885126 # 3.0.0
-        if: ${{
-          startsWith(steps.branchname.outputs.branch, 'dependabot/')
-          && steps.auto_approve.conclusion == 'success'
-          && (github.event.action == 'opened' || github.event.action == 'reopened')
-          && (
-            steps.metadata.outputs.update-type == 'version-update:semver-patch'
-            || (fromJSON(env.ALLOW_MINOR) && steps.metadata.outputs.update-type == 'version-update:semver-minor')
-            || (fromJSON(env.ALLOW_MAJOR) && steps.metadata.outputs.update-type == 'version-update:semver-major')
-          )
-          }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
