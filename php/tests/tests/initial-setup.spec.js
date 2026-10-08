@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync, writeFileSync } from 'node:fs'
+import { createPrivateKey, sign } from 'node:crypto'
+import { request } from 'node:http'
 import { logInToContainersPage } from './helpers.js';
 
 test('Initial setup', async ({ page: setupPage, browser }) => {
@@ -147,4 +149,52 @@ test('Log in via token-unblocked login form', async ({ page: containersPage, bro
   await tokenPage.getByRole('button', { name: 'Log in' }).click();
   await tokenPage.waitForURL('./containers');
   await expect(tokenPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible();
+
+  // A signature made with the private key that was handed to the Nextcloud container unblocks the login form
+  const signaturePage = await (await browser.newContext()).newPage();
+  // Check that the login is blocked.
+  await signaturePage.goto('./login');
+  await expect(containersPage.locator('body')).toContainText('The direct login is blocked since Nextcloud is running.');
+  await expect(signaturePage.locator('#master-password')).toHaveCount(0);
+  // Check that a request to the API with a valid signature redirects to the unblocked login.
+  await signaturePage.goto(`./api/auth/getlogin?signature=${signTimestamp(await getUnblockLoginPrivateKey())}`);
+  await expect(signaturePage).toHaveURL(/\/login$/);
+  await expect(signaturePage.locator('body')).toContainText('This login form is now available to you for up to 5 minutes and max. 5 attempts.');
+  await expect(tokenPage.locator('#master-password')).toBeVisible();
+  // Check that the login actually works.
+  await signaturePage.locator('#master-password').fill(password);
+  await signaturePage.getByRole('button', { name: 'Log in' }).click();
+  await signaturePage.waitForURL('./containers');
+  await expect(tokenPage.getByRole('link', { name: 'Open your Nextcloud ↗' })).toBeVisible();
+
+  // A signature is preferred over a token: an invalid signature fails even if the token is valid
+  const preferredPage = await (await browser.newContext()).newPage();
+  await preferredPage.goto(`./api/auth/getlogin?signature=invalid&token=${AIO_TOKEN}`);
+  await expect(preferredPage.locator('body')).toContainText('The direct login is blocked since Nextcloud is running.');
+  await expect(preferredPage.locator('#master-password')).toHaveCount(0);
 });
+
+// The private key only lives in the environment of the Nextcloud container, so read it via the Docker API.
+async function getUnblockLoginPrivateKey() {
+  const body = await new Promise((resolve, reject) => {
+    request({ socketPath: '/var/run/docker.sock', path: '/containers/nextcloud-aio-nextcloud/json' }, res => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve(data));
+    }).on('error', reject).end();
+  });
+  const env = JSON.parse(body).Config.Env;
+  return env.find(e => e.startsWith('AIO_UNBLOCK_LOGIN_PRIVATE_KEY=')).split('=')[1];
+}
+
+// Same as sodium_crypto_sign(): the Ed25519 signature followed by the signed message, url-safe base64 encoded.
+// A libsodium secret key is the 32 byte seed followed by the 32 byte public key.
+function signTimestamp(privateKeyBase64) {
+  const secretKey = Buffer.from(privateKeyBase64, 'base64url');
+  const key = createPrivateKey({
+    key: { kty: 'OKP', crv: 'Ed25519', d: secretKey.subarray(0, 32).toString('base64url'), x: secretKey.subarray(32).toString('base64url') },
+    format: 'jwk',
+  });
+  const message = Buffer.from(String(Math.floor(Date.now() / 1000)));
+  return Buffer.concat([sign(null, message, key), message]).toString('base64url');
+}
