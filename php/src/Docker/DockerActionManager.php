@@ -535,6 +535,13 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Mounts'] = $mounts;
         }
 
+        // Add the hosts from the EXTRA_HOSTS env variable to all containers (like `--add-host` does). Merge with already existing entries.
+        $extraHosts = $this->configurationManager->getExtraHosts();
+        if (count($extraHosts) > 0) {
+            $existingExtraHosts = $requestBody['HostConfig']['ExtraHosts'] ?? [];
+            $requestBody['HostConfig']['ExtraHosts'] = array_values(array_unique(array_merge($existingExtraHosts, $extraHosts)));
+        }
+
         // All AIO-managed containers should not be updated externally via watchtower but gracefully by AIO's backup and update feature.
         // Also DIUN should not send update notifications. See https://crazymax.dev/diun/providers/docker/#docker-labels
         // Also Dockhand should not be auto updating the containers. See https://dockhand.pro/manual/#container-labels-behavior

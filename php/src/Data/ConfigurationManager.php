@@ -1092,6 +1092,28 @@ class ConfigurationManager
         return '';
     }
 
+    /**
+     * Returns the entries of the EXTRA_HOSTS env variable (comma separated, same format as docker's `--add-host`: `hostname:ip`).
+     * The special value `host-gateway` is allowed as ip, e.g. `my.host.local:host-gateway`.
+     *
+     * @return list<string>
+     */
+    public function getExtraHosts() : array {
+        $extraHosts = getenv('EXTRA_HOSTS');
+        if (!is_string($extraHosts) || trim($extraHosts) === '') {
+            return [];
+        }
+        $result = [];
+        foreach (explode(',', $extraHosts) as $entry) {
+            $entry = trim($entry);
+            if ($entry === '') {
+                continue;
+            }
+            $result[] = $entry;
+        }
+        return array_values(array_unique($result));
+    }
+
     public function getNextcloudStartupApps() : string {
         $apps = getenv('NEXTCLOUD_STARTUP_APPS');
         if (is_string($apps)) {
