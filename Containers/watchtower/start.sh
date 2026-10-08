@@ -20,8 +20,15 @@ if [ -f /run/.containerenv ]; then
     export WATCHTOWER_DISABLE_MEMORY_SWAPPINESS=1
 fi
 
+# Always log at least on info level so that it is visible what watchtower does
+if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
+    WATCHTOWER_LOG_LEVEL=debug
+else
+    WATCHTOWER_LOG_LEVEL=info
+fi
+
 if [ -n "$CONTAINER_TO_UPDATE" ]; then
-    exec /watchtower --cleanup --log-level "$AIO_LOG_LEVEL" --run-once "$CONTAINER_TO_UPDATE"
+    exec /watchtower --cleanup --log-level "$WATCHTOWER_LOG_LEVEL" --run-once "$CONTAINER_TO_UPDATE"
 else
     echo "'CONTAINER_TO_UPDATE' is not set. Cannot update anything."
     exit 1
