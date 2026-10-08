@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+name: Release 3 - publish stable
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency: release
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - env:
+          # Needs write access to this repo (including pushing to main) and permission to run
+          # workflows in nextcloud-releases/all-in-one, which the default token doesn't have.
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }} # zizmor: ignore[secrets-outside-env]
+          GH_REPO: ${{ github.repository }}
+        run: ./.github/scripts/release-stable.sh
