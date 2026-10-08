@@ -76,8 +76,8 @@ $app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $
         return $handler->handle($request);
     }
 
-    // allow cross-origin navigations to /, /login and /containers if no query params are set
-    if ($isDocumentNavigation && in_array($request->getUri()->getPath(), ['/', '/login', '/containers'], true) && $request->getUri()->getQuery() === '') {
+    // allow cross-origin navigations to `/`, and `/login`, if no query params are set
+    if ($isDocumentNavigation && in_array($request->getUri()->getPath(), ['/', '/login'], true) && $request->getUri()->getQuery() === '') {
         return $handler->handle($request);
     }
 
