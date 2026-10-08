@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM caddy:2.11.4-alpine AS caddy
+FROM caddy:2.11.6-alpine AS caddy
 
 # From https://github.com/docker-library/httpd/blob/master/2.4/alpine/Dockerfile
 FROM httpd:2.4.69-alpine3.24
