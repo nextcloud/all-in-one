@@ -4805,16 +4805,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "6.19.1",
+            "version": "6.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "e2ca44251c1f1aa2e35452d426895746b47de64e"
+                "reference": "804f03c0c183d149fcd4b8c7c0c9b3fbf836d34c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/e2ca44251c1f1aa2e35452d426895746b47de64e",
-                "reference": "e2ca44251c1f1aa2e35452d426895746b47de64e",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/804f03c0c183d149fcd4b8c7c0c9b3fbf836d34c",
+                "reference": "804f03c0c183d149fcd4b8c7c0c9b3fbf836d34c",
                 "shasum": ""
             },
             "require": {
@@ -4919,7 +4919,7 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-09-29T09:38:04+00:00"
+            "time": "2026-10-09T15:20:18+00:00"
         },
         {
             "name": "wapmorgan/php-deprecation-detector",
