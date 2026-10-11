@@ -316,6 +316,11 @@
           "source": "nextcloud_aio_nextcloud",
           "destination": "/var/www/html",
           "writeable": false
+        },
+        {
+          "source": "%NEXTCLOUD_TRUSTED_CACERTS_DIR%",
+          "destination": "/usr/local/share/ca-certificates",
+          "writeable": false
         }
       ],
       "environment": [
@@ -325,6 +330,9 @@
       ],
       "restart": "unless-stopped",
       "read_only": true,
+      "tmpfs": [
+        "/tmp"
+      ],
       "cap_drop": [
         "NET_RAW"
       ]
