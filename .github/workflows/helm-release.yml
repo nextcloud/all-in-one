@@ -13,7 +13,7 @@ jobs:
     # Do not run this workflow on forked repositories, as they might not have the `gh-pages` branch created, or might
     # want to use it for other purposes than publishing helm charts
     if: github.repository == 'nextcloud/all-in-one'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
