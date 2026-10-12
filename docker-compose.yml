@@ -242,6 +242,11 @@ services:
         chown www-data:www-data /var/www/html/custom_apps/context_chat
         chown www-data:www-data /var/www/html/custom_apps/context_chat/lib
         chown www-data:www-data /var/www/html/custom_apps/context_chat/lib/AppInfo
+        # Same problem for config/: the skeleton.config.php bind mount would make
+        # Docker create it root-owned on a fresh volume, and Nextcloud then refuses to
+        # install ("Cannot write into config directory").
+        mkdir -p /var/www/html/config
+        chown www-data:www-data /var/www/html/config
         echo "custom_apps init: directories created and chowned to www-data"
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:rw
@@ -308,6 +313,9 @@ services:
       # live under custom_apps in the named volume -- see SETUP.md for the
       # one-time `occ app:enable` step this still needs.
       - ./nextcloud-custom-apps/nc_aio_tools:/var/www/html/custom_apps/nc_aio_tools:rw
+      # See the comment in the file: makes NEXTCLOUD_SKELETON_DIRECTORY apply during
+      # install, not just after it.
+      - ./nextcloud-config/skeleton.config.php:/var/www/html/config/skeleton.config.php:ro
       # Custom occ commands, run through AIO's own NEXTCLOUD_EXEC_COMMANDS hook
       # (see the env var below and the comments in the script itself). Replaces
       # both the former nextcloud-aio-post-install one-shot service and the manual
@@ -395,6 +403,10 @@ services:
       - NEXTCLOUD_EXEC_COMMANDS=bash /nextcloud-exec-commands.sh
       # Consumed by the exec-commands script above, not by AIO itself.
       - DEFAULT_QUOTA
+      # "empty" stops accounts from getting Nextcloud's ~62 MB of sample files, which
+      # alone exceed the 50 MB DEFAULT_QUOTA. Read by AIO's entrypoint and by
+      # nextcloud-config/skeleton.config.php (mounted below), which covers the admin.
+      - NEXTCLOUD_SKELETON_DIRECTORY
       - CLAMAV_MAX_FILE_SIZE
       - NEXTCLOUD_DEFAULT_APPS
       - NEXTCLOUD_APPSTORE_ENABLED
