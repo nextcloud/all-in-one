@@ -530,6 +530,35 @@ services:
     cap_drop:
       - NET_RAW
 
+  # Makes https://${NC_DOMAIN} work from INSIDE the Collabora container. richdocuments
+  # builds the user-settings and template URLs it hands Collabora from the public URL
+  # (overwritehost), not from the internal callback URL. With NC_DOMAIN=localhost those
+  # resolve to 127.0.0.1 in Collabora's own network namespace, where nothing listens, so
+  # every fetch fails and Collabora aborts the document load ("Failed to load all
+  # settings", close reason "configfailed"): the editor opens blank on every document.
+  # The extra_hosts entry above does not help, because Collabora tries 127.0.0.1 first.
+  # This shares Collabora's network namespace and forwards its loopback :443 to
+  # nextcloud-aio-nginx as plain TCP, so TLS still ends at nginx. Collabora does not
+  # verify certificates of hosts it fetches from by default, so the self-signed cert is
+  # fine.
+  nextcloud-aio-collabora-loopback:
+    image: nginx:alpine
+    network_mode: "service:nextcloud-aio-collabora"
+    depends_on:
+      nextcloud-aio-collabora:
+        condition: service_started
+      nextcloud-aio-nginx:
+        condition: service_started
+    command:
+      - sh
+      - -c
+      - |
+        printf 'events {}\nstream {\n  server {\n    listen 127.0.0.1:443;\n    listen [::1]:443;\n    proxy_pass nextcloud-aio-nginx:443;\n  }\n}\n' > /tmp/loopback.conf
+        exec nginx -c /tmp/loopback.conf -g 'daemon off;'
+    restart: unless-stopped
+    profiles:
+      - collabora
+
   nextcloud-aio-talk:
     image: ghcr.io/nextcloud-releases/aio-talk:20260805_083533
     user: "1000"
