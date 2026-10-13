@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 type = process
 command = timeout 86400 nc -lk 9001
 run-as = www-data

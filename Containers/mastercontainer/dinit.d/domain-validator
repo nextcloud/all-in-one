@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 type = process
 command = php -S 127.0.0.1:9876 /var/www/docker-aio/php/domain-validator.php
 run-as = www-data

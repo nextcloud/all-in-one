@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 if [[ "$1" = -* ]]; then
     echo "Usage $(basename "$0") [PLAYWRIGHT_TESTS_FILE]"
     exit 1
