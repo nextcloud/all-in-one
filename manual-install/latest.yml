@@ -95,6 +95,7 @@ services:
     shm_size: 268435456
     read_only: true
     tmpfs:
+      - /var/lib/postgresql
       - /var/run/postgresql
     cap_drop:
       - NET_RAW
