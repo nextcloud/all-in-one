@@ -2,7 +2,7 @@
 This container starts [Glances](https://nicolargo.github.io/glances/), a web-based system monitoring dashboard, and auto-configures it for you.
 
 > [!CAUTION]
-> This container mounts the docker-socket from the host-system.
+> This container mounts the docker-socket from the host-system and thus has unlimited root access to it!
 
 ### Notes
 - After adding and starting the container, you can directly visit http://ip.address.of.server:61208/ and access your new Glances instance!

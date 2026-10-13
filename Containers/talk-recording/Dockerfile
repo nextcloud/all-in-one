@@ -2,7 +2,8 @@
 
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
-FROM python:3.14.7-alpine3.24
+
+FROM python:3.14.8-alpine3.24
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh

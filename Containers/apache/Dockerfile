@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-FROM caddy:2.11.4-alpine AS caddy
+FROM caddy:2.11.6-alpine AS caddy
 
 # From https://github.com/docker-library/httpd/blob/master/2.4/alpine/Dockerfile
 FROM httpd:2.4.69-alpine3.24
