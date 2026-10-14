@@ -214,7 +214,7 @@ RUN set -ex; \
     ; \
 # imap was removed from PHP core in 8.4, so it needs to be installed from PECL from now on
     pecl install -D 'with-kerberos="yes" with-imap-ssl="yes"' imap-1.0.3; \
-    pecl install smbclient; \
+    pecl install smbclient-1.1.2; \
     docker-php-ext-enable imap smbclient; \
     \
     runDeps="$( \
