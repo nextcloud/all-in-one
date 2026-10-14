@@ -39,8 +39,14 @@ FFMPEG_SECTION="[ffmpeg]
 extensionaudio = .ogg
 extensionvideo = .webm"
 
+# Runs a short test encode to verify that the given ffmpeg arguments actually work on this hardware
+ffmpeg_encode_works() {
+    timeout 30 ffmpeg -hide_banner -loglevel error "$@" -f null - >/dev/null 2>&1
+}
+
 # Check for NVIDIA GPU hardware encoding (NVENC)
-if [ -e "/dev/nvidia0" ] && ffmpeg -hide_banner -encoders 2>/dev/null | grep -q "h264_nvenc"; then
+if [ -e "/dev/nvidia0" ] \
+    && ffmpeg_encode_works -f lavfi -i nullsrc=s=256x256 -frames:v 1 -c:v h264_nvenc -preset p4; then
     echo "NVIDIA GPU detected, enabling h264_nvenc hardware transcoding"
     FFMPEG_SECTION="[ffmpeg]
 outputvideo = -c:v h264_nvenc -preset p4
@@ -48,7 +54,9 @@ outputaudio = -c:a aac
 extensionaudio = .m4a
 extensionvideo = .mp4"
 # Check for VA-API render node (Intel/AMD open source drivers)
-elif [ -r "/dev/dri/renderD128" ] && ffmpeg -hide_banner -encoders 2>/dev/null | grep -q "h264_vaapi"; then
+# The render node may also belong to a GPU without a usable VA-API driver (e.g. NVIDIA), so test it
+elif [ -r "/dev/dri/renderD128" ] \
+    && ffmpeg_encode_works -vaapi_device /dev/dri/renderD128 -f lavfi -i nullsrc=s=256x256 -frames:v 1 -vf format=nv12,hwupload -c:v h264_vaapi; then
     echo "DRI device detected, enabling h264_vaapi hardware transcoding"
     FFMPEG_SECTION="[ffmpeg]
 common = ffmpeg -loglevel level+warning -n -vaapi_device /dev/dri/renderD128
@@ -56,6 +64,8 @@ outputvideo = -vf format=nv12,hwupload -c:v h264_vaapi
 outputaudio = -c:a aac
 extensionaudio = .m4a
 extensionvideo = .mp4"
+else
+    echo "No usable hardware encoder detected, using CPU transcoding"
 fi
 
 cat << RECORDING_CONF > "/conf/recording.conf"
