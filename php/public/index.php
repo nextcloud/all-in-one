@@ -63,6 +63,7 @@ $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 // Auth Middleware
 $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
+// Check Sec-Fetch headers
 $app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($responseFactory) : Response {
     // allow same-origin and none
     if (in_array($request->getHeaderLine('Sec-Fetch-Site'), ['same-origin', 'none'], true)) {
