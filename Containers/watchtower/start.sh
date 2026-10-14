@@ -21,6 +21,7 @@ if [ -f /run/.containerenv ]; then
 fi
 
 # Always log at least on info level so that it is visible what watchtower does
+echo "Note: This service is pinned to a log level of at least 'info' in order to always show some information, because it is vital to the AIO update procedure."
 if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     WATCHTOWER_LOG_LEVEL=debug
 else
