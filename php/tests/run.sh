@@ -12,7 +12,7 @@ cd "$(dirname "$0")/../.." || {
 
 DOCO="docker compose -f ./php/tests/compose.yaml"
 
-if [[ $(uname -m) = 'arm64' ]]; then
+if [[ $(uname -m) = 'arm64' || $(uname -m) = 'aarch64' ]]; then
     export ARM64_SUFFIX='-arm64'
 fi
 
