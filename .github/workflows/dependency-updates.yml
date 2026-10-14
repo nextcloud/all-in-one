@@ -54,14 +54,7 @@ jobs:
         )"
         sed -i "s|\(pecl install -D 'with-kerberos=\"yes\" with-imap-ssl=\"yes\"' imap\)-.*\;|\1-$imap_version\;|" ./Containers/nextcloud/Dockerfile
 
-        smbclient_version="$(
-          git ls-remote --tags https://github.com/eduardok/libsmbclient-php.git \
-            | cut -d/ -f3 \
-            | grep -viE -- 'rc|alpha|beta|dev|\^' \
-            | sed -E 's/^v//' \
-            | sort -V \
-            | tail -1
-        )"
+        smbclient_version="$(curl -s https://api.github.com/repos/eduardok/libsmbclient-php/releases/latest | jq -r '.tag_name')"
         sed -i "s|pecl install smbclient.*\;|pecl install smbclient-$smbclient_version\;|" ./Containers/nextcloud/Dockerfile
 
     - name: Create Pull Request
