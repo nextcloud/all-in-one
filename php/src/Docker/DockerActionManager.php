@@ -692,6 +692,47 @@ readonly class DockerActionManager {
         }
     }
 
+    /**
+     * Strict check for daily-backup.sh: true only if the mastercontainer and every enabled
+     * container are running, and the registry digest of each of them could be fetched and
+     * matches the running image. Any lookup that fails counts as "not up to date".
+     */
+    public function IsEverythingRunningAndUpToDate(): bool {
+        if (!$this->IsRunningImageCurrent('nextcloud-aio-mastercontainer', $this->GetCurrentImageName(), $this->GetCurrentChannel())) {
+            return false;
+        }
+        return $this->IsContainerTreeRunningAndUpToDate('nextcloud-aio-apache');
+    }
+
+    private function IsContainerTreeRunningAndUpToDate(string $id): bool {
+        $container = $this->containerDefinitionFetcher->GetContainerById($id);
+        if ($this->GetContainerRunningState($container) !== ContainerState::Running) {
+            return false;
+        }
+        $tag = $container->imageTag;
+        if ($tag === '%AIO_CHANNEL%') {
+            $tag = $this->GetCurrentChannel();
+        }
+        if (!$this->IsRunningImageCurrent($container->identifier, $container->containerName, $tag)) {
+            return false;
+        }
+        foreach ($container->dependsOn as $dependency) {
+            if (!$this->IsContainerTreeRunningAndUpToDate($dependency)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function IsRunningImageCurrent(string $containerName, string $imageName, string $tag): bool {
+        $runningDigests = $this->GetRepoDigestsOfContainer($containerName);
+        $remoteDigest = $this->GetLatestDigestOfTag($imageName, $tag);
+        if ($runningDigests === null || $remoteDigest === null) {
+            return false;
+        }
+        return in_array($remoteDigest, $runningDigests, true);
+    }
+
     private function getBackupVolumes(string $id): string {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
