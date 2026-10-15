@@ -40,7 +40,7 @@ https://:8443 {
     header Strict-Transport-Security max-age=31536000;
 
 	root * /var/www/docker-aio/php/public
-	php_fastcgi unix//run/php.sock
+	php_fastcgi unix//run/php/php.sock
 	file_server
 
 	tls {
