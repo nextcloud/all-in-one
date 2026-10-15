@@ -1,5 +1,6 @@
 type = process
 command = php-fpm
+run-as = www-data
 term-signal = QUIT
 restart = yes
 options = shares-console
