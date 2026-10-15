@@ -1,0 +1,68 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+name: image-scan
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '00 04 * * *'
+
+permissions: {}
+
+jobs:
+  scan:
+    name: scan latest images for fixable vulnerabilities
+    runs-on: ubuntu-latest
+    outputs:
+      fixable: ${{ steps.scan.outputs.fixable }}
+    steps:
+    - uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
+      with:
+        version: v0.76.0
+    - name: Run trivy
+      id: scan
+      run: |
+        # Keep in sync with the image list in nextcloud-releases/all-in-one build_images.yml
+        images="aio-alpine aio-apache aio-borgbackup aio-collabora aio-domaincheck all-in-one aio-nextcloud
+          aio-notify-push aio-postgresql aio-redis aio-talk aio-watchtower aio-clamav aio-onlyoffice aio-eurooffice
+          aio-imaginary aio-talk-recording aio-fulltextsearch aio-docker-socket-proxy aio-harp aio-whiteboard"
+        trivy image --download-db-only
+        fixable=""
+        failed=""
+        for image in $images; do
+          echo "::group::$image"
+          # Exit code 2 means findings, anything else non-zero is a scan error
+          trivy image --quiet --skip-db-update --ignore-unfixed --severity HIGH,CRITICAL --exit-code 2 "ghcr.io/nextcloud-releases/$image:latest" && rc=0 || rc=$?
+          case "$rc" in
+            0) ;;
+            2) fixable="$fixable $image" ;;
+            *) failed="$failed $image" ;;
+          esac
+          # Large images (collabora, onlyoffice) would otherwise fill the runner disk
+          trivy clean --scan-cache
+          echo "::endgroup::"
+        done
+        echo "fixable=${fixable# }" >> "$GITHUB_OUTPUT"
+        {
+          echo "Images with fixable HIGH/CRITICAL vulnerabilities: ${fixable:-none}"
+          echo "Images that could not be scanned: ${failed:-none}"
+        } >> "$GITHUB_STEP_SUMMARY"
+
+  rebuild:
+    name: trigger image rebuild
+    needs: scan
+    if: needs.scan.outputs.fixable != ''
+    runs-on: ubuntu-latest
+    environment: release-dispatch
+    steps:
+    - name: Dispatch repo-sync in nextcloud-releases/all-in-one
+      env:
+        GH_TOKEN: ${{ secrets.RELEASES_DISPATCH_TOKEN }}
+        FIXABLE: ${{ needs.scan.outputs.fixable }}
+      run: |
+        echo "Fixable vulnerabilities in: $FIXABLE"
+        curl -fsS -X POST \
+          -H "Authorization: Bearer $GH_TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          https://api.github.com/repos/nextcloud-releases/all-in-one/actions/workflows/repo-sync.yml/dispatches \
+          -d '{"ref":"main"}'
