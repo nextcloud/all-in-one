@@ -68,6 +68,7 @@ RUN set -ex; \
     )"; \
     apk add --no-cache --virtual .nextcloud-aio-rundeps $runDeps; \
     apk del .build-deps; \
+    rm -f /usr/src/php.tar.xz /usr/src/php.tar.xz.asc; \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 80/' /usr/local/etc/php-fpm.d/www.conf; \
