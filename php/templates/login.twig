@@ -8,7 +8,10 @@
             <text x="10" y="50" fill="var(--color-nextcloud-logo)" class="fallback-text">Nextcloud Logo</text>
         </svg>
         <h1>Nextcloud AIO Login</h1>
-        {% if is_login_allowed == true %}
+        {% if is_authenticated == true %}
+            <p>You are already logged in.</p>
+            <a href="." class="button">Open Nextcloud AIO</a>
+        {% elseif is_login_allowed == true %}
             {% if login_unblocked_notice %}
                 <p>{{ login_unblocked_notice }}</p>
             {% endif %}

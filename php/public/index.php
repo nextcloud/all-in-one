@@ -77,8 +77,8 @@ $app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $
         return $handler->handle($request);
     }
 
-    // allow cross-origin navigations to `/`, and `/login`, if no query params are set
-    if ($isDocumentNavigation && in_array($request->getUri()->getPath(), ['/', '/login'], true) && $request->getUri()->getQuery() === '') {
+    // allow cross-origin navigations to `/login`, if no query params are set
+    if ($isDocumentNavigation && $request->getUri()->getPath() === '/login' && $request->getUri()->getQuery() === '') {
         return $handler->handle($request);
     }
 
@@ -214,6 +214,7 @@ $app->get('/login', function (Request $request, Response $response, array $args)
     /** @var \AIO\Auth\AuthManager $authManager */
     $authManager = $container->get(\AIO\Auth\AuthManager::class);
     return $view->render($response, 'login.twig', [
+        'is_authenticated' => $authManager->IsAuthenticated(),
         'is_login_allowed' => $dockerActionManager->isLoginAllowed() || $authManager->IsLoginUnblockedForSession(),
         'login_unblocked_notice' => $authManager->GetLoginUnblockedNotice(),
     ]);
