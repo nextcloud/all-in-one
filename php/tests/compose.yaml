@@ -28,12 +28,13 @@ services:
       - "8080:8080"
     volumes:
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro
     profiles:
       - none
     environment:
       SKIP_DOMAIN_VALIDATION: ${SKIP_DOMAIN_VALIDATION-true}
       APACHE_PORT: 11000
+      WATCHTOWER_DOCKER_SOCKET_PATH: ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}
       TESTING___DESEC_API_BASE: http://desec-mock:8090/api/v1 
       TESTING___DESEC_UPDATE_URL: http://desec-mock:8090/update
     entrypoint: bash /start.sh
@@ -77,6 +78,7 @@ services:
     volumes:
       - ..:/app
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config:ro
+      - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro # to read the private key from the Nextcloud container's env
     working_dir: /app/tests
     ports:
       - '9323:9323' # to view test reports
