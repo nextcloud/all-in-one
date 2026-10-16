@@ -876,3 +876,19 @@ body.modal-open {
         grid-template-columns: 1fr;
     }
 }
+
+.dev-flags-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 20px;
+    padding: 2px 10px;
+    background-color: var(--color-running);
+    color: black;
+    font-family: monospace;
+}

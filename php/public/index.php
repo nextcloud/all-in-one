@@ -60,8 +60,22 @@ $twig = Twig::create(__DIR__ . '/../templates/', ['cache' => TWIG_CACHE_PATH]);
 $app->add(TwigMiddleware::create($app, $twig));
 $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 
+// Persist hidden developer flags in the session once they appear on the URL of an authenticated request ('=0' or '=false' turns a flag off again)
+const SESSION_DEV_FLAGS = ['bypass_container_update', 'bypass_mastercontainer_update', 'skip_domain_validation'];
+$authManager = $container->get(\AIO\Auth\AuthManager::class);
+$app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($twig, $authManager): Response {
+    $params = $request->getQueryParams();
+    foreach (SESSION_DEV_FLAGS as $flag) {
+        if (isset($params[$flag]) && $authManager->IsAuthenticated() === true) {
+            $_SESSION['dev_flags'][$flag] = !in_array($params[$flag], ['0', 'false'], true);
+        }
+    }
+    $twig->getEnvironment()->addGlobal('session_dev_flags', $_SESSION['dev_flags'] ?? []);
+    return $handler->handle($request);
+});
+
 // Auth Middleware
-$app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
+$app->add(new \AIO\Middleware\AuthMiddleware($authManager));
 
 // Check Sec-Fetch headers
 $app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($responseFactory) : Response {
@@ -122,11 +136,11 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $dockerActionManager->ConnectMasterContainerToNetwork();
     $dockerController->StartDomaincheckContainer();
 
-    // Check if bypass_mastercontainer_update is provided on the URL, a special developer mode to bypass a mastercontainer update and use local image.
-    $params = $request->getQueryParams();
-    $bypass_mastercontainer_update = isset($params['bypass_mastercontainer_update']);
-    $bypass_container_update = isset($params['bypass_container_update']);
-    $skip_domain_validation = isset($params['skip_domain_validation']);
+    // Developer flags, persisted in the session from URL params (see the middleware above)
+    $devFlags = $_SESSION['dev_flags'] ?? [];
+    $bypass_mastercontainer_update = $devFlags['bypass_mastercontainer_update'] ?? false;
+    $bypass_container_update = $devFlags['bypass_container_update'] ?? false;
+    $skip_domain_validation = $devFlags['skip_domain_validation'] ?? false;
 
     return $view->render($response, 'containers.twig', [
         'domain' => $configurationManager->domain,
@@ -137,7 +151,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_password' => $configurationManager->getAndGenerateSecret('NEXTCLOUD_PASSWORD'),
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
         'borgbackup_password' => $configurationManager->getAndGenerateSecret('BORGBACKUP_PASSWORD'),
-        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
+        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update === false && $dockerActionManager->IsMastercontainerUpdateAvailable() ),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
         'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
         'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
