@@ -10,13 +10,6 @@
     </head>
 
     <body>
-        {% if session_dev_flags is not empty %}
-            <div class="dev-flags-bar">
-                {% for flag, value in session_dev_flags %}
-                    <span>{{ flag }}: {{ value ? 'true' : 'false' }}</span>
-                {% endfor %}
-            </div>
-        {% endif %}
         <div class="wrapper">
             {% block body %}{% endblock %}
         </div>

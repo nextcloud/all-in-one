@@ -60,12 +60,13 @@ $twig = Twig::create(__DIR__ . '/../templates/', ['cache' => TWIG_CACHE_PATH]);
 $app->add(TwigMiddleware::create($app, $twig));
 $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 
-// Persist hidden developer flags in the session once they appear on the URL ('=0' or '=false' turns a flag off again)
+// Persist hidden developer flags in the session once they appear on the URL of an authenticated request ('=0' or '=false' turns a flag off again)
 const SESSION_DEV_FLAGS = ['bypass_container_update', 'bypass_mastercontainer_update', 'skip_domain_validation'];
-$app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($twig): Response {
+$authManager = $container->get(\AIO\Auth\AuthManager::class);
+$app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($twig, $authManager): Response {
     $params = $request->getQueryParams();
     foreach (SESSION_DEV_FLAGS as $flag) {
-        if (isset($params[$flag])) {
+        if (isset($params[$flag]) && $authManager->IsAuthenticated()) {
             $_SESSION['dev_flags'][$flag] = !in_array($params[$flag], ['0', 'false'], true);
         }
     }
@@ -74,7 +75,7 @@ $app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $
 });
 
 // Auth Middleware
-$app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
+$app->add(new \AIO\Middleware\AuthMiddleware($authManager));
 
 // Check Sec-Fetch headers
 $app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($responseFactory) : Response {
