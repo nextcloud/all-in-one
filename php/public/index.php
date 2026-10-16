@@ -66,7 +66,7 @@ $authManager = $container->get(\AIO\Auth\AuthManager::class);
 $app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($twig, $authManager): Response {
     $params = $request->getQueryParams();
     foreach (SESSION_DEV_FLAGS as $flag) {
-        if (isset($params[$flag]) && $authManager->IsAuthenticated()) {
+        if (isset($params[$flag]) && $authManager->IsAuthenticated() === true) {
             $_SESSION['dev_flags'][$flag] = !in_array($params[$flag], ['0', 'false'], true);
         }
     }
@@ -151,7 +151,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_password' => $configurationManager->getAndGenerateSecret('NEXTCLOUD_PASSWORD'),
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
         'borgbackup_password' => $configurationManager->getAndGenerateSecret('BORGBACKUP_PASSWORD'),
-        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
+        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update === false && $dockerActionManager->IsMastercontainerUpdateAvailable() ),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
         'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
         'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
