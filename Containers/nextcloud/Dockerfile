@@ -282,6 +282,8 @@ RUN set -ex; \
     mkdir -p /nc-updater; \
     chmod -R 777 /nc-updater
 
+COPY --chmod=775 Containers/nextcloud/create-oauth2-client.php /create-oauth2-client.php
+
 # hadolint ignore=DL3002
 USER root:root
 # The php-fpm base image sets STOPSIGNAL SIGQUIT, which dinit ignores, so the container would never stop gracefully
