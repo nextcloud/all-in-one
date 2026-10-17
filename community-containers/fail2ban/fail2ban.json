@@ -13,7 +13,8 @@
                 "NET_RAW"
             ],
             "environment": [
-                "TZ=%TIMEZONE%"
+                "TZ=%TIMEZONE%",
+                "FAIL2BAN_IGNOREIPS=%FAIL2BAN_IGNOREIPS%"
             ],
             "volumes": [
                 {
