@@ -1,0 +1,68 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-astrolabe-mcp",
+            "display_name": "Astrolabe",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/astrolabe",
+            "image": "ghcr.io/cbcoutinho/nextcloud-mcp-server",
+            "image_tag": "0.151.0",
+            "internal_port": "8000",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "8000",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "NEXTCLOUD_HOST=http://nextcloud-aio-apache.nextcloud-aio:23973",
+                "NEXTCLOUD_PUBLIC_ISSUER_URL=https://%NC_DOMAIN%",
+                "OIDC_ISSUER=https://%NC_DOMAIN%",
+                "MCP_DEPLOYMENT_MODE=login_flow",
+                "NEXTCLOUD_MCP_SERVER_URL=https://mcp.%NC_DOMAIN%",
+                "NEXTCLOUD_OIDC_CLIENT_ID=%MCP_OIDC_CLIENT_ID%",
+                "NEXTCLOUD_OIDC_CLIENT_SECRET=%MCP_OIDC_CLIENT_SECRET%",
+                "ALLOWED_MGMT_CLIENT=%ASTROLABE_OIDC_CLIENT_ID%",
+                "TOKEN_ENCRYPTION_KEY=%ASTROLABE_TOKEN_ENCRYPTION_KEY%",
+                "TOKEN_STORAGE_DB=/app/data/tokens.db",
+                "ENABLE_SEMANTIC_SEARCH=false",
+                "ENABLE_BACKGROUND_OPERATIONS=false"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_astrolabe_mcp_data",
+                    "destination": "/app/data",
+                    "writeable": true
+                }
+            ],
+            "secrets": [
+                "ASTROLABE_OIDC_CLIENT_ID",
+                "MCP_OIDC_CLIENT_ID",
+                "MCP_OIDC_CLIENT_SECRET",
+                "ASTROLABE_TOKEN_ENCRYPTION_KEY"
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_astrolabe_mcp_data"
+            ],
+            "nextcloud_exec_commands": [
+                "php /var/www/html/occ app:install oidc",
+                "php /var/www/html/occ app:enable oidc",
+                "php /var/www/html/occ config:app:set oidc default_token_type --value=jwt",
+                "php /var/www/html/occ app:install astrolabe",
+                "php /var/www/html/occ app:enable astrolabe",
+                "php /var/www/html/occ app:install assistant",
+                "php /var/www/html/occ app:enable assistant",
+                "php /var/www/html/occ oidc:list | grep -q %ASTROLABE_OIDC_CLIENT_ID% || php /var/www/html/occ oidc:create 'Astrolabe' 'https://%NC_DOMAIN%/apps/astrolabe/unused' --client_id %ASTROLABE_OIDC_CLIENT_ID% --type public --flow code --token_type jwt --resource_url 'https://mcp.%NC_DOMAIN%' > /dev/null || echo 'Astrolabe: occ oidc:create failed for the Astrolabe client, the Assistant agent will not be able to reach the MCP server'",
+                "php /var/www/html/occ oidc:list | grep -q %MCP_OIDC_CLIENT_ID% || php /var/www/html/occ oidc:create 'Nextcloud MCP Server' 'https://mcp.%NC_DOMAIN%/oauth/callback' --client_id %MCP_OIDC_CLIENT_ID% --client_secret %MCP_OIDC_CLIENT_SECRET% --type confidential --flow code --token_type jwt --resource_url 'https://mcp.%NC_DOMAIN%/mcp' > /dev/null || echo 'Astrolabe: occ oidc:create failed for the MCP server client, the MCP server will not be able to validate tokens'",
+                "php /var/www/html/occ config:system:set astrolabe_client_id --value=%ASTROLABE_OIDC_CLIENT_ID%",
+                "php /var/www/html/occ config:system:set mcp_server_url --value=http://nextcloud-aio-astrolabe-mcp:8000",
+                "php /var/www/html/occ config:system:set mcp_server_public_url --value=https://mcp.%NC_DOMAIN%",
+                "php /var/www/html/occ config:app:set astrolabe native_sync_enabled --value=0 --type=boolean",
+                "php /var/www/html/occ config:app:set astrolabe agent_scopes --value='files.read notes.read webdav.read calendar.read contacts.read deck.read'",
+                "php /var/www/html/occ config:app:set astrolabe agent_enabled --value=1 --type=boolean"
+            ]
+        }
+    ]
+}
