@@ -13,6 +13,9 @@ class ConfigurationManager
 {
     public const string DEDYN_SUFFIX = '.dedyn.io';
 
+    // ISO-8601 weekdays (1 = Monday ... 7 = Sunday) on which the daily backup runs by default
+    public const array ALL_WEEKDAYS = [1, 2, 3, 4, 5, 6, 7];
+
     private array $secrets = [];
 
     private array $config = [];
@@ -949,15 +952,21 @@ class ConfigurationManager
     }
 
     /**
+     * @param array<mixed> $weekdays ISO-8601 weekdays (1 = Monday ... 7 = Sunday) on which the backup runs
      * @throws InvalidSettingConfigurationException
      */
-    public function setDailyBackupTime(string $time, bool $enableAutomaticUpdates, bool $successNotification) : void {
+    public function setDailyBackupTime(string $time, bool $enableAutomaticUpdates, bool $successNotification, array $weekdays = self::ALL_WEEKDAYS) : void {
         if ($time === "") {
             throw new InvalidSettingConfigurationException("The daily backup time must not be empty!");
         }
 
         if (!preg_match("#^[0-1][0-9]:[0-5][0-9]$#", $time) && !preg_match("#^2[0-3]:[0-5][0-9]$#", $time)) {
             throw new InvalidSettingConfigurationException("You did not enter a correct time! One correct example is '04:00'!");
+        }
+
+        $weekdays = $this->normaliseBackupWeekdays($weekdays);
+        if ($weekdays === []) {
+            throw new InvalidSettingConfigurationException("You need to select at least one day of the week for the backup!");
         }
 
         if ($enableAutomaticUpdates === false) {
@@ -970,9 +979,37 @@ class ConfigurationManager
         } else {
             $time .= PHP_EOL;
         }
+        // The weekdays are only stored on a 4th line if they differ from the default (every day),
+        // so that the file stays identical to the previous format in the default case.
+        if ($weekdays !== self::ALL_WEEKDAYS) {
+            $time .= PHP_EOL . implode(',', $weekdays);
+        }
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
         $this->dailyBackupFileCache = '';
         $this->dailyBackupFileMtime = 0;
+    }
+
+    /**
+     * Keeps only valid, unique ISO-8601 weekdays (1 = Monday ... 7 = Sunday) in ascending order.
+     *
+     * @param array<mixed> $weekdays
+     * @return int[]
+     * @throws InvalidSettingConfigurationException
+     */
+    private function normaliseBackupWeekdays(array $weekdays) : array {
+        $normalised = [];
+        foreach ($weekdays as $weekday) {
+            if (!is_string($weekday) && !is_int($weekday)) {
+                throw new InvalidSettingConfigurationException("You did not select valid days of the week!");
+            }
+            if (!preg_match("#^[1-7]$#", (string)$weekday)) {
+                throw new InvalidSettingConfigurationException("You did not select valid days of the week!");
+            }
+            $normalised[] = (int)$weekday;
+        }
+        $normalised = array_values(array_unique($normalised));
+        sort($normalised);
+        return $normalised;
     }
 
     private function getDailyBackupFileContent() : string {
@@ -1004,6 +1041,49 @@ class ConfigurationManager
         }
         $dailyBackupFileArray = explode("\n", $content);
         return $dailyBackupFileArray[0];
+    }
+
+    /**
+     * Returns the ISO-8601 weekdays (1 = Monday ... 7 = Sunday) on which the daily backup runs.
+     * Defaults to every day if the file has no (valid) 4th line, e.g. if it was written by an older version.
+     *
+     * @return int[]
+     */
+    public function getBackupWeekdays() : array {
+        $content = $this->getDailyBackupFileContent();
+        if ($content === '') {
+            return self::ALL_WEEKDAYS;
+        }
+        $dailyBackupFileArray = explode("\n", $content);
+        if (!isset($dailyBackupFileArray[3])) {
+            return self::ALL_WEEKDAYS;
+        }
+        try {
+            $weekdays = $this->normaliseBackupWeekdays(explode(',', trim($dailyBackupFileArray[3])));
+        } catch (InvalidSettingConfigurationException) {
+            return self::ALL_WEEKDAYS;
+        }
+        return $weekdays === [] ? self::ALL_WEEKDAYS : $weekdays;
+    }
+
+    /**
+     * The Nextcloud apps are updated once a week by the first backup that runs on or after a Saturday.
+     * With a backup on every day this is the Saturday, with e.g. a backup on Tuesdays and Thursdays it is the Tuesday.
+     *
+     * Returns the value for the UPDATE_NEXTCLOUD_APPS variable of the Nextcloud container: 'yes' on a Saturday, which
+     * the container also understands in older versions, 'now' on any other day, or an empty string if it is not the day.
+     */
+    private function getUpdateNextcloudAppsValue() : string {
+        $backupWeekdays = $this->getBackupWeekdays();
+        foreach ([6, 7, 1, 2, 3, 4, 5] as $weekday) {
+            if (in_array($weekday, $backupWeekdays, true)) {
+                if ($weekday !== (int)date('N')) {
+                    return '';
+                }
+                return $weekday === 6 ? 'yes' : 'now';
+            }
+        }
+        return '';
     }
 
     public function areAutomaticUpdatesEnabled() : bool {
@@ -1271,7 +1351,7 @@ class ConfigurationManager
             'EUROOFFICE_ENABLED' => $this->officeSuite === OfficeSuite::Eurooffice ? 'yes' : '',
             'COLLABORA_ENABLED' => $this->officeSuite === OfficeSuite::Collabora ? 'yes' : '',
             'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
-            'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? 'yes' : '',
+            'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? $this->getUpdateNextcloudAppsValue() : '',
             'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
             'COLLABORA_DICTIONARIES' => $this->collaboraDictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->collaboraDictionaries,
             'IMAGINARY_ENABLED' => $this->isImaginaryEnabled ? 'yes' : '',
