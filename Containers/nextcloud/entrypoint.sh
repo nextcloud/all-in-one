@@ -423,6 +423,7 @@ EOF
             if [ "$INSTALL_LATEST_MAJOR" = yes ]; then
                 if ! bash /upgrade-latest-major.sh; then
                     echo "Upgrade to latest major version failed! Check the output above for details."
+                    touch "$NEXTCLOUD_DATA_DIR/install.failed"
                     exit 1
                 fi
                 # shellcheck disable=SC2016

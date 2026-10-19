@@ -21,13 +21,24 @@ fi
 # Make sure updater channel is set to "stable"
 $PHP_CLI /var/www/html/occ config:system:set update_channel --value="stable"
 
-# Run the update
-$PHP_CLI /var/www/html/updater/updater.phar --no-interaction --no-backup
+run_updater() {
+    $PHP_CLI /var/www/html/updater/updater.phar --no-interaction --no-backup
+    # The updater exits with 255 (-1) if one of its steps failed, which might leave the code in an inconsistent state.
+    # Other non-zero exit codes come from "occ upgrade" or from disabling maintenance mode, which can be retried here.
+    if [ "$?" -eq 255 ] || ! $PHP_CLI /var/www/html/occ -V; then
+        return 1
+    fi
+    if $PHP_CLI /var/www/html/occ status | grep needsDbUpgrade | grep -q 'true'; then
+        $PHP_CLI /var/www/html/occ upgrade || return 1
+    fi
+    if $PHP_CLI /var/www/html/occ status | grep maintenance | grep -q 'true'; then
+        $PHP_CLI /var/www/html/occ maintenance:mode --off || return 1
+    fi
+}
 
-# Do some tests
-if ! $PHP_CLI /var/www/html/occ -V || $PHP_CLI /var/www/html/occ status | grep maintenance | grep -q 'true'; then
-    echo "Installation of Nextcloud failed!"
-    touch "$NEXTCLOUD_DATA_DIR/install.failed"
+# Run the update
+if ! run_updater; then
+    echo "Upgrade of Nextcloud failed! Check the output above and the updater.log in the Nextcloud data directory for details."
     exit 1
 fi
 # shellcheck disable=SC2016
@@ -35,11 +46,8 @@ installed_version="$($PHP_CLI -r 'require "/var/www/html/version.php"; echo impl
 export INSTALLED_MAJOR="${installed_version%%.*}"
 # If a valid upgrade path, trigger the Nextcloud built-in Updater
 if ! $PHP_CLI -r "version_compare(getenv('INSTALLED_MAJOR'), getenv('IMAGE_MAJOR'), '>') || exit(1);"; then
-    $PHP_CLI /var/www/html/updater/updater.phar --no-interaction --no-backup
-    if ! $PHP_CLI /var/www/html/occ -V || $PHP_CLI /var/www/html/occ status | grep maintenance | grep -q 'true'; then
-        echo "Installation of Nextcloud failed!"
-        # TODO: Add a hint here about what to do / where to look / updater.log?
-        touch "$NEXTCLOUD_DATA_DIR/install.failed"
+    if ! run_updater; then
+        echo "Upgrade of Nextcloud failed! Check the output above and the updater.log in the Nextcloud data directory for details."
         exit 1
     fi
 fi
