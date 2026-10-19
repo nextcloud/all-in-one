@@ -526,7 +526,7 @@ readonly class DockerActionManager {
             // /dev/nvme0 and not via the block device /dev/nvme0n1)
             $requestBody['HostConfig']['DeviceCgroupRules'] = ["b *:* rmw", "c *:* rmw"];
         // Special things for the makemkv container which should not be exposed in the containers.json
-        } elseif ($container->identifier === 'nextcloud-aio-makemkv') {
+        } elseif ($container->identifier === 'nextcloud-aio-makekv') {
             // Allow it to access block devices
             $requestBody['HostConfig']['DeviceCgroupRules'] = ["b 11:* rmw", "c 21:* rmw"];
         }
