@@ -19,7 +19,9 @@ readonly class AuthManager {
     }
 
     public function CheckCredentials(string $password) : bool {
-        return hash_equals($this->configurationManager->password, $password);
+        $storedPassword = $this->configurationManager->password;
+        // Do not allow login if the password hasn't been set yet.
+        return $storedPassword !== '' && hash_equals($storedPassword, $password);
     }
 
     public function CheckToken(string $token) : bool {
