@@ -90,7 +90,10 @@ RUN set -ex; \
     chmod -R 770 /var/www/docker-aio; \
     chown -R www-data:www-data /var/www; \
     rm -r php/data; \
-    rm -r php/session;
+    rm -r php/session; \
+    \
+    # Remove setuid/setgid bits (e.g. from shadow) as nothing needs them
+    find / -xdev -type f \( -perm -4000 -o -perm -2000 \) -exec chmod u-s,g-s {} +;
 
 # hadolint ignore=DL3048
 LABEL org.opencontainers.image.title="Nextcloud All-in-One Mastercontainer" \
