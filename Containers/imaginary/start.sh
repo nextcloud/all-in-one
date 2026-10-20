@@ -15,12 +15,18 @@ if [ "$AIO_LOG_LEVEL" = "debug" ]; then
     export DEBUG='*'
 fi
 
-echo "Imaginary has started"
-
-IMAGINARY_ARGS=(-return-size -max-allowed-resolution 222.2)
-
-if [ -n "$IMAGINARY_SECRET" ]; then
-    IMAGINARY_ARGS+=(-key "$IMAGINARY_SECRET")
+if [ "$AIO_LOG_LEVEL" = "debug" ] || [ "$AIO_LOG_LEVEL" = "info" ]; then
+    export ACCESS_LOG=1
 fi
 
-exec imaginary "${IMAGINARY_ARGS[@]}" "$@"
+if [ -z "$IMAGINARY_SECRET" ]; then
+    echo "You need to provide the IMAGINARY_SECRET."
+    exit 1
+fi
+
+# Forward additional arguments to imaginary
+export IMAGINARY_ADDITIONAL_ARGS="$*"
+
+echo "Imaginary has started"
+
+exec dinit --system --container imaginary ffmpeg-preview-service

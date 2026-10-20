@@ -20,7 +20,12 @@ jobs:
             | tail -1
         )"
         sed -i "s|^ENV IMAGINARY_HASH.*$|ENV IMAGINARY_HASH=$imaginary_version|" ./Containers/imaginary/Dockerfile
-        
+
+        # ffmpeg preview service
+        if curl -fsSL -o /tmp/ffmpeg-preview-service.py https://raw.githubusercontent.com/nextcloud/server/master/build/ffmpeg-preview-service/server.py; then
+          mv /tmp/ffmpeg-preview-service.py ./Containers/imaginary/ffmpeg-preview-service.py
+        fi
+
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v7
       with:

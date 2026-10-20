@@ -192,7 +192,6 @@ RUN set -ex; \
     \
 # Template from https://github.com/nextcloud/docker/blob/master/.examples/dockerfiles/full/fpm-alpine/Dockerfile
     apk add --no-cache \
-        ffmpeg \
         procps \
         samba-client \
         dinit \

@@ -1035,7 +1035,15 @@ if [ "$IMAGINARY_ENABLED" = 'yes' ]; then
     php /var/www/html/occ config:system:set enabledPreviewProviders 23 --value="OC\\Preview\\ImaginaryPDF"
     php /var/www/html/occ config:system:set preview_imaginary_url --value="http://$IMAGINARY_HOST:9000"
     php /var/www/html/occ config:system:set preview_imaginary_key --value="$IMAGINARY_SECRET"
+    php /var/www/html/occ config:system:set enabledPreviewProviders 25 --value="OC\\Preview\\MovieRemote"
+    php /var/www/html/occ config:system:set preview_ffmpeg_url --value="http://$IMAGINARY_HOST:8080"
+    php /var/www/html/occ config:system:set preview_ffmpeg_key --value="$IMAGINARY_SECRET"
 else
+    if [ -n "$(php /var/www/html/occ config:system:get preview_ffmpeg_url)" ]; then
+        php /var/www/html/occ config:system:delete enabledPreviewProviders 25
+        php /var/www/html/occ config:system:delete preview_ffmpeg_url
+        php /var/www/html/occ config:system:delete preview_ffmpeg_key
+    fi
     if [ -n "$(php /var/www/html/occ config:system:get preview_imaginary_url)" ]; then
         php /var/www/html/occ config:system:delete enabledPreviewProviders 0
         php /var/www/html/occ config:system:delete preview_imaginary_url

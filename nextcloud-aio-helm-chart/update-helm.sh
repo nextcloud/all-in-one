@@ -58,6 +58,9 @@ yq -i 'del(.services.[].tmpfs)' latest.yml
 yq -i 'del(.services.[].cap_drop)' latest.yml
 # Remove SYS_NICE for imaginary as it is not supported with RPSS
 yq -i 'del(.services."nextcloud-aio-imaginary".cap_add)' latest.yml
+# Remove the imaginary volume as /tmp is writeable anyway since read_only is removed
+yq -i 'del(.services."nextcloud-aio-imaginary".volumes)' latest.yml
+yq -i 'del(.volumes.nextcloud_aio_imaginary)' latest.yml
 # cap SYS_ADMIN is called CAP_SYS_ADMIN in k8s
 sed -i "s|- SYS_ADMIN$|- CAP_SYS_ADMIN|" latest.yml
 

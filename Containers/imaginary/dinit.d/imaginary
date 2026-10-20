@@ -1,0 +1,5 @@
+type = process
+command = imaginary -return-size -max-allowed-resolution 222.2 -key $IMAGINARY_SECRET $/IMAGINARY_ADDITIONAL_ARGS
+term-signal = TERM
+restart = yes
+options = shares-console
