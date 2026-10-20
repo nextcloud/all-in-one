@@ -1,25 +1,26 @@
 name: nextcloud-aio # Add the container to the same compose project to which all the sibling containers are added automatically
 services:
   nextcloud-aio-mastercontainer:
-    image: ghcr.io/nextcloud-releases/all-in-one:latest # This is the container image used. You can switch to ghcr.io/nextcloud-releases/all-in-one:beta if you want to help testing new releases. See https://github.com/nextcloud/all-in-one#how-to-switch-the-channel
+    image: ghcr.io/nextcloud-releases/all-in-one:latest-arm64 # This is the container image used. You can switch to ghcr.io/nextcloud-releases/all-in-one:beta if you want to help testing new releases. See https://github.com/nextcloud/all-in-one#how-to-switch-the-channel
     init: true # This setting makes sure that signals from main process inside the container are correctly forwarded to children. See https://docs.docker.com/reference/compose-file/services/#init
     restart: always # This makes sure that the container starts always together with the host OS. See https://docs.docker.com/reference/compose-file/services/#restart
     container_name: nextcloud-aio-mastercontainer # This line is not allowed to be changed as otherwise AIO will not work correctly
     volumes:
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed as otherwise the built-in backup solution will not work
       - /var/run/docker.sock:/var/run/docker.sock:ro # May be changed on macOS, Windows or docker rootless. See the applicable documentation. If adjusting, don't forget to also set 'WATCHTOWER_DOCKER_SOCKET_PATH'!
+      - /Users/paz/projects/nc/worktrees/all-in-one/stocky-ferry/all-in-one/php:/var/www/docker-aio/php
     # devices: ["/dev/dri"] # Uncomment to enable hardware acceleration. ⚠️⚠️⚠️ Warning: this only works if the '/dev/dri' device is present on the host! If it should not exist on your host, don't add this as otherwise the mastercontainer will fail to start! See https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud
     network_mode: bridge # This adds the container to the same network as docker run would do. Comment this line and uncomment the line below and the networks section at the end of the file if you want to define a custom MTU size for the docker network
     # networks: ["nextcloud-aio"]
     ports:
-      - "80:80" # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      #- "80:80" # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       - "8080:8080" # This is the AIO interface, served via https and self-signed certificate. See https://github.com/nextcloud/all-in-one#explanation-of-used-ports
-      - "8443:8443" # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      #- "8443:8443" # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
     # security_opt: ["label:disable"] # Needed when using SELinux. See https://github.com/nextcloud/all-in-one#are-there-known-problems-when-selinux-is-enabled
-    # environment: # This line is needed (has to be uncommented) when using any of the options below
+    environment: # This line is needed (has to be uncommented) when using any of the options below
       # AIO_DISABLE_BACKUP_SECTION: false # Setting this to true allows to hide the backup section in the AIO interface. See https://github.com/nextcloud/all-in-one#how-to-disable-the-backup-section
-      # APACHE_PORT: 11000 # Needed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
-      # APACHE_IP_BINDING: 127.0.0.1 # Should be set when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) that is running on the same host. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      APACHE_PORT: 11000 # Needed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      APACHE_IP_BINDING: 127.0.0.1 # Should be set when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) that is running on the same host. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       # APACHE_ADDITIONAL_NETWORK: frontend_net # (Optional) Connect the apache container to an additional docker network. Needed when behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) running in a different docker network on same server. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       # BORG_RETENTION_POLICY: --keep-within=7d --keep-weekly=4 --keep-monthly=6 # Allows to adjust borgs retention policy. See https://github.com/nextcloud/all-in-one#how-to-adjust-borgs-retention-policy
       # AIO_LOG_LEVEL: warn # Allows to globally adjust the log level of the included AIO components. Supported values: debug, info, warn, error. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-log-level-for-aio-components
@@ -45,34 +46,36 @@ services:
 #   # Alternatively, if you don't have a domain yet, use the built-in deSEC free domain registration in the AIO interface, or use Tailscale. See https://github.com/nextcloud/all-in-one#how-to-get-a-free-domain-via-desec and https://github.com/nextcloud/all-in-one/discussions/6817
 #   # Hint: You need to uncomment APACHE_PORT: 11000 above, adjust cloud.example.com to your domain and uncomment the necessary docker volumes at the bottom of this file in order to make it work
 #   # You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
-#   caddy:
-#     image: caddy:alpine
-#     restart: always
-#     container_name: caddy
-#     volumes:
-#       - caddy_certs:/certs
-#       - caddy_config:/config
-#       - caddy_data:/data
-#       - caddy_sites:/srv
-#     network_mode: "host"
-#     configs:
-#       - source: Caddyfile
-#         target: /etc/caddy/Caddyfile
-# configs:
-#   Caddyfile:
-#     content: |
-#       # Adjust cloud.example.com to your domain below
-#       https://cloud.example.com:443 {
-#         reverse_proxy localhost:11000
-#       }
+  caddy:
+    image: caddy:alpine
+    restart: always
+    container_name: caddy
+    ports:
+      - "443:443"
+    volumes:
+      - caddy_certs:/certs
+      - caddy_config:/config
+      - caddy_data:/data
+      - caddy_sites:/srv
+    # network_mode: "host"
+    configs:
+      - source: Caddyfile
+        target: /etc/caddy/Caddyfile
+configs:
+ Caddyfile:
+   content: |
+     # Adjust cloud.example.com to your domain below
+     https://localhost.local:443 {
+       reverse_proxy host.docker.internal:11000
+     }
 
 volumes: # If you want to store the data on a different drive, see https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive
   nextcloud_aio_mastercontainer:
     name: nextcloud_aio_mastercontainer # This line is not allowed to be changed as otherwise the built-in backup solution will not work
-  # caddy_certs:
-  # caddy_config:
-  # caddy_data:
-  # caddy_sites:
+  caddy_certs:
+  caddy_config:
+  caddy_data:
+  caddy_sites:
 
 # # Adjust the MTU size of the docker network. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-mtu-size-of-the-docker-network
 # networks:
