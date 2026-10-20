@@ -13,5 +13,6 @@ $baseDir = $vendorDir;
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'OCA\\AllInOne\\Controller\\LoginController' => $baseDir . '/../lib/Controller/LoginController.php',
     'OCA\\AllInOne\\Settings\\Admin' => $baseDir . '/../lib/Settings/Admin.php',
 );

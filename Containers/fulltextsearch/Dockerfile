@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Probably from here https://github.com/elastic/dockerfiles/blob/9.3/elasticsearch/Dockerfile
-FROM elasticsearch:9.5.3
+FROM elasticsearch:9.5.5
 
 USER root:root
 
