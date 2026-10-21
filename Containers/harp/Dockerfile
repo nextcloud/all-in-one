@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM ghcr.io/nextcloud/nextcloud-appapi-harp:v0.4.5
+FROM ghcr.io/nextcloud/nextcloud-appapi-harp:v0.4.6
 
 # USER root is probably used
 
