@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 # Probably from this file: https://github.com/nextcloud/whiteboard/blob/main/Dockerfile
-FROM ghcr.io/nextcloud-releases/whiteboard:v2.0.0
+FROM ghcr.io/nextcloud-releases/whiteboard:v2.1.0
 
 USER root:root
 RUN set -ex; \
