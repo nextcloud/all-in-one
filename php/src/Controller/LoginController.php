@@ -63,7 +63,7 @@ readonly class LoginController {
         // Punish failed auth attempts with a delay, as a very simple means against bots.
         sleep(5);
 
-        return $response->withHeader('Location', '../..')->withStatus(302);
+        return $response->withHeader('Location', '../../login')->withStatus(302);
     }
 
     public function Logout(Request $request, Response $response, array $args) : Response
