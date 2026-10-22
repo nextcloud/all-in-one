@@ -1,0 +1,45 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-meshcentral",
+            "display_name": "MeshCentral (Remote Management)",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/meshcentral",
+            "image": "c0reloop/meshcentral-aio",
+            "image_tag": "latest",
+            "internal_port": "4430",
+            "restart": "unless-stopped",
+            "environment": [
+                "MC_HOSTNAME=meshcentral.%NC_DOMAIN%",
+                "MC_SESSION_KEY=%MC_SESSION_KEY%",
+                "TZ=%TIMEZONE%",
+                "MC_PORT=4430"
+            ],
+            "secrets": [
+                "MC_SESSION_KEY"
+            ],
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "4430",
+                    "protocol": "tcp"
+                }
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_meshcentral_data",
+                    "destination": "/opt/meshcentral/meshcentral-data",
+                    "writeable": true
+                },
+                {
+                    "source": "nextcloud_aio_meshcentral_files",
+                    "destination": "/opt/meshcentral/meshcentral-files",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_meshcentral_data",
+                "nextcloud_aio_meshcentral_files"
+            ]
+        }
+    ]
+}
