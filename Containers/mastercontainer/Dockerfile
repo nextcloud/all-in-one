@@ -5,6 +5,9 @@ FROM docker:29.9.1-cli AS docker
 # Caddy is a requirement
 FROM caddy:2.11.7-alpine AS caddy
 
+# Composer is needed to install the php dependencies
+FROM composer:2.10.3 AS composer
+
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.24/fpm/Dockerfile
 FROM php:8.5.12-fpm-alpine3.24
 
@@ -19,6 +22,7 @@ ENV HOME=/var/www
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
 COPY community-containers /var/www/docker-aio/community-containers
 COPY php /var/www/docker-aio/php
@@ -82,8 +86,6 @@ RUN set -ex; \
     echo "listen.owner = www-data" | tee -a /usr/local/etc/php-fpm.d/docker.conf; \
     \
     apk add --no-cache git; \
-    curl https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; \
-    chmod +x /usr/local/bin/composer; \
     cd /var/www/docker-aio; \
     rm -r ./php/tests; \
     chown www-data:www-data -R /var/www/docker-aio; \
