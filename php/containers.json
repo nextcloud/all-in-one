@@ -827,13 +827,21 @@
         "retries": 3
       },
       "expose": [
-        "9000"
+        "9000",
+        "8080"
       ],
       "internal_port": "9000",
       "environment": [
         "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%",
         "IMAGINARY_SECRET=%IMAGINARY_SECRET%"
+      ],
+      "volumes": [
+        {
+          "source": "nextcloud_aio_imaginary",
+          "destination": "/tmp",
+          "writeable": true
+        }
       ],
       "restart": "unless-stopped",
       "cap_add": [
@@ -846,9 +854,6 @@
         "imaginary"
       ],
       "read_only": true,
-      "tmpfs": [
-        "/tmp"
-      ],
       "secrets": [
         "IMAGINARY_SECRET"
       ]

@@ -27,13 +27,19 @@ RUN set -ex; \
         vips-jxl \
         vips-poppler \
         ttf-dejavu \
+        ffmpeg \
+        python3 \
+        dinit \
         bash
 
 COPY --from=go /go/bin/imaginary /usr/local/bin/imaginary
+COPY --chmod=775 ffmpeg-preview-service.py /usr/local/bin/ffmpeg-preview-service
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
+COPY dinit.d/ /etc/dinit.d/
 
 ENV PORT=9000 \
+    FFMPEG_PREVIEW_PORT=8080 \
     AIO_LOG_LEVEL=warn
 
 USER nobody:nobody
@@ -47,7 +53,7 @@ LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \
     dockhand.update="false" \
     org.opencontainers.image.title="Imaginary for Nextcloud AIO" \
-    org.opencontainers.image.description="High-performance image processing service for Nextcloud All-in-One" \
+    org.opencontainers.image.description="High-performance image and video preview service for Nextcloud All-in-One" \
     org.opencontainers.image.url="https://github.com/nextcloud/all-in-one" \
     org.opencontainers.image.source="https://github.com/nextcloud/all-in-one" \
     org.opencontainers.image.vendor="Nextcloud" \
