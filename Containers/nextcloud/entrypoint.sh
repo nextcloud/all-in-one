@@ -278,10 +278,6 @@ if ! [ -f "$NEXTCLOUD_DATA_DIR/skip.update" ]; then
                 done
             fi
 
-            if [ "$((IMAGE_MAJOR - INSTALLED_MAJOR))" -eq 1 ]; then
-                php /var/www/html/occ config:system:delete app_install_overwrite
-            fi
-
             php /var/www/html/occ app:update --all
 
             run_upgrade_if_needed_due_to_app_update
