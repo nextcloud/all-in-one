@@ -8,6 +8,14 @@
 		root /mnt/docker-aio-config/caddy-internal/
 	}
 
+	# Sets the first part of the CA's name when the CA is generated. Caddy's default is shared by every
+	# Caddy with an internal issuer, so browsers would report a bad signature, not an unknown issuer.
+	pki {
+		ca local {
+			name "Nextcloud AIO"
+		}
+	}
+
 	log {
 		level {$CADDY_LOG_LEVEL}
 		# Below ERROR, caddy prints 'admin endpoint disabled' on every start, which is expected
