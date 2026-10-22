@@ -216,7 +216,6 @@ Add this as a new Apache site config:
 
     RewriteEngine On
     ProxyPreserveHost On
-    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
     # Added to support Euro-office
     RequestHeader set X-Forwarded-Proto "https"
     AllowEncodedSlashes NoDecode
