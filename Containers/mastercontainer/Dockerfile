@@ -94,8 +94,10 @@ RUN set -ex; \
     su-exec www-data composer clear-cache; \
     cd ..; \
     rm -f /usr/local/bin/composer; \
-    chmod -R 770 /var/www/docker-aio; \
     chown -R www-data:www-data /var/www; \
+    # The app code must not be writable by www-data. Runtime data is stored in /mnt/docker-aio-config
+    chown -R root:www-data /var/www/docker-aio; \
+    chmod -R u=rwX,g=rX,o= /var/www/docker-aio; \
     rm -r php/data; \
     rm -r php/session; \
     \
