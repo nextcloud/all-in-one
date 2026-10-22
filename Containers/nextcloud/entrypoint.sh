@@ -577,8 +577,10 @@ EOF
         fi
     fi
 
-    # Performing update of all apps if daily backups are enabled, running and successful and if it is saturday
-    if [ "$UPDATE_NEXTCLOUD_APPS" = 'yes' ] && [ "$(date +%u)" = 6 ]; then
+    # Performing update of all apps if daily backups are enabled, running and successful and if it is the day for it:
+    # 'now' means that AIO already decided so, based on the weekdays of the backup (the first backup on or after saturday),
+    # while 'yes' means that the apps get updated if it is saturday.
+    if [ "$UPDATE_NEXTCLOUD_APPS" = 'now' ] || { [ "$UPDATE_NEXTCLOUD_APPS" = 'yes' ] && [ "$(date +%u)" = 6 ]; }; then
         UPDATED_APPS="$(php /var/www/html/occ app:update --all)"
         run_upgrade_if_needed_due_to_app_update
         if [ -n "$UPDATED_APPS" ]; then
