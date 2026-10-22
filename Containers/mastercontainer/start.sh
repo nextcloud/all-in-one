@@ -442,9 +442,6 @@ fi
 caddy fmt --overwrite /acme.Caddyfile
 caddy fmt --overwrite /internal.Caddyfile
 
-# Fix caddy log 
-chmod 777 /root
-
 # Create Twig template cache directory (path must match TWIG_CACHE_PATH in php/public/index.php)
 mkdir -p /tmp/twig-cache
 rm -rf /tmp/twig-cache/*
