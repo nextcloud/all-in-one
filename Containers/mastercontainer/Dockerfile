@@ -8,6 +8,9 @@ FROM caddy:2.11.7-alpine AS caddy
 # Composer is needed to install the php dependencies
 FROM composer:2.10.3 AS composer
 
+# PIE is needed to install php extensions
+FROM ghcr.io/php/pie:1.5.3-bin AS pie
+
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.24/fpm/Dockerfile
 FROM php:8.5.12-fpm-alpine3.24
 
@@ -34,7 +37,8 @@ WORKDIR /var/www/docker-aio
 
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 # hadolint ignore=SC2086,DL3003
-RUN set -ex; \
+RUN --mount=type=bind,from=pie,source=/pie,target=/usr/local/bin/pie \
+    set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
     groupmod -g 33 www-data; \
@@ -53,11 +57,7 @@ RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
         autoconf \
         build-base; \
-    mkdir -p /usr/src/php/ext/apcu; \
-    curl -fsSL --retry 5 "https://github.com/krakjoe/apcu/archive/refs/tags/v$APCU_VERSION.tar.gz" \
-        | tar -xz --strip-components=1 -C /usr/src/php/ext/apcu; \
-    docker-php-ext-install apcu; \
-    docker-php-source delete; \
+    pie install --no-cache "apcu/apcu:$APCU_VERSION"; \
     { \
         echo 'apc.shm_size=32M'; \
     } >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
