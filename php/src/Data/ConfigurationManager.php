@@ -1038,7 +1038,7 @@ class ConfigurationManager
                     throw new InvalidSettingConfigurationException("You entered unallowed characters! Problematic is " . $entry);
                 }
                 $segments = explode('/', $entry);
-                if (in_array('.', $segments, true) || in_array('..', $segments, true)) {
+                if (in_array('.', $segments, true) || in_array('..', $segments, true) || in_array(',', $segments, true)) {
                     throw new InvalidSettingConfigurationException("References to the current or parent directory are not allowed! Problematic is " . $entry);
                 }
                 $validDirectories .= rtrim($entry, '/') . PHP_EOL;
