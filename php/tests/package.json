@@ -2,6 +2,9 @@
   "name": "nextcloud-aio-mastercontainer-tests",
   "version": "1.0.0",
   "license": "AGPL-3.0-or-later",
+  "scripts": {
+    "test:context-chat": "NC_TEST_PASSWORD=\"${NC_TEST_PASSWORD:-$(docker compose --project-directory ../.. -f ../../docker-compose.yml exec -T nextcloud-aio-nextcloud printenv ADMIN_PASSWORD)}\" playwright test --config=playwright.context-chat.config.mjs"
+  },
   "devDependencies": {
     "@playwright/test": "^1.56.1"
   }
