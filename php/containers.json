@@ -316,6 +316,11 @@
           "source": "nextcloud_aio_nextcloud",
           "destination": "/var/www/html",
           "writeable": false
+        },
+        {
+          "source": "%NEXTCLOUD_TRUSTED_CACERTS_DIR%",
+          "destination": "/usr/local/share/ca-certificates",
+          "writeable": false
         }
       ],
       "environment": [
@@ -325,6 +330,9 @@
       ],
       "restart": "unless-stopped",
       "read_only": true,
+      "tmpfs": [
+        "/tmp"
+      ],
       "cap_drop": [
         "NET_RAW"
       ]
@@ -956,6 +964,7 @@
         "HP_SHARED_KEY=%HP_SHARED_KEY%",
         "NC_INSTANCE_URL=https://%NC_DOMAIN%",
         "HP_FRP_DISABLE_TLS=true",
+        "HP_EXAPP_BIND_MOUNTS_ENFORCE_ALL=true",
         "TZ=%TIMEZONE%"
       ],
       "secrets": [

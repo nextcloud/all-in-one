@@ -2,9 +2,13 @@
 
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
-FROM ghcr.io/nextcloud/nextcloud-appapi-harp:v0.4.5
+FROM ghcr.io/nextcloud/nextcloud-appapi-harp:v0.4.6
 
 # USER root is probably used
+
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
+RUN set -ex; \
+    apk upgrade --no-cache -a
 
 LABEL com.centurylinklabs.watchtower.enable="false" \
     wud.watch="false" \

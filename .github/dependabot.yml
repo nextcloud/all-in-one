@@ -32,7 +32,6 @@ updates:
     - "/Containers/borgbackup"
     - "/Containers/clamav"
     - "/Containers/collabora"
-    - "/Containers/docker-socket-proxy"
     - "/Containers/domaincheck"
     - "/Containers/eurooffice"
     - "/Containers/fulltextsearch"
