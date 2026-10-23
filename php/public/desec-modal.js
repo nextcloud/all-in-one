@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 "use strict";
 
 // Opens the deSEC registration flow (the /desec view) inside a modal iframe so the user can

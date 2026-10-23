@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 name: deSEC API version watch
 
 # Watches the authoritative "API Versions and Roadmap" table in the desec-stack README
