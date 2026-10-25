@@ -3,12 +3,7 @@
 
 import { test, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
-import { fileURLToPath } from 'node:url';
-
-const run = promisify(execFile);
-const root = fileURLToPath(new URL('../../../', import.meta.url));
+import { readTaskError } from './runtime.mjs';
 
 // Serial by design: these tests follow one disposable document through its lifecycle.
 test.describe.serial('Context Chat document lifecycle', () => {
@@ -64,13 +59,7 @@ test.describe.serial('Context Chat document lifecycle', () => {
     if (task.status === 'STATUS_FAILED') {
       // Nextcloud 33 omits internal errors from its task API. Read this task's
       // error only, so a provider outage cannot pass the deletion assertion.
-      const { stdout } = await run('docker', [
-        'compose', '--project-directory', root, '-f', `${root}/docker-compose.yml`,
-        'exec', '-T', '-u', 'www-data', 'nextcloud-aio-nextcloud', 'php', '-r',
-        "require '/var/www/html/lib/base.php'; echo json_encode(\\OCP\\Server::get(\\OCP\\TaskProcessing\\IManager::class)->getTask((int)$argv[1])->getErrorMessage());",
-        String(id),
-      ]);
-      task.diagnosticError = JSON.parse(stdout);
+      task.diagnosticError = await readTaskError(id);
     }
     return task;
   }

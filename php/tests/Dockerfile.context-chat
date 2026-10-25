@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+FROM docker:28.5.1-cli AS docker-cli
+FROM mcr.microsoft.com/playwright:v1.56.1-noble
+COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
+WORKDIR /work/php/tests
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund \
+    && node -e "if(require('@playwright/test/package.json').version !== '1.56.1') process.exit(1)"
+COPY playwright.context-chat.config.mjs ./
+COPY context-chat ./context-chat
+ENTRYPOINT ["node", "context-chat/run-container.mjs"]

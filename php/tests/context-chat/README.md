@@ -3,6 +3,53 @@
 
 # Context Chat lifecycle tests
 
+## Docker Compose runner
+
+From the repository root, build the runner once and start the stack plus tests:
+
+```sh
+docker compose build playwright
+docker compose run --rm playwright
+```
+
+The `playwright` service is in the optional `tests` profile. It is excluded from
+normal `docker compose up`. Targeting it explicitly starts its dependencies,
+waits for Nextcloud health checks and the authenticated Context Chat task-type
+API, runs the tests once, and returns their exit status. Existing data is retained.
+The usual `context-chat` and `ollama` profiles must be enabled, as in the supplied
+`.env`. The runner does not install or register missing Nextcloud apps or models.
+
+Reports and screenshots appear under `php/tests/playwright-report` and
+`php/tests/test-results` on the host. To retain videos of failed browser tests:
+
+```sh
+docker compose run --rm -e NC_TEST_VIDEO=retain-on-failure playwright
+```
+
+Use `NC_TEST_VIDEO=on` to retain every browser video. API-only tests have no video.
+The runner reaches nginx through the internal `nextcloud.local` network alias;
+`NC_TEST_URL` defaults to `https://nextcloud.local`. A URL using `localhost` would
+point at the runner itself. Custom URLs must be reachable from
+the Compose network and accepted by Nextcloud's trusted-domain configuration.
+
+The runner mounts the Docker socket to discover this project's Nextcloud
+container, read its existing admin password, and obtain precise task errors.
+This grants Docker access: run only trusted test code. It does not mount the
+repository `.env` or use `docker compose` inside the image. Explicit
+`NC_TEST_USER`/`NC_TEST_PASSWORD` values override the local account defaults.
+The Playwright image and package-lock version must match (currently 1.56.1).
+
+Build/discovery smoke check, without starting the application or changing data:
+
+```sh
+docker compose run --rm --no-deps --entrypoint node playwright \
+  node_modules/playwright/cli.js test --config=playwright.context-chat.config.mjs --list
+```
+
+Runner checks: `node --test php/tests/context-chat/*.test.mjs`.
+
+## Host runner
+
 Run against an existing local Nextcloud with Assistant, Context Chat, its backend,
 an LLM, and background jobs running. This is separate from the mastercontainer suite.
 Requires Node.js 22 and Docker Compose access to this local stack.

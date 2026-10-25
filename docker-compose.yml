@@ -178,6 +178,42 @@ services:
       - /etc/nginx/conf.d
     cap_drop:
       - NET_RAW
+    networks:
+      default:
+        aliases:
+          - nextcloud.local
+
+  # Opt-in local test runner. Docker access supplies existing credentials and
+  # reads task errors omitted by Nextcloud 33's public API. Trusted test code only.
+  playwright:
+    build:
+      context: ./php/tests
+      dockerfile: Dockerfile.context-chat
+    profiles: [tests]
+    init: true
+    restart: "no"
+    shm_size: 1gb
+    depends_on:
+      nextcloud-aio-nextcloud:
+        condition: service_healthy
+      nextcloud-aio-apache:
+        condition: service_healthy
+      nextcloud-aio-nginx:
+        condition: service_started
+      nextcloud-aio-context-chat-backend:
+        condition: service_started
+      nextcloud-aio-ollama:
+        condition: service_healthy
+    environment:
+      NC_TEST_URL: ${NC_TEST_URL:-https://nextcloud.local}
+      NC_TEST_USER: ${NC_TEST_USER:-admin}
+      NC_TEST_PASSWORD: ${NC_TEST_PASSWORD:-}
+      NC_TEST_PROJECT: ${COMPOSE_PROJECT_NAME:-nextcloud-aio}
+      NC_TEST_VIDEO: ${NC_TEST_VIDEO:-off}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./php/tests/test-results:/work/php/tests/test-results
+      - ./php/tests/playwright-report:/work/php/tests/playwright-report
 
   nextcloud-aio-database:
     image: ghcr.io/nextcloud-releases/aio-postgresql:20260805_083533
@@ -897,6 +933,7 @@ services:
     restart: unless-stopped
     profiles:
       - ollama
+      - tests
 
   # Not part of upstream AIO -- added per Anirban's request so Nextcloud can send
   # transactional email (invites, password resets, share notifications) in local
@@ -1044,6 +1081,7 @@ services:
     restart: unless-stopped
     profiles:
       - context-chat
+      - tests
 
   # Self-hosted S3 for Nextcloud's primary storage, per Anirban's request on PR #1
   # ("use self hosted ceph"). quay.io/ceph/demo packs a whole single-node cluster --

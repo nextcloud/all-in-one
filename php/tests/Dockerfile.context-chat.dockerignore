@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+**
+!package.json
+!package-lock.json
+!playwright.context-chat.config.mjs
+!context-chat/
+!context-chat/**

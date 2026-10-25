@@ -14,6 +14,7 @@ if (!process.env.NC_TEST_PASSWORD && local.NEXTCLOUD_PASSWORD) {
 
 export default defineConfig({
   testDir: './context-chat',
+  testMatch: 'lifecycle.spec.mjs',
   workers: 1,
   retries: 0,
   timeout: 25 * 60_000,
@@ -22,7 +23,7 @@ export default defineConfig({
   outputDir: './test-results/context-chat',
   reporter: [['list'], ['html', { outputFolder: 'playwright-report/context-chat', open: 'never' }]],
   use: {
-    baseURL: process.env.NC_TEST_URL ?? 'https://nextcloud.local',
+    baseURL: process.env.NC_TEST_URL ?? local.NC_TEST_URL ?? 'https://nextcloud.local',
     ignoreHTTPSErrors: true,
     browserName: 'chromium',
     viewport: { width: 1440, height: 1000 },
@@ -31,5 +32,6 @@ export default defineConfig({
     // Login credentials and authenticated requests must not be saved in traces.
     trace: 'off',
     screenshot: 'only-on-failure',
+    video: process.env.NC_TEST_VIDEO ?? 'off',
   },
 });
