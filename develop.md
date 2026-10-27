@@ -23,7 +23,7 @@ Simply use https://github.com/nextcloud/all-in-one/issues/180 as template.
 Simply use https://github.com/nextcloud/all-in-one/issues/6198 as template.
 
 ## How to build new containers
-Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/repo-sync.yml and run the workflow that will first sync the repo and then build new container that automatically get published to `develop` and `develop-arm64`.
+Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml and run the workflow to build new container images that automatically get published to `develop` and `develop-arm64`.
 
 ## How to test things correctly?
 Before testing, make sure that at least the amd64 containers are built successfully by checking the last workflow here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml.
