@@ -12,17 +12,41 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: update helm chart
+        with:
+          # get-helm-chart-branch.sh needs all branches
+          fetch-depth: 0
+      # The chart of images built for a release-<major>.<minor> branch is updated on that branch, see get-helm-chart-branch.sh
+      - name: find the newest images and the branch of their helm chart
+        id: target
         run: |
           set -x
           GHCR_TOKEN="$(curl https://ghcr.io/token?scope=repository:nextcloud-releases/nce-php-fpm-mgmt:pull | jq '.token' | sed 's|"||g')"
           DOCKER_TAG="$(curl -H "Authorization: Bearer ${GHCR_TOKEN}" -L -s 'https://ghcr.io/v2/nextcloud-releases/all-in-one/tags/list?page_size=1024' | jq '.tags' | sed 's|"||g;s|[[:space:]]||g;s|,||g' | grep '^20[0-9_]\+' | grep -v latest | sort -r | head -1)"
-          export DOCKER_TAG
           set +x
-          if [ -n "$DOCKER_TAG" ] && ! grep -q "aio-nextcloud:$DOCKER_TAG" ./nextcloud-aio-helm-chart/templates/nextcloud-aio-nextcloud-deployment.yaml; then
+          if [ -z "$DOCKER_TAG" ]; then
+            exit 0
+          fi
+          BRANCH="$(./.github/scripts/get-helm-chart-branch.sh "$DOCKER_TAG")"
+          if [ "$BRANCH" = "main" ]; then
+            PR_BRANCH="aio-helm-update"
+          else
+            PR_BRANCH="aio-helm-update-$BRANCH"
+          fi
+          echo "docker_tag=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "pr_branch=$PR_BRANCH" >> "$GITHUB_OUTPUT"
+      - name: update helm chart
+        if: steps.target.outputs.branch != ''
+        env:
+          DOCKER_TAG: ${{ steps.target.outputs.docker_tag }}
+          BRANCH: ${{ steps.target.outputs.branch }}
+        run: |
+          git checkout "$BRANCH"
+          if ! grep -q "aio-nextcloud:$DOCKER_TAG" ./nextcloud-aio-helm-chart/templates/nextcloud-aio-nextcloud-deployment.yaml; then
             sudo bash nextcloud-aio-helm-chart/update-helm.sh "$DOCKER_TAG"
           fi
       - name: Create Pull Request
+        if: steps.target.outputs.branch != ''
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v7
         with:
           commit-message: Helm Chart updates
@@ -31,5 +55,6 @@ jobs:
           body: Automated Helm Chart updates for the yaml files. It can be merged if it looks good at any time which will automatically trigger a new release of the helm chart.
           labels: 3. to review
           milestone: next
-          branch: aio-helm-update
+          base: ${{ steps.target.outputs.branch }}
+          branch: ${{ steps.target.outputs.pr_branch }}
           token: ${{ secrets.GITHUB_TOKEN }}
