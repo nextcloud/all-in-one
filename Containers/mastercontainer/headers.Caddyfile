@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 header {
     # CSP limits which features can be used. By default we allow nothing and only allow required options. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy
     # default-src 'none'; Allow nothing by default
