@@ -2,6 +2,7 @@
 name: Helm Chart Releaser
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
