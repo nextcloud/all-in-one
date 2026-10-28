@@ -24,20 +24,17 @@ while true; do
         if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
             set +x
         fi
-        # The optional 4th line contains the ISO weekdays (1 = Monday ... 7 = Sunday) on which the backup runs, e.g. "2,5".
-        # If it is missing or empty, the backup runs every day.
-        BACKUP_WEEKDAYS="$(sed -n '4p' "/mnt/docker-aio-config/data/daily_backup_time" | tr -d '[:space:]')"
+        # The optional 4th line is the ISO weekday (1 = Monday ... 7 = Sunday) of a weekly backup. If it is empty, the backup runs every day.
+        BACKUP_WEEKDAY="$(sed -n '4p' "/mnt/docker-aio-config/data/daily_backup_time" | tr -d '[:space:]')"
         if [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
             export LOCK_FILE_PRESENT=1
         else
             export LOCK_FILE_PRESENT=0
         fi
     else
-        # no backup is planned, but the loop still runs once a day for notifications and housekeeping
         export BACKUP_TIME="04:00"
         export DAILY_BACKUP=0
         export LOCK_FILE_PRESENT=0
-        BACKUP_WEEKDAYS=""
     fi
 
     # Allow to continue directly if e.g. the mastercontainer was updated. Otherwise wait for the next execution
@@ -47,21 +44,13 @@ while true; do
         done
     fi
 
-    # Only the backup itself is skipped on the days that were not selected. The tasks below still run every day.
-    # A backup that was interrupted (e.g. by an update of the mastercontainer) is always resumed, whatever the day is.
+    # A backup that was interrupted (e.g. by a mastercontainer update) is resumed on any day
     if [ "$DAILY_BACKUP" = 1 ]; then
-        case ",$BACKUP_WEEKDAYS," in
-            ",,"|*",$(date +%u),"*)
-                bash /daily-backup.sh
-                ;;
-            *)
-                if [ "$LOCK_FILE_PRESENT" = 1 ]; then
-                    bash /daily-backup.sh
-                else
-                    echo "No backup is scheduled for today (weekday $(date +%u)). Skipping."
-                fi
-                ;;
-        esac
+        if [ -z "$BACKUP_WEEKDAY" ] || [ "$BACKUP_WEEKDAY" = "$(date +%u)" ] || [ "$LOCK_FILE_PRESENT" = 1 ]; then
+            bash /daily-backup.sh
+        else
+            echo "The weekly backup is not scheduled for today. Skipping it."
+        fi
     fi
 
     # Make sure to delete the lock file always

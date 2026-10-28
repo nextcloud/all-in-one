@@ -55,17 +55,8 @@ readonly class ConfigurationController {
                     $successNotification = false;
                 }
                 $dailyBackupTime = $request->getParsedBody()['daily_backup_time'] ?? '';
-                // Unticked checkboxes are not submitted, so the hidden marker tells apart "no day selected"
-                // from a client that does not know about the weekdays (which keeps the backup on every day).
-                if (isset($request->getParsedBody()['backup_weekdays_submitted'])) {
-                    $backupWeekdays = $request->getParsedBody()['backup_weekdays'] ?? [];
-                    if (!is_array($backupWeekdays)) {
-                        $backupWeekdays = [$backupWeekdays];
-                    }
-                } else {
-                    $backupWeekdays = ConfigurationManager::ALL_WEEKDAYS;
-                }
-                $this->configurationManager->setDailyBackupTime($dailyBackupTime, $enableAutomaticUpdates, $successNotification, $backupWeekdays);
+                $backupWeekday = $request->getParsedBody()['backup_weekday'] ?? '0';
+                $this->configurationManager->setDailyBackupTime($dailyBackupTime, $enableAutomaticUpdates, $successNotification, $backupWeekday);
             }
 
             if (isset($request->getParsedBody()['delete_daily_backup_time'])) {

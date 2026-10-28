@@ -26,7 +26,7 @@ Included are:
 - Simple web interface included that enables easy installation and maintenance
 - [Easy updates included](https://github.com/nextcloud/all-in-one#how-to-update-the-containers)
 - Update and backup notifications included
-- Daily backups can be enabled from the AIO interface (optionally only on selected days of the week), it also allows updating all containers, Nextcloud and its apps afterwards automatically
+- Daily backups can be enabled from the AIO interface which also allows updating all containers, Nextcloud and its apps afterwards automatically
 - Instance restore from backup archive via the AIO interface included (you only need the archive and the password in order to restore the whole instance on a new AIO instance)
 - APCu as local cache
 - Redis as distributed cache and for file locking
@@ -1039,9 +1039,7 @@ Backups can be created and restored in the AIO interface using the buttons `Crea
 
 The backups themselves get encrypted with an encryption key that gets shown to you in the AIO interface. Please save that at a safe place as you will not be able to restore from backup without this key.
 
-Daily backups can get enabled after the initial backup is done. Enabling this also allows to enable an option that allows to automatically update all containers, Nextcloud and its apps.
-
-By default the backup is created every day. You can untick the days of the week (in UTC) on which it should not run, e.g. keep only Sunday ticked in order to create a backup once a week. Nextcloud apps are only updated automatically once a week, by the first backup that runs on or after a Saturday (e.g. on Saturday if the backup runs every day, or on Tuesday if it only runs on Tuesdays and Thursdays).
+Daily backups can get enabled after the initial backup is done. Enabling this also allows to enable an option that allows to automatically update all containers, Nextcloud and its apps. Instead of every day, you can select a single day of the week (in UTC) to create a weekly backup. In this case, the automatic updates, including the Nextcloud apps, also happen on that day.
 
 Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app - but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.
 
@@ -1297,7 +1295,7 @@ You can do so by running the `/daily-backup.sh` script that is stored in the mas
 - `START_CONTAINERS` if set to `1`, it will automatically start the containers at the end of the script, without updating them. Implied by `AUTOMATIC_UPDATES=1`.
 - `CHECK_BACKUP` if set to `1`, it will start the integrity check of all borg backups made by AIO. Note that the backup check is non blocking so containers can be kept running while the check lasts. That means you can't pass `DAILY_BACKUP=1` at the same time. The output of the check can be found in the logs of the container `nextcloud-aio-borgbackup`.
 
-One example to do a backup would be `sudo docker exec -it --env DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script. Note that the days of the week that can be selected in the AIO interface only apply to the built-in daily backup: running the script yourself always creates a backup.
+One example to do a backup would be `sudo docker exec -it --env DAILY_BACKUP=1 nextcloud-aio-mastercontainer /daily-backup.sh`, which you can run via a cronjob or put it in a script.
 
 Likewise to do a backup check would be `sudo docker exec --env DAILY_BACKUP=0 --env CHECK_BACKUP=1 --env STOP_CONTAINERS=0 nextcloud-aio-mastercontainer /daily-backup.sh`.
 
