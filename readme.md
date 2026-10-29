@@ -15,7 +15,7 @@ Included are:
 - High performance backend for Nextcloud Talk and TURN-server (optional)
 - Nextcloud Talk Recording-server (optional)
 - Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
-- Imaginary (optional, for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
+- Imaginary (optional, for previews of heic, heif, illustrator, pdf, svg, tiff, webp and videos)
 - ClamAV (optional, Antivirus backend for Nextcloud)
 - Fulltextsearch (optional)
 - Whiteboard (optional)
@@ -43,13 +43,13 @@ Included are:
 - zstd/gzip compression enabled by default inside caddy inside the apache container
 - HTTP/2 and HTTP/3 enabled
 - "Pretty URLs" for Nextcloud are enabled by default (removes the index.php from all links)
-- Video previews work out of the box and when Imaginary is enabled, many recent image formats as well!
+- When Imaginary is enabled, video previews and many recent image formats are supported!
 - Only one domain and not multiple domains are required for everything to work (usually you would need to have one domain for each service which is much more complex)
 - [Adjustable location](https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir) of Nextcloud's datadir (e.g. good for easy file-sharing with host system on Windows and MacOS)
 - By default confined (good for security) but can [allow access to additional storages](https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host) in order to enable the usage of the local external storage feature
 - Possibility included to [adjust default installed Nextcloud apps](https://github.com/nextcloud/all-in-one#how-to-change-the-nextcloud-apps-that-are-installed-on-the-first-startup)
 - Nextcloud installation is not read only - that means you can apply patches if you should need them (instead of having to wait for the next release for them getting applied)
-- `ffmpeg`, `smbclient` and `nodejs` are included by default
+- `smbclient` and `nodejs` are included by default
 - Possibility included to [permanently add additional OS packages into the Nextcloud container](https://github.com/nextcloud/all-in-one#how-to-change-the-nextcloud-apps-that-are-installed-on-the-first-startup) without having to build your own Docker image
 - Possibility included to [permanently add additional PHP extensions into the Nextcloud container](https://github.com/nextcloud/all-in-one#how-to-add-php-extensions-permanently-to-the-nextcloud-container) without having to build your own Docker image
 - Possibility included to [pass the needed device for hardware transcoding](https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud) to the Nextcloud container
@@ -685,7 +685,7 @@ You can do so by adding `--env NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS="imagick exte
 The [facerecognition app](https://apps.nextcloud.com/apps/facerecognition) requires the pdlib PHP extension to be installed. Unfortunately, it is not available on PECL nor via PHP core, so there is no way to add this into AIO currently. However you can use [this community container](https://github.com/nextcloud/all-in-one/tree/main/community-containers/facerecognition) in order to run facerecognition.
 
 ### How to enable hardware acceleration for Nextcloud?
-Some container can use GPU acceleration to increase performance like [memories app](https://apps.nextcloud.com/apps/memories) allows to enable hardware transcoding for videos.
+Some container can use GPU acceleration to increase performance like [memories app](https://apps.nextcloud.com/apps/memories) allows to enable hardware transcoding for videos. Since `ffmpeg` is not included in the Nextcloud container by default, you need to add it via [`NEXTCLOUD_ADDITIONAL_APKS`](#how-to-add-os-packages-permanently-to-the-nextcloud-container) for that.
 
 #### With open source drivers MESA for AMD, Intel and **new** drivers `Nouveau` for Nvidia
 

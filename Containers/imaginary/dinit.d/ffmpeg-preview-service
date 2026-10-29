@@ -1,0 +1,5 @@
+type = process
+command = /usr/bin/env PORT=$FFMPEG_PREVIEW_PORT API_KEY=$IMAGINARY_SECRET ffmpeg-preview-service
+term-signal = TERM
+restart = yes
+options = shares-console
