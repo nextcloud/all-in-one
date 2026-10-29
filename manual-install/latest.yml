@@ -220,12 +220,15 @@ services:
       - "7867"
     volumes:
       - nextcloud_aio_nextcloud:/var/www/html:ro
+      - ${NEXTCLOUD_TRUSTED_CACERTS_DIR}:/usr/local/share/ca-certificates:ro
     environment:
       - NEXTCLOUD_HOST=nextcloud-aio-nextcloud
       - AIO_LOG_LEVEL
       - TZ=${TIMEZONE}
     restart: unless-stopped
     read_only: true
+    tmpfs:
+      - /tmp
     cap_drop:
       - NET_RAW
 
@@ -528,6 +531,7 @@ services:
       - HP_SHARED_KEY
       - NC_INSTANCE_URL=https://${NC_DOMAIN}
       - HP_FRP_DISABLE_TLS=true
+      - HP_EXAPP_BIND_MOUNTS_ENFORCE_ALL=true
       - TZ=${TIMEZONE}
     volumes:
       - ${WATCHTOWER_DOCKER_SOCKET_PATH}:/var/run/docker.sock:ro
