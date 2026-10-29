@@ -951,13 +951,18 @@ class ConfigurationManager
     /**
      * @throws InvalidSettingConfigurationException
      */
-    public function setDailyBackupTime(string $time, bool $enableAutomaticUpdates, bool $successNotification) : void {
+    public function setDailyBackupTime(string $time, bool $enableAutomaticUpdates, bool $successNotification, string $weekday = '0') : void {
         if ($time === "") {
             throw new InvalidSettingConfigurationException("The daily backup time must not be empty!");
         }
 
         if (!preg_match("#^[0-1][0-9]:[0-5][0-9]$#", $time) && !preg_match("#^2[0-3]:[0-5][0-9]$#", $time)) {
             throw new InvalidSettingConfigurationException("You did not enter a correct time! One correct example is '04:00'!");
+        }
+
+        // 0 means every day, 1 (Monday) to 7 (Sunday) a weekly backup on that day
+        if (!preg_match("#^[0-7]$#", $weekday)) {
+            throw new InvalidSettingConfigurationException("You did not select a correct day of the week!");
         }
 
         if ($enableAutomaticUpdates === false) {
@@ -969,6 +974,10 @@ class ConfigurationManager
             $time .= PHP_EOL . 'successNotificationsAreNotEnabled';
         } else {
             $time .= PHP_EOL;
+        }
+        // Only stored for a weekly backup so that the file stays unchanged for a daily one
+        if ($weekday !== '0') {
+            $time .= PHP_EOL . $weekday;
         }
         file_put_contents(DataConst::GetDailyBackupTimeFile(), $time);
         $this->dailyBackupFileCache = '';
@@ -1004,6 +1013,18 @@ class ConfigurationManager
         }
         $dailyBackupFileArray = explode("\n", $content);
         return $dailyBackupFileArray[0];
+    }
+
+    /**
+     * Returns the ISO-8601 weekday (1 = Monday ... 7 = Sunday) of the weekly backup, or 0 for a backup on every day.
+     */
+    public function getBackupWeekday() : int {
+        $content = $this->getDailyBackupFileContent();
+        $dailyBackupFileArray = explode("\n", $content);
+        if (isset($dailyBackupFileArray[3]) && preg_match("#^[1-7]$#", trim($dailyBackupFileArray[3]))) {
+            return (int)$dailyBackupFileArray[3];
+        }
+        return 0;
     }
 
     public function areAutomaticUpdatesEnabled() : bool {
@@ -1271,7 +1292,8 @@ class ConfigurationManager
             'EUROOFFICE_ENABLED' => $this->officeSuite === OfficeSuite::Eurooffice ? 'yes' : '',
             'COLLABORA_ENABLED' => $this->officeSuite === OfficeSuite::Collabora ? 'yes' : '',
             'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
-            'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? 'yes' : '',
+            // 'yes' updates the apps on saturdays, 'now' (weekly backup) updates them on the day of the backup
+            'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? ($this->getBackupWeekday() === 0 ? 'yes' : 'now') : '',
             'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
             'COLLABORA_DICTIONARIES' => $this->collaboraDictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->collaboraDictionaries,
             'IMAGINARY_ENABLED' => $this->isImaginaryEnabled ? 'yes' : '',

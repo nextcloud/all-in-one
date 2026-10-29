@@ -105,6 +105,41 @@ test('Initial setup', async ({ page: setupPage, browser }) => {
   await expect(containersPage.locator('#borg-backup-password')).toBeVisible();
   const borgBackupPassword = await containersPage.locator('#borg-backup-password').innerText();
 
+  // Daily backup: a single day of the week can be selected for a weekly backup
+  const dailyBackupTimeFile = '/mnt/docker-aio-config/data/daily_backup_time';
+  const submitDailyBackup = async (weekday) => {
+    await containersPage.locator('input[name="daily_backup_time"]').fill('04:00');
+    await containersPage.locator('#backup_weekday').selectOption(weekday);
+    await containersPage.getByRole('button', { name: 'Submit daily backup time and settings' }).click();
+  };
+
+  // Every successful submission reloads the page, which collapses the backup options again
+  const revealBackupOptions = async () => {
+    const backupOptions = containersPage.locator('details', { hasText: 'Click here to reveal all backup options' });
+    if (!(await backupOptions.evaluate(details => details.open))) {
+      await backupOptions.locator('summary').first().click();
+    }
+  };
+
+  // Accept a weekly backup, which is stored on a 4th line
+  await submitDailyBackup('2');
+  await expect(containersPage.locator('body')).toContainText('Weekly backups will be created on Tuesdays at 04:00 UTC');
+  expect(readFileSync(dailyBackupTimeFile, 'utf8')).toBe('04:00\n\n\n2');
+
+  // Selecting every day keeps the file identical to the one written before the weekday could be selected
+  await revealBackupOptions();
+  await containersPage.getByRole('button', { name: 'Disable or change daily backup settings' }).click();
+  await expect(containersPage.locator('input[name="daily_backup_time"]')).toBeAttached();
+  await revealBackupOptions();
+  await submitDailyBackup('0');
+  await expect(containersPage.locator('body')).toContainText('Daily backups will be created at 04:00 UTC');
+  expect(readFileSync(dailyBackupTimeFile, 'utf8')).toBe('04:00\n\n');
+
+  // Disable the daily backup again so that the following tests are not affected
+  await revealBackupOptions();
+  await containersPage.getByRole('button', { name: 'Disable or change daily backup settings' }).click();
+  await expect(containersPage.locator('input[name="daily_backup_time"]')).toBeAttached();
+
   // Assert that all containers are stopped
   await expect(containersPage.getByRole('button', { name: 'Start containers' })).toBeVisible();
 

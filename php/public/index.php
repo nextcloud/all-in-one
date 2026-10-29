@@ -153,6 +153,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_talk_enabled' => $configurationManager->isTalkEnabled,
         'borg_restore_password' => $configurationManager->borgRestorePassword,
         'daily_backup_time' => $configurationManager->getDailyBackupTime(),
+        'backup_weekday' => $configurationManager->getBackupWeekday(),
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
         'timezone' => $configurationManager->timezone,
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),

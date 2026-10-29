@@ -67,7 +67,7 @@
             {% if is_daily_backup_running == true %}
                 <p><span class="status running"></span> Daily backup currently running. (<a href="log?id=nextcloud-aio-mastercontainer" target="_blank">Mastercontainer logs</a>) (<a href="log?id=nextcloud-aio-borgbackup" target="_blank">Borg backup container logs</a>)</p>
                 {% if automatic_updates == true %}
-                    <p>This will update your containers, the mastercontainer and, on Saturdays, your Nextcloud apps if the backup is successful.</p>
+                    <p>This will update your containers, the mastercontainer and, {{ backup_weekday == 0 ? 'on Saturdays' : 'with this weekly backup' }}, your Nextcloud apps if the backup is successful.</p>
                     {% if is_mastercontainer_update_available == true %}
                         <p>When the mastercontainer is updated it will restart, making it unavailable for a moment. (<a href="log?id=nextcloud-aio-watchtower" target="_blank">Logs</a>)</p>
                     {% endif %}
@@ -568,20 +568,30 @@
                                             </details>
 
                                             <h3>Daily backup and automatic updates</h3>
+                                            {% set weekday_names = {0: 'Every day', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday'} %}
                                             {% if daily_backup_time == "" %}
-                                                <p>By entering a time below and submitting it, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <strong>04:00</strong> will create backups at 4 am UTC and <strong>16:00</strong> at 4 pm UTC. When creating the backup, containers will be stopped and restarted after the backup is complete.</p>
+                                                <p>By entering a time below and submitting it, you can enable daily backups. It will create them at the entered time in 24h format. E.g. <strong>04:00</strong> will create backups at 4 am UTC and <strong>16:00</strong> at 4 pm UTC. When creating the backup, containers will be stopped and restarted after the backup is complete. Instead of every day, you can also select a single day of the week (in UTC) to create a weekly backup. In this case, the automatic updates below also happen on that day.</p>
                                                 <form method="POST" action="api/configuration" class="xhr">
                                                     <input type="text" name="daily_backup_time" placeholder="04:00"/>
                                                     <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
                                                     <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
                                                     <input type="submit" value="Submit daily backup time and settings" /><br>
-                                                    <input type="checkbox" id="automatic_updates" name="automatic_updates" checked="checked"><label for="automatic_updates">Automatically update all containers, the mastercontainer and on saturdays your Nextcloud apps</label><br>
+                                                    <select id="backup_weekday" name="backup_weekday">
+                                                        {% for weekday_number, weekday_name in weekday_names %}
+                                                            <option value="{{ weekday_number }}">{{ weekday_name }}</option>
+                                                        {% endfor %}
+                                                    </select><br>
+                                                    <input type="checkbox" id="automatic_updates" name="automatic_updates" checked="checked"><label for="automatic_updates">Automatically update all containers, the mastercontainer and on saturdays (or on the day of a weekly backup) your Nextcloud apps</label><br>
                                                     <input type="checkbox" id="success_notification" name="success_notification" checked="checked"><label for="success_notification">Send notifications about successful backups (notifications about unsuccessful backups will always be sent)</label>
                                                 </form>
                                             {% else %}
-                                                <p>Daily backups will be created at <strong>{{ daily_backup_time }} UTC</strong>. A notification about the result of the backup will be sent.</p>
+                                                {% if backup_weekday == 0 %}
+                                                    <p>Daily backups will be created at <strong>{{ daily_backup_time }} UTC</strong>. A notification about the result of the backup will be sent.</p>
+                                                {% else %}
+                                                    <p>Weekly backups will be created on <strong>{{ weekday_names[backup_weekday] }}s at {{ daily_backup_time }} UTC</strong>. A notification about the result of the backup will be sent.</p>
+                                                {% endif %}
                                                 {% if automatic_updates == true %}
-                                                    Also your containers, the mastercontainer and, on Saturdays, your Nextcloud apps will be automatically updated.
+                                                    Also your containers, the mastercontainer and, {{ backup_weekday == 0 ? 'on Saturdays' : 'on the same day' }}, your Nextcloud apps will be automatically updated.
                                                 {% endif %}
                                                 <p>To change your backup time first disable Daily Backups, then enter your new backup time, and then re-enable them.</p>
                                                 <form method="POST" action="api/configuration" class="xhr">
