@@ -44,7 +44,7 @@ spec:
               value: nextcloud-aio-nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-notify-push:20261029_150718
+          image: ghcr.io/nextcloud-releases/aio-notify-push:20261029_171813
           readinessProbe:
             exec:
               command:
