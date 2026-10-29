@@ -1,0 +1,46 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-n8n",
+            "display_name": "n8n Workflow Automation",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/n8n",
+            "image": "n8nio/n8n",
+            "image_tag": "latest",
+            "internal_port": "5678",
+            "restart": "unless-stopped",
+            "environment": [
+                "N8N_ENCRYPTION_KEY=%N8N_ENCRYPTION_KEY%",
+                "N8N_PORT=5678",
+                "N8N_HOST=0.0.0.0",
+                "N8N_PROTOCOL=http",
+                "N8N_SECURE_COOKIE=false",
+                "WEBHOOK_URL=https://%NC_DOMAIN%/n8n-webhook",
+                "N8N_PUBLIC_API_ENABLED=true",
+                "N8N_EDITOR_BASE_URL=https://n8n.%NC_DOMAIN%/",
+                "N8N_METRICS=true",
+                "N8N_METRICS_INCLUDE_DEFAULT_METRICS=true",
+                "TZ=%TIMEZONE%"
+            ],
+            "secrets": [
+                "N8N_ENCRYPTION_KEY"
+            ],
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "5678",
+                    "protocol": "tcp"
+                }
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_n8n",
+                    "destination": "/home/node/.n8n",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_n8n"
+            ]
+        }
+    ]
+}
