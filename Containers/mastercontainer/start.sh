@@ -24,6 +24,9 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     set -x
 fi
 
+# Print the AIO version
+echo "Nextcloud AIO version: $(cat /var/www/docker-aio/php/templates/includes/aio-version.twig)"
+
 # Check if running as root user
 if [ "$EUID" != "0" ]; then
     print_red "Container does not run as root user. This is not supported."
