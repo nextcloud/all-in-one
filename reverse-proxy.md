@@ -216,7 +216,6 @@ Add this as a new Apache site config:
 
     RewriteEngine On
     ProxyPreserveHost On
-    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
     # Added to support Euro-office
     RequestHeader set X-Forwarded-Proto "https"
     AllowEncodedSlashes NoDecode
@@ -325,7 +324,7 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
 
 1. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`) which will disable the domain validation (because it is known that the domain validation will not work when using the DNS-challenge since no port is publicly opened).
 
-**Advice:** In order to make it work in your home network, you may add the internal ipv4-address of your reverse proxy as A DNS-record to your domain and disable the dns-rebind-protection in your router. Another way it to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-adddress of your reverse proxy (see https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally). If both is not possible, you may add the domain to the hosts file which is needed then for any devices that shall use the server.
+**Advice:** In order to make it work in your home network, you may add the internal ipv4-address of your reverse proxy as A DNS-record to your domain and disable the dns-rebind-protection in your router. Another way it to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-address of your reverse proxy (see https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally). If both is not possible, you may add the domain to the hosts file which is needed then for any devices that shall use the server.
 
 </details>
 
@@ -575,8 +574,7 @@ http {
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-For $remote_addr;
 
             # Websockets
             proxy_http_version 1.1;
@@ -628,7 +626,7 @@ Second, see these screenshots for a working config:
 
 <summary>click here to expand</summary>
 
-**Hint:** You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-3040493) for a more complete but possibly oudated example.
+**Hint:** You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-3040493) for a more complete but possibly outdated example.
 
 First, make sure the environmental variables `PUID` and `PGID` in the `compose.yaml` file for NPM are either unset or set to `0`. <br>
 If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. <br>
@@ -646,6 +644,9 @@ Second, see these screenshots for a working config:
 
 
 ```
+proxy_buffering off;
+proxy_request_buffering off;
+
 # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
 # By setting proxy_read_timeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NPM. 
 # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
@@ -655,7 +656,6 @@ client_max_body_size 0; # This controls the maximum upload size, 0 means unlimit
 ```
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
-Also change `<you>@<your-mail-provider-domain>` to a mail address of yours.
 
 </details>
 
