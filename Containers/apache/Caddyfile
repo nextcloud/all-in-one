@@ -40,6 +40,9 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
         -Via
     }
 
+    # Clear client-supplied X-Real-IP so it can't be spoofed towards the backends
+    request_header -X-Real-IP
+
     encode
 
     # Collabora
