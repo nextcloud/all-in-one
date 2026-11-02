@@ -60,22 +60,8 @@ $twig = Twig::create(__DIR__ . '/../templates/', ['cache' => TWIG_CACHE_PATH]);
 $app->add(TwigMiddleware::create($app, $twig));
 $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 
-// Persist hidden developer flags in the session once they appear on the URL of an authenticated request ('=0' or '=false' turns a flag off again)
-const SESSION_DEV_FLAGS = ['bypass_container_update', 'bypass_mastercontainer_update', 'skip_domain_validation'];
-$authManager = $container->get(\AIO\Auth\AuthManager::class);
-$app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($twig, $authManager): Response {
-    $params = $request->getQueryParams();
-    foreach (SESSION_DEV_FLAGS as $flag) {
-        if (isset($params[$flag]) && $authManager->IsAuthenticated() === true) {
-            $_SESSION['dev_flags'][$flag] = !in_array($params[$flag], ['0', 'false'], true);
-        }
-    }
-    $twig->getEnvironment()->addGlobal('session_dev_flags', $_SESSION['dev_flags'] ?? []);
-    return $handler->handle($request);
-});
-
 // Auth Middleware
-$app->add(new \AIO\Middleware\AuthMiddleware($authManager));
+$app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
 // Check Sec-Fetch headers
 $app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($responseFactory) : Response {
@@ -136,13 +122,20 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $dockerActionManager->ConnectMasterContainerToNetwork();
     $dockerController->StartDomaincheckContainer();
 
-    // Developer flags, persisted in the session from URL params (see the middleware above)
+    // Hidden developer flags, persisted in the session once they appear on the URL ('=0' or '=false' turns a flag off again)
+    $params = $request->getQueryParams();
+    foreach (['bypass_container_update', 'bypass_mastercontainer_update', 'skip_domain_validation'] as $flag) {
+        if (isset($params[$flag])) {
+            $_SESSION['dev_flags'][$flag] = !in_array($params[$flag], ['0', 'false'], true);
+        }
+    }
     $devFlags = $_SESSION['dev_flags'] ?? [];
     $bypass_mastercontainer_update = $devFlags['bypass_mastercontainer_update'] ?? false;
     $bypass_container_update = $devFlags['bypass_container_update'] ?? false;
     $skip_domain_validation = $devFlags['skip_domain_validation'] ?? false;
 
     return $view->render($response, 'containers.twig', [
+        'session_dev_flags' => $devFlags,
         'domain' => $configurationManager->domain,
         'apache_port' => $configurationManager->apachePort,
         'borg_backup_host_location' => $configurationManager->borgBackupHostLocation,
