@@ -748,8 +748,7 @@ if [ -z "$NEXTCLOUD_HOST" ]; then
 fi
 IPv4_ADDRESS="$(dig "$NEXTCLOUD_HOST" A +short +search | head -1)" 
 # Bring it in CIDR notation 
-# shellcheck disable=SC2001
-IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')" 
+IPv4_ADDRESS="$(ip -o addr show | awk -v ip="$IPv4_ADDRESS" 'index($4, ip "/") == 1 {print $4}')"
 if [ -n "$IPv4_ADDRESS" ]; then
     php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
 fi
