@@ -162,6 +162,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'automatic_updates' => $configurationManager->areAutomaticUpdatesEnabled(),
         'is_backup_section_enabled' => !$configurationManager->disableBackupSection,
         'is_imaginary_enabled' => $configurationManager->isImaginaryEnabled,
+        'is_ffmpeg_enabled' => $configurationManager->isFfmpegEnabled,
         'is_fulltextsearch_enabled' => $configurationManager->isFulltextsearchEnabled,
         'additional_backup_directories' => $configurationManager->getAdditionalBackupDirectoriesString(),
         'nextcloud_datadir' => $configurationManager->nextcloudDatadirMount,

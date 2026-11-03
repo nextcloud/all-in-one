@@ -152,6 +152,7 @@
         "nextcloud-aio-fulltextsearch",
         "nextcloud-aio-talk-recording",
         "nextcloud-aio-imaginary",
+        "nextcloud-aio-ffmpeg",
         "nextcloud-aio-docker-socket-proxy"
       ],
       "display_name": "Nextcloud",
@@ -178,6 +179,7 @@
         "SIGNALING_SECRET",
         "FULLTEXTSEARCH_PASSWORD",
         "IMAGINARY_SECRET",
+        "FFMPEG_SECRET",
         "WHITEBOARD_SECRET",
         "HP_SHARED_KEY"
       ],
@@ -246,6 +248,8 @@
         "TURN_DOMAIN=%TURN_DOMAIN%",
         "IMAGINARY_ENABLED=%IMAGINARY_ENABLED%",
         "IMAGINARY_HOST=nextcloud-aio-imaginary",
+        "FFMPEG_ENABLED=%FFMPEG_ENABLED%",
+        "FFMPEG_HOST=nextcloud-aio-ffmpeg",
         "PHP_UPLOAD_LIMIT=%NEXTCLOUD_UPLOAD_LIMIT%",
         "PHP_MEMORY_LIMIT=%NEXTCLOUD_MEMORY_LIMIT%",
         "FULLTEXTSEARCH_ENABLED=%FULLTEXTSEARCH_ENABLED%",
@@ -269,6 +273,7 @@
         "ADDITIONAL_TRUSTED_PROXY=%CADDY_IP_ADDRESS%",
         "THIS_IS_AIO=true",
         "IMAGINARY_SECRET=%IMAGINARY_SECRET%",
+        "FFMPEG_SECRET=%FFMPEG_SECRET%",
         "WHITEBOARD_SECRET=%WHITEBOARD_SECRET%",
         "WHITEBOARD_ENABLED=%WHITEBOARD_ENABLED%",
         "HARP_ENABLED=%HARP_ENABLED%",
@@ -859,6 +864,45 @@
       ],
       "secrets": [
         "IMAGINARY_SECRET"
+      ]
+    },
+    {
+      "container_name": "nextcloud-aio-ffmpeg",
+      "image_tag": "%AIO_CHANNEL%",
+      "display_name": "FFmpeg",
+      "image": "ghcr.io/nextcloud-releases/aio-ffmpeg",
+      "user": "65534",
+      "init": true,
+      "healthcheck": {
+        "start_period": "0s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "5s",
+        "retries": 3
+      },
+      "expose": [
+        "5050"
+      ],
+      "internal_port": "5050",
+      "environment": [
+        "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
+        "TZ=%TIMEZONE%",
+        "FFMPEG_SECRET=%FFMPEG_SECRET%"
+      ],
+      "restart": "unless-stopped",
+      "cap_drop": [
+        "NET_RAW"
+      ],
+      "profiles": [
+        "ffmpeg"
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/tmp"
+      ],
+      "secrets": [
+        "FFMPEG_SECRET"
       ]
     },
     {

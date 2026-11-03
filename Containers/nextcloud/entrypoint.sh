@@ -1051,6 +1051,19 @@ else
     fi
 fi
 
+# FFmpeg
+if [ "$FFMPEG_ENABLED" = 'yes' ]; then
+    php /var/www/html/occ config:system:set enabledPreviewProviders 25 --value="OC\\Preview\\MovieRemote"
+    php /var/www/html/occ config:system:set preview_ffmpeg_url --value="$FFMPEG_HOST:5050"
+    php /var/www/html/occ config:system:set preview_ffmpeg_key --value="$FFMPEG_SECRET"
+else
+    if [ -n "$(php /var/www/html/occ config:system:get preview_ffmpeg_url)" ]; then
+        php /var/www/html/occ config:system:delete enabledPreviewProviders 25
+        php /var/www/html/occ config:system:delete preview_ffmpeg_url
+        php /var/www/html/occ config:system:delete preview_ffmpeg_key
+    fi
+fi
+
 # Fulltextsearch
 if [ "$FULLTEXTSEARCH_ENABLED" = 'yes' ]; then
     count=0

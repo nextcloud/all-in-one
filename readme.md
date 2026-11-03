@@ -16,6 +16,7 @@ Included are:
 - Nextcloud Talk Recording-server (optional)
 - Backup solution (optional, based on [BorgBackup](https://github.com/borgbackup/borg#what-is-borgbackup))
 - Imaginary (optional, for previews of heic, heif, illustrator, pdf, svg, tiff and webp)
+- FFmpeg (optional, for video previews, based on [ffmpeg-over-ip](https://github.com/steelbrain/ffmpeg-over-ip))
 - ClamAV (optional, Antivirus backend for Nextcloud)
 - Fulltextsearch (optional)
 - Whiteboard (optional)
@@ -124,6 +125,7 @@ flowchart TB
             TALKREC(["🎬 Talk Recording"]):::opt
             FTS(["🔎 Full-text Search\n(Elasticsearch)"]):::opt
             IMAG(["🖼️ Imaginary\nImage previews"]):::opt
+            FFMPEG(["🎞️ FFmpeg\nVideo previews"]):::opt
             CLAM(["🦠 ClamAV\nAntivirus"]):::opt
             WB(["🖊️ Whiteboard"]):::opt
         end
