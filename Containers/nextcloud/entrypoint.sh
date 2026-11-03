@@ -502,6 +502,11 @@ EOF
             touch "$NEXTCLOUD_DATA_DIR/update.failed"
             echo "Upgrading Nextcloud from $installed_version to $image_version..."
             php /var/www/html/occ config:system:delete integrity.check.disabled
+
+            # Temporarily disable lazy objects so that the update does not fail
+            # See https://github.com/nextcloud/server/issues/66167
+            php /var/www/html/occ config:system:set enable_lazy_objects --value=false --type=bool
+
             if ! php /var/www/html/occ upgrade || ! php /var/www/html/occ -V; then
                 echo "Upgrade failed. Please restore from backup."
                 bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup."
@@ -513,6 +518,10 @@ EOF
 
             rm "$NEXTCLOUD_DATA_DIR/update.failed"
             bash /notify.sh "Nextcloud update to $image_version successful!" "You may inspect the Nextcloud container logs for more information."
+
+            # Remove disabling of lazy objects again
+            # See https://github.com/nextcloud/server/issues/66167
+            php /var/www/html/occ config:system:delete enable_lazy_objects
 
             php /var/www/html/occ app:update --all
 
