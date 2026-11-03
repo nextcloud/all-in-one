@@ -21,6 +21,10 @@ fi
 # Make sure updater channel is set to "stable"
 $PHP_CLI /var/www/html/occ config:system:set update_channel --value="stable"
 
+# Temporarily disable lazy objects so that the update does not fail
+# See https://github.com/nextcloud/server/issues/66167
+$PHP_CLI /var/www/html/occ config:system:set enable_lazy_objects --value=false --type=bool
+
 # Run the update
 $PHP_CLI /var/www/html/updater/updater.phar --no-interaction --no-backup
 
@@ -43,6 +47,11 @@ if ! $PHP_CLI -r "version_compare(getenv('INSTALLED_MAJOR'), getenv('IMAGE_MAJOR
         exit 1
     fi
 fi
+
+# Remove disabling of lazy objects again
+# See https://github.com/nextcloud/server/issues/66167
+$PHP_CLI /var/www/html/occ config:system:delete enable_lazy_objects
+
 $PHP_CLI /var/www/html/occ config:system:set updatechecker --type=bool --value=true
 $PHP_CLI /var/www/html/occ app:enable nextcloud-aio --force
 $PHP_CLI /var/www/html/occ db:add-missing-columns
