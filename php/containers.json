@@ -890,6 +890,10 @@
         "TZ=%TIMEZONE%",
         "FFMPEG_SECRET=%FFMPEG_SECRET%"
       ],
+      "devices": [
+        "/dev/dri"
+      ],
+      "enable_nvidia_gpu": true,
       "restart": "unless-stopped",
       "cap_drop": [
         "NET_RAW"

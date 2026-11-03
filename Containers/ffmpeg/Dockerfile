@@ -28,13 +28,23 @@ RUN set -ex; \
 
 # The ffmpeg and ffprobe binaries of ffmpeg-over-ip are linked against glibc so alpine cannot be used
 FROM debian:13.7-slim
+# libva and libdrm are loaded at runtime by ffmpeg, the drivers are needed for hardware acceleration via /dev/dri
 # hadolint ignore=DL3008
 RUN set -ex; \
     apt-get update; \
     apt-get upgrade -y; \
     apt-get install -y --no-install-recommends \
         tzdata \
-        netcat-openbsd; \
+        netcat-openbsd \
+        libva2 \
+        libva-drm2 \
+        libdrm2 \
+        mesa-va-drivers; \
+    if [ "$(dpkg --print-architecture)" = amd64 ]; then \
+        apt-get install -y --no-install-recommends \
+            intel-media-va-driver \
+            i965-va-driver; \
+    fi; \
     rm -rf /var/lib/apt/lists/*
 
 # ffmpeg-over-ip-server expects the patched ffmpeg and ffprobe next to its own binary
