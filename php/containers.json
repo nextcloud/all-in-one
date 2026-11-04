@@ -38,6 +38,9 @@
           "protocol": "udp"
         }
       ],
+      "expose": [
+        "23973"
+      ],
       "internal_port": "%APACHE_PORT%",
       "environment": [
         "NC_DOMAIN=%NC_DOMAIN%",
@@ -237,6 +240,8 @@
         "EUROOFFICE_ENABLED=%EUROOFFICE_ENABLED%",
         "COLLABORA_ENABLED=%COLLABORA_ENABLED%",
         "COLLABORA_HOST=nextcloud-aio-collabora",
+        "COLLABORA_WOPI_URL=http://nextcloud-aio-apache:23973",
+        "COLLABORA_WOPI_CALLBACK_URL=http://nextcloud-aio-apache:23973",
         "TALK_ENABLED=%TALK_ENABLED%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
         "EUROOFFICE_HOST=nextcloud-aio-eurooffice",
@@ -409,10 +414,6 @@
         "DONT_GEN_SSL_CERT=1"
       ],
       "restart": "unless-stopped",
-      "nextcloud_exec_commands": [
-        "echo 'Activating Collabora config...'",
-        "php /var/www/html/occ richdocuments:activate-config --wopi-url='http://nextcloud-aio-apache.nextcloud-aio:23973' --callback-url='http://nextcloud-aio-apache.nextcloud-aio:23973'"
-      ],
       "profiles": [
         "collabora"
       ],
