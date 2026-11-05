@@ -1052,14 +1052,15 @@ else
 fi
 
 # FFmpeg
-if [ "$FFMPEG_ENABLED" = 'yes' ]; then
+# The MovieRemote preview provider is only available since Nextcloud 36. Otherwise the local Movie provider is used which needs ffmpeg to be added via NEXTCLOUD_ADDITIONAL_APKS.
+if [ "$FFMPEG_ENABLED" = 'yes' ] && [ "${installed_version%%.*}" -ge 36 ]; then
     php /var/www/html/occ config:system:set enabledPreviewProviders 25 --value="OC\\Preview\\MovieRemote"
-    php /var/www/html/occ config:system:set preview_ffmpeg_url --value="$FFMPEG_HOST:5050"
+    php /var/www/html/occ config:system:set preview_ffmpeg_address --value="$FFMPEG_HOST:5050"
     php /var/www/html/occ config:system:set preview_ffmpeg_key --value="$FFMPEG_SECRET"
 else
-    if [ -n "$(php /var/www/html/occ config:system:get preview_ffmpeg_url)" ]; then
+    if [ -n "$(php /var/www/html/occ config:system:get preview_ffmpeg_address)" ]; then
         php /var/www/html/occ config:system:delete enabledPreviewProviders 25
-        php /var/www/html/occ config:system:delete preview_ffmpeg_url
+        php /var/www/html/occ config:system:delete preview_ffmpeg_address
         php /var/www/html/occ config:system:delete preview_ffmpeg_key
     fi
 fi
