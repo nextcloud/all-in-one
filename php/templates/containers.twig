@@ -120,6 +120,8 @@
                                 <input type="submit" value="Submit domain" />
                             </form>
 
+                            {# deSEC registration is currently not available #}
+                            {% if false %}
                             <details>
                                 <summary>Don't have a domain? Get a free one from deSEC</summary>
                                 <p><a target="_blank" href="https://desec.io">deSEC</a> offers free dynamic DNS subdomains under <strong>dedyn.io</strong>. AIO can register an account and a subdomain for you automatically. Click the button below to start; the registration runs in a small window so you can adjust the details and complete the email verification without losing this page. Once it's done, this page reloads with your new domain configured. (To make your instance available publicly you additionally would have to make sure that port 443 is open in your server's firewall, and – if applicable – the port is also forwarded by your router to your server. See below for more details on port forwarding.)</p>
@@ -137,12 +139,13 @@
                                 </div>
                             </div>
                             <script type="text/javascript" src="desec-modal.js"></script>
+                            {% endif %}
 
                             {% if skip_domain_validation == false %}
                                 <p>Make sure that this server is reachable on port 443 (port 443/tcp is open/forwarded in your firewall/router and 443/udp as well if you want to enable http3) and that you've correctly set up the DNS config for the domain that you enter (set the A record to your public ipv4-address and if you need ipv6, set the AAAA record to your public ipv6-address. A CNAME record is, of course, also possible). You should see hints on what went wrong in the top right corner if your domain is not accepted.</p>
                                 <details>
                                     <summary>Click here for further hints</summary>
-                                    <p>If you do not have a domain yet, the easiest option is to use the <strong>deSEC free domain</strong> registration below. You can also get a free domain from duckdns.org or others, or use <a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/6817">Tailscale</a>.</p>
+                                    <p>If you do not have a domain yet, {# the easiest option is to use the <strong>deSEC free domain</strong> registration below. You can also #}get a free domain from duckdns.org or others, or use <a target="_blank" href="https://github.com/nextcloud/all-in-one/discussions/6817">Tailscale</a>.</p>
                                     <p>If you have a dynamic public IP-address, you can use e.g. <a target="_blank" href="https://ddclient.net/">DDclient</a> with a compatible domain provider for DNS updates.</p>
                                     <p>If you only want to install AIO locally without exposing it to the public internet or if you cannot do so, feel free to follow <a target="_blank" href="https://github.com/nextcloud/all-in-one/blob/main/local-instance.md">this documentation</a>.</p>
                                     <p>If you should be using Cloudflare Proxy for your domain, make sure to disable the Proxy feature temporarily as it might block the domain validation attempts.</p>
