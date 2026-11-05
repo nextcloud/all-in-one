@@ -140,6 +140,34 @@ test('Initial setup', async ({ page: setupPage, browser }) => {
   await containersPage.getByRole('button', { name: 'Disable or change daily backup settings' }).click();
   await expect(containersPage.locator('input[name="daily_backup_time"]')).toBeAttached();
 
+  // Reject additional backup directories with '.' or '..' segments
+  await revealBackupOptions();
+  for (const additionalBackupDirectory of ['/tmp/test/../aio', '/tmp/test/./aio', '..']) {
+    await containersPage.locator('#additional_backup_directories').fill(additionalBackupDirectory);
+    await containersPage.getByRole('button', { name: 'Submit additional backup locations' }).click();
+    await expect(containersPage.locator('body')).toContainText(`are not allowed as directory names! Problematic is ${additionalBackupDirectory}`);
+  }
+
+  // Accept additional backup directories with dots inside of names and strip trailing slashes
+  await containersPage.locator('#additional_backup_directories').fill('/tmp/test/my.dir..name/\nmy_volume..1');
+  await Promise.all([
+    containersPage.waitForEvent('load'),
+    containersPage.getByRole('button', { name: 'Submit additional backup locations' }).click(),
+  ]);
+  await containersPage.getByText('Click here to reveal all backup options').click();
+  await expect(containersPage.locator('#additional_backup_directories')).toHaveValue('/tmp/test/my.dir..name\nmy_volume..1\n');
+  await expect(containersPage.getByRole('main')).toContainText('This option is currently set.');
+
+  // Clear additional backup directories again so that they do not end up in later backups
+  await containersPage.locator('#additional_backup_directories').fill('');
+  await Promise.all([
+    containersPage.waitForEvent('load'),
+    containersPage.getByRole('button', { name: 'Submit additional backup locations' }).click(),
+  ]);
+  await containersPage.getByText('Click here to reveal all backup options').click();
+  await expect(containersPage.locator('#additional_backup_directories')).toHaveValue('');
+  await expect(containersPage.getByRole('main')).not.toContainText('This option is currently set.');
+
   // Assert that all containers are stopped
   await expect(containersPage.getByRole('button', { name: 'Start containers' })).toBeVisible();
 
