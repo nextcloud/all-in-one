@@ -1,0 +1,57 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-authelia",
+            "display_name": "Authelia Single Sign-On",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/authelia",
+            "image": "ghcr.io/szaimen/aio-authelia",
+            "image_tag": "v1",
+            "internal_port": "9091",
+            "restart": "unless-stopped",
+            "ports": [
+                {
+                    "ip_binding": "127.0.0.1",
+                    "port_number": "9091",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "NC_DOMAIN=%NC_DOMAIN%",
+                "NC_BASE_DN=%NC_BASE_DN%",
+                "JWT_SECRET=%AUTHELIA_JWT_SECRET%",
+                "SESSION_SECRET=%AUTHELIA_SESSION_SECRET%",
+                "STORAGE_ENCRYPTION_KEY=%AUTHELIA_STORAGE_ENCRYPTION_KEY%",
+                "OIDC_HMAC_SECRET=%AUTHELIA_OIDC_HMAC_SECRET%",
+                "OIDC_CLIENT_SECRET=%AUTHELIA_OIDC_CLIENT_SECRET%",
+                "LLDAP_PASSWORD=%LLDAP_LDAP_USER_PASS%",
+                "SMTP_PASSWORD=%AUTHELIA_SMTP_PASSWORD%"
+            ],
+            "secrets": [
+                "AUTHELIA_JWT_SECRET",
+                "AUTHELIA_SESSION_SECRET",
+                "AUTHELIA_STORAGE_ENCRYPTION_KEY",
+                "AUTHELIA_OIDC_HMAC_SECRET",
+                "AUTHELIA_OIDC_CLIENT_SECRET",
+                "AUTHELIA_SMTP_PASSWORD",
+                "LLDAP_LDAP_USER_PASS"
+            ],
+            "ui_secret": "AUTHELIA_SMTP_PASSWORD",
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_authelia",
+                    "destination": "/config",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_authelia"
+            ],
+            "nextcloud_exec_commands": [
+                "php /var/www/html/occ app:install user_oidc",
+                "php /var/www/html/occ app:enable user_oidc",
+                "php /var/www/html/occ user_oidc:provider Authelia --clientid='nextcloud' --clientsecret='%AUTHELIA_OIDC_CLIENT_SECRET%' --discoveryuri='https://auth.%NC_DOMAIN%/.well-known/openid-configuration' --scope='openid email profile groups' --unique-uid=1 --mapping-uid='sub' --mapping-display-name='name' --mapping-email='email'"
+            ]
+        }
+    ]
+}

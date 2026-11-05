@@ -58,6 +58,7 @@ flowchart TD
         DNSM(["📛  dnsmasq\nDNS & DHCP server"]):::community
         VW(["🔐  Vaultwarden\nPassword Manager"]):::community
         LDAP(["👥  LLDAP\nLight LDAP / Users"]):::community
+        AUTH(["🔑  Authelia\nSingle Sign-On / 2FA"]):::community
         CADDY(["🌐  Caddy\nReverse Proxy + Geoblocking"]):::community
         NPMPLUS(["🌐  NPMplus\nNginx Proxy Manager"]):::community
         WG(["🔑  WireGuard Easy\nVPN server with web UI"]):::community
