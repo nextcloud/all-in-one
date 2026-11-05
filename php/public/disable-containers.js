@@ -37,6 +37,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let imaginary = document.getElementById("imaginary");
     imaginary.disabled = true;
 
+    // FFmpeg
+    let ffmpeg = document.getElementById("ffmpeg");
+    ffmpeg.disabled = true;
+
     // Fulltextsearch
     let fulltextsearch = document.getElementById("fulltextsearch");
     fulltextsearch.disabled = true;

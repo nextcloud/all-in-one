@@ -29,6 +29,7 @@ readonly class Setup {
         $this->configurationManager->isClamavEnabled = $this->configurationManager->isClamavEnabled;
         $this->configurationManager->isFulltextsearchEnabled = $this->configurationManager->isFulltextsearchEnabled;
         $this->configurationManager->isImaginaryEnabled = $this->configurationManager->isImaginaryEnabled;
+        $this->configurationManager->isFfmpegEnabled = $this->configurationManager->isFfmpegEnabled;
         $this->configurationManager->isTalkEnabled = $this->configurationManager->isTalkEnabled;
         $this->configurationManager->isTalkRecordingEnabled = $this->configurationManager->isTalkRecordingEnabled;
         $this->configurationManager->isDockerSocketProxyEnabled = $this->configurationManager->isDockerSocketProxyEnabled;
