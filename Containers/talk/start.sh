@@ -86,6 +86,13 @@ if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
     set +x
 fi
 
+# Enable Janus IPv6 ICE candidates only when IPv6 is available in the
+# container and the Talk hostname resolves to an IPv6 address.
+JANUS_IPV6=false
+if [ "$IP_BINDING" = "::" ] && [ -n "$IPv6_ADDRESS_TALK" ]; then
+    JANUS_IPV6=true
+fi
+
 # Turn
 cat << TURN_CONF > "/conf/eturnal.yml"
 eturnal:
@@ -180,7 +187,11 @@ fi
 # Build janus.jcfg: strip the entire nat block from the original and append a
 # clean minimal one that points at the TURN server.
 {
-    sed '/^nat:/,/^}/d' /etc/janus/janus.jcfg.sample
+    sed \
+        -e '/^nat:/,/^}/d' \
+        -e "s|^[[:space:]]*#ipv6 = true|    ipv6 = $JANUS_IPV6|" \
+        -e 's|^[[:space:]]*#ipv6_linklocal = true|    ipv6_linklocal = false|' \
+        /etc/janus/janus.jcfg.sample
     cat << NAT_CONF
 nat: {
 	turn_server = "$TURN_DOMAIN"
