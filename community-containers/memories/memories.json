@@ -10,7 +10,8 @@
             "restart": "unless-stopped",
             "environment": [
                 "TZ=%TIMEZONE%",
-                "NEXTCLOUD_HOST=https://%NC_DOMAIN%"
+                "NEXTCLOUD_HOST=https://%NC_DOMAIN%",
+                "CACHE_DIR=/go-vod-cache"
             ],
             "volumes": [
                 {
@@ -22,6 +23,11 @@
                     "source": "%NEXTCLOUD_MOUNT%", 
                     "destination": "%NEXTCLOUD_MOUNT%", 
                     "writeable": false 
+                },
+                {
+                    "source": "nextcloud_aio_memories_go_vod_cache",
+                    "destination": "/go-vod-cache",
+                    "writeable": true
                 }
             ],
             "devices": [
