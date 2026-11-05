@@ -1060,7 +1060,7 @@ class ConfigurationManager
                 }
                 $segments = explode('/', $entry);
                 if (in_array('.', $segments, true) || in_array('..', $segments, true) || in_array(',', $segments, true)) {
-                    throw new InvalidSettingConfigurationException("References to the current or parent directory are not allowed! Problematic is " . $entry);
+                    throw new InvalidSettingConfigurationException("References to the current ('.') or parent directory ('..'), or commas (',') are not allowed as directory names! Problematic is " . $entry);
                 }
                 $validDirectories .= rtrim($entry, '/') . PHP_EOL;
             }
