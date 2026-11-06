@@ -1127,25 +1127,32 @@ class ConfigurationManager
     }
 
     /**
-     * Returns the entries of the EXTRA_HOSTS env variable (comma separated, same format as docker's `--add-host`: `hostname:ip`).
-     * The special value `host-gateway` is allowed as ip, e.g. `my.host.local:host-gateway`.
-     *
+     * Returns the entries that get added to /etc/hosts of all containers started by AIO
+     * The default is `<NC_DOMAIN>:host-gateway` if AIO runs in "normal" mode, which means that
+     * domain name is set, and either the apache port is 443 or the caddy community container is enabled.
+     * That way the containers can reach the public domain via the host (e.g. if hairpin NAT is not available).
+     * This can be overriden with AIO_EXTRA_HOSTS env variable, a string with comma separated host:ip mappings.
+     * Setting it to an empty string disables the default entry.
      * @return list<string>
      */
     public function getExtraHosts() : array {
-        $extraHosts = getenv('EXTRA_HOSTS');
-        if (!is_string($extraHosts) || trim($extraHosts) === '') {
-            return [];
-        }
-        $result = [];
-        foreach (explode(',', $extraHosts) as $entry) {
-            $entry = trim($entry);
-            if ($entry === '') {
-                continue;
+        $extraHosts = getenv('AIO_EXTRA_HOSTS');
+        if (is_string($extraHosts)) {
+            $result = [];
+            foreach (explode(',', $extraHosts) as $entry) {
+                $entry = trim($entry);
+                if ($entry === '') {
+                    continue;
+                }
+                $result[] = $entry;
             }
-            $result[] = $entry;
+            return array_values(array_unique($result));
         }
-        return array_values(array_unique($result));
+
+        if ($this->domain !== '' && ($this->apachePort === '443' || in_array('caddy', $this->aioCommunityContainers, true))) {
+            return [$this->domain . ':host-gateway'];
+        }
+        return [];
     }
 
     public function getNextcloudStartupApps() : string {
