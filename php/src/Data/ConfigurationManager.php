@@ -1292,8 +1292,8 @@ class ConfigurationManager
             'EUROOFFICE_ENABLED' => $this->officeSuite === OfficeSuite::Eurooffice ? 'yes' : '',
             'COLLABORA_ENABLED' => $this->officeSuite === OfficeSuite::Collabora ? 'yes' : '',
             'TALK_ENABLED' => $this->isTalkEnabled ? 'yes' : '',
-            // 'yes' updates the apps on saturdays, 'now' (weekly backup) updates them on the day of the backup
-            'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? ($this->getBackupWeekday() === 0 ? 'yes' : 'now') : '',
+            // ISO weekday (1 = Monday ... 7 = Sunday) on which the apps get updated: saturday for a daily backup, otherwise the day of the weekly backup
+            'UPDATE_NEXTCLOUD_APPS' => ($this->isDailyBackupRunning() && $this->areAutomaticUpdatesEnabled()) ? (string)($this->getBackupWeekday() ?: 6) : '',
             'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
             'COLLABORA_DICTIONARIES' => $this->collaboraDictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->collaboraDictionaries,
             'IMAGINARY_ENABLED' => $this->isImaginaryEnabled ? 'yes' : '',
