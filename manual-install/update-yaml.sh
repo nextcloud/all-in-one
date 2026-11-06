@@ -159,6 +159,7 @@ cat << NETWORK >> containers.yml
 
 networks:
   default:
+    name: nextcloud-aio
     driver: bridge
 NETWORK
 
