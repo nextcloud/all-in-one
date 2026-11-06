@@ -24,6 +24,8 @@ while true; do
         if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
             set +x
         fi
+        # The optional 4th line is the ISO weekday (1 = Monday ... 7 = Sunday) of a weekly backup. If it is empty, the backup runs every day.
+        BACKUP_WEEKDAY="$(sed -n '4p' "/mnt/docker-aio-config/data/daily_backup_time" | tr -d '[:space:]')"
         if [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
             export LOCK_FILE_PRESENT=1
         else
@@ -42,8 +44,13 @@ while true; do
         done
     fi
 
+    # A backup that was interrupted (e.g. by a mastercontainer update) is resumed on any day
     if [ "$DAILY_BACKUP" = 1 ]; then
-        bash /daily-backup.sh
+        if [ -z "$BACKUP_WEEKDAY" ] || [ "$BACKUP_WEEKDAY" = "$(date +%u)" ] || [ "$LOCK_FILE_PRESENT" = 1 ]; then
+            bash /daily-backup.sh
+        else
+            echo "The weekly backup is not scheduled for today. Skipping it."
+        fi
     fi
 
     # Make sure to delete the lock file always

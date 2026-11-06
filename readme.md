@@ -1039,7 +1039,7 @@ Backups can be created and restored in the AIO interface using the buttons `Crea
 
 The backups themselves get encrypted with an encryption key that gets shown to you in the AIO interface. Please save that at a safe place as you will not be able to restore from backup without this key.
 
-Daily backups can get enabled after the initial backup is done. Enabling this also allows to enable an option that allows to automatically update all containers, Nextcloud and its apps.
+Daily backups can get enabled after the initial backup is done. Enabling this also allows to enable an option that allows to automatically update all containers, Nextcloud and its apps. Instead of every day, you can select a single day of the week (in UTC) to create a weekly backup. In this case, the automatic updates, including the Nextcloud apps, also happen on that day.
 
 Be aware that this solution does not back up files and folders that are mounted into Nextcloud using the external storage app - but you can add further Docker volumes and host paths that you want to back up after the initial backup is done.
 

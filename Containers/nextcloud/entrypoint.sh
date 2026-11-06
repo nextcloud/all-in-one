@@ -582,8 +582,9 @@ EOF
         fi
     fi
 
-    # Performing update of all apps if daily backups are enabled, running and successful and if it is saturday
-    if [ "$UPDATE_NEXTCLOUD_APPS" = 'yes' ] && [ "$(date +%u)" = 6 ]; then
+    # Performing update of all apps if daily backups are enabled, running and successful and if it is the configured weekday
+    # ('yes' is kept for containers that were created by an older mastercontainer and means saturday)
+    if [ "$UPDATE_NEXTCLOUD_APPS" = "$(date +%u)" ] || { [ "$UPDATE_NEXTCLOUD_APPS" = 'yes' ] && [ "$(date +%u)" = 6 ]; }; then
         UPDATED_APPS="$(php /var/www/html/occ app:update --all)"
         run_upgrade_if_needed_due_to_app_update
         if [ -n "$UPDATED_APPS" ]; then
