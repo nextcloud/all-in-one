@@ -256,17 +256,17 @@ It is set to '$APACHE_ADDITIONAL_NETWORK'."
         exit 1
     fi
 fi
-if [ -n "$EXTRA_HOSTS" ]; then
-    IFS=',' read -ra EXTRA_HOSTS_ARRAY <<< "$EXTRA_HOSTS"
-    for EXTRA_HOST in "${EXTRA_HOSTS_ARRAY[@]}"; do
-        EXTRA_HOST="$(echo "$EXTRA_HOST" | xargs)"
-        if [ -z "$EXTRA_HOST" ]; then
-            continue
-        fi
-        if ! echo "$EXTRA_HOST" | grep -q '^[a-zA-Z0-9._-]\+:\(host-gateway\|[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\|\[\?[0-9a-fA-F:]\+\]\?\)$'; then
-            print_red "You've set EXTRA_HOSTS but not to an allowed value.
+if [ -n "${AIO_EXTRA_HOSTS:-}" ]; then
+    IFS=',' read -ra AIO_EXTRA_HOSTS_ARRAY <<< "$AIO_EXTRA_HOSTS" #Split comma separated list
+    for host in "${AIO_EXTRA_HOSTS_ARRAY[@]}"; do
+        host="${host#"${host%%[![:space:]]*}"}" # Trim leading whitespace
+        host="${host%"${host##*[![:space:]]}"}" # Trim trailing whitespace
+        [ -z "$host" ] && continue
+        
+        if ! grep -qE '^[a-zA-Z0-9._-]+:(host-gateway|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|\[?[0-9a-fA-F:]+\]?)$' <<< "$host"; then
+            print_red "You've set AIO_EXTRA_HOSTS but not to an allowed value.
 It needs to be a comma-separated list of 'hostname:ip' entries (the ip can also be 'host-gateway'), e.g. 'example.com:192.168.1.10,other.local:host-gateway'.
-The invalid entry is '$EXTRA_HOST'."
+The invalid entry is '$host'."
             exit 1
         fi
     done

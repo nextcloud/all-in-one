@@ -535,7 +535,7 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Mounts'] = $mounts;
         }
 
-        // Add the hosts from the EXTRA_HOSTS env variable to all containers (like `--add-host` does). Merge with already existing entries.
+        // Add the hosts (default as NC_DOMAIN:host-gateway, overridable via AIO_EXTRA_HOSTS) to all containers. Merge with already existing entries.
         $extraHosts = $this->configurationManager->getExtraHosts();
         if (count($extraHosts) > 0) {
             $existingExtraHosts = $requestBody['HostConfig']['ExtraHosts'] ?? [];
