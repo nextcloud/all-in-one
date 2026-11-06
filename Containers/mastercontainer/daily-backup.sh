@@ -28,6 +28,18 @@ if [ "$DAILY_BACKUP" = 1 ] && [ "$CHECK_BACKUP" = 1 ]; then
     exit 1
 fi
 
+# Skip the whole run if nothing would change, before any session is deleted or the lock file is
+# created. Only for pure update runs: a backup needs the containers stopped anyway. The check
+# also requires every enabled container to be running, so a stopped stack is still started, and
+# a lock file left by an earlier run (e.g. after a mastercontainer update) is still cleaned up.
+if [ "$SKIP_IF_UP_TO_DATE" = 1 ] && [ "$AUTOMATIC_UPDATES" = 1 ] && [ "$DAILY_BACKUP" != 1 ] && [ "$CHECK_BACKUP" != 1 ] && [ "$STOP_CONTAINERS" != 1 ] \
+    && ! [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
+    if su-exec www-data php /var/www/docker-aio/php/src/Cron/IsEverythingUpToDate.php; then
+        echo "Everything is running and up to date. Skipping the update run, so the containers are not restarted."
+        exit 0
+    fi
+fi
+
 # Delete all active sessions and create a lock file
 # But don't kick out the user if the mastercontainer was just updated since we block the interface either way with the lock file
 if [ "$LOCK_FILE_PRESENT" = 0 ] || ! [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
