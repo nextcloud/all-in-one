@@ -430,8 +430,16 @@ export TZ=Etc/UTC
 # Remove unused certs
 rm -vrf /mnt/docker-aio-config/certs
 
-# Remove the php socket as safeguard
-rm -vf /run/php.sock
+# Recreate the php socket directory as safeguard, php-fpm runs as www-data
+rm -vrf /run/php
+install -d -o www-data -g www-data /run/php
+
+# Allow php-fpm (running as www-data) to reopen the container log output, like docker does for non-root images
+for fd in 1 2; do
+    if [ -p "/proc/self/fd/$fd" ] || [ -t "$fd" ]; then
+        chown www-data "/proc/self/fd/$fd"
+    fi
+done
 
 # Fix caddy startup
 if [ -d "/mnt/docker-aio-config/caddy/locks" ]; then

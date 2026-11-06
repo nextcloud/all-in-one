@@ -180,4 +180,11 @@ if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
     set +x
 fi
 
+# Allow php-fpm (running as www-data) to reopen the container log output, like docker does for non-root images
+for fd in 1 2; do
+    if [ -p "/proc/self/fd/$fd" ] || [ -t "$fd" ]; then
+        chown www-data "/proc/self/fd/$fd"
+    fi
+done
+
 exec "$@"
