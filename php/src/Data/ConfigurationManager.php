@@ -1106,7 +1106,7 @@ class ConfigurationManager
      * The default is `<NC_DOMAIN>:host-gateway` if AIO runs in "normal" mode, which means that
      * domain name is set, and either the apache port is 443 or the caddy community container is enabled.
      * That way the containers can reach the public domain via the host (e.g. if hairpin NAT is not available).
-     * This can be overriden with AIO_EXTRA_HOSTS env variable, a string with comma separated host:ip mappings.
+     * This can be overridden with AIO_EXTRA_HOSTS env variable, a string with comma separated host:ip mappings.
      * Setting it to an empty string disables the default entry.
      * @return list<string>
      */
