@@ -216,6 +216,7 @@
         "APACHE_HOST=nextcloud-aio-apache",
         "APACHE_PORT=%APACHE_PORT%",
         "AIO_TOKEN=%AIO_TOKEN%",
+        "AIO_UNBLOCK_LOGIN_PRIVATE_KEY=%AIO_UNBLOCK_LOGIN_PRIVATE_KEY%",
         "NC_DOMAIN=%NC_DOMAIN%",
         "ADMIN_USER=admin",
         "ADMIN_PASSWORD=%NEXTCLOUD_PASSWORD%",
@@ -315,6 +316,11 @@
           "source": "nextcloud_aio_nextcloud",
           "destination": "/var/www/html",
           "writeable": false
+        },
+        {
+          "source": "%NEXTCLOUD_TRUSTED_CACERTS_DIR%",
+          "destination": "/usr/local/share/ca-certificates",
+          "writeable": false
         }
       ],
       "environment": [
@@ -324,6 +330,9 @@
       ],
       "restart": "unless-stopped",
       "read_only": true,
+      "tmpfs": [
+        "/tmp"
+      ],
       "cap_drop": [
         "NET_RAW"
       ]
@@ -955,6 +964,7 @@
         "HP_SHARED_KEY=%HP_SHARED_KEY%",
         "NC_INSTANCE_URL=https://%NC_DOMAIN%",
         "HP_FRP_DISABLE_TLS=true",
+        "HP_EXAPP_BIND_MOUNTS_ENFORCE_ALL=true",
         "TZ=%TIMEZONE%"
       ],
       "secrets": [

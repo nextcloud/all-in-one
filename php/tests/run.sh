@@ -12,8 +12,15 @@ cd "$(dirname "$0")/../.." || {
 
 DOCO="docker compose -f ./php/tests/compose.yaml"
 
-if [[ $(uname -m) = 'arm64' ]]; then
+if [[ $(uname -m) = 'arm64' || $(uname -m) = 'aarch64' ]]; then
     export ARM64_SUFFIX='-arm64'
+fi
+
+# Rootless docker's socket isn't at /var/run/docker.sock. Docker Desktop etc. map that path into containers
+# themselves, even though their client endpoint differs, so only take the endpoint for rootless.
+if docker info --format '{{.SecurityOptions}}' | grep -q 'name=rootless'; then
+    docker_host="$(docker context inspect --format '{{.Endpoints.docker.Host}}')"
+    export DOCKER_SOCKET_PATH="${docker_host#unix://}"
 fi
 
 run_tests() {

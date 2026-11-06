@@ -89,6 +89,10 @@ Every new file must include the correct SPDX license header. For AGPL-3.0-or-lat
 
 See [HowToApplyALicense.md](https://github.com/nextcloud/server/blob/master/contribute/HowToApplyALicense.md) for details on per-language formats. AI-generated code must not include material from sources incompatible with AGPL-3.0-or-later.
 
+### Browser compatibility
+
+JavaScript, CSS and HTML in the AIO interface (`php/public/`, `php/templates/`) must only use web features that are [Baseline "widely available"](https://web.dev/baseline). Do not add polyfills or transpilation for older browsers, and do not use features that are only "newly available" or not yet Baseline. Check a feature's Baseline status on [MDN](https://developer.mozilla.org/) or [caniuse.com](https://caniuse.com/) before using it.
+
 ### Security
 
 - Do not open GitHub issues for potential vulnerabilities. Report them via [HackerOne](https://hackerone.com/nextcloud) following the [security policy](https://nextcloud.com/security/).

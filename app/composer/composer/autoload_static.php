@@ -22,6 +22,7 @@ class ComposerStaticInitAllInOne
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'OCA\\AllInOne\\Controller\\LoginController' => __DIR__ . '/..' . '/../lib/Controller/LoginController.php',
         'OCA\\AllInOne\\Settings\\Admin' => __DIR__ . '/..' . '/../lib/Settings/Admin.php',
     );
 

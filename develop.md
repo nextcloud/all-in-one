@@ -23,7 +23,7 @@ Simply use https://github.com/nextcloud/all-in-one/issues/180 as template.
 Simply use https://github.com/nextcloud/all-in-one/issues/6198 as template.
 
 ## How to build new containers
-Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/repo-sync.yml and run the workflow that will first sync the repo and then build new container that automatically get published to `develop` and `develop-arm64`.
+Go to https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml and run the workflow to build new container images that automatically get published to `develop` and `develop-arm64`.
 
 ## How to test things correctly?
 Before testing, make sure that at least the amd64 containers are built successfully by checking the last workflow here: https://github.com/nextcloud-releases/all-in-one/actions/workflows/build_images.yml.
@@ -71,3 +71,6 @@ docker buildx build --file Containers/{container}/Dockerfile --tag ghcr.io/nextc
 1. Stop the containers using the AIO interface.
 1. Reload the AIO interface with the param `bypass_container_update` to avoid overwriting your local changes, e.g. `https://localhost:8080/containers?bypass_container_update`.
 1. Click "Start and update containers" and test your changes. Containers will not be updated, despite the button text.
+
+## Which web features may be used in the AIO interface?
+The JavaScript, CSS and HTML in `php/public/` and `php/templates/` may only use web features that are [Baseline "widely available"](https://web.dev/baseline). Check a feature's Baseline status on [MDN](https://developer.mozilla.org/) or [caniuse.com](https://caniuse.com/) before using it.

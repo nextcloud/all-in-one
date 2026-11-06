@@ -8,11 +8,16 @@
 		root /mnt/docker-aio-config/caddy-internal/
 	}
 
+	# Sets the first part of the CA's name when the CA is generated. Caddy's default is shared by every
+	# Caddy with an internal issuer, so browsers would report a bad signature, not an unknown issuer.
+	pki {
+		ca local {
+			name "Nextcloud AIO"
+		}
+	}
+
 	log {
 		level {$CADDY_LOG_LEVEL}
-		# We need to exclude the remote-host plugin from logging as it would spam the logs
-		# See https://github.com/nextcloud/all-in-one/pull/7006#issuecomment-4003238239 
-		exclude http.matchers.remote_host
 		# Below ERROR, caddy prints 'admin endpoint disabled' on every start, which is expected
 		# since we set `admin off` above.
 		exclude admin
@@ -37,12 +42,6 @@
 
 https://:8080 {
     import headers.Caddyfile
-
-	@denied {
-		path /api/auth/login /api/auth/getlogin
-		remote_host nextcloud-aio-nextcloud
-	}
-	abort @denied
 
 	root * /var/www/docker-aio/php/public
 	php_fastcgi unix//run/php.sock

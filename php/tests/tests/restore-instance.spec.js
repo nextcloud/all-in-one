@@ -58,6 +58,8 @@ test('Restore instance', async ({ page: setupPage }) => {
 
   // Verify a successful backup restore
   await expect(containersPage.getByRole('main')).toContainText('Last restore successful!', { timeout: 3 * 60 * 1000 });
+  await containersPage.getByText('Click here to reveal all backup options').click();
+  await expect(containersPage.getByText('Reveal your encryption password for backups')).toBeVisible();
   await expect(containersPage.getByRole('main')).toContainText('⚠️ Container updates are available. Click on Stop containers and Start and update containers to update them. You should consider creating a backup first.');
   containersPage.once('dialog', dialog => {
     console.log(`Dialog message: ${dialog.message()}`)

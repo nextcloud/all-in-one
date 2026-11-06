@@ -51,6 +51,24 @@ if grep -q "1" /sys/module/ipv6/parameters/disable \
 fi
 export BIND
 
+# Trust additional CA certificates, if the user provided NEXTCLOUD_TRUSTED_CACERTS_DIR
+# The container is read-only, so we build a custom bundle in /tmp (tmpfs) and
+# point the push server's TLS stack to it via SSL_CERT_FILE.
+if mountpoint -q /usr/local/share/ca-certificates; then
+    echo "Trusting additional CA certificates..."
+    set -x
+    cp /etc/ssl/certs/ca-certificates.crt /tmp/ca-certificates.crt
+    for cert in /usr/local/share/ca-certificates/*; do
+        if [ -f "$cert" ]; then
+            cat "$cert" >> /tmp/ca-certificates.crt
+        fi
+    done
+    export SSL_CERT_FILE=/tmp/ca-certificates.crt
+    if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
+        set +x
+    fi
+fi
+
 echo "notify-push was started"
 
 

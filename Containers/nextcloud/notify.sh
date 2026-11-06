@@ -25,7 +25,9 @@ fi
 echo "Posting notifications to users that are admins..."
 # Listing the admin group members with one occ call is much faster than running
 # 'occ user:info' per user and is not limited to the first 500 users.
-NC_ADMIN_USERS=$("${COMMAND[@]}" group:list admin | sed -n 's|^    - ||p')
+# 'occ group:list admin' searches for groups containing 'admin' in their name,
+# so only take the members listed below the group that is exactly called 'admin'.
+NC_ADMIN_USERS=$("${COMMAND[@]}" group:list admin | awk '/^  - /{found=($0 == "  - admin:")} found && sub(/^    - /, "")')
 if [ -z "$NC_ADMIN_USERS" ]; then
     echo "Could not find any admin user to post notifications to."
     exit 1

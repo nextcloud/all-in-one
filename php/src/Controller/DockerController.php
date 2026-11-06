@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace AIO\Controller;
 
+use AIO\Auth\AuthManager;
 use AIO\Container\Container;
 use AIO\Container\ContainerState;
 use AIO\ContainerDefinitionFetcher;
@@ -263,6 +264,7 @@ readonly class DockerController {
 
     public function startTopContainer(bool $pullImage, ?\Closure $addToStreamingResponseBody = null) : void {
         $this->configurationManager->aioToken = bin2hex(random_bytes(24));
+        [$this->configurationManager->aioUnblockLoginPrivateKey, $this->configurationManager->aioUnblockLoginPublicKey] = AuthManager::generateKeyPair();
 
         // Stop domaincheck since apache would not be able to start otherwise
         $this->StopDomaincheckContainer();

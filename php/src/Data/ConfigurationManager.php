@@ -17,6 +17,10 @@ class ConfigurationManager
 
     private array $config = [];
 
+    // This doesn't get saved to the config because it's only needed inside the Nextcloud container, to which
+    // it gets handed via AIO_UNBLOCK_LOGIN_PRIVATE_KEY.
+    public string $aioUnblockLoginPrivateKey = '';
+
     private bool $noWrite = false;
 
     private string $dailyBackupFileCache = '';
@@ -26,6 +30,11 @@ class ConfigurationManager
     public string $aioToken {
         get => $this->get('AIO_TOKEN', '');
         set { $this->set('AIO_TOKEN', $value); }
+    }
+
+    public string $aioUnblockLoginPublicKey {
+        get => $this->get('AIO_UNBLOCK_LOGIN_PUBLIC_KEY', '');
+        set { $this->set('AIO_UNBLOCK_LOGIN_PUBLIC_KEY', $value); }
     }
 
     public string $password {
@@ -752,19 +761,33 @@ class ConfigurationManager
         if ($location !== '') {
             $isValidPath = false;
             if (str_starts_with($location, '/') && !str_ends_with($location, '/')) {
-                $isValidPath = true;
+                // Reject '//', '/./', '/../' and '/,/' so that the checks below cannot be bypassed
+                $isValidPath = !str_contains($location, '//') && !str_contains($location . '/', '/./') && !str_contains($location . '/', '/../') && !str_contains($location . '/', '/,/');
             } elseif ($location === 'nextcloud_aio_backupdir') {
                 $isValidPath = true;
             }
 
             if (!$isValidPath) {
-                throw new InvalidSettingConfigurationException("The path must start with '/', and must not end with '/'! Another option is to use the docker volume name 'nextcloud_aio_backupdir'.");
+                throw new InvalidSettingConfigurationException("The path must start with '/', must not end with '/' and must not contain '//', '/./', '/../' or '/,/'! Another option is to use the docker volume name 'nextcloud_aio_backupdir'.");
             }
 
             // Prevent backup to be contained in Nextcloud Datadir as this will delete the backup archive upon restore
             // See https://github.com/nextcloud/all-in-one/issues/6607
             if (str_starts_with($location . '/', rtrim($this->nextcloudDatadirMount, '/') . '/')) {
                 throw new InvalidSettingConfigurationException("The path must not be a children of or equal to NEXTCLOUD_DATADIR, which is currently set to " . $this->nextcloudDatadirMount);
+            }
+
+            foreach (['/var/lib/docker', '/var/snap/docker', '/var/lib/containerd'] as $dockerDir) {
+                if (str_starts_with($location . '/', $dockerDir . '/')) {
+                    throw new InvalidSettingConfigurationException("The path must not be a children of or equal to '" . $dockerDir . "'! Please use the docker volume name 'nextcloud_aio_backupdir' instead.");
+                }
+            }
+
+            // Prevent backup to be written into system directories
+            foreach (['/bin', '/boot', '/dev', '/etc', '/lib', '/lib32', '/lib64', '/libx32', '/proc', '/sbin', '/sys', '/usr'] as $systemDir) {
+                if (str_starts_with($location . '/', $systemDir . '/')) {
+                    throw new InvalidSettingConfigurationException("The path must not be a children of or equal to the system directory '" . $systemDir . "'!");
+                }
             }
 
         } else {
@@ -1258,6 +1281,7 @@ class ConfigurationManager
             'NC_DOMAIN' => $this->domain,
             'NC_BASE_DN' => $this->getBaseDN(),
             'AIO_TOKEN' => $this->aioToken,
+            'AIO_UNBLOCK_LOGIN_PRIVATE_KEY' => $this->aioUnblockLoginPrivateKey,
             'AIO_LOG_LEVEL' => $this->aioLogLevel,
             'BORGBACKUP_REMOTE_REPO' => $this->borgRemoteRepo,
             'BORGBACKUP_MODE' => $this->backupMode,

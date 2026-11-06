@@ -43,6 +43,7 @@ sed -i '/: \[\]/d' containers.yml
 sed -i 's|- source: |- |' containers.yml
 sed -i 's|- ip_binding: |- |' containers.yml
 sed -i '/AIO_TOKEN/d' containers.yml
+sed -i '/AIO_UNBLOCK_LOGIN_PRIVATE_KEY/d' containers.yml
 sed -i '/AIO_URL/d' containers.yml
 sed -i '/DOCKER_SOCKET_PROXY_ENABLED/d' containers.yml
 sed -i '/ADDITIONAL_TRUSTED_PROXY/d' containers.yml

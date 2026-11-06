@@ -216,7 +216,6 @@ Add this as a new Apache site config:
 
     RewriteEngine On
     ProxyPreserveHost On
-    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
     # Added to support Euro-office
     RequestHeader set X-Forwarded-Proto "https"
     AllowEncodedSlashes NoDecode
@@ -325,7 +324,7 @@ You can get AIO running using the ACME DNS-challenge. Here is how to do it.
 
 1. Now continue with [point 2](#2-use-this-startup-command) but additionally, add `--env SKIP_DOMAIN_VALIDATION=true` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`) which will disable the domain validation (because it is known that the domain validation will not work when using the DNS-challenge since no port is publicly opened).
 
-**Advice:** In order to make it work in your home network, you may add the internal ipv4-address of your reverse proxy as A DNS-record to your domain and disable the dns-rebind-protection in your router. Another way it to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-adddress of your reverse proxy (see https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally). If both is not possible, you may add the domain to the hosts file which is needed then for any devices that shall use the server.
+**Advice:** In order to make it work in your home network, you may add the internal ipv4-address of your reverse proxy as A DNS-record to your domain and disable the dns-rebind-protection in your router. Another way it to set up a local dns-server like a pi-hole and set up a custom dns-record for that domain that points to the internal ip-address of your reverse proxy (see https://github.com/nextcloud/all-in-one#how-can-i-access-nextcloud-locally). If both is not possible, you may add the domain to the hosts file which is needed then for any devices that shall use the server.
 
 </details>
 
@@ -575,8 +574,7 @@ http {
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-For $remote_addr;
 
             # Websockets
             proxy_http_version 1.1;
@@ -605,19 +603,16 @@ Note: this will cause that a non root user can bind privileged ports.
 
 Second, see these screenshots for a working config:
 
-<img width="475" height="880" alt="image" src="https://github.com/user-attachments/assets/3be9a83f-e721-4d12-96fa-32d1211ea559" />
+<img width="524" height="893" alt="image" src="https://github.com/user-attachments/assets/ac258378-de39-467d-bb5b-5fad2ad6e16e" />
 
-<img width="675" height="355" alt="grafik" src="https://github.com/user-attachments/assets/c4a006f5-f8c4-4898-9ea6-ec33ee7e5bd3" />
+<img width="532" height="205" alt="image" src="https://github.com/user-attachments/assets/c171d433-3b89-4bcd-a176-53d1c27c725a" />
 
-<img width="675" height="650" alt="grafik" src="https://github.com/user-attachments/assets/a4f80ecc-c539-4972-91ed-7b078c269dd1" />
+<img width="536" height="455" alt="image" src="https://github.com/user-attachments/assets/c5419262-a771-4801-9078-b503c1e52aa9" />
 
-<img width="675" height="570" alt="grafik" src="https://github.com/user-attachments/assets/8ea357c2-11d5-48af-abf7-f249bc677213" />
+<img width="527" height="471" alt="image" src="https://github.com/user-attachments/assets/130e94db-dcea-49c0-8cd2-355cb3b48f44" />
 
-
-- The "Enable compression by upstream, not recommended" and "Disable URI Sanitisation, not recommended" buttons may need to be enabled if you use Collabora. (https://github.com/CollaboraOnline/online/issues/10157, https://github.com/nextcloud/all-in-one/issues/834) <br>
-- You may need to check the "Disable Crowdsec Appsec" Button if you use crowdsec and uploads or downloads fail. <br>
-- You may want to enable the "Disable Request/Response Buffering" Button since it could improve uploads and downloads. <br>
-- You can check the "Send noindex header and block some user agents" Button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>
+- Enabling Crowdsec Appsec may break uploads and will enable buffering which could slow down uploads. <br>
+- You can check the "Send noindex header and block some user agents" button If you don't want your Nextcloud to be indexed by web crawlers like google. <br>
 - If you want/need you can also configure Auth Request/mTLS if needed or change the X-Frame-Options header if you want to embed Nextcloud.
 
 
@@ -631,7 +626,7 @@ Second, see these screenshots for a working config:
 
 <summary>click here to expand</summary>
 
-**Hint:** You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-3040493) for a more complete but possibly oudated example.
+**Hint:** You may have a look at [this guide](https://github.com/nextcloud/all-in-one/discussions/588#discussioncomment-3040493) for a more complete but possibly outdated example.
 
 First, make sure the environmental variables `PUID` and `PGID` in the `compose.yaml` file for NPM are either unset or set to `0`. <br>
 If you need to change the GID/PID then please add `net.ipv4.ip_unprivileged_port_start=0` at the end of `/etc/sysctl.conf`. <br>
@@ -649,6 +644,9 @@ Second, see these screenshots for a working config:
 
 
 ```
+proxy_buffering off;
+proxy_request_buffering off;
+
 # The default NEXTCLOUD_MAX_TIME value is 3600 seconds. 
 # By setting proxy_read_timeout 10 seconds higher than that, we make sure that always Nextcloud times out and not NPM. 
 # If you increased NEXTCLOUD_MAX_TIME, increase the timeout below accordingly.
@@ -658,7 +656,6 @@ client_max_body_size 0; # This controls the maximum upload size, 0 means unlimit
 ```
 
 ⚠️ **Please note:** look into [this](#adapting-the-sample-web-server-configurations-below) to adapt the above example configuration.
-Also change `<you>@<your-mail-provider-domain>` to a mail address of yours.
 
 </details>
 

@@ -4,13 +4,9 @@ if [ "$AIO_LOG_LEVEL" = 'debug' ]; then
     set -x
 fi
 
-GOLANG_LOG="$(case "$AIO_LOG_LEVEL" in
-    debug) printf 'info' ;;
-    info) printf 'info' ;;
-    warn) printf 'warning' ;;
-    error) printf 'error' ;;
-esac)"
-export GOLANG_LOG
+# Always log on info level so that it is visible what imaginary does
+echo "Note: This service is pinned to a log level of at least 'info' in order to always show some information, because it makes catching errors easier."
+export GOLANG_LOG=info
 if [ "$AIO_LOG_LEVEL" = "debug" ]; then
     export DEBUG='*'
 fi

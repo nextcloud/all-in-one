@@ -63,6 +63,31 @@ $twig->addExtension(new \AIO\Twig\CsrfExtension($container->get(Guard::class)));
 // Auth Middleware
 $app->add(new \AIO\Middleware\AuthMiddleware($container->get(\AIO\Auth\AuthManager::class)));
 
+// Check Sec-Fetch headers
+$app->add(function (Request $request, \Psr\Http\Server\RequestHandlerInterface $handler) use ($responseFactory) : Response {
+    // allow same-origin and none
+    if (in_array($request->getHeaderLine('Sec-Fetch-Site'), ['same-origin', 'none'], true)) {
+        return $handler->handle($request);
+    }
+
+    $isDocumentNavigation = $request->getMethod() === 'GET' && $request->getHeaderLine('Sec-Fetch-Mode') === 'navigate' && $request->getHeaderLine('Sec-Fetch-Dest') === 'document';
+
+    // allow cross-origin navigations to /api/auth/getlogin (with any query params)
+    if ($isDocumentNavigation && $request->getUri()->getPath() === '/api/auth/getlogin') {
+        return $handler->handle($request);
+    }
+
+    // allow cross-origin navigations to `/login`, if no query params are set
+    if ($isDocumentNavigation && $request->getUri()->getPath() === '/login' && $request->getUri()->getQuery() === '') {
+        return $handler->handle($request);
+    }
+
+    // else deny
+    $response = $responseFactory->createResponse(403);
+    $response->getBody()->write('Forbidden');
+    return $response;
+});
+
 // API
 $app->post('/api/docker/watchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
 $app->get('/api/docker/getwatchtower', AIO\Controller\DockerController::class . ':StartWatchtowerContainer');
@@ -186,8 +211,12 @@ $app->get('/login', function (Request $request, Response $response, array $args)
     $view = Twig::fromRequest($request);
     /** @var \AIO\Docker\DockerActionManager $dockerActionManager */
     $dockerActionManager = $container->get(\AIO\Docker\DockerActionManager::class);
+    /** @var \AIO\Auth\AuthManager $authManager */
+    $authManager = $container->get(\AIO\Auth\AuthManager::class);
     return $view->render($response, 'login.twig', [
-        'is_login_allowed' => $dockerActionManager->isLoginAllowed(),
+        'is_authenticated' => $authManager->IsAuthenticated(),
+        'is_login_allowed' => $dockerActionManager->isLoginAllowed() || $authManager->IsLoginUnblockedForSession(),
+        'login_unblocked_notice' => $authManager->GetLoginUnblockedNotice(),
     ]);
 });
 
