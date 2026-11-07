@@ -447,9 +447,9 @@ readonly class DockerActionManager {
         }
 
         // Disable SELinux for AIO containers so that it does not break them
-        $requestBody['HostConfig']['SecurityOpt'] = ["label:disable"];
+        $requestBody['HostConfig']['SecurityOpt'] = ["label=disable"];
         if ($container->apparmorUnconfined) {
-            $requestBody['HostConfig']['SecurityOpt'] = ["apparmor:unconfined", "label:disable"];
+            $requestBody['HostConfig']['SecurityOpt'] = ["apparmor=unconfined", "label=disable"];
         }
 
         $mounts = [];
@@ -505,7 +505,7 @@ readonly class DockerActionManager {
             if (!$this->configurationManager->collaboraSeccompDisabled) {
                 // Load reference seccomp profile for collabora
                 $seccompProfile = (string)file_get_contents(DataConst::GetCollaboraSeccompProfilePath());
-                $requestBody['HostConfig']['SecurityOpt'] = ["label:disable", "seccomp=$seccompProfile"];
+                $requestBody['HostConfig']['SecurityOpt'] = ["label=disable", "seccomp=$seccompProfile"];
             }
 
             // Additional Collabora options
