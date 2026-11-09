@@ -108,6 +108,7 @@ $app->get('/api/auth/getlogin', AIO\Controller\LoginController::class . ':GetTry
 $app->post('/api/auth/logout', AIO\Controller\LoginController::class . ':Logout');
 $app->post('/api/configuration', \AIO\Controller\ConfigurationController::class . ':SetConfig');
 $app->post('/api/desec/register', \AIO\Controller\DesecController::class . ':Register');
+$app->post('/api/desec/reset', \AIO\Controller\DesecController::class . ':Reset');
 
 // Views
 $app->get('/containers', function (Request $request, Response $response, array $args) use ($container) {
