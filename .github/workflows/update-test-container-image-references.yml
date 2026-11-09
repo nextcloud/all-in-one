@@ -13,6 +13,14 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Install skopeo
       run: sudo apt-get install -y skopeo
+    - name: Update Playwright version
+      # The npm package and the container image must use the same Playwright version.
+      # Only the tag is changed here, the digest is updated by the update script below.
+      run: |
+        playwright_version="$(npm view @playwright/test version)"
+        cd php/tests
+        npm install --save-dev --package-lock-only --no-audit --no-fund "@playwright/test@^$playwright_version"
+        sed -i -E "s|(mcr\.microsoft\.com/playwright:)v[0-9.]+@|\1v$playwright_version@|" compose.yaml
     - name: Run update script
       run: python3 .ci/update-test-container-image-reference.py
       env:
@@ -25,7 +33,7 @@ jobs:
         commit-message: "chore(tests): update test container image references"
         signoff: true
         title: Update test container image references
-        body: Automated update of node and playwright image digests in php/tests/compose.yaml
+        body: Automated update of the Playwright version and the node and playwright image digests in php/tests
         labels: dependencies, 3. to review
         milestone: next
         branch: update-test-container-image-references
