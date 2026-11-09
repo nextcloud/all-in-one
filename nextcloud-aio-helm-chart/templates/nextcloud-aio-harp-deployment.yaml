@@ -40,6 +40,8 @@ spec:
               value: "{{ .Values.HARP_K8S_DEFAULT_STORAGE_SIZE }}"
             - name: HP_K8S_HOST_ALIASES
               value: "{{ .Values.HARP_K8S_HOST_ALIASES }}"
+            - name: HP_EXAPP_BIND_MOUNTS_ENFORCE_ALL
+              value: "true"
             - name: HP_FRP_DISABLE_TLS
               value: "true"
             - name: HP_SHARED_KEY
@@ -48,7 +50,7 @@ spec:
               value: https://{{ .Values.NC_DOMAIN }}
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-harp:20261021_180331
+          image: ghcr.io/nextcloud-releases/aio-harp:20261109_101109
           readinessProbe:
             exec:
               command:
