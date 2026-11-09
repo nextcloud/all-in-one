@@ -481,7 +481,7 @@ services:
 
   nextcloud-aio-fulltextsearch:
     image: ghcr.io/nextcloud-releases/aio-fulltextsearch:latest
-    init: false
+    init: true
     healthcheck:
       start_period: 60s
       test: /healthcheck.sh
