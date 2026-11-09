@@ -529,7 +529,7 @@ In general recommended VPS are those that are KVM/non-virtualized as Docker shou
 - HDD storage should work as well but is of course much slower than SSD storage
 
 ### Are there known problems when SELinux is enabled?
-Yes. If SELinux is enabled, you might need to add the `--security-opt label:disable` option to the docker run command of the mastercontainer in order to allow it to access the docker socket (or `security_opt: ["label:disable"]` in compose.yaml). See https://github.com/nextcloud/all-in-one/discussions/485
+Yes. If SELinux is enabled, you might need to add the `--security-opt label=disable` option to the docker run command of the mastercontainer in order to allow it to access the docker socket (or `security_opt: ["label=disable"]` in compose.yaml). See https://github.com/nextcloud/all-in-one/discussions/485
 
 ## Customization
 
