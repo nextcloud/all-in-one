@@ -21,7 +21,7 @@
 	},
 	"require-dev": {
 		"sserbin/twig-linter": "@dev",
-		"vimeo/psalm": "^6.0",
+		"vimeo/psalm": "^7.0",
 		"wapmorgan/php-deprecation-detector": "dev-master"
 	},
 	"scripts": {
