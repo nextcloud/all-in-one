@@ -43,11 +43,13 @@ class DesecManager {
             throw new \Exception('A domain is already configured. Reset the AIO instance first to register a new domain.');
         }
 
-        $validatedSlug = $this->validateSlug($slug);
-
         // Persist the requested slug so the form can pre-fill it when it re-renders on the
-        // next step of the flow (e.g. after email verification). Cleared once a domain is set.
-        $this->configurationManager->desecSlug = $validatedSlug;
+        // next step of the flow. Cleared once a domain is set. While a new account is awaiting
+        // verification the slug is fixed (the domain was requested together with the account),
+        // so whatever the form posts is ignored in favour of the stored one.
+        if (!$this->configurationManager->isDesecAwaitingVerification()) {
+            $this->configurationManager->desecSlug = $this->validateSlug($slug);
+        }
 
         [$token, $isNewAccount] = $this->obtainToken($email, $password);
 
@@ -58,7 +60,21 @@ class DesecManager {
             return false;
         }
 
-        $domain = $this->registerDomain($token, $validatedSlug);
+        // For an AIO-created account the domain was requested at signup and deSEC created it
+        // when the user activated the account, so it already exists. The stored slug is the
+        // actual slug then (a random one is drawn before signup). Confirm it with a single GET
+        // and fall back to creating it only if it is missing (e.g. a registration that was
+        // started with an older AIO version, where the domain was created after login).
+        $domain = '';
+        if ($isNewAccount && $this->configurationManager->desecSlug !== '') {
+            $candidate = $this->configurationManager->desecSlug . ConfigurationManager::DEDYN_SUFFIX;
+            if ($this->ownsDomain($token, $candidate)) {
+                $domain = $candidate;
+            }
+        }
+        if ($domain === '') {
+            $domain = $this->registerDomain($token, $this->configurationManager->desecSlug);
+        }
 
         if ($isNewAccount) {
             $this->createWildcardCname($token, $domain);
@@ -71,6 +87,29 @@ class DesecManager {
         $this->updateIpIfDesecDomain();
 
         return true;
+    }
+
+    /**
+     * Abandons a registration that is awaiting email verification, so the user can start
+     * over. Needed when the verification mail never arrived, the link expired, or deSEC
+     * could not create the requested domain at activation time (the name was taken in the
+     * meantime), in which case deSEC deletes the pending account and logging in will never
+     * succeed. After such a deletion the same address can be reused right away. While an
+     * account is still pending, however, deSEC sends no further registration mail to its
+     * address for about a day, so starting over then needs a different address; the UI says so.
+     *
+     * @throws \Exception when there is no pending registration to abandon
+     */
+    public function resetPendingRegistration(): void {
+        if (!$this->configurationManager->isDesecAwaitingVerification()) {
+            throw new \Exception('There is no pending deSEC registration to reset.');
+        }
+
+        $this->configurationManager->startTransaction();
+        $this->configurationManager->desecEmail    = '';
+        $this->configurationManager->desecPassword = '';
+        $this->configurationManager->desecSlug     = '';
+        $this->configurationManager->commitTransaction();
     }
 
     /**
@@ -88,7 +127,8 @@ class DesecManager {
      *  - We are awaiting verification of an account we created earlier → try to log
      *    in with the stored credentials; succeed once the email is verified,
      *    otherwise ask the user to verify and try again.
-     *  - Otherwise → create a new account and ask the user to verify their email.
+     *  - Otherwise → create a new account (requesting the domain along with it) and
+     *    ask the user to verify their email.
      *
      * @return array{0: string, 1: bool} the token and whether it belongs to a
      *         freshly created (AIO-managed) account, which controls wildcard setup.
@@ -131,22 +171,61 @@ class DesecManager {
             return [$token, false];
         }
 
-        // Create a new account. 24 random bytes → 48-char hex password; satisfies deSEC's
-        // minimum length and lets the user log in at desec.io if they ever need to.
-        $generatedPassword = bin2hex(random_bytes(24));
-        $this->registerAccount($validatedEmail, $generatedPassword);
-        // Persisting email + password (but no token, no domain) is exactly the
-        // "awaiting verification" state, see ConfigurationManager::isDesecAwaitingVerification().
-        $this->configurationManager->startTransaction();
-        $this->configurationManager->desecPassword = $generatedPassword;
-        $this->configurationManager->desecEmail    = $validatedEmail;
-        $this->configurationManager->commitTransaction();
+        $this->registerAccountWithDomain($validatedEmail, $this->configurationManager->desecSlug);
 
         // This is not an error: the account was requested successfully and we now wait for
         // the user to verify their email. Signal it with an empty token so register() can
         // stop cleanly and the caller can re-render the awaiting-verification UI (which
         // already explains the next step) instead of surfacing an error toast.
         return ['', true];
+    }
+
+    /**
+     * Creates a new deSEC account and requests the dedyn.io domain along with it.
+     *
+     * deSEC validates the domain name as part of the signup request: when the name is
+     * unavailable it answers 400 and creates no account, so the user gets immediate
+     * feedback and can pick another name. When $slug is empty a random slug is drawn and
+     * the signup is retried with a fresh one up to MAX_SLUG_ATTEMPTS times. The domain
+     * itself is created by deSEC when the user activates the account via the emailed link.
+     *
+     * On success the generated password, the email and the slug that was actually
+     * requested are persisted; that is exactly the "awaiting verification" state, see
+     * ConfigurationManager::isDesecAwaitingVerification().
+     *
+     * @throws \Exception if the requested slug is unavailable, on network failure, or after exhausting random attempts
+     */
+    private function registerAccountWithDomain(string $email, string $slug): void {
+        // 24 random bytes → 48-char hex password; satisfies deSEC's minimum length and lets
+        // the user log in at desec.io if they ever need to.
+        $generatedPassword = bin2hex(random_bytes(24));
+
+        $random   = $slug === '';
+        $attempts = $random ? self::MAX_SLUG_ATTEMPTS : 1;
+
+        for ($i = 0; $i < $attempts; $i++) {
+            $candidate = $random ? bin2hex(random_bytes(self::SLUG_BYTES)) : $slug;
+            $domain    = $candidate . ConfigurationManager::DEDYN_SUFFIX;
+
+            try {
+                $this->registerAccount($email, $generatedPassword, $domain);
+            } catch (DomainUnavailableException $e) {
+                if ($random) {
+                    // Random slug collided with an existing name — try another.
+                    continue;
+                }
+                throw new \Exception('"' . $domain . '" is not available: ' . $e->getMessage() . ' Please choose a different subdomain and try again.');
+            }
+
+            $this->configurationManager->startTransaction();
+            $this->configurationManager->desecPassword = $generatedPassword;
+            $this->configurationManager->desecEmail    = $email;
+            $this->configurationManager->desecSlug     = $candidate;
+            $this->configurationManager->commitTransaction();
+            return;
+        }
+
+        throw new \Exception('Could not find a free dedyn.io domain after ' . self::MAX_SLUG_ATTEMPTS . ' attempts. Please try again.');
     }
 
     /**
@@ -180,21 +259,23 @@ class DesecManager {
     }
 
     /**
-     * Requests creation of a new deSEC account.
+     * Requests creation of a new deSEC account together with a domain.
      *
      * deSEC replies 202 Accepted and emails a verification link; no API token is
-     * returned here and the account is unusable until the email is verified. For
-     * privacy reasons deSEC also returns 202 when the email is already registered
-     * (without sending a mail), so a 202 cannot be treated as proof of a new account.
-     * The captcha field is omitted; deSEC requires it only at email-verification time,
-     * which the user completes in the browser via the emailed link.
+     * returned here and the account is unusable until the email is verified. The
+     * domain is created by deSEC once the user activates the account. For privacy
+     * reasons deSEC also returns 202 when the email is already registered (without
+     * sending a mail or touching the domain), so a 202 cannot be treated as proof of a
+     * new account. The captcha field is omitted; deSEC requires it only at
+     * email-verification time, which the user completes in the browser via the emailed link.
      *
+     * @throws DomainUnavailableException if deSEC rejects the domain name (no account is created then)
      * @throws \Exception on network failure or an unexpected HTTP response
      */
-    public function registerAccount(string $email, string $password): void {
+    public function registerAccount(string $email, string $password, string $domain): void {
         try {
             $res = $this->guzzleClient->post($this->configurationManager->desecApiBase . '/auth/', [
-                'json' => ['email' => $email, 'password' => $password],
+                'json' => ['email' => $email, 'password' => $password, 'domain' => $domain],
             ]);
         } catch (TransferException $e) {
             throw new \Exception('Could not reach the deSEC API: ' . $e->getMessage());
@@ -202,21 +283,36 @@ class DesecManager {
 
         $code = $res->getStatusCode();
 
-        if ($code !== 202) {
-            throw new \Exception('Unexpected response from deSEC during account registration (HTTP ' . $code . '): ' . $res->getBody()->getContents());
+        if ($code === 202) {
+            return;
         }
+
+        $body = $res->getBody()->getContents();
+
+        if ($code === 400) {
+            // Validation errors are keyed by field; a problem with the domain name (taken,
+            // reserved, ...) is reported under "domain".
+            $data = json_decode($body, true);
+            if (is_array($data) && isset($data['domain']) && is_array($data['domain'])) {
+                throw new DomainUnavailableException(implode(' ', array_map('strval', $data['domain'])));
+            }
+        }
+
+        throw new \Exception('Unexpected response from deSEC during account registration (HTTP ' . $code . '): ' . $body);
     }
 
     /**
      * Attempts to log in after the user was asked to verify a freshly created account.
      *
-     * A login failure here has two common causes that we cannot tell apart, because
+     * A login failure here has three common causes that we cannot tell apart, because
      * deSEC returns 202 both for a genuinely new account and for one whose email was
      * already registered (to prevent email enumeration):
      *   1. The account is new but its email has not been verified yet.
      *   2. The email already belonged to an existing deSEC account, so no new account
      *      (and no verification mail) was created and our generated password is wrong.
-     * The message covers both and points to the fix for each.
+     *   3. The requested domain could not be created when the user clicked the link
+     *      (e.g. the name was taken in the meantime), so deSEC deleted the pending account.
+     * The message covers all three and points to the fix for each.
      *
      * @throws \Exception with a friendly hint when login is not yet possible
      */
@@ -225,10 +321,12 @@ class DesecManager {
             return $this->loginAccount($email, $password);
         } catch (\Exception $e) {
             throw new \Exception(
-                'Could not log in to deSEC for ' . $email . ' yet. Two things to check:' . "\n"
+                'Could not log in to deSEC for ' . $email . ' yet. Things to check:' . "\n"
                 . '• If deSEC emailed you a verification link, please click it and then try again.' . "\n"
                 . '• If this email already had a deSEC account, no new account was created. '
-                . 'In that case, enter your existing deSEC password in the password field below and try again.'
+                . 'In that case, enter your existing deSEC password in the password field below and try again.' . "\n"
+                . '• If the verification link reported that the domain could not be created, the pending '
+                . 'account was deleted by deSEC. Use "Start over" below to try again with a different subdomain.'
             );
         }
     }
@@ -269,6 +367,9 @@ class DesecManager {
     /**
      * Registers a dedyn.io domain for the authenticated account.
      * When $slug is empty a random 10-character slug is tried up to MAX_SLUG_ATTEMPTS times.
+     *
+     * Used for existing deSEC accounts the user logged into (an AIO-created account gets
+     * its domain at signup instead, see registerAccountWithDomain()).
      *
      * When a specific slug is requested and creation fails because the name is unavailable
      * (HTTP 400/409) or the account's domain limit is reached (HTTP 403), the domain may
@@ -334,9 +435,9 @@ class DesecManager {
     /**
      * Checks whether the authenticated account already owns the given domain.
      *
-     * Used to recover from a failed creation when the user is reusing a slug they
-     * registered earlier: GET /domains/{name}/ returns 200 only for a domain the
-     * token's account owns, 404 otherwise.
+     * GET /domains/{name}/ returns 200 only for a domain the token's account owns, 404
+     * otherwise. Used to confirm the domain deSEC created at account activation, and to
+     * recover from a failed creation when the user is reusing a slug they registered earlier.
      *
      * @throws \Exception on network failure or an unexpected HTTP response
      */
