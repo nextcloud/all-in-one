@@ -44,7 +44,7 @@ spec:
               value: nextcloud-aio-nextcloud
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-notify-push:20261021_180331
+          image: ghcr.io/nextcloud-releases/aio-notify-push:20261109_101109
           readinessProbe:
             exec:
               command:
@@ -76,7 +76,13 @@ spec:
             - mountPath: /var/www/html
               name: nextcloud-aio-nextcloud
               readOnly: true
+            - mountPath: /usr/local/share/ca-certificates
+              name: nextcloud-aio-nextcloud-trusted-cacerts
+              readOnly: true
       volumes:
         - name: nextcloud-aio-nextcloud
           persistentVolumeClaim:
             claimName: nextcloud-aio-nextcloud
+        - name: nextcloud-aio-nextcloud-trusted-cacerts
+          persistentVolumeClaim:
+            claimName: nextcloud-aio-nextcloud-trusted-cacerts
