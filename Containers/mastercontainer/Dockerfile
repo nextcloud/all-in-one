@@ -3,7 +3,7 @@
 FROM docker:29.9.2-cli AS docker
 
 # Caddy is a requirement
-FROM caddy:2.11.7-alpine AS caddy
+FROM caddy:2.11.8-alpine AS caddy
 
 # Composer is needed to install the php dependencies
 FROM composer:2.11.1 AS composer
