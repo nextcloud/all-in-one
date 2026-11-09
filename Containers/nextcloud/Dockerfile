@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.4.27-fpm-alpine3.24
+FROM php:8.4-fpm-alpine3.24
 
 ARG IGBINARY_VERSION=3.2.16
 ARG APCU_VERSION=5.1.28
