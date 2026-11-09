@@ -867,7 +867,7 @@
       "documentation": "https://github.com/nextcloud/all-in-one/discussions/1709",
       "display_name": "Fulltextsearch",
       "image": "ghcr.io/nextcloud-releases/aio-fulltextsearch",
-      "init": false,
+      "init": true,
       "healthcheck": {
         "start_period": "60s",
         "test": "/healthcheck.sh",
