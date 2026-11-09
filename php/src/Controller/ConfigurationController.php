@@ -55,7 +55,8 @@ readonly class ConfigurationController {
                     $successNotification = false;
                 }
                 $dailyBackupTime = $request->getParsedBody()['daily_backup_time'] ?? '';
-                $this->configurationManager->setDailyBackupTime($dailyBackupTime, $enableAutomaticUpdates, $successNotification);
+                $backupWeekday = $request->getParsedBody()['backup_weekday'] ?? '0';
+                $this->configurationManager->setDailyBackupTime($dailyBackupTime, $enableAutomaticUpdates, $successNotification, $backupWeekday);
             }
 
             if (isset($request->getParsedBody()['delete_daily_backup_time'])) {
