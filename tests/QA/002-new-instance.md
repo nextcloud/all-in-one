@@ -14,7 +14,9 @@ For the below to work, it is important that you have a domain that you point ont
     - [ ] Clicking the button should open a modal window with the registration form (email address and an optional subdomain slug) without reloading the page
     - [ ] Submitting with an empty email should show an error asking for a valid email address (inside the modal)
     - [ ] Submitting with an invalid slug (e.g. `-bad-`) should show a validation error about the allowed slug format (inside the modal)
-    - [ ] Submitting with a valid email should step the modal through the register → verify email → register domain flow without closing it; you can adjust the details and re-submit between steps
+    - [ ] Submitting with a slug that is already taken should show an error that the domain is not available (inside the modal) and stay on the registration form
+    - [ ] Submitting with a valid email and a free slug should step the modal through the register → verify email → finish setup flow without closing it; the awaiting-verification step shows the requested `*.dedyn.io` domain
+    - [ ] On the awaiting-verification step, clicking **Start over** should return to the registration form so a different email address or slug can be entered (the step explains when the same address can be reused)
     - [ ] Closing the modal (via the × button, clicking the backdrop, or pressing Escape) and re-opening it should resume the registration where you left off
     - [ ] Once the domain is fully registered the modal should close on its own and the whole page should reload with the new `*.dedyn.io` domain set as the Nextcloud domain
     - [ ] After successful registration, the `caddy` and `dnsmasq` community containers should be listed as enabled in the Community Containers section
