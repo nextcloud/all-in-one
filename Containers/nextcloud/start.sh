@@ -163,8 +163,12 @@ while [ "$THIS_IS_AIO" = "true" ] && [ -z "$(dig nextcloud-aio-apache A +short +
 done
 
 set -x
+# The caddy community container is the reverse proxy inside the known container setup, so limiting access is possible as well
+if [ "$THIS_IS_AIO" = "true" ] && [ -n "$(dig nextcloud-aio-caddy A +short +search)" ]; then
+    COMMUNITY_REVERSE_PROXY_FOUND=1
+fi
 # shellcheck disable=SC2235
-if [ "$THIS_IS_AIO" = "true" ] && [ "$APACHE_PORT" = 443 ]; then
+if [ "$THIS_IS_AIO" = "true" ] && { [ "$APACHE_PORT" = 443 ] || [ "$COMMUNITY_REVERSE_PROXY_FOUND" = 1 ]; }; then
     IPv4_ADDRESS_APACHE="$(dig nextcloud-aio-apache A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
     IPv6_ADDRESS_APACHE="$(dig nextcloud-aio-apache AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
     IPv4_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
