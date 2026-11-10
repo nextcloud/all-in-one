@@ -1,6 +1,9 @@
 ## Scrutiny
 This container bundles [Scrutiny](https://github.com/analogj/scrutiny), a web frontend for SMART stats, and auto-configures it for you.
 
+> [!WARNING]
+> Port 8001 is published on all network interfaces of the host and has no authentication. Anyone who can reach this port (e.g. the whole LAN, or the whole internet on a server without a firewall) can see the dashboard with all information about your drives. Make sure to block this port in your firewall if the server is reachable from untrusted networks.
+
 ### Notes
 - This container should only be run in home networks
 - ⚠️ This container mounts all devices from the host inside the container in order to be able to access the drives and smartctl stats which is a security issue. However no better solution was found for the time being.
