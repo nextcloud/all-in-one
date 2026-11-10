@@ -8,6 +8,9 @@ RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache janus-gateway; \
     mv /etc/janus/janus.transport.websockets.jcfg.sample /etc/janus/janus.transport.websockets.jcfg; \
+    # Only the signaling server in this container needs the Janus API, so do not expose it to other containers
+    sed -i 's|^[[:space:]]*#ws_ip = .*|\tws_ip = "127.0.0.1"|' /etc/janus/janus.transport.websockets.jcfg; \
+    grep -q '^[[:space:]]*ws_ip = "127.0.0.1"' /etc/janus/janus.transport.websockets.jcfg; \
     mv /etc/janus/janus.plugin.videoroom.jcfg.sample /etc/janus/janus.plugin.videoroom.jcfg; \
     sed -i '/^room-1234:/,/^}/d' /etc/janus/janus.plugin.videoroom.jcfg
 
