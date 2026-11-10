@@ -33,7 +33,7 @@ jobs:
         commit-message: "chore(tests): update test container image references"
         signoff: true
         title: Update test container image references
-        body: Automated update of the Playwright version and the node and playwright image digests in php/tests
+        body: Automated update of the node playwright version and the playwright image digests in php/tests
         labels: dependencies, 3. to review
         milestone: next
         branch: update-test-container-image-references
