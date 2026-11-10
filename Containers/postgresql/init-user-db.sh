@@ -16,6 +16,9 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
 	GRANT ALL PRIVILEGES ON SCHEMA public TO "oc_$POSTGRES_USER";
 EOSQL
 
+# The superuser must only be usable via the local socket, so that the shared password does not grant superuser access over the network
+sed -i "1i host all $POSTGRES_USER all reject" "$PGDATA/pg_hba.conf"
+
 rm "$DUMP_DIR/initialization.failed"
 
 set +ex

@@ -162,6 +162,11 @@ if ! [ -f "$DATADIR/PG_VERSION" ] && ! [ -f "$DUMP_FILE" ]; then
     rm -rf "${DATADIR:?}/"*
 fi
 
+# The superuser must only be usable via the local socket, so that the shared password does not grant superuser access over the network
+if [ -f "$DATADIR/pg_hba.conf" ] && ! grep -q "^host all $POSTGRES_USER all reject$" "$DATADIR/pg_hba.conf"; then
+    sed -i "1i host all $POSTGRES_USER all reject" "$DATADIR/pg_hba.conf"
+fi
+
 # Modify postgresql.conf
 if [ -f "/var/lib/postgresql/data/postgresql.conf" ]; then
     echo "Setting postgres values..."
