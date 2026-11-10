@@ -451,6 +451,9 @@ readonly class DockerActionManager {
         if ($container->apparmorUnconfined) {
             $requestBody['HostConfig']['SecurityOpt'] = ["apparmor=unconfined", "label=disable"];
         }
+        if ($container->noNewPrivileges) {
+            $requestBody['HostConfig']['SecurityOpt'][] = "no-new-privileges:true";
+        }
 
         $mounts = [];
 
