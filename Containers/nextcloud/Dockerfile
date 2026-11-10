@@ -2,12 +2,19 @@
 FROM php:8.4.27-fpm-alpine3.24
 
 ARG IGBINARY_VERSION=3.2.16
+ARG IGBINARY_SHA256=941f1cf2ccbecdc1c221dbfae9213439d334be5d490a2f3da2be31e8a00b0cdb
 ARG APCU_VERSION=5.1.28
+ARG APCU_SHA256=0e60ba9d0fa4021c57a70c071f3d8f71de236275d084e560d5959fec4edd8c32
 ARG MEMCACHED_VERSION=3.4.0
+ARG MEMCACHED_SHA256=10b98a0fdc3ce9ab823db59e8935f068de87e374728871a1efacdadd8c7807d1
 ARG REDIS_VERSION=6.3.0
+ARG REDIS_SHA256=cb8f81df1a275599e4f8ddcfec7e1f65ed1953e6f5673649149fd680ebff4cad
 ARG IMAGICK_VERSION=3.8.1
+ARG IMAGICK_SHA256=b0e9279ddf6e75a8c6b4068e16daec0475427dbca7ce2e144e30a51a88aa5ddc
 ARG IMAP_VERSION=1.0.3
+ARG IMAP_SHA256=529383529b799f7cdefc7fadde028f9ac420bab7b4cb40bbc915ff11fceac18c
 ARG SMBCLIENT_VERSION=1.1.2
+ARG SMBCLIENT_SHA256=042465bdde187eb32d4233402f88368426d76c84ab1d076701b6592d6b5fa5d8
 
 ENV PHP_MEMORY_LIMIT=512M
 ENV PHP_UPLOAD_LIMIT=1G
@@ -42,6 +49,16 @@ VOLUME /var/www/html
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 # hadolint ignore=SC2086,DL3003
 RUN set -ex; \
+# downloads a PHP extension source tarball, verifies its sha256 checksum and extracts it to /usr/src/php/ext/<name>
+# usage: fetch_php_ext <name> <url> <sha256>
+    fetch_php_ext() { \
+        curl -fsSL --retry 5 -o "/tmp/$1.tar.gz" "$2"; \
+        echo "$3  /tmp/$1.tar.gz" | sha256sum -c -; \
+        mkdir -p "/usr/src/php/ext/$1"; \
+        tar -xzf "/tmp/$1.tar.gz" --strip-components=1 -C "/usr/src/php/ext/$1"; \
+        rm "/tmp/$1.tar.gz"; \
+    }; \
+    \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
     deluser www-data; \
@@ -95,23 +112,11 @@ RUN set -ex; \
     ; \
     \
 # build PECL extensions from their GitHub release sources as pecl.php.net is not reliably reachable from CI
-    mkdir -p \
-        /usr/src/php/ext/igbinary \
-        /usr/src/php/ext/apcu \
-        /usr/src/php/ext/memcached \
-        /usr/src/php/ext/redis \
-        /usr/src/php/ext/imagick \
-    ; \
-    curl -fsSL --retry 5 "https://github.com/igbinary/igbinary/archive/refs/tags/$IGBINARY_VERSION.tar.gz" \
-        | tar -xz --strip-components=1 -C /usr/src/php/ext/igbinary; \
-    curl -fsSL --retry 5 "https://github.com/krakjoe/apcu/archive/refs/tags/v$APCU_VERSION.tar.gz" \
-        | tar -xz --strip-components=1 -C /usr/src/php/ext/apcu; \
-    curl -fsSL --retry 5 "https://github.com/php-memcached-dev/php-memcached/archive/refs/tags/v$MEMCACHED_VERSION.tar.gz" \
-        | tar -xz --strip-components=1 -C /usr/src/php/ext/memcached; \
-    curl -fsSL --retry 5 "https://github.com/phpredis/phpredis/archive/refs/tags/$REDIS_VERSION.tar.gz" \
-        | tar -xz --strip-components=1 -C /usr/src/php/ext/redis; \
-    curl -fsSL --retry 5 "https://github.com/Imagick/imagick/archive/refs/tags/$IMAGICK_VERSION.tar.gz" \
-        | tar -xz --strip-components=1 -C /usr/src/php/ext/imagick; \
+    fetch_php_ext igbinary "https://github.com/igbinary/igbinary/archive/refs/tags/$IGBINARY_VERSION.tar.gz" "$IGBINARY_SHA256"; \
+    fetch_php_ext apcu "https://github.com/krakjoe/apcu/archive/refs/tags/v$APCU_VERSION.tar.gz" "$APCU_SHA256"; \
+    fetch_php_ext memcached "https://github.com/php-memcached-dev/php-memcached/archive/refs/tags/v$MEMCACHED_VERSION.tar.gz" "$MEMCACHED_SHA256"; \
+    fetch_php_ext redis "https://github.com/phpredis/phpredis/archive/refs/tags/$REDIS_VERSION.tar.gz" "$REDIS_SHA256"; \
+    fetch_php_ext imagick "https://github.com/Imagick/imagick/archive/refs/tags/$IMAGICK_VERSION.tar.gz" "$IMAGICK_SHA256"; \
 # the imagick version placeholder is only replaced when packaging for PECL
     grep -q '@PACKAGE_VERSION@' /usr/src/php/ext/imagick/php_imagick.h; \
     sed -i "s/@PACKAGE_VERSION@/$IMAGICK_VERSION/" /usr/src/php/ext/imagick/php_imagick.h; \
@@ -241,14 +246,8 @@ RUN set -ex; \
         ftp \
     ; \
 # imap was removed from PHP core in 8.4, so it needs to be installed from its PECL sources from now on
-    mkdir -p \
-        /usr/src/php/ext/imap \
-        /usr/src/php/ext/smbclient \
-    ; \
-    curl -fsSL --retry 5 "https://github.com/php/pecl-mail-imap/archive/refs/tags/$IMAP_VERSION.tar.gz" \
-        | tar -xz --strip-components=1 -C /usr/src/php/ext/imap; \
-    curl -fsSL --retry 5 "https://github.com/eduardok/libsmbclient-php/archive/refs/tags/$SMBCLIENT_VERSION.tar.gz" \
-        | tar -xz --strip-components=1 -C /usr/src/php/ext/smbclient; \
+    fetch_php_ext imap "https://github.com/php/pecl-mail-imap/archive/refs/tags/$IMAP_VERSION.tar.gz" "$IMAP_SHA256"; \
+    fetch_php_ext smbclient "https://github.com/eduardok/libsmbclient-php/archive/refs/tags/$SMBCLIENT_VERSION.tar.gz" "$SMBCLIENT_SHA256"; \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install -j "$(nproc)" \
         imap \
