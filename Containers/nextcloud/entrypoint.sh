@@ -685,7 +685,7 @@ php /var/www/html/occ config:system:set maintenance_window_start --type=int --va
 
 # Apply network settings
 echo "Applying network settings..."
-php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
+php /var/www/html/occ config:system:delete allow_local_remote_servers
 php /var/www/html/occ config:system:set davstorage.request_timeout --value="$PHP_MAX_TIME" --type=int
 php /var/www/html/occ config:system:set trusted_domains 1 --value="$NC_DOMAIN"
 php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_DOMAIN/"
