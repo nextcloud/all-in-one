@@ -53,6 +53,14 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
         reverse_proxy {$COLLABORA_HOST}:9980
     }
     route /cool/* {
+        # Collabora's conversion API has no authentication, so only allow Nextcloud to use it, which connects via the internal port 23973.
+        # THIS_IS_AIO is not set in manual-install and Helm, where Nextcloud connects via the public domain.
+        @publicCollaboraConversionApi {
+            path /cool/convert-to* /cool/extract-link-targets* /cool/extract-document-structure* /cool/transform-document-structure* /cool/get-thumbnail* /cool/render-search-result*
+            not vars {http.request.local.port} 23973
+            expression `"{$THIS_IS_AIO}" == "true"`
+        }
+        respond @publicCollaboraConversionApi 403
         reverse_proxy {$COLLABORA_HOST}:9980
     }
 
