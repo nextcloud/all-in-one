@@ -1138,17 +1138,8 @@ class ConfigurationManager
     public function getExtraHosts() : array {
         $extraHosts = getenv('AIO_EXTRA_HOSTS');
         if (is_string($extraHosts)) {
-            $result = [];
-            foreach (explode(',', $extraHosts) as $entry) {
-                $entry = trim($entry);
-                if ($entry === '') {
-                    continue;
-                }
-                $result[] = $entry;
-            }
-            return array_values(array_unique($result));
+            return array_values(array_unique(array_filter(explode(',', $extraHosts))));
         }
-
         if ($this->domain !== '' && ($this->apachePort === '443' || in_array('caddy', $this->aioCommunityContainers, true))) {
             return [$this->domain . ':host-gateway'];
         }
