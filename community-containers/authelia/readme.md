@@ -3,6 +3,9 @@ This container bundles [Authelia](https://www.authelia.com/), a single sign-on p
 
 Logging in with the normal Nextcloud accounts (e.g. `admin`) keeps working.
 
+> [!WARNING]
+> Authelia connects to lldap with the lldap `admin` account. If the Authelia container gets compromised, the attacker controls all users in lldap.
+
 ### Requirements
 - **lldap community container:** Authelia uses [lldap](https://github.com/nextcloud/all-in-one/tree/main/community-containers/lldap) to manage its users, so you need to enable both containers. Authelia waits until lldap is available.
 - **Reverse proxy:** Authelia needs its own subdomain, which must be `auth.$NC_DOMAIN`. So if Nextcloud uses `your-domain.com`, Authelia uses `auth.your-domain.com`. The easiest way is the [Caddy community container](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy), which sets this up automatically. If you use your own reverse proxy (see [reverse-proxy.md](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)), point `auth.$NC_DOMAIN` to port `9091`, serve it via https and send the `X-Forwarded-Proto` and `X-Forwarded-Host` headers.
