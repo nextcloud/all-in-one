@@ -41,10 +41,12 @@
                 "GITEA__log__MODE=console,file",
                 "GITEA__log__LEVEL=Info",
                 "GITEA__log__ROOT_PATH=/var/lib/gitea/log",
-                "GITEA__log__ENABLE_SSH_LOG=true"
+                "GITEA__log__ENABLE_SSH_LOG=true",
+                "SECRET_KEY=%GITEA_SECRET_KEY%"
             ],
             "secrets": [
-                "GITEA_DB_PASSWORD"
+                "GITEA_DB_PASSWORD",
+                "GITEA_SECRET_KEY"
             ],
             "volumes": [
                 {
