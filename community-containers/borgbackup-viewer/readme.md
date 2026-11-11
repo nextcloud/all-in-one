@@ -1,6 +1,10 @@
 ## Borgbackup Viewer
 This container allows to view the local borg backups repository in a web session. It also allows you to restore files and folders from the backup by using desktop programs in a web browser.
 
+> [!WARNING]
+> - This container has **write access** to the mastercontainer volume (which contains all AIO secrets including the AIO password), the Nextcloud data directory, the borg repository and further AIO volumes. Everyone who can log in to its web session has full control over your AIO instance and all data.
+> - Port 5801 is published on all network interfaces of the host. Make sure that it is not reachable from untrusted networks (note that ports published by Docker bypass host firewalls like ufw, so block them e.g. in your router or in a firewall in front of the server).
+
 ### Notes
 - After adding and starting the container, you need to visit `https://ip.address.of.this.server:5801` in order to log in with the user `nextcloud` and the password that you can see next to the container in the AIO interface. (The web page uses a self-signed certificate, so you need to accept the warning).
 - Then, you should see a terminal. There type in `borg mount -o allow_other /mnt/borgbackup/borg /tmp/borg` to mount the backup archive at `/tmp/borg` inside the container (the `-o allow_other` option is required because the file manager runs as an unprivileged user). Afterwards type in `nautilus /tmp/borg` which will show a file explorer and allows you to see all the files. You can then copy files and folders back to their initial mountpoints inside `/nextcloud_aio_volumes/`, `/host_mounts/` and `/docker_volumes/`. ⚠️ Be very carefully while doing that as can break your instance!
