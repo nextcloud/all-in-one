@@ -21,11 +21,16 @@ while true; do
         else
             export SEND_SUCCESS_NOTIFICATIONS=0
         fi
+        # The optional 4th line is the ISO weekday (1 = Monday ... 7 = Sunday) of a weekly backup. If it is empty, the backup runs every day.
+        if [ -n "$(sed -n '4p' "/mnt/docker-aio-config/data/daily_backup_time")" ]; then
+            BACKUP_WEEKDAY="$(sed -n '4p' "/mnt/docker-aio-config/data/daily_backup_time")"
+            export BACKUP_WEEKDAY
+        else
+            export BACKUP_WEEKDAY=""
+        fi
         if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
             set +x
         fi
-        # The optional 4th line is the ISO weekday (1 = Monday ... 7 = Sunday) of a weekly backup. If it is empty, the backup runs every day.
-        BACKUP_WEEKDAY="$(sed -n '4p' "/mnt/docker-aio-config/data/daily_backup_time" | tr -d '[:space:]')"
         if [ -f "/mnt/docker-aio-config/data/daily_backup_running" ]; then
             export LOCK_FILE_PRESENT=1
         else
