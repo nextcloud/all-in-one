@@ -310,8 +310,9 @@ RUN set -ex; \
     echo "[ -n \"\$TERM\" ] && [ -f /root.motd ] && cat /root.motd" >> /root/.bashrc; \
     \
     chown www-data:root -R /usr/src && \
-    chmod 777 -R /usr/local/etc/php/conf.d && \
-    chmod 777 -R /usr/local/etc/php-fpm.d && \
+    chown -R root:root /usr/local/etc/php/conf.d /usr/local/etc/php-fpm.d && \
+    find /usr/local/etc/php/conf.d /usr/local/etc/php-fpm.d -type d -exec chmod 755 {} + && \
+    find /usr/local/etc/php/conf.d /usr/local/etc/php-fpm.d -type f -exec chmod 644 {} + && \
     chmod -R 777 /tmp; \
     chmod -R 777 /etc/openldap; \
     \

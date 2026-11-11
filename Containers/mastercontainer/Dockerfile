@@ -3,13 +3,13 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Docker CLI is a requirement
-FROM docker:29.9.1-cli AS docker
+FROM docker:29.9.3-cli AS docker
 
 # Caddy is a requirement
-FROM caddy:2.11.7-alpine AS caddy
+FROM caddy:2.11.9-alpine AS caddy
 
 # Composer is needed to install the php dependencies
-FROM composer:2.10.3 AS composer
+FROM composer:2.11.1 AS composer
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.24/fpm/Dockerfile
 FROM php:8.5.12-fpm-alpine3.24

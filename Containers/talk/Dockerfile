@@ -2,19 +2,23 @@
 
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
-FROM nats:2.15.1-scratch AS nats
+
+FROM nats:2.15.2-scratch AS nats
 FROM eturnal/eturnal:1.12.3-alpine AS eturnal
 FROM strukturag/nextcloud-spreed-signaling:2.1.1 AS signaling
-FROM alpine:3.24.2 AS janus
+FROM alpine:3.24.3 AS janus
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache janus-gateway; \
     mv /etc/janus/janus.transport.websockets.jcfg.sample /etc/janus/janus.transport.websockets.jcfg; \
+    # Only the signaling server in this container needs the Janus API, so do not expose it to other containers
+    sed -i 's|^[[:space:]]*#ws_ip = .*|\tws_ip = "127.0.0.1"|' /etc/janus/janus.transport.websockets.jcfg; \
+    grep -q '^[[:space:]]*ws_ip = "127.0.0.1"' /etc/janus/janus.transport.websockets.jcfg; \
     mv /etc/janus/janus.plugin.videoroom.jcfg.sample /etc/janus/janus.plugin.videoroom.jcfg; \
     sed -i '/^room-1234:/,/^}/d' /etc/janus/janus.plugin.videoroom.jcfg
 
-FROM alpine:3.24.2
+FROM alpine:3.24.3
 ENV ETURNAL_ETC_DIR="/conf"
 ENV SKIP_CERT_VERIFY=false \
     AIO_LOG_LEVEL=warn

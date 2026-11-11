@@ -128,13 +128,20 @@ $app->get('/containers', function (Request $request, Response $response, array $
     $dockerActionManager->ConnectMasterContainerToNetwork();
     $dockerController->StartDomaincheckContainer();
 
-    // Check if bypass_mastercontainer_update is provided on the URL, a special developer mode to bypass a mastercontainer update and use local image.
+    // Hidden developer flags, persisted in the session once they appear on the URL ('=0' or '=false' turns a flag off again)
     $params = $request->getQueryParams();
-    $bypass_mastercontainer_update = isset($params['bypass_mastercontainer_update']);
-    $bypass_container_update = isset($params['bypass_container_update']);
-    $skip_domain_validation = isset($params['skip_domain_validation']);
+    foreach (['bypass_container_update', 'bypass_mastercontainer_update', 'skip_domain_validation'] as $flag) {
+        if (isset($params[$flag])) {
+            $_SESSION['dev_flags'][$flag] = !in_array($params[$flag], ['0', 'false'], true);
+        }
+    }
+    $devFlags = $_SESSION['dev_flags'] ?? [];
+    $bypass_mastercontainer_update = $devFlags['bypass_mastercontainer_update'] ?? false;
+    $bypass_container_update = $devFlags['bypass_container_update'] ?? false;
+    $skip_domain_validation = $devFlags['skip_domain_validation'] ?? false;
 
     return $view->render($response, 'containers.twig', [
+        'session_dev_flags' => $devFlags,
         'domain' => $configurationManager->domain,
         'apache_port' => $configurationManager->apachePort,
         'borg_backup_host_location' => $configurationManager->borgBackupHostLocation,
@@ -143,7 +150,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'nextcloud_password' => $configurationManager->getAndGenerateSecret('NEXTCLOUD_PASSWORD'),
         'containers' => (new \AIO\ContainerDefinitionFetcher($container->get(\AIO\Data\ConfigurationManager::class), $container))->FetchDefinition(),
         'borgbackup_password' => $configurationManager->getAndGenerateSecret('BORGBACKUP_PASSWORD'),
-        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update ? false : $dockerActionManager->IsMastercontainerUpdateAvailable() ),
+        'is_mastercontainer_update_available' => ( $bypass_mastercontainer_update === false && $dockerActionManager->IsMastercontainerUpdateAvailable() ),
         'has_backup_run_once' => $configurationManager->hasBackupRunOnce(),
         'is_backup_container_running' => $dockerActionManager->isBackupContainerRunning(),
         'backup_exit_code' => $dockerActionManager->GetBackupcontainerExitCode(),
@@ -159,6 +166,7 @@ $app->get('/containers', function (Request $request, Response $response, array $
         'is_talk_enabled' => $configurationManager->isTalkEnabled,
         'borg_restore_password' => $configurationManager->borgRestorePassword,
         'daily_backup_time' => $configurationManager->getDailyBackupTime(),
+        'backup_weekday' => $configurationManager->getBackupWeekday(),
         'is_daily_backup_running' => $configurationManager->isDailyBackupRunning(),
         'timezone' => $configurationManager->timezone,
         'skip_domain_validation' => $configurationManager->shouldDomainValidationBeSkipped($skip_domain_validation),

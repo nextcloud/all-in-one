@@ -13,20 +13,25 @@ flowchart TD
     classDef group     fill:#FEF9E7,stroke:#F39C12,color:#333
 
     subgraph COMM_AI["🤖 AI & Language"]
+        direction TB
         LAI(["🧠  Local AI\nPrivate AI assistant"]):::community
         LT(["✏️  LanguageTool\nSpell & grammar check"]):::community
         LTRANS(["🌐  LibreTranslate\nTranslation engine"]):::community
         FACE(["🙂  FaceRecognition\nPhoto AI processor"]):::community
+        LAI ~~~ LT ~~~ LTRANS ~~~ FACE
     end
 
     subgraph COMM_BACKUP["💾 Backup & Storage"]
+        direction TB
         BV(["📦  Borgbackup Viewer\nBrowse backups"]):::community
         CALB(["📅  CalCardBackup\nCalendar/Contacts backup"]):::community
         MINIO(["🗃️  MinIO\nS3-compatible storage"]):::community
         SMB(["📂  SMB Server\nWindows file sharing"]):::community
+        BV ~~~ CALB ~~~ MINIO ~~~ SMB
     end
 
     subgraph COMM_EXTRA["🌟 Extra Services"]
+        direction TB
         HA(["🏠  Home Assistant\nHome automation"]):::community
         STLW(["📧  Stalwart\nMail server"]):::community
         NOCO(["🗂️  NocoDB\nNo-code database"]):::community
@@ -34,34 +39,47 @@ flowchart TD
         JOPLIN(["📝  Joplin Server\nNotes sync server"]):::community
         NOTIF(["📣  Notifications\nExternal push notify"]):::community
         GITEA(["🍵  Gitea\nSelf-hosted Git service"]):::community
+        HA ~~~ STLW ~~~ NOCO ~~~ JSER ~~~ JOPLIN ~~~ NOTIF ~~~ GITEA
     end
 
     subgraph COMM_MEDIA["🎬 Media"]
+        direction TB
         PLEX(["🎞️  Plex\nMedia Server"]):::community
         JELLY(["🎬  Jellyfin\nMedia Server"]):::community
         DLNA(["📡  DLNA\nMedia Streaming"]):::community
         MEMTR(["📸  Memories\nVideo Transcoder"]):::community
         MKV(["💿  MakeMKV\nBlu-ray / DVD rip"]):::community
         AZURA(["📻  AzuraCast\nRadio Station Server"]):::community
+        PLEX ~~~ JELLY ~~~ DLNA ~~~ MEMTR ~~~ MKV ~~~ AZURA
     end
 
     subgraph COMM_MONITOR["📊 Monitoring & Infra"]
+        direction TB
         GLAN(["📈  Glances\nSystem monitoring"]):::community
         EXP(["📊  Nextcloud Exporter\nPrometheus metrics"]):::community
         SCRU(["💽  Scrutiny\nDisk health (S.M.A.R.T.)"]):::community
         CMGMT(["🐳  Container Mgmt\nDocker web console"]):::community
+        GLAN ~~~ EXP ~~~ SCRU ~~~ CMGMT
     end
 
     subgraph COMM_SEC["🔒 Security & Network"]
+        direction TB
         F2B(["🚫  Fail2ban\nBrute-force protection"]):::community
         PIH(["🕳️  Pi-hole\nAd & DNS blocker"]):::community
         DNSM(["📛  dnsmasq\nDNS & DHCP server"]):::community
         VW(["🔐  Vaultwarden\nPassword Manager"]):::community
         LDAP(["👥  LLDAP\nLight LDAP / Users"]):::community
+        AUTH(["🔑  Authelia\nSingle Sign-On / 2FA"]):::community
         CADDY(["🌐  Caddy\nReverse Proxy + Geoblocking"]):::community
         NPMPLUS(["🌐  NPMplus\nNginx Proxy Manager"]):::community
         WG(["🔑  WireGuard Easy\nVPN server with web UI"]):::community
+        F2B ~~~ PIH ~~~ DNSM ~~~ VW ~~~ LDAP ~~~ AUTH ~~~ CADDY ~~~ NPMPLUS ~~~ WG
     end
+
+    %% ── Layout: invisible links arrange the categories in two rows ──────────────
+    COMM_AI ~~~ COMM_MEDIA
+    COMM_BACKUP ~~~ COMM_MONITOR
+    COMM_EXTRA ~~~ COMM_SEC
 ```
 
 ## How to use this?

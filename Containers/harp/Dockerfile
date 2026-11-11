@@ -2,7 +2,8 @@
 
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
-FROM ghcr.io/nextcloud/nextcloud-appapi-harp:v0.4.6
+
+FROM ghcr.io/nextcloud/nextcloud-appapi-harp:v0.4.8
 
 # USER root is probably used
 

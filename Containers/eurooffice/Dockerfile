@@ -2,9 +2,15 @@
 
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
-FROM ghcr.io/euro-office/documentserver:v9.3.5
+FROM ghcr.io/euro-office/documentserver:v9.3.7
 
 # USER root is probably used
+
+RUN set -ex; \
+    export DEBIAN_FRONTEND=noninteractive; \
+    apt-get update; \
+    apt-get upgrade -y; \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 

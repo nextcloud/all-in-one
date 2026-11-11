@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-FROM alpine:3.24.2
+FROM alpine:3.24.3
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
@@ -16,7 +16,7 @@ RUN set -ex; \
     sed -i "s|#\?MaxScanSize.*|MaxScanSize 2000M|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?MaxFileSize.*|MaxFileSize 2000M|g" /etc/clamav/clamd.conf; \
     sed -i "s|#\?PCREMaxFileSize.*|PCREMaxFileSize 2000M|g" /etc/clamav/clamd.conf; \
-# StreamMaxLength must be synced with av_stream_max_length inside the Nextcloud files_antivirus plugin
+# StreamMaxLength must be synced with av_stream_max_length in Containers/nextcloud/entrypoint.sh (2000M = 2097152000 bytes)
     sed -i "s|#\?StreamMaxLength.*|StreamMaxLength 2000M|g" /etc/clamav/clamd.conf; \
 # By default clamd keeps the old signature database in RAM while loading the new one,
 # briefly doubling memory usage (~1 GB extra) during each freshclam update cycle.

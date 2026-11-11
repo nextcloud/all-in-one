@@ -505,6 +505,11 @@ EOF
             touch "$NEXTCLOUD_DATA_DIR/update.failed"
             echo "Upgrading Nextcloud from $installed_version to $image_version..."
             php /var/www/html/occ config:system:delete integrity.check.disabled
+
+            # Temporarily disable lazy objects so that the update does not fail
+            # See https://github.com/nextcloud/server/issues/66167
+            php /var/www/html/occ config:system:set enable_lazy_objects --value=false --type=bool
+
             if ! php /var/www/html/occ upgrade || ! php /var/www/html/occ -V; then
                 echo "Upgrade failed. Please restore from backup."
                 bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup."
@@ -516,6 +521,10 @@ EOF
 
             rm "$NEXTCLOUD_DATA_DIR/update.failed"
             bash /notify.sh "Nextcloud update to $image_version successful!" "You may inspect the Nextcloud container logs for more information."
+
+            # Remove disabling of lazy objects again
+            # See https://github.com/nextcloud/server/issues/66167
+            php /var/www/html/occ config:system:delete enable_lazy_objects
 
             php /var/www/html/occ app:update --all
 
@@ -576,8 +585,9 @@ EOF
         fi
     fi
 
-    # Performing update of all apps if daily backups are enabled, running and successful and if it is saturday
-    if [ "$UPDATE_NEXTCLOUD_APPS" = 'yes' ] && [ "$(date +%u)" = 6 ]; then
+    # Performing update of all apps if daily backups are enabled, running and successful and if it is the configured weekday
+    # ('yes' is kept for containers that were created by an older mastercontainer and means saturday)
+    if [ "$UPDATE_NEXTCLOUD_APPS" = "$(date +%u)" ] || { [ "$UPDATE_NEXTCLOUD_APPS" = 'yes' ] && [ "$(date +%u)" = 6 ]; }; then
         UPDATED_APPS="$(php /var/www/html/occ app:update --all)"
         run_upgrade_if_needed_due_to_app_update
         if [ -n "$UPDATED_APPS" ]; then
@@ -678,7 +688,7 @@ php /var/www/html/occ config:system:set maintenance_window_start --type=int --va
 
 # Apply network settings
 echo "Applying network settings..."
-php /var/www/html/occ config:system:set allow_local_remote_servers --type=bool --value=true
+php /var/www/html/occ config:system:delete allow_local_remote_servers
 php /var/www/html/occ config:system:set davstorage.request_timeout --value="$PHP_MAX_TIME" --type=int
 php /var/www/html/occ config:system:set trusted_domains 1 --value="$NC_DOMAIN"
 php /var/www/html/occ config:system:set overwrite.cli.url --value="https://$NC_DOMAIN/"
@@ -1014,8 +1024,8 @@ if [ "$CLAMAV_ENABLED" = 'yes' ]; then
         php /var/www/html/occ config:app:set files_antivirus av_mode --value="daemon"
         php /var/www/html/occ config:app:set files_antivirus av_port --value="3310"
         php /var/www/html/occ config:app:set files_antivirus av_host --value="$CLAMAV_HOST"
-        # av_stream_max_length must be synced with StreamMaxLength inside clamav
-        php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="2147483648"
+        # av_stream_max_length must be synced with StreamMaxLength in Containers/clamav/Dockerfile (2000M = 2097152000 bytes)
+        php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="2097152000"
         php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="-1"
         php /var/www/html/occ config:app:set files_antivirus av_infected_action --value="only_log"
         if [ -n "$CLAMAV_BLOCKLISTED_DIRECTORIES" ]; then
