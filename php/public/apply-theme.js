@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 "use strict";
 
 // Apply the saved theme immediately to avoid a flash of the wrong theme.

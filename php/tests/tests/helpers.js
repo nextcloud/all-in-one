@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 // Shared helpers for the deSEC Playwright scenarios.
 //
 // The deSEC mock is wired up by seeding configuration.json (see seed-desec-mock-config.php),
