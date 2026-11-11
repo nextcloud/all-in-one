@@ -203,8 +203,9 @@ RUN set -ex; \
         "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
-    gpg --batch --keyserver keyserver.ubuntu.com  --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
-    gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
+    curl -fsSL https://nextcloud.com/nextcloud.asc | gpg --batch --import; \
+    gpg --batch --status-fd 1 --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2 \
+        | grep -q '^\[GNUPG:\] VALIDSIG .* 28806A878AE423A28372792ED75899B9A724937A$'; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
     gpgconf --kill all; \
     rm nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
