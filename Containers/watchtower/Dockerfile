@@ -9,7 +9,7 @@ RUN set -ex; \
         build-base; \
     go install github.com/nicholas-fedor/watchtower@$WATCHTOWER_COMMIT_HASH # v1.24.0
 
-FROM alpine:3.24.3
+FROM alpine:3.24.4
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \
