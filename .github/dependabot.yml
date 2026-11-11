@@ -51,6 +51,10 @@ updates:
   labels:
   - 3. to review
   - dependencies
+  cooldown:
+    default-days: 1
+    exclude:
+      - "*"
   ignore:
     - dependency-name: "php"
       update-types: ["version-update:semver-major", "version-update:semver-minor"]
