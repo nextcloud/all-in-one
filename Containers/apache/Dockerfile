@@ -2,7 +2,7 @@
 FROM caddy:2.11.9-alpine AS caddy
 
 # From https://github.com/docker-library/httpd/blob/master/2.4/alpine/Dockerfile
-FROM httpd:2.4.70-alpine3.24
+FROM httpd:2.4.71-alpine3.24
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
