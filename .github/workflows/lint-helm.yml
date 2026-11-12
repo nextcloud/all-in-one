@@ -5,6 +5,10 @@ on:
   pull_request:
     paths:
       - 'nextcloud-aio-helm-chart/**'
+      - 'manual-install/**'
+      - 'php/containers.json'
+      - 'tests/talk-bitrate-generators.sh'
+      - '.github/workflows/lint-helm.yml'
 
 jobs:
   lint-helm:
@@ -22,3 +26,10 @@ jobs:
 
       - name: Lint charts
         run: helm lint nextcloud-aio-helm-chart
+
+      - name: Generate and test Talk bitrate configuration
+        run: |
+          sudo bash manual-install/update-yaml.sh
+          sudo bash nextcloud-aio-helm-chart/update-helm.sh test
+          bash tests/talk-bitrate-generators.sh
+          helm lint nextcloud-aio-helm-chart

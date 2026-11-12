@@ -659,6 +659,23 @@ Be aware though that these locations will not be covered by the built-in backup 
 ### How to adjust the Talk port?
 By default will the talk container use port `3478/UDP` and `3478/TCP` for connections. This should be set to something higher than 1024! You can adjust the port by adding e.g. `--env TALK_PORT=3478` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and adjusting the port to your desired value. Best is to use a port over 1024, so e.g. 3479 to not run into this: https://github.com/nextcloud/all-in-one/discussions/2517
 
+### How to adjust Talk bitrates?
+By default, the Talk container uses a maximum bitrate of `1048576` bits per second per publishing media stream and `2097152` bits per second per screensharing stream. You can adjust these by adding e.g. `--env TALK_MAX_STREAM_BITRATE=4194304 --env TALK_MAX_SCREEN_BITRATE=8388608` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`!) and adjusting the values to your needs. You can also set only one of the two variables. These are maximum values and do not enforce a fixed resolution or actual bandwidth usage.
+
+Allowed values are positive decimal integers between `1` and `9223372036854775807`, without spaces or units like `4M`. Using an invalid value will not allow the mastercontainer to start correctly. The values are saved in the mastercontainer's configuration, just like `TALK_PORT`. Leaving a variable unset will use the saved value or the default if no value is saved. Leaving it empty will use the Talk image's default for that setting. Setting it to `0` is not allowed and does not mean unlimited. The values are only passed to the Talk container and do not enable Talk if it is disabled in the AIO interface.
+
+When using Docker Compose, you can add the following to the existing configuration of the mastercontainer:
+
+```yaml
+services:
+  nextcloud-aio-mastercontainer:
+    environment:
+      TALK_MAX_STREAM_BITRATE: "4194304"
+      TALK_MAX_SCREEN_BITRATE: "8388608"
+```
+
+If the mastercontainer was started already, you will need to stop it, remove it and recreate it using the docker run command or Compose configuration that you initially used, with the adjusted values. Afterwards stop and start the containers from the AIO interface so that the Talk container gets recreated with the new values. Please keep the existing volumes and do this when no calls are active. Simply running `docker restart` will not apply changed Compose environment values. To restore a default, set the corresponding variable to an empty string, e.g. `--env TALK_MAX_STREAM_BITRATE=` or `TALK_MAX_STREAM_BITRATE: ""` in Compose, and recreate the containers as described above. Removing the variable alone will keep using its saved value.
+
 ### How to adjust the upload limit for Nextcloud?
 By default, not-chunked uploads to Nextcloud are limited to a max of 1G (the webinterface, also for public uploads, and the mobile/desktop clients can upload much bigger files, since chunking is used in that case). You can adjust the upload limit by providing `--env NEXTCLOUD_UPLOAD_LIMIT=1G` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. It must start with a number and end with `G` e.g. `1G`.
 

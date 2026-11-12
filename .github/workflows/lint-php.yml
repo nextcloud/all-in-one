@@ -52,6 +52,9 @@ jobs:
       - name: Lint
         run: cd php && composer run lint
 
+      - name: Test Talk bitrate placeholders
+        run: php php/tests/talk-bitrates.php
+
   summary:
     permissions:
       contents: none
