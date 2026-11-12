@@ -265,6 +265,16 @@ It needs to be a comma-separated list of 'hostname:ip' entries (the ip can also 
 It is set to '$AIO_EXTRA_HOSTS'."
     exit 1
 fi
+for TALK_BITRATE_VARIABLE in TALK_MAX_STREAM_BITRATE TALK_MAX_SCREEN_BITRATE; do
+    TALK_BITRATE="${!TALK_BITRATE_VARIABLE-}"
+    # The test builtin parses decimal integers and rejects signed 64-bit overflow.
+    if [ -n "$TALK_BITRATE" ] && { ! check_if_number "$TALK_BITRATE" || ! [ "$TALK_BITRATE" -gt 0 ]; }; then
+        print_red "You've set $TALK_BITRATE_VARIABLE but not to an allowed value.
+The value must be a positive decimal integer in bits per second (1 to 9223372036854775807), or empty to use the default.
+It is set to '$TALK_BITRATE'."
+        exit 1
+    fi
+done
 if [ -n "$TALK_PORT" ]; then
     if ! check_if_number "$TALK_PORT"; then
         print_red "You provided an Talk port but did not only use numbers.
