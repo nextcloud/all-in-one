@@ -321,6 +321,8 @@ services:
       - AIO_LOG_LEVEL
       - TZ=${TIMEZONE}
       - TALK_PORT
+      - TALK_MAX_STREAM_BITRATE
+      - TALK_MAX_SCREEN_BITRATE
       - INTERNAL_SECRET=${TALK_INTERNAL_SECRET}
     restart: unless-stopped
     profiles:

@@ -338,16 +338,6 @@ EOL
 # shellcheck disable=SC1083
 find ./ -name '*apache-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-apache.config"  \{} \;
 
-# Additional config
-cat << EOL > /tmp/additional-talk.config
-            - name: TALK_MAX_STREAM_BITRATE
-              value: "{{ .Values.TALK_MAX_STREAM_BITRATE }}"
-            - name: TALK_MAX_SCREEN_BITRATE
-              value: "{{ .Values.TALK_MAX_SCREEN_BITRATE }}"
-EOL
-# shellcheck disable=SC1083
-find ./ -name '*talk-deployment.yaml' -exec sed -i "/^.*\- env:/r /tmp/additional-talk.config"  \{} \;
-
 # Additional config for HaRP
 # The manual-install (docker) only configures HaRP with the docker backend. In the
 # helm chart HaRP needs to talk to the Kubernetes API instead, so we enable the
@@ -472,8 +462,6 @@ SMTP_NAME:         # (empty by default): The username for the authentication.
 SMTP_PASSWORD:         # (empty by default): The password for the authentication.
 MAIL_FROM_ADDRESS:         # (not set by default): Set the local-part for the 'from' field in the emails sent by Nextcloud.
 MAIL_DOMAIN:         # (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
-TALK_MAX_STREAM_BITRATE: "1048576"         # This allows to adjust the max stream bitrate of the talk hpb
-TALK_MAX_SCREEN_BITRATE: "2097152"         # This allows to adjust the max stream bitrate of the talk hpb
 # HP_SHARED_KEY:           # This allows to set the shared key for HaRP which is getting set at the very top of this values.yaml file.
 HARP_K8S_STORAGE_CLASS:        # The storage class that HaRP uses for ExApp persistent volume claims. Leave empty to use the cluster's default storage class.
 HARP_K8S_DEFAULT_STORAGE_SIZE: 10Gi        # The default size of the persistent volume claims that HaRP creates for ExApps.
