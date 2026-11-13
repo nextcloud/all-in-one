@@ -33,15 +33,16 @@ jobs:
         # $(composer outdated)"
     - name: Update apcu
       run: |
-        # APCU
+        # APCU (installed via PIE, which resolves versions from Packagist)
         apcu_version="$(
-          git ls-remote --tags https://github.com/krakjoe/apcu.git \
-            | cut -d/ -f3 \
-            | grep -viE -- 'rc|b' \
+          curl -fsSL https://repo.packagist.org/p2/apcu/apcu.json \
+            | jq -r '.packages["apcu/apcu"][].version' \
             | sed -E 's/^v//' \
+            | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' \
             | sort -V \
             | tail -1
         )"
+        [ -n "$apcu_version" ]
         sed -i "s|^ARG APCU_VERSION=.*|ARG APCU_VERSION=$apcu_version|" ./Containers/mastercontainer/Dockerfile ./php/tests/Containers/composer/Dockerfile
 
         imap_version="$(
