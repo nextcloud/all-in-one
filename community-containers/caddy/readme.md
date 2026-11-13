@@ -7,6 +7,10 @@ This container bundles [caddy](https://caddyserver.com/) and auto-configures it 
 > - Make sure that no other service is using port 443/tcp on your host as otherwise the containers will fail to start. You can check this with `sudo netstat -tulpn | grep 443` before installing this container
 > - the default `admin` Nextcloud user needs to be present, i.e. it can not be deleted because caddy configuration can be done there. 
 
+> [!WARNING]
+> - This container mounts the whole Nextcloud data directory (read-only) and can therefore read the files of all Nextcloud users.
+> - The files inside the `nextcloud-aio-caddy` folder of the `admin` user configure this container. Especially all files inside its `caddy-imports` subfolder are imported into the live Caddy configuration, so everyone who can write to this folder controls the reverse proxy and could e.g. publish the files of all Nextcloud users. Never share the `nextcloud-aio-caddy` folder with anyone and protect the `admin` account well, e.g. with two-factor authentication.
+
 ## Supported community containers
 
 This container creates Let's Encrypt certificates for subdomains of `your-nc-domain.com` for a number of community containers. 

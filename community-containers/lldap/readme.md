@@ -1,6 +1,9 @@
 ## Light LDAP server
 This container bundles an [LLDAP](https://github.com/lldap/lldap) LDAP server and auto-configures your Nextcloud instance for you.
 
+> [!WARNING]
+> The lldap web interface on port 17170 uses plain http and is published on all network interfaces of the host unless you restrict it via [`APACHE_IP_BINDING`](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#3-limit-the-access-to-the-apache-container) (with the [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container, it is not published at all). When accessing it directly, the admin password is sent unencrypted, so always use it via an https reverse proxy.
+
 ### Notes
 - In order to access your LLDAP web interface outside the local network, you have to set up your own reverse proxy. You can set up a reverse proxy following [these instructions](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md) OR use the [Caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container that will automatically configure `ldap.$NC_DOMAIN` to redirect to your Lldap. You need to point the reverse proxy at port 17170 of this server.
 - After adding and starting the container, you can log in to the lldap web interface by using the username `admin` and the secret that you can see next to the container in the AIO interface.
@@ -17,6 +20,9 @@ Functionality with this configuration:
 - Synchronization of administrator accounts (via the lldap_admin group).
 
 > For simplicity, this configuration is done via the command line (don't worry, it's very simple).
+
+> [!WARNING]
+> The configuration below lets Nextcloud connect to lldap with the lldap `admin` account, whose password is then stored in Nextcloud's database. If Nextcloud gets compromised, the attacker controls all lldap users and, via the `lldap_admin` group, can also create Nextcloud admins. For better security, create a dedicated user in the lldap web interface, add it to the `lldap_strict_readonly` group and use it for `ldapAgentName` and `ldapAgentPassword` instead.
 
 First, you need to retrieve the LLDAP admin password that you can see next to the container in the AIO interface. There you can configure smtp first and then invite users via mail.
 

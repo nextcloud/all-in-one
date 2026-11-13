@@ -2,6 +2,10 @@
 
 This container allow you to deploy a [Joplin Server](https://joplinapp.org/help/dev/spec/architecture#joplin-server). Deploy automatically a postgreSQL instance as a sidecar.
 
+> [!WARNING]
+> - The admin account is created with the well-known default credentials `admin@localhost` / `admin`. Change them immediately after the first start, before anyone else can reach the server.
+> - Port 22300 is published on all network interfaces of the host unless you restrict it via [`APACHE_IP_BINDING`](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#3-limit-the-access-to-the-apache-container) (with the [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container, it is not published at all).
+
 
 
 ### Why 

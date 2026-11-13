@@ -1,6 +1,9 @@
 ## Vaultwarden
 This container bundles the [VaultWarden](https://www.vaultwarden.net/) password manager and auto-configures it for you.
 
+> [!WARNING]
+> - Port 8812 serves plain http and is published on all network interfaces of the host unless you restrict it via [`APACHE_IP_BINDING`](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#3-limit-the-access-to-the-apache-container) (with the [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container, it is not published at all). When accessing it directly, the admin token is sent unencrypted, so always use it via an https reverse proxy.
+
 ### Notes
 - You need to configure a reverse proxy in order to run this container since vaultwarden needs a dedicated (sub)domain! For that, you might have a look at https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy or follow https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md and https://github.com/dani-garcia/vaultwarden/wiki/Proxy-examples. You need to point the reverse proxy at port 8812 of this server.
 - Currently, only `bw.$NC_DOMAIN` is supported as subdomain! So if Nextcloud is using `your-domain.com`, vaultwarden will use `bw.your-domain.com`. The reverse proxy and domain must be configured accordingly!

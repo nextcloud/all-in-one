@@ -1,6 +1,9 @@
 ## Pi-hole
 This container bundles the [pi-hole](https://pi-hole.net/) ad blocker and auto-configures it for you.
 
+> [!WARNING]
+> Ports 53 (tcp and udp) and 8573 are published on all network interfaces of the host and Pi-hole answers DNS queries from all networks. On a server that is reachable from the internet, it therefore acts as an open DNS resolver that can be abused e.g. for DNS amplification attacks. Also, the admin interface on port 8573 uses plain http. Make sure that these ports are not reachable from untrusted networks (note that ports published by Docker bypass host firewalls like ufw, so block them e.g. in your router or in a firewall in front of the server).
+
 ### Notes
 - You should not run this container on a public VPS! It is only intended to run in home networks!
 - This container is incompatible with the dnsmasq community container as both need ports 53 to work correctly. Do not enable both at the same time!
