@@ -32,4 +32,17 @@ readonly class DesecController {
             return $response->withStatus(422);
         }
     }
+
+    public function Reset(Request $request, Response $response, array $args): Response {
+        try {
+            // Abandon a registration that is stuck awaiting email verification so the user
+            // can start over. Redirect back to the /desec view like Register() does, so the
+            // modal iframe re-renders the initial form.
+            $this->desecManager->resetPendingRegistration();
+            return $response->withStatus(201)->withHeader('Location', 'desec');
+        } catch (\Exception $ex) {
+            $response->getBody()->write($ex->getMessage());
+            return $response->withStatus(422);
+        }
+    }
 }
