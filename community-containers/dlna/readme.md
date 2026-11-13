@@ -1,6 +1,9 @@
 ## DLNA server
 This container bundles a DLNA multimedia streaming server for your Nextcloud files to be accessible by the clients in your local network. Simply run the container and look for a new media server `nextcloud-aio` in your local network.
 
+> [!WARNING]
+> DLNA has no authentication. All media files of **all** Nextcloud users become visible to and streamable by every device in your local network. Additionally, this container uses a third-party image that receives the Nextcloud database password and read access to the whole Nextcloud data directory.
+
 ### Notes
 - This container will work only if the Nextcloud installation is in your home network, it is not suitable for installations on public servers.
 - If you have a firewall like ufw configured, you might need to open at least port 9999 TCP and 1900 UDP first in order to make it work.
