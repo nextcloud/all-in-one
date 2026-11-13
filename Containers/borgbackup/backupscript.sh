@@ -443,7 +443,7 @@ if [ "$BORG_MODE" = restore ]; then
         else
             # Delete files/dirs present locally, but not in the backup archive, excluding conf files
             # https://unix.stackexchange.com/a/759341
-            # This comm does not support -z, but I doubt any file names would have \n in them
+            # Use NUL-delimited paths so that file names containing newlines cannot inject additional paths to delete
             #
             # These find patterns need to be kept in sync with the borg_excludes file and the rsync excludes in this
             # file, which use a different syntax (patterns appear in 3 places in total)
@@ -465,10 +465,10 @@ if [ "$BORG_MODE" = restore ]; then
                         -o -path "nextcloud_aio_volumes/nextcloud_aio_mastercontainer/data/id_borg*" \
                         -o -path "nextcloud_aio_nextcloud_data/lost+found" \
                         "${ADDITIONAL_FIND_EXCLUDES[@]}" \
-                    \) \
-                    | LC_ALL=C sort \
-                    | LC_ALL=C comm -23 - \
-                        <(borg "$BORG_LOG_LEVEL_FLAG" list "::$SELECTED_ARCHIVE" --short --exclude-from /borg_excludes  --pattern '+nextcloud_aio_volumes/**' | LC_ALL=C sort) \
+                    \) -print0 \
+                    | LC_ALL=C sort -z \
+                    | LC_ALL=C comm -z -23 - \
+                        <(borg "$BORG_LOG_LEVEL_FLAG" list "::$SELECTED_ARCHIVE" --format '{path}{NUL}' --exclude-from /borg_excludes  --pattern '+nextcloud_aio_volumes/**' | LC_ALL=C sort -z) \
                     > /tmp/local_files_not_in_backup
             then
                 RESTORE_FAILED=1
@@ -476,7 +476,7 @@ if [ "$BORG_MODE" = restore ]; then
             else
                 # More robust than e.g. xargs as I got a ~"args line too long" error while testing that, but it's slower
                 # https://stackoverflow.com/a/21848934
-                while IFS= read -r file
+                while IFS= read -r -d '' file
                 do rm -vrf -- "$file" || DELETE_FAILED=1
                 done < /tmp/local_files_not_in_backup
 
