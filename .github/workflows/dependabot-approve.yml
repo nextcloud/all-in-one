@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
+
+name: Auto approve Dependabot PRs
+
+# Triggered on push to Dependabot branches instead of pull_request, so the check
+# only shows up on Dependabot PRs and not as "skipped" on every other PR.
+on:
+  push:
+    branches:
+      - 'dependabot/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependabot-approve-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  auto-approve:
+    # Skip if anyone else than Dependabot pushed to the branch.
+    # On `push` events `github.actor` is the account that pushed the commit, which can't be spoofed like on
+    # `pull_request(_target)`. On `pull_request_target` the actor is whoever last acted on the PR, not its
+    # author. This is the reason that zizmor flags checks against `github.actor`. Since our workflow is
+    # triggered by `push` events only, we're protected against that, though, and make zizmor ignore it.
+    if: github.actor == 'dependabot[bot]' # zizmor: ignore[bot-conditions]
+    runs-on: ubuntu-latest-low
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: GitHub actions bot approve
+        # The push can arrive before Dependabot has opened the PR, so retry a few times.
+        # Approve the pushed commit, not whatever the PR head is by then.
+        run: |
+          for _ in 1 2 3 4 5 6; do
+            pr=$(gh pr view "$GITHUB_REF_NAME" --json number --jq .number) \
+              && gh api --method POST "repos/{owner}/{repo}/pulls/$pr/reviews" \
+                -f event=APPROVE -f commit_id="$GITHUB_SHA" \
+              && exit 0
+            sleep 10
+          done
+          exit 1
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
