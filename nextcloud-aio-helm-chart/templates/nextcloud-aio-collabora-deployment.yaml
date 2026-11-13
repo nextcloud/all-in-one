@@ -33,7 +33,7 @@ spec:
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
             - name: aliasgroup1
-              value: https://{{ .Values.NC_DOMAIN }}:443,http://nextcloud-aio-apache.nextcloud-aio:23973
+              value: https://{{ .Values.NC_DOMAIN }}:443,http://nextcloud-aio-apache:23973
             - name: dictionaries
               value: "{{ .Values.COLLABORA_DICTIONARIES }}"
             - name: extra_params
