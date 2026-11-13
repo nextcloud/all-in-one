@@ -734,16 +734,16 @@ if [ -n "$ADDITIONAL_TRUSTED_PROXY" ]; then
     php /var/www/html/occ config:system:set trusted_proxies 2 --value="$ADDITIONAL_TRUSTED_PROXY"
 fi
 
-# Get ipv4-address of Nextcloud
-if [ -z "$NEXTCLOUD_HOST" ]; then
-    export NEXTCLOUD_HOST="nextcloud-aio-nextcloud"
+# Trust the IPv4 subnet of the interface that holds the default route
+DEFAULT_INTERFACE="$(ip -o -4 route show default | awk '{for (i = 1; i < NF; i++) if ($i == "dev") {print $(i + 1); exit}}')"
+if [ -n "$DEFAULT_INTERFACE" ]; then
+    IPv4_CIDR="$(ip -o -4 addr show dev "$DEFAULT_INTERFACE" | awk '{print $4; exit}')"
 fi
-IPv4_ADDRESS="$(dig "$NEXTCLOUD_HOST" A +short +search | head -1)" 
-# Bring it in CIDR notation 
-# shellcheck disable=SC2001
-IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')" 
-if [ -n "$IPv4_ADDRESS" ]; then
-    php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
+if [ -n "$IPv4_CIDR" ]; then
+    php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_CIDR"
+else
+    echo "Warning: could not determine the IPv4 subnet of this container. Removing trusted_proxies 10."
+    php /var/www/html/occ config:system:delete trusted_proxies 10
 fi
 
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
