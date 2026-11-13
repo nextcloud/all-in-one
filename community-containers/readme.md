@@ -39,7 +39,8 @@ flowchart TD
         JOPLIN(["📝  Joplin Server\nNotes sync server"]):::community
         NOTIF(["📣  Notifications\nExternal push notify"]):::community
         GITEA(["🍵  Gitea\nSelf-hosted Git service"]):::community
-        HA ~~~ STLW ~~~ NOCO ~~~ JSER ~~~ JOPLIN ~~~ NOTIF ~~~ GITEA
+        OPENPROJECT(["📋  OpenProject\nProject management"]):::community
+        HA ~~~ STLW ~~~ NOCO ~~~ JSER ~~~ JOPLIN ~~~ NOTIF ~~~ GITEA ~~~ OPENPROJECT
     end
 
     subgraph COMM_MEDIA["🎬 Media"]

@@ -1,0 +1,90 @@
+{
+    "aio_services_v1": [
+        {
+            "container_name": "nextcloud-aio-openproject",
+            "display_name": "OpenProject",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/openproject",
+            "image": "openproject/openproject",
+            "image_tag": "17",
+            "internal_port": "8060",
+            "restart": "unless-stopped",
+            "depends_on": [
+                "nextcloud-aio-openproject-database"
+            ],
+            "ports": [
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "8060",
+                    "protocol": "tcp"
+                },
+                {
+                    "ip_binding": "%APACHE_IP_BINDING%",
+                    "port_number": "1234",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "PORT=8060",
+                "SECRET_KEY_BASE=%OPENPROJECT_SECRET_KEY_BASE%",
+                "DATABASE_URL=postgres://openproject:%OPENPROJECT_DB_PASSWORD%@nextcloud-aio-openproject-database:5432/openproject",
+                "OPENPROJECT_HOST__NAME=openproject.%NC_DOMAIN%",
+                "OPENPROJECT_HTTPS=true",
+                "OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__URL=wss://openproject.%NC_DOMAIN%/hocuspocus",
+                "OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__SECRET=%OPENPROJECT_HOCUSPOCUS_SECRET%",
+                "OPENPROJECT_SEED_ADMIN_USER_PASSWORD=%OPENPROJECT_ADMIN_PASSWORD%",
+                "OPENPROJECT_SEED_ADMIN_USER_PASSWORD_RESET=true"
+            ],
+            "secrets": [
+                "OPENPROJECT_SECRET_KEY_BASE",
+                "OPENPROJECT_DB_PASSWORD",
+                "OPENPROJECT_HOCUSPOCUS_SECRET",
+                "OPENPROJECT_ADMIN_PASSWORD"
+            ],
+            "ui_secret": "OPENPROJECT_ADMIN_PASSWORD",
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_openproject",
+                    "destination": "/var/openproject/assets",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_openproject"
+            ],
+            "nextcloud_exec_commands": [
+                "php /var/www/html/occ app:install integration_openproject",
+                "php /var/www/html/occ app:enable integration_openproject"
+            ]
+        },
+        {
+            "container_name": "nextcloud-aio-openproject-database",
+            "display_name": "OpenProject Database (PostgreSQL)",
+            "documentation": "https://github.com/nextcloud/all-in-one/tree/main/community-containers/openproject",
+            "image": "postgres",
+            "image_tag": "17",
+            "internal_port": "5432",
+            "restart": "unless-stopped",
+            "environment": [
+                "TZ=%TIMEZONE%",
+                "POSTGRES_PASSWORD=%OPENPROJECT_DB_PASSWORD%",
+                "POSTGRES_DB=openproject",
+                "POSTGRES_USER=openproject",
+                "PGDATA=/var/lib/postgresql/data"
+            ],
+            "secrets": [
+                "OPENPROJECT_DB_PASSWORD"
+            ],
+            "volumes": [
+                {
+                    "source": "nextcloud_aio_openproject_database",
+                    "destination": "/var/lib/postgresql/data",
+                    "writeable": true
+                }
+            ],
+            "backup_volumes": [
+                "nextcloud_aio_openproject_database"
+            ]
+        }
+    ]
+}
