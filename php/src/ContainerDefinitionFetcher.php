@@ -99,6 +99,10 @@ readonly class ContainerDefinitionFetcher {
                 if (!$this->configurationManager->isImaginaryEnabled) {
                     continue;
                 }
+            } elseif ($entry['container_name'] === 'nextcloud-aio-ffmpeg') {
+                if (!$this->configurationManager->isFfmpegEnabled) {
+                    continue;
+                }
             } elseif ($entry['container_name'] === 'nextcloud-aio-fulltextsearch') {
                 if (!$this->configurationManager->isFulltextsearchEnabled) {
                     continue;
@@ -214,6 +218,10 @@ readonly class ContainerDefinitionFetcher {
                         }
                     } elseif ($value === 'nextcloud-aio-imaginary') {
                         if (!$this->configurationManager->isImaginaryEnabled) {
+                            continue;
+                        }
+                    } elseif ($value === 'nextcloud-aio-ffmpeg') {
+                        if (!$this->configurationManager->isFfmpegEnabled) {
                             continue;
                         }
                     } elseif ($value === 'nextcloud-aio-fulltextsearch') {

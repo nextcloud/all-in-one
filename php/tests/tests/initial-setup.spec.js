@@ -24,11 +24,13 @@ test('Initial setup', async ({ page: setupPage, browser }) => {
   await containersPage.locator('#talk').uncheck();
   await containersPage.getByRole('checkbox', { name: 'Whiteboard' }).uncheck();
   await containersPage.getByRole('checkbox', { name: 'Imaginary' }).uncheck();
+  await containersPage.locator('#ffmpeg').uncheck();
   await containersPage.getByText('Disable office suite').click();
   await containersPage.getByRole('button', { name: 'Save changes' }).last().click();
   await expect(containersPage.locator('#talk')).not.toBeChecked()
   await expect(containersPage.getByRole('checkbox', { name: 'Whiteboard' })).not.toBeChecked()
   await expect(containersPage.getByRole('checkbox', { name: 'Imaginary' })).not.toBeChecked()
+  await expect(containersPage.locator('#ffmpeg')).not.toBeChecked()
   await expect(containersPage.locator('#office-none')).toBeChecked()
 
   // Reject invalid time zones

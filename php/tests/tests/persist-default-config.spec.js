@@ -18,6 +18,7 @@ test('Initial setup persists default container selections', async ({ page: setup
     isTalkEnabled: true,
     isTalkRecordingEnabled: false,
     isImaginaryEnabled: true,
+    isFfmpegEnabled: true,
     isFulltextsearchEnabled: false,
     isDockerSocketProxyEnabled: false,
     isHarpEnabled: false,

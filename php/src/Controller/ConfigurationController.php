@@ -87,6 +87,7 @@ readonly class ConfigurationController {
                 $this->configurationManager->isTalkEnabled = isset($request->getParsedBody()['talk']);
                 $this->configurationManager->isTalkRecordingEnabled = isset($request->getParsedBody()['talk-recording']);
                 $this->configurationManager->isImaginaryEnabled = isset($request->getParsedBody()['imaginary']);
+                $this->configurationManager->isFfmpegEnabled = isset($request->getParsedBody()['ffmpeg']);
                 $this->configurationManager->isFulltextsearchEnabled = isset($request->getParsedBody()['fulltextsearch']);
                 $this->configurationManager->isDockerSocketProxyEnabled = isset($request->getParsedBody()['docker-socket-proxy']);
                 $this->configurationManager->isHarpEnabled = isset($request->getParsedBody()['harp']);
