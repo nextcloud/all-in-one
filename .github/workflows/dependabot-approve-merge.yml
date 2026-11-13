@@ -8,76 +8,45 @@
 
 name: Auto approve Dependabot PRs
 
+# Triggered on push to Dependabot branches instead of pull_request, so the check
+# only shows up on Dependabot PRs and not as "skipped" on every other PR.
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - 'dependabot/**'
 
 permissions:
   contents: read
 
 concurrency:
-  group: dependabot-approve-merge-${{ github.head_ref || github.run_id }}
+  group: dependabot-approve-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  auto-approve-merge:
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
+  auto-approve:
+    # Skip if anyone else than Dependabot pushed to the branch.
+    # On `push` events `github.actor` is the account that pushed the commit, which can't be spoofed like on
+    # `pull_request(_target)`. On `pull_request_target` the actor is whoever last acted on the PR, not its
+    # author. This is the reason that zizmor flags checks against `github.actor`. Since our workflow is
+    # triggered by `push` events only, we're protected against that, though, and make zizmor ignore it.
+    if: github.actor == 'dependabot[bot]' # zizmor: ignore[bot-conditions]
     runs-on: ubuntu-latest-low
-    env:
-      # env variable for maintainers: 'true' allows to auto-merge 1.0.2 -> 2.0.0
-      ALLOW_MAJOR: false
-      # env variable for maintainers: 'true' allows to auto-merge 1.0.2 -> 1.1.0
-      ALLOW_MINOR: true
-      # env variable for maintainers: RegExp string to ignore some dependencies from auto-approve and auto-merge
-      IGNORE_PATTERN: ''
     permissions:
-      # for auto-approve step to work
       pull-requests: write
-      # for alexwilson/enable-github-automerge-action to approve PRs
-      contents: write
 
     steps:
-      - name: Disabled on forks
-        if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
-        run: |
-          echo 'Can not approve PRs from forks'
-          exit 1
-
-      - uses: mdecoleman/pr-branch-name@55795d86b4566d300d237883103f052125cc7508 # v3.0.0
-        id: branchname
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Dependabot metadata
-        id: metadata
-        if: startsWith(steps.branchname.outputs.branch, 'dependabot/')
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check for ignored dependencies in the PR
-        id: validate
-        if: startsWith(steps.branchname.outputs.branch, 'dependabot/')
-        env:
-          IGNORE_PATTERN: ${{ env.IGNORE_PATTERN }}
-          DEPENDENCY_NAMES: ${{ steps.metadata.outputs.dependency-names }}
-        run: |
-          if [[ -z ${IGNORE_PATTERN} ]]; then
-              echo "ignore=false" >> "$GITHUB_OUTPUT"
-          elif [[ -z ${DEPENDENCY_NAMES} ]]; then
-              echo "ignore=false" >> "$GITHUB_OUTPUT"
-          elif [[ ${DEPENDENCY_NAMES} =~ ${IGNORE_PATTERN} ]]; then
-              echo "ignore=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: GitHub actions bot approve
-        id: auto_approve
-        if: ${{
-          startsWith(steps.branchname.outputs.branch, 'dependabot/')
-          && steps.validate.outputs.ignore != 'true'
-          }}
-        run: gh pr review --approve "$PR_URL"
+        # The push can arrive before Dependabot has opened the PR, so retry a few times.
+        # Approve the pushed commit, not whatever the PR head is by then.
+        run: |
+          for _ in 1 2 3 4 5 6; do
+            pr=$(gh pr view "$GITHUB_REF_NAME" --json number --jq .number) \
+              && gh api --method POST "repos/{owner}/{repo}/pulls/$pr/reviews" \
+                -f event=APPROVE -f commit_id="$GITHUB_SHA" \
+              && exit 0
+            sleep 10
+          done
+          exit 1
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
