@@ -17,6 +17,17 @@ jobs:
       run: |
         # Inspired by https://github.com/nextcloud/docker/blob/master/update.sh
 
+        # Downloads the archive at <url> and pins its sha256 as ARG <name>_SHA256 in the given Dockerfiles
+        # usage: update_sha256 <name> <url> <Dockerfile>...
+        update_sha256() {
+          local name="$1" url="$2" sha
+          shift 2
+          curl -fsSL --retry 5 -o /tmp/archive.tar.gz "$url"
+          sha="$(sha256sum /tmp/archive.tar.gz | cut -d' ' -f1)"
+          rm /tmp/archive.tar.gz
+          sed -i "s|^ARG ${name}_SHA256=.*|ARG ${name}_SHA256=$sha|" "$@"
+        }
+
         # APCU
         apcu_version="$(
           git ls-remote --tags https://github.com/krakjoe/apcu.git \
@@ -27,6 +38,7 @@ jobs:
             | tail -1
         )"
         sed -i "s|^ARG APCU_VERSION=.*|ARG APCU_VERSION=$apcu_version|" ./Containers/nextcloud/Dockerfile
+        update_sha256 APCU "https://github.com/krakjoe/apcu/archive/refs/tags/v$apcu_version.tar.gz" ./Containers/nextcloud/Dockerfile
         
         # Memcached
         memcached_version="$(
@@ -38,6 +50,7 @@ jobs:
             | tail -1
         )"
         sed -i "s|^ARG MEMCACHED_VERSION=.*|ARG MEMCACHED_VERSION=$memcached_version|" ./Containers/nextcloud/Dockerfile
+        update_sha256 MEMCACHED "https://github.com/php-memcached-dev/php-memcached/archive/refs/tags/v$memcached_version.tar.gz" ./Containers/nextcloud/Dockerfile
         
         # Redis
         redis_version="$(
@@ -49,6 +62,7 @@ jobs:
             | tail -1
         )"
         sed -i "s|^ARG REDIS_VERSION=.*|ARG REDIS_VERSION=$redis_version|" ./Containers/nextcloud/Dockerfile
+        update_sha256 REDIS "https://github.com/phpredis/phpredis/archive/refs/tags/$redis_version.tar.gz" ./Containers/nextcloud/Dockerfile
         
         # Imagick
         imagick_version="$(
@@ -60,6 +74,7 @@ jobs:
             | tail -1
         )"
         sed -i "s|^ARG IMAGICK_VERSION=.*|ARG IMAGICK_VERSION=$imagick_version|" ./Containers/nextcloud/Dockerfile
+        update_sha256 IMAGICK "https://github.com/Imagick/imagick/archive/refs/tags/$imagick_version.tar.gz" ./Containers/nextcloud/Dockerfile
 
         # Igbinary
         igbinary_version="$(
@@ -71,6 +86,7 @@ jobs:
             | tail -1
         )"
         sed -i "s|^ARG IGBINARY_VERSION=.*|ARG IGBINARY_VERSION=$igbinary_version|" ./Containers/nextcloud/Dockerfile
+        update_sha256 IGBINARY "https://github.com/igbinary/igbinary/archive/refs/tags/$igbinary_version.tar.gz" ./Containers/nextcloud/Dockerfile
 
         # Nextcloud
         NC_MAJOR="$(grep "ENV NEXTCLOUD_VERSION" ./Containers/nextcloud/Dockerfile | grep -oP '[23][0-9]')"

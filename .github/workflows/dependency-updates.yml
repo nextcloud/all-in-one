@@ -33,6 +33,17 @@ jobs:
         # $(composer outdated)"
     - name: Update apcu
       run: |
+        # Downloads the archive at <url> and pins its sha256 as ARG <name>_SHA256 in the given Dockerfiles
+        # usage: update_sha256 <name> <url> <Dockerfile>...
+        update_sha256() {
+          local name="$1" url="$2" sha
+          shift 2
+          curl -fsSL --retry 5 -o /tmp/archive.tar.gz "$url"
+          sha="$(sha256sum /tmp/archive.tar.gz | cut -d' ' -f1)"
+          rm /tmp/archive.tar.gz
+          sed -i "s|^ARG ${name}_SHA256=.*|ARG ${name}_SHA256=$sha|" "$@"
+        }
+
         # APCU
         apcu_version="$(
           git ls-remote --tags https://github.com/krakjoe/apcu.git \
@@ -43,6 +54,7 @@ jobs:
             | tail -1
         )"
         sed -i "s|^ARG APCU_VERSION=.*|ARG APCU_VERSION=$apcu_version|" ./Containers/mastercontainer/Dockerfile ./php/tests/Containers/composer/Dockerfile
+        update_sha256 APCU "https://github.com/krakjoe/apcu/archive/refs/tags/v$apcu_version.tar.gz" ./Containers/mastercontainer/Dockerfile ./php/tests/Containers/composer/Dockerfile
 
         imap_version="$(
           git ls-remote --tags https://github.com/php/pecl-mail-imap.git \
@@ -53,9 +65,11 @@ jobs:
             | tail -1
         )"
         sed -i "s|^ARG IMAP_VERSION=.*|ARG IMAP_VERSION=$imap_version|" ./Containers/nextcloud/Dockerfile
+        update_sha256 IMAP "https://github.com/php/pecl-mail-imap/archive/refs/tags/$imap_version.tar.gz" ./Containers/nextcloud/Dockerfile
 
         smbclient_version="$(curl -s https://api.github.com/repos/eduardok/libsmbclient-php/releases/latest | jq -r '.tag_name')"
         sed -i "s|^ARG SMBCLIENT_VERSION=.*|ARG SMBCLIENT_VERSION=$smbclient_version|" ./Containers/nextcloud/Dockerfile
+        update_sha256 SMBCLIENT "https://github.com/eduardok/libsmbclient-php/archive/refs/tags/$smbclient_version.tar.gz" ./Containers/nextcloud/Dockerfile
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
