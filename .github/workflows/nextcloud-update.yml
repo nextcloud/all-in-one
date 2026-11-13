@@ -9,7 +9,7 @@ on:
 jobs:
   run_update_sh:
     name: Run nextcloud-update script
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Run nextcloud-update script

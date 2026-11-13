@@ -20,7 +20,7 @@ on:
 jobs:
   watch:
     name: Compare deSEC API version table against baseline
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     steps:
       - name: Check deSEC API version table
