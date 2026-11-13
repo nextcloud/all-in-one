@@ -9,7 +9,7 @@ FROM caddy:2.11.9-alpine AS caddy
 FROM composer:2.11.2 AS composer
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.24/fpm/Dockerfile
-FROM php:8.5.12-fpm-alpine3.24
+FROM php:8.5-fpm-alpine3.24
 
 ARG APCU_VERSION=5.1.28
 
