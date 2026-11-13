@@ -348,6 +348,8 @@ readonly class ContainerDefinitionFetcher {
                 $init = $entry['init'];
             }
 
+            $noNewPrivileges = $entry['no_new_privileges'] ?? false;
+
             $imageTag = '%AIO_CHANNEL%';
             if (isset($entry['image_tag'])) {
                 $imageTag = $entry['image_tag'];
@@ -383,6 +385,7 @@ readonly class ContainerDefinitionFetcher {
                 $readOnlyRootFs,
                 $tmpfs,
                 $init,
+                $noNewPrivileges,
                 $imageTag,
                 $aioVariables,
                 $documentation,
