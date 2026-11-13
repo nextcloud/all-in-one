@@ -120,6 +120,8 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         exit 1
     elif [ "$DB_OWNER" != "oc_$POSTGRES_USER" ]; then
         DIFFERENT_DB_OWNER=1
+        # Do not print the password via xtrace
+        { set +x; } 2>/dev/null
         psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
             -v "pg_new_password=$POSTGRES_PASSWORD" <<-EOSQL
             CREATE USER "$DB_OWNER" WITH PASSWORD :'pg_new_password' CREATEDB;
@@ -127,6 +129,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
             GRANT ALL PRIVILEGES ON DATABASE "$POSTGRES_DB" TO "$DB_OWNER";
             GRANT ALL PRIVILEGES ON SCHEMA public TO "$DB_OWNER";
 EOSQL
+        set -x
     fi
 
     # Restore database
