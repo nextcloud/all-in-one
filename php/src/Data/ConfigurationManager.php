@@ -1126,6 +1126,26 @@ class ConfigurationManager
         return '';
     }
 
+    /**
+     * Returns the entries that get added to /etc/hosts of all containers started by AIO
+     * The default is `<NC_DOMAIN>:host-gateway` if AIO runs in "normal" mode, which means that
+     * domain name is set, and either the apache port is 443 or the caddy community container is enabled.
+     * That way the containers can reach the public domain via the host (e.g. if hairpin NAT is not available).
+     * This can be overridden with AIO_EXTRA_HOSTS env variable, a string with comma separated host:ip mappings.
+     * Setting it to an empty string disables the default entry.
+     * @return list<string>
+     */
+    public function getExtraHosts() : array {
+        $extraHosts = getenv('AIO_EXTRA_HOSTS');
+        if (is_string($extraHosts)) {
+            return array_values(array_unique(array_filter(explode(',', $extraHosts))));
+        }
+        if ($this->domain !== '' && ($this->apachePort === '443' || in_array('caddy', $this->aioCommunityContainers, true))) {
+            return [$this->domain . ':host-gateway'];
+        }
+        return [];
+    }
+
     public function getNextcloudStartupApps() : string {
         $apps = getenv('NEXTCLOUD_STARTUP_APPS');
         if (is_string($apps)) {

@@ -259,6 +259,12 @@ It is set to '$APACHE_ADDITIONAL_NETWORK'."
         exit 1
     fi
 fi
+if [ -n "$AIO_EXTRA_HOSTS" ] && ! grep -qE '^[a-zA-Z0-9.:,_-]+$' <<< "$AIO_EXTRA_HOSTS"; then
+    print_red "You've set AIO_EXTRA_HOSTS but not to an allowed value.
+It needs to be a comma-separated list of 'hostname:ip' entries (the ip can also be 'host-gateway'), e.g. 'example.com:192.168.1.10,other.local:host-gateway'.
+It is set to '$AIO_EXTRA_HOSTS'."
+    exit 1
+fi
 if [ -n "$TALK_PORT" ]; then
     if ! check_if_number "$TALK_PORT"; then
         print_red "You provided an Talk port but did not only use numbers.
