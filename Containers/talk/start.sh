@@ -64,8 +64,13 @@ if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
     set +x
 fi
 
-if [ -n "$IPv4_ADDRESS_TALK" ] && [ "$IPv4_ADDRESS_TALK_RELAY" = "$IPv4_ADDRESS_TALK" ]; then
-    IPv4_ADDRESS_TALK=""
+if [ -n "$IPv4_ADDRESS_TALK" ]; then
+    RE="^127\.0\.[0-9]+\.[0-9]+$"
+    if [ "$IPv4_ADDRESS_TALK_RELAY" = "$IPv4_ADDRESS_TALK" ]; then
+        IPv4_ADDRESS_TALK=""
+    elif [[ "$IPv4_ADDRESS_TALK_RELAY" =~ $RE ]]; then
+        IPv4_ADDRESS_TALK_RELAY=$IPv4_ADDRESS_TALK
+    fi
 fi
 
 set -x
