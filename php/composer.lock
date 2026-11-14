@@ -4076,16 +4076,16 @@
         },
         {
             "name": "psalm/plugin-phpunit",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/psalm/psalm-plugin-phpunit.git",
-                "reference": "02622ac27c733402886a6d6aaea8a69b14e94f7b"
+                "reference": "9227f2ac5d7ec16d1f4c9904a4326397b90d5566"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-phpunit/zipball/02622ac27c733402886a6d6aaea8a69b14e94f7b",
-                "reference": "02622ac27c733402886a6d6aaea8a69b14e94f7b",
+                "url": "https://api.github.com/repos/psalm/psalm-plugin-phpunit/zipball/9227f2ac5d7ec16d1f4c9904a4326397b90d5566",
+                "reference": "9227f2ac5d7ec16d1f4c9904a4326397b90d5566",
                 "shasum": ""
             },
             "require": {
@@ -4131,10 +4131,10 @@
             "description": "Psalm plugin for PHPUnit",
             "support": {
                 "issues": "https://github.com/psalm/psalm-plugin-phpunit/issues",
-                "source": "https://github.com/psalm/psalm-plugin-phpunit/tree/1.1.0"
+                "source": "https://github.com/psalm/psalm-plugin-phpunit/tree/1.2.0"
             },
-            "time": "2026-11-11T10:38:01+00:00",
-            "published-time": "2026-11-11T10:46:40+00:00"
+            "time": "2026-11-14T00:23:20+00:00",
+            "published-time": "2026-11-14T00:23:32+00:00"
         },
         {
             "name": "psalm/plugin-symfony",
@@ -4212,16 +4212,16 @@
         },
         {
             "name": "psalm/psalm-plugin-api",
-            "version": "0.4.2",
+            "version": "0.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/psalm/psalm-plugin-api.git",
-                "reference": "151e64d8cf62c7972f0f58cd87f68f548b78477e"
+                "reference": "1d4369adfe959d6459f10f647d386051e93e8e2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-api/zipball/151e64d8cf62c7972f0f58cd87f68f548b78477e",
-                "reference": "151e64d8cf62c7972f0f58cd87f68f548b78477e",
+                "url": "https://api.github.com/repos/psalm/psalm-plugin-api/zipball/1d4369adfe959d6459f10f647d386051e93e8e2e",
+                "reference": "1d4369adfe959d6459f10f647d386051e93e8e2e",
                 "shasum": ""
             },
             "conflict": {
@@ -4241,10 +4241,10 @@
             "description": "Stable, semantically versioned API for Psalm plugins",
             "support": {
                 "issues": "https://github.com/psalm/psalm-plugin-api/issues",
-                "source": "https://github.com/psalm/psalm-plugin-api/tree/0.4.2"
+                "source": "https://github.com/psalm/psalm-plugin-api/tree/0.4.3"
             },
-            "time": "2026-11-10T21:10:59+00:00",
-            "published-time": "2026-11-10T21:11:04+00:00"
+            "time": "2026-11-13T22:58:21+00:00",
+            "published-time": "2026-11-13T22:58:30+00:00"
         },
         {
             "name": "revolt/event-loop",
@@ -5199,16 +5199,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "7.4.0",
+            "version": "7.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "ca6d68437df9a573212d442d00556d81b6337ecd"
+                "reference": "9520421041c4de67379270dc17502544dd808140"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/ca6d68437df9a573212d442d00556d81b6337ecd",
-                "reference": "ca6d68437df9a573212d442d00556d81b6337ecd",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/9520421041c4de67379270dc17502544dd808140",
+                "reference": "9520421041c4de67379270dc17502544dd808140",
                 "shasum": ""
             },
             "require": {
@@ -5236,7 +5236,7 @@
                 "psalm/plugin-mockery": "^1.3.2",
                 "psalm/plugin-phpunit": "^0.21 || ^0.22 || ^1.0",
                 "psalm/plugin-symfony": "^5.9.1",
-                "psalm/psalm-plugin-api": "0.4.2",
+                "psalm/psalm-plugin-api": "0.4.3",
                 "sebastian/diff": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0",
                 "spatie/array-to-xml": "^2.17.0 || ^3.0",
                 "symfony/console": "^6.0 || ^7.0 || ^8.0",
@@ -5316,8 +5316,8 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-11-13T11:08:59+00:00",
-            "published-time": "2026-11-13T11:09:32+00:00"
+            "time": "2026-11-14T00:41:11+00:00",
+            "published-time": "2026-11-14T01:26:32+00:00"
         },
         {
             "name": "wapmorgan/php-deprecation-detector",
