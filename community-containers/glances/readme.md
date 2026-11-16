@@ -4,6 +4,9 @@ This container starts [Glances](https://nicolargo.github.io/glances/), a web-bas
 > [!CAUTION]
 > This container mounts the docker-socket from the host-system and thus has unlimited root access to it!
 
+> [!WARNING]
+> Port 61208 is published on all network interfaces of the host and has no authentication. Anyone who can reach this port (e.g. the whole LAN, or the whole internet on a server without a firewall) can see all monitoring data of your host and its containers. Make sure to block this port in your firewall if the server is reachable from untrusted networks.
+
 ### Notes
 - After adding and starting the container, you can directly visit http://ip.address.of.server:61208/ and access your new Glances instance!
 - if you are using caddy community container, this will be available at `https://glances.your-server.com`, For security reasons, a password will be generated and shown in the AIO interface (if you click on showing the secret for glances). Use `glances` as user name. 
