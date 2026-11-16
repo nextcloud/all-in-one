@@ -743,7 +743,7 @@ if [ -n "$ADDITIONAL_TRUSTED_PROXY" ]; then
 fi
 
 # Trust the IPv4 subnet of the interface that holds the default route
-read _ _ _ _ DEFAULT_INTERFACE _ < <(ip -o -4 route show default)
+read -r _ _ _ _ DEFAULT_INTERFACE _ < <(ip -o -4 route show default)
 if [ -n "$DEFAULT_INTERFACE" ]; then
     IPv4_CIDR="$(ip -o -4 addr show dev "$DEFAULT_INTERFACE" | awk '{print $4; exit}')"
 fi
