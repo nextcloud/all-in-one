@@ -2,12 +2,13 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Release step 2: runs the E2E tests, promotes the develop images to beta, creates the beta
+# Release step 2: after the E2E tests passed and the images were promoted to beta, creates the beta
 # pre-release and moves on to a new `next` milestone.
 #
 # Usage: release-beta.sh NEXTCLOUD_VERSION
 #   NEXTCLOUD_VERSION: the Nextcloud version that new instances can install directly, e.g. 35
 
+# shellcheck source=.github/scripts/release-lib.sh
 source "$(dirname "$0")/release-lib.sh"
 
 INSTALLABLE="${1:-}"
@@ -15,16 +16,14 @@ INSTALLABLE="${1:-}"
 VERSION="$(aio_version)"
 INCLUDED="$(sed -n 's/^ENV NEXTCLOUD_VERSION=//p' "$REPO_ROOT/Containers/nextcloud/Dockerfile")"
 OLD_MILESTONE="$(milestone_number next)"
+BUMPED="$(version_bump_date)"
 
-# Check everything up front instead of failing after the images were promoted.
 [ -n "$INCLUDED" ] || die "Could not read NEXTCLOUD_VERSION from the Nextcloud Dockerfile"
 [ -n "$OLD_MILESTONE" ] || die "There is no milestone called next"
 [ -z "$(milestone_number "$VERSION")" ] || die "Milestone $VERSION already exists"
 if gh release view "v$VERSION" > /dev/null 2>&1; then die "Release v$VERSION already exists"; fi
-assert_idle "$RELEASES_REPO" build_images.yml
-
-run_workflow_and_wait "$GH_REPO" playwright-on-workflow-dispatch.yml
-run_workflow_and_wait "$RELEASES_REPO" promote-to-beta.yml
+assert_succeeded_since "$GH_REPO" playwright-on-workflow-dispatch.yml "$BUMPED"
+assert_succeeded_since "$RELEASES_REPO" promote-to-beta.yml "$BUMPED"
 
 gh release create "v$VERSION" --target main --title "v$VERSION Beta" --prerelease \
     --generate-notes --discussion-category Releases \

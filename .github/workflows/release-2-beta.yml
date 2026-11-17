@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
-name: Release 2 - test and publish beta
+name: Release 2 - publish beta
 
 on:
   workflow_dispatch:
@@ -18,12 +18,18 @@ jobs:
   release:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-26.04
+    permissions:
+      actions: read
+      contents: write
+      discussions: write
+      issues: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - env:
-          # Needs write access to this repo (including pushing to main) and permission to run
-          # workflows in nextcloud-releases/all-in-one, which the default token doesn't have.
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }} # zizmor: ignore[secrets-outside-env]
+          GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           NEXTCLOUD_VERSION: ${{ inputs.nextcloud_version }}
         run: ./.github/scripts/release-beta.sh "$NEXTCLOUD_VERSION"

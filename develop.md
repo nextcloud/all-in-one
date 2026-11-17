@@ -17,7 +17,7 @@ And you are done :)
 It will now also select the developer channel for all other containers automatically.
 
 ## How to publish new releases?
-Simply use https://github.com/nextcloud/all-in-one/issues/180 as template.
+Run https://github.com/nextcloud/all-in-one/actions/workflows/create-release-issue.yml to create the release ticket and follow its task list.
 
 ## How to update existing instances to a new major Nextcloud version?
 Simply use https://github.com/nextcloud/all-in-one/issues/6198 as template.
