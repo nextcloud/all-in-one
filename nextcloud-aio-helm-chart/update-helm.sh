@@ -46,6 +46,7 @@ sed -i "s|\${ADDITIONAL_COLLABORA_OPTIONS}|ADDITIONAL_COLLABORA_OPTIONS_PLACEHOL
 sed -i "/name: nextcloud-aio/,$ d" latest.yml
 sed -i "/WATCHTOWER_DOCKER_SOCKET_PATH/d" latest.yml
 sed -i "/NEXTCLOUD_DATADIR/d" latest.yml
+sed -i "/no-new-privileges/d" latest.yml
 sed -i "/\${NEXTCLOUD_MOUNT}/d" latest.yml
 sed -i "/^volumes:/a\ \ nextcloud_aio_nextcloud_trusted_cacerts:\n \ \ \ \ name: nextcloud_aio_nextcloud_trusted_cacerts" latest.yml
 sed -i "s|\${NEXTCLOUD_TRUSTED_CACERTS_DIR}:|nextcloud_aio_nextcloud_trusted_cacerts:|g#" latest.yml
