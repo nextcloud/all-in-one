@@ -2,10 +2,10 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Release step 3: after the beta images were promoted to latest, marks the release as stable and
+# After the beta images were promoted to latest, marks the release as stable and
 # closes its milestone.
 #
-# Usage: release-stable.sh
+# Usage: release-make-final.sh
 
 # shellcheck source=.github/scripts/release-lib.sh
 source "$(dirname "$0")/release-lib.sh"

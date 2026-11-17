@@ -2,10 +2,10 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Release step 2: after the E2E tests passed and the images were promoted to beta, creates the beta
+# After the E2E tests passed and the images were promoted to beta, creates the beta
 # pre-release and moves on to a new `next` milestone.
 #
-# Usage: release-beta.sh NEXTCLOUD_VERSION
+# Usage: release-publish-beta.sh NEXTCLOUD_VERSION
 #   NEXTCLOUD_VERSION: the Nextcloud version that new instances can install directly, e.g. 35
 
 # shellcheck source=.github/scripts/release-lib.sh
