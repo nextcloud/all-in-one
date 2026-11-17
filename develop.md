@@ -19,6 +19,12 @@ It will now also select the developer channel for all other containers automatic
 ## How to publish new releases?
 Run https://github.com/nextcloud/all-in-one/actions/workflows/create-release-issue.yml to create the release ticket and follow its task list.
 
+Most of the steps can be run with `.github/scripts/release.sh` from a checkout of the main branch (needs an authenticated [`gh`](https://cli.github.com/) CLI, e.g. via `gh auth login`):
+- `.github/scripts/release.sh beta VERSION NEXTCLOUD_VERSION` commits the new version number (signed off by you) and pushes it to main, builds the images, runs the E2E tests, promotes the images to beta and publishes the beta release. `VERSION` is the new AIO version, e.g. `15.2.0`, and `NEXTCLOUD_VERSION` is the Nextcloud version that new instances can install directly, e.g. `35`.
+- `.github/scripts/release.sh final` promotes the beta images to latest and makes the release final.
+
+It asks for confirmation before the steps that need manual testing or waiting. The work happens in workflows on GitHub, so if the script gets interrupted, e.g. by network problems, simply run it again: it continues where it stopped without starting workflows twice.
+
 ## How to update existing instances to a new major Nextcloud version?
 Simply use https://github.com/nextcloud/all-in-one/issues/6198 as template.
 

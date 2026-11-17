@@ -12,6 +12,7 @@ Body of the recurring release ticket, used by .github/scripts/create-release-iss
 - [ ] # 
 
 ### Tasks to do for new release:
+The steps from increasing the version number to publishing the beta release can be run with `.github/scripts/release.sh beta VERSION NEXTCLOUD_VERSION`, the steps from deploying to latest to making the release final with `.github/scripts/release.sh final`. Both can be run again if they get interrupted.
 - [ ] make sure to merge any `Helm Chart Updates` PR before continuing with the list below (https://github.com/nextcloud/all-in-one/pulls?q=is%3Apr+is%3Aopen+helm+)
 - [ ] increase the version number in https://github.com/nextcloud/all-in-one/blob/main/php/templates/includes/aio-version.twig
 - [ ] build new images. See https://github.com/nextcloud/all-in-one/blob/main/develop.md#how-to-build-new-containers
