@@ -17,4 +17,8 @@ $container = \AIO\DependencyInjection::GetContainer();
 $dockerController = $container->get(\AIO\Controller\DockerController::class);
 
 // Pull all containers
-$dockerController->PullAllContainerImages();
+$failures = $dockerController->PullAllContainerImages();
+if ($failures !== []) {
+    fwrite(STDOUT, implode(PHP_EOL, $failures) . PHP_EOL);
+    exit(1);
+}

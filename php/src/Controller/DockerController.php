@@ -50,22 +50,27 @@ readonly class DockerController {
         $this->dockerActionManager->ConnectContainerToNetwork($container);
     }
 
-    private function PerformRecursiveImagePull(string $id) : void {
+    /** @param array<string, ?string> $results */
+    private function PerformRecursiveImagePull(string $id, array &$results) : void {
         $container = $this->containerDefinitionFetcher->GetContainerById($id);
 
         // Pull all dependencies first and then itself
         foreach($container->dependsOn as $dependency) {
-            $this->PerformRecursiveImagePull($dependency);
+            $this->PerformRecursiveImagePull($dependency, $results);
         }
 
-        $this->dockerActionManager->PullImage($container, true);
+        try {
+            $results[$id] = $this->dockerActionManager->PullImage($container);
+        } catch (\Exception $e) {
+            $results[$id] = $e->getMessage();
+        }
     }
 
-    public function PullAllContainerImages(): void {
-
-        $id = self::TOP_CONTAINER;
-
-        $this->PerformRecursiveImagePull($id);
+    /** @return array<string, string> */
+    public function PullAllContainerImages(): array {
+        $results = [];
+        $this->PerformRecursiveImagePull(self::TOP_CONTAINER, $results);
+        return array_filter($results, static fn (?string $result): bool => $result !== null);
     }
 
     public function GetLogs(Request $request, Response $response, array $args) : Response
