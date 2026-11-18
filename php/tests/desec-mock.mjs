@@ -15,7 +15,7 @@
 // Routes:
 //   POST /api/v1/auth/                      -> 202 (account requested; verify email) | 400 (requested domain unavailable)
 //   POST /api/v1/auth/login/                -> 403 until verified, then 200 + {token}
-//   POST /api/v1/domains/                    -> 201 (new) | 400 (taken by another zone) | 403 (account limit)
+//   POST /api/v1/domains/                    -> 201 (new) | 400 (taken by another zone, or account already has a dedyn.io domain) | 403 (account limit)
 //   GET  /api/v1/domains/{name}/             -> 200 (owned by this account) | 404 (not owned)
 //   POST /api/v1/domains/{name}/rrsets/      -> 201 (wildcard CNAME)
 //   GET  /update                             -> 200 "good" (dyndns update endpoint)
@@ -39,6 +39,9 @@ const state = {
 // (unverified-payment) account may hold and answers 403 once it is reached; we model
 // that so the "user already owns this slug but is over quota" recovery path is testable.
 const DOMAIN_LIMIT = Number(process.env.DESEC_MOCK_DOMAIN_LIMIT ?? 15)
+
+// deSEC allows only one domain under its own public suffix per account.
+const LOCAL_PUBLIC_SUFFIX = '.dedyn.io'
 
 // The mock issues tokens of the form `mock-token-<hex(email)[:16]>` (see /auth/login/).
 // Recover the owner email from the Authorization header so domain ops are per-account.
@@ -152,17 +155,26 @@ const server = createServer(async (req, res) => {
   // --- Domain creation. Mirrors deSEC's status codes: ---
   //   400 if the name is already registered (to this or another account);
   //   403 once the account has reached its domain limit;
+  //   400 if the account already has a domain under dedyn.io (only one is allowed);
   //   201 otherwise.
+  // Like deSEC, a 400 carries its reason keyed by field ("name").
   if (method === 'POST' && path === '/api/v1/domains/') {
     const body = await readBody(req)
     const name = String(body.name ?? '')
     const email = emailFromToken(req)
     if (state.domains.has(name)) {
-      return send(res, 400, { detail: 'This domain name is unavailable.' })
+      return send(res, 400, { name: ['This domain name conflicts with an existing domain, or is disallowed by policy.'] })
     }
-    const owned = [...state.domains.values()].filter((owner) => owner === email).length
-    if (owned >= DOMAIN_LIMIT) {
+    const ownedNames = [...state.domains].filter(([, owner]) => owner === email).map(([owned]) => owned)
+    if (ownedNames.length >= DOMAIN_LIMIT) {
       return send(res, 403, { detail: 'Domain limit exceeded. Please contact support to create additional domains.' })
+    }
+    const registered = ownedNames.find((owned) => owned.endsWith(LOCAL_PUBLIC_SUFFIX))
+    if (name.endsWith(LOCAL_PUBLIC_SUFFIX) && registered !== undefined) {
+      return send(res, 400, { name: [
+        `You already have ${registered}. Only one domain under dedyn.io can be registered per `
+        + 'account; please delete it first if you would like a different name.',
+      ] })
     }
     state.domains.set(name, email)
     return send(res, 201, { name })

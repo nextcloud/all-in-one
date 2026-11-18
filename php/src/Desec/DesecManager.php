@@ -379,8 +379,12 @@ class DesecManager {
      * conflicts with another user's zone and 403 once the per-account domain limit is hit;
      * both look like a failure here even though the user owns the name.)
      *
+     * deSEC also answers 400 when the account already holds a dedyn.io domain under another
+     * name (only one is allowed per account). It states the reason in the response, which is
+     * passed on to the user.
+     *
      * @return string the fully-qualified domain name that was registered
-     * @throws \Exception if the slug is taken by someone else, on network failure, or after exhausting random attempts
+     * @throws \Exception if deSEC rejects the name, on network failure, or after exhausting random attempts
      */
     public function registerDomain(string $token, string $slug): string {
         $random   = $slug === '';
@@ -404,6 +408,8 @@ class DesecManager {
                 return $domain;
             }
 
+            $body = $res->getBody()->getContents();
+
             // For a user-specified slug, the name may be unavailable (400/409) or the account's
             // domain limit may be reached (403) precisely because the user already owns this
             // domain. Reuse it rather than failing.
@@ -418,18 +424,44 @@ class DesecManager {
                         . 'deSEC support to raise the limit, then try again.'
                     );
                 }
-                throw new \Exception('"' . $domain . '" is already taken. Please choose a different subdomain and try again.');
+            }
+
+            // A 400 has several causes (name taken or reserved, or the account already has its
+            // one dedyn.io domain) that only deSEC's message tells apart. Retrying with another
+            // random slug cannot fix the latter, so this ends the attempts either way.
+            if ($code === 400) {
+                $reason = $this->nameRejectionReason($body);
+                if ($reason !== '') {
+                    throw new \Exception('deSEC could not register "' . $domain . '": ' . $reason);
+                }
             }
 
             if ($code === 409) {
+                if (!$random) {
+                    throw new \Exception('"' . $domain . '" is already taken. Please choose a different subdomain and try again.');
+                }
                 // Random slug collided with an existing name — try another.
                 continue;
             }
 
-            throw new \Exception('Unexpected response from deSEC during domain registration (HTTP ' . $code . '): ' . $res->getBody()->getContents());
+            throw new \Exception('Unexpected response from deSEC during domain registration (HTTP ' . $code . '): ' . $body);
         }
 
         throw new \Exception('Could not register a free dedyn.io domain after ' . self::MAX_SLUG_ATTEMPTS . ' attempts. Please try again.');
+    }
+
+    /**
+     * Extracts deSEC's explanation from the body of a 400 response to a domain creation.
+     * Validation errors are keyed by field; those about the domain name are under "name".
+     *
+     * @return string the explanation, or an empty string when the body carries none
+     */
+    private function nameRejectionReason(string $body): string {
+        $data = json_decode($body, true);
+        if (!is_array($data) || !isset($data['name']) || !is_array($data['name'])) {
+            return '';
+        }
+        return implode(' ', array_map('strval', $data['name']));
     }
 
     /**
