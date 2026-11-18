@@ -27,6 +27,13 @@ jobs:
           if ! json validate --schema-file=php/containers-schema.json --document-file=php/containers.json; then
             exit 1
           fi
+          # All default containers must drop all capabilities and only add back the ones they need via cap_add
+          MISSING_CAP_DROP_ALL="$(jq -r '.aio_services_v1[] | select(.cap_drop != ["ALL"]) | .container_name' php/containers.json)"
+          if [ -n "$MISSING_CAP_DROP_ALL" ]; then
+            echo "The following containers in php/containers.json do not set cap_drop to [\"ALL\"]:"
+            echo "$MISSING_CAP_DROP_ALL"
+            exit 1
+          fi
           JSON_FILES="$(find ./community-containers -name '*.json')"
           mapfile -t JSON_FILES <<< "$JSON_FILES"
           for file in "${JSON_FILES[@]}"; do
