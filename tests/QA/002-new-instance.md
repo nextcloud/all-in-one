@@ -15,6 +15,7 @@ For the below to work, it is important that you have a domain that you point ont
     - [ ] Submitting with an empty email should show an error asking for a valid email address (inside the modal)
     - [ ] Submitting with an invalid slug (e.g. `-bad-`) should show a validation error about the allowed slug format (inside the modal)
     - [ ] Submitting with a slug that is already taken should show an error that the domain is not available (inside the modal) and stay on the registration form
+    - [ ] Logging in with the email and password of an existing deSEC account that already has a `*.dedyn.io` domain, but with a different slug, should show deSEC's explanation that only one dedyn.io domain is allowed per account (inside the modal); entering the slug of the existing domain instead should complete the registration
     - [ ] Submitting with a valid email and a free slug should step the modal through the register → verify email → finish setup flow without closing it; the awaiting-verification step shows the requested `*.dedyn.io` domain
     - [ ] On the awaiting-verification step, clicking **Start over** should return to the registration form so a different email address or slug can be entered (the step explains when the same address can be reused)
     - [ ] Closing the modal (via the × button, clicking the backdrop, or pressing Escape) and re-opening it should resume the registration where you left off

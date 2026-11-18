@@ -53,6 +53,9 @@ jobs:
       - name: Run Playwright tests for desec with existing slug
         run: ./php/tests/run.sh ./php/tests/tests/desec-existing-slug.spec.js
 
+      - name: Run Playwright tests for desec with another slug than the existing one
+        run: ./php/tests/run.sh ./php/tests/tests/desec-existing-other-slug.spec.js
+
       - uses: actions/upload-artifact@v7.0.2
         if: ${{ !cancelled() }}
         with:

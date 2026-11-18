@@ -16,7 +16,7 @@
         <input type="submit" value="Start over" />
     </form>
 {% elseif desec_account_registered %}
-    <p>Your deSEC account (<strong>{{ desec_email }}</strong>) was registered successfully but the domain could not be registered. Please enter a desired subdomain slug (the part before <code>.dedyn.io</code>) and try again, or leave it blank for a random one.</p>
+    <p>Your deSEC account (<strong>{{ desec_email }}</strong>) was registered successfully but the domain could not be registered. Please enter a desired subdomain slug (the part before <code>.dedyn.io</code>) and try again, or leave it blank for a random one. deSEC allows only one dedyn.io domain per account: if your account already has one, enter its subdomain to use it.</p>
     <form method="POST" action="api/desec/register" class="xhr">
         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
@@ -25,7 +25,7 @@
     </form>
 {% else %}
     <p>Please enter your email address. You can also enter a desired subdomain slug (the part before <code>.dedyn.io</code>); leave it blank for a random one. You will be told right away if the name is not available.</p>
-    <p>If you already have a deSEC account for this email address, enter your deSEC password in the optional password field below to log in with it instead of creating a new account. When creating a new account, deSEC will email you a verification link that you must click; your domain is created as soon as you do.</p>
+    <p>If you already have a deSEC account for this email address, enter your deSEC password in the optional password field below to log in with it instead of creating a new account. deSEC allows only one dedyn.io domain per account: if your account already has one, enter its subdomain to use it. When creating a new account, deSEC will email you a verification link that you must click; your domain is created as soon as you do.</p>
     <form method="POST" action="api/desec/register" class="xhr">
         <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
         <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
