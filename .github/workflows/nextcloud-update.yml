@@ -85,6 +85,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: nextcloud-update automated change
+        author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         signoff: true
         title: Nextcloud dependency update to ${{ steps.nextcloud_update.outputs.nc_version }}
         body: |

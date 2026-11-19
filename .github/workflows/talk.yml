@@ -49,6 +49,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: talk-update automated change
+        author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         signoff: true
         title: talk container update
         body: Automated talk container update

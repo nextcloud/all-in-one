@@ -23,6 +23,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: "chore(tests): update test container image references"
+        author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         signoff: true
         title: Update test container image references
         body: Automated update of node and playwright image digests in php/tests/compose.yaml

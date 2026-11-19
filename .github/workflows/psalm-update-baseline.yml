@@ -35,8 +35,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update psalm baseline
-          committer: GitHub <noreply@github.com>
-          author: nextcloud-command <nextcloud-command@users.noreply.github.com>
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           signoff: true
           branch: automated/noid/psalm-baseline-update
           title: '[Automated] Update psalm-baseline.xml'

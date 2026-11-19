@@ -60,6 +60,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: wg-easy-update automated change
+        author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         signoff: true
         title: wg-easy major update
         body: |
