@@ -50,7 +50,7 @@ spec:
               value: https://{{ .Values.NC_DOMAIN }}
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-harp:20261119_100951
+          image: ghcr.io/nextcloud-releases/aio-harp:20261119_161514
           readinessProbe:
             exec:
               command:
