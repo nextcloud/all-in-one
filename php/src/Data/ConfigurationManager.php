@@ -127,6 +127,11 @@ class ConfigurationManager
         set { $this->set('isImaginaryEnabled', $value); }
     }
 
+    public bool $isFfmpegEnabled {
+        get => $this->get('isFfmpegEnabled', true);
+        set { $this->set('isFfmpegEnabled', $value); }
+    }
+
     public bool $isFulltextsearchEnabled {
         // Type-cast because old configs could have 1/0 for this key.
         get => (bool) $this->get('isFulltextsearchEnabled', false);
@@ -1301,6 +1306,7 @@ class ConfigurationManager
             'TIMEZONE' => $this->timezone === '' ? 'Etc/UTC' : $this->timezone,
             'COLLABORA_DICTIONARIES' => $this->collaboraDictionaries === '' ? 'de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru' : $this->collaboraDictionaries,
             'IMAGINARY_ENABLED' => $this->isImaginaryEnabled ? 'yes' : '',
+            'FFMPEG_ENABLED' => $this->isFfmpegEnabled ? 'yes' : '',
             'FULLTEXTSEARCH_ENABLED' => $this->isFulltextsearchEnabled ? 'yes' : '',
             'DOCKER_SOCKET_PROXY_ENABLED' => $this->isDockerSocketProxyEnabled ? 'yes' : '',
             'HARP_ENABLED' => $this->isHarpEnabled ? 'yes' : '',

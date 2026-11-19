@@ -193,6 +193,20 @@
     <p>
         <input
             type="checkbox"
+            id="ffmpeg"
+            name="ffmpeg"
+            {% if is_ffmpeg_enabled == true %}
+                checked="checked"
+                data-initial-state="true"
+            {% else %}
+                data-initial-state="false"
+            {% endif %}
+        >
+        <label for="ffmpeg">FFmpeg (for video previews, based on <a target="_blank" href="https://github.com/steelbrain/ffmpeg-over-ip">ffmpeg-over-ip</a>)</label>
+    </p>
+    <p>
+        <input
+            type="checkbox"
             id="talk"
             name="talk"
             {% if is_talk_enabled == true %}

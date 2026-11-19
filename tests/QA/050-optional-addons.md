@@ -8,6 +8,7 @@
     - [ ] Collabora by trying to open a .docx or .odt file in Nextcloud
     - [ ] Nextcloud Talk by opening the Talk app in Nextcloud, creating a new chat and trying to join a call in this chat. Also verifying in the settings that the HPB and turn server work.
     - [ ] Imaginary by having a look if when uploading a new picture in Nextcloud, it adds some log entries to the container
+    - [ ] FFmpeg by uploading a new video to Nextcloud and checking that a preview gets generated and that it adds some log entries to the container
     - [ ] Fulltextsearch by trying to search for a heading inside a file in Nextcloud
     - [ ] Talk-recording by starting a call and trying to record something
 - [ ] When Collabora is enabled

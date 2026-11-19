@@ -21,7 +21,7 @@ For the below to work, it is important that you have a domain that you point ont
     - [ ] After successful registration, there should be a **deSEC account credentials** section in the AIO interface that shows the registered email and allows revealing the password
 - [ ] Now you should see a button `Start containers` and an explanation which points out that clicking on the button will start the containers and that this can take a long time.
 - [ ] Below that you should see a section `Optional addons` which shows a checkbox list with addons that can be enabled or disabled.
-    - [ ] Collabora, Imaginary, Talk and Whiteboard should be enabled, the rest disabled
+    - [ ] Collabora, Imaginary, FFmpeg, Talk and Whiteboard should be enabled, the rest disabled
     - [ ] Unchecking/Checking any of these should insert a button that allows to save the set config
     - [ ] Only one of Collabora, OnlyOffice and EuroOffice should be selectable at the same time
     - [ ] Recommended is to uncheck all options now
