@@ -760,7 +760,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
         set +x
     fi
-    # Remove richdcoumentscode if it should be incorrectly installed
+    # Remove richdocumentscode should it be incorrectly installed
     if [ -d "/var/www/html/custom_apps/richdocumentscode" ]; then
         php /var/www/html/occ app:remove richdocumentscode
     fi

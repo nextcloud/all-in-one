@@ -10,6 +10,7 @@ while ! nc -z "$APACHE_HOST" "$APACHE_PORT"; do
     sleep 15
 done
 
+# Exec commands for community containers
 if [ -n "$NEXTCLOUD_EXEC_COMMANDS" ]; then
     echo "#!/bin/bash" > /tmp/nextcloud-exec-commands
     echo "$NEXTCLOUD_EXEC_COMMANDS" >> /tmp/nextcloud-exec-commands
@@ -17,10 +18,14 @@ if [ -n "$NEXTCLOUD_EXEC_COMMANDS" ]; then
         bash /tmp/nextcloud-exec-commands
         rm /tmp/nextcloud-exec-commands
     fi
-else
-    # Collabora must work also if using manual-install 
-    if [ "$COLLABORA_ENABLED" = yes ]; then
-        echo "Activating Collabora config..."
+fi
+
+# Exec commands for collabora
+if [ "$COLLABORA_ENABLED" = yes ]; then
+    echo "Activating Collabora config..."
+    if [ -n "$COLLABORA_WOPI_CALLBACK_URL" ] && [ -n "$COLLABORA_WOPI_URL" ]; then
+        php /var/www/html/occ richdocuments:activate-config --callback-url="$COLLABORA_WOPI_CALLBACK_URL" --wopi-url="$COLLABORA_WOPI_URL"
+    else
         php /var/www/html/occ richdocuments:activate-config
     fi
 fi

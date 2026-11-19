@@ -167,6 +167,8 @@ services:
       - EUROOFFICE_ENABLED
       - COLLABORA_ENABLED
       - COLLABORA_HOST=nextcloud-aio-collabora
+      - COLLABORA_WOPI_URL=http://nextcloud-aio-apache:23973
+      - COLLABORA_WOPI_CALLBACK_URL=http://nextcloud-aio-apache:23973
       - TALK_ENABLED
       - ONLYOFFICE_HOST=nextcloud-aio-onlyoffice
       - EUROOFFICE_HOST=nextcloud-aio-eurooffice
@@ -274,7 +276,7 @@ services:
     expose:
       - "9980"
     environment:
-      - aliasgroup1=https://${NC_DOMAIN}:443,http://nextcloud-aio-apache.nextcloud-aio:23973
+      - aliasgroup1=https://${NC_DOMAIN}:443,http://nextcloud-aio-apache:23973
       - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true --o:welcome.enable=false --o:fetch_update_check=0 --o:allow_update_popup=false --o:logging.level=${COLLABORA_LOG_LEVEL} --o:logging.level_startup=${COLLABORA_LOG_LEVEL} --o:remote_font_config.url=https://${NC_DOMAIN}/apps/richdocuments/settings/fonts.json --o:net.post_allow.host[0]=.+
       - dictionaries=${COLLABORA_DICTIONARIES}
       - AIO_LOG_LEVEL
@@ -608,4 +610,5 @@ volumes:
 
 networks:
   default:
+    name: nextcloud-aio
     driver: bridge
