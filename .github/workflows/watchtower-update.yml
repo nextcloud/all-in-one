@@ -40,6 +40,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: watchtower-update automated change
+        author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         signoff: true
         title: watchtower container update to ${{ steps.watchtower_update.outputs.watchtower_version }}
         body: |

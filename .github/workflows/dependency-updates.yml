@@ -76,6 +76,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: php dependency updates
+        author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         signoff: true
         title: PHP dependency updates
         body: Automated php dependency updates since dependabot does not support grouped updates
