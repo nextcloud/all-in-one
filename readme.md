@@ -424,7 +424,8 @@ For a reverse proxy example guide for Tailscale, see this guide by [@Perseus333]
 
 1. Open the AIO interface and expand the **"Don't have a domain? Get a free one from deSEC"** section on the domain-entry page.
 2. Enter your email address and, optionally, a desired subdomain slug (the part before `.dedyn.io`). Leave the slug blank for a random one.
-3. Click **Register free domain via deSEC**. AIO will create a deSEC account, register the subdomain and store the credentials in its configuration.
+3. Click **Register free domain via deSEC**. AIO requests a deSEC account together with the subdomain; if the name is not available you are told right away and can pick another one.
+4. deSEC emails you a verification link. Clicking it activates the account and creates the subdomain. Then click **I have verified my email – finish setup** in AIO, which stores the credentials in its configuration.
 
 After successful registration:
 - AIO sets the registered `*.dedyn.io` domain as the Nextcloud domain automatically.
