@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:latest
-FROM ghcr.io/euro-office/documentserver:v9.3.7
+FROM ghcr.io/euro-office/documentserver:v9.3.8
 
 # USER root is probably used
 
