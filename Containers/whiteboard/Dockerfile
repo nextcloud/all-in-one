@@ -3,11 +3,14 @@
 FROM ghcr.io/nextcloud-releases/whiteboard:v2.1.2
 
 USER root:root
+# The whiteboard image wraps chrome_crashpad_handler to pass --database, without which Chromium fails to start.
+# apk upgrade installs a new chromium over that wrapper, so wrap the handler again whenever it is not a script.
 RUN set -ex; \
+    apk upgrade --no-cache -a; \
     apk add --no-cache bash jq; \
     chmod 777 -R /tmp; \
-    if [ -f /usr/lib/chromium/chrome_crashpad_handler ] && [ ! -f /usr/lib/chromium/chrome_crashpad_handler.real ]; then \
-        mv /usr/lib/chromium/chrome_crashpad_handler /usr/lib/chromium/chrome_crashpad_handler.real; \
+    if [ -f /usr/lib/chromium/chrome_crashpad_handler ] && [ "$(head -c 2 /usr/lib/chromium/chrome_crashpad_handler)" != '#!' ]; then \
+        mv -f /usr/lib/chromium/chrome_crashpad_handler /usr/lib/chromium/chrome_crashpad_handler.real; \
         printf '%s\n' '#!/bin/sh' "exec /usr/lib/chromium/chrome_crashpad_handler.real --no-periodic-tasks --database=\"\${CRASHPAD_DATABASE:-/tmp/chrome-crashpad}\" \"\$@\"" >/usr/lib/chromium/chrome_crashpad_handler; \
         chmod +x /usr/lib/chromium/chrome_crashpad_handler; \
     fi
