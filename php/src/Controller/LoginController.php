@@ -24,6 +24,10 @@ readonly class LoginController {
             return $response->withStatus(403);
         }
         $password = $request->getParsedBody()['password'] ?? '';
+        // Reject empty passwords
+        if ($password === '') {
+            return $response->withStatus(403);
+        }
         if($this->authManager->CheckCredentials($password)) {
             $this->authManager->SetAuthState(true);
             return $response->withHeader('Location', '.')->withStatus(201);
