@@ -40,7 +40,7 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
         -Via
     }
 
-    # Clear client-supplied X-Real-IP and other headers so it can't be spoofed towards the backends
+    # Clear client-supplied X-Real-IP and other headers so they can't be spoofed towards the backends
     request_header -X-Real-IP
     request_header -Forwarded
     request_header -X-Forwarded-Prefix
