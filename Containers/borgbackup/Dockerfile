@@ -7,6 +7,7 @@ RUN set -ex; \
     apk add --no-cache \
         util-linux-misc \
         bash \
+        coreutils \
         borgbackup \
         rsync \
         fuse \
