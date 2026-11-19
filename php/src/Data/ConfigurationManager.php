@@ -291,6 +291,16 @@ class ConfigurationManager
         set { $this->set('talk_port', $value); }
     }
 
+    public string $talkMaxStreamBitrate {
+        get => $this->getEnvironmentalVariableOrConfig('TALK_MAX_STREAM_BITRATE', 'talk_max_stream_bitrate', '1048576');
+        set { $this->set('talk_max_stream_bitrate', $value); }
+    }
+
+    public string $talkMaxScreenBitrate {
+        get => $this->getEnvironmentalVariableOrConfig('TALK_MAX_SCREEN_BITRATE', 'talk_max_screen_bitrate', '2097152');
+        set { $this->set('talk_max_screen_bitrate', $value); }
+    }
+
     public string $nextcloudMount {
         get => $this->getEnvironmentalVariableOrConfig('NEXTCLOUD_MOUNT', 'nextcloud_mount', '');
         set { $this->set('nextcloud_mount', $value); }
@@ -1287,6 +1297,8 @@ class ConfigurationManager
             'APACHE_PORT' => $this->apachePort,
             'APACHE_IP_BINDING' => $this->apacheIpBinding,
             'TALK_PORT' => $this->talkPort,
+            'TALK_MAX_STREAM_BITRATE' => $this->talkMaxStreamBitrate,
+            'TALK_MAX_SCREEN_BITRATE' => $this->talkMaxScreenBitrate,
             'TURN_DOMAIN' => $this->turnDomain,
             'NEXTCLOUD_MOUNT' => $this->nextcloudMount,
             'BACKUP_RESTORE_PASSWORD' => $this->borgRestorePassword,
