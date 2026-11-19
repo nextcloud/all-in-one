@@ -122,6 +122,7 @@ if ( [ -f "$DATADIR/PG_VERSION" ] && [ "$PG_MAJOR" != "$(cat "$DATADIR/PG_VERSIO
         DIFFERENT_DB_OWNER=1
         # Do not print the password via xtrace
         { set +x; } 2>/dev/null
+        echo "Initializing a new db"
         psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
             -v "pg_new_password=$POSTGRES_PASSWORD" <<-EOSQL
             CREATE USER "$DB_OWNER" WITH PASSWORD :'pg_new_password' CREATEDB;
