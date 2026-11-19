@@ -39,7 +39,7 @@ spec:
         {{- end }}
       initContainers:
         - name: init-subpath
-          image: ghcr.io/nextcloud-releases/aio-alpine:20261109_101109
+          image: ghcr.io/nextcloud-releases/aio-alpine:20261119_100951
           command:
             - mkdir
             - "-p"
@@ -64,7 +64,7 @@ spec:
               value: "{{ .Values.NEXTCLOUD_UPLOAD_LIMIT }}"
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-clamav:20261109_101109
+          image: ghcr.io/nextcloud-releases/aio-clamav:20261119_100951
           readinessProbe:
             exec:
               command:
