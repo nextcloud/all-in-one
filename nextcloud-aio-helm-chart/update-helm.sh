@@ -56,8 +56,8 @@ yq -i 'del(.services.[].read_only)' latest.yml
 yq -i 'del(.services.[].tmpfs)' latest.yml
 # Remove cap_drop in order to add it later again easier
 yq -i 'del(.services.[].cap_drop)' latest.yml
-# Remove SYS_NICE for imaginary as it is not supported with RPSS
-yq -i 'del(.services."nextcloud-aio-imaginary".cap_add)' latest.yml
+# Capabilities are handled via the securityContext below. Only collabora keeps its cap_add from containers.json
+yq -i 'del(.services.[] | select(key != "nextcloud-aio-collabora") | .cap_add)' latest.yml
 # cap SYS_ADMIN is called CAP_SYS_ADMIN in k8s
 sed -i "s|- SYS_ADMIN$|- CAP_SYS_ADMIN|" latest.yml
 

@@ -28,6 +28,8 @@ readonly class Container {
         /** @var string[] */
         public array                         $capAdd,
         /** @var string[] */
+        public array                         $capDrop,
+        /** @var string[] */
         public array                         $sysctls,
         public int                           $shmSize,
         public bool                          $apparmorUnconfined,

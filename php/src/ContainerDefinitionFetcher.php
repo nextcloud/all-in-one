@@ -308,6 +308,11 @@ readonly class ContainerDefinitionFetcher {
                 $capAdd = $entry['cap_add'];
             }
 
+            $capDrop = [];
+            if (isset($entry['cap_drop'])) {
+                $capDrop = $entry['cap_drop'];
+            }
+
             $sysctls = [];
             if (isset($entry['sysctls'])) {
                 $sysctls = $entry['sysctls'];
@@ -375,6 +380,7 @@ readonly class ContainerDefinitionFetcher {
                 $devices,
                 $enableNvidiaGpu,
                 $capAdd,
+                $capDrop,
                 $sysctls,
                 $shmSize,
                 $apparmorUnconfined,
