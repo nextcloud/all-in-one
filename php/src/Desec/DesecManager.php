@@ -534,7 +534,20 @@ class DesecManager {
     }
 
     /**
-     * Updates the deSEC dynamic-DNS record with the current public IP.
+     * Updates the deSEC dynamic-DNS records with the current public IPs, but only when
+     * they changed since the last successful update.
+     *
+     * deSEC's terms of use ask clients to only send update requests when there is
+     * something to update (https://github.com/nextcloud/all-in-one/discussions/8997).
+     * We therefore look up the current public addresses via deSEC's cheap check-IP
+     * services and compare them to the addresses we last sent, which we keep locally:
+     * AIO's token is the only client changing these records, so no API read is needed.
+     *
+     * Both address families are sent explicitly. A family whose address is unchanged or
+     * could not be determined (e.g. the container has no IPv6 connectivity even though
+     * the host has) is sent as 'preserve', so deSEC keeps that record instead of deleting
+     * it. When both families would be preserved, no request is sent at all.
+     *
      * Does nothing when the configured domain is not a deSEC-managed dedyn.io domain.
      */
     public function updateIpIfDesecDomain(): void {
@@ -543,22 +556,81 @@ class DesecManager {
         }
 
         $domain = $this->configurationManager->domain;
-        $token  = $this->configurationManager->desecToken;
+
+        $currentIpv4 = $this->getPublicIp($this->configurationManager->desecCheckIpv4Url, 'v4');
+        $currentIpv6 = $this->getPublicIp($this->configurationManager->desecCheckIpv6Url, 'v6');
+
+        if ($currentIpv4 === null && $currentIpv6 === null) {
+            error_log('Could not determine the public IP address, skipping the deSEC DNS update for ' . $domain);
+            return;
+        }
+
+        $lastUpdate = $this->configurationManager->desecLastIpUpdate;
+        if (($lastUpdate['hostname'] ?? '') !== $domain) {
+            // Never sent anything for this domain yet.
+            $lastUpdate = ['hostname' => $domain];
+        }
+
+        $myIpv4 = $currentIpv4 !== null && $currentIpv4 !== ($lastUpdate['ipv4'] ?? null) ? $currentIpv4 : 'preserve';
+        $myIpv6 = $currentIpv6 !== null && $currentIpv6 !== ($lastUpdate['ipv6'] ?? null) ? $currentIpv6 : 'preserve';
+
+        if ($myIpv4 === 'preserve' && $myIpv6 === 'preserve') {
+            return;
+        }
 
         try {
             $res    = $this->guzzleClient->get($this->configurationManager->desecUpdateUrl, [
-                'query'   => ['hostname' => $domain],
-                'headers' => ['Authorization' => 'Token ' . $token],
+                'query'   => ['hostname' => $domain, 'myipv4' => $myIpv4, 'myipv6' => $myIpv6],
+                'headers' => ['Authorization' => 'Token ' . $this->configurationManager->desecToken],
             ]);
             $status = trim($res->getBody()->getContents());
-            // 'nochg' is not logged since this runs every 10 minutes and would spam the logs
-            if (str_starts_with($status, 'good')) {
-                error_log('deSEC IP update for ' . $domain . ': ' . $status);
-            } elseif (!str_starts_with($status, 'nochg')) {
-                error_log('deSEC IP update for ' . $domain . ' returned unexpected response: ' . $status);
-            }
         } catch (\Exception $e) {
             error_log('Could not update deSEC DNS record for ' . $domain . ': ' . $e->getMessage());
+            return;
         }
+
+        if ($res->getStatusCode() !== 200 || (!str_starts_with($status, 'good') && !str_starts_with($status, 'nochg'))) {
+            // Not remembered, so the update is retried on the next run.
+            error_log('deSEC IP update for ' . $domain . ' returned unexpected response (HTTP ' . $res->getStatusCode() . '): ' . $status);
+            return;
+        }
+
+        error_log('deSEC IP update for ' . $domain . ' (IPv4: ' . $myIpv4 . ', IPv6: ' . $myIpv6 . '): ' . $status);
+
+        if ($myIpv4 !== 'preserve') {
+            $lastUpdate['ipv4'] = $myIpv4;
+        }
+        if ($myIpv6 !== 'preserve') {
+            $lastUpdate['ipv6'] = $myIpv6;
+        }
+        $this->configurationManager->desecLastIpUpdate = $lastUpdate;
+    }
+
+    /**
+     * Asks a deSEC check-IP service for this host's public address of the given family.
+     *
+     * @param 'v4'|'v6' $family
+     * @return string|null the address, or null when it could not be determined
+     */
+    private function getPublicIp(string $url, string $family): ?string {
+        try {
+            $res = $this->guzzleClient->get($url, [
+                'force_ip_resolve' => $family,
+                'timeout'          => 5,
+                'connect_timeout'  => 5,
+            ]);
+        } catch (\Exception) {
+            // Common for IPv6 when the container has no IPv6 connectivity; not worth logging.
+            return null;
+        }
+
+        if ($res->getStatusCode() !== 200) {
+            return null;
+        }
+
+        $ip   = trim($res->getBody()->getContents());
+        $flag = $family === 'v4' ? FILTER_FLAG_IPV4 : FILTER_FLAG_IPV6;
+
+        return filter_var($ip, FILTER_VALIDATE_IP, $flag) === false ? null : $ip;
     }
 }

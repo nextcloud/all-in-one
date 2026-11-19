@@ -238,6 +238,34 @@ class ConfigurationManager
         get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_UPDATE_URL', 'desec_update_url', 'https://update.dedyn.io/');
     }
 
+    /**
+     * URLs of deSEC's check-IP services, which answer with the caller's public IPv4/IPv6
+     * address as plain text. Overridable for automated tests only — see desecApiBase.
+     */
+    public string $desecCheckIpv4Url {
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_CHECKIPV4_URL', 'desec_checkipv4_url', 'https://checkipv4.dedyn.io/');
+    }
+
+    public string $desecCheckIpv6Url {
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_CHECKIPV6_URL', 'desec_checkipv6_url', 'https://checkipv6.dedyn.io/');
+    }
+
+    /**
+     * The addresses last successfully sent to the deSEC dyndns endpoint, keyed by the
+     * hostname they were sent for. AIO's token is the only client changing the A/AAAA
+     * records, so this local state tells us whether an update is needed without
+     * querying deSEC (see https://github.com/nextcloud/all-in-one/discussions/8997).
+     *
+     * @var array{hostname?: string, ipv4?: string, ipv6?: string}
+     */
+    public array $desecLastIpUpdate {
+        get {
+            $value = $this->get('desec_last_ip_update', []);
+            return is_array($value) ? $value : [];
+        }
+        set { $this->set('desec_last_ip_update', $value); }
+    }
+
     public string $desecToken {
         get {
             $secrets = $this->get('secrets', []);

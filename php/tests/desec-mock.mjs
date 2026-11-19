@@ -19,6 +19,8 @@
 //   GET  /api/v1/domains/{name}/             -> 200 (owned by this account) | 404 (not owned)
 //   POST /api/v1/domains/{name}/rrsets/      -> 201 (wildcard CNAME)
 //   GET  /update                             -> 200 "good" (dyndns update endpoint)
+//   GET  /checkipv4                          -> 200 "203.0.113.10" (check-IP service)
+//   GET  /checkipv6                          -> 200 "2001:db8::10" (check-IP service)
 //   POST /__control/verify                   -> test hook: mark accounts email-verified (creates domains requested at signup)
 //   POST /__control/reset                    -> test hook: wipe in-memory state
 //   POST /__control/seed-domain              -> test hook: pre-assign a domain to an account
@@ -116,6 +118,14 @@ const server = createServer(async (req, res) => {
   // --- dyndns update endpoint (DesecManager::updateIpIfDesecDomain) ---
   if (method === 'GET' && path === '/update') {
     return send(res, 200, 'good')
+  }
+
+  // --- check-IP services (DesecManager::getPublicIp), documentation-range addresses ---
+  if (method === 'GET' && path === '/checkipv4') {
+    return send(res, 200, '203.0.113.10')
+  }
+  if (method === 'GET' && path === '/checkipv6') {
+    return send(res, 200, '2001:db8::10')
   }
 
   // --- Account registration: deSEC always answers 202 and emails a link; ---
