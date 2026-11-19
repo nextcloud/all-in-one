@@ -343,6 +343,7 @@ https://your-domain-that-points-to-this-server.tld:8443
 - [Backup](#backup)
     - [What is getting backed up by AIO's backup solution?](#what-is-getting-backed-up-by-aios-backup-solution)
     - [How to adjust borgs retention policy?](#how-to-adjust-borgs-retention-policy)
+    - [How to back up to an append-only borg repository?](#how-to-back-up-to-an-append-only-borg-repository)
     - [How to migrate from AIO to AIO?](#how-to-migrate-from-aio-to-aio)
     - [Are remote borg backups supported?](#are-remote-borg-backups-supported)
     - [Failure of the backup container in LXC containers](#failure-of-the-backup-container-in-lxc-containers)
@@ -1054,6 +1055,9 @@ Backed up will get all important data of your Nextcloud AIO instance required to
 
 ### How to adjust borgs retention policy?
 The built-in borg-based backup solution has by default a retention policy of `--keep-within=7d --keep-weekly=4 --keep-monthly=6`. See https://borgbackup.readthedocs.io/en/stable/usage/prune.html for what these values mean. You can adjust the retention policy by providing `--env BORG_RETENTION_POLICY="--keep-within=7d --keep-weekly=4 --keep-monthly=6"` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used) and customize the value to your fitting. ⚠️ Please make sure that this value is valid, otherwise backup pruning will bug out! Also, don't include the `-a` or `--glob-archives` option, since AIO already provides it and you can't override it. See https://github.com/nextcloud/all-in-one/pull/7616
+
+### How to back up to an append-only borg repository?
+If the borg repository is append-only (see https://borgbackup.readthedocs.io/en/stable/usage/notes.html#append-only-mode-forbid-compaction), `borg prune` and `borg compact` fail. You can skip both by providing `--env BORG_APPEND_ONLY=true` to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`! If it was started already, you will need to stop the mastercontainer, remove it (no data will be lost) and recreate it using the docker run command that you initially used). The retention policy is not applied while it is active, so you need to prune and compact the repository yourself on the borg server, for example with a separate SSH key that is not restricted to append-only.
 
 ### How to migrate from AIO to AIO?
 If you have the borg backup feature enabled, you can copy it over to the new host and restore from the backup. This guide assumes the new installation data dir will be on `/mnt/datadir`, you can adjust the steps if it's elsewhere.
