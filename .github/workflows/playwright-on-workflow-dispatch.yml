@@ -36,16 +36,22 @@ jobs:
         run: ./php/tests/run.sh ./php/tests/tests/restore-instance.spec.js
 
       - name: Run Playwright tests for desec registration
+        # deSEC registration is currently not available, so the deSEC flow is hidden in the interface
+        if: false
         env:
           TEST_CODE_FROM_IMAGE: yes
         run: ./php/tests/run.sh ./php/tests/tests/desec-register.spec.js
 
       - name: Run Playwright tests for desec with existing account
+        # deSEC registration is currently not available, so the deSEC flow is hidden in the interface
+        if: false
         env:
           TEST_CODE_FROM_IMAGE: yes
         run: ./php/tests/run.sh ./php/tests/tests/desec-existing.spec.js
 
       - name: Run Playwright tests for desec with existing slug
+        # deSEC registration is currently not available, so the deSEC flow is hidden in the interface
+        if: false
         env:
           TEST_CODE_FROM_IMAGE: yes
         run: ./php/tests/run.sh ./php/tests/tests/desec-existing-slug.spec.js

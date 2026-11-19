@@ -12,9 +12,10 @@ name: deSEC API version watch
 # heredoc below to re-green this job.
 
 on:
-  schedule:
-    # Weekly, Mondays 05:17 UTC (off the hour to avoid scheduler congestion).
-    - cron: '17 5 * * 1'
+  # deSEC registration is currently not available, so the scheduled run is disabled
+  # schedule:
+  #   # Weekly, Mondays 05:17 UTC (off the hour to avoid scheduler congestion).
+  #   - cron: '17 5 * * 1'
   workflow_dispatch:
 
 jobs:

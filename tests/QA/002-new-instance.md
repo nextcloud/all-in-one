@@ -9,6 +9,7 @@ For the below to work, it is important that you have a domain that you point ont
     - [ ] Entering `10.0.0.1` should report that ip-addresses are not supported
     - [ ] Entering `nextcloud.com` should report that the domain does not point to this server
     - [ ] Entering the domain that does point to your server e.g. `yourdomain.com` should finally redirect you to the next screen (if you did not configure your domain yet or did not open port 443, it should report that to you)
+<!-- deSEC registration is currently not available
 - [ ] Below the domain input box there should be a collapsed `<details>` element labelled **"Don't have a domain? Get a free one from deSEC"**
     - [ ] Expanding it should show a short explanation and a **Register free domain via deSEC** button
     - [ ] Clicking the button should open a modal window with the registration form (email address and an optional subdomain slug) without reloading the page
@@ -19,6 +20,7 @@ For the below to work, it is important that you have a domain that you point ont
     - [ ] Once the domain is fully registered the modal should close on its own and the whole page should reload with the new `*.dedyn.io` domain set as the Nextcloud domain
     - [ ] After successful registration, the `caddy` and `dnsmasq` community containers should be listed as enabled in the Community Containers section
     - [ ] After successful registration, there should be a **deSEC account credentials** section in the AIO interface that shows the registered email and allows revealing the password
+-->
 - [ ] Now you should see a button `Start containers` and an explanation which points out that clicking on the button will start the containers and that this can take a long time.
 - [ ] Below that you should see a section `Optional addons` which shows a checkbox list with addons that can be enabled or disabled.
     - [ ] Collabora, Imaginary, Talk and Whiteboard should be enabled, the rest disabled
