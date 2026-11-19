@@ -239,18 +239,22 @@ if [ "$BORG_MODE" = backup ]; then
     read -ra BORG_PRUNE_OPTS <<< "$BORG_RETENTION_POLICY"
     echo "BORG_PRUNE_OPTS are ${BORG_PRUNE_OPTS[*]}"
 
-    # Prune archives
-    echo "Pruning the archives..."
-    if ! borg "$BORG_LOG_LEVEL_FLAG" prune --stats --glob-archives '*_*-nextcloud-aio' "${BORG_PRUNE_OPTS[@]}"; then
-        echo "Failed to prune archives!"
-        exit 1
-    fi
+    if [ "$BORG_APPEND_ONLY" = yes ]; then
+        echo "Skipping prune and compact because the repository is append-only."
+    else
+        # Prune archives
+        echo "Pruning the archives..."
+        if ! borg "$BORG_LOG_LEVEL_FLAG" prune --stats --glob-archives '*_*-nextcloud-aio' "${BORG_PRUNE_OPTS[@]}"; then
+            echo "Failed to prune archives!"
+            exit 1
+        fi
 
-    # Compact archives
-    echo "Compacting the archives..."
-    if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
-        echo "Failed to compact archives!"
-        exit 1
+        # Compact archives
+        echo "Compacting the archives..."
+        if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
+            echo "Failed to compact archives!"
+            exit 1
+        fi
     fi
 
     # Back up additional directories of the host
@@ -271,15 +275,19 @@ if [ "$BORG_MODE" = backup ]; then
                 echo "Backup of additional docker-volumes failed!"
                 exit 1
             fi
-            echo "Pruning additional volumes..."
-            if ! borg "$BORG_LOG_LEVEL_FLAG" prune --stats --glob-archives '*_*-additional-docker-volumes' "${BORG_PRUNE_OPTS[@]}"; then
-                echo "Failed to prune additional docker-volumes archives!"
-                exit 1
-            fi
-            echo "Compacting additional volumes..."
-            if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
-                echo "Failed to compact additional docker-volume archives!"
-                exit 1
+            if [ "$BORG_APPEND_ONLY" = yes ]; then
+                echo "Skipping prune and compact of additional volumes because the repository is append-only."
+            else
+                echo "Pruning additional volumes..."
+                if ! borg "$BORG_LOG_LEVEL_FLAG" prune --stats --glob-archives '*_*-additional-docker-volumes' "${BORG_PRUNE_OPTS[@]}"; then
+                    echo "Failed to prune additional docker-volumes archives!"
+                    exit 1
+                fi
+                echo "Compacting additional volumes..."
+                if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
+                    echo "Failed to compact additional docker-volume archives!"
+                    exit 1
+                fi
             fi
         fi
         if [ -d "/host_mounts/" ]; then
@@ -301,15 +309,19 @@ if [ "$BORG_MODE" = backup ]; then
                 echo "Backup of additional host-mounts failed!"
                 exit 1
             fi
-            echo "Pruning additional host mounts..."
-            if ! borg "$BORG_LOG_LEVEL_FLAG" prune --stats --glob-archives '*_*-additional-host-mounts' "${BORG_PRUNE_OPTS[@]}"; then
-                echo "Failed to prune additional host-mount archives!"
-                exit 1
-            fi
-            echo "Compacting additional host mounts..."
-            if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
-                echo "Failed to compact additional host-mount archives!"
-                exit 1
+            if [ "$BORG_APPEND_ONLY" = yes ]; then
+                echo "Skipping prune and compact of additional host mounts because the repository is append-only."
+            else
+                echo "Pruning additional host mounts..."
+                if ! borg "$BORG_LOG_LEVEL_FLAG" prune --stats --glob-archives '*_*-additional-host-mounts' "${BORG_PRUNE_OPTS[@]}"; then
+                    echo "Failed to prune additional host-mount archives!"
+                    exit 1
+                fi
+                echo "Compacting additional host mounts..."
+                if ! borg "$BORG_LOG_LEVEL_FLAG" compact; then
+                    echo "Failed to compact additional host-mount archives!"
+                    exit 1
+                fi
             fi
         fi
     fi
