@@ -5,6 +5,7 @@ COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh
 
 ENV RECORDING_VERSION=v0.3.1
+ENV RECORDING_COMMIT=bf25bf70cc3d5b7bec763d5ab3d235517135d1b8
 ENV ALLOW_ALL=false \
     HPB_PROTOCOL=https \
     NC_PROTOCOL=https \
@@ -41,6 +42,7 @@ RUN set -ex; \
     useradd -d /tmp --system recording -u 122; \
     \
     git clone --recursive https://github.com/nextcloud/nextcloud-talk-recording --depth=1 --single-branch --branch "$RECORDING_VERSION" /src; \
+    [ "$(git -C /src rev-parse HEAD)" = "$RECORDING_COMMIT" ]; \
     python3 -m pip install --no-cache-dir /src; \
     rm -rf /src; \
     touch /etc/recording.conf; \
