@@ -574,7 +574,8 @@ readonly class DockerActionManager {
         }
     }
 
-    public function PullImage(Container $container, bool $pullImage = true, ?\Closure $addToStreamingResponseBody = null): void {
+    /** Returns a diagnostic when a requested pull fails but startup can continue. */
+    public function PullImage(Container $container, bool $pullImage = true, ?\Closure $addToStreamingResponseBody = null): ?string {
         // Skip database image pull if the last shutdown was not clean
         if ($container->identifier === 'nextcloud-aio-database') {
             if ($this->GetDatabasecontainerExitCode() > 0) {
@@ -587,14 +588,15 @@ readonly class DockerActionManager {
         // and try to mitigate issues that are arising due to that
         if ($pullImage) {
             if (!$this->isRegistryReachable($container)) {
-                $pullImage = false;
-                error_log('Not pulling the ' . $container->containerName . ' image for the ' . $container->identifier . ' container because the registry does not seem to be reachable.');
+                $message = 'Could not pull image ' . $this->BuildImageName($container) . ': registry does not seem to be reachable.';
+                error_log($message);
+                return $message;
             }
         }
 
         // Do not continue if $pullImage is false
         if (!$pullImage) {
-            return;
+            return null;
         }
 
         $imageName = $this->BuildImageName($container);
@@ -647,22 +649,31 @@ readonly class DockerActionManager {
                 }
                 break;
             } catch (\Exception $e) {
-                $errorDetails = $e instanceof RequestException
-                    ? $e->getResponse()?->getBody()->getContents()
-                    : $e->getMessage();
+                $errorDetails = $e->getMessage();
+                $response = $e instanceof RequestException ? $e->getResponse() : null;
+                if ($response !== null) {
+                    $body = trim((string)$response->getBody());
+                    $dockerError = json_decode($body, true);
+                    if (is_string($dockerError['message'] ?? null)) {
+                        $errorDetails = $dockerError['message'];
+                    } elseif ($body !== '') {
+                        $errorDetails = $body;
+                    }
+                }
                 $message = "Could not pull image " . $imageName . " (attempt $attempt/$maxRetries): " . $errorDetails;
                 if ($attempt === $maxRetries) {
                     if ($imageIsThere === false) {
                         throw new \Exception($message);
-                    } else {
-                        error_log($message);
                     }
+                    error_log($message);
+                    return $message;
                 } else {
                     error_log($message . ' Retrying...');
                     sleep(1);
                 }
             }
         }
+        return null;
     }
 
     private function isContainerUpdateAvailable(string $id): string {

@@ -78,9 +78,13 @@ if [ "$AUTOMATIC_UPDATES" = 1 ]; then
 fi
 
 # Update container images to reduce downtime later on
+image_pull_failures=""
 if [ "$AUTOMATIC_UPDATES" = 1 ]; then
     echo "Updating container images..."
-    su-exec www-data php /var/www/docker-aio/php/src/Cron/PullContainerImages.php
+    if ! pull_output=$(su-exec www-data php /var/www/docker-aio/php/src/Cron/PullContainerImages.php); then
+        image_pull_failures=${pull_output:-"See the mastercontainer log for details."}
+        printf 'Container image pull failed!\n%s\n' "$image_pull_failures" >&2
+    fi
 fi
 
 # Stop containers if required
@@ -123,10 +127,9 @@ fi
 # Delete the lock file
 rm -f "/mnt/docker-aio-config/data/daily_backup_running"
 
-# Send backup notification
-# shellcheck disable=SC2235
-if [ "$DAILY_BACKUP" = 1 ] && ([ "$AUTOMATIC_UPDATES" = 1 ] || [ "$START_CONTAINERS" = 1 ]); then
-    # Wait for the nextcloud container to start and send if the backup was successful
+# Wait for Nextcloud before sending backup or image pull notifications
+if { [ "$AUTOMATIC_UPDATES" = 1 ] || [ "$START_CONTAINERS" = 1 ]; } &&
+    { [ "$DAILY_BACKUP" = 1 ] || [ -n "$image_pull_failures" ]; }; then
     if ! docker ps --format "{{.Names}}" | grep -q "^nextcloud-aio-nextcloud$"; then
         echo "Something seems to be wrong: Nextcloud should be started at this step."
     else
@@ -139,8 +142,15 @@ if [ "$DAILY_BACKUP" = 1 ] && ([ "$AUTOMATIC_UPDATES" = 1 ] || [ "$START_CONTAIN
             fi
         done
     fi
-    echo "Sending backup notification..."
-    su-exec www-data php /var/www/docker-aio/php/src/Cron/BackupNotification.php
+    if [ "$DAILY_BACKUP" = 1 ]; then
+        echo "Sending backup notification..."
+        su-exec www-data php /var/www/docker-aio/php/src/Cron/BackupNotification.php
+    fi
+    if [ -n "$image_pull_failures" ]; then
+        docker exec nextcloud-aio-nextcloud bash /notify.sh 'Container image pull failed!' "$image_pull_failures"
+        echo "Daily backup script has finished with image pull failures." >&2
+        exit 1
+    fi
 fi
 
 echo "Daily backup script has finished"
