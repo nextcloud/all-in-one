@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { DESEC_MOCK_URL, logInToContainersPage } from './helpers.js';
+import { DESEC_MOCK_URL, execInMastercontainer, logInToContainersPage, readMastercontainerConfig } from './helpers.js';
 
 // Exercises the deSEC "I already have a verified account" login path: supplying a valid
 // password logs straight in and registers the domain in one step (no email-verification
@@ -47,4 +47,28 @@ test('deSEC existing-account login flow', async ({ page: setupPage }) => {
   await expect(
     containersPage.getByText("Don't have a domain? Get a free one from deSEC"),
   ).toHaveCount(0);
+
+  // The login token is exchanged for a long-lived API token here as well; only that one
+  // remains on the account and it is what AIO stores.
+  const tokensOf = async (address) => {
+    const state = await (await fetch(`${DESEC_MOCK_URL}/__control/state`)).json();
+    return state.tokens.filter((t) => t.email === address);
+  };
+  const tokens = await tokensOf(email);
+  expect(tokens.map((t) => t.kind)).toEqual(['api']);
+  expect(readMastercontainerConfig().secrets.DESEC_TOKEN).toBe(tokens[0].token);
+  expect(tokens[0].policies).toEqual([
+    { domain: null, subname: null, type: null, perm_write: false },
+    { domain: `${slug}.dedyn.io`, subname: '', type: 'A', perm_write: true },
+    { domain: `${slug}.dedyn.io`, subname: '', type: 'AAAA', perm_write: true },
+  ]);
+
+  // The user's own password is never stored, so if deSEC rejects the token it cannot be
+  // renewed automatically: the IP update logs how to fix it and leaves the config untouched.
+  await fetch(`${DESEC_MOCK_URL}/__control/invalidate-tokens`, { method: 'POST' });
+  const run = await execInMastercontainer(['php', '/var/www/docker-aio/php/src/Cron/UpdateDesecIp.php']);
+  expect(run.exitCode, run.output).toBe(0);
+  expect(run.output).toContain('cannot be renewed automatically');
+  expect((await tokensOf(email)).filter((t) => t.valid)).toHaveLength(0);
+  expect(readMastercontainerConfig().secrets.DESEC_TOKEN).toBe(tokens[0].token);
 });

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { DESEC_MOCK_URL, logInToContainersPage } from './helpers.js';
+import { DESEC_MOCK_URL, execInMastercontainer, logInToContainersPage, readMastercontainerConfig } from './helpers.js';
 
 // Drives the real AIO interface through the full deSEC "register a free domain" flow
 // against the local mock (php/tests/desec-mock.mjs). The mastercontainer's
@@ -62,4 +62,36 @@ test('deSEC register -> verify -> domain flow', async ({ page: setupPage }) => {
   await expect(
     containersPage.getByText("Don't have a domain? Get a free one from deSEC"),
   ).toHaveCount(0);
+
+  // 5) AIO must not keep the login token (it expires after 7 days and may manage tokens and
+  //    domains). It exchanges it for a long-lived API token and logs the login token out, so
+  //    the account is left with exactly one token: the API token that is stored in AIO's config.
+  const tokensOf = async (address) => {
+    const state = await (await fetch(`${DESEC_MOCK_URL}/__control/state`)).json();
+    return state.tokens.filter((t) => t.email === address);
+  };
+  const tokens = await tokensOf(email);
+  expect(tokens.map((t) => t.kind)).toEqual(['api']);
+  expect(readMastercontainerConfig().secrets.DESEC_TOKEN).toBe(tokens[0].token);
+  // ... and that token is scoped to what the dynDNS update needs: the apex A and AAAA
+  //     records of the registered domain, nothing else (deny-by-default policy first).
+  const dynDnsPolicies = [
+    { domain: null, subname: null, type: null, perm_write: false },
+    { domain: `${slug}.dedyn.io`, subname: '', type: 'A', perm_write: true },
+    { domain: `${slug}.dedyn.io`, subname: '', type: 'AAAA', perm_write: true },
+  ];
+  expect(tokens[0].policies).toEqual(dynDnsPolicies);
+
+  // 6) Token renewal: an instance set up before the exchange existed still holds a login token
+  //    that eventually expires. Simulate deSEC rejecting the stored token, then run the periodic
+  //    IP update: for an AIO-created account the stored password allows logging in again, and
+  //    the rejected token is replaced with a fresh API token.
+  await fetch(`${DESEC_MOCK_URL}/__control/invalidate-tokens`, { method: 'POST' });
+  const run = await execInMastercontainer(['php', '/var/www/docker-aio/php/src/Cron/UpdateDesecIp.php']);
+  expect(run.exitCode, run.output).toBe(0);
+  const renewed = (await tokensOf(email)).filter((t) => t.valid);
+  expect(renewed.map((t) => t.kind)).toEqual(['api']);
+  expect(renewed[0].token).not.toBe(tokens[0].token);
+  expect(renewed[0].policies).toEqual(dynDnsPolicies);
+  expect(readMastercontainerConfig().secrets.DESEC_TOKEN).toBe(renewed[0].token);
 });

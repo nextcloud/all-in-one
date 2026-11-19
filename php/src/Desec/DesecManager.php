@@ -11,6 +11,7 @@ class DesecManager {
     private const int MAX_SLUG_ATTEMPTS = 5;
     private const int SLUG_BYTES = 5; // bin2hex → 10-char slug
     private const string SLUG_PATTERN = '/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/';
+    private const string API_TOKEN_NAME = 'Nextcloud AIO';
 
     private Client $guzzleClient;
 
@@ -64,6 +65,10 @@ class DesecManager {
             $this->createWildcardCname($token, $domain);
         }
 
+        // Everything that needs the broad permissions of the login token is done. Replace it
+        // with a long-lived, minimally privileged API token before storing the final state.
+        $this->configurationManager->desecToken = $this->exchangeLoginToken($token, $domain);
+
         $this->configurationManager->aioCommunityContainers = ["caddy", "dnsmasq"];
         $this->configurationManager->setDomain($domain, true);
         // Registration is complete; the stored slug is no longer needed.
@@ -74,8 +79,12 @@ class DesecManager {
     }
 
     /**
-     * Resolves the deSEC API token to use for domain registration, creating or
+     * Resolves the deSEC token to use for domain registration, creating or
      * logging into an account as needed.
+     *
+     * The token returned here is a *login* token: it carries the permissions domain
+     * registration needs but expires after 7 days, so register() exchanges it for a
+     * long-lived API token (see exchangeLoginToken()) once the domain is set up.
      *
      * deSEC's POST /auth/ endpoint does NOT return a token: it replies 202 and
      * emails a verification link. A token can only be obtained from /auth/login/
@@ -267,6 +276,141 @@ class DesecManager {
     }
 
     /**
+     * Exchanges a login token for a long-lived API token scoped to the dynamic-DNS update.
+     *
+     * Login tokens expire 7 days after creation (or after 1 hour unused) and carry broad
+     * permissions (token management, domain creation and deletion). The DNS record update
+     * that runs every 10 minutes only needs to write the apex A and AAAA records of the
+     * registered domain, so create a dedicated token with deSEC's defaults — no expiry, no
+     * account-level permissions — restrict it to exactly those two records, and invalidate
+     * the login token afterwards.
+     *
+     * @throws \Exception on network failure or an unexpected HTTP response
+     */
+    private function exchangeLoginToken(string $loginToken, string $domain): string {
+        ['id' => $tokenId, 'token' => $apiToken] = $this->createApiToken($loginToken);
+        try {
+            $this->restrictTokenToDynDns($loginToken, $tokenId, $domain);
+        } catch (\Exception $e) {
+            // Do not leave a half-restricted (or unrestricted) token behind.
+            $this->deleteToken($loginToken, $tokenId);
+            throw $e;
+        }
+        $this->logout($loginToken);
+        return $apiToken;
+    }
+
+    /**
+     * Creates a new API token with deSEC's default settings (never expires, may not manage
+     * tokens or create/delete domains). Returns its id and its secret, which deSEC reveals
+     * only once.
+     *
+     * @return array{id: string, token: string}
+     * @throws \Exception on network failure or an unexpected HTTP response
+     */
+    private function createApiToken(string $loginToken): array {
+        try {
+            $res = $this->guzzleClient->post($this->configurationManager->desecApiBase . '/auth/tokens/', [
+                'headers' => ['Authorization' => 'Token ' . $loginToken],
+                'json'    => ['name' => self::API_TOKEN_NAME],
+            ]);
+        } catch (TransferException $e) {
+            throw new \Exception('Could not reach the deSEC API: ' . $e->getMessage());
+        }
+
+        $code = $res->getStatusCode();
+        $body = $res->getBody()->getContents();
+
+        if ($code !== 201) {
+            throw new \Exception('Unexpected response from deSEC while creating an API token (HTTP ' . $code . '): ' . $body);
+        }
+
+        $data  = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $id    = is_array($data) && isset($data['id']) && is_string($data['id']) ? $data['id'] : '';
+        $token = is_array($data) && isset($data['token']) && is_string($data['token']) ? $data['token'] : '';
+        // The id becomes part of request paths; deSEC token ids are UUIDs, so accept only that shape.
+        if ($token === '' || !preg_match('/^[0-9a-f-]{1,64}$/', $id)) {
+            throw new \Exception('Could not extract the API token from the deSEC response. Please try again.');
+        }
+
+        /** @psalm-taint-escape ssrf */
+        $safeId = $id;
+
+        return ['id' => $safeId, 'token' => $token];
+    }
+
+    /**
+     * Scopes a token to writing the apex A and AAAA records of one domain, which is all the
+     * dynamic-DNS update needs. deSEC requires a default policy (all fields null) before any
+     * specific one; making it deny-by-default turns the token into a restricted one that
+     * cannot touch other records, other domains, or the account.
+     *
+     * @throws \Exception on network failure or an unexpected HTTP response
+     */
+    private function restrictTokenToDynDns(string $loginToken, string $tokenId, string $domain): void {
+        $policies = [
+            ['domain' => null,    'subname' => null, 'type' => null,   'perm_write' => false],
+            ['domain' => $domain, 'subname' => '',   'type' => 'A',    'perm_write' => true],
+            ['domain' => $domain, 'subname' => '',   'type' => 'AAAA', 'perm_write' => true],
+        ];
+
+        foreach ($policies as $policy) {
+            try {
+                $res = $this->guzzleClient->post($this->configurationManager->desecApiBase . '/auth/tokens/' . $tokenId . '/policies/rrsets/', [
+                    'headers' => ['Authorization' => 'Token ' . $loginToken],
+                    'json'    => $policy,
+                ]);
+            } catch (TransferException $e) {
+                throw new \Exception('Could not reach the deSEC API: ' . $e->getMessage());
+            }
+
+            $code = $res->getStatusCode();
+            if ($code !== 201) {
+                throw new \Exception('Unexpected response from deSEC while restricting the API token (HTTP ' . $code . '): ' . $res->getBody()->getContents());
+            }
+        }
+    }
+
+    /**
+     * Deletes a token. Best effort: used to clean up after a failed token setup.
+     */
+    private function deleteToken(string $loginToken, string $tokenId): void {
+        try {
+            $res = $this->guzzleClient->delete($this->configurationManager->desecApiBase . '/auth/tokens/' . $tokenId . '/', [
+                'headers' => ['Authorization' => 'Token ' . $loginToken],
+            ]);
+        } catch (TransferException $e) {
+            error_log('Could not delete the deSEC token ' . $tokenId . ': ' . $e->getMessage());
+            return;
+        }
+
+        $code = $res->getStatusCode();
+        if ($code !== 204) {
+            error_log('Unexpected response from deSEC while deleting token ' . $tokenId . ' (HTTP ' . $code . '): ' . $res->getBody()->getContents());
+        }
+    }
+
+    /**
+     * Invalidates a login token. Best effort: a login token expires on its own within 7 days,
+     * so failing to revoke it early is logged but does not abort the registration.
+     */
+    private function logout(string $loginToken): void {
+        try {
+            $res = $this->guzzleClient->post($this->configurationManager->desecApiBase . '/auth/logout/', [
+                'headers' => ['Authorization' => 'Token ' . $loginToken],
+            ]);
+        } catch (TransferException $e) {
+            error_log('Could not log out of deSEC: ' . $e->getMessage());
+            return;
+        }
+
+        $code = $res->getStatusCode();
+        if ($code < 200 || $code >= 300) {
+            error_log('Unexpected response from deSEC during logout (HTTP ' . $code . '): ' . $res->getBody()->getContents());
+        }
+    }
+
+    /**
      * Registers a dedyn.io domain for the authenticated account.
      * When $slug is empty a random 10-character slug is tried up to MAX_SLUG_ATTEMPTS times.
      *
@@ -402,6 +546,9 @@ class DesecManager {
     /**
      * Updates the deSEC dynamic-DNS record with the current public IP.
      * Does nothing when the configured domain is not a deSEC-managed dedyn.io domain.
+     *
+     * When deSEC rejects the stored token, it is renewed once if possible (see renewToken())
+     * and the update is retried.
      */
     public function updateIpIfDesecDomain(): void {
         if (!$this->configurationManager->isDesecDomain()) {
@@ -409,14 +556,19 @@ class DesecManager {
         }
 
         $domain = $this->configurationManager->domain;
-        $token  = $this->configurationManager->desecToken;
 
         try {
-            $res    = $this->guzzleClient->get($this->configurationManager->desecUpdateUrl, [
-                'query'   => ['hostname' => $domain],
-                'headers' => ['Authorization' => 'Token ' . $token],
-            ]);
-            $status = trim($res->getBody()->getContents());
+            $status = $this->sendIpUpdate($domain, $this->configurationManager->desecToken);
+            if ($status === null) {
+                if (!$this->renewToken($domain)) {
+                    return;
+                }
+                $status = $this->sendIpUpdate($domain, $this->configurationManager->desecToken);
+                if ($status === null) {
+                    error_log('deSEC IP update for ' . $domain . ' was rejected again after renewing the token.');
+                    return;
+                }
+            }
             // 'nochg' is not logged since this runs every 10 minutes and would spam the logs
             if (str_starts_with($status, 'good')) {
                 error_log('deSEC IP update for ' . $domain . ': ' . $status);
@@ -426,5 +578,64 @@ class DesecManager {
         } catch (\Exception $e) {
             error_log('Could not update deSEC DNS record for ' . $domain . ': ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Sends one dynamic-DNS update request. Split out of updateIpIfDesecDomain() because the
+     * update is retried after a token renewal and must report a rejected token distinctly.
+     *
+     * @return string|null the dyndns2 status line ('good ...', 'nochg ...'), or null when deSEC
+     *         rejected the token (HTTP 401/403)
+     * @throws \Exception on network failure
+     */
+    private function sendIpUpdate(string $domain, string $token): ?string {
+        $res = $this->guzzleClient->get($this->configurationManager->desecUpdateUrl, [
+            'query'   => ['hostname' => $domain],
+            'headers' => ['Authorization' => 'Token ' . $token],
+        ]);
+
+        $code = $res->getStatusCode();
+        if ($code === 401 || $code === 403) {
+            return null;
+        }
+
+        return trim($res->getBody()->getContents());
+    }
+
+    /**
+     * Replaces a stored token that deSEC rejected.
+     *
+     * Instances set up before AIO exchanged login tokens for API tokens still hold a login
+     * token, which expires 7 days after it was issued; from then on every DNS update fails.
+     * For an AIO-created account the generated password is stored, so log in again and
+     * exchange the fresh login token for a long-lived API token. For an existing account
+     * the user's password was never stored, so all we can do is explain how to fix it.
+     *
+     * @return bool whether a new token was stored
+     */
+    private function renewToken(string $domain): bool {
+        $email    = $this->configurationManager->desecEmail;
+        $password = $this->configurationManager->desecPassword;
+
+        if ($email === '' || $password === '') {
+            error_log(
+                'deSEC rejected the stored token for ' . $domain . ' and it cannot be renewed automatically '
+                . 'because the deSEC password is not stored (the domain was set up with an existing deSEC account). '
+                . 'Create a new token at https://desec.io and store it as DESEC_TOKEN in the "secrets" section of '
+                . '/mnt/docker-aio-config/data/configuration.json.'
+            );
+            return false;
+        }
+
+        try {
+            $token = $this->exchangeLoginToken($this->loginAccount($email, $password), $domain);
+        } catch (\Exception $e) {
+            error_log('deSEC rejected the stored token for ' . $domain . ' and renewing it failed: ' . $e->getMessage());
+            return false;
+        }
+
+        $this->configurationManager->desecToken = $token;
+        error_log('deSEC rejected the stored token for ' . $domain . '; replaced it with a new API token.');
+        return true;
     }
 }
