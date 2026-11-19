@@ -2,7 +2,9 @@
 This container starts [Glances](https://nicolargo.github.io/glances/), a web-based system monitoring dashboard, and auto-configures it for you.
 
 > [!CAUTION]
-> This container mounts the docker-socket from the host-system and thus has unlimited root access to it!
+> This container mounts the docker-socket from the host-system and thus has unlimited root access to it! Mounting the socket read-only does not limit this, as the full Docker API stays reachable.
+>
+> The image used is the third-party image `nicolargo/glances` with the moving `latest-full` tag, which is not built or reviewed by Nextcloud. Every update of that image gets root access to your host without any further review. Only add this container if you fully trust the upstream Glances project and its release process.
 
 > [!WARNING]
 > Port 61208 is published on all network interfaces of the host and has no authentication. Anyone who can reach this port (e.g. the whole LAN, or the whole internet on a server without a firewall) can see all monitoring data of your host and its containers. Make sure to block this port in your firewall if the server is reachable from untrusted networks.
