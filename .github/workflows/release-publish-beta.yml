@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+name: Release - publish beta
+
+on:
+  workflow_dispatch:
+    inputs:
+      nextcloud_version:
+        description: Nextcloud version that new instances can install directly (e.g. 35)
+        required: true
+
+permissions:
+  contents: read
+
+concurrency: release
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-26.04
+    permissions:
+      actions: read
+      contents: write
+      discussions: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NEXTCLOUD_VERSION: ${{ inputs.nextcloud_version }}
+        run: ./.github/scripts/release-publish-beta.sh "$NEXTCLOUD_VERSION"
