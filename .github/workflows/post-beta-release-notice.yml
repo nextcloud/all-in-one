@@ -1,0 +1,27 @@
+name: Post beta release notice
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only print which issues and pull requests would get the comment'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  post-notice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Post notice
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: ./.github/scripts/post-beta-release-notice.sh
