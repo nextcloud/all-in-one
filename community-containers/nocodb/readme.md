@@ -18,6 +18,11 @@ This container bundles [NocoDb](https://github.com/nocodb/nocodb), an online no-
 
 This is an alternative of **Airtable**.
 
+> [!WARNING]
+> - Sign-up is open by default, so everyone who can reach NocoDB can create an account. Create your own account immediately after the first start and afterwards enable invite-only sign-up in NocoDB's settings.
+> - Port 10028 is published on all network interfaces of the host unless you restrict it via [`APACHE_IP_BINDING`](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#3-limit-the-access-to-the-apache-container) (with the [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container, it is not published at all).
+> - The image uses the `latest` tag of a project that is no longer maintained, so it will not receive security fixes.
+
 ### Notes
 - You need to configure a reverse proxy in order to run this container since nocodb needs a dedicated (sub)domain! For that, you might have a look at https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy.
 - Currently, only `tables.$NC_DOMAIN` is supported as subdomain! So if Nextcloud is using `your-domain.com`, nocodb will use `tables.your-domain.com`.

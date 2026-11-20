@@ -2,6 +2,11 @@
 
 This container bundles [AzuraCast](https://www.azuracast.com/), an open-source web radio management suite, and integrates it with Nextcloud AIO.
 
+> [!WARNING]
+> - Until the admin account is created via `/setup/register`, everyone who can reach AzuraCast can create it. Create it immediately after the first start.
+> - Port 10443 is published on all network interfaces of the host unless you restrict it via [`APACHE_IP_BINDING`](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#3-limit-the-access-to-the-apache-container) (with the [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container, it is not published at all). The SFTP port 2022 and the streaming ports 8000–8046 are always published on all network interfaces.
+> - If `NEXTCLOUD_MOUNT` is configured, it is mounted with write access.
+
 ### Notes
 
 - To access AzuraCast from outside your local network, use the [Caddy community container](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy), which will automatically configure `radio.$NC_DOMAIN` to reverse-proxy the AzuraCast interface. Make sure to point `radio.your-nc-domain.com` to your server using an A or CNAME record before starting.
@@ -10,7 +15,7 @@ This container bundles [AzuraCast](https://www.azuracast.com/), an open-source w
 - **SFTP access** is available on port 2022.
 - AzuraCast's data (stations, database, backups) is automatically included in AIO's BorgBackup solution.
 - **Updater:** The standard AzuraCast `updater` container is omitted — updates are managed through AIO's standard container update mechanism (pulling the new `ghcr.io/azuracast/azuracast:stable` image).
-- AzuraCast uses port **10080** (HTTP) and **10443** (HTTPS), following the [ports recommended by AzuraCast](https://www.azuracast.com/docs/administration/multi-site-installation/#edit-azuracast-web-serving-ports) for reverse proxy deployments. Both ports are exposed directly on the host. The recommended way to access the web interface is via `https://radio.your-nc-domain.com` through the Caddy community container. Direct HTTPS access is also available at `https://yourserver:10443` (self-signed certificate — browser warning expected).
+- AzuraCast uses port **10080** (HTTP) and **10443** (HTTPS), following the [ports recommended by AzuraCast](https://www.azuracast.com/docs/administration/multi-site-installation/#edit-azuracast-web-serving-ports) for reverse proxy deployments. Only port 10443 is published on the host, port 10080 is only used internally by the Caddy community container. The recommended way to access the web interface is via `https://radio.your-nc-domain.com` through the Caddy community container. Direct HTTPS access is also available at `https://yourserver:10443` (self-signed certificate — browser warning expected).
 - Custom domains can be configured using [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy)
 
 ### Recommended settings after first login

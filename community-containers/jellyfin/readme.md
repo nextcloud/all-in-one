@@ -1,6 +1,11 @@
 ## Jellyfin
 This container bundles [Jellyfin](https://jellyfin.org/) and auto-configures it for you.
 
+> [!WARNING]
+> - This container uses the host network, so port 8096 and all other Jellyfin ports listen on all network interfaces of the host. `APACHE_IP_BINDING` has no effect on it.
+> - Until the initial setup is completed, everyone who can reach port 8096 (also directly via the IP address) can create the Jellyfin admin account. Complete the setup immediately after the first start.
+> - The Nextcloud data directory is mounted read-only, so the Jellyfin admin can add the files of all Nextcloud users as libraries. `NEXTCLOUD_MOUNT` is mounted with write access.
+
 ### Notes
 - This container is incompatible with the [Plex](https://github.com/nextcloud/all-in-one/tree/main/community-containers/plex) community container. So make sure that you do not enable both at the same time!
 - After adding and starting the container, you can directly visit http://ip.address.of.server:8096/ and access your new Jellyfin instance!
