@@ -40,11 +40,28 @@ http://{$APACHE_HOST}.nextcloud-aio:23973, # For Collabora callback and WOPI req
         -Via
     }
 
-    # Clear client-supplied X-Real-IP and other headers so they can't be spoofed towards the backends
+    # Clear client-supplied IP/scheme/host/path headers so they can't be spoofed towards the backends.
+    # Don't add X-Forwarded-For/-Proto/-Host: reverse_proxy handles them and only keeps them from trusted_proxies.
+    # Client IP
     request_header -X-Real-IP
+    request_header -X-Client-IP
+    request_header -X-Cluster-Client-IP
+    request_header -True-Client-IP
+    request_header -CF-Connecting-IP
     request_header -Forwarded
-    request_header -X-Forwarded-Prefix
+    # Scheme and port
+    request_header -X-Forwarded-Port
+    request_header -X-Forwarded-Ssl
+    request_header -X-Forwarded-Scheme
+    request_header -X-Url-Scheme
+    request_header -Front-End-Https
     request_header -CloudFront-Forwarded-Proto
+    # Host and path
+    request_header -X-Forwarded-Server
+    request_header -X-Original-Host
+    request_header -X-Forwarded-Prefix
+    request_header -X-Original-URL
+    request_header -X-Rewrite-URL
 
     encode
 
