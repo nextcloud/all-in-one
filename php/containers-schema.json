@@ -229,6 +229,9 @@
 					"init": {
 						"type": "boolean"
 					},
+					"no_new_privileges": {
+						"type": "boolean"
+					},
 					"tmpfs": {
 						"type": "array",
 						"items": {
