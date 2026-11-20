@@ -1,5 +1,8 @@
 # syntax=docker/dockerfile:latest
-FROM python:3.15-alpine3.24
+
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+FROM python:3.15.0-alpine3.24
 
 COPY --chmod=775 start.sh /start.sh
 COPY --chmod=775 healthcheck.sh /healthcheck.sh

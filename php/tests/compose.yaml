@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # This setup expects that you run the services via profiles!
 # Usage: docker compose --profile local-code up
 #    or: docker compose --profile code-from-image up

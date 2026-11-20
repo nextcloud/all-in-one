@@ -1,8 +1,12 @@
 # syntax=docker/dockerfile:latest
-FROM nats:2.15-scratch AS nats
-FROM eturnal/eturnal:1.12-alpine AS eturnal
-FROM strukturag/nextcloud-spreed-signaling:2.2 AS signaling
-FROM alpine:3.24 AS janus
+
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+FROM nats:2.15.2-scratch AS nats
+FROM eturnal/eturnal:1.12.3-alpine AS eturnal
+FROM strukturag/nextcloud-spreed-signaling:2.1.1 AS signaling
+FROM alpine:3.24.3 AS janus
 
 RUN set -ex; \
     apk upgrade --no-cache -a; \

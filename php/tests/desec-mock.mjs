@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 // Minimal mock of the deSEC API, implementing exactly the endpoints that
 // php/src/Desec/DesecManager.php calls, with the same HTTP status-code semantics
 // as the real service (see https://desec.readthedocs.io). It exists so the deSEC

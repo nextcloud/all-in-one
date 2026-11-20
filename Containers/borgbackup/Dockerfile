@@ -1,5 +1,9 @@
 # syntax=docker/dockerfile:latest
-FROM alpine:3.24
+
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+FROM alpine:3.24.3
 
 RUN set -ex; \
     \

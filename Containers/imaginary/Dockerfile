@@ -1,5 +1,9 @@
 # syntax=docker/dockerfile:latest
-FROM golang:1.27-alpine3.24 AS go
+
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+FROM golang:1.27.3-alpine3.24 AS go
 
 ENV IMAGINARY_HASH=6a274b488759a896aff02f52afee6e50b5e3a3ee
 

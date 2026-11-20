@@ -1,5 +1,8 @@
 # syntax=docker/dockerfile:latest
-FROM php:8.4-fpm-alpine3.24
+
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+FROM php:8.4.27-fpm-alpine3.24
 
 ARG IGBINARY_VERSION=3.2.16
 ARG IGBINARY_SHA256=941f1cf2ccbecdc1c221dbfae9213439d334be5d490a2f3da2be31e8a00b0cdb
