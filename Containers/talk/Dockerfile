@@ -18,7 +18,7 @@ RUN set -ex; \
     mv /etc/janus/janus.plugin.videoroom.jcfg.sample /etc/janus/janus.plugin.videoroom.jcfg; \
     sed -i '/^room-1234:/,/^}/d' /etc/janus/janus.plugin.videoroom.jcfg
 
-FROM alpine:3.24.3
+FROM alpine:3.24
 ENV ETURNAL_ETC_DIR="/conf"
 ENV SKIP_CERT_VERIFY=false \
     AIO_LOG_LEVEL=warn

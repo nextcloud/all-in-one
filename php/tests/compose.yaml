@@ -63,21 +63,21 @@ services:
       - local-code
 
   desec-mock:
-    image: docker.io/library/node:26@sha256:438603bbb5cda404b9416f0b5c8026f61501ab911760d861ec28c36b5d675725
+    image: docker.io/library/node:26@sha256:e18c3ccdf7d71619990b0e85639f506e2028a95410999cab24cc373cbd10e0ac
     volumes:
       - ..:/app/php
     working_dir: /app
     command: node php/tests/desec-mock.mjs 8090 2>&1
           
   npm-installer:
-    image: docker.io/library/node:26@sha256:438603bbb5cda404b9416f0b5c8026f61501ab911760d861ec28c36b5d675725
+    image: docker.io/library/node:26@sha256:e18c3ccdf7d71619990b0e85639f506e2028a95410999cab24cc373cbd10e0ac
     volumes:
       - ..:/app
     working_dir: /app/tests
     command: npm ci --omit=optional
 
   test-runner-base:
-    image: mcr.microsoft.com/playwright:v1.56.1@sha256:f1e7e01021efd65dd1a2c56064be399f3e4de00fd021ac561325f2bfbb2b837a
+    image: mcr.microsoft.com/playwright:v1.65.0@sha256:6e3fb709361521eb27161606e6da6d2674e5e89fa16516cb37d6fdd91372273d
     volumes:
       - ..:/app
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config:ro

@@ -505,11 +505,6 @@ EOF
             touch "$NEXTCLOUD_DATA_DIR/update.failed"
             echo "Upgrading Nextcloud from $installed_version to $image_version..."
             php /var/www/html/occ config:system:delete integrity.check.disabled
-
-            # Temporarily disable lazy objects so that the update does not fail
-            # See https://github.com/nextcloud/server/issues/66167
-            php /var/www/html/occ config:system:set enable_lazy_objects --value=false --type=bool
-
             if ! php /var/www/html/occ upgrade || ! php /var/www/html/occ -V; then
                 echo "Upgrade failed. Please restore from backup."
                 bash /notify.sh "Nextcloud update to $image_version failed!" "Please restore from backup."
@@ -521,10 +516,6 @@ EOF
 
             rm "$NEXTCLOUD_DATA_DIR/update.failed"
             bash /notify.sh "Nextcloud update to $image_version successful!" "You may inspect the Nextcloud container logs for more information."
-
-            # Remove disabling of lazy objects again
-            # See https://github.com/nextcloud/server/issues/66167
-            php /var/www/html/occ config:system:delete enable_lazy_objects
 
             php /var/www/html/occ app:update --all
 
@@ -746,16 +737,16 @@ if [ -n "$ADDITIONAL_TRUSTED_PROXY" ]; then
     php /var/www/html/occ config:system:set trusted_proxies 2 --value="$ADDITIONAL_TRUSTED_PROXY"
 fi
 
-# Get ipv4-address of Nextcloud
-if [ -z "$NEXTCLOUD_HOST" ]; then
-    export NEXTCLOUD_HOST="nextcloud-aio-nextcloud"
+# Trust the IPv4 subnet of the interface that holds the default route
+read -r _ _ _ _ DEFAULT_INTERFACE _ < <(ip -o -4 route show default)
+if [ -n "$DEFAULT_INTERFACE" ]; then
+    IPv4_CIDR="$(ip -o -4 addr show dev "$DEFAULT_INTERFACE" | awk '{print $4; exit}')"
 fi
-IPv4_ADDRESS="$(dig "$NEXTCLOUD_HOST" A +short +search | head -1)" 
-# Bring it in CIDR notation 
-# shellcheck disable=SC2001
-IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')" 
-if [ -n "$IPv4_ADDRESS" ]; then
-    php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_ADDRESS"
+if [ -n "$IPv4_CIDR" ]; then
+    php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_CIDR"
+else
+    echo "Warning: could not determine the IPv4 subnet of this container. Removing trusted_proxies 10."
+    php /var/www/html/occ config:system:delete trusted_proxies 10
 fi
 
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
@@ -772,7 +763,7 @@ if [ "$COLLABORA_ENABLED" = 'yes' ]; then
     if [ "$AIO_LOG_LEVEL" != 'debug' ]; then
         set +x
     fi
-    # Remove richdcoumentscode if it should be incorrectly installed
+    # Remove richdocumentscode should it be incorrectly installed
     if [ -d "/var/www/html/custom_apps/richdocumentscode" ]; then
         php /var/www/html/occ app:remove richdocumentscode
     fi

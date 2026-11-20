@@ -3,18 +3,19 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Docker CLI is a requirement
-FROM docker:29.9.3-cli AS docker
+FROM docker:29.10-cli AS docker
 
 # Caddy is a requirement
-FROM caddy:2.11.9-alpine AS caddy
+FROM caddy:2.11-alpine AS caddy
 
 # Composer is needed to install the php dependencies
-FROM composer:2.11.1 AS composer
+FROM composer:2.11 AS composer
 
 # From https://github.com/docker-library/php/blob/master/8.5/alpine3.24/fpm/Dockerfile
-FROM php:8.5.12-fpm-alpine3.24
+FROM php:8.5-fpm-alpine3.24
 
 ARG APCU_VERSION=5.1.28
+ARG APCU_SHA256=0e60ba9d0fa4021c57a70c071f3d8f71de236275d084e560d5959fec4edd8c32
 
 EXPOSE 80
 EXPOSE 8080
@@ -38,6 +39,16 @@ WORKDIR /var/www/docker-aio
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 # hadolint ignore=SC2086,DL3003
 RUN set -ex; \
+# downloads a PHP extension source tarball, verifies its sha256 checksum and extracts it to /usr/src/php/ext/<name>
+# usage: fetch_php_ext <name> <url> <sha256>
+    fetch_php_ext() { \
+        curl -fsSL --retry 5 -o "/tmp/$1.tar.gz" "$2"; \
+        echo "$3  /tmp/$1.tar.gz" | sha256sum -c -; \
+        mkdir -p "/usr/src/php/ext/$1"; \
+        tar -xzf "/tmp/$1.tar.gz" --strip-components=1 -C "/usr/src/php/ext/$1"; \
+        rm "/tmp/$1.tar.gz"; \
+    }; \
+    \
     apk upgrade --no-cache -a; \
     apk add --no-cache shadow; \
     groupmod -g 33 www-data; \
@@ -56,9 +67,7 @@ RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
         autoconf \
         build-base; \
-    mkdir -p /usr/src/php/ext/apcu; \
-    curl -fsSL --retry 5 "https://github.com/krakjoe/apcu/archive/refs/tags/v$APCU_VERSION.tar.gz" \
-        | tar -xz --strip-components=1 -C /usr/src/php/ext/apcu; \
+    fetch_php_ext apcu "https://github.com/krakjoe/apcu/archive/refs/tags/v$APCU_VERSION.tar.gz" "$APCU_SHA256"; \
     docker-php-ext-install apcu; \
     docker-php-source delete; \
     { \

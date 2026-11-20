@@ -25,6 +25,13 @@ jobs:
             | tail -1
         )"
         sed -i "s|^ENV RECORDING_VERSION.*$|ENV RECORDING_VERSION=$recording_version|" ./Containers/talk-recording/Dockerfile
+        # pin the commit the tag points to (the peeled ^{} entry is listed last for annotated tags)
+        recording_commit="$(
+          git ls-remote https://github.com/nextcloud/nextcloud-talk-recording "refs/tags/$recording_version" "refs/tags/$recording_version^{}" \
+            | tail -1 \
+            | cut -f1
+        )"
+        sed -i "s|^ENV RECORDING_COMMIT.*$|ENV RECORDING_COMMIT=$recording_commit|" ./Containers/talk-recording/Dockerfile
         curl -L "https://raw.githubusercontent.com/nextcloud/nextcloud-talk-recording/$recording_version/server.conf.in" -o Containers/talk-recording/recording.conf
         
         # Signaling
@@ -36,22 +43,13 @@ jobs:
             | tail -1
         )"
         curl -L "https://raw.githubusercontent.com/strukturag/nextcloud-spreed-signaling/$signaling_version/server.conf.in" -o Containers/talk/server.conf.in
-        
-        # Janus
-        janus_version="$(
-          git ls-remote https://github.com/meetecho/janus-gateway v1.*.* \
-            | cut -d/ -f3 \
-            | sort -V \
-            | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+$" \
-            | tail -1
-        )"
-        sed -i "s|^ARG JANUS_VERSION=.*$|ARG JANUS_VERSION=$janus_version|" ./Containers/talk/Dockerfile
-        
+
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+      uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: talk-update automated change
+        author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         signoff: true
         title: talk container update
         body: Automated talk container update

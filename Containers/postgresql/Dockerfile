@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # From https://github.com/docker-library/postgres/blob/master/18/alpine3.24/Dockerfile
-FROM postgres:18.6-alpine
+FROM postgres:18.7-alpine
 
 ENV PGDATA=/var/lib/postgresql/data
 

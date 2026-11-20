@@ -39,10 +39,11 @@ jobs:
 
     - name: Create Pull Request
       id: create_pr
-      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+      uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: watchtower-update automated change
+        author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         signoff: true
         title: watchtower container update to ${{ steps.watchtower_update.outputs.watchtower_version }}
         body: |

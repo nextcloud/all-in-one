@@ -50,9 +50,10 @@ jobs:
           fi
       - name: Create Pull Request
         if: steps.target.outputs.branch != ''
-        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         with:
           commit-message: Helm Chart updates
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           signoff: true
           title: Helm Chart updates
           body: Automated Helm Chart updates for the yaml files. It can be merged if it looks good at any time which will automatically trigger a new release of the helm chart.

@@ -2,7 +2,7 @@
 
 # SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
-FROM ghcr.io/euro-office/documentserver:v9.3.7
+FROM ghcr.io/euro-office/documentserver:v9.3.8
 
 # USER root is probably used
 
