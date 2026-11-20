@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           # get-helm-chart-branch.sh needs all branches
           fetch-depth: 0
@@ -47,7 +47,7 @@ jobs:
           fi
       - name: Create Pull Request
         if: steps.target.outputs.branch != ''
-        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
+        uses: peter-evans/create-pull-request@v8.1.3
         with:
           commit-message: Helm Chart updates
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>

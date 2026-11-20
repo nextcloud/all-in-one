@@ -37,19 +37,19 @@ jobs:
 
     steps:
       - name: Check actor permission
-        uses: skjnldsv/check-actor-permission@69e92a3c4711150929bca9fcf34448c5bf5526e7 # v3.0
+        uses: skjnldsv/check-actor-permission@v3.0
         with:
           require: admin
 
       - name: Checkout workflow repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           path: source
           repository: nextcloud/.github
 
       - name: Checkout app
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           path: target
@@ -120,7 +120,7 @@ jobs:
           echo "DRAFT_ONLY=${draft_only}" >> $GITHUB_ENV
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
+        uses: peter-evans/create-pull-request@v8.1.3
         with:
           token: ${{ secrets.COMMAND_BOT_WORKFLOWS }} # zizmor: ignore[secrets-outside-env]
           commit-message: 'ci(actions): Update workflow templates from organization template repository'
