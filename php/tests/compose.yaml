@@ -74,7 +74,7 @@ services:
     command: npm ci --omit=optional
 
   test-runner-base:
-    image: mcr.microsoft.com/playwright:v1.65.0@sha256:6e3fb709361521eb27161606e6da6d2674e5e89fa16516cb37d6fdd91372273d
+    image: mcr.microsoft.com/playwright:v1.65.1@sha256:1507cbfc550a63a6b7396791ca4f00df17beb56342d2447b3f106c306f525579
     volumes:
       - ..:/app
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config:ro
