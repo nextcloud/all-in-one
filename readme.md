@@ -155,6 +155,9 @@ flowchart TB
 
 ## How to use this?
 
+> [!TIP]
+> **New (alpha): Nextcloud AIO Desktop.** [Nextcloud AIO Desktop](https://github.com/nextcloud/aio-desktop#readme) installs and runs AIO with one app, without installing Docker yourself, and starts it automatically: [Linux](https://github.com/nextcloud/aio-desktop/tree/main/linux#readme) (Flatpak/AppImage, x86_64 and arm64), [macOS](https://github.com/nextcloud/aio-desktop/tree/main/macos#readme) (`.pkg`, Apple Silicon) and [Windows 11](https://github.com/nextcloud/aio-desktop/tree/main/windows#readme) (MSI, x64). It is going to become the main and recommended way to install AIO. It is still in alpha, so please give it a try on test systems and report feedback! The manual installation below stays the recommended way for now.
+
 The steps below are written for Linux. For platform-specific guidance see:
 - macOS: [How to run AIO on macOS?](#how-to-run-aio-on-macos)
 - Windows: [How to run AIO on Windows?](#how-to-run-aio-on-windows)
