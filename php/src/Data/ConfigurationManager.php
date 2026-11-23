@@ -624,11 +624,12 @@ class ConfigurationManager
     }
 
     /**
-     * @throws InvalidSettingConfigurationException
+     * Ensures the value is a plain hostname without scheme, path or port.
      *
-     * We can't turn this into a private validation method because of the second argument.
+     * @throws InvalidSettingConfigurationException
+     * @psalm-taint-escape ssrf
      */
-    public function setDomain(string $domain, bool $skipDomainValidation) : void {
+    private function validateDomainFormat(string $domain) : string {
         // Validate that at least one dot is contained
         if (!str_contains($domain, '.')) {
             throw new InvalidSettingConfigurationException("Domain must contain at least one dot!");
@@ -653,6 +654,17 @@ class ConfigurationManager
         if(filter_var($domain, FILTER_VALIDATE_IP)) {
             throw new InvalidSettingConfigurationException("Please enter a domain and not an IP-address!");
         }
+
+        return $domain;
+    }
+
+    /**
+     * @throws InvalidSettingConfigurationException
+     *
+     * We can't turn this into a private validation method because of the second argument.
+     */
+    public function setDomain(string $domain, bool $skipDomainValidation) : void {
+        $domain = $this->validateDomainFormat($domain);
 
         // Skip domain validation if opted in to do so
         if ($this->shouldDomainValidationBeSkipped($skipDomainValidation)) {
@@ -964,7 +976,7 @@ class ConfigurationManager
             throw new InvalidSettingConfigurationException("The daily backup time must not be empty!");
         }
 
-        if (!preg_match("#^[0-1][0-9]:[0-5][0-9]$#", $time) && !preg_match("#^2[0-3]:[0-5][0-9]$#", $time)) {
+        if (!preg_match("#^([0-1][0-9]|2[0-3]):[0-5][0-9]$#", $time)) {
             throw new InvalidSettingConfigurationException("You did not enter a correct time! One correct example is '04:00'!");
         }
 

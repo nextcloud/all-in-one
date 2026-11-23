@@ -101,7 +101,7 @@ readonly class ConfigurationController {
                  */
                 foreach ($request->getParsedBody() as $item) {
                     if (array_key_exists($item , $cc)) {
-                        $enabledCC[] = $item;
+                        $enabledCC[] = $cc[$item]['id'];
                     }
                 }
                 $this->configurationManager->aioCommunityContainers = $enabledCC;
