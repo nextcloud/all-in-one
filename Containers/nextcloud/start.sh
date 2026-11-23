@@ -163,7 +163,8 @@ while [ "$THIS_IS_AIO" = "true" ] && [ -z "$(dig nextcloud-aio-apache A +short +
 done
 
 set -x
-# The caddy community container is the reverse proxy inside the known container setup, so limiting access is possible as well
+# Restrict php-fpm to apache and mastercontainer, except with an external reverse proxy (APACHE_PORT != 443).
+# The caddy community container runs inside AIO and only talks to apache, so the restriction is applied there too.
 if [ "$THIS_IS_AIO" = "true" ] && [ -n "$(dig nextcloud-aio-caddy A +short +search)" ]; then
     COMMUNITY_REVERSE_PROXY_FOUND=1
 fi
