@@ -167,6 +167,7 @@ class DesecManager {
      * Returns an empty string when the caller wants a randomly generated slug.
      *
      * @throws \Exception if the slug is non-empty but does not match the allowed pattern
+     * @psalm-taint-escape ssrf
      */
     private function validateSlug(string $slug): string {
         $slug = trim($slug);
