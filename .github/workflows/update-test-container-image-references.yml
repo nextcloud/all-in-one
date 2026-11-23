@@ -10,7 +10,7 @@ jobs:
     name: Update test container image references
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: actions/checkout@v7.0.1
     - name: Install skopeo
       run: sudo apt-get install -y skopeo
     - name: Update Playwright version
@@ -27,7 +27,7 @@ jobs:
         COMPOSE_FILES: php/tests/compose.yaml
         DOCKERFILE_FILES: php/tests/Containers/composer/Dockerfile
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
+      uses: peter-evans/create-pull-request@v8.1.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: "chore(tests): update test container image references"
