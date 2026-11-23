@@ -19,7 +19,8 @@ jobs:
       run: |
         set -x
         cd ./php
-        composer update --with-all-dependencies
+        # Only update the non-dev requirements (and their dependencies), skipping platform packages like php and ext-*
+        composer update --with-all-dependencies $(jq -r '.require | keys[] | select(contains("/"))' composer.json)
         # Disable dependency updates for now
         # set +e
         # ALL_LINES="$(composer outdated | grep -v "^$\|Direct dependencies\|Everything up to date\|Transitive dependencies")"
