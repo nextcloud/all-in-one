@@ -326,6 +326,11 @@ class ConfigurationManager
         set { $this->set('borg_retention_policy', $value); }
     }
 
+    public bool $borgAppendOnly {
+        get => $this->booleanize($this->getEnvironmentalVariableOrConfig('BORG_APPEND_ONLY', 'borg_append_only', ''));
+        set { $this->set('borg_append_only', $value); }
+    }
+
     public string $fulltextsearchJavaOptions {
         get => $this->getEnvironmentalVariableOrConfig('FULLTEXTSEARCH_JAVA_OPTIONS', 'fulltextsearch_java_options', '-Xms512M -Xmx512M');
         set { $this->set('fulltextsearch_java_options', $value); }
@@ -1331,6 +1336,7 @@ class ConfigurationManager
             'NEXTCLOUD_MEMORY_LIMIT' => $this->nextcloudMemoryLimit,
             'NEXTCLOUD_MAX_TIME' => $this->nextcloudMaxTime,
             'BORG_RETENTION_POLICY' => $this->borgRetentionPolicy,
+            'BORG_APPEND_ONLY' => $this->borgAppendOnly ? 'yes' : '',
             'FULLTEXTSEARCH_JAVA_OPTIONS' => $this->fulltextsearchJavaOptions,
             'NEXTCLOUD_TRUSTED_CACERTS_DIR' => $this->trustedCacertsDir,
             'ADDITIONAL_DIRECTORIES_BACKUP' => $this->getAdditionalBackupDirectoriesString() !== '' ? 'yes' : '',
