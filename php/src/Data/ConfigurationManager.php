@@ -278,6 +278,20 @@ class ConfigurationManager
         set { $this->set('desec_published_ip_families', $value); }
     }
 
+    /**
+     * Consecutive dynDNS updates for the configured domain that deSEC rejected because
+     * the token is invalid or the domain no longer exists, to back off retries.
+     *
+     * @var array{failed_attempts?: int, last_failed_at?: int}
+     */
+    public array $desecIpUpdateBackoff {
+        get {
+            $value = $this->get('desec_ip_update_backoff', []);
+            return is_array($value) ? $value : [];
+        }
+        set { $this->set('desec_ip_update_backoff', $value); }
+    }
+
     public string $desecToken {
         get {
             $secrets = $this->get('secrets', []);
@@ -801,6 +815,7 @@ class ConfigurationManager
         $this->borgRestorePassword = '';
         // Records published for a previous domain say nothing about the new one
         $this->desecPublishedIpFamilies = [];
+        $this->desecIpUpdateBackoff = [];
         $this->commitTransaction();
     }
 
