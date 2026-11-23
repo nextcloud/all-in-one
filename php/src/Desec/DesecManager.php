@@ -81,6 +81,9 @@ class DesecManager {
         }
 
         $this->configurationManager->aioCommunityContainers = ["caddy", "dnsmasq"];
+        // Forget addresses sent earlier: the domain may have been deleted at deSEC and
+        // re-created under the same name, in which case it has no records yet.
+        $this->configurationManager->desecLastIpUpdate = [];
         $this->configurationManager->setDomain($domain, true);
         // Registration is complete; the stored slug is no longer needed.
         $this->configurationManager->desecSlug = '';
@@ -543,10 +546,11 @@ class DesecManager {
      * services and compare them to the addresses we last sent, which we keep locally:
      * AIO's token is the only client changing these records, so no API read is needed.
      *
-     * Both address families are sent explicitly. A family whose address is unchanged or
-     * could not be determined (e.g. the container has no IPv6 connectivity even though
-     * the host has) is sent as 'preserve', so deSEC keeps that record instead of deleting
-     * it. When both families would be preserved, no request is sent at all.
+     * Both address families are sent together in one request, each with its current
+     * address. A family whose address could not be determined is sent empty, which
+     * removes the record, if AIO itself published it earlier (e.g. the host lost IPv6).
+     * Otherwise it is sent as 'preserve', so a record that AIO never published (e.g. a
+     * manually added AAAA record while the container has no IPv6 connectivity) is kept.
      *
      * Does nothing when the configured domain is not a deSEC-managed dedyn.io domain.
      */
@@ -571,10 +575,12 @@ class DesecManager {
             $lastUpdate = ['hostname' => $domain];
         }
 
-        $myIpv4 = $currentIpv4 !== null && $currentIpv4 !== ($lastUpdate['ipv4'] ?? null) ? $currentIpv4 : 'preserve';
-        $myIpv6 = $currentIpv6 !== null && $currentIpv6 !== ($lastUpdate['ipv6'] ?? null) ? $currentIpv6 : 'preserve';
+        $myIpv4 = $currentIpv4 ?? (isset($lastUpdate['ipv4']) ? '' : 'preserve');
+        $myIpv6 = $currentIpv6 ?? (isset($lastUpdate['ipv6']) ? '' : 'preserve');
 
-        if ($myIpv4 === 'preserve' && $myIpv6 === 'preserve') {
+        $ipv4Changed = $myIpv4 !== 'preserve' && $myIpv4 !== ($lastUpdate['ipv4'] ?? '');
+        $ipv6Changed = $myIpv6 !== 'preserve' && $myIpv6 !== ($lastUpdate['ipv6'] ?? '');
+        if (!$ipv4Changed && !$ipv6Changed) {
             return;
         }
 
@@ -595,13 +601,15 @@ class DesecManager {
             return;
         }
 
-        error_log('deSEC IP update for ' . $domain . ' (IPv4: ' . $myIpv4 . ', IPv6: ' . $myIpv6 . '): ' . $status);
+        error_log('deSEC IP update for ' . $domain . ' (IPv4: ' . ($myIpv4 === '' ? 'removed' : $myIpv4)
+            . ', IPv6: ' . ($myIpv6 === '' ? 'removed' : $myIpv6) . '): ' . $status);
 
-        if ($myIpv4 !== 'preserve') {
-            $lastUpdate['ipv4'] = $myIpv4;
-        }
-        if ($myIpv6 !== 'preserve') {
-            $lastUpdate['ipv6'] = $myIpv6;
+        foreach (['ipv4' => $myIpv4, 'ipv6' => $myIpv6] as $family => $sent) {
+            if ($sent === '') {
+                unset($lastUpdate[$family]);
+            } elseif ($sent !== 'preserve') {
+                $lastUpdate[$family] = $sent;
+            }
         }
         $this->configurationManager->desecLastIpUpdate = $lastUpdate;
     }
