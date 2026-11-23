@@ -37,6 +37,7 @@ readonly class Container {
         public bool                          $readOnlyRootFs,
         public array                         $tmpfs,
         public bool                          $init,
+        public bool                          $noNewPrivileges,
         public string                        $imageTag,
         public AioVariables                  $aioVariables,
         public string                        $documentation,
