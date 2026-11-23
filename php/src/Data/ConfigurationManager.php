@@ -117,7 +117,7 @@ class ConfigurationManager
 
     public bool $isTalkRecordingEnabled {
         // Type-cast because old configs could have 1/0 for this key.
-        get => (bool) $this->isTalkEnabled && $this->get('isTalkRecordingEnabled', false);
+        get => $this->isTalkEnabled && (bool) $this->get('isTalkRecordingEnabled', false);
         set { $this->set('isTalkRecordingEnabled', $this->isTalkEnabled && $value); }
     }
 
@@ -136,7 +136,7 @@ class ConfigurationManager
 
     public string $domain {
         get => $this->get('domain', '');
-        set { $this->setDomain($value); }
+        set { $this->setDomain($value, true); }
     }
 
     public string $borgBackupHostLocation {
@@ -372,7 +372,10 @@ class ConfigurationManager
     }
 
     public string $driDeviceGid {
-        get => getenv('NEXTCLOUD_DRI_GID') ?: '';
+        get {
+            $gid = getenv('NEXTCLOUD_DRI_GID');
+            return $gid === false || $gid === '0' ? '' : $gid;
+        }
     }
 
     public bool $enableNvidiaGpu {
