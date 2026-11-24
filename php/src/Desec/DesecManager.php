@@ -568,11 +568,10 @@ class DesecManager {
         }
 
         $publishedFamilies = $this->configurationManager->desecPublishedIpFamilies;
-        $myIps = [];
+        $myIps = ['ipv4' => 'preserve', 'ipv6' => 'preserve'];
         $needsUpdate = false;
         foreach ($currentIps as $family => $currentIp) {
             if ($currentIp === null && !in_array($family, $publishedFamilies, true)) {
-                $myIps[$family] = 'preserve';
                 continue;
             }
             $myIps[$family] = $currentIp ?? '';
@@ -689,6 +688,8 @@ class DesecManager {
             return $ip;
         }
 
-        return inet_ntop($packed) ?: $ip;
+        $normalized = inet_ntop($packed);
+
+        return $normalized === false ? $ip : $normalized;
     }
 }
