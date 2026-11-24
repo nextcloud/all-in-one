@@ -23,6 +23,7 @@
             ],
             "cap_add": [
                 "NET_ADMIN",
+                "NET_RAW",
                 "SYS_MODULE"
             ],
             "sysctls": [
