@@ -4,7 +4,7 @@ This container bundles [AzuraCast](https://www.azuracast.com/), an open-source w
 
 > [!WARNING]
 > - Until the admin account is created via `/setup/register`, everyone who can reach AzuraCast can create it. Create it immediately after the first start.
-> - Port 10443 is published on all network interfaces of the host unless you restrict it via [`APACHE_IP_BINDING`](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#3-limit-the-access-to-the-apache-container) (with the [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container, it is not published at all). The SFTP port 2022 and the streaming ports 8000–8046 are always published on all network interfaces.
+> - Port 10443 is published on all network interfaces of the host unless you restrict it via [`APACHE_IP_BINDING`](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#3-limit-the-access-to-the-apache-container) (with the [caddy](https://github.com/nextcloud/all-in-one/tree/main/community-containers/caddy) community container, it is not published at all). The SFTP port 2022 and the streaming ports 8000–8046 are always published on all network interfaces. Make sure that all ports that should not be public are not reachable from untrusted networks (note that ports published by Docker bypass host firewalls like ufw, so block them e.g. in your router or in a firewall in front of the server).
 > - If `NEXTCLOUD_MOUNT` is configured, it is mounted with write access.
 
 ### Notes
