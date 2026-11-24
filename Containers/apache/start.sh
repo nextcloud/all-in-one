@@ -29,13 +29,6 @@ while ! nc -z "$NEXTCLOUD_HOST" 9000; do
     sleep 5
 done
 
-# Get ipv4-address of Apache
-# shellcheck disable=SC2153
-IPv4_ADDRESS="$(dig "$APACHE_HOST" A +short +search | head -1)"
-# Bring it in CIDR notation
-# shellcheck disable=SC2001
-IPv4_ADDRESS="$(echo "$IPv4_ADDRESS" | sed 's|[0-9]\+$|0/16|')"
-
 if [ -z "$APACHE_PORT" ]; then
     export APACHE_PORT="443"
 fi
@@ -57,13 +50,7 @@ fi
 echo "$CADDYFILE" > /tmp/Caddyfile
 
 # Determine the trusted_proxies in case of reverse proxies
-if [ "$APACHE_PORT" != '443' ]; then
-    # Here the 100.64.0.0/10 range gets added which is the CGNAT range used by Tailscale nodes
-    # See https://github.com/nextcloud/all-in-one/pull/6703 for reference
-    TRUSTED_PROXIES="trusted_proxies static private_ranges 100.64.0.0/10"
-else
-    TRUSTED_PROXIES="trusted_proxies static $IPv4_ADDRESS"
-fi
+TRUSTED_PROXIES="trusted_proxies static $(ip -o addr show scope global | awk '{print $4}' | tr '\n' ' ')$APACHE_TRUSTED_PROXIES\n\t\ttrusted_proxies_strict"
 
 # In case of reverse proxies the APACHE_PORT listener is plain http, so limit it to h1 to avoid
 # caddy warning that HTTP/2 and HTTP/3 were skipped. See the Caddyfile for further details.

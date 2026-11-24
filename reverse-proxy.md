@@ -1137,6 +1137,7 @@ sudo docker run \
 --env APACHE_PORT=11000 \
 --env APACHE_IP_BINDING=0.0.0.0 \
 --env APACHE_ADDITIONAL_NETWORK="" \
+--env APACHE_TRUSTED_PROXIES="" \
 --env SKIP_DOMAIN_VALIDATION=false \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
@@ -1156,6 +1157,7 @@ ghcr.io/nextcloud-releases/all-in-one:latest
 - `--env APACHE_PORT=11000` This is the port that is published on the host that runs Docker and Nextcloud AIO at which the reverse proxy should point at.
 - `--env APACHE_IP_BINDING=0.0.0.0` This can be modified to allow access to the published port on the host only from certain ip-addresses. [See this documentation](#3-limit-the-access-to-the-apache-container)
 - `--env APACHE_ADDITIONAL_NETWORK=""` This can be used to put the sibling apache container that is created by AIO into a specified network - useful if your reverse proxy runs as a container on the same host. [See this documentation](#adapting-the-sample-web-server-configurations-below)
+- `--env APACHE_TRUSTED_PROXIES=""` This needs to be set to the ip-addresses or ip-ranges of your reverse proxy if it connects to the apache container from outside of its docker networks. [See this documentation](#5-optional-configure-aio-for-reverse-proxies-that-connect-to-nextcloud-not-using-localhost-nor-127001)
 - `--env SKIP_DOMAIN_VALIDATION=false` This can be set to `true` if the domain validation does not work and you are sure that you configured everything correctly after you followed [the debug documentation](#7-how-to-debug-things). Also see [this documentation](https://github.com/nextcloud/all-in-one#how-to-skip-the-domain-validation).
 - `--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config` This means that the files that are created by the mastercontainer will be stored in a docker volume that is called `nextcloud_aio_mastercontainer`. This line is not allowed to be changed, since built-in backups would fail later on.
 - `--volume /var/run/docker.sock:/var/run/docker.sock:ro` The docker socket is mounted into the container which is used for spinning up all the other containers and for further features. It needs to be adjusted on Windows/macOS and on docker rootless. See the applicable documentation on this. If adjusting, don't forget to also set `WATCHTOWER_DOCKER_SOCKET_PATH`! If you dislike this, see https://github.com/nextcloud/all-in-one/tree/main/manual-install.
@@ -1186,6 +1188,7 @@ docker run ^
 --env APACHE_PORT=11000 ^
 --env APACHE_IP_BINDING=0.0.0.0 ^
 --env APACHE_ADDITIONAL_NETWORK="" ^
+--env APACHE_TRUSTED_PROXIES="" ^
 --env SKIP_DOMAIN_VALIDATION=false ^
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config ^
 --volume //var/run/docker.sock:/var/run/docker.sock:ro ^
@@ -1215,11 +1218,13 @@ Enter your domain in the AIO interface that you've used in the reverse proxy con
 ### 5. Optional: Configure AIO for reverse proxies that connect to nextcloud not using localhost nor 127.0.0.1
 If your reverse proxy connects to nextcloud not using localhost or 127.0.0.1, you must add said IP as trusted proxy to the installation. See the step below:
 
-Add the IP it uses connect to AIO to the Nextcloud trusted_proxies like this:
+Add the IP it uses to connect to AIO (or its ip-range in CIDR notation, e.g. `100.64.0.0/10` for Tailscale) to the docker run command of the mastercontainer (but before the last line `ghcr.io/nextcloud-releases/all-in-one:latest`). Multiple values are separated by spaces:
 
 ```
-sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:system:set trusted_proxies 2 --value=ip.address.of.proxy
+--env APACHE_TRUSTED_PROXIES="ip.address.of.proxy"
 ```
+
+This is not needed if your reverse proxy connects from inside of a docker network of the apache container, e.g. via `localhost` or 127.0.0.1 on the same host or via `APACHE_ADDITIONAL_NETWORK`. If it runs on the same host but connects via the host's own ip-address, add that ip-address. An entry for the reverse proxy in Nextcloud's `trusted_proxies` is not needed anymore.
 
 #### Collabora WOPI allow list
 If your reverse proxy connects to Nextcloud with an IP address that is different from the one for your domain<sup>*</sup> and you are using the Collabora server then you must also add the IP to the WOPI request allow list via `Administration Settings > Administration > Office > Allow list for WOPI requests`.

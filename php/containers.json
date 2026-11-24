@@ -47,6 +47,7 @@
         "COLLABORA_HOST=nextcloud-aio-collabora",
         "TALK_HOST=nextcloud-aio-talk",
         "APACHE_PORT=%APACHE_PORT%",
+        "APACHE_TRUSTED_PROXIES=%APACHE_TRUSTED_PROXIES%",
         "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "ONLYOFFICE_HOST=nextcloud-aio-onlyoffice",
         "EUROOFFICE_HOST=nextcloud-aio-eurooffice",
@@ -332,6 +333,7 @@
       ],
       "environment": [
         "NEXTCLOUD_HOST=nextcloud-aio-nextcloud",
+        "NEXTCLOUD_URL=http://nextcloud-aio-apache:23973",
         "AIO_LOG_LEVEL=%AIO_LOG_LEVEL%",
         "TZ=%TIMEZONE%"
       ],
@@ -979,6 +981,7 @@
         "NC_INSTANCE_URL=https://%NC_DOMAIN%",
         "HP_FRP_DISABLE_TLS=true",
         "HP_EXAPP_BIND_MOUNTS_ENFORCE_ALL=true",
+        "HP_TRUSTED_PROXY_IPS=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fd00::/8",
         "TZ=%TIMEZONE%"
       ],
       "secrets": [

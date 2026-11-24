@@ -131,6 +131,7 @@ writetimeout = 30
 
 [app]
 debug = false
+trustedproxies = $(ip -o addr show scope global | awk '{print $4}' | tr '\n' ',')
 
 [sessions]
 hashkey = $(openssl rand -hex 16)

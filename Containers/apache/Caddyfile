@@ -50,10 +50,14 @@ http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests
 
     # Collabora
     route /browser/* {
-        reverse_proxy {$COLLABORA_HOST}:9980
+        reverse_proxy {$COLLABORA_HOST}:9980 {
+            header_up X-Forwarded-For {client_ip}
+        }
     }
     route /hosting/* {
-        reverse_proxy {$COLLABORA_HOST}:9980
+        reverse_proxy {$COLLABORA_HOST}:9980 {
+            header_up X-Forwarded-For {client_ip}
+        }
     }
     route /cool/* {
         # Collabora's conversion API has no authentication, so only allow Nextcloud to use it, which connects via the internal port 23973.
@@ -64,19 +68,24 @@ http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests
             expression `"{$THIS_IS_AIO}" == "true"`
         }
         respond @publicCollaboraConversionApi 403
-        reverse_proxy {$COLLABORA_HOST}:9980
+        reverse_proxy {$COLLABORA_HOST}:9980 {
+            header_up X-Forwarded-For {client_ip}
+        }
     }
 
     # Notify Push
     route /push/* {
         uri strip_prefix /push
-        reverse_proxy {$NOTIFY_PUSH_HOST}:7867
+        reverse_proxy {$NOTIFY_PUSH_HOST}:7867 {
+            header_up X-Forwarded-For {client_ip}
+        }
     }
 
     # Onlyoffice
     route /onlyoffice/* {
         uri strip_prefix /onlyoffice
         reverse_proxy {$ONLYOFFICE_HOST}:80 {
+            header_up X-Forwarded-For {client_ip}
             header_up X-Forwarded-Host {http.request.hostport}/onlyoffice
             header_up X-Forwarded-Proto https
         }
@@ -86,6 +95,7 @@ http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests
     route /eurooffice/* {
         uri strip_prefix /eurooffice
         reverse_proxy {$EUROOFFICE_HOST}:80 {
+            header_up X-Forwarded-For {client_ip}
             header_up X-Forwarded-Prefix /eurooffice
             header_up X-Forwarded-Proto https
         }
@@ -94,23 +104,31 @@ http://{$APACHE_HOST}:23973, # For Collabora callback and WOPI requests
     # Talk
     route /standalone-signaling/* {
         uri strip_prefix /standalone-signaling
-        reverse_proxy {$TALK_HOST}:8081
+        reverse_proxy {$TALK_HOST}:8081 {
+            header_up X-Forwarded-For {client_ip}
+        }
     }
 
     # Whiteboard
     route /whiteboard/* {
         uri strip_prefix /whiteboard
-        reverse_proxy {$WHITEBOARD_HOST}:3002
+        reverse_proxy {$WHITEBOARD_HOST}:3002 {
+            header_up X-Forwarded-For {client_ip}
+        }
     }
 
     # HaRP (ExApps)
     route /exapps/* {
-        reverse_proxy {$HARP_HOST}:8780
+        reverse_proxy {$HARP_HOST}:8780 {
+            header_up X-Forwarded-For {client_ip}
+        }
     }
 
     # Nextcloud
     route {
-        reverse_proxy 127.0.0.1:8000
+        reverse_proxy 127.0.0.1:8000 {
+            header_up X-Forwarded-For {client_ip}
+        }
     }
     redir /.well-known/carddav /remote.php/dav/ 301
     redir /.well-known/caldav /remote.php/dav/ 301

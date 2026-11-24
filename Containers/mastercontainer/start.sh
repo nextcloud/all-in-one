@@ -265,6 +265,14 @@ It needs to be a comma-separated list of 'hostname:ip' entries (the ip can also 
 It is set to '$AIO_EXTRA_HOSTS'."
     exit 1
 fi
+if [ -n "$APACHE_TRUSTED_PROXIES" ]; then
+    if ! echo "$APACHE_TRUSTED_PROXIES" | grep -q '^[0-9a-fA-F.:/ ]\+$'; then
+        print_red "You've set APACHE_TRUSTED_PROXIES but not to an allowed value.
+It needs to be a space separated list of ip-addresses or ip-ranges in CIDR notation.
+It is set to '$APACHE_TRUSTED_PROXIES'."
+        exit 1
+    fi
+fi
 if [ -n "$TALK_PORT" ]; then
     if ! check_if_number "$TALK_PORT"; then
         print_red "You provided an Talk port but did not only use numbers.

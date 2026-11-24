@@ -159,6 +159,11 @@ class ConfigurationManager
         set { $this->set('apache_ip_binding', $value); }
     }
 
+    public string $apacheTrustedProxies {
+        get => $this->getEnvironmentalVariableOrConfig('APACHE_TRUSTED_PROXIES', 'apache_trusted_proxies', '');
+        set { $this->set('apache_trusted_proxies', $value); }
+    }
+
     /**
      * @throws InvalidSettingConfigurationException
      */
@@ -1326,6 +1331,7 @@ class ConfigurationManager
             'RESTORE_EXCLUDE_PREVIEWS' => $this->restoreExcludePreviews ? '1' : '',
             'APACHE_PORT' => $this->apachePort,
             'APACHE_IP_BINDING' => $this->apacheIpBinding,
+            'APACHE_TRUSTED_PROXIES' => $this->apacheTrustedProxies,
             'TALK_PORT' => $this->talkPort,
             'TURN_DOMAIN' => $this->turnDomain,
             'NEXTCLOUD_MOUNT' => $this->nextcloudMount,
