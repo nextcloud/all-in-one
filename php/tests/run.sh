@@ -80,7 +80,11 @@ else
     sleep 1
     run_tests tests/desec-register.spec.js
     sleep 1
+    run_tests tests/desec-start-over.spec.js
+    sleep 1
     run_tests tests/desec-existing.spec.js
     sleep 1
     run_tests tests/desec-existing-slug.spec.js
+    sleep 1
+    run_tests tests/desec-existing-other-slug.spec.js
 fi
