@@ -251,19 +251,31 @@ class ConfigurationManager
     }
 
     /**
-     * The addresses last successfully sent to the deSEC dyndns endpoint, keyed by the
-     * hostname they were sent for. AIO's token is the only client changing the A/AAAA
-     * records, so this local state tells us whether an update is needed without
-     * querying deSEC (see https://github.com/nextcloud/all-in-one/discussions/8997).
+     * deSEC's authoritative nameservers, queried directly so that the comparison is not
+     * affected by caching or split-brain DNS of the local resolver. Comma-separated;
+     * overridable for automated tests only — see desecApiBase.
      *
-     * @var array{hostname?: string, ipv4?: string, ipv6?: string}
+     * @return list<string>
      */
-    public array $desecLastIpUpdate {
+    public array $desecNameservers {
+        get => array_values(array_filter(array_map('trim', explode(',',
+            $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_NAMESERVERS', 'desec_nameservers', 'ns1.desec.io,ns2.desec.org')
+        ))));
+    }
+
+    /**
+     * The address families ('ipv4', 'ipv6') whose dynDNS record AIO itself published
+     * for the configured domain. Only these records are removed by AIO when the
+     * corresponding public address can no longer be determined.
+     *
+     * @var list<'ipv4'|'ipv6'>
+     */
+    public array $desecPublishedIpFamilies {
         get {
-            $value = $this->get('desec_last_ip_update', []);
-            return is_array($value) ? $value : [];
+            $value = $this->get('desec_published_ip_families', []);
+            return is_array($value) ? array_values(array_intersect(['ipv4', 'ipv6'], $value)) : [];
         }
-        set { $this->set('desec_last_ip_update', $value); }
+        set { $this->set('desec_published_ip_families', $value); }
     }
 
     public string $desecToken {
@@ -777,6 +789,8 @@ class ConfigurationManager
         $this->set('domain', $domain);
         // Reset the borg restore password when setting the domain
         $this->borgRestorePassword = '';
+        // Records published for a previous domain say nothing about the new one
+        $this->desecPublishedIpFamilies = [];
         $this->commitTransaction();
     }
 

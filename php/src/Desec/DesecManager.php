@@ -81,9 +81,6 @@ class DesecManager {
         }
 
         $this->configurationManager->aioCommunityContainers = ["caddy", "dnsmasq"];
-        // Forget addresses sent earlier: the domain may have been deleted at deSEC and
-        // re-created under the same name, in which case it has no records yet.
-        $this->configurationManager->desecLastIpUpdate = [];
         $this->configurationManager->setDomain($domain, true);
         // Registration is complete; the stored slug is no longer needed.
         $this->configurationManager->desecSlug = '';
@@ -538,13 +535,12 @@ class DesecManager {
 
     /**
      * Updates the deSEC dynamic-DNS records with the current public IPs, but only when
-     * they changed since the last successful update.
+     * they differ from what DNS currently answers for the domain.
      *
      * deSEC's terms of use ask clients to only send update requests when there is
      * something to update (https://github.com/nextcloud/all-in-one/discussions/8997).
-     * We therefore look up the current public addresses via deSEC's cheap check-IP
-     * services and compare them to the addresses we last sent, which we keep locally:
-     * AIO's token is the only client changing these records, so no API read is needed.
+     * We therefore look up the current public addresses via deSEC's check-IP services
+     * and compare them to the domain's A/AAAA records.
      *
      * Both address families are sent together in one request, each with its current
      * address. A family whose address could not be determined is sent empty, which
@@ -561,32 +557,38 @@ class DesecManager {
 
         $domain = $this->configurationManager->domain;
 
-        $currentIpv4 = $this->getPublicIp($this->configurationManager->desecCheckIpv4Url, 'v4');
-        $currentIpv6 = $this->getPublicIp($this->configurationManager->desecCheckIpv6Url, 'v6');
+        $currentIps = [
+            'ipv4' => $this->getPublicIp($this->configurationManager->desecCheckIpv4Url, 'v4'),
+            'ipv6' => $this->getPublicIp($this->configurationManager->desecCheckIpv6Url, 'v6'),
+        ];
 
-        if ($currentIpv4 === null && $currentIpv6 === null) {
+        if ($currentIps['ipv4'] === null && $currentIps['ipv6'] === null) {
             error_log('Could not determine the public IP address, skipping the deSEC DNS update for ' . $domain);
             return;
         }
 
-        $lastUpdate = $this->configurationManager->desecLastIpUpdate;
-        if (($lastUpdate['hostname'] ?? '') !== $domain) {
-            // Never sent anything for this domain yet.
-            $lastUpdate = ['hostname' => $domain];
+        $publishedFamilies = $this->configurationManager->desecPublishedIpFamilies;
+        $myIps = [];
+        $needsUpdate = false;
+        foreach ($currentIps as $family => $currentIp) {
+            if ($currentIp === null && !in_array($family, $publishedFamilies, true)) {
+                $myIps[$family] = 'preserve';
+                continue;
+            }
+            $myIps[$family] = $currentIp ?? '';
+            $expectedRecords = $currentIp === null ? [] : [$currentIp];
+            if ($this->getDnsRecords($domain, $family) !== $expectedRecords) {
+                $needsUpdate = true;
+            }
         }
 
-        $myIpv4 = $currentIpv4 ?? (isset($lastUpdate['ipv4']) ? '' : 'preserve');
-        $myIpv6 = $currentIpv6 ?? (isset($lastUpdate['ipv6']) ? '' : 'preserve');
-
-        $ipv4Changed = $myIpv4 !== 'preserve' && $myIpv4 !== ($lastUpdate['ipv4'] ?? '');
-        $ipv6Changed = $myIpv6 !== 'preserve' && $myIpv6 !== ($lastUpdate['ipv6'] ?? '');
-        if (!$ipv4Changed && !$ipv6Changed) {
+        if (!$needsUpdate) {
             return;
         }
 
         try {
             $res    = $this->guzzleClient->get($this->configurationManager->desecUpdateUrl, [
-                'query'   => ['hostname' => $domain, 'myipv4' => $myIpv4, 'myipv6' => $myIpv6],
+                'query'   => ['hostname' => $domain, 'myipv4' => $myIps['ipv4'], 'myipv6' => $myIps['ipv6']],
                 'headers' => ['Authorization' => 'Token ' . $this->configurationManager->desecToken],
             ]);
             $status = trim($res->getBody()->getContents());
@@ -596,22 +598,57 @@ class DesecManager {
         }
 
         if ($res->getStatusCode() !== 200 || (!str_starts_with($status, 'good') && !str_starts_with($status, 'nochg'))) {
-            // Not remembered, so the update is retried on the next run.
             error_log('deSEC IP update for ' . $domain . ' returned unexpected response (HTTP ' . $res->getStatusCode() . '): ' . $status);
             return;
         }
 
-        error_log('deSEC IP update for ' . $domain . ' (IPv4: ' . ($myIpv4 === '' ? 'removed' : $myIpv4)
-            . ', IPv6: ' . ($myIpv6 === '' ? 'removed' : $myIpv6) . '): ' . $status);
+        error_log('deSEC IP update for ' . $domain . ' (IPv4: ' . ($myIps['ipv4'] === '' ? 'removed' : $myIps['ipv4'])
+            . ', IPv6: ' . ($myIps['ipv6'] === '' ? 'removed' : $myIps['ipv6']) . '): ' . $status);
 
-        foreach (['ipv4' => $myIpv4, 'ipv6' => $myIpv6] as $family => $sent) {
+        foreach ($myIps as $family => $sent) {
             if ($sent === '') {
-                unset($lastUpdate[$family]);
+                $publishedFamilies = array_diff($publishedFamilies, [$family]);
             } elseif ($sent !== 'preserve') {
-                $lastUpdate[$family] = $sent;
+                $publishedFamilies[] = $family;
             }
         }
-        $this->configurationManager->desecLastIpUpdate = $lastUpdate;
+        $this->configurationManager->desecPublishedIpFamilies = array_values(array_unique($publishedFamilies));
+    }
+
+    /**
+     * Queries deSEC's nameservers for the domain's A ('ipv4') or AAAA ('ipv6') records.
+     * drill is run without a shell, so the arguments need no escaping, and is limited
+     * to 5 seconds per nameserver since this also runs during web requests.
+     *
+     * @param 'ipv4'|'ipv6' $family
+     * @return list<string>|null the sorted addresses, or null when no nameserver answered
+     */
+    private function getDnsRecords(string $domain, string $family): ?array {
+        foreach ($this->configurationManager->desecNameservers as $nameserver) {
+            $process = @proc_open(
+                ['timeout', '5', 'drill', '-Q', '@' . $nameserver, $domain, $family === 'ipv4' ? 'A' : 'AAAA'],
+                [1 => ['pipe', 'w'], 2 => ['file', '/dev/null', 'w']],
+                $pipes,
+            );
+            if (!is_resource($process)) {
+                return null;
+            }
+            $output = (string)stream_get_contents($pipes[1]);
+            fclose($pipes[1]);
+            if (proc_close($process) !== 0) {
+                continue;
+            }
+
+            // Besides the addresses, the output contains e.g. the target of a CNAME
+            $flag = $family === 'ipv4' ? FILTER_FLAG_IPV4 : FILTER_FLAG_IPV6;
+            $ips  = array_filter(explode("\n", $output), fn (string $line) => filter_var($line, FILTER_VALIDATE_IP, $flag) !== false);
+            $ips  = array_map($this->normalizeIp(...), array_values($ips));
+            sort($ips);
+
+            return $ips;
+        }
+
+        return null;
     }
 
     /**
@@ -639,6 +676,19 @@ class DesecManager {
         $ip   = trim($res->getBody()->getContents());
         $flag = $family === 'v4' ? FILTER_FLAG_IPV4 : FILTER_FLAG_IPV6;
 
-        return filter_var($ip, FILTER_VALIDATE_IP, $flag) === false ? null : $ip;
+        return filter_var($ip, FILTER_VALIDATE_IP, $flag) === false ? null : $this->normalizeIp($ip);
+    }
+
+    /**
+     * Brings an address into its canonical notation (e.g. compressed IPv6), so that
+     * addresses from the check-IP services and from DNS can be compared as strings.
+     */
+    private function normalizeIp(string $ip): string {
+        $packed = inet_pton($ip);
+        if ($packed === false) {
+            return $ip;
+        }
+
+        return inet_ntop($packed) ?: $ip;
     }
 }

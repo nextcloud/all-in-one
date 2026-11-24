@@ -39,6 +39,7 @@ services:
       TESTING___DESEC_UPDATE_URL: http://desec-mock:8090/update
       TESTING___DESEC_CHECKIPV4_URL: http://desec-mock:8090/checkipv4
       TESTING___DESEC_CHECKIPV6_URL: http://desec-mock:8090/checkipv6
+      TESTING___DESEC_NAMESERVERS: desec-mock
     entrypoint: bash /start.sh
 
   app-code-from-image:

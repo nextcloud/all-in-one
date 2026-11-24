@@ -25,8 +25,11 @@
 //   POST /__control/reset                    -> test hook: wipe in-memory state
 //   POST /__control/seed-domain              -> test hook: pre-assign a domain to an account
 //   GET  /__control/state                    -> test hook: dump accounts and domains
+// DNS (UDP port 53): answers A/AAAA queries with the addresses set via /update, like
+// deSEC's authoritative nameservers (DesecManager::getDnsRecords).
 
 import { createServer } from 'node:http'
+import { createSocket } from 'node:dgram'
 
 const port = Number(process.argv[2] ?? process.env.DESEC_MOCK_PORT ?? 8090)
 
@@ -35,6 +38,7 @@ const state = {
   accounts: new Map(), // email -> { password, pendingDomain } (pendingDomain: requested at signup, created on verify)
   domains: new Map(),  // fully-qualified domain name -> owner email (mirrors deSEC: a name is globally unique)
   verified: false,     // simulates whether the (most recent) account's email was verified
+  records: new Map(),  // hostname -> { ipv4, ipv6 } as set via the dyndns update endpoint
 }
 
 // Per-account domain limit. The real deSEC service caps the number of domains an
@@ -104,6 +108,7 @@ const server = createServer(async (req, res) => {
   if (method === 'POST' && path === '/__control/reset') {
     state.accounts.clear()
     state.domains.clear()
+    state.records.clear()
     state.verified = false
     return send(res, 200, { reset: true })
   }
@@ -116,7 +121,17 @@ const server = createServer(async (req, res) => {
   }
 
   // --- dyndns update endpoint (DesecManager::updateIpIfDesecDomain) ---
+  // 'preserve' keeps a record, an empty value removes it.
   if (method === 'GET' && path === '/update') {
+    const update = Object.fromEntries(url.searchParams)
+    const records = state.records.get(update.hostname) ?? {}
+    for (const family of ['ipv4', 'ipv6']) {
+      const value = update['my' + family]
+      if (value === undefined || value === 'preserve') continue
+      if (value === '') delete records[family]
+      else records[family] = value
+    }
+    state.records.set(update.hostname, records)
     return send(res, 200, 'good')
   }
 
@@ -212,4 +227,52 @@ const server = createServer(async (req, res) => {
 
 server.listen(port, '0.0.0.0', () => {
   console.log(`deSEC mock listening on http://0.0.0.0:${port}`)
+})
+
+// --- Minimal authoritative DNS server for A/AAAA queries (RFC 1035) ---
+function ipToBytes(ip) {
+  if (!ip.includes(':')) return Buffer.from(ip.split('.').map(Number))
+  const [head, tail = ''] = ip.split('::')
+  const headGroups = head ? head.split(':') : []
+  const tailGroups = tail ? tail.split(':') : []
+  const groups = ip.includes('::')
+    ? [...headGroups, ...Array(8 - headGroups.length - tailGroups.length).fill('0'), ...tailGroups]
+    : headGroups
+  const bytes = Buffer.alloc(16)
+  groups.forEach((group, i) => bytes.writeUInt16BE(parseInt(group, 16), i * 2))
+  return bytes
+}
+
+const dns = createSocket('udp4')
+dns.on('message', (query, remote) => {
+  let offset = 12
+  const labels = []
+  while (query[offset] !== 0) {
+    labels.push(query.subarray(offset + 1, offset + 1 + query[offset]).toString())
+    offset += query[offset] + 1
+  }
+  const qtype = query.readUInt16BE(offset + 1)
+  const question = query.subarray(12, offset + 5)
+  const family = { 1: 'ipv4', 28: 'ipv6' }[qtype]
+  const ip = family && state.records.get(labels.join('.').toLowerCase())?.[family]
+  const answers = ip ? [ipToBytes(ip)] : []
+
+  const header = Buffer.alloc(12)
+  query.copy(header, 0, 0, 2)          // ID
+  header.writeUInt16BE(0x8400, 2)      // response, authoritative, NOERROR
+  header.writeUInt16BE(1, 4)           // QDCOUNT
+  header.writeUInt16BE(answers.length, 6)
+  const records = answers.map((rdata) => {
+    const record = Buffer.alloc(12)
+    record.writeUInt16BE(0xc00c, 0)    // name: pointer to the question
+    record.writeUInt16BE(qtype, 2)
+    record.writeUInt16BE(1, 4)         // class IN
+    record.writeUInt32BE(60, 6)        // TTL
+    record.writeUInt16BE(rdata.length, 10)
+    return Buffer.concat([record, rdata])
+  })
+  dns.send(Buffer.concat([header, question, ...records]), remote.port, remote.address)
+})
+dns.bind(53, '0.0.0.0', () => {
+  console.log('deSEC mock DNS listening on udp://0.0.0.0:53')
 })
