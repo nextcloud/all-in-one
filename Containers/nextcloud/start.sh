@@ -163,8 +163,13 @@ while [ "$THIS_IS_AIO" = "true" ] && [ -z "$(dig nextcloud-aio-apache A +short +
 done
 
 set -x
+# Restrict php-fpm to apache and mastercontainer, except with an external reverse proxy (APACHE_PORT != 443).
+# The caddy community container runs inside AIO and only talks to apache, so the restriction is applied there too.
+if [ "$THIS_IS_AIO" = "true" ] && [ -n "$(dig nextcloud-aio-caddy A +short +search)" ]; then
+    COMMUNITY_REVERSE_PROXY_FOUND=1
+fi
 # shellcheck disable=SC2235
-if [ "$THIS_IS_AIO" = "true" ] && [ "$APACHE_PORT" = 443 ]; then
+if [ "$THIS_IS_AIO" = "true" ] && { [ "$APACHE_PORT" = 443 ] || [ "$COMMUNITY_REVERSE_PROXY_FOUND" = 1 ]; }; then
     IPv4_ADDRESS_APACHE="$(dig nextcloud-aio-apache A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
     IPv6_ADDRESS_APACHE="$(dig nextcloud-aio-apache AAAA +short +search | grep '^[0-9a-f:]\+$' | sort | head -n1)"
     IPv4_ADDRESS_MASTERCONTAINER="$(dig nextcloud-aio-mastercontainer A +short +search | grep '^[0-9.]\+$' | sort | head -n1)"
