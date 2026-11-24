@@ -31,7 +31,6 @@ RUN set -ex; \
         dinit \
         tzdata \
         ca-certificates \
-        bind-tools \
         netcat-openbsd; \
     \
     sed -i \

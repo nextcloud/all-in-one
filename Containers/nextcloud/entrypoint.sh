@@ -728,23 +728,7 @@ elif [ "$SKIP_UPDATE" != 1 ]; then
     php /var/www/html/occ app:update notify_push
 fi
 chmod 775 -R /var/www/html/custom_apps/notify_push/bin/
-php /var/www/html/occ config:system:set trusted_proxies 0 --value="127.0.0.1"
-php /var/www/html/occ config:system:set trusted_proxies 1 --value="::1"
-if [ -n "$ADDITIONAL_TRUSTED_PROXY" ]; then
-    php /var/www/html/occ config:system:set trusted_proxies 2 --value="$ADDITIONAL_TRUSTED_PROXY"
-fi
-
-# Trust the IPv4 subnet of the interface that holds the default route
-read -r _ _ _ _ DEFAULT_INTERFACE _ < <(ip -o -4 route show default)
-if [ -n "$DEFAULT_INTERFACE" ]; then
-    IPv4_CIDR="$(ip -o -4 addr show dev "$DEFAULT_INTERFACE" | awk '{print $4; exit}')"
-fi
-if [ -n "$IPv4_CIDR" ]; then
-    php /var/www/html/occ config:system:set trusted_proxies 10 --value="$IPv4_CIDR"
-else
-    echo "Warning: could not determine the IPv4 subnet of this container. Removing trusted_proxies 10."
-    php /var/www/html/occ config:system:delete trusted_proxies 10
-fi
+php /var/www/html/occ config:system:set trusted_proxies --type=json --value='["127.0.0.1","::1"]'
 
 if [ -n "$ADDITIONAL_TRUSTED_DOMAIN" ]; then
     php /var/www/html/occ config:system:set trusted_domains 2 --value="$ADDITIONAL_TRUSTED_DOMAIN"
