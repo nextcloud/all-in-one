@@ -18,13 +18,13 @@
 //   POST /api/v1/domains/                    -> 201 (new) | 400 (taken by another zone, or account already has a dedyn.io domain) | 403 (account limit)
 //   GET  /api/v1/domains/{name}/             -> 200 (owned by this account) | 404 (not owned)
 //   POST /api/v1/domains/{name}/rrsets/      -> 201 (wildcard CNAME)
-//   GET  /update                             -> 200 "good" (dyndns update endpoint)
+//   GET  /update                             -> 200 "good" (dyndns update endpoint, records the requested addresses)
 //   GET  /checkipv4                          -> 200 "203.0.113.10" (check-IP service)
 //   GET  /checkipv6                          -> 200 "2001:db8::10" (check-IP service)
 //   POST /__control/verify                   -> test hook: mark accounts email-verified (creates domains requested at signup)
 //   POST /__control/reset                    -> test hook: wipe in-memory state
 //   POST /__control/seed-domain              -> test hook: pre-assign a domain to an account
-//   GET  /__control/state                    -> test hook: dump accounts and domains
+//   GET  /__control/state                    -> test hook: dump accounts, domains and dyndns updates
 // DNS (UDP port 53): answers A/AAAA queries with the addresses set via /update, like
 // deSEC's authoritative nameservers (DesecManager::getDnsRecords).
 
@@ -39,6 +39,7 @@ const state = {
   domains: new Map(),  // fully-qualified domain name -> owner email (mirrors deSEC: a name is globally unique)
   verified: false,     // simulates whether the (most recent) account's email was verified
   records: new Map(),  // hostname -> { ipv4, ipv6 } as set via the dyndns update endpoint
+  updates: [],         // query parameters of every dyndns update request, in order
 }
 
 // Per-account domain limit. The real deSEC service caps the number of domains an
@@ -103,12 +104,14 @@ const server = createServer(async (req, res) => {
     return send(res, 200, {
       accounts: [...state.accounts.keys()],
       domains: Object.fromEntries(state.domains),
+      updates: state.updates,
     })
   }
   if (method === 'POST' && path === '/__control/reset') {
     state.accounts.clear()
     state.domains.clear()
     state.records.clear()
+    state.updates = []
     state.verified = false
     return send(res, 200, { reset: true })
   }
@@ -124,6 +127,7 @@ const server = createServer(async (req, res) => {
   // 'preserve' keeps a record, an empty value removes it.
   if (method === 'GET' && path === '/update') {
     const update = Object.fromEntries(url.searchParams)
+    state.updates.push(update)
     const records = state.records.get(update.hostname) ?? {}
     for (const family of ['ipv4', 'ipv6']) {
       const value = update['my' + family]
