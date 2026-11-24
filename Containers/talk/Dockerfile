@@ -7,6 +7,7 @@ FROM alpine:3.24 AS janus
 RUN set -ex; \
     apk upgrade --no-cache -a; \
     apk add --no-cache janus-gateway; \
+    mv /etc/janus/janus.jcfg.sample /etc/janus/janus.jcfg; \
     mv /etc/janus/janus.transport.websockets.jcfg.sample /etc/janus/janus.transport.websockets.jcfg; \
     # Only the signaling server in this container needs the Janus API, so do not expose it to other containers
     sed -i 's|^[[:space:]]*#ws_ip = .*|\tws_ip = "127.0.0.1"|' /etc/janus/janus.transport.websockets.jcfg; \
@@ -21,7 +22,7 @@ ENV SKIP_CERT_VERIFY=false \
 COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/bin/janus /usr/bin/janus
 COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/lib/janus/plugins/libjanus_videoroom.so* /usr/lib/janus/plugins/
 COPY --from=janus     --chmod=777 --chown=1000:1000 /usr/lib/janus/transports/libjanus_websockets.so* /usr/lib/janus/transports/
-COPY --from=janus     --chmod=777 --chown=1000:1000 /etc/janus/janus.jcfg.sample /etc/janus/janus.plugin.videoroom.jcfg /etc/janus/janus.transport.websockets.jcfg /etc/janus/
+COPY --from=janus     --chmod=777 --chown=1000:1000 /etc/janus/janus.jcfg /etc/janus/janus.plugin.videoroom.jcfg /etc/janus/janus.transport.websockets.jcfg /etc/janus/
 
 COPY --from=eturnal   --chmod=777 --chown=1000:1000 /opt/eturnal                        /opt/eturnal
 COPY --from=nats      --chmod=777 --chown=1000:1000 /nats-server                        /usr/local/bin/nats-server
