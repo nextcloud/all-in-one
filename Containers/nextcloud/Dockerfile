@@ -287,6 +287,10 @@ RUN set -ex; \
 # We don't actually expect so many children but don't want to limit it artificially because people will report issues otherwise.
 # Also children will usually be terminated again after the process is done due to the ondemand setting
     sed -i 's/^pm.max_children =.*/pm.max_children = 5000/' /usr/local/etc/php-fpm.d/www.conf; \
+# php-fpm runs as www-data via dinit, so the user and group directives are ignored and only log notices
+    grep -q '^user = www-data' /usr/local/etc/php-fpm.d/www.conf; \
+    grep -q '^group = www-data' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^\(user\|group\) = /;\1 = /' /usr/local/etc/php-fpm.d/www.conf; \
 # With pm = ondemand, workers are killed after pm.process_idle_timeout seconds
 # of inactivity.  The upstream default is 10 s, which is aggressive: after a
 # brief quiet period (e.g. desktop-sync clients polling every few seconds), all
