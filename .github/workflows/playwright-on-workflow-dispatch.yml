@@ -17,42 +17,72 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - spec: persist-default-config
-          # The restore test restores the backup that the initial setup test creates, so both share a runner.
-          - spec: initial-setup
-            skip_domain_validation: 'true'
-            then: restore-instance
-          - spec: desec-register
-          - spec: desec-start-over
-          - spec: desec-existing
-          - spec: desec-existing-slug
-          - spec: desec-existing-other-slug
+        # Only one AIO instance can run per Docker host, so the specs of a group run one after another.
+        # The restore test restores the backup that the initial setup test creates.
+        group:
+          - setup-and-restore
+          - defaults-and-desec
 
-    name: test (${{ matrix.spec }})
+    name: test (${{ matrix.group }})
 
     runs-on: ubuntu-26.04
 
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - name: Run Playwright tests for ${{ matrix.spec }}
+      - name: Run Playwright tests for initial setup
+        if: matrix.group == 'setup-and-restore'
         env:
-          SKIP_DOMAIN_VALIDATION: ${{ matrix.skip_domain_validation || 'false' }}
+          SKIP_DOMAIN_VALIDATION: 'true'
           TEST_CODE_FROM_IMAGE: yes
-        run: ./php/tests/run.sh ./php/tests/tests/${{ matrix.spec }}.spec.js
+        run: ./php/tests/run.sh ./php/tests/tests/initial-setup.spec.js
 
-      - name: Run Playwright tests for ${{ matrix.then }}
-        if: ${{ matrix.then }}
+      - name: Run Playwright tests for backup restore
+        if: matrix.group == 'setup-and-restore'
         env:
-          SKIP_DOMAIN_VALIDATION: 'false'
           TEST_CODE_FROM_IMAGE: yes
-        run: ./php/tests/run.sh ./php/tests/tests/${{ matrix.then }}.spec.js
+        run: ./php/tests/run.sh ./php/tests/tests/restore-instance.spec.js
+
+      - name: Run Playwright tests for persisted defaults
+        if: matrix.group == 'defaults-and-desec'
+        env:
+          TEST_CODE_FROM_IMAGE: yes
+        run: ./php/tests/run.sh ./php/tests/tests/persist-default-config.spec.js
+
+      - name: Run Playwright tests for desec registration
+        if: matrix.group == 'defaults-and-desec'
+        env:
+          TEST_CODE_FROM_IMAGE: yes
+        run: ./php/tests/run.sh ./php/tests/tests/desec-register.spec.js
+
+      - name: Run Playwright tests for desec start over
+        if: matrix.group == 'defaults-and-desec'
+        env:
+          TEST_CODE_FROM_IMAGE: yes
+        run: ./php/tests/run.sh ./php/tests/tests/desec-start-over.spec.js
+
+      - name: Run Playwright tests for desec with existing account
+        if: matrix.group == 'defaults-and-desec'
+        env:
+          TEST_CODE_FROM_IMAGE: yes
+        run: ./php/tests/run.sh ./php/tests/tests/desec-existing.spec.js
+
+      - name: Run Playwright tests for desec with existing slug
+        if: matrix.group == 'defaults-and-desec'
+        env:
+          TEST_CODE_FROM_IMAGE: yes
+        run: ./php/tests/run.sh ./php/tests/tests/desec-existing-slug.spec.js
+
+      - name: Run Playwright tests for desec with another slug than the existing one
+        if: matrix.group == 'defaults-and-desec'
+        env:
+          TEST_CODE_FROM_IMAGE: yes
+        run: ./php/tests/run.sh ./php/tests/tests/desec-existing-other-slug.spec.js
 
       - uses: actions/upload-artifact@v7.0.2
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ matrix.spec }}
+          name: playwright-report-${{ matrix.group }}
           path: php/tests/playwright-report/
           retention-days: 14
           overwrite: true
