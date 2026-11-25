@@ -38,6 +38,9 @@ run_tests() {
     docker container rm --force nextcloud-aio-{mastercontainer,apache,notify-push,nextcloud,redis,database,domaincheck,whiteboard,imaginary,talk,collabora,borgbackup} > /dev/null 2>&1
     docker volume rm nextcloud_aio_{mastercontainer,apache,database,database_dump,nextcloud,nextcloud_data,redis,backup_cache,elasticsearch} > /dev/null 2>&1
 
+    # Pull all images at once, otherwise the test runner image is only pulled once the mastercontainer started.
+    $DOCO --profile $profile pull --quiet
+
     echo -e "\n 📣  Running playwright tests for ${TESTS_FILE} with SKIP_DOMAIN_VALIDATION=$SKIP_DOMAIN_VALIDATION and profile '$profile'\n"
     $DOCO --profile $profile run --remove-orphans test-runner-$profile
     exitcode=$?
