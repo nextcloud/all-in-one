@@ -90,6 +90,10 @@ RUN set -ex; \
     grep -q '^pm = dynamic' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm = dynamic/pm = ondemand/' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's/^pm.max_children =.*/pm.max_children = 80/' /usr/local/etc/php-fpm.d/www.conf; \
+# php-fpm runs as www-data via dinit, so the user and group directives are ignored and only log notices
+    grep -q '^user = www-data' /usr/local/etc/php-fpm.d/www.conf; \
+    grep -q '^group = www-data' /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i 's/^\(user\|group\) = /;\1 = /' /usr/local/etc/php-fpm.d/www.conf; \
     sed -i 's|access.log = /proc/self/fd/2|access.log = /proc/self/fd/1|' /usr/local/etc/php-fpm.d/docker.conf; \
     grep -q '^listen =' /usr/local/etc/php-fpm.d/docker.conf; \
     sed -i 's|listen =.*|listen = /run/php/php.sock|' /usr/local/etc/php-fpm.d/docker.conf; \
