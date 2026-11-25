@@ -11,6 +11,8 @@ class DesecManager {
     private const int MAX_SLUG_ATTEMPTS = 5;
     private const int SLUG_BYTES = 5; // bin2hex → 10-char slug
     private const string SLUG_PATTERN = '/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/';
+    private const int UPDATE_RETRY_BASE_DELAY = 1200; // seconds
+    private const int UPDATE_RETRY_MAX_DELAY = 86400; // seconds
 
     private Client $guzzleClient;
 
@@ -548,6 +550,10 @@ class DesecManager {
      * Otherwise it is sent as 'preserve', so a record that AIO never published (e.g. a
      * manually added AAAA record while the container has no IPv6 connectivity) is kept.
      *
+     * When deSEC rejects the update because the token is invalid or the domain no longer
+     * exists, further attempts are delayed with an exponential backoff instead of being
+     * sent on every run.
+     *
      * Does nothing when the configured domain is not a deSEC-managed dedyn.io domain.
      */
     public function updateIpIfDesecDomain(): void {
@@ -585,6 +591,12 @@ class DesecManager {
             return;
         }
 
+        $backoff        = $this->configurationManager->desecIpUpdateBackoff;
+        $failedAttempts = $backoff['failed_attempts'] ?? 0;
+        if ($failedAttempts > 0 && time() < ($backoff['last_failed_at'] ?? 0) + self::getUpdateRetryDelay($failedAttempts)) {
+            return;
+        }
+
         try {
             $res    = $this->guzzleClient->get($this->configurationManager->desecUpdateUrl, [
                 'query'   => ['hostname' => $domain, 'myipv4' => $myIps['ipv4'], 'myipv6' => $myIps['ipv6']],
@@ -596,9 +608,26 @@ class DesecManager {
             return;
         }
 
-        if ($res->getStatusCode() !== 200 || (!str_starts_with($status, 'good') && !str_starts_with($status, 'nochg'))) {
-            error_log('deSEC IP update for ' . $domain . ' returned unexpected response (HTTP ' . $res->getStatusCode() . '): ' . $status);
+        $code = $res->getStatusCode();
+        if ($code === 401 || $code === 403 || $code === 404) {
+            // Retrying will not help until the token or domain is fixed at deSEC, so back off.
+            $this->configurationManager->desecIpUpdateBackoff = [
+                'failed_attempts' => $failedAttempts + 1,
+                'last_failed_at'  => time(),
+            ];
+            error_log('deSEC rejected the IP update for ' . $domain . ' (HTTP ' . $code . '): ' . $status
+                . '. The API token may have been revoked or the domain deleted at deSEC. Next attempt in '
+                . intdiv(self::getUpdateRetryDelay($failedAttempts + 1), 60) . ' minutes at the earliest.');
             return;
+        }
+
+        if ($code !== 200 || (!str_starts_with($status, 'good') && !str_starts_with($status, 'nochg'))) {
+            error_log('deSEC IP update for ' . $domain . ' returned unexpected response (HTTP ' . $code . '): ' . $status);
+            return;
+        }
+
+        if ($failedAttempts > 0) {
+            $this->configurationManager->desecIpUpdateBackoff = [];
         }
 
         error_log('deSEC IP update for ' . $domain . ' (IPv4: ' . ($myIps['ipv4'] === '' ? 'removed' : $myIps['ipv4'])
@@ -650,6 +679,16 @@ class DesecManager {
         }
 
         return null;
+    }
+
+    /**
+     * Seconds to wait after the given number of consecutive rejected updates:
+     * 20 minutes, doubling with every further rejection, capped at one day.
+     */
+    public static function getUpdateRetryDelay(int $failedAttempts): int {
+        // The exponent is clamped so the multiplication cannot overflow; 2^7 already exceeds the cap.
+        $exponent = min(max($failedAttempts - 1, 0), 7);
+        return min(self::UPDATE_RETRY_BASE_DELAY * (1 << $exponent), self::UPDATE_RETRY_MAX_DELAY);
     }
 
     /**
