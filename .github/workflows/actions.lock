@@ -39,7 +39,7 @@ workflows:
         - 'shivammathur/setup-php@2.40.0'
     '.github/workflows/lint-yaml.yml':
         - 'actions/checkout@v7.0.1'
-        - 'astral-sh/setup-uv@v10.3.3'
+        - 'astral-sh/setup-uv@v10.4.0'
         - 'ibiqlik/action-yamllint@v3.1.1'
     '.github/workflows/lock-threads.yml':
         - 'dessant/lock-threads@v6.0.2'
@@ -108,9 +108,9 @@ dependencies:
         commit: 'sha1-cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         owner_id: 44036562
         repo_id: 192625955
-    'astral-sh/setup-uv@v10.3.3':
-        ref: 'v10.3.3'
-        commit: 'sha1-68559e99cc807c1eb7e9238fd43a15bba460eec2'
+    'astral-sh/setup-uv@v10.4.0':
+        ref: 'v10.4.0'
+        commit: 'sha1-1db35dd8eee11c5894872e0b383ae6c406cf738d'
         owner_id: 115962839
         repo_id: 846733598
     'azure/setup-helm@v5.1.0':
