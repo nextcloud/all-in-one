@@ -640,8 +640,10 @@ class DesecManager {
 
             // Besides the addresses, the output contains e.g. the target of a CNAME
             $flag = $family === 'ipv4' ? FILTER_FLAG_IPV4 : FILTER_FLAG_IPV6;
-            $ips  = array_filter(explode("\n", $output), fn (string $line) => filter_var($line, FILTER_VALIDATE_IP, $flag) !== false);
-            $ips  = array_map($this->normalizeIp(...), array_values($ips));
+            $ips  = array_values(array_filter(
+                array_map(fn (string $line) => $this->parseIp($line, $flag), explode("\n", $output)),
+                fn (?string $ip) => $ip !== null,
+            ));
             sort($ips);
 
             return $ips;
@@ -672,24 +674,20 @@ class DesecManager {
             return null;
         }
 
-        $ip   = trim($res->getBody()->getContents());
-        $flag = $family === 'v4' ? FILTER_FLAG_IPV4 : FILTER_FLAG_IPV6;
-
-        return filter_var($ip, FILTER_VALIDATE_IP, $flag) === false ? null : $this->normalizeIp($ip);
+        return $this->parseIp(trim($res->getBody()->getContents()), $family === 'v4' ? FILTER_FLAG_IPV4 : FILTER_FLAG_IPV6);
     }
 
     /**
-     * Brings an address into its canonical notation (e.g. compressed IPv6), so that
-     * addresses from the check-IP services and from DNS can be compared as strings.
+     * Validates an address of the family given by $flag (FILTER_FLAG_IPV4/IPV6) and
+     * brings it into its canonical notation (e.g. compressed IPv6), so that addresses
+     * from the check-IP services and from DNS can be compared as strings.
+     *
+     * @return string|null the canonical address, or null when $value is not one
      */
-    private function normalizeIp(string $ip): string {
-        $packed = inet_pton($ip);
-        if ($packed === false) {
-            return $ip;
-        }
+    private function parseIp(string $value, int $flag): ?string {
+        $packed = filter_var($value, FILTER_VALIDATE_IP, $flag) === false ? false : inet_pton($value);
+        $ip     = $packed === false ? false : inet_ntop($packed);
 
-        $normalized = inet_ntop($packed);
-
-        return $normalized === false ? $ip : $normalized;
+        return $ip === false ? null : $ip;
     }
 }
