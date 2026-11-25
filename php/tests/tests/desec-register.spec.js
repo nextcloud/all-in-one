@@ -89,4 +89,11 @@ test('deSEC register -> verify -> domain flow', async ({ page: setupPage }) => {
   await expect(
     containersPage.getByText("Don't have a domain? Get a free one from deSEC"),
   ).toHaveCount(0);
+
+  // 6) Registration published the public address reported by the mock's check-IP service.
+  //    IPv6 is either published or, without IPv6 connectivity, explicitly preserved.
+  mockState = await (await fetch(`${DESEC_MOCK_URL}/__control/state`)).json();
+  const update = mockState.updates.find((u) => u.hostname === `${slug}.dedyn.io`);
+  expect(update?.myipv4).toBe('203.0.113.10');
+  expect(['2001:db8::10', 'preserve']).toContain(update?.myipv6);
 });

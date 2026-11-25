@@ -59,6 +59,7 @@ RUN set -ex; \
         su-exec \
         netcat-openbsd \
         curl \
+        drill \
         grep; \
     \
     apk add --no-cache --virtual .build-deps \

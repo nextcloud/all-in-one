@@ -238,6 +238,46 @@ class ConfigurationManager
         get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_UPDATE_URL', 'desec_update_url', 'https://update.dedyn.io/');
     }
 
+    /**
+     * URLs of deSEC's check-IP services, which answer with the caller's public IPv4/IPv6
+     * address as plain text. Overridable for automated tests only — see desecApiBase.
+     */
+    public string $desecCheckIpv4Url {
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_CHECKIPV4_URL', 'desec_checkipv4_url', 'https://checkipv4.dedyn.io/');
+    }
+
+    public string $desecCheckIpv6Url {
+        get => $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_CHECKIPV6_URL', 'desec_checkipv6_url', 'https://checkipv6.dedyn.io/');
+    }
+
+    /**
+     * deSEC's authoritative nameservers, queried directly so that the comparison is not
+     * affected by caching or split-brain DNS of the local resolver. Comma-separated;
+     * overridable for automated tests only — see desecApiBase.
+     *
+     * @return list<string>
+     */
+    public array $desecNameservers {
+        get => array_values(array_filter(array_map('trim', explode(',',
+            $this->getEnvironmentalVariableOrConfig('TESTING___DESEC_NAMESERVERS', 'desec_nameservers', 'ns1.desec.io,ns2.desec.org')
+        ))));
+    }
+
+    /**
+     * The address families ('ipv4', 'ipv6') whose dynDNS record AIO itself published
+     * for the configured domain. Only these records are removed by AIO when the
+     * corresponding public address can no longer be determined.
+     *
+     * @var list<'ipv4'|'ipv6'>
+     */
+    public array $desecPublishedIpFamilies {
+        get {
+            $value = $this->get('desec_published_ip_families', []);
+            return is_array($value) ? array_values(array_intersect(['ipv4', 'ipv6'], $value)) : [];
+        }
+        set { $this->set('desec_published_ip_families', $value); }
+    }
+
     public string $desecToken {
         get {
             $secrets = $this->get('secrets', []);
@@ -759,6 +799,8 @@ class ConfigurationManager
         $this->set('domain', $domain);
         // Reset the borg restore password when setting the domain
         $this->borgRestorePassword = '';
+        // Records published for a previous domain say nothing about the new one
+        $this->desecPublishedIpFamilies = [];
         $this->commitTransaction();
     }
 

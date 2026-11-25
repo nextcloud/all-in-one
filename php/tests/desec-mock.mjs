@@ -18,13 +18,18 @@
 //   POST /api/v1/domains/                    -> 201 (new) | 400 (taken by another zone, or account already has a dedyn.io domain) | 403 (account limit)
 //   GET  /api/v1/domains/{name}/             -> 200 (owned by this account) | 404 (not owned)
 //   POST /api/v1/domains/{name}/rrsets/      -> 201 (wildcard CNAME)
-//   GET  /update                             -> 200 "good" (dyndns update endpoint)
+//   GET  /update                             -> 200 "good" (dyndns update endpoint, records the requested addresses)
+//   GET  /checkipv4                          -> 200 "203.0.113.10" (check-IP service)
+//   GET  /checkipv6                          -> 200 "2001:db8::10" (check-IP service)
 //   POST /__control/verify                   -> test hook: mark accounts email-verified (creates domains requested at signup)
 //   POST /__control/reset                    -> test hook: wipe in-memory state
 //   POST /__control/seed-domain              -> test hook: pre-assign a domain to an account
-//   GET  /__control/state                    -> test hook: dump accounts and domains
+//   GET  /__control/state                    -> test hook: dump accounts, domains and dyndns updates
+// DNS (UDP port 53): answers A/AAAA queries with the addresses set via /update, like
+// deSEC's authoritative nameservers (DesecManager::getDnsRecords).
 
 import { createServer } from 'node:http'
+import { createSocket } from 'node:dgram'
 
 const port = Number(process.argv[2] ?? process.env.DESEC_MOCK_PORT ?? 8090)
 
@@ -33,6 +38,8 @@ const state = {
   accounts: new Map(), // email -> { password, pendingDomain } (pendingDomain: requested at signup, created on verify)
   domains: new Map(),  // fully-qualified domain name -> owner email (mirrors deSEC: a name is globally unique)
   verified: false,     // simulates whether the (most recent) account's email was verified
+  records: new Map(),  // hostname -> { ipv4, ipv6 } as set via the dyndns update endpoint
+  updates: [],         // query parameters of every dyndns update request, in order
 }
 
 // Per-account domain limit. The real deSEC service caps the number of domains an
@@ -97,11 +104,14 @@ const server = createServer(async (req, res) => {
     return send(res, 200, {
       accounts: [...state.accounts.keys()],
       domains: Object.fromEntries(state.domains),
+      updates: state.updates,
     })
   }
   if (method === 'POST' && path === '/__control/reset') {
     state.accounts.clear()
     state.domains.clear()
+    state.records.clear()
+    state.updates = []
     state.verified = false
     return send(res, 200, { reset: true })
   }
@@ -114,8 +124,27 @@ const server = createServer(async (req, res) => {
   }
 
   // --- dyndns update endpoint (DesecManager::updateIpIfDesecDomain) ---
+  // 'preserve' keeps a record, an empty value removes it.
   if (method === 'GET' && path === '/update') {
+    const update = Object.fromEntries(url.searchParams)
+    state.updates.push(update)
+    const records = state.records.get(update.hostname) ?? {}
+    for (const family of ['ipv4', 'ipv6']) {
+      const value = update['my' + family]
+      if (value === undefined || value === 'preserve') continue
+      if (value === '') delete records[family]
+      else records[family] = value
+    }
+    state.records.set(update.hostname, records)
     return send(res, 200, 'good')
+  }
+
+  // --- check-IP services (DesecManager::getPublicIp), documentation-range addresses ---
+  if (method === 'GET' && path === '/checkipv4') {
+    return send(res, 200, '203.0.113.10')
+  }
+  if (method === 'GET' && path === '/checkipv6') {
+    return send(res, 200, '2001:db8::10')
   }
 
   // --- Account registration: deSEC always answers 202 and emails a link; ---
@@ -202,4 +231,52 @@ const server = createServer(async (req, res) => {
 
 server.listen(port, '0.0.0.0', () => {
   console.log(`deSEC mock listening on http://0.0.0.0:${port}`)
+})
+
+// --- Minimal authoritative DNS server for A/AAAA queries (RFC 1035) ---
+function ipToBytes(ip) {
+  if (!ip.includes(':')) return Buffer.from(ip.split('.').map(Number))
+  const [head, tail = ''] = ip.split('::')
+  const headGroups = head ? head.split(':') : []
+  const tailGroups = tail ? tail.split(':') : []
+  const groups = ip.includes('::')
+    ? [...headGroups, ...Array(8 - headGroups.length - tailGroups.length).fill('0'), ...tailGroups]
+    : headGroups
+  const bytes = Buffer.alloc(16)
+  groups.forEach((group, i) => bytes.writeUInt16BE(parseInt(group, 16), i * 2))
+  return bytes
+}
+
+const dns = createSocket('udp4')
+dns.on('message', (query, remote) => {
+  let offset = 12
+  const labels = []
+  while (query[offset] !== 0) {
+    labels.push(query.subarray(offset + 1, offset + 1 + query[offset]).toString())
+    offset += query[offset] + 1
+  }
+  const qtype = query.readUInt16BE(offset + 1)
+  const question = query.subarray(12, offset + 5)
+  const family = { 1: 'ipv4', 28: 'ipv6' }[qtype]
+  const ip = family && state.records.get(labels.join('.').toLowerCase())?.[family]
+  const answers = ip ? [ipToBytes(ip)] : []
+
+  const header = Buffer.alloc(12)
+  query.copy(header, 0, 0, 2)          // ID
+  header.writeUInt16BE(0x8400, 2)      // response, authoritative, NOERROR
+  header.writeUInt16BE(1, 4)           // QDCOUNT
+  header.writeUInt16BE(answers.length, 6)
+  const records = answers.map((rdata) => {
+    const record = Buffer.alloc(12)
+    record.writeUInt16BE(0xc00c, 0)    // name: pointer to the question
+    record.writeUInt16BE(qtype, 2)
+    record.writeUInt16BE(1, 4)         // class IN
+    record.writeUInt32BE(60, 6)        // TTL
+    record.writeUInt16BE(rdata.length, 10)
+    return Buffer.concat([record, rdata])
+  })
+  dns.send(Buffer.concat([header, question, ...records]), remote.port, remote.address)
+})
+dns.bind(53, '0.0.0.0', () => {
+  console.log('deSEC mock DNS listening on udp://0.0.0.0:53')
 })
