@@ -38,6 +38,9 @@ jobs:
         env:
           SKIP_DOMAIN_VALIDATION: 'true'
 
+      - name: Test image pull failure handling
+        run: docker exec --user www-data nextcloud-aio-mastercontainer php /var/www/docker-aio/php/tests/image-pulls.php
+
       - name: Run Playwright tests for backup restore
         run: ./php/tests/run.sh ./php/tests/tests/restore-instance.spec.js
 
