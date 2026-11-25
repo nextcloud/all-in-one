@@ -24,7 +24,8 @@
     }
     lastError = toast
     body.prepend(toast)
-    setTimeout(toast.remove.bind(toast), 10000)
+    // Scheduled on the toast's window so the timer survives the iframe navigating away.
+    doc.defaultView.setTimeout(toast.remove.bind(toast), 10000)
   }
 
   function handleEvent(e) {

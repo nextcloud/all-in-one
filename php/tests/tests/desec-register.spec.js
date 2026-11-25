@@ -74,6 +74,15 @@ test('deSEC register -> verify -> domain flow', async ({ page: setupPage }) => {
   await frame.getByRole('button', { name: 'I have verified my email – finish setup' }).click();
   await expect(containersPage.locator('.toast.error')).toContainText('Could not log in to deSEC', { timeout: 8 * 1000 });
 
+  //    Closing the modal unloads the iframe; the toast must still disappear on its own.
+  await containersPage.locator('#desec-modal [data-desec-close]').click();
+  await expect(containersPage.locator('#desec-modal')).toBeHidden();
+  await expect(containersPage.locator('.toast.error')).toHaveCount(0, { timeout: 15 * 1000 });
+  await containersPage.getByRole('button', { name: 'Register free domain via deSEC' }).click();
+  await expect(
+    frame.getByRole('button', { name: 'I have verified my email – finish setup' }),
+  ).toBeVisible({ timeout: 30 * 1000 });
+
   // 4) Simulate the user clicking the verification link in their email. Activation creates
   //    the domain requested at signup.
   const verifyResponse = await fetch(`${DESEC_MOCK_URL}/__control/verify`, { method: 'POST' });
