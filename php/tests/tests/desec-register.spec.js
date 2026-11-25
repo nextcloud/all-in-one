@@ -52,7 +52,7 @@ test('deSEC register -> verify -> domain flow', async ({ page: setupPage }) => {
   await frame.locator('input[name="desec_email"]').fill(email);
   await frame.locator('input[name="desec_slug"]').first().fill(takenSlug);
   await frame.getByRole('button', { name: 'Register free domain via deSEC' }).click();
-  await expect(frame.locator('.toast.error')).toContainText(`"${takenSlug}.dedyn.io" is not available`, { timeout: 8 * 1000 });
+  await expect(containersPage.locator('.toast.error')).toContainText(`"${takenSlug}.dedyn.io" is not available`, { timeout: 8 * 1000 });
   await expect(frame.locator('input[name="desec_email"]')).toBeVisible();
   let mockState = await (await fetch(`${DESEC_MOCK_URL}/__control/state`)).json();
   expect(mockState.accounts).not.toContain(email);
@@ -70,9 +70,9 @@ test('deSEC register -> verify -> domain flow', async ({ page: setupPage }) => {
   ).toBeVisible();
 
   // 3) Re-submit BEFORE verifying -> login still fails (mock 403) -> friendly hint shown.
-  //    The error is a transient toast rendered inside the iframe.
+  //    The error is a transient toast rendered on the containers page, outside the modal.
   await frame.getByRole('button', { name: 'I have verified my email – finish setup' }).click();
-  await expect(frame.locator('.toast.error')).toContainText('Could not log in to deSEC', { timeout: 8 * 1000 });
+  await expect(containersPage.locator('.toast.error')).toContainText('Could not log in to deSEC', { timeout: 8 * 1000 });
 
   // 4) Simulate the user clicking the verification link in their email. Activation creates
   //    the domain requested at signup.

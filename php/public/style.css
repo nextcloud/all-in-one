@@ -571,7 +571,7 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 .modal .modal-content {
     position: relative;
     width: min(640px, 100%);
-    max-height: calc(100vh - 4rem);
+    max-height: calc(100vh - 8rem);
     background-color: var(--color-main-background);
     border-radius: var(--border-radius-large);
     border: solid thin rgb(192, 192, 192);
@@ -582,7 +582,7 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 .modal .modal-content iframe {
     display: block;
     width: 100%;
-    height: min(640px, calc(100vh - 4rem));
+    height: min(640px, calc(100vh - 8rem));
     border: 0;
 }
 
@@ -601,6 +601,12 @@ input[type="checkbox"]:disabled:not(:checked) + label {
 
 body.modal-open {
     overflow: hidden;
+}
+
+/* Keep toasts in the free band above the modal. */
+body.modal-open > div.toast {
+    top: 1rem;
+    margin-top: 0;
 }
 
 /* deSEC modal view body (desec.twig) */

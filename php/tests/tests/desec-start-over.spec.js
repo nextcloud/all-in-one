@@ -47,7 +47,7 @@ test('deSEC start over after a failed activation', async ({ page: setupPage }) =
 
   // 3) Finishing the setup can never succeed now; the hint points at "Start over".
   await frame.getByRole('button', { name: 'I have verified my email – finish setup' }).click();
-  await expect(frame.locator('.toast.error')).toContainText('Start over', { timeout: 8 * 1000 });
+  await expect(containersPage.locator('.toast.error')).toContainText('Start over', { timeout: 8 * 1000 });
 
   // 4) Start over -> the pending registration is cleared and the initial form is back.
   await frame.getByRole('button', { name: 'Start over' }).click();
