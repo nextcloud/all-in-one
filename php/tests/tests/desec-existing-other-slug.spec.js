@@ -51,7 +51,7 @@ test('deSEC explains that the account already has another dedyn.io domain', asyn
   await frame.locator('input[name="desec_password"]').fill(password);
   await slugField.fill(otherSlug);
   await submit.click();
-  await expect(frame.locator('.toast.error')).toContainText(
+  await expect(containersPage.locator('.toast.error')).toContainText(
     `deSEC could not register "${otherSlug}.dedyn.io": ${reason}`,
     { timeout: 8 * 1000 },
   );
@@ -61,7 +61,7 @@ test('deSEC explains that the account already has another dedyn.io domain', asyn
   // 2) So is a random one (blank subdomain), without retrying with further random names.
   await slugField.fill('');
   await submit.click();
-  await expect(frame.locator('.toast.error')).toContainText(reason, { timeout: 8 * 1000 });
+  await expect(containersPage.locator('.toast.error')).toContainText(reason, { timeout: 8 * 1000 });
 
   // 3) A name that belongs to somebody else is reported with deSEC's explanation, too.
   const takenSlug = `aio-taken-${Math.floor(Math.random() * 2147483647)}`;
@@ -72,7 +72,7 @@ test('deSEC explains that the account already has another dedyn.io domain', asyn
   });
   await slugField.fill(takenSlug);
   await submit.click();
-  await expect(frame.locator('.toast.error')).toContainText(
+  await expect(containersPage.locator('.toast.error')).toContainText(
     `deSEC could not register "${takenSlug}.dedyn.io": This domain name conflicts with an existing domain`,
     { timeout: 8 * 1000 },
   );

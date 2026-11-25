@@ -3,9 +3,20 @@
 (function (){
   let lastError;
 
+  // Forms rendered inside a same-origin iframe (e.g. the deSEC modal) show their
+  // errors on the top-level page so the toast is not clipped by the modal.
+  function toastDocument() {
+    try {
+      return window.top.document
+    } catch {
+      return document
+    }
+  }
+
   function showError(message) {
-    const body = document.getElementsByTagName('body')[0]
-    const toast = document.createElement("div")
+    const doc = toastDocument()
+    const body = doc.body
+    const toast = doc.createElement("div")
     toast.className = "toast error"
     toast.prepend(message)
     if (lastError) {
@@ -13,7 +24,8 @@
     }
     lastError = toast
     body.prepend(toast)
-    setTimeout(toast.remove.bind(toast), 10000)
+    // Scheduled on the toast's window so the timer survives the iframe navigating away.
+    doc.defaultView.setTimeout(toast.remove.bind(toast), 10000)
   }
 
   function handleEvent(e) {
