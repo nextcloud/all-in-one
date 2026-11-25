@@ -25,41 +25,43 @@ jobs:
   test:
     timeout-minutes: 60
 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - spec: persist-default-config
+          # The restore test restores the backup that the initial setup test creates, so both share a runner.
+          - spec: initial-setup
+            skip_domain_validation: 'true'
+            then: restore-instance
+          - spec: desec-register
+          - spec: desec-start-over
+          - spec: desec-existing
+          - spec: desec-existing-slug
+          - spec: desec-existing-other-slug
+
+    name: test (${{ matrix.spec }})
+
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - name: Run Playwright test for persisted defaults
-        run: ./php/tests/run.sh ./php/tests/tests/persist-default-config.spec.js
-
-      - name: Run Playwright tests for initial setup
-        run: ./php/tests/run.sh ./php/tests/tests/initial-setup.spec.js
+      - name: Run Playwright tests for ${{ matrix.spec }}
         env:
-          SKIP_DOMAIN_VALIDATION: 'true'
+          SKIP_DOMAIN_VALIDATION: ${{ matrix.skip_domain_validation || 'false' }}
+        run: ./php/tests/run.sh ./php/tests/tests/${{ matrix.spec }}.spec.js
 
-      - name: Run Playwright tests for backup restore
-        run: ./php/tests/run.sh ./php/tests/tests/restore-instance.spec.js
-
-      - name: Run Playwright tests for desec registration
-        run: ./php/tests/run.sh ./php/tests/tests/desec-register.spec.js
-
-      - name: Run Playwright tests for desec start over
-        run: ./php/tests/run.sh ./php/tests/tests/desec-start-over.spec.js
-
-      - name: Run Playwright tests for desec with existing account
-        run: ./php/tests/run.sh ./php/tests/tests/desec-existing.spec.js
-
-      - name: Run Playwright tests for desec with existing slug
-        run: ./php/tests/run.sh ./php/tests/tests/desec-existing-slug.spec.js
-
-      - name: Run Playwright tests for desec with another slug than the existing one
-        run: ./php/tests/run.sh ./php/tests/tests/desec-existing-other-slug.spec.js
+      - name: Run Playwright tests for ${{ matrix.then }}
+        if: ${{ matrix.then }}
+        env:
+          SKIP_DOMAIN_VALIDATION: 'false'
+        run: ./php/tests/run.sh ./php/tests/tests/${{ matrix.then }}.spec.js
 
       - uses: actions/upload-artifact@v7.0.2
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.spec }}
           path: php/tests/playwright-report/
           retention-days: 14
           overwrite: true
