@@ -54,8 +54,8 @@ jobs:
             | sort -V \
             | tail -1
         )"
-        sed -i "s|^ARG APCU_VERSION=.*|ARG APCU_VERSION=$apcu_version|" ./Containers/mastercontainer/Dockerfile ./php/tests/Containers/composer/Dockerfile
-        update_sha256 APCU "https://github.com/krakjoe/apcu/archive/refs/tags/v$apcu_version.tar.gz" ./Containers/mastercontainer/Dockerfile ./php/tests/Containers/composer/Dockerfile
+        sed -i "s|^ARG APCU_VERSION=.*|ARG APCU_VERSION=$apcu_version|" ./Containers/mastercontainer/Dockerfile
+        update_sha256 APCU "https://github.com/krakjoe/apcu/archive/refs/tags/v$apcu_version.tar.gz" ./Containers/mastercontainer/Dockerfile
 
         imap_version="$(
           git ls-remote --tags https://github.com/php/pecl-mail-imap.git \

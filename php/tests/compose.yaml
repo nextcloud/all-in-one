@@ -5,9 +5,7 @@
 name: nextcloud-aio-test
 services:
   composer:
-    image: localhost/composer:latest
-    build: Containers/composer
-    pull_policy: never
+    image: docker.io/library/composer:2@sha256:50ea4d33fdcde1adb0f045547295faa1548b33872e5f789dae5b02ce2fb5de93
     volumes:
       - ..:/app
     working_dir: /app
@@ -15,7 +13,7 @@ services:
       bash -c '
         test -d ./data && rm -r ./data
         test -d ./session && rm -r ./session
-        composer install --no-dev
+        composer install --no-dev --ignore-platform-req=ext-apcu
         composer clear-cache
       '
 
@@ -41,6 +39,10 @@ services:
       TESTING___DESEC_CHECKIPV6_URL: http://desec-mock:8090/checkipv6
       TESTING___DESEC_NAMESERVERS: desec-mock
     entrypoint: bash /start.sh
+    # The image's healthcheck only runs every 30s and passes before the interface is up as long as no configuration exists.
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 8080 && test -S /run/php/php.sock"]
+      interval: 2s
 
   app-code-from-image:
     extends: app-base
