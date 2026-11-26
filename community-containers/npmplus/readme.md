@@ -6,7 +6,7 @@ This container contains a fork of [Nginx Proxy Manager](https://nginxproxymanage
 - Make sure that no other service is using port `443 (tcp/upd)` or `81 (tcp)` on your host as otherwise the containers will fail to start. You can check this with `sudo netstat -tulpn | grep "443\|81"` before installing AIO.
 - Please change the default login data first, after you can read inside the logs that the default config for AIO is created and there are no errors.
 - After the container was started the first time, please check the logs for errors. Then you can open NPMplus on `https://<ip>:81` and change the password. 
-- The default password is `iArhP1j7p1P6TA92FA2FMbbUGYqwcYzxC4AVEe12Wbi94FY9gNN62aKyF1shrvG4NycjjX9KfmDQiwkLZH1ZDR9xMjiG2QmoHXi` and the default email is `admin@example.org`
+- The default email is `admin@example.org`. The initial password is generated randomly on the first start and printed in the container logs (`sudo docker logs nextcloud-aio-npmplus`).
 - If you want to use NPMplus behind a domain and outside localhost just create a new proxy host inside the NPMplus which proxies to `https`, `127.0.0.1` and port `81` - all other settings should be the same as for the AIO host.
 - If you want to set env options from this [compose.yaml](https://github.com/ZoeyVid/NPMplus/blob/develop/compose.yaml), please set them inside the `.env` file which you can find in the `nextcloud_aio_npmplus` volume **Please note:** If you do not have CLI access to the server, you can now run docker commands via a web session by using this community container: https://github.com/nextcloud/all-in-one/tree/main/community-containers/container-management
 - The data (certs, configs, etc.) of NPMplus will be automatically included in AIOs backup solution!

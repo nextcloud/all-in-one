@@ -1,6 +1,10 @@
 ## Plex
 This container bundles the [Plex Media Server](https://www.plex.tv/en-gb/personal-media-server/) and auto-configures it for you.
 
+> [!WARNING]
+> - This container uses the host network, so Plex and its DLNA server listen on all network interfaces of the host.
+> - The Nextcloud data directory is mounted read-only, so everyone who administers the Plex server (i.e. the Plex account that claimed it) can add the files of all Nextcloud users as libraries.
+
 ### Notes
 - This container is incompatible with the [Jellyfin](https://github.com/nextcloud/all-in-one/tree/main/community-containers/jellyfin) community container. So make sure that you do not enable both at the same time!
 - This is not working on arm64 since Plex does only provide x64 docker images.

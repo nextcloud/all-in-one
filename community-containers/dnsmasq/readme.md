@@ -8,6 +8,9 @@ By default, all devices on your LAN reach Nextcloud via the public internet (or 
 
 This container is automatically enabled when you register a deSEC domain through the AIO interface.
 
+> [!WARNING]
+> This container uses the host network and answers DNS queries on port 53 of the server's primary IP address, which is detected via the default route. On a server with a public IP address (e.g. a VPS), this is the public IP address, so the container acts as an open DNS resolver for the whole internet that can be abused e.g. for DNS amplification attacks. If your server has a public IP address, block port 53 (tcp and udp) in your firewall or remove this container from the AIO stack.
+
 ## How it works
 
 On startup the container:
