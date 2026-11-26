@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+name: ffmpeg-over-ip-update
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '00 12 * * *'
+
+jobs:
+  run_update:
+    name: update to latest ffmpeg-over-ip release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Run ffmpeg-over-ip-update
+      run: |
+        # Only update within the major version as the protocol version is pinned in the client of Nextcloud server
+        ffmpeg_over_ip_version="$(
+          git ls-remote https://github.com/steelbrain/ffmpeg-over-ip v6.* \
+            | cut -d/ -f3 \
+            | grep -E "^v[0-9\.]+$" \
+            | sort -V \
+            | tail -1
+        )"
+        sha256sums="$(curl -fsSL "https://github.com/steelbrain/ffmpeg-over-ip/releases/download/$ffmpeg_over_ip_version/SHA256SUMS")"
+        sha256_amd64="$(echo "$sha256sums" | grep " linux-amd64-ffmpeg-over-ip-server.zip$" | cut -d' ' -f1)"
+        sha256_arm64="$(echo "$sha256sums" | grep " linux-arm64-ffmpeg-over-ip-server.zip$" | cut -d' ' -f1)"
+        if [ -n "$sha256_amd64" ] && [ -n "$sha256_arm64" ]; then
+          sed -i "s|FFMPEG_OVER_IP_VERSION=.*|FFMPEG_OVER_IP_VERSION=$ffmpeg_over_ip_version \\\\|" ./Containers/ffmpeg/Dockerfile
+          sed -i "s|FFMPEG_OVER_IP_SHA256_AMD64=.*|FFMPEG_OVER_IP_SHA256_AMD64=$sha256_amd64 \\\\|" ./Containers/ffmpeg/Dockerfile
+          sed -i "s|FFMPEG_OVER_IP_SHA256_ARM64=.*|FFMPEG_OVER_IP_SHA256_ARM64=$sha256_arm64|" ./Containers/ffmpeg/Dockerfile
+        fi
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v7
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: ffmpeg-over-ip-update automated change
+        signoff: true
+        title: ffmpeg-over-ip update
+        body: Automated ffmpeg-over-ip update for the FFmpeg container
+        labels: dependencies, 3. to review
+        milestone: next
+        branch: ffmpeg-over-ip-container-update
