@@ -441,8 +441,12 @@ readonly class DockerActionManager {
             $requestBody['HostConfig']['Sysctls'] = $sysctls;
         }
 
-        // Disable arp spoofing
-        if (!in_array('NET_RAW', $capAdds, true)) {
+        // Docker applies CapDrop before CapAdd, so ['ALL'] plus CapAdd leaves exactly the listed caps.
+        $capDrops = $container->capDrop;
+        if (count($capDrops) > 0) {
+            $requestBody['HostConfig']['CapDrop'] = $capDrops;
+        } elseif (!in_array('NET_RAW', $capAdds, true)) {
+            // Disable arp spoofing for containers that do not define cap_drop (e.g. community containers)
             $requestBody['HostConfig']['CapDrop'] = ['NET_RAW'];
         }
 

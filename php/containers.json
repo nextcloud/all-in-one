@@ -82,8 +82,11 @@
         "/tmp",
         "/home/www-data"
       ],
+      "cap_add": [
+        "NET_BIND_SERVICE"
+      ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -142,7 +145,7 @@
         "/var/run/postgresql"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -290,8 +293,16 @@
       "backup_volumes": [
         "nextcloud_aio_nextcloud"
       ],
+      "cap_add": [
+        "CHOWN",
+        "DAC_OVERRIDE",
+        "FOWNER",
+        "KILL",
+        "SETGID",
+        "SETUID"
+      ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -341,7 +352,7 @@
         "/tmp"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -385,7 +396,7 @@
       "restart": "unless-stopped",
       "read_only": true,
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -431,7 +442,7 @@
         "CHOWN"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -504,7 +515,7 @@
         "/tmp"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -559,7 +570,7 @@
         "/conf"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -623,10 +634,14 @@
         "/dev/fuse"
       ],
       "cap_add": [
-        "SYS_ADMIN"
+        "SYS_ADMIN",
+        "CHOWN",
+        "DAC_OVERRIDE",
+        "FOWNER",
+        "FSETID"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ],
       "apparmor_unconfined": true,
       "read_only": true,
@@ -656,7 +671,7 @@
       ],
       "read_only": true,
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -690,7 +705,7 @@
         "/var/www/domaincheck"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -736,7 +751,7 @@
         "/var/log/clamav"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -779,8 +794,18 @@
       "profiles": [
         "onlyoffice"
       ],
+      "cap_add": [
+        "AUDIT_WRITE",
+        "CHOWN",
+        "DAC_OVERRIDE",
+        "FOWNER",
+        "KILL",
+        "NET_BIND_SERVICE",
+        "SETGID",
+        "SETUID"
+      ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -828,8 +853,17 @@
       "profiles": [
         "eurooffice"
       ],
+      "cap_add": [
+        "CHOWN",
+        "DAC_OVERRIDE",
+        "FOWNER",
+        "KILL",
+        "NET_BIND_SERVICE",
+        "SETGID",
+        "SETUID"
+      ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -862,7 +896,7 @@
         "SYS_NICE"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ],
       "profiles": [
         "imaginary"
@@ -927,7 +961,7 @@
         "FULLTEXTSEARCH_PASSWORD"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -955,7 +989,7 @@
         "/tmp"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     },
     {
@@ -1005,7 +1039,7 @@
         "/run/harp"
       ],
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ],
       "profiles": [
         "harp"
@@ -1055,7 +1089,7 @@
       ],
       "read_only": true,
       "cap_drop": [
-        "NET_RAW"
+        "ALL"
       ]
     }
   ]
