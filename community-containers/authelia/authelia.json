@@ -50,6 +50,7 @@
             "nextcloud_exec_commands": [
                 "php /var/www/html/occ app:install user_oidc",
                 "php /var/www/html/occ app:enable user_oidc",
+                "php /var/www/html/occ config:system:set user_oidc httpclient.allowlocal --value=true --type=boolean",
                 "php /var/www/html/occ user_oidc:provider Authelia --clientid='nextcloud' --clientsecret='%AUTHELIA_OIDC_CLIENT_SECRET%' --discoveryuri='https://auth.%NC_DOMAIN%/.well-known/openid-configuration' --scope='openid email profile groups' --unique-uid=1 --mapping-uid='sub' --mapping-display-name='name' --mapping-email='email'"
             ]
         }
