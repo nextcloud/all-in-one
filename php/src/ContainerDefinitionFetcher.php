@@ -318,6 +318,11 @@ readonly class ContainerDefinitionFetcher {
                 $shmSize = $entry['shm_size'];
             }
 
+            $cpuShares = 512;
+            if (isset($entry['cpu_shares'])) {
+                $cpuShares = $entry['cpu_shares'];
+            }
+
             $apparmorUnconfined = false;
             if (isset($entry['apparmor_unconfined'])) {
                 $apparmorUnconfined = $entry['apparmor_unconfined'];
@@ -362,6 +367,11 @@ readonly class ContainerDefinitionFetcher {
 
             $hideFromList = $entry['hide_from_list'] ?? false;
 
+            $oomScoreAdj = 500;
+            if (isset($entry['oom_score_adj'])) {
+                $oomScoreAdj = $entry['oom_score_adj'];
+            }
+
             $containers[] = new Container(
                 $entry['container_name'],
                 $displayName,
@@ -379,6 +389,7 @@ readonly class ContainerDefinitionFetcher {
                 $capAdd,
                 $sysctls,
                 $shmSize,
+                $cpuShares,
                 $apparmorUnconfined,
                 $backupVolumes,
                 $nextcloudExecCommands,
@@ -390,6 +401,7 @@ readonly class ContainerDefinitionFetcher {
                 $aioVariables,
                 $documentation,
                 $hideFromList,
+                $oomScoreAdj,
                 $this->container->get(DockerActionManager::class)
             );
         }

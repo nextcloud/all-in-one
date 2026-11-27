@@ -6,9 +6,11 @@ sudo docker run \
 --sig-proxy=false \
 --name nextcloud-aio-mastercontainer \
 --restart always \
+--oom-score-adj -500 \
 --publish 80:80 \
 --publish 8080:8080 \
 --publish 8443:8443 \
+--cpu-shares 2048 \
 --volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
 --volume /var/run/docker.sock:/var/run/docker.sock:ro \
 ghcr.io/nextcloud-releases/all-in-one:develop
